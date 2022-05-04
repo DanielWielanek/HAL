@@ -1,0 +1,452 @@
+/*
+ * HalPackageExtractor.cxx
+ *
+ *  Created on: 23-08-2013
+ *      Author: Daniel Wielanek
+ *		E-mail: daniel.wielanek@gmail.com
+ *		Warsaw University of Technology, Faculty of Physics
+ */
+
+#include "HalAnaFile.h"
+#include "HalPackage.h"
+#include "HalPackage2HTML.h"
+
+#include <TCollection.h>
+#include <TDirectory.h>
+#include <TFile.h>
+#include <TH1.h>
+#include <TKey.h>
+#include <TList.h>
+#include <TNamed.h>
+#include <TObjArray.h>
+#include <TSeqCollection.h>
+#include <cstdlib>
+#include <cstring>
+
+#include "HalCout.h"
+#include "HalParameter.h"
+#include "HalStdString.h"
+
+HalAnaFile::HalAnaFile(TString filename, TString packname) :
+  fHTMLCounter(0), fMainPackageArray(NULL), fCutContainerArray(NULL), fMetaDataPack(NULL), fFilename(filename) {
+  fFile = new TFile(filename);
+  if (fFile->IsZombie()) {
+    delete fFile;
+    exit(0);
+  }
+  fMetaDataPack            = (HalPackage*) fFile->Get("HalInfo/RunInfo");
+  HalParameterString* str = (HalParameterString*) fMetaDataPack->GetObjectByName("Software ver");
+  Int_t SoftVer            = HalStd::VersionId(str->GetValue());
+  if (SoftVer <= 201612) {
+    HalCout::PrintInfo("This file version might be not compatible wtih current version, use "
+                        "macro/path/fix_files.C to fix it",
+                        Hal::EInfo::kImportantWarning);
+  }
+  TDirectory* PhysDir = (TDirectory*) fFile->Get("HalPhysics");
+  fPhysKeys           = PhysDir->GetListOfKeys();
+  fCurrentPackID      = 0;
+  fMainPackageArray   = new TObjArray();
+  fCutContainerArray  = new TObjArray();
+  fMainPackageArray->SetOwner(kTRUE);
+  fCutContainerArray->SetOwner(kFALSE);
+  if (packname != "") {
+    fMaxPackID = 1;
+    for (int i = 0; i < fPhysKeys->GetEntries(); i++) {
+      TString name = ((TKey*) (fPhysKeys->At(0)))->GetName();
+      if (name != packname) {
+        fPhysKeys->RemoveAt(i);
+      } else {
+        fMainPackageArray->AddLast(dynamic_cast<HalPackage*>(PhysDir->Get(name)));
+        if (FindCutContainer(0) == kFALSE) { HalCout::PrintInfo("Cut container not found !", Hal::EInfo::kImportantWarning); }
+      }
+    }
+  } else {
+    for (int i = 0; i < fPhysKeys->GetEntries(); i++) {
+      TString name            = ((TKey*) (fPhysKeys->At(i)))->GetName();
+      TObject* pack_candidate = PhysDir->Get(name);
+      if (!pack_candidate->InheritsFrom("HalPackage")) {
+        fPhysKeys->RemoveAt(i);
+        delete pack_candidate;
+      } else {
+        fMainPackageArray->AddLast(pack_candidate);
+      }
+    }
+    fMaxPackID = fPhysKeys->GetEntries();
+    for (int i = 0; i < fMaxPackID; i++) {
+      if (FindCutContainer(i) == kFALSE) { HalCout::PrintInfo("Cut container not found !", Hal::EInfo::kImportantWarning); }
+    }
+  }
+  fMainPackageArray->Compress();
+}
+
+HalAnaFile::HalAnaFile(TString filename, Int_t id) :
+  fHTMLCounter(0), fMainPackageArray(NULL), fCutContainerArray(NULL), fMetaDataPack(NULL), fFilename(filename) {
+  fFile = new TFile(filename);
+  if (fFile->IsZombie()) { exit(0); }
+  fMetaDataPack            = (HalPackage*) fFile->Get("HalInfo/RunInfo");
+  HalParameterString* str = (HalParameterString*) fMetaDataPack->GetObjectByName("Software ver");
+  Int_t SoftVer            = HalStd::VersionId(str->GetValue());
+  if (SoftVer <= 201612) {
+    HalCout::PrintInfo("This file version might be not compatible wtih current version, use "
+                        "macro/path/fix_files.C to fix it",
+                        Hal::EInfo::kImportantWarning);
+  }
+  TDirectory* PhysDir = (TDirectory*) fFile->Get("HalPhysics");
+  fPhysKeys           = (TList*) PhysDir->GetListOfKeys()->Clone();
+  fCurrentPackID      = 0;
+  fMainPackageArray   = new TObjArray();
+  fCutContainerArray  = new TObjArray();
+  fMainPackageArray->SetOwner(kTRUE);
+  fCutContainerArray->SetOwner(kFALSE);
+  if (id >= 0) {
+    fMaxPackID = 1;
+    if (id > fPhysKeys->GetEntries()) {
+      HalCout::PrintInfo(Form("Package with id = %i  not found !", id), Hal::EInfo::kImportantWarning);
+      return;
+    }
+    TString name = ((TKey*) (fPhysKeys->At(id)))->GetName();
+    fMainPackageArray->AddLast(dynamic_cast<HalPackage*>(PhysDir->Get(name)));
+    if (FindCutContainer(0) == kFALSE) { HalCout::PrintInfo("Cut container not found !", Hal::EInfo::kImportantWarning); }
+  } else {
+    for (int i = 0; i < fPhysKeys->GetEntries(); i++) {
+      TString name            = ((TKey*) (fPhysKeys->At(i)))->GetName();
+      TObject* pack_candidate = PhysDir->Get(name);
+      if (!pack_candidate->InheritsFrom("HalPackage")) {
+        fPhysKeys->RemoveAt(i--);
+        delete pack_candidate;
+      } else {
+        fMainPackageArray->AddLast(pack_candidate);
+      }
+    }
+    fMaxPackID = fPhysKeys->GetEntries();
+    for (int i = 0; i < fMaxPackID; i++) {
+      if (FindCutContainer(i) == kFALSE) { HalCout::PrintInfo("Cut container not found !", Hal::EInfo::kImportantWarning); }
+    }
+  }
+  fMainPackageArray->Compress();
+}
+
+TObject* HalAnaFile::GetMainObject(Int_t i) const { return GetMainPackage()->GetObject(i); }
+
+TObject* HalAnaFile::GetMainObject(TString name, Int_t index) const { return GetMainPackage()->GetObjectByName(name, index); }
+
+void HalAnaFile::PrintMonitorCutList(TList* list) const {
+  HalCout::Database(5, "No", "Type", "UnitX", "UnitY", "UnitZ");
+  TString no, type, unitx, unity, unitz;
+  for (int i = 0; i < list->GetEntries(); i++) {
+    HalPackage* mon = (HalPackage*) list->At(i);
+    TString size     = mon->GetComment();
+    no               = HalStd::RoundToString(i);
+    type             = size;
+    unitx = unity = unitz = "-";
+    if (size == "HalCutMonitorX") {
+      unitx = ((HalParameterString*) mon->GetObjectByName("AxisX"))->GetValue();
+    } else if (size == "HalCutMonitorXY") {
+      unitx = ((HalParameterString*) mon->GetObjectByName("AxisX"))->GetValue();
+      unity = ((HalParameterString*) mon->GetObjectByName("AxisY"))->GetValue();
+    } else if (size == "HalCutMonitorXYZ") {
+      unitx = ((HalParameterString*) mon->GetObjectByName("AxisX"))->GetValue();
+      unity = ((HalParameterString*) mon->GetObjectByName("AxisY"))->GetValue();
+      unitz = ((HalParameterString*) mon->GetObjectByName("AxisZ"))->GetValue();
+    } else {
+      HalCout::PrintInfo("Oops, unknown Monitor :(", Hal::EInfo::kLessWarning);
+    }
+    HalCout::Database(5, no.Data(), type.Data(), unitx.Data(), unity.Data(), unitz.Data());
+  }
+}
+
+Int_t HalAnaFile::GetMerged() const { return GetMainPackage()->GetMerged(); }
+
+HalPackage* HalAnaFile::GetCutCollection(Hal::ECutUpdate update, Int_t no) const {
+  TList* list      = NULL;
+  TString listName = Form("Hal%sCutCollectionList", HalStd::UpdateEnumToString(update).Data());
+  list             = ((TList*) GetCutContainer()->GetObjectByName(listName));
+  return (HalPackage*) list->At(no);
+}
+
+void HalAnaFile::ExportHTML(TString fdirname, Int_t task_id) const {
+  if (task_id < 0) {
+    HalPackage2HTML* pack = new HalPackage2HTML(fFilename, fdirname);
+    delete pack;
+  } else {
+    HalPackage2HTML* pack = new HalPackage2HTML(GetMainPackage(), fMetaDataPack, fdirname, task_id);
+    delete pack;
+  }
+}
+
+Int_t HalAnaFile::GetCollectionsNo(Hal::ECutUpdate update) const {
+  TString label = "";
+  switch (update) {
+    case Hal::ECutUpdate::kEventUpdate: label = "Event_collections_No"; break;
+    case Hal::ECutUpdate::kTrackUpdate: label = "Track_collections_No"; break;
+    case Hal::ECutUpdate::kTwoTrackUpdate: label = "TwoTrack_collections_No"; break;
+    case Hal::ECutUpdate::kTwoTrackBackgroundUpdate: label = "TwoTrack_collections_background_No"; break;
+    default: return 0; break;
+  }
+  if (GetCutContainer()->Exist(label, 0)) { return ((HalParameterInt*) GetCutContainer()->GetObjectByName(label))->GetValue(); }
+  return 0;
+}
+
+TH1* HalAnaFile::GetHistogramPassed(Hal::ECutUpdate update, Int_t collection, Int_t no) const {
+  HalPackage* pack = GetCutCollection(update, collection);
+  TList* lista      = (TList*) pack->GetObjectByName("CutMonitorList");
+  if (lista == NULL) return NULL;
+  HalPackage* cutmon = (HalPackage*) lista->At(no);  //(HalPackage*)pack->GetObject(no);
+  return (TH1*) cutmon->GetObjectByName("Passed");
+}
+
+TH1* HalAnaFile::GetHistogramFailed(Hal::ECutUpdate update, Int_t collection, Int_t no) const {
+  HalPackage* pack = GetCutCollection(update, collection);
+  TList* lista      = (TList*) pack->GetObjectByName("CutMonitorList");
+  if (lista == NULL) return NULL;
+  HalPackage* cutmon = (HalPackage*) lista->At(no);
+  // HalPackage *cutmon = (HalPackage*)pack->GetObject(no);
+  return (TH1*) cutmon->GetObjectByName("Failed");
+}
+
+HalPackage* HalAnaFile::GetPackage(TString packname) const {
+  for (int i = 0; i < fMainPackageArray->GetEntriesFast(); i++) {
+    TString name = ((TKey*) fPhysKeys->At(i))->GetName();
+    TObject* obj = fMainPackageArray->UncheckedAt(i);
+    if (obj->InheritsFrom("HalPackage") && name == packname) { return (HalPackage*) obj; }
+  }
+  HalCout::FailSucced(Form("Package %s not found !", packname.Data()), "WARNING", kRed);
+  return NULL;
+}
+
+Bool_t HalAnaFile::SwitchPackage(TString name) {
+  Bool_t not_switched = kTRUE;
+  for (int i = 0; i < fPhysKeys->GetEntries(); i++) {
+    TKey* key        = (TKey*) fPhysKeys->At(i);
+    TString key_name = key->GetName();
+    if (key_name.EqualTo(name)) {
+      fCurrentPackID = i;
+      not_switched   = kFALSE;
+    }
+  }
+  if (not_switched) {
+    HalCout::PrintInfo(Form("%s not found in HalPhysics", name.Data()), Hal::EInfo::kLessWarning);
+    return kFALSE;
+  }
+  return kTRUE;
+}
+
+Bool_t HalAnaFile::SwitchPackage(Int_t no) {
+  if (no < 0) return kFALSE;
+  if (no >= fMaxPackID) return kFALSE;
+  fCurrentPackID = no;
+  return kTRUE;
+}
+
+Bool_t HalAnaFile::FindCutContainer(Int_t pack_no) {
+  HalPackage* mainpack = static_cast<HalPackage*>(fMainPackageArray->UncheckedAt(pack_no));
+  for (int i = 0; i < mainpack->GetEntries(); i++) {
+    TObject* obj      = mainpack->GetObject(i);
+    TString classname = obj->ClassName();
+    if (classname == "HalPackage") {  // possible canditate
+      HalPackage* pack = (HalPackage*) mainpack->GetObject(i);
+      TString pack_class_name(pack->GetName(), strlen(pack->GetName()));
+      if (pack_class_name.EqualTo("HalCutContainer")) {
+        fCutContainerArray->AddAtAndExpand(pack, pack_no);
+        return kTRUE;
+      }
+    }
+  }
+  return kFALSE;
+}
+
+HalPackage* HalAnaFile::GetMetaData() const { return fMetaDataPack; }
+
+HalAnaFile::~HalAnaFile() {
+  delete fMetaDataPack;
+  delete fMainPackageArray;
+  delete fCutContainerArray;
+  fFile->Close();
+  delete fFile;
+}
+
+Int_t HalAnaFile::GetMainObjectsNo() const { return GetMainPackage()->GetEntries(); }
+
+void HalAnaFile::GetPackageList(TString filename) {
+  TFile* file      = new TFile(filename);
+  TDirectory* tdir = (TDirectory*) file->Get("HalPhysics");
+  TList* list      = tdir->GetListOfKeys();
+  for (int i = 0; i < list->GetEntries(); i++) {
+    TString name    = ((TKey*) (list->At(i)))->GetName();
+    TObject* object = tdir->Get(name);
+    HalCout::Text("List of keys ", "L");
+    if (object->InheritsFrom("HalPackage")) {
+      HalCout::Text(object->GetName(), "L");
+    } else {
+      HalCout::PrintInfo(Form("%s found in HalPhysics but don't inherit from HalPackage", name.Data()),
+                          Hal::EInfo::kLessWarning);
+    }
+  }
+  file->Close();
+}
+
+ULong64_t HalAnaFile::GetPassedNo(Hal::ECutUpdate update, Int_t collection, Option_t* opt) const {
+  HalPackage* pack = GetCutCollection(update, collection);
+  TString option    = opt;
+  if (option == "fast")
+    option = "PassedFast";
+  else
+    option = "PassedSlow";
+  HalParameterULong64* entries = (HalParameterULong64*) pack->GetObjectByName(option);
+  return entries->GetValue();
+}
+
+ULong64_t HalAnaFile::GetFailedNo(Hal::ECutUpdate update, Int_t collection, Option_t* opt) const {
+  HalPackage* pack = GetCutCollection(update, collection);
+  TString option    = opt;
+  if (option == "fast")
+    option = "FailedFast";
+  else
+    option = "FailedSlow";
+  HalParameterULong64* entries = (HalParameterULong64*) pack->GetObjectByName(option);
+  return entries->GetValue();
+}
+
+Int_t HalAnaFile::GetCutsNo(Hal::ECutUpdate update, Int_t collection, TString opt) const {
+  HalPackage* pack = GetCutCollection(update, collection);
+  TString option    = opt;
+  if (option == "fast") {
+    TList* list = (TList*) pack->GetObjectByName("FastCutList");
+    if (list) return list->GetEntries();
+  } else if (option == "slow") {
+    TList* list = (TList*) pack->GetObjectByName("CutList");
+    if (list) return list->GetEntries();
+  } else {
+    Int_t total  = 0;
+    TList* listf = (TList*) pack->GetObjectByName("FastCutList");
+    TList* list  = (TList*) pack->GetObjectByName("CutList");
+    if (listf) total += listf->GetEntries();
+    if (list) total += list->GetEntries();
+    return total;
+  }
+  return 0;
+}
+
+Int_t HalAnaFile::GetCuMonitorsNo(Hal::ECutUpdate update, Int_t collection, TString opt) const {
+  HalPackage* pack = GetCutCollection(update, collection);
+  TString option    = opt;
+  Int_t d1, d2, d3, d4;
+  d1 = d2 = d3 = d4 = 0;
+  TList* list       = (TList*) pack->GetObjectByName("CutMonitorList");
+  if (list == NULL) return 0;
+  for (int iCut = 0; iCut < list->GetEntries(); iCut++) {
+    HalPackage* mon = (HalPackage*) list->At(iCut);
+    if (((TString) mon->GetName()) == "HalCutMonitorX") d1++;
+    if (((TString) mon->GetName()) == "HalCutMonitorXY") d2++;
+    if (((TString) mon->GetName()) == "HalCutMonitorXYZ") d3++;
+    d4++;
+  }
+  if (option == "1d") return d1;
+  if (option == "2d") return d2;
+  if (option == "3d") return d3;
+  return d4;
+}
+
+void HalAnaFile::PrintCuts(Hal::ECutUpdate update, Int_t col) const {
+  TList* list   = NULL;
+  TString label = "";
+  list =
+    ((TList*) GetCutContainer()->GetObjectByName(Form("Hal%sCutCollectionList", HalStd::UpdateEnumToString(update).Data())));
+  label = Form("%s Cuts", HalStd::UpdateEnumToString(update).Data());
+  if (list == NULL) return;
+  if (col == -1) {
+    for (int i = 0; i < list->GetEntries(); i++) {
+      HalCout::Text(Form("%s Cut col: %i", label.Data(), i), "M", kCyan);
+      PrintCutsInPackage((HalPackage*) list->At(i));
+    }
+  } else {
+    HalCout::Text(Form("%s Cut col: %i", label.Data(), col), "M", kCyan);
+    PrintCutsInPackage((HalPackage*) list->At(col));
+  }
+}
+
+void HalAnaFile::PrintCutsInPackage(HalPackage* pack) const {
+  TList* fast_cuts                 = (TList*) pack->GetObjectByName("FastCutList");
+  TList* slow_cuts                 = (TList*) pack->GetObjectByName("CutList");
+  HalParameterULong64* passedFast = (HalParameterULong64*) pack->GetObjectByName("PassedFast");
+  HalParameterULong64* passedSlow = (HalParameterULong64*) pack->GetObjectByName("PassedSlow");
+  HalParameterULong64* failedFast = (HalParameterULong64*) pack->GetObjectByName("FailedFast");
+  HalParameterULong64* failedSlow = (HalParameterULong64*) pack->GetObjectByName("FailedSlow");
+  TString PassedFast               = HalStd::RoundToString(passedFast->GetValue());
+  TString PassedSlow               = HalStd::RoundToString(passedSlow->GetValue());
+  TString FailedFast               = HalStd::RoundToString(failedFast->GetValue());
+  TString FailedSlow               = HalStd::RoundToString(failedSlow->GetValue());
+  HalCout::Database(3, "Type", "Failed", "Passed");
+  HalCout::Database(3, "Fast", PassedFast.Data(), FailedFast.Data());
+  HalCout::Database(3, "Slow", PassedFast.Data(), FailedSlow.Data());
+  HalCout::Text("Fast Cuts", "M", kCyan);
+  HalCout::Database(5, "Name", "Passed %", "Param", "Min", "Max");
+  for (int i = 0; i < fast_cuts->GetEntries(); i++)
+    PrintCut((HalPackage*) fast_cuts->At(i));
+  HalCout::Text("Slow Cuts", "M", kCyan);
+  for (int i = 0; i < slow_cuts->GetEntries(); i++)
+    PrintCut((HalPackage*) slow_cuts->At(i));
+}
+
+void HalAnaFile::PrintCut(HalPackage* cut) const {
+  TString name    = cut->GetName();
+  Double_t passed = (Double_t)(((HalParameterULong64*) cut->GetObjectByName("Passed")))->GetValue();
+  Double_t failed = (Double_t)(((HalParameterULong64*) cut->GetObjectByName("Failed")))->GetValue();
+  Int_t cut_size  = (((HalParameterInt*) cut->GetObjectByName("CutSize")))->GetValue();
+  passed          = passed / (passed + failed) * 100.0;
+  if (cut_size == 0) {
+    TString unit_name = ((HalParameterString*) cut->GetObjectByName("UnitName_0i"))->GetValue();
+    TString min       = HalStd::RoundToString(((HalParameterDouble*) cut->GetObjectByName("MinCut_0"))->GetValue(), 3);
+    TString max       = HalStd::RoundToString(((HalParameterDouble*) cut->GetObjectByName("MaxCut_0"))->GetValue(), 3);
+    HalCout::Database(5, name.Data(), Form("%4.2f", passed), unit_name.Data(), min.Data(), max.Data());
+    return;
+  }
+  TString min, max, unit;
+
+  for (int i = 0; i < cut_size; i++) {
+    min  = Form("MinCut_%i", i);
+    max  = Form("MaxCut_%i", i);
+    unit = Form("UnitName_%i", i);
+    unit = ((HalParameterString*) cut->GetObjectByName(unit))->GetValue();
+    min  = HalStd::RoundToString(((HalParameterDouble*) cut->GetObjectByName(min))->GetValue(), 3);
+    max  = HalStd::RoundToString(((HalParameterDouble*) cut->GetObjectByName(max))->GetValue(), 3);
+    if (i == 0) {
+      HalCout::Database(5, name.Data(), Form("%4.2f", passed), unit.Data(), min.Data(), max.Data());
+    } else {
+      HalCout::Database(5, "", "", unit.Data(), min.Data(), max.Data());
+    }
+  }
+}
+
+HalPackage* HalAnaFile::GetCutPackage(Hal::ECutUpdate update, Int_t collection, Int_t cutNo, Option_t* opt) const {
+  TList* list   = NULL;
+  TString label = "";
+  list =
+    ((TList*) GetCutContainer()->GetObjectByName(Form("Hal%sCutCollectionList", HalStd::UpdateEnumToString(update).Data())));
+  label = Form("%s Cuts", HalStd::UpdateEnumToString(update).Data());
+  if (list == NULL) return NULL;
+  HalPackage* cutCollection = (HalPackage*) list->At(collection);
+  if (cutCollection == NULL) return NULL;
+  TString option   = opt;
+  TList* list_fast = (TList*) cutCollection->GetObjectByName("FastCutList");
+  TList* list_slow = (TList*) cutCollection->GetObjectByName("CutList");
+  if (option == "all") {
+    if (cutNo > list_fast->GetEntries()) {
+      return (HalPackage*) list_slow->At(cutNo - list_fast->GetEntries());
+    } else {
+      return (HalPackage*) list_fast->At(cutNo);
+    }
+  } else if (option == "slow") {
+    return (HalPackage*) list_slow->At(cutNo);
+  } else {  // fast cuts
+    return (HalPackage*) list_fast->At(cutNo);
+  }
+}
+
+HalPackage* HalAnaFile::GetMainPackage() const {
+  return static_cast<HalPackage*>(fMainPackageArray->UncheckedAt(fCurrentPackID));
+}
+
+HalPackage* HalAnaFile::GetCutContainer() const {
+  return static_cast<HalPackage*>(fCutContainerArray->UncheckedAt(fCurrentPackID));
+}

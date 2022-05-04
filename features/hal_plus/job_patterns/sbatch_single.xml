@@ -1,0 +1,23 @@
+<nica-submitter>
+	<!--nodes here are mandatory -->
+	<settings>
+		<!--submit command -->
+		<submit>sbatch ${NICA_JOB_FILE}</submit>
+		<!--job ids -->
+		<submit_start>1</submit_start>
+		<submit_end>1</submit_end>
+		<shell>#!/bin/bash</shell>
+	</settings>
+	<job_options array="no">
+		<!--walltime -->
+		<command>#SBATCH --time=01:30:00</command>
+	</job_options>
+	<job_commands>
+		<!--commands -->
+		<!-- ${JOB_ID_NICA} will be replaced by job ID -->
+		<command>export JOB_ID_NICA=${NICA_JOB_ID}</command>
+		<command>export TEMP_VAR=`nica-jobs --export=job_file.txt
+			--id=${JOB_ID_NICA} --par=0 `</command>
+		<command>root -l -b -q "macro()"</command>
+	</job_commands>
+</nica-submitter>

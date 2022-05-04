@@ -1,0 +1,46 @@
+<generator_patterns>
+	<event_patterns>
+		<pattern desc="impact parameter" type="d">B</pattern>
+		<pattern desc="number of particles" type="i">Npa</pattern>
+		<pattern desc="number of event steps" type="i">Nes</pattern>
+		<pattern desc="number" type="i">Nr</pattern>
+		<pattern desc="reaction plane angle" type="d">Phi</pattern>
+		<pattern desc="step number" type="i">Step_nr</pattern>
+		<pattern desc="step time" type="d">Step_t</pattern>
+		<pattern desc="X-vetex" type="d">Vx</pattern>
+		<pattern desc="Y-vetex" type="d">Vy</pattern>
+		<pattern desc="Z-vetex" type="d">Vz</pattern>
+		<pattern desc="time" type="d">Vt</pattern>
+		<pattern desc="run id" type="u">RunId</pattern>
+		<pattern desc="primary track no" type="i">PrimaryTrackNo</pattern>
+		<pattern desc="flag" type="i">Flag</pattern>
+		<pattern desc="X-rot" type="d">RotX</pattern>
+		<pattern desc="Y-rot" type="d">RotY</pattern>
+		<pattern desc="Z-rot" type="d">RotZ</pattern>
+	</event_patterns>
+	<track_patterns>
+		<pattern desc="decay index (-1 if not decayed" type="i">decay</pattern>
+		<pattern desc="index of first child" type="i">first_child</pattern>
+		<pattern desc="X-freezout" type="d">frx</pattern>
+		<pattern desc="Y-freezout" type="d">fry</pattern>
+		<pattern desc="Z-freezout" type="d">frz</pattern>
+		<pattern desc="T-freezout" type="d">frt</pattern>
+		<pattern desc="index" type="i">index</pattern>
+		<pattern desc="index of last child" type="i">last_child</pattern>
+		<pattern desc="index of last collision partner" type="i">mate</pattern>
+		<pattern desc="parent decay index" type="i">parent_decay</pattern>
+		<pattern desc="parent index" type="i">parent</pattern>
+		<pattern desc="pdg code" type="i">pdg</pattern>
+		<pattern desc="px" type="d">px</pattern>
+		<pattern desc="py" type="d">py</pattern>
+		<pattern desc="pz" type="d">pz</pattern>
+		<pattern desc="e" type="d">e</pattern>
+		<pattern desc="status" type="i">status</pattern>
+		<pattern desc="weight" type="d">weight</pattern>
+		<pattern desc="X-vertex" type="d">vx</pattern>
+		<pattern desc="Y-vertex" type="d">vy</pattern>
+		<pattern desc="z-vertex" type="d">vz</pattern>
+		<pattern desc="T-vertex" type="d">vt</pattern>
+		<pattern desc="points no" type="i">pointN</pattern>
+	</track_patterns>
+</generator_patterns>

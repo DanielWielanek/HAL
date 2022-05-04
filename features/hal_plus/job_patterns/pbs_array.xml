@@ -1,0 +1,27 @@
+<nica-submitter>
+	<!--nodes here are mandatory -->
+	<settings>
+		<!--submit command -->
+		<submit>qsub ${NICA_JOB_FILE}</submit>
+		<submit_start>1</submit_start>
+		<submit_end>1</submit_end>
+		<shell>#!/bin/bash</shell>
+	</settings>
+	<job_options array="yes">
+		<!--array command in options, ${NICA_START_ARRAY}/${NICA_END_ARRAY} will 
+			be replaced by submit start/end -->
+		<command>#PBS -t ${NICA_START_ARRAY}-${NICA_END_ARRAY}</command>
+		<!--job array ids -->
+		<!--number of nodes, cores per node walltime -->
+		<command>#PBS -l nodes=1:ppn=1,walltime=30:00</command>
+		<!--output logs -->
+		<command>#PBS -o /dev/null</command>
+		<!--error logs -->
+		<command>#PBS -e /dev/null</command>
+	</job_options>
+	<job_commands>
+		<!--commands -->
+		<command>export JOB_ID_NICA=${PBS_ARRAYID}</command>
+		<command>root -l -b -q "macro()"</command>
+	</job_commands>
+</nica-submitter>

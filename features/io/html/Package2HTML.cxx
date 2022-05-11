@@ -54,7 +54,6 @@ namespace Hal {
   Package2HTML::Package2HTML() :
     fHTML(nullptr),
     fDir(""),
-    fObjectCounter(0),
     fDynamicTableCounter(0),
     fTaskTableCounter(0),
     fCutContainerPosition(0),
@@ -66,7 +65,6 @@ namespace Hal {
     fCurrentCutContainer(nullptr),
     fListDeep(0),
     fSoftVer(0) {}
-
 
   Package2HTML::Package2HTML(Package* pack, const TString dir, Bool_t main_dir) : Package2HTML() {
     fDir = dir;
@@ -462,7 +460,7 @@ namespace Hal {
 
       } else if (nameClass == "HalQAPlotReport") {
         Object* rep = (Object*) object;
-        rep->HTMLExtractIntoTable(i, halTable, path, inject);
+        rep->HTMLExtractIntoTable(fTObjectCounter["qa"]++, halTable, path, inject);
       } else if (nameClass != "TList" || fListDeep != 0) {
         HtmlRow row;
         row.SetClass(styleCell);

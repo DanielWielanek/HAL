@@ -16,6 +16,7 @@ namespace Hal {
     TString fID;
     TString fStyle;
     TString fContent;
+    TString fOtherAttribs;
 
   protected:
     TString GetClass() const { return fClass; };
@@ -59,6 +60,7 @@ namespace Hal {
     void SetStringContent(TString content) { fContent = content; };
     TString GetContent() const { return fContent; };
     virtual void AddStringContent(TString text) { fContent = fContent + text; };
+    void AddAtrib(TString name, TString value);
     /** convert this object to HTML **/
     virtual TString ToString() const = 0;
     virtual ~HtmlObject();

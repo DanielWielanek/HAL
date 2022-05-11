@@ -10,12 +10,17 @@
 
 #include <TString.h>
 namespace Hal {
-  HtmlObject::HtmlObject() : TObject(), fClass(""), fID(""), fStyle(""), fContent("") {}
+  HtmlObject::HtmlObject() : TObject(), fClass(""), fID(""), fStyle(""), fContent(""), fOtherAttribs("") {}
 
   HtmlObject::~HtmlObject() {}
 
   HtmlObject::HtmlObject(const HtmlObject& other) :
-    TObject(other), fClass(other.fClass), fID(other.fID), fStyle(other.fStyle), fContent(other.fContent) {}
+    TObject(other),
+    fClass(other.fClass),
+    fID(other.fID),
+    fStyle(other.fStyle),
+    fContent(other.fContent),
+    fOtherAttribs(other.fOtherAttribs) {}
 
   void HtmlObject::AddContent(const HtmlObject& obj) { fContent = fContent + obj.ToString(); }
 
@@ -28,6 +33,7 @@ namespace Hal {
     fID              = other.fID;
     fStyle           = other.fStyle;
     fContent         = other.fContent;
+    fOtherAttribs    = other.fOtherAttribs;
     return *this;
   }
 
@@ -35,6 +41,7 @@ namespace Hal {
     TString properties;
     if (GetStyle().Length() > 0) { properties = properties + " style=\"" + GetStyle() + "\" "; }
     if (GetClass().Length() > 0) { properties = properties + " class=\"" + GetClass() + "\" "; }
+    if (fOtherAttribs.Length() > 0) properties = properties + fOtherAttribs;
     if (GetId().Length() > 0) { properties = properties + " id=\"" + GetId() + "\" "; }
     return properties;
   }
@@ -45,4 +52,9 @@ namespace Hal {
     res         = res + ">\n" + GetContent() + "</" + tag + ">\n";
     return res;
   }
+
+  void HtmlObject::AddAtrib(TString name, TString value) {
+    fOtherAttribs = fOtherAttribs + Form(" %s=\"%s\"", name.Data(), value.Data());
+  }
+
 }  // namespace Hal

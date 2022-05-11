@@ -15,6 +15,7 @@
 #include <TObject.h>
 #include <TString.h>
 #include <initializer_list>
+#include <map>
 #include <vector>
 
 
@@ -91,7 +92,9 @@ namespace Hal {
     TString GetGroupListName(Hal::ECutUpdate update) const;
     HtmlFile* fHTML;
     TString fDir;
-    Int_t fObjectCounter, fDynamicTableCounter, fTaskTableCounter;
+    std::map<TString, Int_t> fTObjectCounter;
+    Int_t fDynamicTableCounter, fTaskTableCounter;
+
     Int_t fCutContainerPosition, fPackageID;
     Int_t fCollectionsNo[4];
     Double_t fBasicRadius, fWindowWidth, fWIndowHeight;

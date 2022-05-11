@@ -1,7 +1,7 @@
 /*
  * FluctuationsAna.h
  *
- *  Created on: 05-05-2022
+ *  Created on: 31 sie 2017
  *      Author: Daniel Wielanek
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
@@ -9,12 +9,12 @@
 #ifndef HALCHARGEDFLUCTUATIONSANA_H_
 #define HALCHARGEDFLUCTUATIONSANA_H_
 /**
- * basic class for calculation of fluctiuations of any variables
+ * basic class for calculation of fluctiuations of any number of charged particles
+ * by default draw number of particles selected by odd cuts vs number of particles selected by event cuts vs event parameter
  */
 
-
 #include <FairTask.h>
-#include <TH2.h>
+#include <TH3.h>
 #include <TString.h>
 
 #include "Cut.h"
@@ -22,18 +22,21 @@
 #include "TrackAna.h"
 
 namespace Hal {
+  class TrackCut;
+  class EventCut;
+
   class ChargedFluctuationsAna : public TrackAna {
-    Int_t fBins[4];
-    Double_t fMin[4], fMax[4];
-    Int_t fNPos[4];
-    Int_t fNNeg[4];
-    enum eCollectionFlag { kPion = 0, kKaon = 1, kProton = 2, kCharge = 3 };
+    Int_t fBins;
+    Double_t fMin, fMax;
+    Int_t fEventBins, fEventPar, fTrackCols;
+    Double_t fEventMin, fEventMax;
+    std::vector<Int_t> fCounts;
+    std::vector<TString> fEventLabels;
+    std::vector<TString> fTrackLabels;
     TString HistoName(Int_t id, TString pattern) const;
     TString HistoTitle(Int_t id, TString pattern) const;
-    HistogramManager_1_2D<TH2D>* fKaon;
-    HistogramManager_1_2D<TH2D>* fPion;
-    HistogramManager_1_2D<TH2D>* fProton;
-    HistogramManager_1_2D<TH2D>* fCharged;
+    TString CleanOpt(Option_t* opt, Int_t col) const;
+    HistogramManager_2_3D<TH3D>* fHistogram;
 
   protected:
     virtual void CheckCutContainerCollections();
@@ -42,6 +45,8 @@ namespace Hal {
 
   public:
     ChargedFluctuationsAna();
+    void SetEventLabels(const std::initializer_list<TString>& init = {"Events"});
+    void SetTrackLabels(const std::initializer_list<TString>& init = {"Pions"});
     /**
      * set histogram axis
      * @param bins number of bins
@@ -50,29 +55,25 @@ namespace Hal {
      * @param flag flag that is equal to cut collection id - 0 for pions, 2 for
      * kaons, 4 for protons, 6 for charged particles (see PionPlusID etc.)
      */
-    void SetHistogramAxis(Int_t bins, Double_t min, Double_t max, Int_t flag);
+    void SetTrackHistogramAxis(Int_t bins, Double_t min, Double_t max);
     /**
-     * set histogram axis -  recommended method - in this case range is made in
-     * following way that bin centers corresponds from 0, 1.. nbisn
-     * @param bins number of bins
-     * @param min min
-     * @param max max
-     * @param flag flag that is equal to cut collection id - 0 for pions, 2 for
-     * kaons, 4 for protons, 6 for charged particles (see PionPlusID etc.)
+     * set third axis of a histogram with fluctuations
      */
-    void SetHistogramAxis(Int_t bins, Int_t flag);
+    void SetEventHistogramAxis(Int_t bins, Double_t min, Double_t max);
     virtual void AddCut(const Cut& cut, Option_t* opt = "");
-    static Int_t PionPlusID() { return 0; };
-    static Int_t PionMinusID() { return 1; };
-    static Int_t KaonMinusID() { return 3; };
-    static Int_t KaonPlusID() { return 2; };
-    static Int_t ProtonID() { return 4; };
-    static Int_t AntiProtonID() { return 5; };
-    static Int_t PositiveChargeID() { return 6; };
-    static Int_t NegativeChargeID() { return 7; };
+    /**
+     * save way to add pair of track cuts
+     */
+    void AddCut(const TrackCut& pos, const TrackCut& neg, Option_t* opt);
+
+    /**
+     * event property around second/third axis
+     */
+    void SetEventprop(Int_t evProp);
     virtual Package* Report() const;
     virtual ~ChargedFluctuationsAna();
     ClassDef(ChargedFluctuationsAna, 1)
   };
 }  // namespace Hal
-#endif /* HALCHARGEDFLUCTUATIONSANA_H_ */
+
+#endif /* NICACHARGEDFLUCTUATIONSANA_H_ */

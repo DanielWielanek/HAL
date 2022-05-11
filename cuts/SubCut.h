@@ -1,7 +1,7 @@
 /*
  * SubCut.h
  *
- *  Created on: 04-05-2022
+ *  Created on: 10 gru 2016
  *      Author: Daniel Wielanek
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
@@ -19,6 +19,8 @@ class TH1;
  * small class for storing cut parameters
  */
 namespace Hal {
+  class Cut;
+  class Package;
   class SubCut : public TObject {
     Int_t fSize;
     Double_t* fMin;      //[fSize]
@@ -116,9 +118,10 @@ namespace Hal {
    */
   class SubCutHisto : public TObject {
     Int_t fSize;
-    Double_t* fValue;    //[fSize]
-    TString* fUnitName;  //[fSize]
     TH1* fAcceptanceHistogram;
+    Int_t fParX;
+    Int_t fParY;
+    Int_t fParZ;
 
   public:
     /**
@@ -126,12 +129,6 @@ namespace Hal {
      * @param size default sub-cut size
      */
     SubCutHisto(Int_t size = 3);
-    /**
-     * set name of  cut unit on given parameter
-     * @param name unit name
-     * @param i parameter numer
-     */
-    void SetUnitName(TString name, Int_t i = 0) { fUnitName[i] = name; };
     /**
      *
      * @return number of checked values
@@ -149,19 +146,13 @@ namespace Hal {
      * check values
      * @return return true if  values for all axes are between fMin and fMax
      */
-    Bool_t Validate();
+    Bool_t Validate(Double_t x, Double_t y = 0, Double_t z = 0);
     /**
      * check values
      * @return return true if  absolute values for all axes are between fMin and
      * fMax
      */
-    Bool_t ValidateAbs();
-    /**
-     *
-     * @param i axis (parameter no)
-     * @return unit name
-     */
-    TString GetUnit(Int_t i) const { return fUnitName[i]; };
+    Bool_t ValidateAbs(Double_t x, Double_t y = 0, Double_t z = 0);
     /**
      * operator =
      * @param other
@@ -169,34 +160,73 @@ namespace Hal {
      */
     SubCutHisto& operator=(const SubCutHisto& other);
     /**
-     * set value of given parameter
-     * @param val value
-     * @param i parameter no
-     */
-    inline void SetValue(Double_t val, Int_t i = 0) { fValue[i] = val; };
-    /**
-     * return latest value put by SetValue with given parameter number
-     * @param i parameter no
-     * @return value
-     */
-    inline Double_t GetValue(Int_t i) const { return fValue[i]; };
-    /**
      *
      * @return accpetance histogram
      */
     TH1* GetHisto() const { return fAcceptanceHistogram; };
     /**
      * check if everything is ok
+     * @param thisCut reference to this cut
+     * @param par1 ID of first checked parameter in thisCut object
+     * @param par2 ID of second checked parameter in thisCut object
+     * @param par3 ID of third checked parameter in thisCut object
      * @return tru if this is ok
      */
-    Bool_t Init();
+    Bool_t Init(const Cut& thisCut, Int_t par1, Int_t par2 = -1, Int_t par3 = -1);
     /**
      * copy constructor
      * @param other
      */
     SubCutHisto(const SubCutHisto& other);
+    /**
+     * add this object to cut report
+     */
+    void AddToReport(Package* report) const;
     virtual ~SubCutHisto();
     ClassDef(SubCutHisto, 1)
   };
+
+  /**
+   * class for accepting objects in rectangle-like ranges
+   */
+  class SubCutRectangle : public TObject {
+    std::vector<Double_t> fMinX;
+    std::vector<Double_t> fMaxX;
+    std::vector<Double_t> fMinY;
+    std::vector<Double_t> fMaxY;
+    TString fNameX;
+    TString fNameY;
+    Int_t fParX;
+    Int_t fParY;
+
+  public:
+    SubCutRectangle();
+    void AddSquare(Double_t xmin, Double_t xmax, Double_t ymin, Double_t ymax);
+    /**
+     * check if everything is ok
+     * @param thisCut reference to this cut
+     * @param par1 ID of first checked parameter in thisCut object
+     * @param par2 ID of second checked parameter in thisCut object
+     * @return tru if this is ok
+     */
+    Bool_t Init(const Cut& thisCut, Int_t par1, Int_t par2 = 1);
+    /**
+     * @param x
+     * @param y
+     * @return number of squares that cover object range
+     */
+    Int_t Validate(Double_t x, Double_t y);
+    /**
+     * return number of polygons
+     */
+    Int_t GetAreasNo() { return fMinX.size(); };
+    /**
+     * add this object to cut report
+     */
+    void AddToReport(Package* report) const;
+    virtual ~SubCutRectangle();
+    ClassDef(SubCutRectangle, 1);
+  };
 }  // namespace Hal
-#endif /* HALSUBCUT_H_ */
+
+#endif /* NICASUBCUT_H_ */

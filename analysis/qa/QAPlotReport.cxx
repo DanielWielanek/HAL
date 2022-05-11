@@ -9,13 +9,13 @@
 
 #include "QAPlotReport.h"
 
-
 #include <TAxis.h>
 #include <TBrowser.h>
 #include <TCanvas.h>
 #include <TMathBase.h>
 #include <TNamed.h>
 #include <TROOT.h>
+#include <TRegexp.h>
 #include <TSystem.h>
 #include <iostream>
 #include <vector>
@@ -26,7 +26,6 @@
 #include "HtmlDiv.h"
 #include "HtmlFile.h"
 #include "HtmlTable.h"
-
 namespace Hal {
   QAPlotReport::QAPlotReport() :
     fExtraInfo(nullptr), fOriginName("OriginName", ""), f1dHistos(nullptr), f2dHistos(nullptr), f3dHistos(nullptr) {}
@@ -263,7 +262,7 @@ namespace Hal {
     HtmlDiv div;
 
     Int_t max = TMath::Max(GetSize1D(), TMath::Max(GetSize2D(), GetSize3D()));
-    HtmlTable table1("table_1d", "nicatable", "");
+    HtmlTable table1("table_1d", "haltable", "");
 
     HtmlRow rowParent("", "green_", "");
     rowParent.AddContent(HtmlCell("Origin"));
@@ -318,6 +317,8 @@ namespace Hal {
 
     Int_t max = TMath::Max(GetSize1D(), TMath::Max(GetSize2D(), GetSize3D()));
 
+    TString className = Form("med_blue qa_%i", no);
+
     HtmlRow row;
     row.SetClass("light_blue");
     HtmlCell cell1(Form("%i", no));
@@ -328,48 +329,67 @@ namespace Hal {
     TString rowButton = HtmlCore::GetHideButtonRow(Form("qa_%i", no), "Show/Hide");
     row.AddContent(HtmlCell(rowButton));
     table.AddContent(row);
+    HtmlRow rowPaint("", className, "display:none");
+    TString buttonDraw = Form("<button onclick=\"qaPopup('%i')\">Plot Many</button>", no);
+    rowPaint.AddContent(HtmlCellCol(buttonDraw, 5));
+    table.AddContent(rowPaint);
     gSystem->mkdir(path);
     //  if (path_url != path_data) list_dir2 = Form("%s/list_%i/", path_url.Data(), no);
+    struct constRowData {
+      TString className;
+      TString subDir;
+      TString path;
+      HtmlTable* table;
+      QAPlotReport* rep;
+      Int_t no;
+      Int_t dim;
+    };
+    constRowData data;
+    data.className = className;
+    data.subDir    = subdir;
+    data.path      = path;
+    data.no        = no;
+    data.table     = &table;
 
-    TString className = Form("med_blue qa_%i", no);
+    auto makeRow = [](Int_t nu, Int_t dim, TH1* h, constRowData dat) {
+      HtmlRow rowElement2("", dat.className, "display:none");
+      TString url      = dat.rep->ExportHistogramToFile(dat.path, dat.subDir, nu, h);
+      TString boxname  = Form("cb_%i_%i_%i", dat.no, dat.dim, nu);
+      TString urlBox   = Form("<input type=\"checkbox\" name = \"%s\" >", boxname.Data());
+      HtmlCellCol cell = HtmlCellCol(urlBox, 1);
+      cell.AddAtrib("onclick", Form("chageCheckBoxCell('%s')", boxname.Data()));
+      rowElement2.AddContent(cell);
+      rowElement2.AddContent(HtmlCellCol(Form("%i", nu), 1));
+      rowElement2.AddContent(HtmlCellCol(url, 3));
+      dat.table->AddContent(rowElement2);
+    };
     HtmlRow rowElement("", className, "display:none");
     rowElement.AddContent(HtmlCellCol(" ", 1));
     if (GetSize1D() > 0) {
+      data.dim   = 1;
       HtmlRow rE = rowElement;
       rE.AddContent(HtmlCellCol("Histograms 1D", 4));
       table.AddContent(rE);
       for (int i = 0; i < GetSize1D(); i++) {
-        HtmlRow rowElement2("", className, "display:none");
-        TString url = ExportHistogramToFile(path, subdir, i, f1dHistos->At(i));
-        rowElement2.AddContent(HtmlCellCol("", 1));
-        rowElement2.AddContent(HtmlCellCol(Form("%i", i), 1));
-        rowElement2.AddContent(HtmlCellCol(url, 3));
-        table.AddContent(rowElement2);
+        makeRow(i, 1, f1dHistos->At(i), data);
       }
     }
     if (GetSize2D() > 0) {
+      data.dim   = 2;
       HtmlRow rE = rowElement;
       rE.AddContent(HtmlCellCol("Histograms 2D", 4));
       table.AddContent(rE);
       for (int i = 0; i < GetSize2D(); i++) {
-        HtmlRow rowElement2("", className, "display:none");
-        TString url = ExportHistogramToFile(path, subdir, i, f2dHistos->At(i));
-        rowElement2.AddContent(HtmlCellCol("", 1));
-        rowElement2.AddContent(HtmlCellCol(Form("%i", i), 1));
-        rowElement2.AddContent(HtmlCellCol(url, 3));
-        table.AddContent(rowElement2);
+        makeRow(i, 2, f2dHistos->At(i), data);
       }
     }
     if (GetSize3D() > 0) {
+      data.dim   = 3;
       HtmlRow rE = rowElement;
       rE.AddContent(HtmlCellCol("Histograms 3D", 4));
       table.AddContent(rE);
       for (int i = 0; i < GetSize3D(); i++) {
-        HtmlRow rowElement2("", "med_blue", "display:none");
-        TString url = ExportHistogramToFile(path, subdir, i, f3dHistos->At(i));
-        rowElement2.AddContent(HtmlCellCol("", 1));
-        rowElement2.AddContent(HtmlCellCol(url, 4));
-        table.AddContent(rowElement2);
+        makeRow(i, 3, f3dHistos->At(i), data);
       }
     }
     /*

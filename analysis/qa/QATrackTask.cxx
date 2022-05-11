@@ -141,18 +141,16 @@ namespace Hal {
       QAPlot* qa_event           = (QAPlot*) fEventQA->At(iEventCol);
       QAPlotReport* event_report = qa_event->GetReport();
       event_report->Recalculate();
-      if (iEventCol < fEventColNames.size()) {
-        event_report->SetName(fEventColNames[iEventCol]);
-      } else {
-        event_report->SetName(Form("Event coll. %i", iEventCol));
-      }
+      TString eventColName = Form("Event coll. %i", iEventCol);
+      if (fEventColNames.size() > iEventCol) { eventColName = fEventColNames[iEventCol]; }
+      event_report->SetName(eventColName);
       pack->AddObject(event_report);
       for (int jTrackCol = 0; jTrackCol < trackCol; jTrackCol++) {
         QAPlot* qa_track           = (QAPlot*) fTrackQA->At(iEventCol * trackCol + jTrackCol);
         QAPlotReport* track_report = qa_track->GetReport();
         track_report->Recalculate();
         if (jTrackCol < fTrackColNames.size()) {
-          TString name = Form("%s %s", fEventColNames[iEventCol].Data(), fTrackColNames[jTrackCol].Data());
+          TString name = Form("%s %s", eventColName.Data(), fTrackColNames[jTrackCol].Data());
           track_report->SetName(name);
         } else {
           track_report->SetName(Form("Event coll. %i Track coll. %i", iEventCol, jTrackCol));

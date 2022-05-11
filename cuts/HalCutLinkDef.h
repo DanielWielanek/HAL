@@ -11,6 +11,7 @@
 #pragma link C++ class Hal::SubCutHisto + ;
 #pragma link C++ class Hal::SubCutRectangle + ;
 #pragma link C++ class Hal::CutContainer + ;
+#pragma link c++ enum Hal::CutContainer::ELinkPolicy;
 #pragma link C++ class Hal::CutCollection + ;
 #pragma link C++ class Hal::EventCut + ;
 #pragma link C++ class Hal::TrackCut + ;

@@ -1,7 +1,7 @@
 /*
  * CutContainer.h
  *
- *  Created on: 04-05-2022
+ *  Created on: 06-08-2013
  *      Author: Daniel Wielanek
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
@@ -10,14 +10,13 @@
 #ifndef HALCUTCONTAINER_H_
 #define HALCUTCONTAINER_H_
 
+#include <TObjArray.h>
+#include <TString.h>
+
 #include "Cut.h"
 #include "CutCollection.h"
 #include "CutMonitor.h"
 #include "HalStd.h"
-
-#include <TObjArray.h>
-#include <TString.h>
-
 
 //#define SHOW_CUT_INIT
 /**
@@ -44,6 +43,10 @@ namespace Hal {
     inline TObjArray* GetCutContainer(ECutUpdate upd) const { return (TObjArray*) fCutContainers[static_cast<Int_t>(upd)]; };
 
   public:
+    /**
+     * for linking policy
+     */
+    enum class ELinkPolicy { kOneToMany, kEqual, kReplicateLast, kReplicateFirst, kAnyToAny };
     /**
      * default constructor that shouldn't be used
      */
@@ -114,6 +117,14 @@ namespace Hal {
      */
     void MakeDummyCopies(ECutUpdate update, CutContainer* other, Bool_t copy_link);
     /**
+     * add virtual cut for given collection
+     */
+    void AddVirtualCut(ECutUpdate update, Int_t col);
+    /**
+     * return event collections no for given update ratio
+     */
+    Int_t GetCollectionsNo(ECutUpdate update) const;
+    /**
      *
      * @return number of event collections in this
      */
@@ -133,6 +144,10 @@ namespace Hal {
      * @return number of background two-track collections in this
      */
     Int_t GetTwoTrackCollectionsBackgroundNo() const;
+    /**
+     *
+     */
+    Bool_t LinkCollections(ECutUpdate first, ECutUpdate last, ELinkPolicy policy);
     /**
      *
      * @param collection collection no

@@ -17,11 +17,14 @@
 #include <iostream>
 
 #include "EventComplexCut.h"
+#include "EventVirtualCut.h"
 #include "HalStdString.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "TrackComplexCut.h"
+#include "TrackVirtualCut.h"
 #include "TwoTrackComplexCut.h"
+#include "TwoTrackVirtualCut.h"
 
 namespace Hal {
   CutContainer::CutContainer() : TObject(), fInit(kFALSE), fSize(0), fTempCutMonitors(NULL), fCutContainers(NULL) {}
@@ -544,5 +547,129 @@ namespace Hal {
       }
     }
     mon->fCutNames[axis] = Form("%s(%s)", pattern.Data(), mon->GetCutName(axis).Data());
+  }
+
+  Int_t CutContainer::GetCollectionsNo(ECutUpdate update) const {
+    switch (update) {
+      case ECutUpdate::kEventUpdate: {
+        return GetEventCollectionsNo();
+      } break;
+      case ECutUpdate::kTrackUpdate: {
+        return GetTrackCollectionsNo();
+      } break;
+      case ECutUpdate::kTwoTrackUpdate: {
+        return GetTwoTrackCollectionsNo();
+      } break;
+      case ECutUpdate::kTwoTrackBackgroundUpdate: {
+        return GetTwoTrackCollectionsBackgroundNo();
+      } break;
+    }
+    return 0;
+  }
+
+  void CutContainer::AddVirtualCut(ECutUpdate update, Int_t col) {
+    switch (update) {
+      case ECutUpdate::kEventUpdate: {
+        EventVirtualCut v;
+        v.SetCollectionID(col);
+        AddCut(v);
+      } break;
+      case ECutUpdate::kTrackUpdate: {
+        TrackVirtualCut v;
+        v.SetCollectionID(col);
+        AddCut(v);
+      } break;
+      case ECutUpdate::kTwoTrackUpdate: {
+        TwoTrackVirtualCut v;
+        v.SetCollectionID(col);
+        AddCut(v, "sig");
+      } break;
+      case ECutUpdate::kTwoTrackBackgroundUpdate: {
+        TwoTrackVirtualCut v;
+        v.SetCollectionID(col);
+        AddCut(v, "bckg");
+      } break;
+    }
+  }
+
+  Bool_t CutContainer::LinkCollections(ECutUpdate first, ECutUpdate last, ELinkPolicy policy) {
+    Int_t lowLinks  = GetCollectionsNo(first);
+    Int_t highLinks = GetCollectionsNo(last);
+    if (lowLinks == 0) AddVirtualCut(first, 0);
+    if (highLinks == 0) AddVirtualCut(last, 0);
+    switch (policy) {
+      case ELinkPolicy::kOneToMany: {
+        if (lowLinks != 1) {
+          LOG(ERROR) << "EventAna::LinkCollections one-to-many to much first collections!";
+          return kFALSE;
+        }
+        for (int i = 0; i < highLinks; i++) {
+          LinkCollections(first, 0, last, i);
+        }
+        return kTRUE;
+      } break;
+      case ELinkPolicy::kEqual: {
+        if (lowLinks > highLinks) {
+          Int_t jump = lowLinks / highLinks;
+          if (lowLinks % highLinks) {
+            LOG(ERROR) << "EventAna::LinkCollections equal link cannot group cuts!";
+            return kFALSE;
+          }
+          for (int i = 0; i < highLinks; i++) {
+            for (int j = 0; j < jump; j++) {
+              LinkCollections(first, i * jump + j, last, i);
+            }
+          }
+          return kTRUE;
+        } else {
+          Int_t jump = highLinks / lowLinks;
+          if (highLinks % lowLinks) {
+            LOG(ERROR) << "EventAna::LinkCollections equal link cannot group cuts!";
+            return kFALSE;
+          }
+          for (int i = 0; i < lowLinks; i++) {
+            for (int j = 0; j < jump; j++) {
+              LinkCollections(first, i, last, i * jump + j);
+            }
+          }
+          return kTRUE;
+        }
+      } break;
+      case ELinkPolicy::kReplicateLast: {
+        for (int i = 1; i < lowLinks; i++) {
+          for (int j = 0; j < highLinks; j++) {
+            ReplicateCollection(last, j, i * highLinks + j);
+          }
+        }
+        for (int i = 0; i < lowLinks; i++) {
+          for (int j = 0; j < highLinks; j++) {
+            LinkCollections(first, i, last, i * highLinks + j);
+          }
+        }
+        return kTRUE;
+      } break;
+      case ELinkPolicy::kReplicateFirst: {
+        for (int i = 1; i < highLinks; i++) {
+          for (int j = 0; j < lowLinks; j++) {
+            ReplicateCollection(first, j, i * lowLinks + j);
+          }
+        }
+        for (int i = 0; i < highLinks; i++) {
+          for (int j = 0; j < lowLinks; j++) {
+            LinkCollections(first, i * lowLinks + j, last, i);
+          }
+        }
+        return kTRUE;
+      } break;
+      case ELinkPolicy::kAnyToAny: {
+        for (int i = 0; i < lowLinks; i++) {
+          for (int j = 0; j < highLinks; j++) {
+            LinkCollections(first, i, last, j);
+          }
+        }
+        return kTRUE;
+      } break;
+    }
+    return kFALSE;
   }
 }  // namespace Hal

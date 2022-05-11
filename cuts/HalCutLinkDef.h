@@ -9,7 +9,7 @@
 #pragma link C++ class Hal::Cut + ;
 #pragma link C++ class Hal::SubCut + ;
 #pragma link C++ class Hal::SubCutHisto + ;
-#pragma link C++ class Hal::SubCutRectangle +
+#pragma link C++ class Hal::SubCutRectangle + ;
 #pragma link C++ class Hal::CutContainer + ;
 #pragma link C++ class Hal::CutCollection + ;
 #pragma link C++ class Hal::EventCut + ;

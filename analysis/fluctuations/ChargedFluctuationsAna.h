@@ -24,6 +24,7 @@
 namespace Hal {
   class TrackCut;
   class EventCut;
+  class CutsAndMonitors;
 
   class ChargedFluctuationsAna : public TrackAna {
     Int_t fBins;
@@ -65,7 +66,7 @@ namespace Hal {
      * save way to add pair of track cuts
      */
     void AddCut(const TrackCut& pos, const TrackCut& neg, Option_t* opt = "");
-
+    void AddCutsAndMonitors(const CutsAndMonitors& posTrack, const CutsAndMonitors& negTrack, Option_t* opt = "");
     /**
      * event property around second/third axis
      */

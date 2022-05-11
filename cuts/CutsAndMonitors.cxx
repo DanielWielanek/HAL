@@ -39,7 +39,7 @@ namespace Hal {
       fCuts->SetOwner(kTRUE);
       fCutsOptions = new TObjArray();
       fCutsOptions->SetOwner(kTRUE);
-      for (int iCut = 0; iCut < fCuts->GetEntries(); iCut++) {
+      for (int iCut = 0; iCut < other.fCuts->GetEntries(); iCut++) {
         Cut* cut        = (Cut*) other.fCuts->UncheckedAt(iCut);
         TObjString* str = (TObjString*) other.fCutsOptions->UncheckedAt(iCut);
         fCuts->AddLast(cut->MakeCopy());
@@ -51,7 +51,7 @@ namespace Hal {
       fCutMonitors->SetOwner(kTRUE);
       fCutMonitorsOptions = new TObjArray();
       fCutMonitorsOptions->SetOwner(kTRUE);
-      for (int iCutMon = 0; iCutMon < fCutMonitors->GetEntries(); iCutMon++) {
+      for (int iCutMon = 0; iCutMon < other.fCutMonitors->GetEntries(); iCutMon++) {
         CutMonitor* cut = (CutMonitor*) other.fCutMonitors->UncheckedAt(iCutMon);
         TObjString* str = (TObjString*) other.fCutMonitorsOptions->UncheckedAt(iCutMon);
         fCutMonitors->AddLast(cut->MakeCopy());
@@ -92,7 +92,7 @@ namespace Hal {
       fCuts->SetOwner(kTRUE);
       fCutsOptions = new TObjArray();
       fCutsOptions->SetOwner(kTRUE);
-      for (int iCut = 0; iCut < fCuts->GetEntries(); iCut++) {
+      for (int iCut = 0; iCut < other.fCuts->GetEntries(); iCut++) {
         Cut* cut        = (Cut*) other.fCuts->UncheckedAt(iCut);
         TObjString* str = (TObjString*) other.fCutsOptions->UncheckedAt(iCut);
         fCuts->AddLast(cut->MakeCopy());
@@ -104,7 +104,7 @@ namespace Hal {
       fCutMonitors->SetOwner(kTRUE);
       fCutMonitorsOptions = new TObjArray();
       fCutMonitorsOptions->SetOwner(kTRUE);
-      for (int iCutMon = 0; iCutMon < fCutMonitors->GetEntries(); iCutMon++) {
+      for (int iCutMon = 0; iCutMon < other.fCutMonitors->GetEntries(); iCutMon++) {
         CutMonitor* cut = (CutMonitor*) other.fCutMonitors->UncheckedAt(iCutMon);
         TObjString* str = (TObjString*) other.fCutMonitorsOptions->UncheckedAt(iCutMon);
         fCutMonitors->AddLast(cut->MakeCopy());
@@ -292,4 +292,10 @@ namespace Hal {
   void CutsAndMonitors::AddCutMonitorRequest(const CutMonAxisConf& x, const CutMonAxisConf& y, const CutMonAxisConf& z) {
     fCutMonitorRequests.push_back(CutMonitorRequest(x, y, z));
   }
-}  // namespace Hal
+
+  void CutsAndMonitors::SetCollectionID(Int_t id) {
+    for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
+      Cut* cut = static_cast<Cut*>(fCuts->UncheckedAt(i));
+      cut->SetCollectionID(id);
+    }
+  }  // namespace Hal

@@ -15,6 +15,7 @@
 #include <TPRegexp.h>
 
 #include "CutContainer.h"
+#include "CutsAndMonitors.h"
 #include "DataFormat.h"
 #include "DataFormatManager.h"
 #include "Event.h"
@@ -189,4 +190,27 @@ namespace Hal {
   }
 
   void ChargedFluctuationsAna::SetEventprop(Int_t evProp) { fEventPar = evProp; }
+
+  void
+  ChargedFluctuationsAna::AddCutsAndMonitors(const CutsAndMonitors& posTrack, const CutsAndMonitors& negTrack, Option_t* opt) {
+    if (posTrack.GetCut(0)->GetCollectionID() == negTrack.GetCut(0)->GetCollectionID()) {
+      LOG(WARNING) << "cannot add two cuts with the same collection ID by NicaChargedFluctuationsAna::AddCut!";
+    }
+    if (TMath::Abs(posTrack.GetCut(0)->GetCollectionID() - negTrack.GetCut(0)->GetCollectionID()) != 1) {
+      LOG(WARNING) << "cannot add two cuts with delta collection ID!=1 by NicaChargedFluctuationsAna::AddCut!";
+    }
+    for (int iCut = 0; iCut < posTrack.GetNCuts(); iCut++) {
+      TrackAna::AddCut(*posTrack.GetCut(iCut), posTrack.GetCutOption(iCut));
+    }
+    for (int iCut = 0; iCut < negTrack.GetNCuts(); iCut++) {
+      TrackAna::AddCut(*negTrack.GetCut(iCut), negTrack.GetCutOption(iCut));
+    }
+    for (int iMon = 0; iMon < posTrack.GetNCutMonitors(); iMon++) {
+      TrackAna::AddCutMonitor(*posTrack.GetMonitor(iMon), posTrack.GetCutMonitorOption(iMon));
+    }
+    for (int iMon = 0; iMon < negTrack.GetNCutMonitors(); iMon++) {
+      TrackAna::AddCutMonitor(*negTrack.GetMonitor(iMon), negTrack.GetCutMonitorOption(iMon));
+    }
+  }
+
 }  // namespace Hal

@@ -7,10 +7,8 @@ enable_language(Fortran)
 
 
 if (DEFINED ENV{SIMPATH})
-message(warning "SIMPATH found")
     include(cmake/modules/CMakeFairRoot.cmake)
   else()
-  message(warning "SIMPATH NOT found")
     set(DISABLE_JSROOT)
     
     include(cmake/modules/CMakeListsExternal.cmake)

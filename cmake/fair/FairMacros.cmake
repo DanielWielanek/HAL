@@ -318,7 +318,7 @@ IF(FAIRROOT_FOUND)
 
   Add_Custom_Command(TARGET svnheader
                      COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${PROJECT_SOURCE_DIR}
-		     -DBINARY_DIR=${CMAKE_BINARY_DIR}
+             -DBINARY_DIR=${CMAKE_BINARY_DIR}
                      -DINCLUDE_OUTPUT_DIRECTORY=${INCLUDE_OUTPUT_DIRECTORY}
                      -DFAIRROOT=${FAIRROOT_CMAKEMOD_DIR}
                      -P ${FAIRROOT_CMAKEMOD_DIR}/modules/GenerateVersionInfo.cmake
@@ -327,10 +327,10 @@ ELSE(FAIRROOT_FOUND)
   Add_Custom_Target(svnheader ALL)
   Add_Custom_Command(TARGET svnheader
                      COMMAND ${CMAKE_COMMAND} -DSOURCE_DIR=${CMAKE_SOURCE_DIR}
-		     -DBINARY_DIR=${CMAKE_BINARY_DIR}
+             -DBINARY_DIR=${CMAKE_BINARY_DIR}
                      -DINCLUDE_OUTPUT_DIRECTORY=${INCLUDE_OUTPUT_DIRECTORY}
                      -P ${CMAKE_SOURCE_DIR}/cmake/modules/GenerateVersionInfo.cmake
-		     )
+             )
 ENDIF(FAIRROOT_FOUND)
 
 EndMacro (Generate_Version_Info)

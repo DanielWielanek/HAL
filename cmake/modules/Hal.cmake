@@ -1,21 +1,7 @@
 
 Macro(SetHeaderVariables HAL_CORE_DIR)
 set(HAL_CORE "${HAL_CORE_DIR}")
-set(HAL_CUTS
-	${HAL_CORE}/cuts
-	${HAL_CORE}/cuts/eventcuts
-	${HAL_CORE}/cuts/trackcuts
-	${HAL_CORE}/cuts/trackcuts/detector
-	${HAL_CORE}/cuts/trackcuts/kinematics
-	${HAL_CORE}/cuts/trackcuts/mc
-	${HAL_CORE}/cuts/trackcuts/resolution
-	${HAL_CORE}/cuts/trackcuts/monprop
-	${HAL_CORE}/cuts/twotrackcuts
-	${HAL_CORE}/cuts/twotrackcuts/detector
-	${HAL_CORE}/cuts/twotrackcuts/kinematics
-	${HAL_CORE}/cuts/twotrackcuts/mc
-	${HAL_CORE}/cuts/cutmonitors
-)
+
 
 set(HAL_FEATURES
 	${HAL_CORE}/features
@@ -26,11 +12,29 @@ set(HAL_FEATURES
 	${HAL_CORE}/features/minimizer
 )
 
+set(HAL_CUTS
+    ${HAL_CORE}/cuts
+    ${HAL_CORE}/cuts/eventcuts
+    ${HAL_CORE}/cuts/trackcuts
+    ${HAL_CORE}/cuts/trackcuts/detector
+    ${HAL_CORE}/cuts/trackcuts/kinematics
+    ${HAL_CORE}/cuts/trackcuts/mc
+    ${HAL_CORE}/cuts/trackcuts/resolution
+    ${HAL_CORE}/cuts/trackcuts/monprop
+    ${HAL_CORE}/cuts/twotrackcuts
+    ${HAL_CORE}/cuts/twotrackcuts/detector
+    ${HAL_CORE}/cuts/twotrackcuts/kinematics
+    ${HAL_CORE}/cuts/twotrackcuts/mc
+    ${HAL_CORE}/cuts/cutmonitors
+)
+
 set(HAL_DATA
-	${HAL_CORE}/dataformat
-	${HAL_CORE}/dataformat/detector
-	${HAL_CORE}/dataformat/compound
-	${HAL_CORE}/dataformat/hiddeninfo
+    ${HAL_CORE}/data/
+	${HAL_CORE}/data/dataformat
+	${HAL_CORE}/data/dataformat/detector
+	${HAL_CORE}/data/dataformat/compound
+	${HAL_CORE}/data/dataformat/hiddeninfo	
+	${HAL_CORE}/data/io	
 )
 
 set(HAL_GEN

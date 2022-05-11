@@ -1,0 +1,44 @@
+/*
+ * FemtoDumpPairAna.h
+ *
+ *  Created on: 9 lut 2019
+ *      Author: Daniel Wielanek
+ *		E-mail: daniel.wielanek@gmail.com
+ *		Warsaw University of Technology, Faculty of Physics
+ */
+#ifndef HALFEMTODUMPPAIRANA_H_
+#define HALFEMTODUMPPAIRANA_H_
+
+#include "FemtoBasicAna.h"
+
+#include "FemtoMiniPair.h"
+
+namespace Hal {
+  class FemtoDumpPairAna : public FemtoBasicAna {
+    Int_t fBinLimit;
+    Int_t fNBins;
+    Array_1<Double_t> fLimitsN;
+    Array_1<Double_t> fLimitsD;
+    Double_t fStep, fMax;
+    Bool_t fWriteBackground;
+    TClonesArray* fSignalPairs;
+    TClonesArray* fBackgroundPairs;
+
+  protected:
+    virtual void ProcessFemtoPair();
+    virtual void ProcessFemtoPair_Perfect() {};
+    virtual void ProcessFemtoPair_Rotated();
+    virtual void ProcessFemtoPair_Hemisphere();
+    virtual void ProcessFemtoPair_Mixed();
+    virtual Task::EInitFlag Init();
+
+  public:
+    FemtoDumpPairAna();
+    virtual void Exec(Option_t* opt = "");
+    void SetPairLimitPerBin(Int_t limit) { fBinLimit = limit; };
+    void WriteBackground() { fWriteBackground = kTRUE; }
+    virtual ~FemtoDumpPairAna();
+    ClassDef(FemtoDumpPairAna, 1)
+  };
+}  // namespace Hal
+#endif /* HALFEMTODUMPPAIRANA_H_ */

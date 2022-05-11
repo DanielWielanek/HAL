@@ -7,9 +7,10 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 
-#include "HalCout.h"
-#include "HalPackage.h"
+#include "Cout.h"
 #include "HalStd.h"
+#include "Package.h"
+#include "XMLNode.h"
 
 #include <TCollection.h>
 #include <TDirectory.h>
@@ -49,7 +50,7 @@ Bool_t CheckPackagesList(TList* list) {
 }
 Bool_t CheckAndMergeList(TList* prim, TList* sec) {
   if (prim->GetEntries() != sec->GetEntries()) {
-    HalCout::PrintInfo("Prim !=Sec", Hal::EInfo::kLessError);
+    Hal::Cout::PrintInfo("Prim !=Sec", Hal::EInfo::kLessError);
     return kFALSE;
   }
   for (int i = 0; i < prim->GetEntries() / 2; i++) {
@@ -59,13 +60,13 @@ Bool_t CheckAndMergeList(TList* prim, TList* sec) {
     Bool_t second_can_be_merged = sec->At(i * 2)->InheritsFrom("HalPackage");
     if (name_a.EqualTo(name_b)) {
     } else {
-      HalCout::PrintInfo("Names not equal", Hal::EInfo::kLessError);
+      Hal::Cout::PrintInfo("Names not equal", Hal::EInfo::kLessError);
     }
     if (first_can_be_merged == kFALSE) {
-      HalCout::PrintInfo(Form("First object cannot be merged (%s)", name_a.Data()), Hal::EInfo::kLessError);
+      Hal::Cout::PrintInfo(Form("First object cannot be merged (%s)", name_a.Data()), Hal::EInfo::kLessError);
     }
     if (second_can_be_merged == kFALSE) {
-      HalCout::PrintInfo(Form("Second object cannot be merged (%s)", name_b.Data()), Hal::EInfo::kLessError);
+      Hal::Cout::PrintInfo(Form("Second object cannot be merged (%s)", name_b.Data()), Hal::EInfo::kLessError);
     }
     if (!name_a.EqualTo(name_b) || !first_can_be_merged || !second_can_be_merged) {
       delete sec;
@@ -73,8 +74,8 @@ Bool_t CheckAndMergeList(TList* prim, TList* sec) {
     }
   }
   for (int i = 0; i < prim->GetEntries() / 2; i++) {
-    HalPackage* A = (HalPackage*) prim->At(i * 2);
-    HalPackage* B = (HalPackage*) sec->At(i * 2);
+    Hal::Package* A = (Hal::Package*) prim->At(i * 2);
+    Hal::Package* B = (Hal::Package*) sec->At(i * 2);
     A->Add(B);
   }
   return kTRUE;
@@ -84,9 +85,9 @@ TList* GetListObjects(TFile* file, TString dir_name, Bool_t must_be) {
   TDirectory* dir = (TDirectory*) file->Get(dir_name);
   if (dir == NULL) {
     if (must_be == kTRUE) {
-      HalCout::PrintInfo(Form("%s directory not found in file", dir_name.Data()), Hal::EInfo::kImportantError);
+      Hal::Cout::PrintInfo(Form("%s directory not found in file", dir_name.Data()), Hal::EInfo::kImportantError);
     } else {
-      HalCout::PrintInfo(Form("%s directory not found in file", dir_name.Data()), Hal::EInfo::kLessError);
+      Hal::Cout::PrintInfo(Form("%s directory not found in file", dir_name.Data()), Hal::EInfo::kLessError);
     }
     return NULL;
   } else {
@@ -112,12 +113,12 @@ Int_t mergeAnaFiles(TString filename, TFile* file1, TString outFile, TList* list
   prim_meta = GetListObjects(file1, "HalInfo", kFALSE);
   if (prim_ana)
     if (!CheckPackagesList(prim_ana)) {
-      HalCout::PrintInfo("HalPhysics contain class that cannot be merged by hal-merger", Hal::EInfo::kImportantError);
+      Hal::Cout::PrintInfo("HalPhysics contain class that cannot be merged by hal-merger", Hal::EInfo::kImportantError);
       return 0;
     }
   if (prim_meta)
     if (!CheckPackagesList(prim_meta)) {
-      HalCout::PrintInfo("HalInfo contain classes that cannot be merged by hal-merger", Hal::EInfo::kLessError);
+      Hal::Cout::PrintInfo("HalInfo contain classes that cannot be merged by hal-merger", Hal::EInfo::kLessError);
       return 0;
     }
   file1->Close();
@@ -125,17 +126,17 @@ Int_t mergeAnaFiles(TString filename, TFile* file1, TString outFile, TList* list
   if (prim_ana == NULL || prim_meta == NULL) {
     if (prim_ana) delete prim_ana;
     if (prim_meta) delete prim_meta;
-    HalCout::FailSucced(Form("Opening primary file: %s ", filename.Data()), " FAIL ", kRed);
+    Hal::Cout::FailSucced(Form("Opening primary file: %s ", filename.Data()), " FAIL ", kRed);
     return 0;
   } else {
-    HalCout::FailSucced(Form("Opening primary file: %s ", filename.Data()), " OK  ", kGreen);
+    Hal::Cout::FailSucced(Form("Opening primary file: %s ", filename.Data()), " OK  ", kGreen);
   }
 
   for (int i = 1; i < list_files->GetEntries(); i++) {
     filename    = ((TObjString*) list_files->At(i))->GetString();
     TFile* file = new TFile(filename);
     if (file->IsZombie()) {
-      HalCout::FailSucced(Form("Zombie file %s", filename.Data()), "FATAL", kRed);
+      Hal::Cout::FailSucced(Form("Zombie file %s", filename.Data()), "FATAL", kRed);
       file->Close();
       delete file;
       continue;
@@ -143,8 +144,8 @@ Int_t mergeAnaFiles(TString filename, TFile* file1, TString outFile, TList* list
     sec_ana  = GetListObjects(file, "HalPhysics", kTRUE);
     sec_meta = GetListObjects(file, "HalInfo", kFALSE);
     if (sec_ana == NULL) {
-      HalCout::PrintInfo(Form("No HalPhysics in %s", filename.Data()), Hal::EInfo::kLessError);
-      HalCout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
+      Hal::Cout::PrintInfo(Form("No HalPhysics in %s", filename.Data()), Hal::EInfo::kLessError);
+      Hal::Cout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
       file->Close();
       delete file;
       if (sec_meta) {
@@ -154,8 +155,8 @@ Int_t mergeAnaFiles(TString filename, TFile* file1, TString outFile, TList* list
       continue;
     }
     if (sec_meta == NULL) {
-      HalCout::PrintInfo(Form("No HalInfo in %s", filename.Data()), Hal::EInfo::kLessError);
-      HalCout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
+      Hal::Cout::PrintInfo(Form("No HalInfo in %s", filename.Data()), Hal::EInfo::kLessError);
+      Hal::Cout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
       file->Close();
       delete file;
       if (sec_ana) {
@@ -165,8 +166,8 @@ Int_t mergeAnaFiles(TString filename, TFile* file1, TString outFile, TList* list
       continue;
     }
     if (CheckAndMergeList(prim_ana, sec_ana) == kFALSE) {
-      HalCout::PrintInfo("Cannot merge HalPhysisc directory, incompatible objects", Hal::EInfo::kLessError);
-      HalCout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
+      Hal::Cout::PrintInfo("Cannot merge HalPhysisc directory, incompatible objects", Hal::EInfo::kLessError);
+      Hal::Cout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
       file->Close();
       delete file;
       if (sec_ana) delete sec_ana;
@@ -174,8 +175,8 @@ Int_t mergeAnaFiles(TString filename, TFile* file1, TString outFile, TList* list
       continue;
     }
     if (CheckAndMergeList(prim_meta, sec_meta) == kFALSE) {
-      HalCout::PrintInfo("Cannot merge HalInfo directory, incompatible objects", Hal::EInfo::kLessError);
-      HalCout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
+      Hal::Cout::PrintInfo("Cannot merge HalInfo directory, incompatible objects", Hal::EInfo::kLessError);
+      Hal::Cout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
       file->Close();
       delete file;
       if (sec_ana) {
@@ -190,11 +191,11 @@ Int_t mergeAnaFiles(TString filename, TFile* file1, TString outFile, TList* list
     }
     if (sec_ana) delete sec_ana;
     if (sec_meta) delete sec_meta;
-    HalCout::FailSucced(Form("Closing added file: %s ", filename.Data()), " OK  ", kGreen);
+    Hal::Cout::FailSucced(Form("Closing added file: %s ", filename.Data()), " OK  ", kGreen);
     file->Close();
     delete file;
   }
-  HalCout::Text(Form("Saving file: %s", outFile.Data()), "L", kWhite);
+  Hal::Cout::Text(Form("Saving file: %s", outFile.Data()), "L", kWhite);
   TFile* file = new TFile(outFile, "recreate");
   file->cd();
   TDirectory* d = gDirectory;
@@ -219,7 +220,7 @@ Int_t mergeQAFiles(TString filename, TFile* file1, TString outFile, TList* list_
     filename    = ((TObjString*) list_files->At(i))->GetString();
     TFile* file = new TFile(filename);
     if (file->IsZombie()) {
-      HalCout::FailSucced(Form("Zombie file %s", filename.Data()), "FATAL", kRed);
+      Hal::Cout::FailSucced(Form("Zombie file %s", filename.Data()), "FATAL", kRed);
       file->Close();
       delete file;
       continue;
@@ -267,34 +268,34 @@ Int_t mergeFiles(TString outFile, TList* list_files) {
  */
 int main(int argc, char* argv[]) {
   if (argc < 2) {
-    HalCout::PrintInfo("No arguments", Hal::EInfo::kLessError);
-    HalCout::Text("You can use following arguments : ", "M");
-    HalCout::Text("1) name of xml file (with .xml extension) with list of files to merge", "M");
-    HalCout::Text("2) name of output root file and input root files (like for hadd: "
-                  "out.root input1.root input2.root ...)",
-                  "M");
-    HalCout::Text("3) --n=X  + one of options above to specify maximum number of files "
-                  "merged at once",
-                  "M");
+    Hal::Cout::PrintInfo("No arguments", Hal::EInfo::kLessError);
+    Hal::Cout::Text("You can use following arguments : ", "M");
+    Hal::Cout::Text("1) name of xml file (with .xml extension) with list of files to merge", "M");
+    Hal::Cout::Text("2) name of output root file and input root files (like for hadd: "
+                    "out.root input1.root input2.root ...)",
+                    "M");
+    Hal::Cout::Text("3) --n=X  + one of options above to specify maximum number of files "
+                    "merged at once",
+                    "M");
     return 0;
   } else {
     TString opt = argv[1];
     if (opt == "--help") {
-      HalCout::Text("You can use following arguments : ", "M");
-      HalCout::Text("1) name of xml file (with .xml extension) with list of files to "
-                    "merge",
-                    "M");
-      HalCout::Text("2) name of output root file and input root files (like for hadd: "
-                    "out.root input1.root input2.root ...)",
-                    "M");
-      HalCout::Text("3) --n=X  + one of options above to specify maximum number of files "
-                    "merged at once",
-                    "M");
+      Hal::Cout::Text("You can use following arguments : ", "M");
+      Hal::Cout::Text("1) name of xml file (with .xml extension) with list of files to "
+                      "merge",
+                      "M");
+      Hal::Cout::Text("2) name of output root file and input root files (like for hadd: "
+                      "out.root input1.root input2.root ...)",
+                      "M");
+      Hal::Cout::Text("3) --n=X  + one of options above to specify maximum number of files "
+                      "merged at once",
+                      "M");
     }
   }
   gSystem->Load("libTree");
   gErrorIgnoreLevel = kError;
-  HalCout::Stars(kWhite);
+  Hal::Cout::Stars(kWhite);
 
   TList* list_files = new TList();
   TString outputFile;
@@ -308,21 +309,21 @@ int main(int argc, char* argv[]) {
     arg_pos = 3;
   }
   if (argname.EndsWith(".xml")) {
-    HalCout::Text(Form("Opening XML file %s", argname.Data()), "L", kWhite);
-    FairXMLFile parser(argname);
-    FairXMLNode* root = parser.GetRootNode();
-    outputFile        = root->GetAttrib("outfile")->GetValue();
+    Hal::Cout::Text(Form("Opening XML file %s", argname.Data()), "L", kWhite);
+    Hal::XMLFile parser(argname);
+    Hal::XMLNode* root = parser.GetRootNode();
+    outputFile         = root->GetAttrib("outfile")->GetValue();
     for (int i = 0; i < root->GetNChildren(); i++) {
       list_files->AddLast(new TObjString(root->GetChild(i)->GetValue()));
     }
   } else if (argname.EndsWith(".root") || argname.EndsWith(".root_t")) {
-    HalCout::Text("Using direct list of root files", "L", kWhite);
+    Hal::Cout::Text("Using direct list of root files", "L", kWhite);
     outputFile = argname;
     for (int i = arg_pos; i < argc; i++) {
       list_files->AddLast(new TObjString(argv[i]));
     }
   } else {
-    HalCout::Text("wrong file extension !", "M", kRed);
+    Hal::Cout::Text("wrong file extension !", "M", kRed);
     return 0;
   }
   if (split < 2 || split >= list_files->GetEntries()) {

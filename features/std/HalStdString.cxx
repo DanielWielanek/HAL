@@ -8,7 +8,7 @@
  */
 #include "HalStdString.h"
 
-#include "HalCout.h"
+#include "Cout.h"
 
 #include <TMath.h>
 #include <TRegexp.h>
@@ -52,7 +52,7 @@ namespace HalStd {
       if (fullArg.BeginsWith("--")) {
         std::vector<TString> vec = ExplodeString(fullArg, '=');
         if (vec.size() < 1) {
-          HalCout::PrintInfo(Form("Problem with extraction of argument %s", fullArg.Data()), Hal::EInfo::kImportantWarning);
+          Hal::Cout::PrintInfo(Form("Problem with extraction of argument %s", fullArg.Data()), Hal::EInfo::kImportantWarning);
         } else if (vec.size() != 2) {
           vec[0] = vec[0](2, vec[0].Length() - 2);
           res.push_back(std::pair<TString, TString>(vec[0], ""));

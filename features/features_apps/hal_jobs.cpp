@@ -1,13 +1,12 @@
-#include "HalCout.h"
+#include "Jobs.h"
+#include "Cout.h"
 #include "HalStd.h"
-#include "HalJobs.h"
 #include "HalStdString.h"
 
 #include <TString.h>
 #include <TSystem.h>
 #include <iostream>
 #include <vector>
-
 
 
 /** \addtogroup hal-jobs
@@ -94,7 +93,7 @@ void printHelp() {
 }
 int main(int argc, char* argv[]) {
   if (argc < 2) {
-    HalCout::PrintInfo("No arguments! run: hal-jobs --help to get help", Hal::EInfo::kImportantError);
+    Hal::Cout::PrintInfo("No arguments! run: hal-jobs --help to get help", Hal::EInfo::kImportantError);
     return 0;
   }
   std::vector<std::pair<TString, TString>> args = HalStd::ConvertMainArgs(argc, argv);
@@ -107,12 +106,12 @@ int main(int argc, char* argv[]) {
       printHelp();
       return 0;
     } else if (flag1 == "" && val1.EndsWith(".xml")) {
-      HalJobs jobs(val1);
+      Hal::Jobs jobs(val1);
       jobs.CreateJobs();
       jobs.SubmitJobs();
       return 0;
     } else if (flag1 == "debug" && val1.EndsWith(".xml")) {
-      HalJobs jobs(val1);
+      Hal::Jobs jobs(val1);
       jobs.DebugCommands();
       jobs.CreateJobs();
       jobs.SubmitJobs();
@@ -131,11 +130,11 @@ int main(int argc, char* argv[]) {
     TString flag2 = args[1].first;
     TString val2  = args[1].second;
     if (flag1 == "submit" && val2 == "create") {
-      HalJobs jobs(val1);
+      Hal::Jobs jobs(val1);
       jobs.CreateJobs();
       return 0;
     } else if (flag1 == "submit" && val2 == "deploy") {
-      HalJobs jobs(val1);
+      Hal::Jobs jobs(val1);
       jobs.SubmitJobs();
       return 0;
     }
@@ -151,7 +150,7 @@ int main(int argc, char* argv[]) {
       TString job_id       = val1;
       TString parameter_id = val2;
       TString textfile     = val3;
-      std::cout << HalJobs::GetParameter(textfile, job_id.Atoi(), parameter_id.Atoi()) << std::endl;
+      std::cout << Hal::Jobs::GetParameter(textfile, job_id.Atoi(), parameter_id.Atoi()) << std::endl;
       return 0;
     }
   }

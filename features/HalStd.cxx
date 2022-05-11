@@ -1,8 +1,7 @@
 #include "HalStd.h"
-#include "HalConst.h"
-#include "HalCout.h"
-
-#include <FairXMLNode.h>
+#include "Const.h"
+#include "Cout.h"
+#include "XMLNode.h"
 
 #include <TCanvas.h>
 #include <TCollection.h>
@@ -94,15 +93,15 @@ namespace HalStd {
   }
   TString GetConfigParameter(TString par_name) {
     TString home = gSystem->Getenv("HOME");
-    FairXMLFile parser(Form("%s/.hal_config.xml", home.Data()));
-    FairXMLNode* root        = parser.GetRootNode();
+    Hal::XMLFile parser(Form("%s/.hal_config.xml", home.Data()));
+    Hal::XMLNode* root       = parser.GetRootNode();
     std::vector<TString> arr = HalStd::ExplodeString(par_name, '/');
-    FairXMLNode* node        = root->GetChild(arr[0]);
+    Hal::XMLNode* node       = root->GetChild(arr[0]);
     for (int i = 1; i < (int) arr.size(); i++) {
       node = node->GetChild(arr[i]);
     }
     if (node == nullptr) {
-      HalCout::PrintInfo(Form("Node %s not found in hal configuration file", par_name.Data()), Hal::EInfo::kLessWarning);
+      Hal::Cout::PrintInfo(Form("Node %s not found in hal configuration file", par_name.Data()), Hal::EInfo::kLessWarning);
       return "";
     }
     TString value = node->GetValue();
@@ -317,7 +316,7 @@ namespace HalStd {
       }
     }
 
-    HalCout::PrintInfo("Hal plus not found!", Hal::EInfo::kLessError);
+    Hal::Cout::PrintInfo("Hal plus not found!", Hal::EInfo::kLessError);
     return "";
   }
 
@@ -348,7 +347,7 @@ namespace HalStd {
         return make_install;
       }
     }
-    HalCout::PrintInfo("JSROOT not found!", Hal::EInfo::kLessError);
+    Hal::Cout::PrintInfo("JSROOT not found!", Hal::EInfo::kLessError);
     return "";
   }
 
@@ -369,8 +368,8 @@ namespace HalStd {
     Double_t Pp      = p_proj;
     Double_t Nt      = n_tar;
     Double_t Pt      = p_tar;
-    Double_t mass1   = HalConst::NeutronMass() * Np + HalConst::ProtonMass() * Pp;
-    Double_t mass2   = HalConst::NeutronMass() * Nt + HalConst::ProtonMass() * Pt;
+    Double_t mass1   = Hal::Const::NeutronMass() * Np + Hal::Const::ProtonMass() * Pp;
+    Double_t mass2   = Hal::Const::NeutronMass() * Nt + Hal::Const::ProtonMass() * Pt;
     Double_t energy1 = energy_per_nucleon * (Np + Pp);
     Double_t energy2 = mass2;
     Double_t mom1    = TMath::Sqrt(energy1 * energy1 - mass1 * mass1);

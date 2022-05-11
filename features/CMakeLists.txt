@@ -24,40 +24,43 @@ Set(LINK_DIRECTORIES
 link_directories( ${LINK_DIRECTORIES})
 
 set(SRCS
-HalCout.cxx
-HalArray.cxx
-HalOptions.cxx
-HalParameter.cxx
+Cout.cxx
+Array.cxx
+Options.cxx
+Parameter.cxx
 HalStd.cxx
-HalObjectMatrix.cxx
-HalHelix.cxx
-HalHelixBase.cxx
-HalConst.cxx
-HalXMLNode.cxx
+ObjectMatrix.cxx
+Helix.cxx
+HelixBase.cxx
+Const.cxx
+XMLNode.cxx
 
-io/HalLink.cxx
-io/HalJobs.cxx
-io/HalObject.cxx
-io/HalPackage.cxx
-io/HalPackage2HTML.cxx
-io/HalAnaFile.cxx
-io/HalHtmlCore.cxx
-io/HalPackageSql.cxx
-io/HalDataManager.cxx
-io/html/HalHtmlDiv.cxx
-io/html/HalHtmlFile.cxx
-io/html/HalHtmlObject.cxx
-io/html/HalHtmlTable.cxx
-hist/HalDividedHisto.cxx
-hist/HalHistogramManager.cxx
-hist/HalMultiGraph.cxx
-hist/HalSplines.cxx
-hist/HalChiSqMap2D.cxx
+io/Link.cxx
+io/Jobs.cxx
+io/Object.cxx
+io/Package.cxx
+io/AnaFile.cxx
+
+io/html/PackageSql.cxx
+io/html/Package2HTML.cxx
+io/html/HtmlCore.cxx
+io/html/HtmlDiv.cxx
+io/html/HtmlFile.cxx
+io/html/HtmlObject.cxx
+io/html/HtmlTable.cxx
+
+hist/DividedHisto.cxx
+hist/HistogramManager.cxx
+hist/MultiGraph.cxx
+hist/Splines.cxx
+hist/ChiSqMap2D.cxx
+
 std/HalStdHist.cxx
 std/HalStdString.cxx
 std/HalStdMath.cxx
-minimizer/HalFitParam.cxx
-minimizer/HalMinimizer.cxx
+
+minimizer/FitParam.cxx
+minimizer/Minimizer.cxx
 )
 install(FILES ${EXT_HEADERS}
         DESTINATION include
@@ -66,7 +69,7 @@ install(FILES ${EXT_HEADERS}
 Set(HEADERS )
 Set(LINKDEF HalFeaturesLinkDef.h)
 Set(LIBRARY_NAME HalFeatures)
-Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO FairTools Base)
+Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO  EG FairTools Base)
 #Set(DEPENDENCIES XMLIO SQLIO FairTools)
 
 
@@ -80,7 +83,7 @@ Install(DIRECTORY hal_plus
 
 #making executables
 
-#[[
+
 Set(Exe_Names
     hal-merger
     hal-report
@@ -104,6 +107,6 @@ Set(Exe_Source
     endif()
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
-]]
+
 
 

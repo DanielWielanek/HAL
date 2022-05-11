@@ -7,11 +7,11 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 
-#include "HalCout.h"
-#include "HalHtmlCore.h"
-#include "HalPackage2HTML.h"
-#include "HalPackageSql.h"
+#include "Cout.h"
 #include "HalStd.h"
+#include "HtmlCore.h"
+#include "Package2HTML.h"
+#include "PackageSql.h"
 
 #include <RtypesCore.h>
 #include <TString.h>
@@ -42,7 +42,7 @@
  */
 int main(int argc, char* argv[]) {
   if (argc < 2) {
-    HalCout::PrintInfo("No arguments! run: hal-report --help to get help", Hal::EInfo::kImportantError);
+    Hal::Cout::PrintInfo("No arguments! run: hal-report --help to get help", Hal::EInfo::kImportantError);
     return 0;
   }
   TString arg1 = argv[1];
@@ -56,8 +56,8 @@ int main(int argc, char* argv[]) {
     return 1;
   }
   if (argc < 3) {
-    HalCout::PrintInfo("No output file, export to SQL", Hal::EInfo::kLessWarning);
-    HalPackageSql* sql = new HalPackageSql(argv[1]);
+    Hal::Cout::PrintInfo("No output file, export to SQL", Hal::EInfo::kLessWarning);
+    Hal::PackageSql* sql = new Hal::PackageSql(argv[1]);
     delete sql;
     return 0;
   }
@@ -66,11 +66,11 @@ int main(int argc, char* argv[]) {
   if (argc > 3) {
     for (int i = 3; i < argc; i++) {
       TString temp = argv[i];
-      if (temp.EqualTo("--online")) HalHtmlCore::SetOnline(kTRUE);
+      if (temp.EqualTo("--online")) Hal::HtmlCore::SetOnline(kTRUE);
       if (temp.EqualTo("--gz")) zip = kTRUE;
     }
   }
-  HalPackage2HTML* package = new HalPackage2HTML(argv[1], argv[2]);
+  Hal::Package2HTML* package = new Hal::Package2HTML(argv[1], argv[2]);
   delete package;
   if (zip) {
     TString command = Form("tar -czvf %s.tar.gz %s", argv[2], argv[2]);

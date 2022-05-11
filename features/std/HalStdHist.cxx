@@ -10,7 +10,6 @@
 #include "HalStdHist.h"
 #include "HalStdString.h"
 
-#include "HalSplines.h"
 
 #include <TArray.h>
 #include <TAxis.h>
@@ -27,8 +26,9 @@
 #include <TRandom.h>
 #include <iostream>
 
-#include "HalCout.h"
+#include "Cout.h"
 #include "HalStd.h"
+#include "Splines.h"
 
 NamespaceImp(HalStd);
 namespace HalStd {
@@ -215,15 +215,15 @@ namespace HalStd {
     TString option = opt;
     Bool_t bad_map = kFALSE;
     if (input_histogram->GetNbinsX() != smear_matrix->GetNbinsX()) {
-      if (!option.Contains("forced")) HalCout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kImportantWarning);
+      if (!option.Contains("forced")) Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kImportantWarning);
       bad_map = kTRUE;
     }
     if (input_histogram->GetNbinsX() != smear_matrix->GetNbinsY()) {
-      if (!option.Contains("forced")) HalCout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kImportantWarning);
+      if (!option.Contains("forced")) Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kImportantWarning);
       bad_map = kTRUE;
     }
     if (option.Contains("forced") && bad_map) {
-      HalSpline2D* m_map = new HalSpline2D(smear_matrix);
+      Hal::Spline2D* m_map = new Hal::Spline2D(smear_matrix);
       m_map->Refit();
       TH2D* smear_new = new TH2D("smear_temp",
                                  "smear_temp",
@@ -559,7 +559,7 @@ namespace HalStd {
 
   TH1D* GetDiagonalProjection1D(TH3* h, TString dir, Double_t start, Double_t start2) {
     if (h->GetNbinsX() != h->GetNbinsY() || h->GetNbinsX() != h->GetNbinsZ()) {
-      HalCout::PrintInfo("Cannto make projection in nonsymetric histo", Hal::EInfo::kLessWarning);
+      Hal::Cout::PrintInfo("Cannto make projection in nonsymetric histo", Hal::EInfo::kLessWarning);
       return nullptr;
     }
     TString temp     = dir;
@@ -661,7 +661,7 @@ namespace HalStd {
         newTitle = titleX + signFlag;
       }
     } else {
-      HalCout::PrintInfo("HalStd::GetDiagonalProjection1D unknown option", Hal::EInfo::kLessWarning);
+      Hal::Cout::PrintInfo("HalStd::GetDiagonalProjection1D unknown option", Hal::EInfo::kLessWarning);
       delete res;
       return nullptr;
     }

@@ -148,8 +148,9 @@ namespace Hal {
       case DataFieldID::ETrack::kCharge: return GetCharge(); break;
       case DataFieldID::ETrack::kStatus: return GetStatus(); break;
       case DataFieldID::ETrack::kPq: return GetCharge() * fP.P(); break;
+      case DataFieldID::ETrack::kTrackZero: return 0; break;
     }
-    return 0;
+    return -FLT_MAX;
   }
 
   TString Track::GetFieldName(Int_t fieldID) const {

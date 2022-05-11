@@ -13,18 +13,20 @@
 namespace Hal {
   namespace DataFieldID {
     enum EEvent {
-      kVertexX  = 10000001,
-      kVertexY  = 10000002,
-      kVertexZ  = 10000003,
-      kVertexXY = 10000004,
-      kVertexT  = 10000005,
-      kEventPhi = 10000006,
-      kPhiError = 10000007,
-      kTracksNo = 10000008,
-      kEventId  = 10000009
+      kVertexX   = 10000001,
+      kVertexY   = 10000002,
+      kVertexZ   = 10000003,
+      kVertexXY  = 10000004,
+      kVertexT   = 10000005,
+      kEventPhi  = 10000006,
+      kPhiError  = 10000007,
+      kTracksNo  = 10000008,
+      kEventId   = 10000009,
+      kEventZero = 10000010
+
     };
-    enum EMcEvent { kB = 10000010 };
-    enum EExpEvent { kTofTracksNo = 10000011 };
+    enum EMcEvent { kB = 10000011 };
+    enum EExpEvent { kTofTracksNo = 10000012 };
     enum EComplexEvent {
       kDeltaRPhi     = 10000050,
       kDeltaVertexXY = 10000051,
@@ -45,19 +47,20 @@ namespace Hal {
     }  // namespace Internal
 
     enum ETrack {
-      kPx       = 1,
-      kPy       = 2,
-      kPz       = 3,
-      kE        = 4,
-      kPhi      = 5,
-      kPt       = 6,
-      kTheta    = 7,
-      kP        = 8,
-      kEta      = 9,
-      kRapidity = 10,
-      kCharge   = 11,
-      kStatus   = 12,
-      kPq       = 13,
+      kPx        = 1,
+      kPy        = 2,
+      kPz        = 3,
+      kE         = 4,
+      kPhi       = 5,
+      kPt        = 6,
+      kTheta     = 7,
+      kP         = 8,
+      kEta       = 9,
+      kRapidity  = 10,
+      kCharge    = 11,
+      kStatus    = 12,
+      kPq        = 13,
+      kTrackZero = 14
     };
 
     enum EMcTrack {

@@ -287,8 +287,9 @@ namespace Hal {
       case DataFieldID::EEvent::kVertexZ: return GetVertex()->Z(); break;
       case DataFieldID::EEvent::kVertexT: return GetVertex()->T(); break;
       case DataFieldID::EEvent::kEventId: return GetEventID(); break;
+      case DataFieldID::EEvent::kEventZero: return 0;
     }
-    return 0;
+    return -FLT_MAX;
   }
 
   TString Event::GetFieldName(Int_t fieldID) const {

@@ -144,7 +144,7 @@ namespace Hal {
      * of accepting/rejecting object
      * @return false if histogram cannot be used here
      */
-    Bool_t SetAcceptanceHistogram(TH1* h);
+    Bool_t SetAcceptanceHistogram(const TH1& h);
     /**
      * check values
      * @return return true if  values for all axes are between fMin and fMax

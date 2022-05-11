@@ -16,7 +16,7 @@
 
 namespace Hal {
 
-  SubCut::SubCut(Int_t size) : TObject(), fMin(NULL), fMax(NULL), fValue(NULL), fUnitName(NULL) {
+  SubCut::SubCut(Int_t size) : TObject(), fMin(nullptr), fMax(nullptr), fValue(nullptr), fUnitName(nullptr) {
     fSize = size;
     if (fSize > 0) {
       fMin      = new Double_t[fSize];
@@ -176,40 +176,40 @@ namespace Hal {
   }
 
   Bool_t SubCutHisto::Init() {
-    if (fAcceptanceHistogram == NULL) return kFALSE;
+    if (fAcceptanceHistogram == nullptr) return kFALSE;
     fAcceptanceHistogram->GetXaxis()->SetTitle(fUnitName[0]);
     if (fSize > 1) fAcceptanceHistogram->GetYaxis()->SetTitle(fUnitName[1]);
     if (fSize > 2) fAcceptanceHistogram->GetZaxis()->SetTitle(fUnitName[2]);
     return kFALSE;
   }
 
-  Bool_t SubCutHisto::SetAcceptanceHistogram(TH1* h) {
-    if (h->InheritsFrom("TH3")) {
+  Bool_t SubCutHisto::SetAcceptanceHistogram(const TH1& h) {
+    if (h.InheritsFrom("TH3")) {
       if (fSize != 3) return kFALSE;
-      for (int i = 0; i <= h->GetNbinsX() + 1; i++) {
-        for (int j = 0; j <= h->GetNbinsY() + 1; j++) {
-          for (int k = 0; k <= h->GetNbinsZ() + 1; k++) {
-            Double_t cont = h->GetBinContent(i, j, k);
+      for (int i = 0; i <= h.GetNbinsX() + 1; i++) {
+        for (int j = 0; j <= h.GetNbinsY() + 1; j++) {
+          for (int k = 0; k <= h.GetNbinsZ() + 1; k++) {
+            Double_t cont = h.GetBinContent(i, j, k);
             if (cont < 0 || cont > 1) return kFALSE;
           }
         }
       }
-    } else if (h->InheritsFrom("TH2")) {
+    } else if (h.InheritsFrom("TH2")) {
       if (fSize != 2) return kFALSE;
-      for (int i = 0; i <= h->GetNbinsX() + 1; i++) {
-        for (int j = 0; j <= h->GetNbinsY() + 1; j++) {
-          Double_t cont = h->GetBinContent(i, j);
+      for (int i = 0; i <= h.GetNbinsX() + 1; i++) {
+        for (int j = 0; j <= h.GetNbinsY() + 1; j++) {
+          Double_t cont = h.GetBinContent(i, j);
           if (cont < 0 || cont > 1) return kFALSE;
         }
       }
     } else {
       if (fSize != 1) return kFALSE;
-      for (int i = 0; i <= h->GetNbinsX() + 1; i++) {
-        Double_t cont = h->GetBinContent(i);
+      for (int i = 0; i <= h.GetNbinsX() + 1; i++) {
+        Double_t cont = h.GetBinContent(i);
         if (cont < 0 || cont > 1) return kFALSE;
       }
     }
-    fAcceptanceHistogram = (TH1*) h->Clone();
+    fAcceptanceHistogram = (TH1*) h.Clone();
     fAcceptanceHistogram->SetDirectory(0);
     return kTRUE;
   }
@@ -218,6 +218,12 @@ namespace Hal {
     if (this == &other) {
       return *this;
     } else {
+      if (fValue) {
+        delete[] fValue;
+        delete[] fUnitName;
+        fValue    = nullptr;
+        fUnitName = nullptr;
+      }
       this->fSize     = other.fSize;
       this->fValue    = new Double_t[fSize];
       this->fUnitName = new TString[fSize];
@@ -225,7 +231,7 @@ namespace Hal {
         this->fValue[i]    = other.fValue[i];
         this->fUnitName[i] = other.fUnitName[i];
       }
-      if (other.fAcceptanceHistogram != NULL) {
+      if (other.fAcceptanceHistogram != nullptr) {
         this->fAcceptanceHistogram = (TH1*) other.fAcceptanceHistogram->Clone();
         fAcceptanceHistogram->SetDirectory(0);
       }

@@ -296,7 +296,7 @@ namespace Hal {
       pattern      = "th2";
     }
     if (h1->InheritsFrom("TH3")) {
-      rootFileName = "histo2d.root";
+      rootFileName = "histo3d.root";
       opt          = "box2";
       pattern      = "th3";
     }

@@ -16,6 +16,7 @@
 
 #include "CutContainer.h"
 #include "DataFormat.h"
+#include "DataFormatManager.h"
 #include "Event.h"
 #include "EventVirtualCut.h"
 #include "HalStd.h"
@@ -30,7 +31,7 @@ namespace Hal {
     fMax(1000),
     fEventBins(1),
     fEventPar(DataFieldID::EEvent::kEventZero),
-    fTrackCols(0),
+    fTrackColsHalf(0),
     fEventMin(-0.5),
     fEventMax(0.5),
     fHistogram(nullptr) {}
@@ -38,40 +39,48 @@ namespace Hal {
   void ChargedFluctuationsAna::ProcessEvent() {
     Int_t step          = fCurrentEventCollectionID * 8;
     Double_t evProperty = fCurrentEvent->GetFieldVal(fEventPar);
-    for (int j = 0; j < fTrackCols; j++) {
+    for (int j = 0; j < fTrackColsHalf * 2; j++) {
       fCounts[j] = 0;
     }
 
     for (int i = 0; i < fMemoryMap->GetTemporaryTotalTracksNo(); i++) {
       fCurrentTrack = fCurrentEvent->GetTrack(i);
-      for (int j = 0; j < fTrackCols; j++) {
+      for (int j = 0; j < fTrackColsHalf * 2; j++) {
         if (fCutContainer->PassTrack(fCurrentTrack, j + step)) ++fCounts[j];
       }
     }
-    for (int j = 0; j < fTrackCols; j += 2) {
+    for (int j = 0; j < fTrackColsHalf * 2; j += 2) {
       fHistogram->Fill(fCurrentEventCollectionID, j, fCounts[2 * j], fCounts[2 * j + 1], evProperty);
     }
   }
 
   Task::EInitFlag ChargedFluctuationsAna::Init() {
     if (TrackAna::Init() == Task::EInitFlag::kFATAL) return Task::EInitFlag::kFATAL;
-    fTrackCols = fCutContainer->GetTrackCollectionsNo() / fCutContainer->GetEventCollectionsNo();
-    if (fTrackCols % 2 == 1) return Task::EInitFlag::kFATAL;
-    fHistogram = new HistogramManager_2_3D<TH3D>();
-    fHistogram->Init(fEventCollectionsNo, fTrackCols / 2, fBins, fMin, fMax, fBins, fMin, fMax, fEventBins, fEventMin, fEventMax);
+    fTrackColsHalf = fCutContainer->GetTrackCollectionsNo() / fCutContainer->GetEventCollectionsNo();
+    if (fTrackColsHalf % 2 == 1) return kFATAL;
+    fCounts.resize(fTrackColsHalf);
+    fTrackColsHalf = fTrackColsHalf / 2;
+    fHistogram     = new HistogramManager_2_3D<TH3D>();
+    fHistogram->Init(fEventCollectionsNo, fTrackColsHalf, fBins, fMin, fMax, fBins, fMin, fMax, fEventBins, fEventMin, fEventMax);
+    const Event* ev = DataFormatManager::Instance()->GetFormat(GetTaskID());
+    TString parName = ev->GetFieldName(fEventPar);
     for (int i = 0; i < fEventCollectionsNo; i++) {
       TString eventName = Form("Event [%i]", i);
       if (i < fEventLabels.size()) { eventName = fEventLabels[i]; }
-      for (int j = 0; j < fTrackCols; j += 2) {
-        TString trackNameA = Form("Track [%i]", j);
-        TString trackNameB = Form("Track [%i]", j);
-        if (j < fTrackLabels.size()) { trackNameA = fTrackLabels[2 * j]; }
-        if (j + 1 < fTrackLabels.size()) { trackNameA = fTrackLabels[2 * j + 1]; }
+      for (int j = 0; j < fTrackColsHalf; j++) {
+        Int_t posColl      = 2 * j;
+        Int_t negColl      = 2 * j + 1;
+        TString trackNameA = Form("Track [%i]", posColl);
+        TString trackNameB = Form("Track [%i]", negColl);
+        if (posColl < fTrackLabels.size()) { trackNameA = fTrackLabels[posColl]; }
+        if (negColl < fTrackLabels.size()) { trackNameB = fTrackLabels[negColl]; }
+
         TH3D* h = fHistogram->At(i, j);
         h->SetTitle(Form("%s %s vs %s", eventName.Data(), trackNameA.Data(), trackNameB.Data()));
+        h->SetName(h->GetTitle());
         h->GetXaxis()->SetTitle(Form("N_{%s}", trackNameA.Data()));
         h->GetYaxis()->SetTitle(Form("N_{%s}", trackNameB.Data()));
-        h->GetZaxis()->SetTitle(Form("%s", fCurrentEvent->GetFieldName(fEventPar).Data()));
+        h->GetZaxis()->SetTitle(Form("%s", parName.Data()));
       }
     }
     return Task::EInitFlag::kSUCCESS;
@@ -97,10 +106,10 @@ namespace Hal {
     fEventCollectionsNo = fCutContainer->GetEventCollectionsNo();
     fTrackCollectionsNo = fCutContainer->GetTrackCollectionsNo();
     if (fEventCollectionsNo == 0) { AddCut(EventVirtualCut()); }
-    if (fTrackCollectionsNo == 8) {
+    if (fTrackCollectionsNo % 2 == 0) {
       for (int i = 1; i < fEventCollectionsNo; i++) {
-        for (int j = 0; j < 8; j++) {
-          fCutContainer->ReplicateCollection(ECutUpdate::kTrackUpdate, j, 8 * i + j);
+        for (int j = 0; j < fTrackCollectionsNo; j++) {
+          fCutContainer->ReplicateCollection(ECutUpdate::kTrackUpdate, j, fTrackCollectionsNo * i + j);
         }
       }
     } else {
@@ -175,8 +184,8 @@ namespace Hal {
       LOG(WARNING) << "cannot add two cuts with delta collection ID!=1 by ChargedFluctuationsAna::AddCut!";
     }
     TString option = CleanOpt(opt, -1);
-    AddCut(pos, opt);
-    AddCut(neg, opt);
+    TrackAna::AddCut(pos, opt);
+    TrackAna::AddCut(neg, opt);
   }
 
   void ChargedFluctuationsAna::SetEventprop(Int_t evProp) { fEventPar = evProp; }

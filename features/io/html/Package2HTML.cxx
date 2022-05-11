@@ -1247,6 +1247,27 @@ namespace Hal {
   }
 
   TString Package2HTML::GetLink3D(TH3* h1, TH3* h2, Int_t no, TString path) const {
+      TString url;
+        path = Form("%s/th1_%i", path.Data(), no);
+        gSystem->mkdir(path);
+        TString filename = Form("%s/histo.html", path.Data());
+        TCanvas* c1      = new TCanvas("cutmon", "cutmon", 0, 0, 800, 600);
+        c1->Divide(2, 1);
+        c1->cd(1);
+        h1->SetTitle(Form("%s (Passed)", h1->GetTitle()));
+        h1->Draw(Draw_3D_option);
+        c1->cd(2);
+        h2->SetTitle(Form("%s (Failed)", h2->GetTitle()));
+        h2->Draw(Draw_3D_option);
+        c1->SetName("cutmon");
+        c1->SaveAs(Form("%s/cutmon.root", path.Data()));
+        delete c1;
+        HtmlFile file(filename, kFALSE);
+        file.AddStringContent(HtmlCore::GetJsDiv("cutmon.root", "cutmon;1"));
+        file.Save();
+        return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
+
+      /*
     TString url;
     gSystem->mkdir(Form("%s/th1_%i", path.Data(), no));
     TString name = "histo";
@@ -1261,7 +1282,7 @@ namespace Hal {
     delete stack;
     TString filename = Form("%s/th1_%i/histo.html", path.Data(), no);
     CreateImagePage(filename, "histo_%i.png", 1, Form("%s/th1_%i", path.Data(), no));
-    return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
+    return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));*/
   }
 
   TString Package2HTML::GetLinkToCut(Hal::ECutUpdate update, Int_t collection_no, Int_t cut_no, Bool_t fast) const {

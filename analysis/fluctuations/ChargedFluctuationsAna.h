@@ -28,7 +28,7 @@ namespace Hal {
   class ChargedFluctuationsAna : public TrackAna {
     Int_t fBins;
     Double_t fMin, fMax;
-    Int_t fEventBins, fEventPar, fTrackCols;
+    Int_t fEventBins, fEventPar, fTrackColsHalf;
     Double_t fEventMin, fEventMax;
     std::vector<Int_t> fCounts;
     std::vector<TString> fEventLabels;
@@ -64,7 +64,7 @@ namespace Hal {
     /**
      * save way to add pair of track cuts
      */
-    void AddCut(const TrackCut& pos, const TrackCut& neg, Option_t* opt);
+    void AddCut(const TrackCut& pos, const TrackCut& neg, Option_t* opt = "");
 
     /**
      * event property around second/third axis

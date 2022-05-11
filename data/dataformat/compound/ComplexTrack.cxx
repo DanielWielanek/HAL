@@ -36,7 +36,12 @@ namespace Hal {
   }
 
   Float_t ComplexTrack::GetFieldVal(Int_t fieldID) const {
-    if (fieldID >= DataFieldID::ImStep) {
+    if (fieldID >= DataFieldID::Internal::EventStart) {
+      if (GetEvent())
+        return GetEvent()->GetFieldVal(fieldID);
+      else
+        return FLT_MIN;
+    } else if (fieldID >= DataFieldID::ImStep) {
       if (GetImgTrack() == nullptr) return FLT_MIN;
       return GetImgTrack()->GetFieldVal(fieldID - DataFieldID::ImStep);
     } else if (fieldID >= DataFieldID::ReStep) {
@@ -65,16 +70,24 @@ namespace Hal {
   }
 
   TString ComplexTrack::GetFieldName(Int_t fieldID) const {
-    if (fieldID >= DataFieldID::ImStep) {
+    if (fieldID >= DataFieldID::Internal::EventStart) {
+      if (GetEvent())
+        return GetEvent()->GetFieldVal(fieldID);
+      else
+        return "xxx";
+    } else if (fieldID >= DataFieldID::ImStep) {
       ComplexEvent* ev = static_cast<ComplexEvent*>(GetEvent());
       Track* tr        = ev->GetImgEvent()->GetNewTrack();
-      TString name     = tr->GetFieldName(fieldID - DataFieldID::ImStep) + " (im)";
+      tr->SetEvent(ev->GetImgEvent());
+      TString name = tr->GetFieldName(fieldID - DataFieldID::ImStep) + " (im)";
+
       delete tr;
       return name;
     } else if (fieldID >= DataFieldID::ReStep) {
       ComplexEvent* ev = static_cast<ComplexEvent*>(GetEvent());
       Track* tr        = ev->GetRealEvent()->GetNewTrack();
-      TString name     = tr->GetFieldName(fieldID - DataFieldID::ReStep) + " (re)";
+      tr->SetEvent(ev->GetRealEvent());
+      TString name = tr->GetFieldName(fieldID - DataFieldID::ReStep) + " (re)";
       delete tr;
       return name;
     } else {

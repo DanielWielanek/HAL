@@ -13,31 +13,36 @@
 namespace Hal {
   namespace DataFieldID {
     enum EEvent {
-      kVertexX  = 1,
-      kVertexY  = 2,
-      kVertexZ  = 3,
-      kVertexXY = 4,
-      kVertexT  = 5,
-      kEventPhi = 6,
-      kPhiError = 7,
-      kTracksNo = 8,
-      kEventId  = 9
+      kVertexX  = 10000001,
+      kVertexY  = 10000002,
+      kVertexZ  = 10000003,
+      kVertexXY = 10000004,
+      kVertexT  = 10000005,
+      kEventPhi = 10000006,
+      kPhiError = 10000007,
+      kTracksNo = 10000008,
+      kEventId  = 10000009
     };
-    enum EMcEvent { kB = 10 };
-    enum EExpEvent { kTofTracksNo = 11 };
+    enum EMcEvent { kB = 10000010 };
+    enum EExpEvent { kTofTracksNo = 10000011 };
     enum EComplexEvent {
-      kDeltaRPhi     = 50,
-      kDeltaVertexXY = 51,
-      kDeltaVertexX  = 52,
-      kDeltaVertexY  = 53,
-      kDeltaVertexZ  = 54,
+      kDeltaRPhi     = 10000050,
+      kDeltaVertexXY = 10000051,
+      kDeltaVertexX  = 10000052,
+      kDeltaVertexY  = 10000053,
+      kDeltaVertexZ  = 10000054,
 
-      kDeltaVertexT  = 55,
-      kDeltaVertex   = 56,
-      kDeltaTracksNo = 57
+      kDeltaVertexT  = 10000055,
+      kDeltaVertex   = 10000056,
+      kDeltaTracksNo = 10000057
     };
-    const Int_t ReStep = 10000;
-    const Int_t ImStep = 20000;
+    const Int_t ReStep = 100000;
+    const Int_t ImStep = 200000;
+    namespace Internal {  // do not use in macro
+      const Int_t ReStepEvent = 10100000;
+      const Int_t ImStepEvent = 10200000;
+      const Int_t EventStart  = 10000000;
+    }  // namespace Internal
 
     enum ETrack {
       kPx       = 1,

@@ -196,10 +196,10 @@ namespace Hal {
 
   Float_t ComplexEvent::GetFieldVal(Int_t fieldID) const {
 
-    if (fieldID >= DataFieldID::ImStep) {
+    if (fieldID >= DataFieldID::Internal::ImStepEvent) {
       if (GetImgEvent() == nullptr) return FLT_MIN;
       return GetImgEvent()->GetFieldVal(fieldID - DataFieldID::ImStep);
-    } else if (fieldID >= DataFieldID::ReStep) {
+    } else if (fieldID >= DataFieldID::Internal::ReStepEvent) {
       return GetRealEvent()->GetFieldVal(fieldID - DataFieldID::ReStep);
     }
 
@@ -237,10 +237,10 @@ namespace Hal {
   }
 
   TString ComplexEvent::GetFieldName(Int_t fieldID) const {
-    if (fieldID >= DataFieldID::ImStep) {
+    if (fieldID >= DataFieldID::Internal::ImStepEvent) {
       if (GetImgEvent() == nullptr) return "xxx";
       return GetImgEvent()->GetFieldName(fieldID - DataFieldID::ImStep) + " (im)";
-    } else if (fieldID >= DataFieldID::ReStep) {
+    } else if (fieldID >= DataFieldID::Internal::ReStepEvent) {
       return GetRealEvent()->GetFieldName(fieldID - DataFieldID::ReStep) + " (re)";
     }
     switch (fieldID) {

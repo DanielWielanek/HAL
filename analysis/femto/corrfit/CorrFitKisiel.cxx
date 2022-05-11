@@ -144,6 +144,9 @@ namespace Hal {
     TString option        = draw_option;
     Bool_t drawNormalized = HalStd::FindParam(option, "norm", kTRUE);
     Double_t Rmid         = 0.5 * (fMaps[0]->GetRmax() + fMaps[0]->GetKstarMin());
+    Double_t draw_min, draw_max;
+    Bool_t set_limits = ExtrDraw(option, draw_min, draw_max);
+
     if (HalStd::FindParam(option, "full") && HalStd::FindParam(option, "ee")) {
       TH1* cf        = GetTHForDrawing(drawNormalized);
       TF1* draw_func = GetFunctionForDrawing();
@@ -158,9 +161,14 @@ namespace Hal {
 
       cf2->SetMarkerSize(0);
       cf2->SetMinimum(0);
+      if (set_limits) {
+        cf2->SetMinimum(draw_min);
+        cf2->SetMaximum(draw_max);
+      }
+
       cf2->Draw("E2");
       cf->Draw("SAME");
-      draw_func->SetParameter(Norm(), 1);
+      if (drawNormalized) draw_func->SetParameter(Norm(), 1);
       draw_func->Draw("SAME");
       TLegend* leg = GetLegendForDrawing();
       leg->Draw("SAME");

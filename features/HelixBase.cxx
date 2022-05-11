@@ -8,8 +8,14 @@
  */
 #include "HelixBase.h"
 
+#include <RtypesCore.h>
 #include <TMath.h>
+#include <TMathBase.h>
+#include <TString.h>
+#include <TVector2.h>
+#include <cmath>
 #include <iostream>
+
 
 namespace Hal {
   Double_t HelixBase::fgHelixBz = 0.5;

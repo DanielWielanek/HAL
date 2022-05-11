@@ -190,6 +190,29 @@ namespace HalStd {
    * @param opt
    */
   void Fold3D(Double_t val, TH3& h, TString opt = "x");
+  /**
+   * set the same color of line and marker for histogram
+   * @param color color to set
+   * @param h histogram
+   */
+  void SetColor(TH1& h, Color_t color);
+  /**
+   * set the same color for line and maker for histogram, set histogram marker
+   * @param color color to set
+   * @param m marker style to set
+   * @param h histogram
+   */
+  void SetColorAndMarker(TH1& h, Color_t color, Marker_t m);
+  /**
+   * set axis in histogram
+   * @param histogram to set
+   * @param titleSize title size
+   * @param labelSize label size
+   * @param space the space between title and axis
+   * @param opt - axis, can be 'x', 'y' or 'z'
+   */
+  void SetHistogramAxes(TH1& h, Double_t titleSize = 0.05, Double_t labelSize = 0.05, Double_t space = 1.0, Char_t opt = 'x');
+
 }  // namespace HalStd
 
 #endif /* HALSTDHIST_H_ */

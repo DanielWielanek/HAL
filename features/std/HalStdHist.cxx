@@ -832,4 +832,28 @@ namespace HalStd {
     h.ResetStats();
     delete tempCopy;
   }
+  void SetColor(TH1& h, Color_t color) {
+    h.SetLineColor(color);
+    h.SetMarkerColor(color);
+  }
+
+  void SetColorAndMarker(TH1& h, Color_t color, Marker_t m) {
+    h.SetLineColor(color);
+    h.SetMarkerColor(color);
+    h.SetMarkerStyle(m);
+  }
+
+  void SetHistogramAxes(TH1& h, Double_t titleSize, Double_t labelSize, Double_t space, Char_t opt) {
+    TAxis* x = nullptr;
+    switch (opt) {
+      case 'x': x = h.GetXaxis(); break;
+      case 'y': x = h.GetYaxis(); break;
+      case 'z': x = h.GetZaxis(); break;
+    }
+    if (x == nullptr) return;
+    x->SetTitleSize(titleSize);
+    x->SetLabelSize(labelSize);
+    x->SetTitleOffset(space);
+  }
+
 }  // namespace HalStd

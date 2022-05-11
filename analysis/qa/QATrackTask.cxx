@@ -72,7 +72,10 @@ namespace Hal {
     GetEventQAPlot(fCurrentEventCollectionID)->Fill(fCurrentEvent);
   }
 
-  void QATrackTask::ProcessTrack() { GetTrackQAPlot(fCurrentTrackCollectionID)->Fill(fCurrentTrack); }
+  void QATrackTask::ProcessTrack() {
+    Int_t id = fCurrentEventCollectionID * fTrackCollectionsNo + fCurrentTrackCollectionID;
+    GetTrackQAPlot(id)->Fill(fCurrentTrack);
+  }
 
   Task::EInitFlag QATrackTask::Init() {
     Task::EInitFlag stat = TrackAna::Init();
@@ -92,7 +95,7 @@ namespace Hal {
     fTempEventPlot = nullptr;
 
     fTrackQA = new TObjArray();
-    for (int i = 0; i < fTrackCollectionsNo; i++) {
+    for (int i = 0; i < fTrackCollectionsNo * fEventCollectionsNo; i++) {
       QAPlot* plot = fTempTrackPlot->MakeCopy();
       plot->Init(GetTaskID());
       fTrackQA->Add(plot);
@@ -118,18 +121,7 @@ namespace Hal {
   }
 
   void QATrackTask::LinkCollections() {
-    Int_t trackCollections = fCutContainer->GetTrackCollectionsNo();
-    Int_t eventCollections = fCutContainer->GetEventCollectionsNo();
-    for (int i = 1; i < eventCollections; i++) {
-      for (int j = 0; j < trackCollections; j++) {
-        fCutContainer->ReplicateCollection(ECutUpdate::kTrackUpdate, j, i * trackCollections + j);
-      }
-    }
-    for (int i = 0; i < eventCollections; i++) {
-      for (int j = 0; j < trackCollections; j++) {
-        fCutContainer->LinkCollections(ECutUpdate::kEventUpdate, i, ECutUpdate::kTrackUpdate, i * trackCollections + j);
-      }
-    }
+    fCutContainer->LinkCollections(ECutUpdate::kEventUpdate, ECutUpdate::kTrackUpdate, CutContainer::ELinkPolicy::kAnyToAny);
   }
 
   Package* QATrackTask::Report() const {
@@ -172,7 +164,6 @@ namespace Hal {
     fTrackColNames.clear();
     for (auto const name : init) {
       fTrackColNames.push_back(name);
-      std::cout << fTrackColNames[fTrackColNames.size() - 1] << std::endl;
     }
   }
 }  // namespace Hal

@@ -150,6 +150,8 @@ namespace Hal {
       case DataFieldID::ETrack::kPq: return GetCharge() * fP.P(); break;
       case DataFieldID::ETrack::kTrackZero: return 0; break;
     }
+    if (fieldID > DataFieldID::Internal::EventStart) { return GetEvent()->GetFieldVal(fieldID); }
+
     return -FLT_MAX;
   }
 
@@ -171,7 +173,7 @@ namespace Hal {
       case DataFieldID::ETrack::kStatus: return "stat [AU]"; break;
       case DataFieldID::ETrack::kPq: return "Pq [GeV/c*e]"; break;
     }
-
+    if (fieldID > DataFieldID::Internal::EventStart) { return GetEvent()->GetFieldName(fieldID); }
     LOG(warning) << "Track::GetFieldName cannot find field with fieldID " << fieldID;
     return "[]";
   }

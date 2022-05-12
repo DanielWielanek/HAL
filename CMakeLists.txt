@@ -9,7 +9,13 @@ enable_language(Fortran)
 if (DEFINED ENV{SIMPATH})
     include(cmake/modules/CMakeFairRoot.cmake)
   else()
-    set(DISABLE_JSROOT)
-    
     include(cmake/modules/CMakeListsExternal.cmake)
 endif()
+
+SetHeaderVariables(${CMAKE_SOURCE_DIR})
+WriteConfig()
+
+add_subdirectory (data)
+add_subdirectory (cuts) 
+add_subdirectory (features)
+add_subdirectory (analysis)

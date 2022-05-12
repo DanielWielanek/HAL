@@ -121,6 +121,8 @@ Macro(ROOT_GENERATE_DICTIONARY_NEW)
     Configure_File(${PROJECT_SOURCE_DIR}/cmake/scripts/generate_dictionary_root.sh.in
                    ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh
                   )
+                  #workaround for stand alone compilation
+                  execute_process(COMMAND /bin/chmod u+x ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh OUTPUT_QUIET)
   ENDIF(FAIRROOTPATH)
 
 

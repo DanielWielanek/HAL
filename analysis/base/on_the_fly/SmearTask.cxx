@@ -78,11 +78,11 @@ namespace Hal {
       Cout::PrintInfo("No track smear algorithm, new will be added but do virtual", EInfo::kLessWarning);
       fTrackAlgorithm = new TrackSmearVirtual();
     }
-    if (fEventAlgorithm->Init() == kFATAL) {
+    if (fEventAlgorithm->Init() == Task::EInitFlag::kFATAL) {
       Cout::PrintInfo("Failed to initialize EventSmear", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
     }
-    if (fTrackAlgorithm->Init() == kFATAL) {
+    if (fTrackAlgorithm->Init() == Task::EInitFlag::kFATAL) {
       Cout::PrintInfo("Failed to initialize TrackSmear", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
     }

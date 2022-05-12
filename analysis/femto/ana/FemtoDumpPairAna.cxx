@@ -111,7 +111,7 @@ namespace Hal {
     if (min != 0) fNBins = fNBins * 0.5;
     fStep = fMax / ((Double_t) fNBins);
     fStep = 1. / fStep;
-    return kSUCCESS;
+    return Task::EInitFlag::kSUCCESS;
   }
 
   FemtoDumpPairAna::~FemtoDumpPairAna() {}

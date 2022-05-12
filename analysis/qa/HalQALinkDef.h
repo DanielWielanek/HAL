@@ -13,13 +13,13 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ class QAPlot + ;
-#pragma link C++ class QAPlotReport + ;
+#pragma link C++ class Hal::QAPlot + ;
+#pragma link C++ class Hal::QAPlotReport + ;
 
-#pragma link C++ class QAEventTask + ;
-#pragma link C++ class QATrackTask + ;
-#pragma link C++ class QACoreManager + ;
+#pragma link C++ class Hal::QAEventTask + ;
+#pragma link C++ class Hal::QATrackTask + ;
+#pragma link C++ class Hal::QACoreManager + ;
 
-#pragma link C++ class QAHistoSettings + ;
-#pragma link C++ class std::vector < QAHistoSettings> + ;
+#pragma link C++ class Hal::QAHistoSettings + ;
+#pragma link C++ class std::vector < Hal::QAHistoSettings> + ;
 #endif

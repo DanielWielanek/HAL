@@ -59,7 +59,7 @@ namespace Hal {
   Task::EInitFlag ChargedFluctuationsAna::Init() {
     if (TrackAna::Init() == Task::EInitFlag::kFATAL) return Task::EInitFlag::kFATAL;
     fTrackColsHalf = fCutContainer->GetTrackCollectionsNo() / fCutContainer->GetEventCollectionsNo();
-    if (fTrackColsHalf % 2 == 1) return kFATAL;
+    if (fTrackColsHalf % 2 == 1) return Task::EInitFlag::kFATAL;
     fCounts.resize(fTrackColsHalf);
     fTrackColsHalf = fTrackColsHalf / 2;
     fHistogram     = new HistogramManager_2_3D<TH3D>();

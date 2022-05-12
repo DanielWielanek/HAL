@@ -121,7 +121,8 @@ namespace Hal {
 
   void FemtoCorrFunc1D::SetBins(const std::initializer_list<double>& init) {
     if (fRange.GetSize() != (Int_t) init.size()) {
-      Cout::PrintInfo(Form("Wrong size of array during call SetKtBins %i %i", fRange.GetSize(), init.size()), EInfo::kLessError);
+      Cout::PrintInfo(Form("Wrong size of array during call SetKtBins %i %i", fRange.GetSize(), (int) init.size()),
+                      EInfo::kLessError);
       return;
     }
     std::initializer_list<double>::iterator it;

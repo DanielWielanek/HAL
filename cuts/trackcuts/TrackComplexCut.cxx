@@ -9,17 +9,17 @@
 
 #include "TrackComplexCut.h"
 
-
-#include <FairLogger.h>
-#include <TString.h>
-
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
+#include "Cout.h"
 #include "Cut.h"
 #include "DataFormatManager.h"
 #include "HalStd.h"
 #include "Package.h"
 #include "Parameter.h"
+
+#include <TString.h>
+
 
 namespace Hal {
   Bool_t TrackComplexCut::Pass(Track* track) {
@@ -84,12 +84,10 @@ namespace Hal {
   }
 
   Bool_t TrackComplexCut::Init(Int_t task_id) {
-    if (!fRealCut->CutName().EqualTo(fImgCut->CutName())) {
-      LOG(DEBUG3) << Form(
-        "Not identical cuts in TrackCutComplex %s and %s", fRealCut->CutName().Data(), fImgCut->CutName().Data());
-    }
     if (!TrackCut::Init(task_id)) {
-      LOG(DEBUG2) << "Failed to init cut " << ClassName();
+#ifdef HAL_DEBUG
+      Cout::PrintInfo(Form("Failed to init cut %s", ClassName()), EInfo::kLessInfo);
+#endif
       return kFALSE;
     }
     DataFormatManager* manager = DataFormatManager::Instance();
@@ -99,10 +97,18 @@ namespace Hal {
       Int_t ok        = 0;
       manager->SetFormat(z->GetRealEvent(), task_id, EFormatDepth::kNonBuffered, kTRUE);
       ok += fRealCut->Init(task_id);
-      if (ok == 0) { LOG(DEBUG3) << "Failed to init " << ClassName() << " due to init " << fRealCut->ClassName(); }
+      if (ok == 0) {
+#ifdef HAL_DEBUG
+        Cout::PrintInfo(Form("Failed to init %s due to init %s", ClassName(), fRealCut->ClassName()), EInfo::kLessInfo);
+#endif
+      }
       manager->SetFormat(z->GetImgEvent(), task_id, EFormatDepth::kNonBuffered, kTRUE);
       Int_t dx = fImgCut->Init(task_id);
-      if (dx == 0) LOG(DEBUG3) << "Failed to init " << ClassName() << " due to init " << fImgCut->ClassName();
+      if (dx == 0) {
+#ifdef HAL_DEBUG
+        Cout::PrintInfo(Form("Failed to init %s due to init %s", ClassName(), fImgCut->ClassName()), EInfo::kLessInfo);
+#endif
+      }
       ok += dx;
       manager->SetFormat(z, task_id, EFormatDepth::kNonBuffered, kTRUE);
       for (int i = 0; i < fRealCut->GetCutSize(); i++) {

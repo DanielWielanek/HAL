@@ -10,7 +10,6 @@
 #include "V0BasicFinder.h"
 
 
-#include <FairLogger.h>
 #include <FairTask.h>
 #include <RtypesCore.h>
 #include <TClonesArray.h>
@@ -19,6 +18,7 @@
 #include <TParticlePDG.h>
 #include <TString.h>
 
+#include "Cout.h"
 #include "CutContainer.h"
 #include "CutMonitor.h"
 #include "DataManager.h"
@@ -29,6 +29,7 @@
 #include "TwoTrack.h"
 #include "TwoTrackCut.h"
 #include "V0Candidate.h"
+#include "V0Track.h"
 
 #include <iostream>
 
@@ -60,7 +61,7 @@ namespace Hal {
 
     Task::EInitFlag stat = TrackAna::Init();
     if (fV0Candiate == nullptr) {
-      LOG(FATAL) << "No VO candidate class!";
+      Cout::PrintInfo("No VO candidate class!", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
     }
     TDatabasePDG* db       = TDatabasePDG::Instance();

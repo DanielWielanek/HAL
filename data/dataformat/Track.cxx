@@ -16,8 +16,6 @@
 #include <TMath.h>
 #include <TString.h>
 
-#include <FairLogger.h>
-
 
 namespace Hal {
 
@@ -174,7 +172,7 @@ namespace Hal {
       case DataFieldID::ETrack::kPq: return "Pq [GeV/c*e]"; break;
     }
     if (fieldID > DataFieldID::Internal::EventStart) { return GetEvent()->GetFieldName(fieldID); }
-    LOG(warning) << "Track::GetFieldName cannot find field with fieldID " << fieldID;
+    Cout::PrintInfo(Form("Track::GetFieldName cannot find field with fieldID  %i", fieldID), EInfo::kLessWarning);
     return "[]";
   }
 

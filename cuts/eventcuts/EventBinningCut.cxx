@@ -9,12 +9,12 @@
 
 #include "EventBinningCut.h"
 
+#include "Cout.h"
 #include "Cut.h"
 #include "EventComplexCut.h"
 #include "Package.h"
 #include "Parameter.h"
 
-#include "FairLogger.h"
 #include <iostream>
 
 
@@ -137,7 +137,7 @@ namespace Hal {
     for (unsigned int pos = 0; pos < init.size(); pos++) {
       fStepsNo.Set(pos, init[pos]);
       if (init[pos] == 0) {
-        LOG(warning) << "cannot have event bins with 0 binst at " << pos;
+        Cout::PrintInfo("cannot have event bins with 0 binst at ", EInfo::kLessWarning);
       } else {
         fTotalBinsNo = fTotalBinsNo * init[pos];
       }

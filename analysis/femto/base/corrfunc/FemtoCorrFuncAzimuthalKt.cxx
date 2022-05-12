@@ -10,6 +10,7 @@
 #include "FemtoCorrFuncAzimuthalKt.h"
 
 #include "Array.h"
+#include "Cout.h"
 #include "DividedHisto.h"
 #include "Event.h"
 #include "FemtoPair.h"
@@ -19,7 +20,6 @@
 #include "ObjectMatrix.h"
 #include "Track.h"
 
-#include <FairLogger.h>
 #include <TMath.h>
 #include <TString.h>
 #include <TSystem.h>
@@ -36,7 +36,7 @@ namespace Hal {
     fPhiCorrection[1] = TMath::TwoPi();
     if (phi == 0) return;
     if (fRangeX.GetSize() != (Int_t) init.size()) {
-      LOG(ERROR) << "Wrong size of array during call SetKtBins" << fRangeX.GetSize() << " " << init.size() << std::endl;
+      Cout::PrintInfo(Form("Wrong size of array during call SetKtBins %i %i", fRangeX.GetSize(), init.size()), EInfo::kLessError);
       return;
     }
     std::initializer_list<double>::iterator it;
@@ -149,7 +149,7 @@ namespace Hal {
     fPhiCorrection[1] = TMath::TwoPi();
     if (phi == 0) return;
     if (fRangeX.GetSize() != (Int_t) init.size()) {
-      LOG(ERROR) << "Wrong size of array during call SetKtBins" << fRangeX.GetSize() << " " << init.size() << std::endl;
+      Cout::PrintInfo(Form("Wrong size of array during call SetKtBins %i %i", fRangeX.GetSize(), init.size()), EInfo::kLessError);
       return;
     }
     std::initializer_list<double>::iterator it;

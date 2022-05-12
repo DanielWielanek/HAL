@@ -10,8 +10,7 @@
 #include "QAEventTask.h"
 
 
-#include <FairLogger.h>
-
+#include "Cout.h"
 #include "Event.h"
 #include "HalStd.h"
 #include "Package.h"
@@ -42,7 +41,7 @@ namespace Hal {
     Task::EInitFlag stat = EventAna::Init();
     if (stat == Task::EInitFlag::kFATAL) return stat;
     if (fTempEventPlot == nullptr) {
-      LOG(FATAL) << "Lack of Event QA";
+      Cout::PrintInfo("Lack of Event QA", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
     } else {
       fEventQA = new TObjArray();

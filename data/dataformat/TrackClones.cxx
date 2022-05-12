@@ -9,10 +9,9 @@
 
 #include "TrackClones.h"
 
+#include "Cout.h"
 #include "DataManager.h"
 #include "IOManager.h"
-
-#include <FairLogger.h>
 
 namespace Hal {
   TrackClones::TrackClones(TString className, TString branchname, TString dirname) :
@@ -29,7 +28,7 @@ namespace Hal {
     if (fClones) { delete fClones; }
     fClones = NULL;
     fClones = (TClonesArray*) DataManager::Instance()->GetObject(fBranchName);
-    if (fClones == NULL) { LOG(ERROR) << "Branch " << fBranchName << " not found !"; }
+    if (fClones == NULL) { Cout::PrintInfo(Form("Branch %s not found!", fBranchName.Data()), EInfo::kLessError); }
   }
 
   TrackClones::~TrackClones() {

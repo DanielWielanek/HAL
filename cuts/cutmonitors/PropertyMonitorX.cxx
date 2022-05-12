@@ -9,21 +9,21 @@
 
 #include "PropertyMonitorX.h"
 
+#include "ComplexEvent.h"
+#include "ComplexTrack.h"
+#include "Cout.h"
+#include "DataFormatManager.h"
+#include "Event.h"
+#include "HalStd.h"
+#include "HalStdString.h"
 #include "Package.h"
 #include "Parameter.h"
 
-#include <FairLogger.h>
 #include <TAttFill.h>
 #include <TAxis.h>
 #include <TH1.h>
 #include <TString.h>
 
-#include "ComplexEvent.h"
-#include "ComplexTrack.h"
-#include "DataFormatManager.h"
-#include "Event.h"
-#include "HalStd.h"
-#include "HalStdString.h"
 
 namespace Hal {
   void PropertyMonitorX::CreateHistograms() {
@@ -53,7 +53,9 @@ namespace Hal {
 
   Bool_t PropertyMonitorX::Init(Int_t task_id) {
     if (fInit) {
-      LOG(DEBUG3) << Form("%s is initialized ", this->ClassName());
+#ifdef HAL_DEBUG
+      Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kLessInfo);
+#endif
       return kFALSE;
     }
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);

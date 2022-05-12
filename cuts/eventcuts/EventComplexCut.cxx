@@ -9,11 +9,10 @@
 #include "EventComplexCut.h"
 
 #include "ComplexEvent.h"
+#include "Cout.h"
 #include "DataFormatManager.h"
 #include "Package.h"
 #include "Parameter.h"
-
-#include <FairLogger.h>
 
 
 namespace Hal {
@@ -67,10 +66,6 @@ namespace Hal {
   }
 
   Bool_t EventComplexCut::Init(Int_t task_id) {
-    if (!fRealCut->CutName().EqualTo(fImgCut->CutName())) {
-      LOG(DEBUG3) << Form(
-        "Not identical cuts in TrackCutComplex %s and %s", fRealCut->CutName().Data(), fImgCut->CutName().Data());
-    }
     if (!EventCut::Init(task_id)) return kFALSE;
     DataFormatManager* manager = DataFormatManager::Instance();
     const Event* event         = manager->GetFormat(task_id, EFormatDepth::kNonBuffered);

@@ -9,11 +9,7 @@
 
 #include "SimpleVnAnalysis.h"
 
-
-#include <FairLogger.h>
-#include <TMath.h>
-#include <TString.h>
-
+#include "Cout.h"
 #include "CutContainer.h"
 #include "DividedHisto.h"
 #include "Event.h"
@@ -21,6 +17,10 @@
 #include "Package.h"
 #include "Parameter.h"
 #include "Track.h"
+
+#include <TMath.h>
+#include <TString.h>
+
 
 namespace Hal {
   SimpleVnAnalysis::SimpleVnAnalysis(Double_t n) :
@@ -52,15 +52,10 @@ namespace Hal {
 
   void SimpleVnAnalysis::SetAxis(Int_t nbins, Double_t min, Double_t max, Int_t axis) {
     if (min == max) {
-      LOG(DEBUG) << "In SimpleVnAnalysis::SetAxis you set same min and max, "
-                    "autofixing..";
       min = 0;
       max = 1;
     }
-    if (nbins < 0) {
-      LOG(DEBUG) << "In SimpleVnAnalysis::SetAxis nBins>1, autofixing..";
-      nbins = 100;
-    }
+    if (nbins < 0) { nbins = 100; }
 
     switch (axis) {
       case 0: {
@@ -73,7 +68,13 @@ namespace Hal {
         fMaxY  = max;
         fBinsY = nbins;
       } break;
-      default: LOG(DEBUG) << Form("Wrong SetAxis option in %s", this->ClassName()); break;
+
+      default:
+#ifdef HAL_DEBUG
+        Cout::PrintInfo(Form("Wrong SetAxis option in %s", this->ClassName()), EInfo::kLessWarning);
+#endif
+        ;
+        break;
     }
   }
 
@@ -81,11 +82,11 @@ namespace Hal {
     if (TrackAna::Init() == Task::EInitFlag::kSUCCESS) {
       // checking "fake collections"
       if (fVarX == NULL) {
-        LOG(WARNING) << "No FlowVariable on X";
+        Cout::PrintInfo("No FlowVariable on X", EInfo::kLessWarning);
         return Task::EInitFlag::kFATAL;
       }
       if (fVarY == NULL) {
-        LOG(WARNING) << "No FlowVariable on Y, it will be empty";
+        Cout::PrintInfo("No FlowVariable on Y, it will be empty", EInfo::kLessWarning);
         fVarY = new FlowVirtualVariable();
         SetAxis(1, 0, 1, 1);
       }
@@ -139,7 +140,7 @@ namespace Hal {
     if (fCutContainer->GetEventCollectionsNo() > 1) {
       for (int i = 1; i < fCutContainer->GetEventCollectionsNo(); i++)
         fCutContainer->RemoveCollection(ECutUpdate::kEventUpdate, i);
-      LOG(ERROR) << "Only 1 event cut container allowed for SimpleVnAnalysis";
+      Cout::PrintInfo("Only 1 event cut container allowed for SimpleVnAnalysis", EInfo::kLessError);
     }
   }
 

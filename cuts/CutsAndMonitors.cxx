@@ -299,3 +299,4 @@ namespace Hal {
       cut->SetCollectionID(id);
     }
   }  // namespace Hal
+}  // namespace Hal

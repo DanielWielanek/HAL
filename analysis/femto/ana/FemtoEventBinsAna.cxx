@@ -8,12 +8,12 @@
  */
 #include "FemtoEventBinsAna.h"
 
+#include "Cout.h"
 #include "CutCollection.h"
 #include "CutContainer.h"
 #include "EventBinningCut.h"
 #include "EventVirtualCut.h"
 #include "MemoryMapManager.h"
-#include <FairLogger.h>
 
 
 namespace Hal {
@@ -47,8 +47,8 @@ namespace Hal {
       fEventBinnngsBinsNo->Set(i, mult);
       Bool_t ready = evcut->Init(GetTaskID());
       if (ready == kFALSE) {
-        LOG(ERROR) << "Problem with initialization of " << evcut->ClassName();
-        return kFATAL;
+        Cout::PrintInfo(Form("Problem with initialization of  %s", evcut->ClassName()), EInfo::kLessError);
+        return Task::EInitFlag::kFATAL;
       }
     }
     return FemtoBasicAna::Init();
@@ -90,7 +90,9 @@ namespace Hal {
     fTotalEventBins = multi_factor;
     fMemoryMap      = new MemoryMapManager(fCutContainer);
     fMemoryMap->SetMixSize(fMixSize);
-    LOG(DEBUG3) << "Initialization MemoryMap";
+#ifdef HAL_DEBUG
+    Cout::PrintInfo("Initialization MemoryMap", EInfo::kLessInfo);
+#endif
     fMemoryMap->Init(multi_factor, GetTaskID(), fKeepSource, fCompressEvents, fDirectAcces);
   }
 
@@ -145,12 +147,19 @@ namespace Hal {
     fEventCollectionCF        = fCurrentEventCollectionID;
     fCurrentEventCollectionID = DummyEventCol;
     if (IdenticalParticles()) {
-      LOG(DEBUG) << "Finish identical event with "
-                 << fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) << " tracks";
+#ifdef HAL_DEBUG
+      Cout::PrintInfo(Format("Finish identical event with %i tracks",
+                             fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID)),
+                      EInfo::kLessInfo);
+#endif
       FinishEventIdentical();
     } else {
-      LOG(DEBUG) << "Finish non-identical event with " << fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 0) << " "
-                 << fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1) << " tracks";
+#ifdef HAL_DEBUG
+      Cout::PrintInfo(Format("Finish non-identical event with %i %i tracks",
+                             fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 0),
+                             fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1)),
+                      EInfo::kLessInfo);
+#endif
       FinishEventNonIdentical();
     }
     fCurrentEventCollectionID = fEventCollectionCF;

@@ -9,10 +9,10 @@
 #include "QATrackTask.h"
 #include "QAPlot.h"
 
+#include "Cout.h"
 #include "CutCollection.h"
 #include "CutContainer.h"
 #include "Event.h"
-#include "FairLogger.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "Track.h"
@@ -63,7 +63,9 @@ namespace Hal {
       case ECutUpdate::kTrackUpdate: {
         fTempTrackPlot = plot.MakeCopy();
       } break;
-      default: LOG(warning) << "Unkown QAPlot::GetUpdateRatio()"; break;
+      default: {
+        Cout::PrintInfo("Unkown QAPlot::GetUpdateRatio()", EInfo::kLessWarning);
+      } break;
     }
   }
 
@@ -82,7 +84,7 @@ namespace Hal {
     if (stat == Task::EInitFlag::kFATAL) return stat;
     if (fTempEventPlot == nullptr) { fTempEventPlot = new QAPlot("Null", 0, 0, 0, ECutUpdate::kEventUpdate); }
     if (fTempTrackPlot == nullptr) {
-      LOG(FATAL) << "Lack of Track QA";
+      Cout::PrintInfo("Lack of Track QA", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
     }
     fEventQA = new TObjArray();

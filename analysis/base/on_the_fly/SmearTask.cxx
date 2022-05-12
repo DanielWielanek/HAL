@@ -10,6 +10,7 @@
 #include "SmearTask.h"
 
 #include "ComplexEvent.h"
+#include "Cout.h"
 #include "CutCollection.h"
 #include "CutContainer.h"
 #include "DataFormatManager.h"
@@ -20,8 +21,6 @@
 #include "Package.h"
 #include "SmearedEvent.h"
 #include "SmearedTrack.h"
-
-#include <FairLogger.h>
 
 
 namespace Hal {
@@ -39,7 +38,7 @@ namespace Hal {
 
   void SmearTask::CheckCutContainerCollections() {
     if (fCutContainer->GetEventCollectionsNo() > 1) {
-      LOG(WARNING) << "Too many event collections, they will be removed! ";
+      Cout::PrintInfo("Too many event collections, they will be removed! ", EInfo::kLessWarning);
       for (int i = 1; i < fCutContainer->GetEventCollectionsNo(); i++)
         fCutContainer->RemoveCollection(ECutUpdate::kEventUpdate, i);
     }
@@ -60,7 +59,7 @@ namespace Hal {
     if (formats->FormatExist(GetTaskID())) {
       const Event* temp = formats->GetFormat(GetTaskID());
       if (temp->InheritsFrom("EventSmeared")) {
-        LOG(WARNING) << "Cannot set smeared algorithm in smearing task";
+        Cout::PrintInfo("Cannot set smeared algorithm in smearing task", EInfo::kImportantError);
         return Task::EInitFlag::kFATAL;
       }
     }
@@ -72,19 +71,19 @@ namespace Hal {
     fCurrentEventSmeared->LinkWithTree();
     fCurrentEventSmeared->GetImgEvent()->Register(kFALSE);
     if (fEventAlgorithm == NULL) {
-      LOG(DEBUG) << "No event smear algorithm, new will be added but do virtual";
+      Cout::PrintInfo("No event smear algorithm, new will be added but do virtual", EInfo::kLessWarning);
       fEventAlgorithm = new EventSmearVirtual();
     }
     if (fTrackAlgorithm == NULL) {
-      LOG(DEBUG) << "No track smear algorithm, new will be added but do virtual";
+      Cout::PrintInfo("No track smear algorithm, new will be added but do virtual", EInfo::kLessWarning);
       fTrackAlgorithm = new TrackSmearVirtual();
     }
     if (fEventAlgorithm->Init() == kFATAL) {
-      LOG(FATAL) << "Failed to initialize EventSmear";
+      Cout::PrintInfo("Failed to initialize EventSmear", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
     }
     if (fTrackAlgorithm->Init() == kFATAL) {
-      LOG(FATAL) << "Failed to initialize TrackSmear";
+      Cout::PrintInfo("Failed to initialize TrackSmear", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
     }
     return stat;

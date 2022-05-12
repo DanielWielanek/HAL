@@ -8,8 +8,8 @@
  */
 
 #include "TrackAna.h"
+#include "Cout.h"
 #include "MemoryMapManager.h"
-#include <FairLogger.h>
 
 #include "CutCollection.h"
 #include "CutContainer.h"
@@ -63,10 +63,12 @@ namespace Hal {
     Int_t eventCollections = fCutContainer->GetEventCollectionsNo();
     Int_t jump             = trackCollections / eventCollections;
     if (jump == 0) {
-      LOG(WARNING) << "Too many event collections, some of them will be ignored";
+      Cout::PrintInfo("Too many event collections, some of them will be ignored", EInfo::kLessWarning);
       jump++;
     }
-    if (trackCollections != jump * eventCollections) { LOG(WARNING) << "Some track collections will be ignored"; }
+    if (trackCollections != jump * eventCollections) {
+      Cout::PrintInfo("Some track collections will be ignored", EInfo::kLessWarning);
+    }
     for (int i = 0; i < eventCollections; i++) {
       for (int j = i * jump; j < (i + 1) * jump; j++) {
         fCutContainer->LinkCollections(ECutUpdate::kEventUpdate, i, ECutUpdate::kTrackUpdate, j);
@@ -78,7 +80,9 @@ namespace Hal {
     EventAna::CheckCutContainerCollections();
     Int_t trackCollections = fCutContainer->GetTrackCollectionsNo();
     if (trackCollections == 0) {
-      LOG(DEBUG) << "No track collections, virtual will be added";
+#ifdef HAL_DEBUG
+      Cout::PrintInfo("No track collections, virtual will be added", EInfo::kLessInfo);
+#endif
       fCutContainer->AddCut(TrackVirtualCut(), "fast");
     }
   }

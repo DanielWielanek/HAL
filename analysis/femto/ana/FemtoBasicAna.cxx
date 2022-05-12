@@ -9,6 +9,7 @@
 
 #include "FemtoBasicAna.h"
 
+#include "Cout.h"
 #include "CutCollection.h"
 #include "CutContainer.h"
 #include "DataFormatManager.h"
@@ -25,7 +26,6 @@
 #include "Package.h"
 #include "Parameter.h"
 
-#include <FairLogger.h>
 #include <TClonesArray.h>
 #include <TNamed.h>
 #include <TObjArray.h>
@@ -111,16 +111,16 @@ namespace Hal {
   Task::EInitFlag FemtoBasicAna::Init() {
     Task::EInitFlag prev = TwoTrackAna::Init();
     if (fCutContainer->GetTwoTrackCollectionsNo() != fCutContainer->GetTwoTrackCollectionsBackgroundNo()) {
-      LOG(WARNING) << "Two track collectionsNo in signal and background are "
-                      "different - this might result in crash";
+      Cout::PrintInfo("Two track collectionsNo in signal and background are different - this might result in crash",
+                      EInfo::kImportantWarning);
     }
     const Event* ev = DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kBuffered);
     if (!ev->InheritsFrom("ComplexEvent") && fUseImgMomenta == kTRUE) {
-      LOG(WARNING) << "Can't use fake momenta with current format !";
+      Cout::PrintInfo("Can't use fake momenta with current format !", EInfo::kLessWarning);
       fUseImgMomenta = kFALSE;
     }
     if (fCFTemp == nullptr) {
-      LOG(ERROR) << "No correlation function in analysis";
+      Cout::PrintInfo("No correlation function in analysis", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
     }
     DividedHisto1D* dummy    = fCFTemp->GetCF(0);
@@ -130,9 +130,12 @@ namespace Hal {
       kinem         = Femto::LabelToKinematics(label);
     }
     fFemtoPair = Femto::MakePair(kinem, fUseImgMomenta);
-    if (fFemtoPair == nullptr) { LOG(FATAL) << "Something wrong is with FemtoPair it cannot be created"; }
+    if (fFemtoPair == nullptr) {
+      Cout::PrintInfo("Something wrong is with FemtoPair it cannot be created", EInfo::kLessError);
+      return Task::EInitFlag::kFATAL;
+    }
     if (fPdg1 == 0 || fPdg2 == 0) {
-      LOG(WARNING) << "Assumed wrong PID = 0, pion PID will be assumed";
+      Cout::PrintInfo("Assumed wrong PID = 0, pion PID will be assumed", EInfo::kLessWarning);
       fPdg1 = fPdg2 = 211;
     }
     if (fPdg1 != fPdg2) { EnableNonIdentical(); }
@@ -141,17 +144,19 @@ namespace Hal {
     fFemtoPair->Init(GetTaskID());
     if (fIgnoreSign) fFemtoPair->UseAbs();
     AddTags(fFemtoPair->GetTags());
-    if (fUseImgMomenta == kFALSE) { LOG(INFO) << "Only true momenta will be used"; }
+    if (fUseImgMomenta == kFALSE) { Cout::PrintInfo("Only true momenta will be used", EInfo::kLessInfo); }
     if (prev != Task::EInitFlag::kSUCCESS) {
-      LOG(FATAL) << "Fatal FemtoBasicAna::TwoTrackAna::Init";
+      Cout::PrintInfo("Fatal FemtoBasicAna::TwoTrackAna::Init", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
     }
     // check weights
     if (fCalc == nullptr) {
-      LOG(WARNING) << "Weight algorithm not configured, autoconfiguration";
+      Cout::PrintInfo("Weight algorithm not configured, autoconfiguration", EInfo::kLessWarning);
       fCalc = new FemtoWeightGenerator();
     }
-    if (fCalc->Init(GetTaskID(), fFemtoPair) == kFALSE) { LOG(WARNING) << "Weight algorithm not initialized correctly"; }
+    if (fCalc->Init(GetTaskID(), fFemtoPair) == kFALSE) {
+      Cout::PrintInfo("Weight algorithm not initialized correctly", EInfo::kLessWarning);
+    }
     // inilitalize array of histograms
     if (InitArray() == kFALSE) return Task::EInitFlag::kFATAL;
     if (fCFTemp) delete fCFTemp;
@@ -174,7 +179,7 @@ namespace Hal {
     } else if (opt.EqualTo("use_im_momenta")) {
       fUseImgMomenta = kTRUE;
     } else if (opt.EqualTo("background:no")) {
-      LOG(WARNING) << "This analysis must have background !";
+      Cout::PrintInfo("This analysis must have background !", EInfo::kLessWarning);
       return;
     } else {
       TwoTrackAna::SetOption(option);
@@ -267,8 +272,9 @@ namespace Hal {
     Int_t two_track_background = fCutContainer->GetTwoTrackCollectionsBackgroundNo();
     if (fBackgroundMode != kNoBackgroundID && fBackgroundMode != kNoBackgroundNID) {
       if (two_track_signal != two_track_background) {
-        LOG(DEBUG) << "Different number of two-track collections in signal and "
-                      "background, fixing";
+#ifdef HAL_DEBUG
+        Cout::PrintInfo("Different number of two-track collections in signal and background, fixing", EInfo::kLessInfo);
+#endif
       }
       if (two_track_signal > two_track_background) {
         for (int i = two_track_background; i < two_track_signal; i++) {
@@ -306,7 +312,9 @@ namespace Hal {
   void FemtoBasicAna::InitMemoryMap() {
     fMemoryMap = new MemoryMapManager(fCutContainer);
     fMemoryMap->SetMixSize(fMixSize);
-    LOG(DEBUG3) << "Initialization MemoryMap";
+#ifdef HAL_DEBUG
+    Cout::PrintInfo("Initialization MemoryMap", EInfo::kLessInfo);
+#endif
     fMemoryMap->Init(1, GetTaskID(), fKeepSource, fCompressEvents, fDirectAcces);
   }
 
@@ -330,12 +338,19 @@ namespace Hal {
     fMemoryMap->BufferEvent(fCurrentEventCollectionID);
     fCurrentTrackCollectionID = 0;
     if (IdenticalParticles()) {
-      LOG(DEBUG) << "Finish identical event with "
-                 << fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) << " tracks";
+#ifdef HAL_DEBUG
+      Cout::PrintInfo(Form("Finish identical event with %i tracks ",
+                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID)),
+                      EInfo::kLessInfo);
+#endif
       FinishEventIdentical();
     } else {
-      LOG(DEBUG) << "Finish non-identical event with " << fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 0) << " "
-                 << fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1) << " tracks";
+#ifdef HAL_DEBUG
+      Cout::PrintInfo(Form("Finish identical event with %i  %itracks ",
+                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID),
+                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1)),
+                      EInfo::kLessInfo);
+#endif
       FinishEventNonIdentical();
     }
   }

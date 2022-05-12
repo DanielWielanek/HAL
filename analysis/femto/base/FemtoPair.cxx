@@ -7,21 +7,21 @@
 
 #include "FemtoPair.h"
 
-
-#include <FairLogger.h>
-#include <TDatabasePDG.h>
-#include <TLorentzVector.h>
-#include <TParticlePDG.h>
-#include <cstdio>
-#include <iostream>
-
 #include "ComplexTrack.h"
+#include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "FemtoMiniPair.h"
 #include "McTrack.h"
 #include "Track.h"
 #include "TwoTrack.h"
+
+#include <TDatabasePDG.h>
+#include <TLorentzVector.h>
+#include <TParticlePDG.h>
+#include <cstdio>
+#include <iostream>
+
 
 namespace Hal {
   FemtoPair::FemtoPair(Bool_t use_fake) :
@@ -113,7 +113,7 @@ namespace Hal {
     }
     if (fUseImgMomenta) {
       if (event->InheritsFrom("ComplexEvent")) return kTRUE;
-      LOG(WARNING) << "Cannot use fake momenta without combiend event!";
+      Cout::PrintInfo("Cannot use fake momenta without combiend event!", EInfo::kLessWarning);
       return kFALSE;
     } else {
       return kTRUE;

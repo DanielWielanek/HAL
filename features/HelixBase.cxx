@@ -169,7 +169,6 @@ namespace Hal {
     fZ0 = z;  // z0
   }
 
-
   void HelixBase::SetMagField(Double_t Bz) { fgHelixBz = Bz; }
 
   Double_t HelixBase::GetBz() { return fgHelixBz; }

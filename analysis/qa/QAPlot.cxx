@@ -9,13 +9,6 @@
 
 #include "QAPlot.h"
 
-#include <TH1.h>
-#include <TH2.h>
-#include <TH3.h>
-#include <TVector3.h>
-
-#include <FairLogger.h>
-
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "Cout.h"
@@ -24,6 +17,11 @@
 #include "HalStdHist.h"
 #include "HistogramManager.h"
 #include "Track.h"
+
+#include <TH1.h>
+#include <TH2.h>
+#include <TH3.h>
+#include <TVector3.h>
 
 namespace Hal {
 

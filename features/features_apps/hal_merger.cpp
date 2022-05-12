@@ -24,7 +24,6 @@
 #include <TString.h>
 #include <TSystem.h>
 
-#include <FairXMLNode.h>
 
 
 /** \addtogroup hal-merger

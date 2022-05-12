@@ -9,9 +9,6 @@
 
 #include "TwoTrackComplexCut.h"
 
-#include <FairLogger.h>
-#include <TString.h>
-
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "Cut.h"
@@ -20,6 +17,10 @@
 #include "Package.h"
 #include "Parameter.h"
 #include "TwoTrack.h"
+
+#include <TString.h>
+
+
 namespace Hal {
   TwoTrackComplexCut::TwoTrackComplexCut() :
     TwoTrackCut(1), fRealCut(nullptr), fImgCut(nullptr), fNullObjects(0), fAcceptNulls(kTRUE) {
@@ -81,10 +82,6 @@ namespace Hal {
   }
 
   Bool_t TwoTrackComplexCut::Init(Int_t task_id) {
-    if (!fRealCut->CutName().EqualTo(fImgCut->CutName())) {
-      LOG(DEBUG3) << Form(
-        "Not identical cuts in TrackCutComplex %s and %s", fRealCut->CutName().Data(), fImgCut->CutName().Data());
-    }
     if (!TwoTrackCut::Init(task_id)) return kFALSE;
     DataFormatManager* manager = DataFormatManager::Instance();
     const Event* event         = manager->GetFormat(task_id, EFormatDepth::kBuffered);

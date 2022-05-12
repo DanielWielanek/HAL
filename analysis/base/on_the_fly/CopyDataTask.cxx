@@ -9,9 +9,10 @@
 
 #include "CopyDataTask.h"
 
+#include "Cout.h"
 #include "Event.h"
+#include "Task.h"
 
-#include <FairLogger.h>
 
 namespace Hal {
   CopyDataTask::CopyDataTask() : fInputData(NULL) {}
@@ -26,10 +27,11 @@ namespace Hal {
   }
 
   void CopyDataTask::SetFormat(Event* event) {
-    if (fInputData) { LOG(WARNING) << "Overwriting format in CotyDataTask"; }
-    fInputData = event;
+    if (fInputData) {
+      Cout::PrintInfo("Overwriting format in CopyDataTask", EInfo::kLessWarning);
+      fInputData = event;
+    }
   }
-
   CopyDataTask::~CopyDataTask() {
     // TODO Auto-generated destructor stub
   }

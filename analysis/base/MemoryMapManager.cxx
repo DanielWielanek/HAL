@@ -9,19 +9,19 @@
 
 #include "MemoryMapManager.h"
 
+#include "Cout.h"
 #include "CutCollection.h"
 #include "CutContainer.h"
 #include "DataFormatManager.h"
 #include "DataManager.h"
+#include "HalStd.h"
 #include "Link.h"
 #include "Track.h"
 
-#include <FairLogger.h>
 #include <TMathBase.h>
 #include <TString.h>
 #include <iostream>
 
-#include "HalStd.h"
 
 namespace Hal {
   MemoryMapManager::MemoryMapManager() :
@@ -107,7 +107,9 @@ namespace Hal {
     fSumMap       = new Int_t[size];
     fIndexMap     = new Int_t[size];
     fTrackMapSize = size;
-    LOG(DEBUG4) << "Reloading maps";
+#ifdef HAL_DEBUG
+    Cout::PrintInfo("Reloading maps", EInfo::kLessInfo);
+#endif
   }
 
   void MemoryMapManager::SetMixSize(Int_t mix_size) { fMixSize = mix_size; }

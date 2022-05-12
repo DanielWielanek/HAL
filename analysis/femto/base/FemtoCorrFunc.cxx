@@ -14,7 +14,6 @@
 #include "HtmlCore.h"
 #include "HtmlTable.h"
 
-#include <FairLogger.h>
 #include <TBrowser.h>
 #include <TNamed.h>
 #include <TSystem.h>
@@ -122,7 +121,7 @@ namespace Hal {
 
   void FemtoCorrFunc1D::SetBins(const std::initializer_list<double>& init) {
     if (fRange.GetSize() != (Int_t) init.size()) {
-      LOG(ERROR) << "Wrong size of array during call SetKtBins" << fRange.GetSize() << " " << init.size() << std::endl;
+      Cout::PrintInfo(Form("Wrong size of array during call SetKtBins %i %i", fRange.GetSize(), init.size()), EInfo::kLessError);
       return;
     }
     std::initializer_list<double>::iterator it;

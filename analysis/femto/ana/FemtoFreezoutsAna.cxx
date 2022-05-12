@@ -9,6 +9,7 @@
 
 #include "FemtoFreezoutsAna.h"
 
+#include "Cout.h"
 #include "Cut.h"
 #include "FemtoConst.h"
 #include "FemtoFastCut.h"
@@ -18,7 +19,6 @@
 #include "Package.h"
 #include "Parameter.h"
 
-#include <FairLogger.h>
 #include <FairTask.h>
 #include <TCollection.h>
 #include <TDatabasePDG.h>
@@ -301,7 +301,7 @@ namespace Hal {
 
   void FemtoFreezoutsAna::SetMomentumCut(Double_t cut) {
     if (fCut <= 0) {
-      LOG(WARNING) << "KSTar cut shouldn't be <=0";
+      Cout::PrintInfo("KSTar cut shouldn't be <=0", EInfo::kLessWarning);
       return;
     }
     fCut = cut;
@@ -310,7 +310,7 @@ namespace Hal {
   void FemtoFreezoutsAna::SetOption(Option_t* opt) {
     TString option = opt;
     if (option.BeginsWith("background:")) {
-      LOG(INFO) << Form("%s backgrounds are not supported", this->ClassName());
+      Cout::PrintInfo(Form("%s backgrounds are not supported", this->ClassName()), EInfo::kLessInfo);
       return;
     } else if (option.EqualTo("prf")) {
       fKinematicsMode = EMode::kPRF;
@@ -327,18 +327,20 @@ namespace Hal {
 
   void FemtoFreezoutsAna::AddCut(const Cut& cut, Option_t* opt) {
     if (cut.GetCollectionID() != 0 && cut.GetUpdateRatio() == ECutUpdate::kEventUpdate) {
-      LOG(WARNING) << "This class not work with more than 1 event cut collection";
+      Cout::PrintInfo("This class not work with more than 1 event cut collection", EInfo::kLessWarning);
       return;
     }
     if (cut.GetCollectionID() >= 2 && cut.GetUpdateRatio() == ECutUpdate::kTrackUpdate) {
-      LOG(WARNING) << "This class not work with more than 1 track collections (2 "
-                      "in case of non idental HBT";
+      Cout::PrintInfo("This class not work with more than 1 track collections (2 "
+                      "in case of non idental HBT",
+                      EInfo::kLessWarning);
       return;
     }
     if (cut.GetUpdateRatio() == ECutUpdate::kTwoTrackUpdate) {
       if (cut.GetCollectionID() != 0) {
-        LOG(WARNING) << "You are trying to add two track collection with tirgger "
-                        ">0, it's not supported now, try add FemtoFastCut";
+        Cout::PrintInfo("You are trying to add two track collection with tirgger "
+                        ">0, it's not supported now, try add FemtoFastCut",
+                        EInfo::kLessWarning);
       }
     }
     TwoTrackAna::AddCut(cut, opt);

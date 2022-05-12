@@ -8,15 +8,15 @@
  */
 
 #include "MultiTrackAna.h"
+
+#include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "EventAna.h"
 #include "HalStd.h"
 #include "MemoryMapManager.h"
-
 #include "Parameter.h"
 
-#include <FairLogger.h>
 #include <RtypesCore.h>
 #include <TString.h>
 
@@ -25,10 +25,14 @@ namespace Hal {
   Task::EInitFlag MultiTrackAna::Init() {
     if (Task::EInitFlag::kSUCCESS == TrackAna::Init()) {
       if (fMixSize < 1) {
-        LOG(DEBUG) << "To small mix size, increasing to 1";
+#ifdef HAL_DEBUG
+        Cout::PrintInfo("To small mix size, increasing to 1", EInfo::kLessInfo);
+#endif
         fMixSize = 1;
       }
-      LOG(DEBUG2) << Form("Mix size is %i", fMixSize);
+#ifdef HAL_DEBUG
+      Cout::PrintInfo(Form("Mix size is %i", fMixSize), EInfo::kLessInfo);
+#endif
 
       return Task::EInitFlag::kSUCCESS;
     } else {
@@ -38,7 +42,7 @@ namespace Hal {
 
   void MultiTrackAna::SetMixSize(Int_t to_mix) {
     if (to_mix < 1) {
-      LOG(WARNING) << "Wrong mix size in SetMixSize";
+      Cout::PrintInfo("Wrong mix size in SetMixSize", EInfo::kImportantWarning);
     } else {
       fMixSize = to_mix;
     }
@@ -78,20 +82,23 @@ namespace Hal {
     Task::EInitFlag stat = TrackAna::CheckFormat();
     if (stat == Task::EInitFlag::kFATAL) return stat;
     if (DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kBuffered) == nullptr) {
-      LOG(WARNING) << this->ClassName() << ": Buffered format not set, fixing";
+      Cout::PrintInfo(Form("%s %s", this->ClassName(), ": Buffered format not set, fixing"), EInfo::kImportantWarning);
       if (DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered) == nullptr) {
-        LOG(ERROR) << "Cannot fix, non-buffered format not present";
-        return kFATAL;
+        Cout::PrintInfo("Cannot fix, non-buffered format not present", EInfo::kLessError);
+        return Task::EInitFlag::kFATAL;
       }
       SetFormatBuffered(DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered)->GetNewEvent());
     }
     const Event* nonBuf = DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered);
     const Event* Buf    = DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kBuffered);
     if (Buf->IsCompatible(nonBuf)) {
-      LOG(DEBUG) << "Formats are compatible";
+#ifdef HAL_DEBUG
+      Cout::PrintInfo("Formats are compatible", EInfo::kLessInfo);
+#endif
       return Task::EInitFlag::kSUCCESS;
     } else {
-      LOG(ERROR) << Form("Format %s is not compatible with %s", nonBuf->GetFormatName().Data(), Buf->GetFormatName().Data());
+      Cout::PrintInfo(Form("Format %s is not compatible with %s", nonBuf->GetFormatName().Data(), Buf->GetFormatName().Data()),
+                      EInfo::kLessError);
     }
     return Task::EInitFlag::kSUCCESS;
   }

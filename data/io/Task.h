@@ -16,9 +16,9 @@ namespace Hal {
   class Task : public TTask {
 
   public:
-    enum EInitFlag { kSUCCESS, kERROR, kFATAL };
+    enum class EInitFlag { kSUCCESS, kERROR, kFATAL };
     Task();
-    EInitFlag Init() { return kSUCCESS; };
+    EInitFlag Init() { return EInitFlag::kSUCCESS; };
     virtual void FinishTask() {};
     virtual ~Task();
     ClassDef(Task, 1)

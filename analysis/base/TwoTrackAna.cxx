@@ -8,18 +8,17 @@
  */
 
 #include "TwoTrackAna.h"
-#include "MemoryMapManager.h"
 
-#include "Parameter.h"
-
-#include <FairLogger.h>
-#include <FairTask.h>
-#include <TString.h>
-
+#include "Cout.h"
 #include "CutCollection.h"
 #include "CutContainer.h"
+#include "MemoryMapManager.h"
+#include "Parameter.h"
 #include "TwoTrack.h"
 #include "TwoTrackVirtualCut.h"
+
+#include <TString.h>
+
 
 namespace Hal {
   TwoTrackAna::TwoTrackAna(Bool_t use_background) :
@@ -123,9 +122,9 @@ namespace Hal {
       default: break;
     }
     if (fIdentical) {
-      LOG(INFO) << "IDENTICAL two track analysis enabled";
+      Cout::PrintInfo("IDENTICAL two track analysis enabled", EInfo::kLessInfo);
     } else {
-      LOG(INFO) << "NON-IDENTICAL two track analysis enabled";
+      Cout::PrintInfo("NON-IDENTICAL two track analysis enabled", EInfo::kLessInfo);
     }
     return in;
   }
@@ -167,7 +166,11 @@ namespace Hal {
 
   void TwoTrackAna::SetMixSize(Int_t mixsize) {
     if (mixsize > 0) fMixSize = mixsize;
-    if (mixsize > 10) { LOG(DEBUG) << "Mix size >10"; }
+    if (mixsize > 10) {
+#ifdef HAL_DEBUG
+      Cout::PrintInfo("Mix size >10", EInfo::kLessInfo);
+#endif
+    }
   }
 
   void TwoTrackAna::InitNewCutContainer() { MultiTrackAna::InitNewCutContainer(); }
@@ -184,9 +187,9 @@ namespace Hal {
     switch (fBackgroundMode) {
       case kCharged: {
         if (trackTrig < 2) {
-          LOG(WARNING) << "Not enough track collections";
+          Cout::PrintInfo("Not enough track collections", EInfo::kLessWarning);
         } else if (trackTrig > 3) {
-          LOG(WARNING) << "Too much track collections (>3) fixing ...";
+          Cout::PrintInfo("Too much track collections (>3) fixing ...", EInfo::kLessWarning);
           for (int i = 3; i < trackTrig; i++)
             fCutContainer->RemoveCollection(ECutUpdate::kTrackUpdate, i);
           trackTrig = fCutContainer->GetTrackCollectionsNo();
@@ -202,7 +205,7 @@ namespace Hal {
       default: {
         if (IdenticalParticles()) {
           if (trackTrig > 1) {
-            LOG(WARNING) << "Too much track collections (>1), fixing ..";
+            Cout::PrintInfo("Too much track collections (>1), fixing ..", EInfo::kLessWarning);
             for (int i = 1; i < trackTrig; i++)
               fCutContainer->RemoveCollection(ECutUpdate::kTrackUpdate, i);
             trackTrig = 1;
@@ -216,7 +219,7 @@ namespace Hal {
           }
         } else {
           if (trackTrig > 2) {
-            LOG(WARNING) << "To much track collections (more than 1) fixiing";
+            Cout::PrintInfo("To much track collections (more than 1) fixing", EInfo::kLessWarning);
             for (int i = 2; i < trackTrig; i++)
               fCutContainer->RemoveCollection(ECutUpdate::kTrackUpdate, i);
             trackTrig = 2;
@@ -346,7 +349,7 @@ namespace Hal {
         if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo) == 0) return;
         MakePairs_Charged3();
       } break;
-      default: LOG(WARNING) << "Unknown Background mode"; break;
+      default: Cout::PrintInfo("Unknown Background mode", EInfo::kImportantWarning); break;
     }
   }
 
@@ -391,7 +394,8 @@ namespace Hal {
         if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) == 0) return;
         MakePairs2_Charged3();
       } break;
-      default: LOG(WARNING) << "Unknown Background mode"; break;
+
+      default: Cout::PrintInfo("Unknown Background mode", EInfo::kImportantWarning); break;
     }
   }
 
@@ -415,12 +419,19 @@ namespace Hal {
     MultiTrackAna::ProcessEvent();
     fCurrentTrackCollectionID = 0;
     if (fIdentical) {
-      LOG(DEBUG) << "Finish identical event with "
-                 << fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) << " tracks";
+#ifdef HAL_DEBUG
+      Cout::PrintInfo(Form("Finish identical event with %i tracks",
+                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID)),
+                      EInfo::kLessInfo);
+#endif
       FinishEventIdentical();
     } else {
-      LOG(DEBUG) << "Finish non-identical event with " << fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 0) << " "
-                 << fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1) << " tracks";
+#ifdef HAL_DEBUG
+      Cout::PrintInfo(Form("Finish non-identical event with  %i %i tracks",
+                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 0),
+                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1)),
+                      EInfo::kLessInfo);
+#endif
       FinishEventNonIdentical();
     }
   }
@@ -531,7 +542,9 @@ namespace Hal {
     Int_t nTrack              = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);  //
     Int_t tt_cut_no           = track_cuts->GetNextNo();
-    LOG(DEBUG) << "Making pairs";
+#ifdef HAL_DEBUG
+    Cout::PrintInfo("Making pairs", EInfo::kLessInfo);
+#endif
     for (int i = 0; i < nTrack; i++) {
       fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, i);
       for (int j = i + 1; j < nTrack; j++) {
@@ -570,7 +583,9 @@ namespace Hal {
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID);
-    LOG(DEBUG) << "Mixing event";
+#ifdef HAL_DEBUG
+    Cout::PrintInfo("Mixing event", EInfo::kLessInfo);
+#endif
     for (int l = 0; l < fMixSize; l++) {
       if (l == fMemoryMap->GetCounter(fCurrentEventCollectionID)) continue;
       Int_t nTrackB = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID, l);

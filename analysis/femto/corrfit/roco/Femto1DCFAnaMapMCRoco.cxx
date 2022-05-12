@@ -9,8 +9,13 @@
 
 #include "Femto1DCFAnaMapMCRoco.h"
 
+#include "Cout.h"
+#include "DividedHisto.h"
+#include "Femto1DCF.h"
+#include "FemtoPair.h"
+#include "FemtoSourceModel.h"
+#include "FemtoSourceModelNumerical1D.h"
 
-#include <FairLogger.h>
 #include <TAxis.h>
 #include <TDatabasePDG.h>
 #include <TFile.h>
@@ -22,12 +27,6 @@
 #include <TRandom.h>
 #include <TVector3.h>
 #include <iostream>
-
-#include "DividedHisto.h"
-#include "Femto1DCF.h"
-#include "FemtoPair.h"
-#include "FemtoSourceModel.h"
-#include "FemtoSourceModelNumerical1D.h"
 
 
 namespace Hal {
@@ -262,7 +261,7 @@ namespace Hal {
   Bool_t Femto1DCFAnaMapMCRoco::Init() {
     if (fGeneratorRaw == nullptr) return kFALSE;
     if (fGeneratorRaw->GetSourceModel()->GetModelNumProp() != FemtoSourceModel::ENumProperty::kFullyAnalytical) {
-      LOG(warning) << " Femto1DCFAnaMapMCRoco::Init - cannot use nonanalytical source emission function";
+      Cout::PrintInfo(" Femto1DCFAnaMapMCRoco::Init - cannot use nonanalytical source emission function", EInfo::kLessWarning);
       return kFALSE;
     }
     FemtoSourceModel* sourceModel = fGeneratorRaw->GetSourceModel();
@@ -277,7 +276,8 @@ namespace Hal {
     } else if (dynamic_cast<FemtoSourceModel3D*>(sourceModel)) {
       fModelType = EModelType::k3dModel;
     } else {
-      LOG(warning) << " Femto1DCFAnaMapMCRoco::Init - cannot use analytical model that not base from 1d or 3d source model";
+      Cout::PrintInfo(" Femto1DCFAnaMapMCRoco::Init - cannot use analytical model that not base from 1d or 3d source model",
+                      EInfo::kLessWarning);
       return kFALSE;
     }
 

@@ -7,16 +7,14 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "FemtoWeightGeneratorResidual.h"
-#include "FemtoWeightGeneratorLednicky.h"
-
-
-#include <FairLogger.h>
 
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
+#include "Cout.h"
 #include "DataFormatManager.h"
 #include "ExpEvent.h"
 #include "FemtoPair.h"
+#include "FemtoWeightGeneratorLednicky.h"
 #include "McTrack.h"
 #include "Track.h"
 
@@ -92,7 +90,7 @@ namespace Hal {
     const Event* event      = mngr->GetFormat(task_id, EFormatDepth::kBuffered);
     if (dynamic_cast<const ComplexEvent*>(event)) fComplexFormat = kTRUE;
     if (dynamic_cast<const ExpEvent*>(event)) {
-      LOG(warning) << "Experimental format cannot be used for residual weights";
+      Cout::PrintInfo("Experimental format cannot be used for residual weights", EInfo::kLessWarning);
       return kFALSE;
     }
     if (dynamic_cast<FemtoWeightGeneratorLednicky*>(fMainWeight)) { fWeightType = eWeightType::kLednicky; }

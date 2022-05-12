@@ -10,12 +10,12 @@
 
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
+#include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "Link.h"
 #include "MemoryMapManager.h"
 #include "Track.h"
-#include <FairLogger.h>
 
 namespace Hal {
   SplitedTrackToStatusTask::SplitedTrackToStatusTask() {}
@@ -36,7 +36,7 @@ namespace Hal {
       fCurrentEvent->Register(kFALSE);
       return Task::EInitFlag::kSUCCESS;
     }
-    LOG(FATAL) << "Wrong format in " << this->ClassName();
+    Cout::PrintInfo(Form("Wrong format in %s", this->ClassName()), EInfo::kLessError);
     return Task::EInitFlag::kFATAL;
   }
 

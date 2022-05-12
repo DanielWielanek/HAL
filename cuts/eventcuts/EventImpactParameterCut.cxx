@@ -9,9 +9,9 @@
 
 #include "EventImpactParameterCut.h"
 
-#include "McEvent.h"
+#include "Cout.h"
 #include "DataFormatManager.h"
-#include "FairLogger.h"
+#include "McEvent.h"
 
 namespace Hal {
   EventImpactParameterCut::EventImpactParameterCut() : EventCut(1) { SetUnitName("Impact Parameter [fm]"); }
@@ -49,8 +49,9 @@ namespace Hal {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id);
     if (!ev->InheritsFrom("MCEvent")) { return kFALSE; }
     if (fBMax < 0) {
-      LOG(WARNING) << "Max impact  parameter in EventImpactCentralityCut is "
-                      "<0 setting to 0";
+      Cout::PrintInfo("Max impact  parameter in EventImpactCentralityCut is "
+                      "<0 setting to 0",
+                      EInfo::kLessWarning);
       fBMax  = 0;
       fAlpha = 1.0;
     } else {

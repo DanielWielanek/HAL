@@ -9,6 +9,7 @@
 
 #include "BoostTask.h"
 
+#include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "EventInterface.h"
@@ -17,8 +18,6 @@
 #include "Package.h"
 #include "Parameter.h"
 #include "TrackInterface.h"
-
-#include <FairLogger.h>
 
 
 namespace Hal {
@@ -41,8 +40,10 @@ namespace Hal {
     }
     fCurrentEvent = fMemoryMap->GetTemporaryEvent();
     if (!fCurrentEvent->GetSource()) {
-      LOG(ERROR) << "Event don't have source - boost cannot be perfomed on "
-                    " data";
+      Cout::PrintInfo("Event don't have source - boost cannot be perfomed on "
+                      " data",
+                      Hal::EInfo::kLessError);
+      return Task::EInitFlag::kERROR;
     }
     return stat;
   }

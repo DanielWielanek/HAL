@@ -9,11 +9,7 @@
 
 #include "ChargedFluctuationsAna.h"
 
-#include <FairLogger.h>
-#include <TCollection.h>
-#include <TList.h>
-#include <TPRegexp.h>
-
+#include "Cout.h"
 #include "CutContainer.h"
 #include "CutsAndMonitors.h"
 #include "DataFormat.h"
@@ -24,6 +20,11 @@
 #include "MemoryMapManager.h"
 #include "Package.h"
 #include "TrackCut.h"
+
+#include <TCollection.h>
+#include <TList.h>
+#include <TPRegexp.h>
+
 
 namespace Hal {
   ChargedFluctuationsAna::ChargedFluctuationsAna() :
@@ -114,7 +115,7 @@ namespace Hal {
         }
       }
     } else {
-      LOG(ERROR) << "wrong number of track collections, this might result in crash";
+      Cout::PrintInfo("wrong number of track collections, this might result in crash", EInfo::kLessError);
     }
   }
 
@@ -179,10 +180,10 @@ namespace Hal {
 
   void ChargedFluctuationsAna::AddCut(const TrackCut& pos, const TrackCut& neg, Option_t* opt) {
     if (pos.GetCollectionID() == neg.GetCollectionID()) {
-      LOG(WARNING) << "cannot add two cuts with the same collection ID by ChargedFluctuationsAna::AddCut!";
+      Cout::PrintInfo("cannot add two cuts with the same collection ID by ChargedFluctuationsAna::AddCut!", EInfo::kLessWarning);
     }
     if (TMath::Abs(pos.GetCollectionID() - neg.GetCollectionID()) != 1) {
-      LOG(WARNING) << "cannot add two cuts with delta collection ID!=1 by ChargedFluctuationsAna::AddCut!";
+      Cout::PrintInfo("cannot add two cuts with delta collection ID!=1 by ChargedFluctuationsAna::AddCut!", EInfo::kLessWarning);
     }
     TString option = CleanOpt(opt, -1);
     TrackAna::AddCut(pos, opt);
@@ -194,10 +195,12 @@ namespace Hal {
   void
   ChargedFluctuationsAna::AddCutsAndMonitors(const CutsAndMonitors& posTrack, const CutsAndMonitors& negTrack, Option_t* opt) {
     if (posTrack.GetCut(0)->GetCollectionID() == negTrack.GetCut(0)->GetCollectionID()) {
-      LOG(WARNING) << "cannot add two cuts with the same collection ID by NicaChargedFluctuationsAna::AddCut!";
+      Cout::PrintInfo("cannot add two cuts with the same collection ID by NicaChargedFluctuationsAna::AddCut!",
+                      EInfo::kLessWarning);
     }
     if (TMath::Abs(posTrack.GetCut(0)->GetCollectionID() - negTrack.GetCut(0)->GetCollectionID()) != 1) {
-      LOG(WARNING) << "cannot add two cuts with delta collection ID!=1 by NicaChargedFluctuationsAna::AddCut!";
+      Cout::PrintInfo("cannot add two cuts with delta collection ID!=1 by NicaChargedFluctuationsAna::AddCut!",
+                      EInfo::kLessWarning);
     }
     for (int iCut = 0; iCut < posTrack.GetNCuts(); iCut++) {
       TrackAna::AddCut(*posTrack.GetCut(iCut), posTrack.GetCutOption(iCut));

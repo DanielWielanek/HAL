@@ -9,15 +9,6 @@
 
 #include "SpectraAna.h"
 
-
-#include <FairLogger.h>
-#include <FairTask.h>
-#include <TH2.h>
-#include <TMath.h>
-#include <TObjArray.h>
-#include <TObjString.h>
-#include <TString.h>
-
 #include "Cout.h"
 #include "Cut.h"
 #include "CutCollection.h"
@@ -27,6 +18,14 @@
 #include "Parameter.h"
 #include "Track.h"
 #include "TrackPdgCut.h"
+
+#include <FairTask.h>
+#include <TH2.h>
+#include <TMath.h>
+#include <TObjArray.h>
+#include <TObjString.h>
+#include <TString.h>
+
 
 namespace Hal {
   SpectraAna::SpectraAna() :
@@ -163,15 +162,15 @@ namespace Hal {
     }
     if (fUseMass) {
       if (fMass.size() == 0) {
-        LOG(ERROR) << "Mass used but mass is not set";
+        Cout::PrintInfo("Mass used but mass is not set", EInfo::kLessError);
         return Task::EInitFlag::kFATAL;
       } else {
         if ((unsigned int) (fTrackCollectionsNo) < fMass.size()) {
-          LOG(ERROR) << "Mass used, but some masses are not set";
+          Cout::PrintInfo("Mass used, but some masses are not set", EInfo::kLessError);
           fMass.resize(fTrackCollectionsNo);
         }
         for (int i = 0; i < fTrackCollectionsNo; i++) {
-          if (fMass.at(i) <= 0) LOG(ERROR) << Form("Mass at collection %i (%4.2f) is not valid", i, fMass.at(i));
+          Cout::PrintInfo(Form("Mass at collection %i (%4.2f) is not valid", i, fMass.at(i)), EInfo::kLessError);
         }
       }
     }

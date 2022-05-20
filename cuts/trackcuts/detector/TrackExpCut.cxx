@@ -26,7 +26,7 @@ namespace Hal {
   Bool_t TrackExpCut::TpcAvaiable(Int_t format_id) const {
     const Event* ev = DataFormatManager::Instance()->GetFormat(format_id);
     Bool_t res      = kFALSE;
-    if (ev->InheritsFrom("ExpEvent")) {
+    if (ev->InheritsFrom("Hal::ExpEvent")) {
       ExpTrack* tr = (ExpTrack*) ev->GetNewTrack();
       if (tr->GetDetTrack(DetectorID::kTPC) != NULL) res = kTRUE;
       delete tr;

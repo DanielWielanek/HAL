@@ -98,9 +98,9 @@ namespace Hal {
     const Event* event      = mngr->GetFormat(task_id);
     Track* tr               = event->GetNewTrack();
     Bool_t use_mc           = kFALSE;
-    if (tr->InheritsFrom("MCTrack")) { use_mc = kTRUE; }
+    if (tr->InheritsFrom("Hal::MCTrack")) { use_mc = kTRUE; }
     Bool_t complex = kFALSE;
-    if (tr->InheritsFrom("ComplexTrack")) { complex = kTRUE; }
+    if (tr->InheritsFrom("Hal::ComplexTrack")) { complex = kTRUE; }
     delete tr;
     if (use_mc) {
       fMode = kMC;
@@ -112,7 +112,7 @@ namespace Hal {
       }
     }
     if (fUseImgMomenta) {
-      if (event->InheritsFrom("ComplexEvent")) return kTRUE;
+      if (event->InheritsFrom("Hal::ComplexEvent")) return kTRUE;
       Cout::PrintInfo("Cannot use fake momenta without combiend event!", EInfo::kLessWarning);
       return kFALSE;
     } else {

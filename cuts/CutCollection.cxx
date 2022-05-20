@@ -16,9 +16,9 @@
 #include "CutMonitorXYZ.h"
 #include "Event.h"
 #include "EventCut.h"
-#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "StdString.h"
 #include "Track.h"
 #include "TrackCut.h"
 #include "TwoTrack.h"
@@ -551,8 +551,7 @@ namespace Hal {
       for (int i = 0; i < this->GetPrevNo(); i++) {
         CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTrack)->At(this->GetPrevAddr(i)));
         for (int j = 0; j < subcont->GetPrevNo(); j++) {
-          CutCollection* subsubcont =
-            (CutCollection*) (GetCutContainerArray(ECutUpdate::kTwoTrack)->At(this->GetPrevAddr(j)));
+          CutCollection* subsubcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTwoTrack)->At(this->GetPrevAddr(j)));
           if (subsubcont->FindCut(cut)) { obj->AddLast(subsubcont->FindCut(cut)); }
         }
       }
@@ -918,9 +917,9 @@ namespace Hal {
     if (cutname.BeginsWith("TrackImaginaryCut")) return ECutUpdate::kTrack;
     if (cutname.BeginsWith("TwoTrackImaginaryCut")) return ECutUpdate::kTwoTrack;
     TClass* cl = TClass::GetClass(cutname, kFALSE, kTRUE);
-    if (cl->InheritsFrom("EventCut")) {
+    if (cl->InheritsFrom("Hal::EventCut")) {
       return ECutUpdate::kEvent;
-    } else if (cl->InheritsFrom("TrackCut")) {
+    } else if (cl->InheritsFrom("Hal::TrackCut")) {
       return ECutUpdate::kTrack;
     } else {
       return ECutUpdate::kTwoTrack;

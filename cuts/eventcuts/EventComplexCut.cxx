@@ -69,7 +69,7 @@ namespace Hal {
     if (!EventCut::Init(task_id)) return kFALSE;
     DataFormatManager* manager = DataFormatManager::Instance();
     const Event* event         = manager->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (event->InheritsFrom("ComplexEvent")) {
+    if (event->InheritsFrom("Hal::ComplexEvent")) {
       ComplexEvent* z = (ComplexEvent*) event;
       Int_t ok        = 0;
       manager->SetFormat(z->GetRealEvent(), task_id, EFormatDepth::kNonBuffered, kTRUE);
@@ -166,7 +166,7 @@ namespace Hal {
     if (!EventCut::Init(task_id)) return kFALSE;
     DataFormatManager* manager = DataFormatManager::Instance();
     const Event* event         = manager->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (event->InheritsFrom("ComplexEvent")) {
+    if (event->InheritsFrom("Hal::ComplexEvent")) {
       ComplexEvent* z = (ComplexEvent*) event;
       manager->SetFormat(z->GetRealEvent(), task_id, EFormatDepth::kNonBuffered, kTRUE);
       Bool_t ok = fRealCut->Init(task_id);
@@ -244,7 +244,7 @@ namespace Hal {
     if (!EventCut::Init(task_id)) return kFALSE;
     DataFormatManager* manager = DataFormatManager::Instance();
     const Event* event         = manager->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (event->InheritsFrom("ComplexEvent")) {
+    if (event->InheritsFrom("Hal::ComplexEvent")) {
       ComplexEvent* z = (ComplexEvent*) event;
       manager->SetFormat(z->GetImgEvent(), task_id, EFormatDepth::kNonBuffered, kTRUE);
       Bool_t ok = fImgCut->Init(task_id);

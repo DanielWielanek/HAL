@@ -114,7 +114,7 @@ namespace Hal {
       TString key_name   = ((TKey*) (list->At(fPackageID)))->GetName();
       TObject* object    = tdir->Get(key_name);
       TString table_name = Form("task_table_%i", fTaskTableCounter++);
-      if (object->InheritsFrom("HalPackage")) {
+      if (object->InheritsFrom("Hal::Package")) {
         Package* package      = (Package*) object;
         Package* meta_data    = (Package*) (((Package*) object)->GetObjectByName("HalMetadata"));
         TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
@@ -189,7 +189,7 @@ namespace Hal {
     TObject* object    = tdir->Get(packname);
     TString table_name = Form("task_table_%i", fTaskTableCounter++);
     TString path       = Form("%s/superpack_0/", fDir.Data());
-    if (object->InheritsFrom("HalPackage")) {
+    if (object->InheritsFrom("Hal::Package")) {
       Package* package      = (Package*) object;
       Package* meta_data    = (Package*) (((Package*) object)->GetObjectByName("HalMetadata"));
       TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
@@ -240,7 +240,7 @@ namespace Hal {
     Int_t pack_counter = 0;
     TString table_name = Form("task_table_%i", fTaskTableCounter++);
     TString path       = fDir + "/superpack_0";
-    if (pack_ana->InheritsFrom("HalPackage")) {
+    if (pack_ana->InheritsFrom("Hal::Package")) {
       Package* package      = (Package*) pack_ana;
       Package* meta_data    = (Package*) (((Package*) pack_ana)->GetObjectByName("HalMetadata"));
       TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
@@ -698,8 +698,8 @@ namespace Hal {
     Bool_t complex     = kFALSE;
     TString dummy_name = "";
     if (class_temp) {
-      if (class_temp->InheritsFrom("HalTrackComplexCut") || class_temp->InheritsFrom("HalEventComplexCut")
-          || class_temp->InheritsFrom("HalTwoTrackComplexCut")) {
+      if (class_temp->InheritsFrom("Hal::TrackComplexCut") || class_temp->InheritsFrom("Hal::EventComplexCut")
+          || class_temp->InheritsFrom("Hal::TwoTrackComplexCut")) {
         complex = kTRUE;
         if (cut->GetObjectByName("CutName_{re}")) {  // FIXME new version
           TString name_real = ((ParameterString*) cut->GetObjectByName("CutName_{re}"))->GetValue();
@@ -709,16 +709,16 @@ namespace Hal {
           }
         }
       }
-      if (class_temp->InheritsFrom("HalTrackRealCut") || class_temp->InheritsFrom("HalEventRealCut")
-          || class_temp->InheritsFrom("HalTwoTrackRealCut")) {
+      if (class_temp->InheritsFrom("Hal::TrackRealCut") || class_temp->InheritsFrom("Hal::EventRealCut")
+          || class_temp->InheritsFrom("Hal::TwoTrackRealCut")) {
         if (cut->GetObjectByName("CutName_{re}")) {
           TString name_real = ((ParameterString*) cut->GetObjectByName("CutName_{re}"))->GetValue();
           dummy_name        = Form("<br/>(%s)", name_real.Data());
         }
       }
 
-      if (class_temp->InheritsFrom("HalTrackImaginaryCut") || class_temp->InheritsFrom("HalEventImaginaryCut")
-          || class_temp->InheritsFrom("HalTwoTrackImaginaryCut")) {
+      if (class_temp->InheritsFrom("Hal::TrackImaginaryCut") || class_temp->InheritsFrom("Hal::EventImaginaryCut")
+          || class_temp->InheritsFrom("Hal::TwoTrackImaginaryCut")) {
         if (cut->GetObjectByName("CutName_{im}")) {
           TString name_real = ((ParameterString*) cut->GetObjectByName("CutName_{im}"))->GetValue();
           dummy_name        = Form("<br/>(%s)", name_real.Data());

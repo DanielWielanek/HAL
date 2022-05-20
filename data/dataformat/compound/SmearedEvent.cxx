@@ -11,13 +11,12 @@
 #include "ComplexTrack.h"
 
 
-
 #include <TClonesArray.h>
 #include <TObjArray.h>
 #include <TString.h>
 
-#include "McTrack.h"
 #include "Event.h"
+#include "McTrack.h"
 #include "VirtualEvent.h"
 
 namespace Hal {
@@ -29,7 +28,7 @@ namespace Hal {
 
   SmearedEvent::SmearedEvent(Event* event) :
     ComplexEvent("SmearedTrack", event->GetNewEvent(), new VirtualEvent()), fSmearing(kFALSE) {
-    if (event->InheritsFrom("MCEvent")) {
+    if (event->InheritsFrom("Hal::MCEvent")) {
       fRealMC = kTRUE;
     } else {
       fRealMC = kFALSE;

@@ -9,9 +9,9 @@
 
 #include "Cout.h"
 #include "Cut.h"
-#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "StdString.h"
 
 #include <TClass.h>
 #include <TH1.h>
@@ -155,12 +155,12 @@ namespace Hal {
     }
     ECutUpdate newUpd = ECutUpdate::kNo;
 
-    if (classdata == NULL) {
+    if (classdata == nullptr) {
       Cout::PrintInfo(Form("Cannot find class %s", cut.Data()), EInfo::kLessWarning);
     } else {
-      if (classdata->InheritsFrom("EventCut")) newUpd = ECutUpdate::kEvent;
-      if (classdata->InheritsFrom("TrackCut")) newUpd = ECutUpdate::kTrack;
-      if (classdata->InheritsFrom("TwoTrackCut")) newUpd = ECutUpdate::kTwoTrack;
+      if (classdata->InheritsFrom("Hal::EventCut")) newUpd = ECutUpdate::kEvent;
+      if (classdata->InheritsFrom("Hal::TrackCut")) newUpd = ECutUpdate::kTrack;
+      if (classdata->InheritsFrom("Hal::TwoTrackCut")) newUpd = ECutUpdate::kTwoTrack;
     }
 
     if (fCuts == 0) {

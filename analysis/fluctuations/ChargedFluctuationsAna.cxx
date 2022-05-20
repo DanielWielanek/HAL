@@ -16,9 +16,9 @@
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "EventVirtualCut.h"
-#include "Std.h"
 #include "MemoryMapManager.h"
 #include "Package.h"
+#include "Std.h"
 #include "TrackCut.h"
 
 #include <TCollection.h>
@@ -129,7 +129,7 @@ namespace Hal {
 
 
   void ChargedFluctuationsAna::AddCut(const Cut& cut, Option_t* opt) {
-    if (cut.InheritsFrom("TrackCut")) return;
+    if (cut.InheritsFrom("Hal::TrackCut")) return;
     TrackAna::AddCut(cut, opt);
   }
 

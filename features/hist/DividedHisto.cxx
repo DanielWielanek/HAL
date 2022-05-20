@@ -10,12 +10,12 @@
 #include "DividedHisto.h"
 
 #include "Cout.h"
-#include "Std.h"
-#include "StdHist.h"
-#include "StdString.h"
 #include "HtmlCore.h"
 #include "HtmlFile.h"
 #include "HtmlTable.h"
+#include "Std.h"
+#include "StdHist.h"
+#include "StdString.h"
 
 #include <TAttFill.h>
 #include <TAttLine.h>
@@ -730,7 +730,7 @@ namespace Hal {
   void DividedHisto2D::Browse(TBrowser* b) {
     gPad->Clear();
     TVirtualPad* c1 = gPad;
-    if (!this->InheritsFrom("HalDividedHisto3D")) {  // not 3d
+    if (!this->InheritsFrom("Hal::DividedHisto3D")) {  // not 3d
       Draw("all+colz");
     } else {
       Draw();

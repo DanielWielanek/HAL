@@ -28,7 +28,7 @@ namespace Hal {
   }
 
   TrackComplexCut* TrackCut::MakeComplexCut(Option_t* opt) const {
-    if (this->InheritsFrom("TrackComplexCut")) return NULL;
+    if (this->InheritsFrom("Hal::TrackComplexCut")) return NULL;
     TString option = opt;
     if (option == "re" || option == "RE" || option == "Re") {
       return new TrackComplexCut(this, new TrackVirtualCut());

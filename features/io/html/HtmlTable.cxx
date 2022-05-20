@@ -15,7 +15,7 @@ namespace Hal {
 
   HtmlTable::HtmlTable(TString id, TString className, TString style) : HtmlObject(id, className, style) {}
   void HtmlTable::AddContent(const HtmlObject& obj) {
-    if (obj.InheritsFrom("HalHtmlRow")) { HtmlObject::AddContent(obj); }
+    if (obj.InheritsFrom("Hal::HtmlRow")) { HtmlObject::AddContent(obj); }
   }
 
   HtmlTable::~HtmlTable() {}
@@ -27,7 +27,7 @@ namespace Hal {
   HtmlRow::HtmlRow(TString id, TString className, TString style) : HtmlObject(id, className, style) {}
 
   void HtmlRow::AddContent(const HtmlObject& obj) {
-    if (obj.InheritsFrom("HalHtmlCell")) { HtmlObject::AddContent(obj); }
+    if (obj.InheritsFrom("Hal::HtmlCell")) { HtmlObject::AddContent(obj); }
   }
 
   TString HtmlRow::ToString() const { return GetDefaultString("tr"); }
@@ -56,8 +56,7 @@ namespace Hal {
 
   HtmlCell::HtmlCell(TString content) : HtmlCell() { SetStringContent(content); }
 
-  HtmlCell::HtmlCell(TString id, TString className, TString style) :
-    HtmlObject(id, className, style), fColSpan(0), fRowSpan(0) {}
+  HtmlCell::HtmlCell(TString id, TString className, TString style) : HtmlObject(id, className, style), fColSpan(0), fRowSpan(0) {}
 
   HtmlCellCol::HtmlCellCol() {}
 

@@ -17,13 +17,13 @@
 #include <vector>
 
 #include "Cout.h"
-#include "Std.h"
-#include "StdString.h"
 #include "HtmlFile.h"
 #include "HtmlTable.h"
 #include "Object.h"
 #include "Package.h"
 #include "Package2HTML.h"
+#include "Std.h"
+#include "StdString.h"
 
 namespace Hal {
   HtmlCore* HtmlCore::fgInstance = NULL;
@@ -269,7 +269,7 @@ namespace Hal {
       delete pack;
       return HtmlCore::GetUrl(Form("pack_%i/index.html", no), "HalPackage");
     }
-    if (obj->InheritsFrom("HalPack")) { return static_cast<Object*>(obj)->HTMLExtract(no, dir); }
+    if (obj->InheritsFrom("Hal::Object")) { return static_cast<Object*>(obj)->HTMLExtract(no, dir); }
     if (obj->InheritsFrom("TList")) { return GetLinkList(static_cast<TList*>(obj), no, dir); };
     if (obj->InheritsFrom("TH1")) { return GetLinkTH1(static_cast<TH1*>(obj), no, dir); }
     if (obj->InheritsFrom("TGraph")) { return GetLinkGraph(static_cast<TGraph*>(obj), no, dir); };

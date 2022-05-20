@@ -16,11 +16,11 @@
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "EventAna.h"
-#include "Std.h"
 #include "MemoryMapManager.h"
 #include "Package.h"
 #include "SmearedEvent.h"
 #include "SmearedTrack.h"
+#include "Std.h"
 
 
 namespace Hal {
@@ -58,7 +58,7 @@ namespace Hal {
     DataFormatManager* formats = DataFormatManager::Instance();
     if (formats->FormatExist(GetTaskID())) {
       const Event* temp = formats->GetFormat(GetTaskID());
-      if (temp->InheritsFrom("EventSmeared")) {
+      if (temp->InheritsFrom("Hal::EventSmeared")) {
         Cout::PrintInfo("Cannot set smeared algorithm in smearing task", EInfo::kImportantError);
         return Task::EInitFlag::kFATAL;
       }

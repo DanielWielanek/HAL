@@ -15,10 +15,11 @@
 #include "Event.h"
 #include "EventAna.h"
 #include "EventVirtualCut.h"
-#include "Std.h"
 #include "MemoryMapManager.h"
+#include "MultiTrackAna.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Std.h"
 #include "TrackVirtualCut.h"
 
 #include <TFile.h>
@@ -99,7 +100,7 @@ namespace Hal {
   }
 
   void TrackAnaChain::AddAnalysis(TrackAna* ana) {
-    if (!ana->InheritsFrom("TrackAna")) return;
+    if (!dynamic_cast<TrackAna*>(ana)) return;
     if (fTask == NULL) {
       fTask = new TrackAna*[1];
       ana->MarkAsInChain();
@@ -112,7 +113,7 @@ namespace Hal {
           return;
         }
       }
-      if (ana->InheritsFrom("MultiTrackAna")) {
+      if (dynamic_cast<MultiTrackAna*>(ana)) {
         Cout::PrintInfo("Tasks with track buffering cannot be processed vy this task", EInfo::kLessError);
       }
       TrackAna** temp = fTask;

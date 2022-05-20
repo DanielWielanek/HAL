@@ -181,7 +181,7 @@ namespace Hal {
 
   Bool_t Cut::FormatEquals(TString format, Int_t format_id, EFormatDepth depth) const {
     if (depth == EFormatDepth::kAll) {  // default depth, check manually
-      if (this->InheritsFrom("TwoTrackCut"))
+      if (this->InheritsFrom("Hal::TwoTrackCut"))
         depth = EFormatDepth::kBuffered;
       else
         depth = EFormatDepth::kNonBuffered;
@@ -196,7 +196,7 @@ namespace Hal {
 
   Bool_t Cut::FormatInhertis(TString format, Int_t format_id, EFormatDepth depth) const {
     if (depth == EFormatDepth::kAll) {  // default depth, check manually
-      if (this->InheritsFrom("TwoTrackCut"))
+      if (this->InheritsFrom("Hal::TwoTrackCut"))
         depth = EFormatDepth::kBuffered;
       else
         depth = EFormatDepth::kNonBuffered;
@@ -209,19 +209,19 @@ namespace Hal {
   TString Cut::CutName(Option_t* opt) const {
     TString option = opt;
     if (option.EqualTo("re")) {
-      if (InheritsFrom("EventCut")) {
+      if (InheritsFrom("Hal::EventCut")) {
         return Form("EventRealCut(%s)", ClassName());
-      } else if (InheritsFrom("TrackCut")) {
+      } else if (InheritsFrom("Hal::TrackCut")) {
         return Form("TrackRealCut(%s)", ClassName());
-      } else if (InheritsFrom("TwoTrackCut")) {
+      } else if (InheritsFrom("Hal::TwoTrackCut")) {
         return Form("TwoTrackRealCut(%s)", ClassName());
       }
     } else if (option.EqualTo("im")) {
-      if (InheritsFrom("EventCut")) {
+      if (InheritsFrom("Hal::EventCut")) {
         return Form("EventImaginaryCut(%s)", ClassName());
-      } else if (InheritsFrom("TrackCut")) {
+      } else if (InheritsFrom("Hal::TrackCut")) {
         return Form("TrackImaginaryCut(%s)", ClassName());
-      } else if (InheritsFrom("TwoTrackCut")) {
+      } else if (InheritsFrom("Hal::TwoTrackCut")) {
         return Form("TwoTrackImaginaryCut(%s)", ClassName());
       }
     }

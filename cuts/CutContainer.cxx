@@ -18,9 +18,9 @@
 #include "Cout.h"
 #include "EventComplexCut.h"
 #include "EventVirtualCut.h"
-#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "StdString.h"
 #include "TrackComplexCut.h"
 #include "TrackVirtualCut.h"
 #include "TwoTrackComplexCut.h"
@@ -71,13 +71,13 @@ namespace Hal {
     if (Hal::Std::FindParam(option, "im", kTRUE)) {
       Cut* tempcut = NULL;
       Bool_t nulls = Hal::Std::FindParam(option, "null", kTRUE);
-      if (cut.InheritsFrom("TrackCut")) {
+      if (cut.InheritsFrom("Hal::TrackCut")) {
         tempcut = new TrackImaginaryCut(static_cast<const TrackCut&>(cut));
         if (nulls) static_cast<TrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
-      } else if (cut.InheritsFrom("EventCut")) {
+      } else if (cut.InheritsFrom("Hal::EventCut")) {
         tempcut = new EventImaginaryCut(static_cast<const EventCut&>(cut));
         if (nulls) static_cast<EventImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
-      } else if (cut.InheritsFrom("TwoTrackCut")) {
+      } else if (cut.InheritsFrom("Hal::TwoTrackCut")) {
         tempcut = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
         if (nulls) static_cast<TwoTrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
       }
@@ -88,11 +88,11 @@ namespace Hal {
       return;
     } else if (Hal::Std::FindParam(option, "re", kTRUE)) {
       Cut* tempcut = NULL;
-      if (cut.InheritsFrom("TrackCut")) {
+      if (cut.InheritsFrom("Hal::TrackCut")) {
         tempcut = new TrackRealCut(static_cast<const TrackCut&>(cut));
-      } else if (cut.InheritsFrom("EventCut")) {
+      } else if (cut.InheritsFrom("Hal::EventCut")) {
         tempcut = new EventRealCut(static_cast<const EventCut&>(cut));
-      } else if (cut.InheritsFrom("TwoTrackCut")) {
+      } else if (cut.InheritsFrom("Hal::TwoTrackCut")) {
         tempcut = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
       }
       if (tempcut == nullptr) return;
@@ -331,8 +331,7 @@ namespace Hal {
       pack->AddObject(list2);
     }
     if (fSize > 2) {
-      pack->AddObject(
-        new ParameterInt("TwoTrack_collections_No", GetCutContainer(ECutUpdate::kTwoTrack)->GetEntriesFast()));
+      pack->AddObject(new ParameterInt("TwoTrack_collections_No", GetCutContainer(ECutUpdate::kTwoTrack)->GetEntriesFast()));
       TList* list3 = new TList();
       list3->SetOwner(kTRUE);
       list3->SetName("TwoTrackCutCollectionList");
@@ -401,8 +400,7 @@ namespace Hal {
   }
 
   Bool_t CutContainer::CheckTwoTracksOptions(const CutMonitor& cutmon, Option_t* opt) {
-    if (!(cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrack
-          || cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground)) {
+    if (!(cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrack || cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground)) {
       return kFALSE;
     }
     TString option = opt;
@@ -524,8 +522,8 @@ namespace Hal {
       opt.ReplaceAll("im", "");
       opt.ReplaceAll("re", "");
       Int_t size = 1;
-      if (mon->InheritsFrom("CutMonitorXY")) size = 2;
-      if (mon->InheritsFrom("CutMonitorXYZ")) size = 3;
+      if (mon->InheritsFrom("Hal::CutMonitorXY")) size = 2;
+      if (mon->InheritsFrom("Hal::CutMonitorXYZ")) size = 3;
       switch (size) {
         case 1: {
           MakeComplexAxis(mon, 0, flag);
@@ -547,13 +545,13 @@ namespace Hal {
     TString cut_name = mon->GetCutName(axis);
     TClass* clas     = TClass::GetClass(cut_name, kTRUE, kTRUE);
     TString pattern  = "";
-    if (clas->InheritsFrom("EventCut")) {
+    if (clas->InheritsFrom("Hal::EventCut")) {
       if (flag == -1) {  // im
         pattern = "EventImaginaryCut";
       } else {  // re
         pattern = "EventRealCut";
       }
-    } else if (clas->InheritsFrom("TrackCut")) {
+    } else if (clas->InheritsFrom("Hal::TrackCut")) {
       if (flag == -1) {  // im
         pattern = "TrackImaginaryCut";
       } else {  // re

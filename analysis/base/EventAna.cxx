@@ -19,10 +19,10 @@
 #include "Event.h"
 #include "EventVirtualCut.h"
 #include "Field.h"
-#include "StdString.h"
 #include "Helix.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "StdString.h"
 
 #include <TCollection.h>
 #include <TDatabasePDG.h>
@@ -86,7 +86,7 @@ namespace Hal {
     if (stat == Task::EInitFlag::kFATAL) return Task::EInitFlag::kFATAL;
     InitMemoryMap();
     fEventCollectionsNo = fCutContainer->GetEventCollectionsNo();
-    if (!this->InheritsFrom("TrackAna") && !this->InheritsFrom("MultiTrackAna")) {
+    if (!this->InheritsFrom("Hal::TrackAna") && !this->InheritsFrom("Hal::MultiTrackAna")) {
       AddTags("eventana");
       AddTags(DataFormatManager::Instance()->GetFormatName(this->fTaskID));
     }

@@ -9,6 +9,7 @@
 
 #include "TrackNullCut.h"
 
+#include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "Cut.h"
 #include "DataFormatManager.h"
@@ -34,7 +35,7 @@ namespace Hal {
   Bool_t TrackNullCut::Init(Int_t task_id) {
     DataFormatManager* manager = DataFormatManager::Instance();
     const Event* event         = manager->GetFormat(task_id);
-    if (event->InheritsFrom("ComplexEvent")) return kTRUE;
+    if (dynamic_cast<const ComplexEvent*>(event)) return kTRUE;
     return kFALSE;
   }
 }  // namespace Hal

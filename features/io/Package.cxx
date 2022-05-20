@@ -8,9 +8,9 @@
 #include "Package.h"
 
 #include "Cout.h"
+#include "Parameter.h"
 #include "Std.h"
 #include "StdString.h"
-#include "Parameter.h"
 
 #include <TBrowser.h>
 #include <TCollection.h>
@@ -238,11 +238,11 @@ namespace Hal {
       SumPackages(first, second);
     } else if (first->InheritsFrom("TH1")) {
       SumHistograms(first, second);
-    } else if ((first->InheritsFrom("HalParameter"))) {
+    } else if ((first->InheritsFrom("Hal::Parameter"))) {
       SumHalParameter(first, second);
     } else if (name == "TList") {
       SumList(first, second);
-    } else if (first->InheritsFrom("HalPack")) {
+    } else if (first->InheritsFrom("Hal::Object")) {
       SumPack(first, second);
     } else if (name.EqualTo("TObjString")) {
       SumTObjString(first, second);

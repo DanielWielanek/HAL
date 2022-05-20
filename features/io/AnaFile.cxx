@@ -23,10 +23,10 @@
 #include <cstring>
 
 #include "Cout.h"
-#include "StdString.h"
 #include "Package.h"
 #include "Package2HTML.h"
 #include "Parameter.h"
+#include "StdString.h"
 namespace Hal {
   AnaFile::AnaFile(TString filename, TString packname) :
     fHTMLCounter(0), fMainPackageArray(NULL), fCutContainerArray(NULL), fMetaDataPack(NULL), fFilename(filename) {
@@ -65,7 +65,7 @@ namespace Hal {
       for (int i = 0; i < fPhysKeys->GetEntries(); i++) {
         TString name            = ((TKey*) (fPhysKeys->At(i)))->GetName();
         TObject* pack_candidate = PhysDir->Get(name);
-        if (!pack_candidate->InheritsFrom("HalPackage")) {
+        if (!pack_candidate->InheritsFrom("Hal::Package")) {
           fPhysKeys->RemoveAt(i);
           delete pack_candidate;
         } else {
@@ -112,7 +112,7 @@ namespace Hal {
       for (int i = 0; i < fPhysKeys->GetEntries(); i++) {
         TString name            = ((TKey*) (fPhysKeys->At(i)))->GetName();
         TObject* pack_candidate = PhysDir->Get(name);
-        if (!pack_candidate->InheritsFrom("HalPackage")) {
+        if (!pack_candidate->InheritsFrom("Hal::Package")) {
           fPhysKeys->RemoveAt(i--);
           delete pack_candidate;
         } else {
@@ -209,7 +209,7 @@ namespace Hal {
     for (int i = 0; i < fMainPackageArray->GetEntriesFast(); i++) {
       TString name = ((TKey*) fPhysKeys->At(i))->GetName();
       TObject* obj = fMainPackageArray->UncheckedAt(i);
-      if (obj->InheritsFrom("HalPackage") && name == packname) { return (Package*) obj; }
+      if (obj->InheritsFrom("Hal::Package") && name == packname) { return (Package*) obj; }
     }
     Cout::FailSucced(Form("Package %s not found !", packname.Data()), "WARNING", kRed);
     return NULL;
@@ -276,7 +276,7 @@ namespace Hal {
       TString name    = ((TKey*) (list->At(i)))->GetName();
       TObject* object = tdir->Get(name);
       Cout::Text("List of keys ", "L");
-      if (object->InheritsFrom("HalPackage")) {
+      if (object->InheritsFrom("Hal::Package")) {
         Cout::Text(object->GetName(), "L");
       } else {
         Cout::PrintInfo(Form("%s found in HalPhysics but don't inherit from HalPackage", name.Data()), Hal::EInfo::kLessWarning);

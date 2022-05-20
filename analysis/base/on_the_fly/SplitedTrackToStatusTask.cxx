@@ -31,7 +31,7 @@ namespace Hal {
     Task::EInitFlag stat = EventAna::Init();
     if (stat == Task::EInitFlag::kFATAL) return stat;
     const Event* ev = DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered);
-    if (ev->InheritsFrom("ComplexEvent")) {
+    if (ev->InheritsFrom("Hal::ComplexEvent")) {
       fCurrentEvent = fMemoryMap->GetTemporaryEvent();
       fCurrentEvent->Register(kFALSE);
       return Task::EInitFlag::kSUCCESS;

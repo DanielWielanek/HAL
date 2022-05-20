@@ -14,10 +14,10 @@
 #include "DataFormatManager.h"
 #include "EventAna.h"
 #include "EventVirtualCut.h"
-#include "Std.h"
 #include "MemoryMapManager.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Std.h"
 #include "TrackVirtualCut.h"
 #include "TwoTrack.h"
 #include "TwoTrackVirtualCut.h"
@@ -73,7 +73,7 @@ namespace Hal {
   }
 
   void TwoTrackAnaChain::AddAnalysis(TwoTrackAna* ana) {
-    if (!ana->InheritsFrom("TwoTrackAna")) {
+    if (!ana->InheritsFrom("Hal::TwoTrackAna")) {
       Cout::PrintInfo("Tasks that doesn't inherit from TwoTrackAna cannot be processed "
                       "vy this task",
                       EInfo::kImportantWarning);

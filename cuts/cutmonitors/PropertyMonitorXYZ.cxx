@@ -14,10 +14,10 @@
 #include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
-#include "Std.h"
-#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Std.h"
+#include "StdString.h"
 
 #include <TAxis.h>
 #include <TH1.h>
@@ -159,7 +159,7 @@ namespace Hal {
 
   Bool_t TrackFieldMonitorXYZ::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (ev->InheritsFrom("ComplexEvent")) {
+    if (ev->InheritsFrom("Hal::ComplexEvent")) {
       ComplexTrack* tr  = (ComplexTrack*) ev->GetNewTrack();
       ComplexEvent* tev = (ComplexEvent*) ev->GetNewEvent();
       tr->SetEvent(tev);

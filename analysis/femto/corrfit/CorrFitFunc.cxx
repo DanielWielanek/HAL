@@ -15,9 +15,9 @@
 #include "Femto1DCF.h"
 #include "Femto3DCF.h"
 #include "FemtoSHCF.h"
-#include "StdString.h"
 #include "Minimizer.h"
 #include "Splines.h"
+#include "StdString.h"
 
 #include <Math/Factory.h>
 #include <Math/Functor.h>
@@ -134,15 +134,15 @@ namespace Hal {
     fCorrelationFunctionHistogram = ((DividedHisto1D*) fCF)->GetHist(kFALSE);
 
     fCorrelationFunctionHistogram->SetDirectory(0);
-    if (fCF->InheritsFrom("Femto1DCF")) {
+    if (fCF->InheritsFrom("Hal::Femto1DCF")) {
       fKinematics = static_cast<Femto1DCF*>(fCF)->GetFrame();
       if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc1D();
     }
-    if (fCF->InheritsFrom("Femto3DCF")) {
+    if (fCF->InheritsFrom("Hal::Femto3DCF")) {
       fKinematics = static_cast<Femto3DCF*>(fCF)->GetFrame();
       if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc3D();
     }
-    if (fCF->InheritsFrom("FemtoSHCF")) fKinematics = static_cast<FemtoSHCF*>(fCF)->GetFrame();
+    if (fCF->InheritsFrom("Hal::FemtoSHCF")) fKinematics = static_cast<FemtoSHCF*>(fCF)->GetFrame();
   }
 
   void CorrFitFunc::CalcError(const Double_t Num,

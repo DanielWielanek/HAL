@@ -80,7 +80,7 @@ namespace Hal {
   Bool_t TwoTrackFemtoPRFCut::Init(Int_t task_id) {
     if (TwoTrackCut::Init() == kFALSE) return kFALSE;
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kBuffered);
-    if (ev->InheritsFrom("MCEvent")) {
+    if (ev->InheritsFrom("Hal::MCEvent")) {
       return kTRUE;
     } else {
       return kFALSE;

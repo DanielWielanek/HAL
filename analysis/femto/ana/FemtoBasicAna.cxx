@@ -20,11 +20,11 @@
 #include "EventVirtualCut.h"
 #include "FemtoConst.h"
 #include "FemtoPair.h"
-#include "Std.h"
 #include "MemoryMapManager.h"
 #include "ObjectMatrix.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Std.h"
 
 #include <TClonesArray.h>
 #include <TNamed.h>
@@ -115,7 +115,7 @@ namespace Hal {
                       EInfo::kImportantWarning);
     }
     const Event* ev = DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kBuffered);
-    if (!ev->InheritsFrom("ComplexEvent") && fUseImgMomenta == kTRUE) {
+    if (!ev->InheritsFrom("Hal::ComplexEvent") && fUseImgMomenta == kTRUE) {
       Cout::PrintInfo("Can't use fake momenta with current format !", EInfo::kLessWarning);
       fUseImgMomenta = kFALSE;
     }

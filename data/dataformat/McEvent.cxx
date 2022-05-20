@@ -6,9 +6,9 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
+#include "McEvent.h"
 #include "DataFormat.h"
 #include "EventInterfaceAdvanced.h"
-#include "McEvent.h"
 #include "McTrack.h"
 #include "McTrackInterface.h"
 namespace Hal {
@@ -18,7 +18,7 @@ namespace Hal {
 
   void McEvent::ShallowCopyEvent(Event* event) {
     Event::ShallowCopyEvent(event);
-    if (event->InheritsFrom("MCEvent")) fB = ((McEvent*) event)->GetImpactParameter();
+    if (event->InheritsFrom("Hal::MCEvent")) fB = ((McEvent*) event)->GetImpactParameter();
   }
 
   McEvent::~McEvent() {}

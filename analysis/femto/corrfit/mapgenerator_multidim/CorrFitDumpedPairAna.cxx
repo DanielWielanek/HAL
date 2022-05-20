@@ -85,7 +85,7 @@ namespace Hal {
       fCF[i] = (FemtoCorrFunc*) fTempCF->Clone();
     }
 
-    DividedHisto1D* dummy  = fTempCF->GetCF(0);
+    DividedHisto1D* dummy    = fTempCF->GetCF(0);
     Femto::EKinematics kinem = Femto::EKinematics::kLCMS;
     if (dummy->GetLabelsNo() > 0) {
       TString label = dummy->GetLabel(0);
@@ -132,11 +132,11 @@ namespace Hal {
 
     for (int iJob = 0; iJob < fMultiplyJobs; iJob++) {
       obj = fCF[iJob]->GetCF(0);
-      if (obj->InheritsFrom("Femto1DCF")) {
+      if (obj->InheritsFrom("Hal::Femto1DCF")) {
         RootExport1D(static_cast<Femto1DCF*>(obj), iJob);
-      } else if (obj->InheritsFrom("Femto3DCF")) {
+      } else if (obj->InheritsFrom("Hal::Femto3DCF")) {
         RootExport3D(static_cast<Femto3DCF*>(obj), iJob);
-      } else if (obj->InheritsFrom("FemtoSHCF")) {
+      } else if (obj->InheritsFrom("Hal::FemtoSHCF")) {
         RootExportSH(static_cast<FemtoSHCF*>(obj), iJob);
       } else {
         Cout::Text("Not supported CF", "L", kRed);

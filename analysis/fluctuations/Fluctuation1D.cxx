@@ -183,7 +183,7 @@ namespace Hal {
   }
 
   void Fluctuation1D::Add(const Object* pack) {
-    if (pack->InheritsFrom("Fluctuation1D")) {
+    if (pack->InheritsFrom("Hal::Fluctuation1D")) {
       Fluctuation1D* other = (Fluctuation1D*) pack;
       fHistogram->Add(other->fHistogram);
       Recalculate();

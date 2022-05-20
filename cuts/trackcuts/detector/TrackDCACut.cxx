@@ -30,7 +30,7 @@ namespace Hal {
   Bool_t TrackDCACut::Init(Int_t id_format) {
     if (TrackCut::Init() == kFALSE) return kFALSE;
     const Event* ev = DataFormatManager::Instance()->GetFormat(id_format);
-    if (ev->InheritsFrom("ExpEvent")) {
+    if (ev->InheritsFrom("Hal::ExpEvent")) {
       return kTRUE;
     } else {
       return kFALSE;

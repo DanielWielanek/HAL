@@ -9,7 +9,6 @@
 #ifndef HALFLUCTUATIONSANA_H_
 #define HALFLUCTUATIONSANA_H_
 
-#include <FairTask.h>
 #include <TH1.h>
 
 #include "Array.h"

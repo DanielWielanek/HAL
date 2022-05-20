@@ -15,7 +15,6 @@
 #include "Std.h"
 #include "Task.h"
 
-#include <FairTask.h>
 #include <Rtypes.h>
 #include <RtypesCore.h>
 #include <TString.h>

@@ -13,7 +13,6 @@
 #include "FemtoConst.h"
 #include "FemtoCorrFunc.h"
 
-#include <FairTask.h>
 
 
 namespace Hal {

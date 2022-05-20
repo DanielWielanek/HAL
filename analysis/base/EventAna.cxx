@@ -70,8 +70,8 @@ namespace Hal {
 
   Task::EInitFlag EventAna::Init() {
 #ifdef _HAL_CLEAR_BUFFER_
-    TList* list = FairRunAna::Instance()->GetMainTask()->GetListOfTasks();
-    if (this == list->At(list->GetEntries() - 1)) { fIsLastTask = kTRUE; }
+    // TList* list = FairRunAna::Instance()->GetMainTask()->GetListOfTasks();
+    // if (this == list->At(list->GetEntries() - 1)) { fIsLastTask = kTRUE; }
 #endif
     /* trying to set magfield */
     fPDG = TDatabasePDG::Instance();

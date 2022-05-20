@@ -12,8 +12,6 @@
 
 #include "EventAna.h"
 
-#include <FairTask.h>
-
 
 namespace Hal {
   class Track;

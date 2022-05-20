@@ -13,6 +13,7 @@
 
 #include "FemtoMiniPair.h"
 
+class TClonesArray;
 namespace Hal {
   class FemtoDumpPairAna : public FemtoBasicAna {
     Int_t fBinLimit;

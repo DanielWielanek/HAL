@@ -19,7 +19,6 @@
 #include "Track.h"
 #include "TrackPdgCut.h"
 
-#include <FairTask.h>
 #include <TH2.h>
 #include <TMath.h>
 #include <TObjArray.h>

@@ -9,8 +9,6 @@
 
 #include "V0BasicFinder.h"
 
-
-#include <FairTask.h>
 #include <RtypesCore.h>
 #include <TClonesArray.h>
 #include <TDatabasePDG.h>

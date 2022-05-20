@@ -33,13 +33,13 @@ set(SRCS
    QAEventTask.cxx
    QATrackTask.cxx
    QAHistoSettings.cxx
-   QACoreManager.cxx
+ #  QACoreManager.cxx
 )
 
 Set(HEADERS )
 Set(LINKDEF HalQALinkDef.h)
 Set(LIBRARY_NAME QA)
-Set(DEPENDENCIES Base EG MathCore Physics Core HalAna )
+Set(DEPENDENCIES EG MathCore Physics Core HalAna )
 
 GENERATE_LIBRARY()
 

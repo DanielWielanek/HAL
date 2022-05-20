@@ -34,7 +34,7 @@ set(SRCS
 Set(HEADERS )
 Set(LINKDEF HalSpectraLinkDef.h)
 Set(LIBRARY_NAME HalSpectra)
-Set(DEPENDENCIES Base EG MathCore Physics Core HalAna )
+Set(DEPENDENCIES EG MathCore Physics Core HalAna )
 
 GENERATE_LIBRARY()
 

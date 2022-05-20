@@ -17,7 +17,6 @@
 #include "ObjectMatrix.h"
 #include "TwoTrackAna.h"
 
-#include <FairTask.h>
 #include <TAxis.h>
 #include <TClonesArray.h>
 #include <TH1.h>

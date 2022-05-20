@@ -14,10 +14,10 @@
 #include "TrackCut.h"
 #include "TwoTrackCut.h"
 
-#include <FairTask.h>
 #include <Rtypes.h>
 #include <RtypesCore.h>
 
+class TClonesArray;
 
 namespace Hal {
   class V0Candidate;

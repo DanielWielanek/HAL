@@ -19,7 +19,6 @@
 #include "Package.h"
 #include "Parameter.h"
 
-#include <FairTask.h>
 #include <TCollection.h>
 #include <TDatabasePDG.h>
 #include <TH3.h>

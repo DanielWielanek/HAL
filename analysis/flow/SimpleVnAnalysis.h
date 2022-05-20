@@ -15,7 +15,6 @@
 #include "HistogramManager.h"
 #include "TrackAna.h"
 
-#include <FairTask.h>
 #include <Rtypes.h>
 #include <RtypesCore.h>
 #include <TH2.h>

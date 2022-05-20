@@ -16,7 +16,6 @@
 #include "FemtoWeightGenerator.h"
 #include "TwoTrackAna.h"
 
-#include <FairTask.h>
 #include <Rtypes.h>
 #include <RtypesCore.h>
 

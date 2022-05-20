@@ -44,7 +44,7 @@ on_the_fly/smear_codes/TrackSmearMomentumPercent.cxx
 Set(HEADERS )
 Set(LINKDEF HalAnaLinkDef.h)
 Set(LIBRARY_NAME HalAna)
-Set(DEPENDENCIES Base HalCut)
+Set(DEPENDENCIES HalCut)
 
 GENERATE_LIBRARY()
 

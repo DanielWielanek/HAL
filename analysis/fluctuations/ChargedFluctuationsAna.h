@@ -13,7 +13,6 @@
  * by default draw number of particles selected by odd cuts vs number of particles selected by event cuts vs event parameter
  */
 
-#include <FairTask.h>
 #include <TH3.h>
 #include <TString.h>
 

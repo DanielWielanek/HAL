@@ -12,6 +12,7 @@
 #include "QAPlot.h"
 
 #include "TrackAna.h"
+#include <TObjArray.h>
 
 /**
  * class for QA plots, works similar to the standard TrackAnalysis

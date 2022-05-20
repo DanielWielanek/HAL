@@ -9,8 +9,6 @@
 
 #include "FluctuationsAna.h"
 
-
-#include <FairTask.h>
 #include <TCollection.h>
 #include <TH1.h>
 #include <TList.h>

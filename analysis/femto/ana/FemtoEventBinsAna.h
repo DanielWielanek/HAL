@@ -13,7 +13,6 @@
 
 #include "Array.h"
 
-#include <FairTask.h>
 #include <Rtypes.h>
 #include <RtypesCore.h>
 

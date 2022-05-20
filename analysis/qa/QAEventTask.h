@@ -13,7 +13,6 @@
 
 #include "EventAna.h"
 
-#include <FairTask.h>
 #include <TObjArray.h>
 
 

@@ -37,7 +37,7 @@ set(SRCS
 Set(HEADERS )
 Set(LINKDEF HalPhysFluctLinkDef.h)
 Set(LIBRARY_NAME Fluct)
-Set(DEPENDENCIES Base EG MathCore Physics Core HalAna )
+Set(DEPENDENCIES EG MathCore Physics Core HalAna )
 
 GENERATE_LIBRARY()
 

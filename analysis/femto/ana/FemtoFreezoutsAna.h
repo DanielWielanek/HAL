@@ -10,7 +10,6 @@
 #define HALFEMTOFREEZOUTSANA_H_
 
 #define SIMPLIFIED_PRF_COMPUTING_IN_FREEZOUT
-#include <FairTask.h>
 #include <Rtypes.h>
 #include <RtypesCore.h>
 #include <TH3.h>

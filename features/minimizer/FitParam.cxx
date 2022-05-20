@@ -8,7 +8,7 @@
  */
 #include "FitParam.h"
 
-#include "HalStd.h"
+#include "Std.h"
 
 #include <iostream>
 namespace Hal {
@@ -31,9 +31,9 @@ namespace Hal {
       fValues.clear();
       if (fDParam == 0) fDParam = (fMapMax - fMapMin) / (fNPoint - 1.);
       if (fNPoint == 0) fNPoint = (fMapMax - fMapMin) / fDParam + 1;
-      fMin   = HalStd::Discretize(fNPoint, fMapMin, fMapMax, fMin, '-');
-      fMax   = HalStd::Discretize(fNPoint, fMapMin, fMapMax, fMax, '+');
-      fStart = HalStd::Discretize(fNPoint, fMapMin, fMapMax, fStart, '=');
+      fMin   = Hal::Std::Discretize(fNPoint, fMapMin, fMapMax, fMin, '-');
+      fMax   = Hal::Std::Discretize(fNPoint, fMapMin, fMapMax, fMax, '+');
+      fStart = Hal::Std::Discretize(fNPoint, fMapMin, fMapMax, fStart, '=');
       for (double i = fMapMin; i <= fMapMax; i += fDParam) {
         fValues.push_back(i);
       }

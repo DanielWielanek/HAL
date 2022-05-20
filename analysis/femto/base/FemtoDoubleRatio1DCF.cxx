@@ -10,7 +10,7 @@
 #include "FemtoDoubleRatio1DCF.h"
 
 #include "FemtoPair.h"
-#include "HalStdString.h"
+#include "StdString.h"
 
 #include <TAttLine.h>
 #include <TAxis.h>
@@ -65,7 +65,7 @@ namespace Hal {
     TVirtualPad* c2 = gPad;
     TString option  = opt;
     TString same    = "";
-    if (HalStd::FindParam(option, "same")) { same = "SAME"; }
+    if (Hal::Std::FindParam(option, "same")) { same = "SAME"; }
     if (option == "num") {
       if (c1->GetListOfPrimitives()->GetEntries() < 3) c2->Divide(3, 1);
       c2->cd(1);

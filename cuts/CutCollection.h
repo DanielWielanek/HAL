@@ -17,7 +17,7 @@
 #include <TObjArray.h>
 #include <TString.h>
 
-#include "HalStd.h"
+#include "Std.h"
 
 namespace Hal {
   class CutMonitor;

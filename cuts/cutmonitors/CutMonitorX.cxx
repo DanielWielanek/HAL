@@ -14,7 +14,7 @@
 #include <TString.h>
 
 #include "Cut.h"
-#include "HalStdString.h"
+#include "StdString.h"
 
 namespace Hal {
   CutMonitorX::CutMonitorX() : CutMonitor(1) {}
@@ -52,14 +52,14 @@ namespace Hal {
   }
 
   void CutMonitorX::CreateHistograms() {
-    TString title = Form("%s", HalStd::RemoveUnits(fCut[0]->GetUnit(fOptionAxis[0])).Data());
+    TString title = Form("%s", Hal::Std::RemoveUnits(fCut[0]->GetUnit(fOptionAxis[0])).Data());
     TString name  = "Passed";
     fHistoPassed  = new TH1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
     fHistoPassed->GetXaxis()->SetTitle(fCut[0]->GetUnit(fOptionAxis[0]).Data());
     TString y_axis_name       = fCut[0]->GetGroupFlag();  // take flag group like dNTracks
     TString y_axis_name_units = fCut[0]->GetUnit(fOptionAxis[0]);
     y_axis_name               = y_axis_name + "/";
-    y_axis_name               = y_axis_name + HalStd::RemoveUnits(y_axis_name_units);
+    y_axis_name               = y_axis_name + Hal::Std::RemoveUnits(y_axis_name_units);
     fHistoPassed->GetYaxis()->SetTitle(y_axis_name);
     fHistoPassed->SetFillColor(kGreen);
     name         = "Failed";

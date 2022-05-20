@@ -14,10 +14,12 @@
 #include "CutCollection.h"
 #include "CutContainer.h"
 #include "EventVirtualCut.h"
-#include "HalStd.h"
 #include "MemoryMapManager.h"
+#include "MultiTrackAna.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Std.h"
+#include "TrackAna.h"
 
 #include <TFile.h>
 #include <TString.h>
@@ -35,18 +37,18 @@ namespace Hal {
   }
 
   void EventAnaChain::AddAnalysis(EventAna* ana) {
-    if (ana->InheritsFrom("MultiTrackAna")) {
+    if (dynamic_cast<MultiTrackAna*>(ana)) {
       Cout::PrintInfo("Tasks with track buffering cannot be processed vy this task", EInfo::kImportantWarning);
       return;
     }
-    if (ana->InheritsFrom("TrackAna")) {
+    if (dynamic_cast<TrackAna*>(ana)) {
       Cout::PrintInfo(Form("Task %s inherits from TrackAna, any features connected to "
                            "linking collections might not work correltly",
                            ana->ClassName()),
                       EInfo::kLessError);
       return;
     }
-    if (fTask == NULL) {
+    if (fTask == nullptr) {
       ana->MarkAsInChain();
       fTask    = new EventAna*[1];
       fTask[0] = ana;
@@ -75,8 +77,8 @@ namespace Hal {
     Package* metadata_new = new Package();
     metadata_new->SetName("RunInfo");
     metadata_new->AddObject(new ParameterString("Software ver", HAL_PHYSICALANALYSYS_VER));
-    metadata_new->AddObject(new ParameterString("Date", HalStd::GetDate(), 'f'));
-    metadata_new->AddObject(new ParameterString("Time", HalStd::GetTime(), 'f'));
+    metadata_new->AddObject(new ParameterString("Date", Hal::Std::GetDate(), 'f'));
+    metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", GetInputFileName(), 'f'));
     GoToDir("Info");
@@ -166,7 +168,7 @@ namespace Hal {
   void EventAnaChain::UnlinkTask(EventAna* ana) const { ana->fMemoryMap = NULL; }
 
   void EventAnaChain::SynchronizeCutContainers(EventAna* ana, Bool_t end) const {
-    ana->fCutContainer->MakeDummyCopies(ECutUpdate::kEventUpdate, fCutContainer, end);
+    ana->fCutContainer->MakeDummyCopies(ECutUpdate::kEvent, fCutContainer, end);
   }
 
   EventAnaChain::~EventAnaChain() {

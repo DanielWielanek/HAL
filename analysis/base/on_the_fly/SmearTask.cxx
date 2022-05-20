@@ -16,7 +16,7 @@
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "EventAna.h"
-#include "HalStd.h"
+#include "Std.h"
 #include "MemoryMapManager.h"
 #include "Package.h"
 #include "SmearedEvent.h"
@@ -40,7 +40,7 @@ namespace Hal {
     if (fCutContainer->GetEventCollectionsNo() > 1) {
       Cout::PrintInfo("Too many event collections, they will be removed! ", EInfo::kLessWarning);
       for (int i = 1; i < fCutContainer->GetEventCollectionsNo(); i++)
-        fCutContainer->RemoveCollection(ECutUpdate::kEventUpdate, i);
+        fCutContainer->RemoveCollection(ECutUpdate::kEvent, i);
     }
     TrackAna::CheckCutContainerCollections();
   }

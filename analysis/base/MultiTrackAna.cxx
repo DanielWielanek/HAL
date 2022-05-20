@@ -13,7 +13,7 @@
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "EventAna.h"
-#include "HalStd.h"
+#include "Std.h"
 #include "MemoryMapManager.h"
 #include "Parameter.h"
 
@@ -54,7 +54,7 @@ namespace Hal {
 
   MultiTrackAna::~MultiTrackAna() {}
 
-  MultiTrackAna::MultiTrackAna() { fTiers = ECutUpdate::kTwoTrackUpdate; }
+  MultiTrackAna::MultiTrackAna() { fTiers = ECutUpdate::kTwoTrack; }
 
   MultiTrackAna::MultiTrackAna(const MultiTrackAna& ana) : TrackAna(ana) {}
 

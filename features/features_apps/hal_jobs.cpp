@@ -1,7 +1,7 @@
-#include "Jobs.h"
 #include "Cout.h"
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Jobs.h"
+#include "Std.h"
+#include "StdString.h"
 
 #include <TString.h>
 #include <TSystem.h>
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
     Hal::Cout::PrintInfo("No arguments! run: hal-jobs --help to get help", Hal::EInfo::kImportantError);
     return 0;
   }
-  std::vector<std::pair<TString, TString>> args = HalStd::ConvertMainArgs(argc, argv);
+  std::vector<std::pair<TString, TString>> args = Hal::Std::ConvertMainArgs(argc, argv);
 
   Int_t nArgs = args.size();
   if (nArgs == 1) {
@@ -117,8 +117,8 @@ int main(int argc, char* argv[]) {
       jobs.SubmitJobs();
     } else if (flag1 == "prepare") {
       TString name = val1 + ".xml";
-      TString path = HalStd::GetHalrootPlus();
-      HalStd::CopyFiles(Form("%s/job_patterns/%s", path.Data(), name.Data()), name);
+      TString path = Hal::Std::GetHalrootPlus();
+      Hal::Std::CopyFiles(Form("%s/job_patterns/%s", path.Data(), name.Data()), name);
       gSystem->mkdir("jobs");
       gSystem->mkdir("logs");
       gSystem->mkdir("errors");

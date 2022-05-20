@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "Cout.h"
-#include "HalStdString.h"
+#include "StdString.h"
 #include "HtmlCore.h"
 #include "HtmlDiv.h"
 #include "HtmlFile.h"
@@ -88,7 +88,7 @@ namespace Hal {
     if (flag.Contains("/")) { op = '/'; }
     if (flag.Contains("+")) { op = '+'; }
     if (flag.Contains("-")) { op = '-'; }
-    std::vector<TString> arr = HalStd::ExplodeString(flag, op);
+    std::vector<TString> arr = Hal::Std::ExplodeString(flag, op);
     hist1                    = arr[0].Atoi();
     hist2                    = arr[1].Atoi();
   }

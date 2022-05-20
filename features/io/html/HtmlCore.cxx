@@ -17,8 +17,8 @@
 #include <vector>
 
 #include "Cout.h"
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdString.h"
 #include "HtmlFile.h"
 #include "HtmlTable.h"
 #include "Object.h"
@@ -31,7 +31,7 @@ namespace Hal {
   Bool_t HtmlCore::fgOnline      = kFALSE;
 
   void HtmlCore::CopyCss(TString path, TString css_name) {
-    TString workdir    = HalStd::GetHalrootPlus();
+    TString workdir    = Hal::Std::GetHalrootPlus();
     TString filetocopy = Form("%s/html/%s", workdir.Data(), css_name.Data());
     TString outPath    = Form("%s/table.css", path.Data());
     if (path.Length() == 0) outPath = "table.css";  // to copy into this dir
@@ -39,7 +39,7 @@ namespace Hal {
   }
 
   void HtmlCore::CopyJs(TString path) {
-    TString workdir    = HalStd::GetHalrootPlus();
+    TString workdir    = Hal::Std::GetHalrootPlus();
     TString filetocopy = Form("%s/html/hal_js.js", workdir.Data());
     if (path.Length() != 0) {
       gSystem->CopyFile(filetocopy, Form("%s/hal_js.js", path.Data()), kTRUE);
@@ -48,23 +48,23 @@ namespace Hal {
     }
 
     if (fgOnline) return;
-    filetocopy = HalStd::GetJsRoot();
+    filetocopy = Hal::Std::GetJsRoot();
     if (path.Length() != 0) {
       gSystem->mkdir(Form("%s/hal_js", path.Data()));
       gSystem->mkdir(Form("%s/hal_js/img", path.Data()));
       gSystem->mkdir(Form("%s/hal_js/scripts", path.Data()));
       gSystem->mkdir(Form("%s/hal_js/style", path.Data()));
-      HalStd::CopyFiles(Form("%s/img", filetocopy.Data()), Form("%s/hal_js/img", path.Data()), kFALSE);
-      HalStd::CopyFiles(Form("%s/scripts", filetocopy.Data()), Form("%s/hal_js/scripts", path.Data()), kFALSE);
-      HalStd::CopyFiles(Form("%s/style", filetocopy.Data()), Form("%s/hal_js/style", path.Data()), kFALSE);
+      Hal::Std::CopyFiles(Form("%s/img", filetocopy.Data()), Form("%s/hal_js/img", path.Data()), kFALSE);
+      Hal::Std::CopyFiles(Form("%s/scripts", filetocopy.Data()), Form("%s/hal_js/scripts", path.Data()), kFALSE);
+      Hal::Std::CopyFiles(Form("%s/style", filetocopy.Data()), Form("%s/hal_js/style", path.Data()), kFALSE);
     } else {
       gSystem->mkdir("hal_js");
       gSystem->mkdir("hal_js/img");
       gSystem->mkdir("hal_js/scripts");
       gSystem->mkdir("hal_js/style");
-      HalStd::CopyFiles(Form("%s/img", filetocopy.Data()), "hal_js/img", kFALSE);
-      HalStd::CopyFiles(Form("%s/scripts", filetocopy.Data()), "hal_js/scripts", kFALSE);
-      HalStd::CopyFiles(Form("%s/style", filetocopy.Data()), "hal_js/style", kFALSE);
+      Hal::Std::CopyFiles(Form("%s/img", filetocopy.Data()), "hal_js/img", kFALSE);
+      Hal::Std::CopyFiles(Form("%s/scripts", filetocopy.Data()), "hal_js/scripts", kFALSE);
+      Hal::Std::CopyFiles(Form("%s/style", filetocopy.Data()), "hal_js/style", kFALSE);
     }
   }
 
@@ -188,7 +188,7 @@ namespace Hal {
 
     if (temp.EndsWith("/")) { temp.Remove(temp.Length() - 1); }
 
-    std::vector<TString> vec = HalStd::ExplodeString(temp, '/');
+    std::vector<TString> vec = Hal::Std::ExplodeString(temp, '/');
 
     if (vec.size() == 0) return "";
     for (unsigned int i = 0; i < vec.size() - 1; i++) {
@@ -277,8 +277,8 @@ namespace Hal {
   }
 
   TString HtmlCore::GetLinkVector(TVector2* vect) {
-    TString stringA = HalStd::RoundToString(vect->Px(), 1);
-    TString stringB = HalStd::RoundToString(vect->Py(), 1);
+    TString stringA = Hal::Std::RoundToString(vect->Px(), 1);
+    TString stringB = Hal::Std::RoundToString(vect->Py(), 1);
     stringA         = stringA + " ";
     return stringA + stringB;
   }
@@ -364,7 +364,7 @@ namespace Hal {
       TString name           = object->ClassName();
       TString oryginal_class = object->GetName();
       HtmlRow row2("", Hal::HtmlTableRowStyles::DefStyle(), "");
-      table.AddContent(HtmlCell(HalStd::RoundToString(i)));
+      table.AddContent(HtmlCell(Hal::Std::RoundToString(i)));
       table.AddContent(HtmlCell(object->ClassName()));
 
       table.AddContent(HtmlCell(addToUrl(list_dir, HTMLExtract(object, i, path))));

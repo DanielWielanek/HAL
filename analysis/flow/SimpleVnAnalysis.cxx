@@ -13,7 +13,7 @@
 #include "CutContainer.h"
 #include "DividedHisto.h"
 #include "Event.h"
-#include "HalStd.h"
+#include "Std.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "Track.h"
@@ -127,7 +127,7 @@ namespace Hal {
 
   void SimpleVnAnalysis::LinkCollections() {
     for (int i = 0; i < this->fCutContainer->GetTrackCollectionsNo(); i++) {
-      this->fCutContainer->LinkCollections(ECutUpdate::kEventUpdate, 0, ECutUpdate::kTrackUpdate, i);
+      this->fCutContainer->LinkCollections(ECutUpdate::kEvent, 0, ECutUpdate::kTrack, i);
     }
   }
 
@@ -139,7 +139,7 @@ namespace Hal {
     TrackAna::CheckCutContainerCollections();
     if (fCutContainer->GetEventCollectionsNo() > 1) {
       for (int i = 1; i < fCutContainer->GetEventCollectionsNo(); i++)
-        fCutContainer->RemoveCollection(ECutUpdate::kEventUpdate, i);
+        fCutContainer->RemoveCollection(ECutUpdate::kEvent, i);
       Cout::PrintInfo("Only 1 event cut container allowed for SimpleVnAnalysis", EInfo::kLessError);
     }
   }

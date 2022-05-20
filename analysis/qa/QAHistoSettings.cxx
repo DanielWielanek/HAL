@@ -8,16 +8,16 @@
  */
 #include "QAHistoSettings.h"
 
-#include "HalStdHist.h"
+#include "StdHist.h"
 
 #include <iostream>
 
 namespace Hal {
   TH1* QAHistoSettings::MakeHisto() const {
     switch (fSize) {
-      case 1: return HalStd::MakeHisto1D(GetName(), GetFullTitle(), fBinsX); break;
-      case 2: return (TH1*) HalStd::MakeHisto2D(GetName(), GetFullTitle(), fBinsX, fBinsY); break;
-      case 3: return (TH1*) HalStd::MakeHisto3D(GetName(), GetFullTitle(), fBinsX, fBinsY, fBinsZ); break;
+      case 1: return Hal::Std::MakeHisto1D(GetName(), GetFullTitle(), fBinsX); break;
+      case 2: return (TH1*) Hal::Std::MakeHisto2D(GetName(), GetFullTitle(), fBinsX, fBinsY); break;
+      case 3: return (TH1*) Hal::Std::MakeHisto3D(GetName(), GetFullTitle(), fBinsX, fBinsY, fBinsZ); break;
     }
     return nullptr;
   }

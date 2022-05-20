@@ -19,7 +19,7 @@
 #include "Event.h"
 #include "EventVirtualCut.h"
 #include "Field.h"
-#include "HalStdString.h"
+#include "StdString.h"
 #include "Helix.h"
 #include "Package.h"
 #include "Parameter.h"
@@ -45,7 +45,7 @@ namespace Hal {
     fMixSize(1),
     fEventCollectionsNo(0),
     fCurrentEventCollectionID(0),
-    fTiers(ECutUpdate::kEventUpdate),
+    fTiers(ECutUpdate::kEvent),
     fPDG(NULL),
     fCutContainer(NULL),
     fMemoryMap(NULL),
@@ -114,7 +114,7 @@ namespace Hal {
   void EventAna::SetOption(Option_t* opt) {
     TString option = opt;
     if (option.Contains("+")) {
-      std::vector<TString> arr = HalStd::ExplodeString(option, '+');
+      std::vector<TString> arr = Hal::Std::ExplodeString(option, '+');
       for (int i = 0; i < (int) arr.size(); i++) {
         SetOption(arr[i]);
       }
@@ -293,8 +293,8 @@ namespace Hal {
     Package* metadata_new = new Package();
     metadata_new->SetName("RunInfo");
     metadata_new->AddObject(new ParameterString("Software ver", HAL_PHYSICALANALYSYS_VER));
-    metadata_new->AddObject(new ParameterString("Date", HalStd::GetDate(), 'f'));
-    metadata_new->AddObject(new ParameterString("Time", HalStd::GetTime(), 'f'));
+    metadata_new->AddObject(new ParameterString("Date", Hal::Std::GetDate(), 'f'));
+    metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", GetInputFileName(), 'f'));
     GoToDir("Info");
@@ -339,7 +339,7 @@ namespace Hal {
 
   void EventAna::GoToDir(TString name) {
     TDirectory* dir            = (TDirectory*) gFile;
-    std::vector<TString> array = HalStd::ExplodeString(name, '/');
+    std::vector<TString> array = Hal::Std::ExplodeString(name, '/');
     for (int i = 0; i < (int) array.size(); i++) {
       TDirectory* newdir = (TDirectory*) dir->FindObject(array[i]);
       if (!newdir) { dir->mkdir(array[i]); }

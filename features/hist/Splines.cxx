@@ -10,8 +10,8 @@
 #include "Splines.h"
 
 #include "Cout.h"
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdString.h"
 
 #include <TAxis.h>
 #include <TH1.h>
@@ -555,8 +555,8 @@ namespace Hal {
     fAe.MakeBigger(fNbinsX + 2, fNbinsY + 2, fNbinsZ + 2);
     TString opt      = interpolation;
     Int_t fix_method = 0;
-    if (HalStd::FindParam(opt, "yes") || HalStd::FindParam(opt, "fix1")) { fix_method = 1; }
-    if (HalStd::FindParam(opt, "nointerpolation")) {
+    if (Hal::Std::FindParam(opt, "yes") || Hal::Std::FindParam(opt, "fix1")) { fix_method = 1; }
+    if (Hal::Std::FindParam(opt, "nointerpolation")) {
       for (int i = 0; i <= fNbinsX + 1; i++) {
         for (int j = 0; j <= fNbinsY + 1; j++) {
           for (int k = 0; k <= fNbinsZ + 1; k++) {
@@ -569,7 +569,7 @@ namespace Hal {
       }
       return;
     }
-    if (HalStd::FindParam(opt, "mid")) { mid = kTRUE; }
+    if (Hal::Std::FindParam(opt, "mid")) { mid = kTRUE; }
     Double_t x[2], y[2], z[2];
     Double_t v[2][2][2];
     Double_t params[8];
@@ -817,8 +817,8 @@ namespace Hal {
     Bool_t mid       = kFALSE;
     TString opt      = interpolation;
     Int_t fix_method = 0;
-    if (HalStd::FindParam(opt, "yes") || HalStd::FindParam(opt, "fix1")) { fix_method = 1; }
-    if (HalStd::FindParam(opt, "nointerpolation")) {
+    if (Hal::Std::FindParam(opt, "yes") || Hal::Std::FindParam(opt, "fix1")) { fix_method = 1; }
+    if (Hal::Std::FindParam(opt, "nointerpolation")) {
       for (int i = 0; i <= fNbinsX + 1; i++) {
         for (int j = 0; j <= fNbinsY + 1; j++) {
           for (int k = 0; k <= fNbinsZ + 1; k++) {
@@ -831,7 +831,7 @@ namespace Hal {
       }
       return;
     }
-    if (HalStd::FindParam(opt, "mid")) { mid = kTRUE; }
+    if (Hal::Std::FindParam(opt, "mid")) { mid = kTRUE; }
     Double_t x[2], y[2], z[2];
     Double_t v[2][2][2];
     Double_t params[8];

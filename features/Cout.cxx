@@ -219,7 +219,7 @@ namespace Hal {
 
   void Cout::DebugInfo(Int_t i) {
     Cout::Stars(kViolet);
-    Cout::Text(HalStd::RoundToString(i), "L", kViolet);
+    Cout::Text(Hal::Std::RoundToString(i), "L", kViolet);
     Cout::Stars(kViolet);
   }
 

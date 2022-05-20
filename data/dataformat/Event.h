@@ -18,7 +18,7 @@
 #include <TObjArray.h>
 #include <TString.h>
 
-#include "HalStd.h"
+#include "Std.h"
 
 class TDatabasePDG;
 namespace Hal {

@@ -38,7 +38,7 @@ namespace Hal {
     PropertyMonitorXYZ(TString xLabel    = "",
                        TString yLabel    = "",
                        TString zLabel    = "",
-                       ECutUpdate update = ECutUpdate::kEventUpdate);
+                       ECutUpdate update = ECutUpdate::kEvent);
     PropertyMonitorXYZ(const PropertyMonitorXYZ& other);
     /**
      * Assignment operator

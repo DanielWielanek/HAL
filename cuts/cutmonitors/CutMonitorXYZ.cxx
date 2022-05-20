@@ -14,7 +14,7 @@
 #include <TString.h>
 
 #include "Cut.h"
-#include "HalStdString.h"
+#include "StdString.h"
 
 namespace Hal {
   CutMonitorXYZ::CutMonitorXYZ() : CutMonitor(3) {
@@ -90,9 +90,9 @@ namespace Hal {
     if ((fCut[0] == fCut[1]) && fCut[0] == fCut[2]) { fWeightFlag = 1; }
 #endif
     TString title = Form("%s vs %s vs %s",
-                         HalStd::RemoveUnits(fCut[2]->GetUnit(fOptionAxis[2])).Data(),
-                         HalStd::RemoveUnits(fCut[1]->GetUnit(fOptionAxis[1])).Data(),
-                         HalStd::RemoveUnits(fCut[0]->GetUnit(fOptionAxis[0])).Data());
+                         Hal::Std::RemoveUnits(fCut[2]->GetUnit(fOptionAxis[2])).Data(),
+                         Hal::Std::RemoveUnits(fCut[1]->GetUnit(fOptionAxis[1])).Data(),
+                         Hal::Std::RemoveUnits(fCut[0]->GetUnit(fOptionAxis[0])).Data());
     TString
       name;  // = Form("%s_vs_%s_vs_%s",
              // fCut[0]->GetUnit(fOptionAxis[0]).Data(),fCut[1]->GetUnit(fOptionAxis[1]).Data(),fCut[2]->GetUnit(fOptionAxis[2]).Data());

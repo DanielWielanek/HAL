@@ -16,7 +16,7 @@
 #include "CutMonitorXYZ.h"
 #include "Event.h"
 #include "EventCut.h"
-#include "HalStdString.h"
+#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "Track.h"
@@ -70,8 +70,8 @@ namespace Hal {
       return;
     }
     TString option    = opt;
-    Bool_t keepDouble = HalStd::FindParam(option, "double");
-    if (!HalStd::FindParam(option, "fast")) {  // add normal cut
+    Bool_t keepDouble = Hal::Std::FindParam(option, "double");
+    if (!Hal::Std::FindParam(option, "fast")) {  // add normal cut
       for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
         if (cut->CutName() == ((Cut*) fCuts->UncheckedAt(i))->CutName()) {
           Cout::PrintInfo(Form("Cut used %s in collection no %i, cut will be removed", cut->ClassName(), cut->GetCollectionID()),
@@ -426,7 +426,7 @@ namespace Hal {
           Cut* cut3      = (Cut*) Ncut3->UncheckedAt(0);
           Int_t own_cuts = 0;
           ECutUpdate upd = fMode;
-          if (fMode == ECutUpdate::kTwoTrackBackgroundUpdate) { upd = ECutUpdate::kTwoTrackUpdate; }
+          if (fMode == ECutUpdate::kTwoTrackBackground) { upd = ECutUpdate::kTwoTrack; }
           if (cut1->GetUpdateRatio() == upd) own_cuts = 1;
           if (cut2->GetUpdateRatio() == upd) own_cuts += 2;
           if (cut3->GetUpdateRatio() == upd) own_cuts += 4;
@@ -533,43 +533,43 @@ namespace Hal {
   TObjArray* CutCollection::LocateInLowerCollections(TString cut) {
     TObjArray* obj = new TObjArray();
     obj->SetOwner(kFALSE);
-    if (this->fMode == ECutUpdate::kEventUpdate) { return obj; }
-    if (this->fMode == ECutUpdate::kTrackUpdate) {
+    if (this->fMode == ECutUpdate::kEvent) { return obj; }
+    if (this->fMode == ECutUpdate::kTrack) {
       for (int i = 0; i < this->GetPrevNo(); i++) {
-        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kEventUpdate)->At(this->GetPrevAddr(i)));
+        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kEvent)->At(this->GetPrevAddr(i)));
         if (subcont->FindCut(cut)) { obj->AddLast(subcont->FindCut(cut)); }
       }
       return obj;
     }
-    if (this->fMode == ECutUpdate::kTwoTrackUpdate) {
+    if (this->fMode == ECutUpdate::kTwoTrack) {
       // look over track containers
       for (int i = 0; i < this->GetPrevNo(); i++) {
-        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTrackUpdate)->At(this->GetPrevAddr(i)));
+        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTrack)->At(this->GetPrevAddr(i)));
         if (subcont->FindCut(cut)) { obj->AddLast(subcont->FindCut(cut)); }
       }
       // still not found - we need go deeper !! to event cuts
       for (int i = 0; i < this->GetPrevNo(); i++) {
-        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTrackUpdate)->At(this->GetPrevAddr(i)));
+        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTrack)->At(this->GetPrevAddr(i)));
         for (int j = 0; j < subcont->GetPrevNo(); j++) {
           CutCollection* subsubcont =
-            (CutCollection*) (GetCutContainerArray(ECutUpdate::kTwoTrackUpdate)->At(this->GetPrevAddr(j)));
+            (CutCollection*) (GetCutContainerArray(ECutUpdate::kTwoTrack)->At(this->GetPrevAddr(j)));
           if (subsubcont->FindCut(cut)) { obj->AddLast(subsubcont->FindCut(cut)); }
         }
       }
       return obj;
     }
-    if (this->fMode == ECutUpdate::kTwoTrackBackgroundUpdate) {
+    if (this->fMode == ECutUpdate::kTwoTrackBackground) {
       // look over track containers
       for (int i = 0; i < this->GetPrevNo(); i++) {
-        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTrackUpdate)->At(this->GetPrevAddr(i)));
+        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTrack)->At(this->GetPrevAddr(i)));
         if (subcont->FindCut(cut)) { obj->AddLast(subcont->FindCut(cut)); }
       }
       // still not found - we need go deeper !! to event cuts
       for (int i = 0; i < this->GetPrevNo(); i++) {
-        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTrackUpdate)->At(this->GetPrevAddr(i)));
+        CutCollection* subcont = (CutCollection*) (GetCutContainerArray(ECutUpdate::kTrack)->At(this->GetPrevAddr(i)));
         for (int j = 0; j < subcont->GetPrevNo(); j++) {
           CutCollection* subsubcont =
-            (CutCollection*) (GetCutContainerArray(ECutUpdate::kTwoTrackBackgroundUpdate)->At(this->GetPrevAddr(j)));
+            (CutCollection*) (GetCutContainerArray(ECutUpdate::kTwoTrackBackground)->At(this->GetPrevAddr(j)));
           if (subsubcont->FindCut(cut)) { obj->AddLast(subsubcont->FindCut(cut)); }
         }
       }
@@ -589,14 +589,14 @@ namespace Hal {
   TObjArray* CutCollection::LocateCuts(TString classname) {
     TObjArray* arr = new TObjArray();
     arr->SetOwner(kFALSE);
-    ECutUpdate cut_up = ECutUpdate::kNoUpdate;
+    ECutUpdate cut_up = ECutUpdate::kNo;
     cut_up            = GetUpdateFromName(classname);
     if (fMode == cut_up) {
       Cut* cut = FindCut(classname);
       arr->AddLast(cut);
       return arr;
     }
-    if (fMode == ECutUpdate::kTwoTrackBackgroundUpdate && cut_up == ECutUpdate::kTwoTrackUpdate) {
+    if (fMode == ECutUpdate::kTwoTrackBackground && cut_up == ECutUpdate::kTwoTrack) {
       Cut* cut = FindCut(classname);
       arr->AddLast(cut);
       return arr;
@@ -618,16 +618,16 @@ namespace Hal {
     Cout::InStars(Form("Subcontainer trig %i", fCollectionID));
     TString mode;
     switch (fMode) {
-      case (ECutUpdate::kEventUpdate): {
+      case (ECutUpdate::kEvent): {
         mode = "Event Upd";
       } break;
-      case (ECutUpdate::kTrackUpdate): {
+      case (ECutUpdate::kTrack): {
         mode = "Track upd";
       } break;
-      case (ECutUpdate::kTwoTrackUpdate): {
+      case (ECutUpdate::kTwoTrack): {
         mode = "TTrack mod";
       } break;
-      case (ECutUpdate::kTwoTrackBackgroundUpdate): {
+      case (ECutUpdate::kTwoTrackBackground): {
         mode = "TTRack mixed";
       } break;
       default: Cout::PrintInfo("Unknown update mode inf CutCollection", EInfo::kLessWarning); break;
@@ -700,13 +700,13 @@ namespace Hal {
   Package* CutCollection::Report() const {
     Package* pack = new Package(this, kTRUE);
     switch (fMode) {
-      case (ECutUpdate::kEventUpdate): {
+      case (ECutUpdate::kEvent): {
         pack->AddObject(new ParameterString("UpdateMode", "Event"));
       } break;
-      case (ECutUpdate::kTrackUpdate): {
+      case (ECutUpdate::kTrack): {
         pack->AddObject(new ParameterString("UpdateMode", "Track"));
       } break;
-      case (ECutUpdate::kTwoTrackUpdate): {
+      case (ECutUpdate::kTwoTrack): {
         pack->AddObject(new ParameterString("UpdateMode", "TwoTrack"));
       } break;
       default: pack->AddObject(new ParameterString("UpdateMode", "Unknown")); break;
@@ -784,7 +784,7 @@ namespace Hal {
     fNextAddress(NULL),
     fNextNo(NULL),
     fPreviousNo(NULL),
-    fMode(ECutUpdate::kNoUpdate),
+    fMode(ECutUpdate::kNo),
     fInit(kFALSE),
     fDummy(kFALSE),
     fCollectionID(0),
@@ -908,22 +908,22 @@ namespace Hal {
   void CutCollection::MarkAsDummy() { fDummy = kTRUE; }
 
   ECutUpdate CutCollection::GetUpdateFromName(TString cutname) const {
-    if (cutname.BeginsWith("EventComplexCut")) return ECutUpdate::kEventUpdate;
-    if (cutname.BeginsWith("TrackComplexCut")) return ECutUpdate::kTrackUpdate;
-    if (cutname.BeginsWith("TwoTrackComplexCut")) return ECutUpdate::kTwoTrackUpdate;
-    if (cutname.BeginsWith("EventRealCut")) return ECutUpdate::kEventUpdate;
-    if (cutname.BeginsWith("TrackRealCut")) return ECutUpdate::kTrackUpdate;
-    if (cutname.BeginsWith("TwoTrackRealCut")) return ECutUpdate::kTwoTrackUpdate;
-    if (cutname.BeginsWith("EventImaginaryCut")) return ECutUpdate::kEventUpdate;
-    if (cutname.BeginsWith("TrackImaginaryCut")) return ECutUpdate::kTrackUpdate;
-    if (cutname.BeginsWith("TwoTrackImaginaryCut")) return ECutUpdate::kTwoTrackUpdate;
+    if (cutname.BeginsWith("EventComplexCut")) return ECutUpdate::kEvent;
+    if (cutname.BeginsWith("TrackComplexCut")) return ECutUpdate::kTrack;
+    if (cutname.BeginsWith("TwoTrackComplexCut")) return ECutUpdate::kTwoTrack;
+    if (cutname.BeginsWith("EventRealCut")) return ECutUpdate::kEvent;
+    if (cutname.BeginsWith("TrackRealCut")) return ECutUpdate::kTrack;
+    if (cutname.BeginsWith("TwoTrackRealCut")) return ECutUpdate::kTwoTrack;
+    if (cutname.BeginsWith("EventImaginaryCut")) return ECutUpdate::kEvent;
+    if (cutname.BeginsWith("TrackImaginaryCut")) return ECutUpdate::kTrack;
+    if (cutname.BeginsWith("TwoTrackImaginaryCut")) return ECutUpdate::kTwoTrack;
     TClass* cl = TClass::GetClass(cutname, kFALSE, kTRUE);
     if (cl->InheritsFrom("EventCut")) {
-      return ECutUpdate::kEventUpdate;
+      return ECutUpdate::kEvent;
     } else if (cl->InheritsFrom("TrackCut")) {
-      return ECutUpdate::kTrackUpdate;
+      return ECutUpdate::kTrack;
     } else {
-      return ECutUpdate::kTwoTrackUpdate;
+      return ECutUpdate::kTwoTrack;
     }
   }
 }  // namespace Hal

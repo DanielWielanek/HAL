@@ -222,7 +222,7 @@ void preparetemplate() {
 
 void rebin(TString rebin) {
 
-  TString opt  = HalStd::RemoveString(rebin, "--rebin=");
+  TString opt  = Hal::Std::RemoveString(rebin, "--rebin=");
   Int_t Nrebin = opt.Atoi();
   if (Nrebin <= 0) {
     std::cout << "invalid number of bins " << std::endl;

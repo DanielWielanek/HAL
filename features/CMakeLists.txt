@@ -28,7 +28,7 @@ Cout.cxx
 Array.cxx
 Options.cxx
 Parameter.cxx
-HalStd.cxx
+Std.cxx
 ObjectMatrix.cxx
 Helix.cxx
 HelixBase.cxx
@@ -55,9 +55,9 @@ hist/MultiGraph.cxx
 hist/Splines.cxx
 hist/ChiSqMap2D.cxx
 
-std/HalStdHist.cxx
-std/HalStdString.cxx
-std/HalStdMath.cxx
+std/StdHist.cxx
+std/StdString.cxx
+std/StdMath.cxx
 
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx

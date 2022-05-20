@@ -22,7 +22,7 @@ namespace Hal {
         return kTRUE;
       }
     }
-    if (HalStd::FindParam(option, "forced:")) {
+    if (Hal::Std::FindParam(option, "forced:")) {
       Cout::PrintInfo("replacing HalFastCut by force !", Hal::EInfo::kLessWarning);
       TRegexp reg("[9-0]+");
       option = option(reg);

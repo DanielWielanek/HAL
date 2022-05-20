@@ -10,7 +10,7 @@
 #ifndef HALPACKAGE2HTML_H_
 #define HALPACKAGE2HTML_H_
 
-#include "HalStd.h"
+#include "Std.h"
 
 #include <TObject.h>
 #include <TString.h>

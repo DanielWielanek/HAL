@@ -50,7 +50,7 @@ namespace Hal {
     fHistograms3d(nullptr) {
     fBackgroundMode = kNoBackground;
     fMixSize        = 1;
-    fTiers          = ECutUpdate::kTwoTrackUpdate;
+    fTiers          = ECutUpdate::kTwoTrack;
     fKinematicsMode = EMode::kPRF;
     for (int i = 0; i < 3; i++) {
       fBins[i]     = 100;
@@ -326,17 +326,17 @@ namespace Hal {
   }
 
   void FemtoFreezoutsAna::AddCut(const Cut& cut, Option_t* opt) {
-    if (cut.GetCollectionID() != 0 && cut.GetUpdateRatio() == ECutUpdate::kEventUpdate) {
+    if (cut.GetCollectionID() != 0 && cut.GetUpdateRatio() == ECutUpdate::kEvent) {
       Cout::PrintInfo("This class not work with more than 1 event cut collection", EInfo::kLessWarning);
       return;
     }
-    if (cut.GetCollectionID() >= 2 && cut.GetUpdateRatio() == ECutUpdate::kTrackUpdate) {
+    if (cut.GetCollectionID() >= 2 && cut.GetUpdateRatio() == ECutUpdate::kTrack) {
       Cout::PrintInfo("This class not work with more than 1 track collections (2 "
                       "in case of non idental HBT",
                       EInfo::kLessWarning);
       return;
     }
-    if (cut.GetUpdateRatio() == ECutUpdate::kTwoTrackUpdate) {
+    if (cut.GetUpdateRatio() == ECutUpdate::kTwoTrack) {
       if (cut.GetCollectionID() != 0) {
         Cout::PrintInfo("You are trying to add two track collection with tirgger "
                         ">0, it's not supported now, try add FemtoFastCut",

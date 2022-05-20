@@ -38,9 +38,9 @@ namespace Hal {
     fCurrentSignalPair(NULL),
     fCurrentBackgroundPair(NULL) {
     if (use_background) {
-      fTiers = ECutUpdate::kTwoTrackBackgroundUpdate;
+      fTiers = ECutUpdate::kTwoTrackBackground;
     } else {
-      fTiers = ECutUpdate::kTwoTrackUpdate;
+      fTiers = ECutUpdate::kTwoTrack;
     }
     fMixSize = 1;
     AddTags("twotrack");
@@ -141,22 +141,22 @@ namespace Hal {
       fNonIdIsSet = kTRUE;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionMixed())) {
       fBackgroundMode = kMixedPairs;
-      fTiers          = ECutUpdate::kTwoTrackBackgroundUpdate;
+      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionPerfect())) {
       fBackgroundMode = kPerfectPairs;
-      fTiers          = ECutUpdate::kTwoTrackBackgroundUpdate;
+      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionRotated())) {
       fBackgroundMode = kRotatedPairs;
-      fTiers          = ECutUpdate::kTwoTrackBackgroundUpdate;
+      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionHemisphere())) {
       fBackgroundMode = kHemispherePairs;
-      fTiers          = ECutUpdate::kTwoTrackBackgroundUpdate;
+      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionNoBackground())) {
       fBackgroundMode = kNoBackground;
-      fTiers          = ECutUpdate::kTwoTrackUpdate;
+      fTiers          = ECutUpdate::kTwoTrack;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionCharge())) {
       fBackgroundMode = kCharged;
-      fTiers          = ECutUpdate::kTwoTrackBackgroundUpdate;
+      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo("disable:signs_sum")) {
       fSignedBoth = kFALSE;
     } else {
@@ -191,7 +191,7 @@ namespace Hal {
         } else if (trackTrig > 3) {
           Cout::PrintInfo("Too much track collections (>3) fixing ...", EInfo::kLessWarning);
           for (int i = 3; i < trackTrig; i++)
-            fCutContainer->RemoveCollection(ECutUpdate::kTrackUpdate, i);
+            fCutContainer->RemoveCollection(ECutUpdate::kTrack, i);
           trackTrig = fCutContainer->GetTrackCollectionsNo();
         }
         if (fIdentical) {
@@ -207,7 +207,7 @@ namespace Hal {
           if (trackTrig > 1) {
             Cout::PrintInfo("Too much track collections (>1), fixing ..", EInfo::kLessWarning);
             for (int i = 1; i < trackTrig; i++)
-              fCutContainer->RemoveCollection(ECutUpdate::kTrackUpdate, i);
+              fCutContainer->RemoveCollection(ECutUpdate::kTrack, i);
             trackTrig = 1;
           }
           switch (fBackgroundMode) {
@@ -221,7 +221,7 @@ namespace Hal {
           if (trackTrig > 2) {
             Cout::PrintInfo("To much track collections (more than 1) fixing", EInfo::kLessWarning);
             for (int i = 2; i < trackTrig; i++)
-              fCutContainer->RemoveCollection(ECutUpdate::kTrackUpdate, i);
+              fCutContainer->RemoveCollection(ECutUpdate::kTrack, i);
             trackTrig = 2;
           }
           switch (fBackgroundMode) {
@@ -243,62 +243,62 @@ namespace Hal {
     Int_t twoTrackB = fCutContainer->GetTwoTrackCollectionsBackgroundNo();
     for (int i = 0; i < eventTrig; i++) {
       for (int j = 0; j < trackTrig; j++) {
-        fCutContainer->LinkCollections(ECutUpdate::kEventUpdate, i, ECutUpdate::kTrackUpdate, j);
+        fCutContainer->LinkCollections(ECutUpdate::kEvent, i, ECutUpdate::kTrack, j);
       }
     }
     switch (fBackgroundMode) {
       case kChargedID2: {
         for (int j = 0; j < twotrackT; j++) {  // AA / AB
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 0, ECutUpdate::kTwoTrackUpdate,
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 0, ECutUpdate::kTwoTrack,
                                          j);  // A -> All
         }
         for (int j = 0; j < twoTrackB; j++) {
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 0, ECutUpdate::kTwoTrackBackgroundUpdate, j);  // A -> All
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 1, ECutUpdate::kTwoTrackBackgroundUpdate, j);  // B -> All
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 0, ECutUpdate::kTwoTrackBackground, j);  // A -> All
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 1, ECutUpdate::kTwoTrackBackground, j);  // B -> All
         }
 
       } break;
       case kChargedID3: {  // AA BC
         for (int j = 0; j < twotrackT; j++) {
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 0, ECutUpdate::kTwoTrackUpdate,
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 0, ECutUpdate::kTwoTrack,
                                          j);  // A - >All
         }
         for (int j = 0; j < twoTrackB; j++) {
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 1, ECutUpdate::kTwoTrackBackgroundUpdate, j);  // B - > All
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 2, ECutUpdate::kTwoTrackBackgroundUpdate, j);  // C- > All
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 1, ECutUpdate::kTwoTrackBackground, j);  // B - > All
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 2, ECutUpdate::kTwoTrackBackground, j);  // C- > All
         }
       } break;
       case kChargedNID2: {  // AB AA+ BB
         for (int j = 0; j < twotrackT; j++) {
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 0, ECutUpdate::kTwoTrackUpdate,
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 0, ECutUpdate::kTwoTrack,
                                          j);  // A - >All
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 1, ECutUpdate::kTwoTrackUpdate,
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 1, ECutUpdate::kTwoTrack,
                                          j);  // B - >All
         }
         for (int j = 0; j < twoTrackB; j++) {
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 0, ECutUpdate::kTwoTrackBackgroundUpdate, j);  // A - >All
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 1, ECutUpdate::kTwoTrackBackgroundUpdate, j);  // B - >All
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 0, ECutUpdate::kTwoTrackBackground, j);  // A - >All
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 1, ECutUpdate::kTwoTrackBackground, j);  // B - >All
         }
       } break;
       case kChargedNID3: {  // AB CC
         for (int j = 0; j < twotrackT; j++) {
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 0, ECutUpdate::kTwoTrackUpdate,
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 0, ECutUpdate::kTwoTrack,
                                          j);  // A -> All
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 1, ECutUpdate::kTwoTrackUpdate,
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 1, ECutUpdate::kTwoTrack,
                                          j);  // B - >All
         }
         for (int j = 0; j < twoTrackB; j++) {
-          fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 2, ECutUpdate::kTwoTrackBackgroundUpdate, j);  // C - >All
+          fCutContainer->LinkCollections(ECutUpdate::kTrack, 2, ECutUpdate::kTwoTrackBackground, j);  // C - >All
         }
       } break;
       default: {
         for (int i = 0; i < trackTrig; i++) {
           for (int j = 0; j < twotrackT; j++) {
-            fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, i, ECutUpdate::kTwoTrackUpdate, j);
+            fCutContainer->LinkCollections(ECutUpdate::kTrack, i, ECutUpdate::kTwoTrack, j);
             if (fBackgroundMode != kNoBackgroundID && fBackgroundMode != kNoBackgroundNID)
-              fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate,
+              fCutContainer->LinkCollections(ECutUpdate::kTrack,
                                              i,
-                                             ECutUpdate::kTwoTrackBackgroundUpdate,
+                                             ECutUpdate::kTwoTrackBackground,
                                              j);  // second layer is for background
           }
         }

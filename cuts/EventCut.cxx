@@ -7,9 +7,9 @@
 
 #include "EventCut.h"
 
-#include "HalStd.h"
+#include "Std.h"
 namespace Hal {
-  EventCut::EventCut(const Int_t i) : Cut(i, ECutUpdate::kEventUpdate, "N_{events}") { fName = "EventCut"; }
+  EventCut::EventCut(const Int_t i) : Cut(i, ECutUpdate::kEvent, "N_{events}") { fName = "EventCut"; }
 
   EventCut::~EventCut() {
     // TODO Auto-generated destructor stub

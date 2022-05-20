@@ -14,7 +14,7 @@
 #include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
-#include "HalStdHist.h"
+#include "StdHist.h"
 #include "HistogramManager.h"
 #include "Track.h"
 
@@ -25,7 +25,7 @@
 
 namespace Hal {
 
-  QAPlot::QAPlot() : fUpdate(ECutUpdate::kNoUpdate), fReport(nullptr) {}
+  QAPlot::QAPlot() : fUpdate(ECutUpdate::kNo), fReport(nullptr) {}
 
   QAPlot::QAPlot(ECutUpdate upd) : QAPlot("", 0, 0, 0, upd) {};
 
@@ -80,7 +80,7 @@ namespace Hal {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
     if (ev == nullptr) return kFALSE;
     switch (fUpdate) {
-      case ECutUpdate::kEventUpdate: {
+      case ECutUpdate::kEvent: {
         for (int j = 0; j < 3; j++) {
           for (int i = 0; i < fSettings[j].size(); i++) {
             if (fSettings[j][i].IsCustom()) continue;
@@ -102,7 +102,7 @@ namespace Hal {
           }
         }
       } break;
-      case ECutUpdate::kTrackUpdate: {
+      case ECutUpdate::kTrack: {
         Track* track         = ev->GetNewTrack();
         ComplexEvent* zEvent = static_cast<ComplexEvent*>(ev->GetNewEvent());
         track->SetEvent(zEvent);
@@ -174,10 +174,10 @@ namespace Hal {
 
   void QAPlot::Fill(TObject* obj) {
     switch (fUpdate) {
-      case ECutUpdate::kEventUpdate: {
+      case ECutUpdate::kEvent: {
         FillEvent(static_cast<Event*>(obj));
       } break;
-      case ECutUpdate::kTrackUpdate: {
+      case ECutUpdate::kTrack: {
         FillTrack(static_cast<Track*>(obj));
       } break;
       default: break;

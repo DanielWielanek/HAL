@@ -6,7 +6,7 @@
 #pragma link off all namespaces;
 
 #pragma link C++ namespace Hal;
-#pragma link C++ namespace HalStd;
+#pragma link C++ namespace Hal::Std;
 #ifdef __MAKECINT__
 #endif
 

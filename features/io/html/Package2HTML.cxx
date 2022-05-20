@@ -47,7 +47,7 @@
 #include <cstring>
 #include <vector>
 
-#include "HalStdString.h"
+#include "StdString.h"
 #include <iostream>
 
 namespace Hal {
@@ -96,7 +96,7 @@ namespace Hal {
       TString temp_dir         = Form("%s/global_data", fDir.Data());
       Package* pack            = (Package*) file->Get("HalInfo/RunInfo");
       ParameterString* version = (ParameterString*) pack->GetObjectByName("Software ver");
-      fSoftVer                 = HalStd::VersionId(version->GetValue());
+      fSoftVer                 = Hal::Std::VersionId(version->GetValue());
       CreatePackageList(dummyCell, pack, eTableStyle::kMetaData, temp_dir, 2, "drawmerged");
       fHTML->AddStringContent(dummyCell.GetContent());
     }
@@ -177,7 +177,7 @@ namespace Hal {
       TString temp_dir         = Form("%s/global_data", fDir.Data());
       Package* pack            = (Package*) file->Get("HalInfo/RunInfo");
       ParameterString* version = (ParameterString*) pack->GetObjectByName("Software ver");
-      fSoftVer                 = HalStd::VersionId(version->GetValue());
+      fSoftVer                 = Hal::Std::VersionId(version->GetValue());
       CreatePackageList(dummyCell, pack, eTableStyle::kMetaData, temp_dir, 2, "drawmerged");
       fHTML->AddStringContent(dummyCell.GetContent());
     }
@@ -322,7 +322,7 @@ namespace Hal {
       return "unknown";
     }
     gROOT->SetBatch(batch);
-    std::vector<TString> arr = HalStd::ExplodeString(path, '/');
+    std::vector<TString> arr = Hal::Std::ExplodeString(path, '/');
     TString inject           = Form("%s/%s/", arr[arr.size() - 2].Data(), arr[arr.size() - 1].Data());
     url                      = AddToUrl(inject, url);
     return url;
@@ -433,7 +433,7 @@ namespace Hal {
     halTable.AddContent(legend1);
 
     // path = fDir;
-    std::vector<TString> out = HalStd::ExplodeString(path, '/');
+    std::vector<TString> out = Hal::Std::ExplodeString(path, '/');
     TString inject           = "";
     if (depth == 2) { inject = out[out.size() - 1]; }
     if (depth == 3) { inject = Form("%s/%s", out[out.size() - 2].Data(), out[out.size() - 1].Data()); }
@@ -449,7 +449,7 @@ namespace Hal {
         row.SetClass(styleCell);
         if (oryginal_class == "HalMetadata") { row.SetClass(styleExtra); }
         if (oryginal_class == "HalCutContainer") { row.SetClass(styleExtra); }
-        HtmlCell first_cell(HalStd::RoundToString(i));
+        HtmlCell first_cell(Hal::Std::RoundToString(i));
         first_cell.SetColSpan(2);
         row.AddContent(first_cell);
         row.AddContent(HtmlCell(object->ClassName()));
@@ -464,7 +464,7 @@ namespace Hal {
       } else if (nameClass != "TList" || fListDeep != 0) {
         HtmlRow row;
         row.SetClass(styleCell);
-        HtmlCell first_cell(HalStd::RoundToString(i));
+        HtmlCell first_cell(Hal::Std::RoundToString(i));
         first_cell.SetColSpan(2);
         row.AddContent(first_cell);
         row.AddContent(HtmlCell(object->ClassName()));
@@ -513,47 +513,47 @@ namespace Hal {
     path = Form("%s/cut_monitors", path.Data());
     gSystem->mkdir(path);
 
-    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEventUpdate)]) {
+    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEvent)]) {
       HtmlRow row;
       row.SetClass(Hal::HtmlTableRowStyles::TitleStyle());
       HtmlCell cell(" Event Cut Collections ");
       cell.SetColSpan(8);
       row.AddContent(cell);
       tableCuts.AddContent(row);
-      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEventUpdate)]; i++) {
-        CreateCutHTML(tableCuts, Hal::ECutUpdate::kEventUpdate, i);
+      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEvent)]; i++) {
+        CreateCutHTML(tableCuts, Hal::ECutUpdate::kEvent, i);
       }
     }
-    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrackUpdate)]) {
+    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrack)]) {
       HtmlRow row;
       row.SetClass(Hal::HtmlTableRowStyles::TitleStyle());
       HtmlCell cell(" TrackCut Cut Collections ");
       cell.SetColSpan(8);
       row.AddContent(cell);
       tableCuts.AddContent(row);
-      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrackUpdate)]; i++) {
-        CreateCutHTML(tableCuts, Hal::ECutUpdate::kTrackUpdate, i);
+      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrack)]; i++) {
+        CreateCutHTML(tableCuts, Hal::ECutUpdate::kTrack, i);
       }
     }
-    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackUpdate)]) {
+    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrack)]) {
       HtmlRow row;
       row.SetClass(Hal::HtmlTableRowStyles::TitleStyle());
       HtmlCell cell(" TwoTrackCut Cut Collections ");
       cell.SetColSpan(8);
       row.AddContent(cell);
       tableCuts.AddContent(row);
-      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackUpdate)]; i++)
-        CreateCutHTML(tableCuts, Hal::ECutUpdate::kTwoTrackUpdate, i);
+      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrack)]; i++)
+        CreateCutHTML(tableCuts, Hal::ECutUpdate::kTwoTrack, i);
     }
-    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackgroundUpdate)]) {
+    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackground)]) {
       HtmlRow row;
       row.SetClass(Hal::HtmlTableRowStyles::TitleStyle());
       HtmlCell cell(" TwoTrackCut Cut Collections (background) ");
       cell.SetColSpan(8);
       row.AddContent(cell);
       tableCuts.AddContent(row);
-      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackgroundUpdate)]; i++)
-        CreateCutHTML(tableCuts, Hal::ECutUpdate::kTwoTrackBackgroundUpdate, i);
+      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackground)]; i++)
+        CreateCutHTML(tableCuts, Hal::ECutUpdate::kTwoTrackBackground, i);
     }
 
     table_name = Form("dynamic_table_%i", fDynamicTableCounter++);
@@ -572,40 +572,40 @@ namespace Hal {
     table.AddContent(tableMonitorsButton);
     HtmlTable tableMonitors(table_name, "haltable", "display:none");
     Int_t cut_monitor_counter = 0;
-    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEventUpdate)]) {
+    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEvent)]) {
       HtmlRow rowGreen("", Hal::HtmlTableRowStyles::TitleStyle(), "");
       HtmlCellCol cell("Event Cut Monitors", 9);
       rowGreen.AddContent(cell);
       tableMonitors.AddContent(rowGreen);
-      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEventUpdate)]; i++) {
-        CreateCutMonitorHTML(tableMonitors, Hal::ECutUpdate::kEventUpdate, i, cut_monitor_counter, path);
+      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEvent)]; i++) {
+        CreateCutMonitorHTML(tableMonitors, Hal::ECutUpdate::kEvent, i, cut_monitor_counter, path);
       }
     }
-    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrackUpdate)]) {
+    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrack)]) {
       HtmlRow rowGreen("", Hal::HtmlTableRowStyles::TitleStyle(), "");
       HtmlCellCol cell("Track Cut Monitors", 9);
       rowGreen.AddContent(cell);
       tableMonitors.AddContent(rowGreen);
-      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrackUpdate)]; i++) {
-        CreateCutMonitorHTML(tableMonitors, Hal::ECutUpdate::kTrackUpdate, i, cut_monitor_counter, path);
+      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrack)]; i++) {
+        CreateCutMonitorHTML(tableMonitors, Hal::ECutUpdate::kTrack, i, cut_monitor_counter, path);
       }
     }
-    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackUpdate)]) {
+    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrack)]) {
       HtmlRow rowGreen("", Hal::HtmlTableRowStyles::TitleStyle(), "");
       HtmlCellCol cell("TwoTrack Cut Monitors", 9);
       rowGreen.AddContent(cell);
       tableMonitors.AddContent(rowGreen);
-      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackUpdate)]; i++) {
-        CreateCutMonitorHTML(tableMonitors, Hal::ECutUpdate::kTwoTrackUpdate, i, cut_monitor_counter, path);
+      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrack)]; i++) {
+        CreateCutMonitorHTML(tableMonitors, Hal::ECutUpdate::kTwoTrack, i, cut_monitor_counter, path);
       }
     }
-    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackgroundUpdate)]) {
+    if (fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackground)]) {
       HtmlRow rowGreen("", Hal::HtmlTableRowStyles::TitleStyle(), "");
       HtmlCellCol cell("TwoTrack Cut Monitors (Background)", 9);
       rowGreen.AddContent(cell);
       tableMonitors.AddContent(rowGreen);
-      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackgroundUpdate)]; i++)
-        CreateCutMonitorHTML(tableMonitors, Hal::ECutUpdate::kTwoTrackBackgroundUpdate, i, cut_monitor_counter, path);
+      for (int i = 0; i < fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackground)]; i++)
+        CreateCutMonitorHTML(tableMonitors, Hal::ECutUpdate::kTwoTrackBackground, i, cut_monitor_counter, path);
     }
     HtmlDiv divCutMonitor;
     divCutMonitor.AddContent(tableMonitors);
@@ -616,19 +616,19 @@ namespace Hal {
     TString group_name, desc, names;
     group_name = GetGroupListName(cut_update);
     switch (cut_update) {
-      case Hal::ECutUpdate::kEventUpdate:
+      case Hal::ECutUpdate::kEvent:
         desc  = "EventCollection";
         names = "Events";
         break;
-      case Hal::ECutUpdate::kTrackUpdate:
+      case Hal::ECutUpdate::kTrack:
         desc  = "TrackCollection";
         names = "Tracks";
         break;
-      case Hal::ECutUpdate::kTwoTrackUpdate:
+      case Hal::ECutUpdate::kTwoTrack:
         desc  = "TwoTrackCollection";
         names = "Track TwoTracks";
         break;
-      case Hal::ECutUpdate::kTwoTrackBackgroundUpdate:
+      case Hal::ECutUpdate::kTwoTrackBackground:
         desc  = "TwoTrackCollectionBackground";
         names = "Track TwoTracks (Background)";
         break;
@@ -668,8 +668,8 @@ namespace Hal {
     rowFast.SetClass(Hal::HtmlTableRowStyles::SummaryStyle());
     rowFast.AddContent(HtmlCell("-"));
     rowFast.AddContent(HtmlCell(Form("TOTAL %s", names.Data())));
-    rowFast.AddContent(HtmlCell(HalStd::RoundToString(passed, -3, "prefix")));
-    rowFast.AddContent(HtmlCell(HalStd::RoundToString(failed, -3, "prefix")));
+    rowFast.AddContent(HtmlCell(Hal::Std::RoundToString(passed, -3, "prefix")));
+    rowFast.AddContent(HtmlCell(Hal::Std::RoundToString(failed, -3, "prefix")));
     for (int i = 0; i < 3; i++)
       rowFast.AddContent(HtmlCell("-"));
     rowFast.AddContent(HtmlCell("Fast"));
@@ -683,8 +683,8 @@ namespace Hal {
     rowSlow.SetClass(Hal::HtmlTableRowStyles::SummaryStyle());
     rowSlow.AddContent(HtmlCell("-"));
     rowSlow.AddContent(HtmlCell(Form("TOTAL %s", names.Data())));
-    rowSlow.AddContent(HtmlCell(HalStd::RoundToString(passed, -3, "prefix")));
-    rowSlow.AddContent(HtmlCell(HalStd::RoundToString(failed, -3, "prefix")));
+    rowSlow.AddContent(HtmlCell(Hal::Std::RoundToString(passed, -3, "prefix")));
+    rowSlow.AddContent(HtmlCell(Hal::Std::RoundToString(failed, -3, "prefix")));
     for (int i = 0; i < 3; i++)
       rowSlow.AddContent(HtmlCell("-"));
     rowSlow.AddContent(HtmlCell("Slow"));
@@ -692,7 +692,7 @@ namespace Hal {
   }
 
   void Package2HTML::CreateCutLink(HtmlObject& table, Hal::ECutUpdate cut_update, Package* cut, Int_t no, Bool_t fast) {
-    TString numer      = HalStd::RoundToString(no);
+    TString numer      = Hal::Std::RoundToString(no);
     TString name       = cut->GetName();
     TClass* class_temp = TClass::GetClass(name);
     Bool_t complex     = kFALSE;
@@ -729,9 +729,9 @@ namespace Hal {
     if (fSoftVer < 201705) { complex = kFALSE; }
     Int_t collection_no = ((ParameterInt*) cut->GetObjectByName("CollectionID"))->GetValue();
     TString passed =
-      HalStd::RoundToString((Float_t)((ParameterULong64*) cut->GetObjectByName("Passed"))->GetValue(), -3, "prefix");
+      Hal::Std::RoundToString((Float_t)((ParameterULong64*) cut->GetObjectByName("Passed"))->GetValue(), -3, "prefix");
     TString failed =
-      HalStd::RoundToString((Float_t)((ParameterULong64*) cut->GetObjectByName("Failed"))->GetValue(), -3, "prefix");
+      Hal::Std::RoundToString((Float_t)((ParameterULong64*) cut->GetObjectByName("Failed"))->GetValue(), -3, "prefix");
     Int_t cut_size  = (((ParameterInt*) cut->GetObjectByName("CutSize")))->GetValue();
     TString type    = "Slow";
     TString address = HtmlCore::GetUrl(GetLinkToCut(cut_update, collection_no, no, fast), name);
@@ -752,13 +752,13 @@ namespace Hal {
     }
     if (complex) {
       TString passed_re =
-        HalStd::RoundToString((ULong64_t)((ParameterULong64*) cut->GetObjectByName("Passed_{re}"))->GetValue(), -3, "prefix");
+        Hal::Std::RoundToString((ULong64_t)((ParameterULong64*) cut->GetObjectByName("Passed_{re}"))->GetValue(), -3, "prefix");
       TString failed_re =
-        HalStd::RoundToString((ULong64_t)((ParameterULong64*) cut->GetObjectByName("Failed_{re}"))->GetValue(), -3, "prefix");
+        Hal::Std::RoundToString((ULong64_t)((ParameterULong64*) cut->GetObjectByName("Failed_{re}"))->GetValue(), -3, "prefix");
       TString passed_im =
-        HalStd::RoundToString((ULong64_t)((ParameterULong64*) cut->GetObjectByName("Passed_{im}"))->GetValue(), -3, "prefix");
+        Hal::Std::RoundToString((ULong64_t)((ParameterULong64*) cut->GetObjectByName("Passed_{im}"))->GetValue(), -3, "prefix");
       TString failed_im =
-        HalStd::RoundToString((ULong64_t)((ParameterULong64*) cut->GetObjectByName("Failed_{im}"))->GetValue(), -3, "prefix");
+        Hal::Std::RoundToString((ULong64_t)((ParameterULong64*) cut->GetObjectByName("Failed_{im}"))->GetValue(), -3, "prefix");
       passed = Form("%s <br/>(%s %s)", passed.Data(), passed_re.Data(), passed_im.Data());
       failed = Form("%s <br/>(%s %s)", failed.Data(), failed_re.Data(), failed_im.Data());
     }
@@ -778,8 +778,8 @@ namespace Hal {
     row.AddContent(cell4);
 
     // i ==1
-    TString minima = HalStd::RoundToString(((ParameterDouble*) cut->GetObjectByName(Form("MinCut_%i", 0)))->GetValue(), 3);
-    TString maxima = HalStd::RoundToString(((ParameterDouble*) cut->GetObjectByName(Form("MaxCut_%i", 0)))->GetValue(), 3);
+    TString minima = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName(Form("MinCut_%i", 0)))->GetValue(), 3);
+    TString maxima = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName(Form("MaxCut_%i", 0)))->GetValue(), 3);
     TString units  = ((ParameterString*) cut->GetObjectByName(Form("UnitName_%i", 0)))->GetValue();
     row.AddContent(HtmlCell(minima));
     row.AddContent(HtmlCell(maxima));
@@ -794,8 +794,8 @@ namespace Hal {
       min    = Form("MinCut_%i", i);
       max    = Form("MaxCut_%i", i);
       unit   = Form("UnitName_%i", i);
-      minima = HalStd::RoundToString(((ParameterDouble*) cut->GetObjectByName(min))->GetValue(), 3);
-      maxima = HalStd::RoundToString(((ParameterDouble*) cut->GetObjectByName(max))->GetValue(), 3);
+      minima = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName(min))->GetValue(), 3);
+      maxima = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName(max))->GetValue(), 3);
       units  = ((ParameterString*) cut->GetObjectByName(unit))->GetValue();
       HtmlRow singleCut;
       singleCut.SetClass(Hal::HtmlTableRowStyles::DefStyle());
@@ -812,16 +812,16 @@ namespace Hal {
                                           Int_t no,
                                           Int_t counter,
                                           TString path) {
-    TString numer   = HalStd::RoundToString(no);
+    TString numer   = Hal::Std::RoundToString(no);
     TString unit    = ((ParameterString*) monitor->GetObjectByName("AxisX"))->GetValue();
     TString cutname = ((ParameterString*) monitor->GetObjectByName("CutXName"))->GetValue();
 
     Int_t collection_no   = ((ParameterInt*) monitor->GetObjectByName("CollectionID"))->GetValue();
     TString monitor_class = monitor->GetName();
     TString address       = HtmlCore::GetUrl(GetLinkToCutMonitor(update, collection_no, no), monitor_class);
-    TString axisopt       = HalStd::RoundToString(((ParameterInt*) monitor->GetObjectByName("CutXAxis"))->GetValue());
-    TString cutmin        = HalStd::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutXMin"))->GetValue(), 3);
-    TString cutmax        = HalStd::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutXMax"))->GetValue(), 3);
+    TString axisopt       = Hal::Std::RoundToString(((ParameterInt*) monitor->GetObjectByName("CutXAxis"))->GetValue());
+    TString cutmin        = Hal::Std::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutXMin"))->GetValue(), 3);
+    TString cutmax        = Hal::Std::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutXMax"))->GetValue(), 3);
     // TString cutimg =
     // CreateTH1Link((TH1*)monitor->GetObjectByName("Passed"),(TH1*)monitor->GetObjectByName("Failed"));
     TString exupdate = "no";
@@ -866,9 +866,9 @@ namespace Hal {
         unit    = ((ParameterString*) monitor->GetObjectByName("AxisY"))->GetValue();
         cutname = ((ParameterString*) monitor->GetObjectByName("CutYName"))->GetValue();
         if (cutname.Contains(")")) cutname = cutname.ReplaceAll("(", "</br>(");
-        axisopt = HalStd::RoundToString(((ParameterInt*) monitor->GetObjectByName("CutYAxis"))->GetValue());
-        cutmin  = HalStd::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutYMin"))->GetValue(), 3);
-        cutmax  = HalStd::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutYMax"))->GetValue(), 3);
+        axisopt = Hal::Std::RoundToString(((ParameterInt*) monitor->GetObjectByName("CutYAxis"))->GetValue());
+        cutmin  = Hal::Std::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutYMin"))->GetValue(), 3);
+        cutmax  = Hal::Std::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutYMax"))->GetValue(), 3);
         rowMonitor2.AddContent(HtmlCell(cutname));
         rowMonitor2.AddContent(HtmlCell(unit));
         rowMonitor2.AddContent(HtmlCell(axisopt));
@@ -889,9 +889,9 @@ namespace Hal {
         unit    = ((ParameterString*) monitor->GetObjectByName("AxisY"))->GetValue();
         cutname = ((ParameterString*) monitor->GetObjectByName("CutYName"))->GetValue();
         if (cutname.Contains(")")) cutname = cutname.ReplaceAll("(", "</br>(");
-        axisopt = HalStd::RoundToString(((ParameterInt*) monitor->GetObjectByName("CutYAxis"))->GetValue());
-        cutmin  = HalStd::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutYMin"))->GetValue(), 3);
-        cutmax  = HalStd::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutYMax"))->GetValue(), 3);
+        axisopt = Hal::Std::RoundToString(((ParameterInt*) monitor->GetObjectByName("CutYAxis"))->GetValue());
+        cutmin  = Hal::Std::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutYMin"))->GetValue(), 3);
+        cutmax  = Hal::Std::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutYMax"))->GetValue(), 3);
         HtmlRow rowMonitor2;
         rowMonitor2.SetClass(Hal::HtmlTableRowStyles::DefStyle());
         rowMonitor2.AddContent(HtmlCell(cutname));
@@ -904,9 +904,9 @@ namespace Hal {
         unit    = ((ParameterString*) monitor->GetObjectByName("AxisZ"))->GetValue();
         cutname = ((ParameterString*) monitor->GetObjectByName("CutZName"))->GetValue();
         if (cutname.Contains(")")) cutname = cutname.ReplaceAll("(", "</br>(");
-        axisopt = HalStd::RoundToString(((ParameterInt*) monitor->GetObjectByName("CutZAxis"))->GetValue());
-        cutmin  = HalStd::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutZMin"))->GetValue(), 3);
-        cutmax  = HalStd::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutZMax"))->GetValue(), 3);
+        axisopt = Hal::Std::RoundToString(((ParameterInt*) monitor->GetObjectByName("CutZAxis"))->GetValue());
+        cutmin  = Hal::Std::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutZMin"))->GetValue(), 3);
+        cutmax  = Hal::Std::RoundToString(((ParameterDouble*) monitor->GetObjectByName("CutZMax"))->GetValue(), 3);
         HtmlRow rowMonitor3;
         rowMonitor3.SetClass(Hal::HtmlTableRowStyles::DefStyle());
         rowMonitor3.AddContent(HtmlCell(cutname));
@@ -980,19 +980,19 @@ namespace Hal {
     TString group_name, desc, names;
     group_name = GetGroupListName(cut_upd);
     switch (cut_upd) {
-      case Hal::ECutUpdate::kEventUpdate:
+      case Hal::ECutUpdate::kEvent:
         desc  = "EventCollection";
         names = "Events";
         break;
-      case Hal::ECutUpdate::kTrackUpdate:
+      case Hal::ECutUpdate::kTrack:
         desc  = "TrackCollection";
         names = "Tracks";
         break;
-      case Hal::ECutUpdate::kTwoTrackUpdate:
+      case Hal::ECutUpdate::kTwoTrack:
         desc  = "TwoTrackCollection";
         names = "Track TwoTracks";
         break;
-      case Hal::ECutUpdate::kTwoTrackBackgroundUpdate:
+      case Hal::ECutUpdate::kTwoTrackBackground:
         desc  = "TwoTrackBackgroundCollection";
         names = "Track TwoTracks Background";
         break;
@@ -1106,10 +1106,10 @@ namespace Hal {
     gROOT->SetBatch(kTRUE);
     TCanvas* c1 = new TCanvas("canv", "canv", fWindowWidth, fWIndowHeight);
     c1->Range(0, 0, fWindowWidth, fWIndowHeight);
-    TList* listE   = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kEventUpdate));
-    TList* listT   = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTrackUpdate));
-    TList* listT2  = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrackUpdate));
-    TList* listT2B = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrackBackgroundUpdate));
+    TList* listE   = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kEvent));
+    TList* listT   = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTrack));
+    TList* listT2  = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrack));
+    TList* listT2B = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrackBackground));
     Int_t event_collections             = 0;
     Int_t track_collections             = 0;
     Int_t ttrack_collections            = 0;
@@ -1328,10 +1328,10 @@ namespace Hal {
 
   TString Package2HTML::GetGroupListName(Hal::ECutUpdate update) const {
     switch (update) {
-      case Hal::ECutUpdate::kEventUpdate: return "HalEventCutCollectionList"; break;
-      case Hal::ECutUpdate::kTrackUpdate: return "HalTrackCutCollectionList"; break;
-      case Hal::ECutUpdate::kTwoTrackUpdate: return "HalTwoTrackCutCollectionList"; break;
-      case Hal::ECutUpdate::kTwoTrackBackgroundUpdate: return "HalTwoTrackBackgroundCutCollectionList"; break;
+      case Hal::ECutUpdate::kEvent: return "HalEventCutCollectionList"; break;
+      case Hal::ECutUpdate::kTrack: return "HalTrackCutCollectionList"; break;
+      case Hal::ECutUpdate::kTwoTrack: return "HalTwoTrackCutCollectionList"; break;
+      case Hal::ECutUpdate::kTwoTrackBackground: return "HalTwoTrackBackgroundCutCollectionList"; break;
       default: return ""; break;
     }
   }
@@ -1404,22 +1404,22 @@ namespace Hal {
     ParameterInt* twotrack_collections_background_no =
       (ParameterInt*) fCurrentCutContainer->GetObjectByName(collection_name[3], 0);
     if (event_collections_no)
-      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEventUpdate)] = event_collections_no->GetValue();
+      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEvent)] = event_collections_no->GetValue();
     else
-      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEventUpdate)] = 0;
+      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kEvent)] = 0;
     if (track_collections_no)
-      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrackUpdate)] = track_collections_no->GetValue();
+      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrack)] = track_collections_no->GetValue();
     else
-      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrackUpdate)] = 0;
+      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTrack)] = 0;
     if (twotrack_collections_no)
-      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackUpdate)] = twotrack_collections_no->GetValue();
+      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrack)] = twotrack_collections_no->GetValue();
     else
-      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackUpdate)] = 0;
+      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrack)] = 0;
     if (twotrack_collections_background_no) {
-      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackgroundUpdate)] =
+      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackground)] =
         twotrack_collections_background_no->GetValue();
     } else {
-      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackgroundUpdate)] = 0;
+      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackground)] = 0;
     }
   }
 

@@ -23,7 +23,7 @@
 #include <cstring>
 
 #include "Cout.h"
-#include "HalStdString.h"
+#include "StdString.h"
 #include "Package.h"
 #include "Package2HTML.h"
 #include "Parameter.h"
@@ -37,7 +37,7 @@ namespace Hal {
     }
     fMetaDataPack        = (Package*) fFile->Get("HalInfo/RunInfo");
     ParameterString* str = (ParameterString*) fMetaDataPack->GetObjectByName("Software ver");
-    Int_t SoftVer        = HalStd::VersionId(str->GetValue());
+    Int_t SoftVer        = Hal::Std::VersionId(str->GetValue());
     if (SoftVer <= 201612) {
       Cout::PrintInfo("This file version might be not compatible wtih current version, use "
                       "macro/path/fix_files.C to fix it",
@@ -86,7 +86,7 @@ namespace Hal {
     if (fFile->IsZombie()) { exit(0); }
     fMetaDataPack        = (Package*) fFile->Get("HalInfo/RunInfo");
     ParameterString* str = (ParameterString*) fMetaDataPack->GetObjectByName("Software ver");
-    Int_t SoftVer        = HalStd::VersionId(str->GetValue());
+    Int_t SoftVer        = Hal::Std::VersionId(str->GetValue());
     if (SoftVer <= 201612) {
       Cout::PrintInfo("This file version might be not compatible wtih current version, use "
                       "macro/path/fix_files.C to fix it",
@@ -137,7 +137,7 @@ namespace Hal {
     for (int i = 0; i < list->GetEntries(); i++) {
       Package* mon = (Package*) list->At(i);
       TString size = mon->GetComment();
-      no           = HalStd::RoundToString(i);
+      no           = Hal::Std::RoundToString(i);
       type         = size;
       unitx = unity = unitz = "-";
       if (size == "HalCutMonitorX") {
@@ -160,7 +160,7 @@ namespace Hal {
 
   Package* AnaFile::GetCutCollection(Hal::ECutUpdate update, Int_t no) const {
     TList* list      = NULL;
-    TString listName = Form("Hal%sCutCollectionList", HalStd::UpdateEnumToString(update).Data());
+    TString listName = Form("Hal%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data());
     list             = ((TList*) GetCutContainer()->GetObjectByName(listName));
     return (Package*) list->At(no);
   }
@@ -178,10 +178,10 @@ namespace Hal {
   Int_t AnaFile::GetCollectionsNo(Hal::ECutUpdate update) const {
     TString label = "";
     switch (update) {
-      case Hal::ECutUpdate::kEventUpdate: label = "Event_collections_No"; break;
-      case Hal::ECutUpdate::kTrackUpdate: label = "Track_collections_No"; break;
-      case Hal::ECutUpdate::kTwoTrackUpdate: label = "TwoTrack_collections_No"; break;
-      case Hal::ECutUpdate::kTwoTrackBackgroundUpdate: label = "TwoTrack_collections_background_No"; break;
+      case Hal::ECutUpdate::kEvent: label = "Event_collections_No"; break;
+      case Hal::ECutUpdate::kTrack: label = "Track_collections_No"; break;
+      case Hal::ECutUpdate::kTwoTrack: label = "TwoTrack_collections_No"; break;
+      case Hal::ECutUpdate::kTwoTrackBackground: label = "TwoTrack_collections_background_No"; break;
       default: return 0; break;
     }
     if (GetCutContainer()->Exist(label, 0)) { return ((ParameterInt*) GetCutContainer()->GetObjectByName(label))->GetValue(); }
@@ -351,8 +351,8 @@ namespace Hal {
     TList* list   = NULL;
     TString label = "";
     list =
-      ((TList*) GetCutContainer()->GetObjectByName(Form("Hal%sCutCollectionList", HalStd::UpdateEnumToString(update).Data())));
-    label = Form("%s Cuts", HalStd::UpdateEnumToString(update).Data());
+      ((TList*) GetCutContainer()->GetObjectByName(Form("Hal%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data())));
+    label = Form("%s Cuts", Hal::Std::UpdateEnumToString(update).Data());
     if (list == NULL) return;
     if (col == -1) {
       for (int i = 0; i < list->GetEntries(); i++) {
@@ -372,10 +372,10 @@ namespace Hal {
     ParameterULong64* passedSlow = (ParameterULong64*) pack->GetObjectByName("PassedSlow");
     ParameterULong64* failedFast = (ParameterULong64*) pack->GetObjectByName("FailedFast");
     ParameterULong64* failedSlow = (ParameterULong64*) pack->GetObjectByName("FailedSlow");
-    TString PassedFast           = HalStd::RoundToString(passedFast->GetValue());
-    TString PassedSlow           = HalStd::RoundToString(passedSlow->GetValue());
-    TString FailedFast           = HalStd::RoundToString(failedFast->GetValue());
-    TString FailedSlow           = HalStd::RoundToString(failedSlow->GetValue());
+    TString PassedFast           = Hal::Std::RoundToString(passedFast->GetValue());
+    TString PassedSlow           = Hal::Std::RoundToString(passedSlow->GetValue());
+    TString FailedFast           = Hal::Std::RoundToString(failedFast->GetValue());
+    TString FailedSlow           = Hal::Std::RoundToString(failedSlow->GetValue());
     Cout::Database(3, "Type", "Failed", "Passed");
     Cout::Database(3, "Fast", PassedFast.Data(), FailedFast.Data());
     Cout::Database(3, "Slow", PassedFast.Data(), FailedSlow.Data());
@@ -396,8 +396,8 @@ namespace Hal {
     passed          = passed / (passed + failed) * 100.0;
     if (cut_size == 0) {
       TString unit_name = ((ParameterString*) cut->GetObjectByName("UnitName_0i"))->GetValue();
-      TString min       = HalStd::RoundToString(((ParameterDouble*) cut->GetObjectByName("MinCut_0"))->GetValue(), 3);
-      TString max       = HalStd::RoundToString(((ParameterDouble*) cut->GetObjectByName("MaxCut_0"))->GetValue(), 3);
+      TString min       = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName("MinCut_0"))->GetValue(), 3);
+      TString max       = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName("MaxCut_0"))->GetValue(), 3);
       Cout::Database(5, name.Data(), Form("%4.2f", passed), unit_name.Data(), min.Data(), max.Data());
       return;
     }
@@ -408,8 +408,8 @@ namespace Hal {
       max  = Form("MaxCut_%i", i);
       unit = Form("UnitName_%i", i);
       unit = ((ParameterString*) cut->GetObjectByName(unit))->GetValue();
-      min  = HalStd::RoundToString(((ParameterDouble*) cut->GetObjectByName(min))->GetValue(), 3);
-      max  = HalStd::RoundToString(((ParameterDouble*) cut->GetObjectByName(max))->GetValue(), 3);
+      min  = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName(min))->GetValue(), 3);
+      max  = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName(max))->GetValue(), 3);
       if (i == 0) {
         Cout::Database(5, name.Data(), Form("%4.2f", passed), unit.Data(), min.Data(), max.Data());
       } else {
@@ -422,8 +422,8 @@ namespace Hal {
     TList* list   = NULL;
     TString label = "";
     list =
-      ((TList*) GetCutContainer()->GetObjectByName(Form("Hal%sCutCollectionList", HalStd::UpdateEnumToString(update).Data())));
-    label = Form("%s Cuts", HalStd::UpdateEnumToString(update).Data());
+      ((TList*) GetCutContainer()->GetObjectByName(Form("Hal%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data())));
+    label = Form("%s Cuts", Hal::Std::UpdateEnumToString(update).Data());
     if (list == NULL) return NULL;
     Package* cutCollection = (Package*) list->At(collection);
     if (cutCollection == NULL) return NULL;

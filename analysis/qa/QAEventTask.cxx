@@ -12,7 +12,7 @@
 
 #include "Cout.h"
 #include "Event.h"
-#include "HalStd.h"
+#include "Std.h"
 #include "Package.h"
 #include "QAPlotReport.h"
 #include "Track.h"
@@ -73,7 +73,7 @@ namespace Hal {
   }
 
   void QAEventTask::SetQAPlot(const QAPlot& plot) {
-    if (plot.GetUpdateRatio() == ECutUpdate::kEventUpdate) fTempEventPlot = plot.MakeCopy();
+    if (plot.GetUpdateRatio() == ECutUpdate::kEvent) fTempEventPlot = plot.MakeCopy();
   }
 
   void QAEventTask::ProcessEvent() { GetQAPlot(fCurrentEventCollectionID)->Fill(fCurrentEvent); }

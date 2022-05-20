@@ -16,7 +16,7 @@
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "EventVirtualCut.h"
-#include "HalStd.h"
+#include "Std.h"
 #include "MemoryMapManager.h"
 #include "Package.h"
 #include "TrackCut.h"
@@ -111,7 +111,7 @@ namespace Hal {
     if (fTrackCollectionsNo % 2 == 0) {
       for (int i = 1; i < fEventCollectionsNo; i++) {
         for (int j = 0; j < fTrackCollectionsNo; j++) {
-          fCutContainer->ReplicateCollection(ECutUpdate::kTrackUpdate, j, fTrackCollectionsNo * i + j);
+          fCutContainer->ReplicateCollection(ECutUpdate::kTrack, j, fTrackCollectionsNo * i + j);
         }
       }
     } else {

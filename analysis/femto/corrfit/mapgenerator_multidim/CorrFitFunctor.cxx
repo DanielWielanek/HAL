@@ -70,7 +70,7 @@ namespace Hal {
       entry_val += step_val;
       prestep *= fSetup.GetNPoints(i);*/
     }
-    entry_val = HalStd::MultiToOneDimIndex(fDimsArray, fPosArray);
+    entry_val = Hal::Std::MultiToOneDimIndex(fDimsArray, fPosArray);
     fChain->GetEntry(entry_val);
     return fData;
   }

@@ -258,7 +258,7 @@ namespace Hal {
     for (int j = 0; j < fMultiplyJobs; j++) {
       fGenerator[j]           = fTempGenerator->MakeCopy();
       FemtoSourceModel* freez = fGenerator[j]->GetSourceModel();
-      std::vector<int> arPos  = HalStd::OneToMultiDimIndex(dims, fJobId * fMultiplyJobs + j);
+      std::vector<int> arPos  = Hal::Std::OneToMultiDimIndex(dims, fJobId * fMultiplyJobs + j);
       for (int i = 0; i < parameters->GetNChildren(); i++) {
         XMLNode* parameter = parameters->GetChild(i);
         Double_t val       = setup.GetMin(i) + setup.GetStepSize(i) * ((Double_t) arPos[i]);
@@ -298,7 +298,7 @@ namespace Hal {
       if (w == nullptr) return kFALSE;
       XMLNode* pairType        = weight->GetChild("PairType");
       TString val              = pairType->GetValue();
-      std::vector<TString> str = HalStd::ExplodeString(val, ';');
+      std::vector<TString> str = Hal::Std::ExplodeString(val, ';');
       if (str.size() == 2) {
         Int_t pid1 = str[0].Atoi();
         Int_t pid2 = str[1].Atoi();

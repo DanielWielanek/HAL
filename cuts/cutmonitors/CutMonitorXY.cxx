@@ -15,7 +15,7 @@
 #include <TH2.h>
 #include <TString.h>
 
-#include "HalStdString.h"
+#include "StdString.h"
 
 namespace Hal {
   CutMonitorXY::CutMonitorXY() : CutMonitor(2) {
@@ -79,8 +79,8 @@ namespace Hal {
 
   void CutMonitorXY::CreateHistograms() {
     TString title = Form("%s vs %s",
-                         HalStd::RemoveUnits(fCut[1]->GetUnit(fOptionAxis[1])).Data(),
-                         HalStd::RemoveUnits(fCut[0]->GetUnit(fOptionAxis[0])).Data());
+                         Hal::Std::RemoveUnits(fCut[1]->GetUnit(fOptionAxis[1])).Data(),
+                         Hal::Std::RemoveUnits(fCut[0]->GetUnit(fOptionAxis[0])).Data());
     TString name;  // = Form("%s_vs_%s",
                    // fCut[0]->GetUnit(fOptionAxis[0]).Data(),fCut[1]->GetUnit(fOptionAxis[1]).Data());
     name         = "Passed";

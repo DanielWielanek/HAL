@@ -16,7 +16,7 @@
 #include "Cut.h"
 #include "CutCollection.h"
 #include "CutMonitor.h"
-#include "HalStd.h"
+#include "Std.h"
 
 //#define SHOW_CUT_INIT
 /**
@@ -154,7 +154,7 @@ namespace Hal {
      * @return given event collection
      */
     inline CutCollection* GetEventCollection(Int_t collection) const {
-      return (CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kEventUpdate)]->UncheckedAt(collection);
+      return (CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kEvent)]->UncheckedAt(collection);
       ;
     };
     /**
@@ -163,7 +163,7 @@ namespace Hal {
      * @return given track collection
      */
     inline CutCollection* GetTrackCollection(Int_t collection) const {
-      return (CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTrackUpdate)]->UncheckedAt(collection);
+      return (CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTrack)]->UncheckedAt(collection);
     };
     /**
      *
@@ -171,7 +171,7 @@ namespace Hal {
      * @return given two-track collection
      */
     inline CutCollection* GetTwoTrackCollection(Int_t collection) const {
-      return (CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTwoTrackUpdate)]->UncheckedAt(collection);
+      return (CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTwoTrack)]->UncheckedAt(collection);
     };
     /**
      *
@@ -179,7 +179,7 @@ namespace Hal {
      * @return given background two-track collection
      */
     inline CutCollection* GetTwoTrackBackgroundCollection(Int_t collection) const {
-      return (CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTwoTrackBackgroundUpdate)]->UncheckedAt(collection);
+      return (CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTwoTrackBackground)]->UncheckedAt(collection);
     };
     /**
      *
@@ -193,7 +193,7 @@ namespace Hal {
      * @return true if passed false otherwise
      */
     inline Bool_t PassEvent(Event* event, const Int_t collection) {
-      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kEventUpdate)]->UncheckedAt(collection))
+      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kEvent)]->UncheckedAt(collection))
         ->PassEvent(event);
     }
     /**
@@ -203,7 +203,7 @@ namespace Hal {
      * @return true if passed false otherwise
      */
     inline Bool_t PassTrack(Track* track, const Int_t collection) {
-      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTrackUpdate)]->UncheckedAt(collection))
+      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTrack)]->UncheckedAt(collection))
         ->PassTrack(track);
     };
     /**
@@ -213,7 +213,7 @@ namespace Hal {
      * @return true if passed false otherwise
      */
     inline Bool_t PassSignalPair(TwoTrack* pair, const Int_t collection) {
-      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTwoTrackUpdate)]->UncheckedAt(collection))
+      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTwoTrack)]->UncheckedAt(collection))
         ->PassTwoTrack(pair);
     };
     /**
@@ -223,7 +223,7 @@ namespace Hal {
      * @return true if passed false otherwise
      */
     inline Bool_t PassBackgroundPair(TwoTrack* pair, const Int_t collection) {
-      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTwoTrackBackgroundUpdate)]->UncheckedAt(collection))
+      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTwoTrackBackground)]->UncheckedAt(collection))
         ->PassTwoTrack(pair);
     };
     /**

@@ -20,7 +20,7 @@
 #include "EventVirtualCut.h"
 #include "FemtoConst.h"
 #include "FemtoPair.h"
-#include "HalStd.h"
+#include "Std.h"
 #include "MemoryMapManager.h"
 #include "ObjectMatrix.h"
 #include "Package.h"
@@ -47,7 +47,7 @@ namespace Hal {
     fCFs(nullptr),
     fCFTemp(nullptr) {
     fMixSize        = 2;
-    fTiers          = ECutUpdate::kTwoTrackBackgroundUpdate;
+    fTiers          = ECutUpdate::kTwoTrackBackground;
     fBackgroundMode = kMixedPairs;
     AddTags("femto hbt");
   }
@@ -278,11 +278,11 @@ namespace Hal {
       }
       if (two_track_signal > two_track_background) {
         for (int i = two_track_background; i < two_track_signal; i++) {
-          fCutContainer->RemoveCollection(ECutUpdate::kTwoTrackUpdate, i);
+          fCutContainer->RemoveCollection(ECutUpdate::kTwoTrack, i);
         }
       } else if (two_track_background > two_track_signal) {
         for (int i = two_track_signal; i < two_track_background; i++) {
-          fCutContainer->RemoveCollection(ECutUpdate::kTwoTrackBackgroundUpdate, i);
+          fCutContainer->RemoveCollection(ECutUpdate::kTwoTrackBackground, i);
         }
       }
     }

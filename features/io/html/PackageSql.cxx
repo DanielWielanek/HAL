@@ -29,8 +29,8 @@
 #include <fstream>
 #include <vector>
 
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdString.h"
 
 namespace Hal {
   void PackageSql::ExportTask(AnaFile* extr, Int_t file_id, Int_t task_id) {
@@ -61,7 +61,7 @@ namespace Hal {
     stat->SetString(3, comment, comment.Length());
     stat->SetString(4, sofwer->GetValue(), sofwer->GetValue().Length());
     TString data_s                = data->GetValue();
-    std::vector<TString> data_arr = HalStd::ExplodeString(data_s, '-');
+    std::vector<TString> data_arr = Hal::Std::ExplodeString(data_s, '-');
     Int_t year, month, day;
     year  = data_arr[0].Atoi();
     month = data_arr[1].Atoi();
@@ -80,14 +80,14 @@ namespace Hal {
 
   PackageSql::PackageSql(TString filename) {
     fFilename        = filename;
-    TString www_path = HalStd::GetConfigParameter("www_path");
+    TString www_path = Hal::Std::GetConfigParameter("www_path");
     if (www_path.Length() <= 0) {
       Cout::PrintInfo("www_path not found in hal configruration file!", Hal::EInfo::kLessError);
       return;
     }
     TString datafile = Form("sqlite://%s/database.sqlite", www_path.Data());
-    TString user     = HalStd::GetConfigParameter("www_path/database_user");
-    TString pass     = HalStd::GetConfigParameter("www_path/database_password");
+    TString user     = Hal::Std::GetConfigParameter("www_path/database_user");
+    TString pass     = Hal::Std::GetConfigParameter("www_path/database_password");
     if (user.Length() == 0) { user = "user"; }
     if (pass.Length() == 0) { pass = "password"; }
     // check if ifle exist
@@ -98,7 +98,7 @@ namespace Hal {
       f.close();
       fSQL = TSQLServer::Connect(datafile, user, pass);
     } else {
-      TString workdir = HalStd::GetHalrootPlus();
+      TString workdir = Hal::Std::GetHalrootPlus();
       f.close();
       gSystem->MakeDirectory(www_path.Data());
       gSystem->MakeDirectory(Form("%s/html_rep/", www_path.Data()));

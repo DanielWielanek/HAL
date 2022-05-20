@@ -648,7 +648,7 @@ namespace Hal {
      * and max are treated as number of bins for projection. If "scale" is
      * specified, then projection is divided by number of bins in projection
      * range, you can also specify projection direction (@see
-     * HalStd::GetProjection2D).
+     * Hal::Std::GetProjection2D).
      * @return projection
      */
     virtual TH2D* GetProjection2D(Double_t min, Double_t max, Option_t* opt) const;

@@ -15,7 +15,7 @@
 #include "Femto1DCF.h"
 #include "Femto3DCF.h"
 #include "FemtoSHCF.h"
-#include "HalStdString.h"
+#include "StdString.h"
 #include "Minimizer.h"
 #include "Splines.h"
 
@@ -291,18 +291,18 @@ namespace Hal {
                                            EMinFunc algo) const {
     // TF1 *func = GetFittingFunction("TF");
     if (IsParDiscrete(par1)) {
-      par1_min = HalStd::Discretize(
+      par1_min = Hal::Std::Discretize(
         fParameters[par1].GetNPoints(), fParameters[par1].GetMapMin(), fParameters[par1].GetMapMax(), par1_min, '-');
-      par1_max = HalStd::Discretize(
+      par1_max = Hal::Std::Discretize(
         fParameters[par1].GetNPoints(), fParameters[par1].GetMapMin(), fParameters[par1].GetMapMax(), par1_max, '+');
       if (par1_min < fParameters[par1].GetMapMin()) { par1_min = fParameters[par1].GetMapMin(); }
       if (par1_max > fParameters[par1].GetMapMax()) { par1_max = fParameters[par1].GetMapMax(); }
       par1_steps = (par1_max - par1_min) / fParameters[par1].GetDParam() + 1.;
     }
     if (IsParDiscrete(par2)) {
-      par2_min = HalStd::Discretize(
+      par2_min = Hal::Std::Discretize(
         fParameters[par2].GetNPoints(), fParameters[par2].GetMapMin(), fParameters[par2].GetMapMax(), par2_min, '-');
-      par1_max = HalStd::Discretize(
+      par1_max = Hal::Std::Discretize(
         fParameters[par2].GetNPoints(), fParameters[par2].GetMapMin(), fParameters[par2].GetMapMax(), par2_max, '+');
       if (par2_min < fParameters[par2].GetMapMin()) { par2_min = fParameters[par2].GetMapMin(); }
       if (par2_max > fParameters[par2].GetMapMax()) { par2_max = fParameters[par2].GetMapMax(); }

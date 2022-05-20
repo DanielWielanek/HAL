@@ -46,7 +46,7 @@ namespace Hal {
     fWrite(kFALSE),
     fV0Candiate(nullptr),
     fV0Tracks(nullptr) {
-    fTiers = ECutUpdate::kTwoTrackUpdate;
+    fTiers = ECutUpdate::kTwoTrack;
   }
 
   Task::EInitFlag V0BasicFinder::Init() {
@@ -111,18 +111,18 @@ namespace Hal {
   void V0BasicFinder::AddNegDauCut(const TrackCut& dau_neg, Option_t* opt) {
     TString option = opt;
     TString optz   = "";
-    if (HalStd::FindParam(option, "fast")) { optz = "fast"; }
-    if (HalStd::FindParam(option, "re")) { optz = optz + "+re"; }
-    if (HalStd::FindParam(option, "im")) { optz = optz + "+im"; }
+    if (Hal::Std::FindParam(option, "fast")) { optz = "fast"; }
+    if (Hal::Std::FindParam(option, "re")) { optz = optz + "+re"; }
+    if (Hal::Std::FindParam(option, "im")) { optz = optz + "+im"; }
     TrackAna::AddCut(dau_neg, optz + "{1}");
   }
 
   void V0BasicFinder::AddPosDauCut(const TrackCut& pos_cut, Option_t* opt) {
     TString option = opt;
     TString optz   = "";
-    if (HalStd::FindParam(option, "fast")) { optz = "fast"; }
-    if (HalStd::FindParam(option, "re")) { optz = optz + "+re"; }
-    if (HalStd::FindParam(option, "im")) { optz = optz + "+im"; }
+    if (Hal::Std::FindParam(option, "fast")) { optz = "fast"; }
+    if (Hal::Std::FindParam(option, "re")) { optz = optz + "+re"; }
+    if (Hal::Std::FindParam(option, "im")) { optz = optz + "+im"; }
     TrackAna::AddCut(pos_cut, optz + "{0}");
   }
 
@@ -145,10 +145,10 @@ namespace Hal {
   void V0BasicFinder::LinkCollections() {
     Int_t eventTrig = fCutContainer->GetEventCollectionsNo();
     for (int iEv = 0; iEv < eventTrig; iEv++) {
-      fCutContainer->LinkCollections(ECutUpdate::kEventUpdate, iEv, ECutUpdate::kTrackUpdate, 0);
-      fCutContainer->LinkCollections(ECutUpdate::kEventUpdate, iEv, ECutUpdate::kTrackUpdate, 1);
-      fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 0, ECutUpdate::kTwoTrackUpdate, 0);
-      fCutContainer->LinkCollections(ECutUpdate::kTrackUpdate, 1, ECutUpdate::kTwoTrackUpdate, 0);
+      fCutContainer->LinkCollections(ECutUpdate::kEvent, iEv, ECutUpdate::kTrack, 0);
+      fCutContainer->LinkCollections(ECutUpdate::kEvent, iEv, ECutUpdate::kTrack, 1);
+      fCutContainer->LinkCollections(ECutUpdate::kTrack, 0, ECutUpdate::kTwoTrack, 0);
+      fCutContainer->LinkCollections(ECutUpdate::kTrack, 1, ECutUpdate::kTwoTrack, 0);
     }
   }
 }  // namespace Hal

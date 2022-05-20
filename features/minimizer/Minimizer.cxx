@@ -10,7 +10,7 @@
 #include "Minimizer.h"
 
 #include "Cout.h"
-#include "HalStd.h"
+#include "Std.h"
 #include <Math/IFunctionfwd.h>
 #include <RtypesCore.h>
 #include <TMath.h>
@@ -244,9 +244,9 @@ namespace Hal {
     if (x1 < fParameters[par].GetMapMin()) { y1 = y3; }
     fTempParams[par] = fParamsMin[par];
     Double_t a, b, c;
-    HalStd::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
+    Hal::Std::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
     Double_t X1, X2;
-    HalStd::SolveParabola(a, b, c - 0.9 * fGlobMin / fNDF, X1, X2);
+    Hal::Std::SolveParabola(a, b, c - 0.9 * fGlobMin / fNDF, X1, X2);
     Double_t min_Fit = -b / (2.0 * a);
 
 
@@ -508,7 +508,7 @@ namespace Hal {
       y1 = chi_low;
       y2 = scalled_chi2;
       y3 = chi_high;
-      HalStd::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
+      Hal::Std::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
       fSmoothFits[poz]  = -b / (2.0 * a);
       fQuantumFits[poz] = fTempParams[poz];
       fErrors[poz]      = TMath::Sqrt(1.0 / a) * scalled_chi2;

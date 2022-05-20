@@ -60,11 +60,11 @@ namespace Hal {
     Int_t col      = bin.GetCollectionID();
     Int_t start, end;
     Bool_t loop = kFALSE;
-    if (HalStd::FindExpressionTwoValues(option, end, start, kTRUE)) { loop = kTRUE; }
+    if (Hal::Std::FindExpressionTwoValues(option, end, start, kTRUE)) { loop = kTRUE; }
     EventBinningCut* cut = nullptr;
-    if (HalStd::FindParam(option, "re")) {
+    if (Hal::Std::FindParam(option, "re")) {
       cut = bin.MakeCopyReal();
-    } else if (HalStd::FindParam(option, "im")) {
+    } else if (Hal::Std::FindParam(option, "im")) {
       cut = bin.MakeCopyImg();
     } else {
       cut = bin.MakeCopy();

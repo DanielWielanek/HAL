@@ -1,4 +1,4 @@
-#include "HalStd.h"
+#include "Std.h"
 #include "Const.h"
 #include "Cout.h"
 #include "XMLNode.h"
@@ -24,8 +24,8 @@
 #include <vector>
 
 
-NamespaceImp(HalStd);
-namespace HalStd {
+NamespaceImp(Hal::Std);
+namespace Hal::Std {
 
   void CopyFiles(TString from, TString to, Bool_t hidden) {
     TSystemFile file(from, from);
@@ -83,11 +83,11 @@ namespace HalStd {
 
   TString UpdateEnumToString(Hal::ECutUpdate upd) {
     switch (upd) {
-      case Hal::ECutUpdate::kNoUpdate: return ""; break;
-      case Hal::ECutUpdate::kEventUpdate: return "Event"; break;
-      case Hal::ECutUpdate::kTrackUpdate: return "Track"; break;
-      case Hal::ECutUpdate::kTwoTrackUpdate: return "TwoTrack"; break;
-      case Hal::ECutUpdate::kTwoTrackBackgroundUpdate: return "TwoTrackBackground"; break;
+      case Hal::ECutUpdate::kNo: return ""; break;
+      case Hal::ECutUpdate::kEvent: return "Event"; break;
+      case Hal::ECutUpdate::kTrack: return "Track"; break;
+      case Hal::ECutUpdate::kTwoTrack: return "TwoTrack"; break;
+      case Hal::ECutUpdate::kTwoTrackBackground: return "TwoTrackBackground"; break;
       default: return ""; break;
     }
   }
@@ -95,7 +95,7 @@ namespace HalStd {
     TString home = gSystem->Getenv("HOME");
     Hal::XMLFile parser(Form("%s/.hal_config.xml", home.Data()));
     Hal::XMLNode* root       = parser.GetRootNode();
-    std::vector<TString> arr = HalStd::ExplodeString(par_name, '/');
+    std::vector<TString> arr = Hal::Std::ExplodeString(par_name, '/');
     Hal::XMLNode* node       = root->GetChild(arr[0]);
     for (int i = 1; i < (int) arr.size(); i++) {
       node = node->GetChild(arr[i]);
@@ -387,4 +387,4 @@ namespace HalStd {
       return kFALSE;
     }
   }
-}  // namespace HalStd
+}  // namespace Hal::Std

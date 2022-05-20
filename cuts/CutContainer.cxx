@@ -18,7 +18,7 @@
 #include "Cout.h"
 #include "EventComplexCut.h"
 #include "EventVirtualCut.h"
-#include "HalStdString.h"
+#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "TrackComplexCut.h"
@@ -31,10 +31,10 @@ namespace Hal {
 
   CutContainer::CutContainer(ECutUpdate tiers) : fInit(kFALSE), fTempCutMonitors(NULL), fCutContainers(NULL) {
     switch (tiers) {
-      case ECutUpdate::kEventUpdate: fSize = 1; break;
-      case ECutUpdate::kTrackUpdate: fSize = 2; break;
-      case ECutUpdate::kTwoTrackUpdate: fSize = 3; break;
-      case ECutUpdate::kTwoTrackBackgroundUpdate: fSize = 4; break;
+      case ECutUpdate::kEvent: fSize = 1; break;
+      case ECutUpdate::kTrack: fSize = 2; break;
+      case ECutUpdate::kTwoTrack: fSize = 3; break;
+      case ECutUpdate::kTwoTrackBackground: fSize = 4; break;
       default: {
         Cout::PrintInfo("Unknown update ration in CutContainer", EInfo::kLessError);
       } break;
@@ -68,9 +68,9 @@ namespace Hal {
 
   void CutContainer::AddCut(const Cut& cut, Option_t* opt) {
     TString option = opt;
-    if (HalStd::FindParam(option, "im", kTRUE)) {
+    if (Hal::Std::FindParam(option, "im", kTRUE)) {
       Cut* tempcut = NULL;
-      Bool_t nulls = HalStd::FindParam(option, "null", kTRUE);
+      Bool_t nulls = Hal::Std::FindParam(option, "null", kTRUE);
       if (cut.InheritsFrom("TrackCut")) {
         tempcut = new TrackImaginaryCut(static_cast<const TrackCut&>(cut));
         if (nulls) static_cast<TrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
@@ -86,7 +86,7 @@ namespace Hal {
       AddCut(*tempcut, option);
       delete tempcut;
       return;
-    } else if (HalStd::FindParam(option, "re", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "re", kTRUE)) {
       Cut* tempcut = NULL;
       if (cut.InheritsFrom("TrackCut")) {
         tempcut = new TrackRealCut(static_cast<const TrackCut&>(cut));
@@ -121,14 +121,14 @@ namespace Hal {
 #endif
       return;
     }
-    if (HalStd::FindParam(option, "bckg")) place = ECutUpdate::kTwoTrackBackgroundUpdate;
+    if (Hal::Std::FindParam(option, "bckg")) place = ECutUpdate::kTwoTrackBackground;
     if (fSize <= static_cast<Int_t>(place)) {
       TString update_ratio_name;
       switch (place) {
-        case ECutUpdate::kEventUpdate: update_ratio_name = "event"; break;
-        case ECutUpdate::kTrackUpdate: update_ratio_name = "track"; break;
-        case ECutUpdate::kTwoTrackUpdate: update_ratio_name = "two_track"; break;
-        case ECutUpdate::kTwoTrackBackgroundUpdate: update_ratio_name = "two_track<background>"; break;
+        case ECutUpdate::kEvent: update_ratio_name = "event"; break;
+        case ECutUpdate::kTrack: update_ratio_name = "track"; break;
+        case ECutUpdate::kTwoTrack: update_ratio_name = "two_track"; break;
+        case ECutUpdate::kTwoTrackBackground: update_ratio_name = "two_track<background>"; break;
         default:
           Cout::PrintInfo(Form("Unknown update ratio for  %s", cut.CutName().Data()), EInfo::kLessWarning);
           update_ratio_name = "unknown";
@@ -169,12 +169,12 @@ namespace Hal {
       return;
     }
     ECutUpdate update = monitor.GetUpdateRatio();
-    if (update == ECutUpdate::kNoUpdate) return;
+    if (update == ECutUpdate::kNo) return;
     if (CheckTwoTracksOptions(*monitor_copy, option)) {
       delete monitor_copy;
       return;
     }
-    if (HalStd::FindParam(option, "bckg")) { update = ECutUpdate::kTwoTrackBackgroundUpdate; }
+    if (Hal::Std::FindParam(option, "bckg")) { update = ECutUpdate::kTwoTrackBackground; }
     if (fSize <= static_cast<Int_t>(update)) {
       Cout::PrintInfo("CutContainer can't hold this cut because it's update ratio is to big, check fTries or call "
                       "SetOption(backround) before adding cuts or cut monitors",
@@ -203,17 +203,17 @@ namespace Hal {
     }
     CutCollection* low  = NULL;
     CutCollection* high = NULL;
-    if (opt_low == ECutUpdate::kEventUpdate) {
+    if (opt_low == ECutUpdate::kEvent) {
       low = (CutCollection*) GetCutContainer(opt_low)->At(in_low);
-    } else if (opt_low == ECutUpdate::kTrackUpdate) {
+    } else if (opt_low == ECutUpdate::kTrack) {
       low = (CutCollection*) GetCutContainer(opt_low)->At(in_low);
     } else {
       Cout::PrintInfo("Invalid opt_low argument in CutContainer::LinkCollections", EInfo::kLessError);
       return;
     }
-    if (opt_high == ECutUpdate::kTrackUpdate) {
+    if (opt_high == ECutUpdate::kTrack) {
       high = (CutCollection*) GetCutContainer(opt_high)->At(in_high);
-    } else if (opt_high == ECutUpdate::kTwoTrackUpdate || opt_high == ECutUpdate::kTwoTrackBackgroundUpdate) {
+    } else if (opt_high == ECutUpdate::kTwoTrack || opt_high == ECutUpdate::kTwoTrackBackground) {
       high = (CutCollection*) GetCutContainer(opt_high)->At(in_high);
     } else {
       Cout::PrintInfo("Invalid opt_high argument in CutContainer::LinkCollections", EInfo::kLessError);
@@ -224,7 +224,7 @@ namespace Hal {
       return;
     }
     high->AddPreviousAddr(in_low, 0);
-    if (opt_high == ECutUpdate::kTwoTrackBackgroundUpdate) {
+    if (opt_high == ECutUpdate::kTwoTrackBackground) {
       if (!high->IsDummy()) low->AddNextAddr(in_high, kTRUE);
     } else {
       if (!high->IsDummy()) low->AddNextAddr(in_high, kFALSE);
@@ -311,44 +311,44 @@ namespace Hal {
   Package* CutContainer::Report() const {
     Package* pack = new Package(this, kTRUE);
     if (fSize > 0) {
-      pack->AddObject(new ParameterInt("Event_collections_No", GetCutContainer(ECutUpdate::kEventUpdate)->GetEntriesFast()));
+      pack->AddObject(new ParameterInt("Event_collections_No", GetCutContainer(ECutUpdate::kEvent)->GetEntriesFast()));
       TList* list1 = new TList();
       list1->SetOwner(kTRUE);
       list1->SetName("EventCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kEventUpdate)->GetEntriesFast(); i++) {
-        list1->Add(((CutCollection*) GetCutContainer(ECutUpdate::kEventUpdate)->UncheckedAt(i))->Report());
+      for (int i = 0; i < GetCutContainer(ECutUpdate::kEvent)->GetEntriesFast(); i++) {
+        list1->Add(((CutCollection*) GetCutContainer(ECutUpdate::kEvent)->UncheckedAt(i))->Report());
       }
       pack->AddObject(list1);
     }
     if (fSize > 1) {
-      pack->AddObject(new ParameterInt("Track_collections_No", GetCutContainer(ECutUpdate::kTrackUpdate)->GetEntriesFast()));
+      pack->AddObject(new ParameterInt("Track_collections_No", GetCutContainer(ECutUpdate::kTrack)->GetEntriesFast()));
       TList* list2 = new TList();
       list2->SetOwner(kTRUE);
       list2->SetName("TrackCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kTrackUpdate)->GetEntriesFast(); i++) {
-        list2->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTrackUpdate)->UncheckedAt(i))->Report());
+      for (int i = 0; i < GetCutContainer(ECutUpdate::kTrack)->GetEntriesFast(); i++) {
+        list2->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTrack)->UncheckedAt(i))->Report());
       }
       pack->AddObject(list2);
     }
     if (fSize > 2) {
       pack->AddObject(
-        new ParameterInt("TwoTrack_collections_No", GetCutContainer(ECutUpdate::kTwoTrackUpdate)->GetEntriesFast()));
+        new ParameterInt("TwoTrack_collections_No", GetCutContainer(ECutUpdate::kTwoTrack)->GetEntriesFast()));
       TList* list3 = new TList();
       list3->SetOwner(kTRUE);
       list3->SetName("TwoTrackCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kTwoTrackUpdate)->GetEntriesFast(); i++) {
-        list3->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTwoTrackUpdate)->UncheckedAt(i))->Report());
+      for (int i = 0; i < GetCutContainer(ECutUpdate::kTwoTrack)->GetEntriesFast(); i++) {
+        list3->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTwoTrack)->UncheckedAt(i))->Report());
       }
       pack->AddObject(list3);
     }
     if (fSize > 3) {
       pack->AddObject(new ParameterInt("TwoTrack_collections_background_No",
-                                       GetCutContainer(ECutUpdate::kTwoTrackBackgroundUpdate)->GetEntriesFast()));
+                                       GetCutContainer(ECutUpdate::kTwoTrackBackground)->GetEntriesFast()));
       TList* list4 = new TList();
       list4->SetOwner(kTRUE);
       list4->SetName("TwoTrackBackgroundCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kTwoTrackBackgroundUpdate)->GetEntriesFast(); i++) {
-        list4->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTwoTrackBackgroundUpdate)->UncheckedAt(i))->Report());
+      for (int i = 0; i < GetCutContainer(ECutUpdate::kTwoTrackBackground)->GetEntriesFast(); i++) {
+        list4->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTwoTrackBackground)->UncheckedAt(i))->Report());
       }
       pack->AddObject(list4);
     }
@@ -359,7 +359,7 @@ namespace Hal {
   Bool_t CutContainer::ExtractRegExp(const Cut& cut, Option_t* opt) {
     TString option = opt;
     Int_t number, jump;
-    Bool_t found = HalStd::FindExpressionTwoValues(option, number, jump, kTRUE);
+    Bool_t found = Hal::Std::FindExpressionTwoValues(option, number, jump, kTRUE);
     if (!found) return kFALSE;
     Int_t begin_collection = cut.GetCollectionID();
     Cut* temp_cut;
@@ -378,7 +378,7 @@ namespace Hal {
     TString expr = option(regexp);
     if (expr.Length() <= 0) { return kFALSE; }
     Int_t number, jump;
-    Bool_t found = HalStd::FindExpressionTwoValues(option, number, jump, kTRUE);
+    Bool_t found = Hal::Std::FindExpressionTwoValues(option, number, jump, kTRUE);
     if (!found) return kFALSE;
     // found regular exprestion like {number x number}
     Int_t begin_collection = cut.GetCollectionID();
@@ -401,22 +401,22 @@ namespace Hal {
   }
 
   Bool_t CutContainer::CheckTwoTracksOptions(const CutMonitor& cutmon, Option_t* opt) {
-    if (!(cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrackUpdate
-          || cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrackBackgroundUpdate)) {
+    if (!(cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrack
+          || cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground)) {
       return kFALSE;
     }
     TString option = opt;
-    if (HalStd::FindParam(option, "bckg") && HalStd::FindParam(option, "sig")) {  // bckg + sig options
-      HalStd::FindParam(option, "bckg", kTRUE);
-      HalStd::FindParam(option, "im", kTRUE);
+    if (Hal::Std::FindParam(option, "bckg") && Hal::Std::FindParam(option, "sig")) {  // bckg + sig options
+      Hal::Std::FindParam(option, "bckg", kTRUE);
+      Hal::Std::FindParam(option, "im", kTRUE);
       AddMonitor(cutmon, option + "bckg");
       AddMonitor(cutmon, option + "sig");
       return kTRUE;
-    } else if (HalStd::FindParam(option, "both", kTRUE)) {  // both options
+    } else if (Hal::Std::FindParam(option, "both", kTRUE)) {  // both options
       AddMonitor(cutmon, option + "+sig");
       AddMonitor(cutmon, option + "+bckg");
       return kTRUE;
-    } else if (!HalStd::FindParam(option, "bckg") && !HalStd::FindParam(option, "sig")) {  // no specification
+    } else if (!Hal::Std::FindParam(option, "bckg") && !Hal::Std::FindParam(option, "sig")) {  // no specification
       AddMonitor(cutmon, option + "+sig");
       AddMonitor(cutmon, option + "+bckg");
       return kTRUE;
@@ -425,21 +425,21 @@ namespace Hal {
   }
 
   Bool_t CutContainer::CheckTwoTracksOptions(const Cut& cut, Option_t* opt) {
-    if (!(cut.GetUpdateRatio() == ECutUpdate::kTwoTrackUpdate || cut.GetUpdateRatio() == ECutUpdate::kTwoTrackBackgroundUpdate)) {
+    if (!(cut.GetUpdateRatio() == ECutUpdate::kTwoTrack || cut.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground)) {
       return kFALSE;
     }
     TString option = opt;
-    if (HalStd::FindParam(option, "bckg") && HalStd::FindParam(option, "sig")) {  // bckg + sig options
-      HalStd::FindParam(option, "bckg", kTRUE);
-      HalStd::FindParam(option, "sig", kTRUE);
+    if (Hal::Std::FindParam(option, "bckg") && Hal::Std::FindParam(option, "sig")) {  // bckg + sig options
+      Hal::Std::FindParam(option, "bckg", kTRUE);
+      Hal::Std::FindParam(option, "sig", kTRUE);
       AddCut(cut, option);
       AddCut(cut, option);
       return kTRUE;
-    } else if (HalStd::FindParam(option, "both", kTRUE)) {  // both options
+    } else if (Hal::Std::FindParam(option, "both", kTRUE)) {  // both options
       AddCut(cut, option + "+sig");
       AddCut(cut, option + "+bckg");
       return kTRUE;
-    } else if (!HalStd::FindParam(option, "bckg") && !HalStd::FindParam(option, "sig")) {  // no specification
+    } else if (!Hal::Std::FindParam(option, "bckg") && !Hal::Std::FindParam(option, "sig")) {  // no specification
       AddCut(cut, option + "+sig");
       AddCut(cut, option + "+bckg");
       return kTRUE;
@@ -449,28 +449,28 @@ namespace Hal {
 
   Int_t CutContainer::GetEventCollectionsNo() const {
     if (fSize < 1) return 0;
-    return GetCutContainer(ECutUpdate::kEventUpdate)->GetEntriesFast();
+    return GetCutContainer(ECutUpdate::kEvent)->GetEntriesFast();
   }
 
   Int_t CutContainer::GetTrackCollectionsNo() const {
     if (fSize < 2) return 0;
-    return GetCutContainer(ECutUpdate::kTrackUpdate)->GetEntriesFast();
+    return GetCutContainer(ECutUpdate::kTrack)->GetEntriesFast();
   }
 
   Int_t CutContainer::GetTwoTrackCollectionsNo() const {
     if (fSize < 3) return 0;
-    return GetCutContainer(ECutUpdate::kTwoTrackUpdate)->GetEntriesFast();
+    return GetCutContainer(ECutUpdate::kTwoTrack)->GetEntriesFast();
   }
 
   Int_t CutContainer::GetTwoTrackCollectionsBackgroundNo() const {
     if (fSize < 4) return 0;
-    return GetCutContainer(ECutUpdate::kTwoTrackBackgroundUpdate)->GetEntriesFast();
+    return GetCutContainer(ECutUpdate::kTwoTrackBackground)->GetEntriesFast();
   }
 
   Bool_t CutContainer::ExtrackRegExp2(const Cut& cut, Option_t* opt) {
     TString option = opt;
     Int_t number;
-    if (!HalStd::FindExpressionSingleValue(option, number, kTRUE)) return kFALSE;
+    if (!Hal::Std::FindExpressionSingleValue(option, number, kTRUE)) return kFALSE;
     Cut* temp_cut = cut.MakeCopy();
     temp_cut->SetCollectionID(number);
     AddCut(*temp_cut, option.Data());
@@ -481,7 +481,7 @@ namespace Hal {
   Bool_t CutContainer::ExtractRegExp2(const CutMonitor& monit, Option_t* opt) {
     TString option = opt;
     Int_t number;
-    if (!HalStd::FindExpressionSingleValue(option, number, kTRUE)) return kFALSE;
+    if (!Hal::Std::FindExpressionSingleValue(option, number, kTRUE)) return kFALSE;
     CutMonitor* temp_mon = monit.MakeCopy();
     temp_mon->SetCollectionID(number);
     AddMonitor(*temp_mon, option.Data());
@@ -516,7 +516,7 @@ namespace Hal {
 
   void CutContainer::ExtractComplexMonitor(CutMonitor* mon, TString& opt) {
     Int_t flag = 0;
-    if (HalStd::FindParam(opt, "im") || HalStd::FindParam(opt, "re")) {
+    if (Hal::Std::FindParam(opt, "im") || Hal::Std::FindParam(opt, "re")) {
       if (opt.Contains("im")) flag = -1;
       if (opt.Contains("re")) flag = 1;
       opt.ReplaceAll("+im", "");
@@ -571,16 +571,16 @@ namespace Hal {
 
   Int_t CutContainer::GetCollectionsNo(ECutUpdate update) const {
     switch (update) {
-      case ECutUpdate::kEventUpdate: {
+      case ECutUpdate::kEvent: {
         return GetEventCollectionsNo();
       } break;
-      case ECutUpdate::kTrackUpdate: {
+      case ECutUpdate::kTrack: {
         return GetTrackCollectionsNo();
       } break;
-      case ECutUpdate::kTwoTrackUpdate: {
+      case ECutUpdate::kTwoTrack: {
         return GetTwoTrackCollectionsNo();
       } break;
-      case ECutUpdate::kTwoTrackBackgroundUpdate: {
+      case ECutUpdate::kTwoTrackBackground: {
         return GetTwoTrackCollectionsBackgroundNo();
       } break;
     }
@@ -589,22 +589,22 @@ namespace Hal {
 
   void CutContainer::AddVirtualCut(ECutUpdate update, Int_t col) {
     switch (update) {
-      case ECutUpdate::kEventUpdate: {
+      case ECutUpdate::kEvent: {
         EventVirtualCut v;
         v.SetCollectionID(col);
         AddCut(v);
       } break;
-      case ECutUpdate::kTrackUpdate: {
+      case ECutUpdate::kTrack: {
         TrackVirtualCut v;
         v.SetCollectionID(col);
         AddCut(v);
       } break;
-      case ECutUpdate::kTwoTrackUpdate: {
+      case ECutUpdate::kTwoTrack: {
         TwoTrackVirtualCut v;
         v.SetCollectionID(col);
         AddCut(v, "sig");
       } break;
-      case ECutUpdate::kTwoTrackBackgroundUpdate: {
+      case ECutUpdate::kTwoTrackBackground: {
         TwoTrackVirtualCut v;
         v.SetCollectionID(col);
         AddCut(v, "bckg");

@@ -9,12 +9,12 @@
 
 #include <TString.h>
 
-#include "HalStd.h"
+#include "Std.h"
 #include "TrackComplexCut.h"
 #include "TrackVirtualCut.h"
 
 namespace Hal {
-  TrackCut::TrackCut(const Int_t i) : Cut(i, ECutUpdate::kTrackUpdate, "N_{tracks}") {
+  TrackCut::TrackCut(const Int_t i) : Cut(i, ECutUpdate::kTrack, "N_{tracks}") {
     // fUnitName = " ";
   }
 

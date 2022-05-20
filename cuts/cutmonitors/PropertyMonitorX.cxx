@@ -14,8 +14,8 @@
 #include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
 
@@ -28,7 +28,7 @@
 namespace Hal {
   void PropertyMonitorX::CreateHistograms() {
     TH1::AddDirectory(kFALSE);
-    TString title = Form("%s", HalStd::RemoveUnits(fXaxisName).Data());
+    TString title = Form("%s", Hal::Std::RemoveUnits(fXaxisName).Data());
     TString name  = "Passed";
     fHistoPassed  = new TH1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
     fHistoPassed->GetXaxis()->SetTitle(fXaxisName);
@@ -92,7 +92,7 @@ namespace Hal {
 
   //========================================================================
   EventFieldMonitorX::EventFieldMonitorX(Int_t fieldID) :
-    PropertyMonitorX("", "N_{events}", ECutUpdate::kEventUpdate), fFieldID(fieldID) {}
+    PropertyMonitorX("", "N_{events}", ECutUpdate::kEvent), fFieldID(fieldID) {}
 
   void EventFieldMonitorX::Update(Bool_t passed, TObject* obj) {
     Event* ev = (Event*) obj;
@@ -110,7 +110,7 @@ namespace Hal {
   }
   //========================================================================
   TrackFieldMonitorX::TrackFieldMonitorX(Int_t fieldID) :
-    PropertyMonitorX("", "N_{tracks}", ECutUpdate::kTrackUpdate), fFieldID(fieldID) {}
+    PropertyMonitorX("", "N_{tracks}", ECutUpdate::kTrack), fFieldID(fieldID) {}
 
   void TrackFieldMonitorX::Update(Bool_t passed, TObject* obj) {
     Track* tr = (Track*) obj;

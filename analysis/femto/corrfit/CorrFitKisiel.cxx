@@ -28,8 +28,8 @@
 #include <TList.h>
 #include <TObjArray.h>
 
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdString.h"
 
 namespace Hal {
   CorrFitKisiel::CorrFitKisiel(Int_t params) : CorrFit1DCF(params), fSkipError(kFALSE) {}
@@ -142,12 +142,12 @@ namespace Hal {
 
   void CorrFitKisiel::Draw(Option_t* draw_option) {
     TString option        = draw_option;
-    Bool_t drawNormalized = HalStd::FindParam(option, "norm", kTRUE);
+    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
     Double_t Rmid         = 0.5 * (fMaps[0]->GetRmax() + fMaps[0]->GetKstarMin());
     Double_t draw_min, draw_max;
     Bool_t set_limits = ExtrDraw(option, draw_min, draw_max);
 
-    if (HalStd::FindParam(option, "full") && HalStd::FindParam(option, "ee")) {
+    if (Hal::Std::FindParam(option, "full") && Hal::Std::FindParam(option, "ee")) {
       TH1* cf        = GetTHForDrawing(drawNormalized);
       TF1* draw_func = GetFunctionForDrawing();
       cf->SetMarkerStyle(kFullSquare);

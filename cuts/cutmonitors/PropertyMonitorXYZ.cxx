@@ -14,8 +14,8 @@
 #include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
 
@@ -28,9 +28,9 @@
 namespace Hal {
   void PropertyMonitorXYZ::CreateHistograms() {
     TString title = Form("%s vs %s vs %s",
-                         HalStd::RemoveUnits(fZaxisName).Data(),
-                         HalStd::RemoveUnits(fYaxisName).Data(),
-                         HalStd::RemoveUnits(fXaxisName).Data());
+                         Hal::Std::RemoveUnits(fZaxisName).Data(),
+                         Hal::Std::RemoveUnits(fYaxisName).Data(),
+                         Hal::Std::RemoveUnits(fXaxisName).Data());
     TString
       name;  // = Form("%s_vs_%s_vs_%s",
              // fCut[0]->GetUnit(fOptionAxis[0]).Data(),fCut[1]->GetUnit(fOptionAxis[1]).Data(),fCut[2]->GetUnit(fOptionAxis[2]).Data());
@@ -123,7 +123,7 @@ namespace Hal {
   }
   //========================================================================
   EventFieldMonitorXYZ::EventFieldMonitorXYZ(Int_t fieldIDX, Int_t fiedIDY, Int_t fiedIDZ) :
-    PropertyMonitorXYZ("", "", "", ECutUpdate::kEventUpdate), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {}
+    PropertyMonitorXYZ("", "", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {}
 
   void EventFieldMonitorXYZ::Update(Bool_t passed, TObject* obj) {
 
@@ -145,7 +145,7 @@ namespace Hal {
   }
   //========================================================================
   TrackFieldMonitorXYZ::TrackFieldMonitorXYZ(Int_t fieldIDX, Int_t fiedIDY, Int_t fiedIDZ) :
-    PropertyMonitorXYZ("", "", "", ECutUpdate::kTrackUpdate), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {}
+    PropertyMonitorXYZ("", "", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {}
 
   void TrackFieldMonitorXYZ::Update(Bool_t passed, TObject* obj) {
 

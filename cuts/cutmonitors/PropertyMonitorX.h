@@ -30,7 +30,7 @@ namespace Hal {
      * @param yLabel name of y axis
      * @param ratio update ratio
      */
-    PropertyMonitorX(TString xLabel = "", TString yLabel = "", ECutUpdate ratio = ECutUpdate::kEventUpdate);
+    PropertyMonitorX(TString xLabel = "", TString yLabel = "", ECutUpdate ratio = ECutUpdate::kEvent);
     PropertyMonitorX(const PropertyMonitorX& other);
     /**
      * Assignment operator

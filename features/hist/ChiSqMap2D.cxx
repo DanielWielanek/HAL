@@ -10,7 +10,7 @@
 #include "ChiSqMap2D.h"
 #include "Splines.h"
 
-#include "HalStdMath.h"
+#include "StdMath.h"
 #include <TAttLine.h>
 #include <TAxis.h>
 #include <TH1.h>
@@ -245,10 +245,10 @@ namespace Hal {
     Double_t x2 = X;
     Double_t x3 = X + dX;
     Double_t a, b, c;
-    HalStd::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
+    Hal::Std::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
     Double_t X1, X2;
     if (thres <= 0) return 1.0 / TMath::Sqrt(a);
-    HalStd::SolveParabola(a, b, c - y2 * (1.0 + thres), X1, X2);
+    Hal::Std::SolveParabola(a, b, c - y2 * (1.0 + thres), X1, X2);
     return TMath::Max(TMath::Abs(X1 - X), TMath::Abs(X2 - X));
   }
 
@@ -273,10 +273,10 @@ namespace Hal {
     Double_t x2 = X;
     Double_t x3 = X + dX;
     Double_t a, b, c;
-    HalStd::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
+    Hal::Std::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
     Double_t X1, X2;
     if (thres <= 0) return 1.0 / TMath::Sqrt(a);
-    HalStd::SolveParabola(a, b, c - y2 * (1.0 + thres), X1, X2);
+    Hal::Std::SolveParabola(a, b, c - y2 * (1.0 + thres), X1, X2);
     return TMath::Max(TMath::Abs(X1 - X), TMath::Abs(X2 - X));
   }
 
@@ -296,7 +296,7 @@ namespace Hal {
     Double_t x2 = X;
     Double_t x3 = X + dX;
     Double_t a, b, c;
-    HalStd::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
+    Hal::Std::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
     return -b / (2.0 * a);
   }
 
@@ -316,7 +316,7 @@ namespace Hal {
     Double_t x2 = X;
     Double_t x3 = X + dX;
     Double_t a, b, c;
-    HalStd::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
+    Hal::Std::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
     return -b / (2.0 * a);
   }
 

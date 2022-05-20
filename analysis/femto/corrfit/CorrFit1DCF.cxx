@@ -26,9 +26,9 @@
 #include "CorrFitHDFunc.h"
 #include "Cout.h"
 #include "Femto1DCF.h"
-#include "HalStd.h"
-#include "HalStdHist.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdHist.h"
+#include "StdString.h"
 #include "Splines.h"
 
 namespace Hal {
@@ -67,9 +67,9 @@ namespace Hal {
     if (fDrawFunc.size() == 0) fDrawFunc.resize(1);
     Double_t draw_min, draw_max;
     Bool_t set_limits     = ExtrDraw(option, draw_min, draw_max);
-    Bool_t drawNormalized = HalStd::FindParam(option, "norm", kTRUE);
-    Bool_t drawFull       = HalStd::FindParam(option, "full", kTRUE);
-    Bool_t drawSame       = HalStd::FindParam(option, "same", kTRUE);
+    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
+    Bool_t drawFull       = Hal::Std::FindParam(option, "full", kTRUE);
+    Bool_t drawSame       = Hal::Std::FindParam(option, "same", kTRUE);
     if (drawFull) {
       TH1* cf = GetTHForDrawing(drawNormalized);
       cf->SetMarkerStyle(kFullSquare);
@@ -94,7 +94,7 @@ namespace Hal {
         GetTF1(0)->FixParameter(i, GetParameter(i));
       }
       Bool_t draw_leg = kFALSE;
-      if (HalStd::FindParam(option, "leg", kTRUE)) draw_leg = kTRUE;
+      if (Hal::Std::FindParam(option, "leg", kTRUE)) draw_leg = kTRUE;
 
       if (drawNormalized) GetTF1(0)->SetParameter(Norm(), 1);
       fDrawFunc[0].second = gPad;
@@ -220,7 +220,7 @@ namespace Hal {
   void CorrFit1DCF::EstimateActiveBins() {
     fActiveBins = 0;
     if (fOwnRangeMap) {
-      if (!HalStd::AreSimilar(fDenominatorHistogram, fMask, kFALSE)) {
+      if (!Hal::Std::AreSimilar(fDenominatorHistogram, fMask, kFALSE)) {
         delete fMask;
         fMask = NULL;
         Cout::Text("Non compatible mask in corrfit", "L", kOrange);
@@ -283,7 +283,7 @@ namespace Hal {
   }
 
   TF1* CorrFit1DCF::GetFunctionForDrawing() const {
-    TF1* draw_func = new TF1(HalStd::GetUniqueName("func_draw"),
+    TF1* draw_func = new TF1(Hal::Std::GetUniqueName("func_draw"),
                              this,
                              &CorrFit1DCF::GetFunDrawable,
                              fRange.Get(0),
@@ -303,7 +303,7 @@ namespace Hal {
 
   TH1* CorrFit1DCF::GetTHForDrawing(Bool_t normalize) const {
     TH1* cf = (TH1*) ((Femto1DCF*) fCF)->GetHist(kFALSE);
-    cf->SetName(HalStd::GetUniqueName(cf->GetName()));
+    cf->SetName(Hal::Std::GetUniqueName(cf->GetName()));
     if (normalize) cf->Scale(1.0 / GetNorm());
     cf->SetStats(kFALSE);
     cf->SetMinimum(0);
@@ -332,16 +332,16 @@ namespace Hal {
     if (chi <= 1000)
       chi_s = Form("%4.3f", chi);
     else
-      chi_s = HalStd::RoundToString(chi, 2, "prefix");
+      chi_s = Hal::Std::RoundToString(chi, 2, "prefix");
     if (chindf <= 1000) {
       chindf_s = Form("%4.3f", chindf);
     } else {
-      chindf_s = HalStd::RoundToString(chindf, 2, "prefix");
+      chindf_s = Hal::Std::RoundToString(chindf, 2, "prefix");
     }
     if (ndf <= 1000) {
       ndf_s = Form("%i", (int) ndf);
     } else {
-      ndf_s = HalStd::RoundToString(ndf, 2, "prefix");
+      ndf_s = Hal::Std::RoundToString(ndf, 2, "prefix");
     }
     leg->AddEntry((TObject*) 0x0, Form("#chi^{2}/NDF %s (%s/%s)", chindf_s.Data(), chi_s.Data(), ndf_s.Data()), "");
     return leg;

@@ -8,8 +8,8 @@
  */
 
 #include "Cout.h"
-#include "HalStd.h"
 #include "Package.h"
+#include "Std.h"
 #include "XMLNode.h"
 
 #include <TCollection.h>
@@ -23,7 +23,6 @@
 #include <TObject.h>
 #include <TString.h>
 #include <TSystem.h>
-
 
 
 /** \addtogroup hal-merger
@@ -347,8 +346,8 @@ int main(int argc, char* argv[]) {
       if (iStep + 1 == nSteps) { outFile = argname; }
       gSystem->Exec(Form("hal-merger %s %s", outFile.Data(), name.Data()));
       if (iStep + 1 == nSteps) {  // clean up temp files if present
-        if (HalStd::FileExists(file[0])) gSystem->Exec("rm temp_1.root_t ");
-        if (HalStd::FileExists(file[1])) gSystem->Exec("rm temp_2.root_t ");
+        if (Hal::Std::FileExists(file[0])) gSystem->Exec("rm temp_1.root_t ");
+        if (Hal::Std::FileExists(file[1])) gSystem->Exec("rm temp_2.root_t ");
       }
     }
   }

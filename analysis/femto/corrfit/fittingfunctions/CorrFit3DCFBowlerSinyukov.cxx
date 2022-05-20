@@ -25,8 +25,8 @@
 #include "Cout.h"
 #include "Femto3DCF.h"
 #include "Femto3DCFQinv.h"
-#include "HalStdHist.h"
-#include "HalStdString.h"
+#include "StdHist.h"
+#include "StdString.h"
 
 
 namespace Hal {
@@ -93,7 +93,7 @@ namespace Hal {
   void CorrFit3DCFBowlerSinyukov::LoadMap(TH2D* h, Option_t* opt) {
     TString option = opt;
     if (fCFs) delete fCFs;
-    if (HalStd::FindParam(option, "krmap")) {
+    if (Hal::Std::FindParam(option, "krmap")) {
       fCFs = new Spline2D(h);
       //		h->RebinY(4);
       //		h->RebinX(2);
@@ -166,7 +166,7 @@ namespace Hal {
       delete fCFs;
       fCFs = new Spline2D(cf_map, "linear");
       fCFs->Refit();
-      if (HalStd::FindParam(option, "dump")) {
+      if (Hal::Std::FindParam(option, "dump")) {
         TFile* dump = new TFile("dump.root", "recreate");
         cf_map->Write();
         dump->Close();
@@ -174,7 +174,7 @@ namespace Hal {
         delete cf_map;
       }
     } else {
-      if (HalStd::FindParam(option, "lcms")) {
+      if (Hal::Std::FindParam(option, "lcms")) {
         TH2D* h2 = new TH2D("kstarMap",
                             "kstarMap",
                             h->GetNbinsX(),
@@ -195,9 +195,9 @@ namespace Hal {
         delete h2;
       } else {
         TH2D* temp = (TH2D*) h->Clone();
-        HalStd::HistogramEdges(temp, "x+uv", 0);
-        HalStd::HistogramEdges(temp, "y+uv", 0);
-        HalStd::HistogramEdges(temp, "z+uv", 0);
+        Hal::Std::HistogramEdges(temp, "x+uv", 0);
+        Hal::Std::HistogramEdges(temp, "y+uv", 0);
+        Hal::Std::HistogramEdges(temp, "z+uv", 0);
         fCFs = new Spline2D(temp);
         delete temp;
       }

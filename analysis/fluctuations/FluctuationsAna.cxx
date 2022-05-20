@@ -20,7 +20,7 @@
 #include "CutContainer.h"
 #include "Event.h"
 #include "EventVirtualCut.h"
-#include "HalStd.h"
+#include "Std.h"
 #include "MemoryMapManager.h"
 #include "Package.h"
 
@@ -35,7 +35,7 @@ namespace Hal {
     if (fEventCollectionsNo == 0) { AddCut(EventVirtualCut()); }
     for (int i = 1; i < fEventCollectionsNo; i++) {
       for (int j = 0; j < fTackCollectionsPerEvent; j++) {
-        fCutContainer->ReplicateCollection(ECutUpdate::kTrackUpdate, j, fTackCollectionsPerEvent * i + j);
+        fCutContainer->ReplicateCollection(ECutUpdate::kTrack, j, fTackCollectionsPerEvent * i + j);
       }
     }
     fTrackCollectionsNo = fCutContainer->GetTrackCollectionsNo();

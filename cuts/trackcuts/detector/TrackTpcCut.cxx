@@ -16,7 +16,7 @@
 #include "Cut.h"
 #include "DataFormat.h"
 #include "ExpTrack.h"
-#include "HalStdString.h"
+#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "TpcTrack.h"
@@ -58,13 +58,13 @@ namespace Hal {
   }
 
   void TrackTpcCut::SetSigma(Double_t min, Double_t max, TString opt) {
-    if (HalStd::FindParam(opt, "pi")) {
+    if (Hal::Std::FindParam(opt, "pi")) {
       SetMinMax(min, max, PionSigma());
-    } else if (HalStd::FindParam(opt, "K")) {
+    } else if (Hal::Std::FindParam(opt, "K")) {
       SetMinMax(min, max, KaonSigma());
-    } else if (HalStd::FindParam(opt, "p")) {
+    } else if (Hal::Std::FindParam(opt, "p")) {
       SetMinMax(min, max, ProtonSigma());
-    } else if (HalStd::FindParam(opt, "e")) {
+    } else if (Hal::Std::FindParam(opt, "e")) {
       SetMinMax(min, max, ElectronSigma());
     } else {
       Cout::Text("Wrong SetSigma flag please use pi/K/p/e", "L", kOrange);
@@ -152,13 +152,13 @@ namespace Hal {
     TrackExpCut(other), fParticleType(other.fParticleType), fMode(other.fMode) {}
 
   void TrackTpcCut::SetActiveSigma(TString flag) {
-    if (HalStd::FindParam(flag, "pi")) {
+    if (Hal::Std::FindParam(flag, "pi")) {
       fParticleType = PionSigma();
-    } else if (HalStd::FindParam(flag, "K")) {
+    } else if (Hal::Std::FindParam(flag, "K")) {
       fParticleType = KaonSigma();
-    } else if (HalStd::FindParam(flag, "p")) {
+    } else if (Hal::Std::FindParam(flag, "p")) {
       fParticleType = ProtonSigma();
-    } else if (HalStd::FindParam(flag, "e")) {
+    } else if (Hal::Std::FindParam(flag, "e")) {
       fParticleType = ElectronSigma();
     } else {
       Cout::Text("Wrong SetActiveSigma flag please use pi/K/p/e", "L", kOrange);

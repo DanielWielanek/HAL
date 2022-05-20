@@ -57,10 +57,10 @@ namespace Hal {
 
   void QATrackTask::SetQAPlot(const QAPlot& plot) {
     switch (plot.GetUpdateRatio()) {
-      case ECutUpdate::kEventUpdate: {
+      case ECutUpdate::kEvent: {
         fTempEventPlot = plot.MakeCopy();
       } break;
-      case ECutUpdate::kTrackUpdate: {
+      case ECutUpdate::kTrack: {
         fTempTrackPlot = plot.MakeCopy();
       } break;
       default: {
@@ -82,7 +82,7 @@ namespace Hal {
   Task::EInitFlag QATrackTask::Init() {
     Task::EInitFlag stat = TrackAna::Init();
     if (stat == Task::EInitFlag::kFATAL) return stat;
-    if (fTempEventPlot == nullptr) { fTempEventPlot = new QAPlot("Null", 0, 0, 0, ECutUpdate::kEventUpdate); }
+    if (fTempEventPlot == nullptr) { fTempEventPlot = new QAPlot("Null", 0, 0, 0, ECutUpdate::kEvent); }
     if (fTempTrackPlot == nullptr) {
       Cout::PrintInfo("Lack of Track QA", EInfo::kLessError);
       return Task::EInitFlag::kFATAL;
@@ -123,7 +123,7 @@ namespace Hal {
   }
 
   void QATrackTask::LinkCollections() {
-    fCutContainer->LinkCollections(ECutUpdate::kEventUpdate, ECutUpdate::kTrackUpdate, CutContainer::ELinkPolicy::kAnyToAny);
+    fCutContainer->LinkCollections(ECutUpdate::kEvent, ECutUpdate::kTrack, CutContainer::ELinkPolicy::kAnyToAny);
   }
 
   Package* QATrackTask::Report() const {

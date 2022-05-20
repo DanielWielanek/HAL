@@ -17,7 +17,7 @@
 
 #include <vector>
 
-#include "HalStd.h"
+#include "Std.h"
 
 namespace Hal{
 class Package;
@@ -154,7 +154,7 @@ public:
   /** default constructor
    **@param size - number of values in cut
    */
-  Cut(const Int_t size = 1, ECutUpdate update = ECutUpdate::kNoUpdate, TString groupFlag = "");
+  Cut(const Int_t size = 1, ECutUpdate update = ECutUpdate::kNo, TString groupFlag = "");
   /**
    * copy constructor
    * @param cut

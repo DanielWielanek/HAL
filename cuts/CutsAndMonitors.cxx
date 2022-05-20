@@ -203,9 +203,9 @@ namespace Hal {
     if (request_no < 0 || request_no > fCutMonitorRequests.size()) return nullptr;
     CutMonitorRequest req = fCutMonitorRequests[request_no];
     auto TransformOpt     = [](TString opt) {
-      if (HalStd::FindParam(opt, "re")) {
+      if (Hal::Std::FindParam(opt, "re")) {
         return "re";
-      } else if (HalStd::FindParam(opt, "im")) {
+      } else if (Hal::Std::FindParam(opt, "im")) {
         return "im";
       } else {
         return "";

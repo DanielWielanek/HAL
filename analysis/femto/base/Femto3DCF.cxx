@@ -28,7 +28,7 @@
 #include <TSystem.h>
 
 #include "CorrFit3DCF.h"
-#include "HalStdString.h"
+#include "StdString.h"
 
 namespace Hal {
   Femto3DCF::Femto3DCF(TString name, Femto::EKinematics frame) : DividedHisto3D(name), fFrame(frame) {
@@ -191,21 +191,21 @@ namespace Hal {
     TH1D* res      = DividedHisto3D::Projection3DTo1D(min1, max1, min2, max2, opt);
     Int_t axis     = 0;
     TString option = opt;
-    if (HalStd::FindParam(option, "y")) {
+    if (Hal::Std::FindParam(option, "y")) {
       axis = 1;
-    } else if (HalStd::FindParam(option, "z")) {
+    } else if (Hal::Std::FindParam(option, "z")) {
       axis = 2;
     } else {
       axis = 0;
     }
     TString titleY;
-    if (HalStd::FindParam(option, "num") || HalStd::FindParam(option, "den")) {
+    if (Hal::Std::FindParam(option, "num") || Hal::Std::FindParam(option, "den")) {
       titleY = "dN_{pairs}/d%s";
     } else {
       titleY = "CF(%s)";
     }
     TString axisTitle = Femto::KinematicsToAxisLabel(fFrame, axis, 3);
-    axisTitle         = HalStd::RemoveUnits(axisTitle);
+    axisTitle         = Hal::Std::RemoveUnits(axisTitle);
     axisTitle.ReplaceAll(" ", "");
     titleY = Form(titleY.Data(), axisTitle.Data());
 
@@ -232,11 +232,11 @@ namespace Hal {
     TString option = opt;
     Double_t draw_min, draw_max;
     Bool_t set_limits = ExtrDraw(option, draw_min, draw_max);
-    if (HalStd::FindParam(option, "num", kTRUE)) {
+    if (Hal::Std::FindParam(option, "num", kTRUE)) {
       fNum->Draw(option);
-    } else if (HalStd::FindParam(option, "den", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "den", kTRUE)) {
       fDen->Draw(option);
-    } else if (HalStd::FindParam(option, "all", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "all", kTRUE)) {
       TString name = "Divided 1D";
       Int_t middle_x[2];
       Int_t middle_y[2];
@@ -328,7 +328,7 @@ namespace Hal {
       long_func->Draw(option);
       gPad = c1;
       gPad->cd();
-    } else if (HalStd::FindParam(option, "diag2", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "diag2", kTRUE)) {
       TString drawOpt = option;
       TH1D** array    = GetDiagProj("diag2");
       TVirtualPad* c1 = gPad;
@@ -337,7 +337,7 @@ namespace Hal {
         c1->cd(i + 1);
         array[i]->Draw(option);
       }
-    } else if (HalStd::FindParam(option, "diag1", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "diag1", kTRUE)) {
       TVirtualPad* c1 = gPad;
       if (c1->GetListOfPrimitives()->GetEntries() < 7) c1->Divide(4, 2);
       TH1D** array = GetDiagProj("diag1");
@@ -349,7 +349,7 @@ namespace Hal {
       option.ReplaceAll("all", "");
       TString name = "Divided 1D";
       Bool_t norm  = kFALSE;
-      if (HalStd::FindParam(option, "norm", kTRUE)) { norm = kTRUE; }
+      if (Hal::Std::FindParam(option, "norm", kTRUE)) { norm = kTRUE; }
       option.ReplaceAll("norm", "");
       TH1D** arr = GetDiagProj(option, norm);
       option.ReplaceAll("rgb", "");
@@ -491,16 +491,16 @@ namespace Hal {
 
   TH1D** Femto3DCF::GetDiagProj(Option_t* opt, Bool_t normalized) const {
     TString option = opt;
-    if (HalStd::FindParam(option, "cf", kTRUE)) {
+    if (Hal::Std::FindParam(option, "cf", kTRUE)) {
       TH3D* h            = (TH3D*) GetHist(normalized);
       TString options[3] = {"x", "y", "z"};
       TString titles[3]  = {"out", "side", "long"};
       TH1D** array       = new TH1D*[3];
       Bool_t rgb         = kFALSE;
       Color_t colors[3]  = {kRed, kBlue, kGreen};
-      if (HalStd::FindParam(option, "rgb", kTRUE)) rgb = kTRUE;
+      if (Hal::Std::FindParam(option, "rgb", kTRUE)) rgb = kTRUE;
       for (int i = 0; i < 3; i++) {
-        array[i] = HalStd::GetDiagonalProjection1D(h, options[i], 0, 0);
+        array[i] = Hal::Std::GetDiagonalProjection1D(h, options[i], 0, 0);
         array[i]->SetTitle(titles[i]);
         array[i]->SetStats(0);
         TString xTitle = array[i]->GetXaxis()->GetTitle();
@@ -528,7 +528,7 @@ namespace Hal {
       };
       TH1D** array = new TH1D*[7];
       for (int i = 0; i < 7; i++) {
-        array[i] = HalStd::GetDiagonalProjection1D(h, options[i], 0, 0);
+        array[i] = Hal::Std::GetDiagonalProjection1D(h, options[i], 0, 0);
         array[i]->SetTitle(titles[i]);
         array[i]->SetStats(0);
         TString xTitle = array[i]->GetXaxis()->GetTitle();
@@ -559,7 +559,7 @@ namespace Hal {
                             "out+side+long-"};
       TH1D** array       = new TH1D*[13];
       for (int i = 0; i < 13; i++) {
-        array[i] = HalStd::GetDiagonalProjection1D(h, options[i], 0, 0);
+        array[i] = Hal::Std::GetDiagonalProjection1D(h, options[i], 0, 0);
         array[i]->SetTitle(titles[i]);
         array[i]->SetStats(0);
         TString xTitle = array[i]->GetXaxis()->GetTitle();

@@ -9,7 +9,7 @@
 #include "CorrFitGUI.h"
 #include "ChiSqMap2D.h"
 #include "CorrFitFunc.h"
-#include "HalStd.h"
+#include "Std.h"
 
 #include <TCanvas.h>
 #include <TColor.h>
@@ -129,7 +129,7 @@ namespace Hal {
     if (fDiscrete) {
       Int_t par_sec = 0;
       Double_t val =
-        HalStd::Discretize(parConf.GetNPoints(), parConf.GetMapMin(), parConf.GetMapMax(), parConf.GetFittedValue(), '=');
+        Hal::Std::Discretize(parConf.GetNPoints(), parConf.GetMapMin(), parConf.GetMapMax(), parConf.GetFittedValue(), '=');
 
       Int_t entry = 0;
       for (Double_t a = parConf.GetMapMin(); a <= parConf.GetMapMax(); a += parConf.GetDParam()) {

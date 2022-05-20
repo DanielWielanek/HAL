@@ -12,7 +12,7 @@
 #include "TwoTrack.h"
 
 namespace Hal {
-  TwoTrackCut::TwoTrackCut(const Int_t i) : Cut(i, ECutUpdate::kTwoTrackUpdate, "N_{pairs}") {}
+  TwoTrackCut::TwoTrackCut(const Int_t i) : Cut(i, ECutUpdate::kTwoTrack, "N_{pairs}") {}
 
   TwoTrackCut::~TwoTrackCut() {
     // TODO Auto-generated destructor stub

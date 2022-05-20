@@ -11,7 +11,7 @@
 #ifndef HALANAFILE_H_
 #define HALANAFILE_H_
 
-#include "HalStd.h"
+#include "Std.h"
 
 #include <TObject.h>
 #include <TString.h>
@@ -194,7 +194,7 @@ namespace Hal {
      * @param update - update
      * @param col - collection ID (If -1 print all colllections)
      */
-    void PrintCuts(Hal::ECutUpdate update = Hal::ECutUpdate::kNoUpdate, Int_t col = -1) const;
+    void PrintCuts(Hal::ECutUpdate update = Hal::ECutUpdate::kNo, Int_t col = -1) const;
     /**
      *
      * @param update

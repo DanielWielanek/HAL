@@ -9,7 +9,7 @@
 
 #include "Cout.h"
 #include "Cut.h"
-#include "HalStdString.h"
+#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
 
@@ -57,7 +57,7 @@ namespace Hal {
     fExUpdate = kFALSE;
     fCuts     = 0;
     if (fAxisNo > 0) {
-      fUpdateRatio = ECutUpdate::kNoUpdate;
+      fUpdateRatio = ECutUpdate::kNo;
       fCut         = new Cut*[fAxisNo];
       fCutNames    = new TString[fAxisNo];
       fAxisBins    = new Int_t[fAxisNo];
@@ -142,7 +142,7 @@ namespace Hal {
   void CutMonitor::CreateHistograms() {}
 
   void CutMonitor::AddCut(TString cut, Int_t parameter_no) {
-    if (HalStd::FindParam(cut, "Cloned")) {
+    if (Hal::Std::FindParam(cut, "Cloned")) {
       Cout::PrintInfo("You can't add Cloned Cuts to CutMonitor", EInfo::kLessWarning);
       return;
     }
@@ -153,14 +153,14 @@ namespace Hal {
     } else {
       classdata = TClass::GetClass(cut);
     }
-    ECutUpdate newUpd = ECutUpdate::kNoUpdate;
+    ECutUpdate newUpd = ECutUpdate::kNo;
 
     if (classdata == NULL) {
       Cout::PrintInfo(Form("Cannot find class %s", cut.Data()), EInfo::kLessWarning);
     } else {
-      if (classdata->InheritsFrom("EventCut")) newUpd = ECutUpdate::kEventUpdate;
-      if (classdata->InheritsFrom("TrackCut")) newUpd = ECutUpdate::kTrackUpdate;
-      if (classdata->InheritsFrom("TwoTrackCut")) newUpd = ECutUpdate::kTwoTrackUpdate;
+      if (classdata->InheritsFrom("EventCut")) newUpd = ECutUpdate::kEvent;
+      if (classdata->InheritsFrom("TrackCut")) newUpd = ECutUpdate::kTrack;
+      if (classdata->InheritsFrom("TwoTrackCut")) newUpd = ECutUpdate::kTwoTrack;
     }
 
     if (fCuts == 0) {

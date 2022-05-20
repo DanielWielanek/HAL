@@ -10,9 +10,9 @@
 #include "DividedHisto.h"
 
 #include "Cout.h"
-#include "HalStd.h"
-#include "HalStdHist.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdHist.h"
+#include "StdString.h"
 #include "HtmlCore.h"
 #include "HtmlFile.h"
 #include "HtmlTable.h"
@@ -411,11 +411,11 @@ namespace Hal {
       return;
     }
     TAxis* ax = NULL;
-    if (HalStd::FindParam(option, "x")) {
+    if (Hal::Std::FindParam(option, "x")) {
       ax = fNum->GetXaxis();
-    } else if (HalStd::FindParam(option, "y")) {
+    } else if (Hal::Std::FindParam(option, "y")) {
       ax = fNum->GetYaxis();
-    } else if (HalStd::FindParam(option, "z")) {
+    } else if (Hal::Std::FindParam(option, "z")) {
       ax = fNum->GetZaxis();
     }
     Int_t bin     = ax->FindBin(val);
@@ -541,7 +541,7 @@ namespace Hal {
     TAxis *X, *Y;
     TString opt = axis;
     Int_t order = 0;
-    if (HalStd::FindParam(opt, "x")) {
+    if (Hal::Std::FindParam(opt, "x")) {
       X = fNum->GetXaxis();
       Y = fNum->GetYaxis();
     } else {
@@ -819,14 +819,14 @@ namespace Hal {
   TH2D* DividedHisto3D::GetProjection2D(Double_t min, Double_t max, Option_t* opt) const {
     TString option = opt;
     TH3* histo     = NULL;
-    if (HalStd::FindParam(option, "num", kTRUE)) {
+    if (Hal::Std::FindParam(option, "num", kTRUE)) {
       histo = (TH3*) GetNum()->Clone();
-    } else if (HalStd::FindParam(option, "den", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "den", kTRUE)) {
       histo = (TH3*) GetDen()->Clone();
     } else {
       histo = (TH3*) GetHist(kTRUE);
     }
-    TH2D* proj = HalStd::GetProjection2D(histo, min, max, opt);
+    TH2D* proj = Hal::Std::GetProjection2D(histo, min, max, opt);
     delete histo;
     return proj;
   }
@@ -840,16 +840,16 @@ namespace Hal {
     TAxis *X, *Y, *Z;
     TString opt = axis;
     Int_t order = 0;
-    if (HalStd::FindParam(opt, "x")) {
+    if (Hal::Std::FindParam(opt, "x")) {
       X = fNum->GetXaxis();
       Y = fNum->GetYaxis();
       Z = fNum->GetZaxis();
-    } else if (HalStd::FindParam(opt, "y")) {
+    } else if (Hal::Std::FindParam(opt, "y")) {
       order = 1;
       Y     = fNum->GetXaxis();
       X     = fNum->GetYaxis();
       Z     = fNum->GetZaxis();
-    } else if (HalStd::FindParam(opt, "z")) {
+    } else if (Hal::Std::FindParam(opt, "z")) {
       order = 2;
       X     = fNum->GetZaxis();
       Y     = fNum->GetYaxis();
@@ -1104,8 +1104,8 @@ namespace Hal {
 
   void DividedHisto1D::Rebin(Int_t ngroup, Option_t* opt) {
     TString option   = opt;
-    Bool_t num_rebin = HalStd::FindParam(option, "num");
-    Bool_t den_rebin = HalStd::FindParam(option, "den");
+    Bool_t num_rebin = Hal::Std::FindParam(option, "num");
+    Bool_t den_rebin = Hal::Std::FindParam(option, "den");
     if ((!num_rebin) && (!den_rebin)) {
       num_rebin = kTRUE;
       den_rebin = kTRUE;
@@ -1116,11 +1116,11 @@ namespace Hal {
 
   void DividedHisto2D::Rebin(Int_t ngroup, Option_t* opt) {
     TString option   = opt;
-    Bool_t num_rebin = HalStd::FindParam(option, "num");
-    Bool_t den_rebin = HalStd::FindParam(option, "den");
+    Bool_t num_rebin = Hal::Std::FindParam(option, "num");
+    Bool_t den_rebin = Hal::Std::FindParam(option, "den");
     Bool_t rebin_x   = kFALSE;
     Bool_t rebin_y   = kFALSE;
-    if (HalStd::FindParam(option, "y")) {
+    if (Hal::Std::FindParam(option, "y")) {
       rebin_y = kTRUE;
     } else {
       rebin_x = kTRUE;
@@ -1141,8 +1141,8 @@ namespace Hal {
 
   void DividedHisto3D::Rebin(Int_t ngroup, Option_t* opt) {
     TString option   = opt;
-    Bool_t num_rebin = HalStd::FindParam(option, "num");
-    Bool_t den_rebin = HalStd::FindParam(option, "den");
+    Bool_t num_rebin = Hal::Std::FindParam(option, "num");
+    Bool_t den_rebin = Hal::Std::FindParam(option, "den");
     Bool_t rebin_x   = kFALSE;
     Bool_t rebin_y   = kFALSE;
     Bool_t rebin_z   = kFALSE;
@@ -1193,11 +1193,11 @@ namespace Hal {
   void DividedHisto1D::Draw(Option_t* opt) {
     if (gPad == NULL) new TCanvas();
     TString option = opt;
-    if (HalStd::FindParam(option, "num", kTRUE)) {
+    if (Hal::Std::FindParam(option, "num", kTRUE)) {
       fNum->Draw(option);
-    } else if (HalStd::FindParam(option, "den", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "den", kTRUE)) {
       fDen->Draw(option);
-    } else if (HalStd::FindParam(option, "all", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "all", kTRUE)) {
       TVirtualPad* c1 = gPad;
       if (gPad->GetListOfPrimitives()->GetEntries() < 4) gPad->Divide(2, 2);
       c1->cd(1);
@@ -1245,7 +1245,7 @@ namespace Hal {
 
   DividedHisto1D::DividedHisto1D(TString name, Int_t nbins, Double_t min, Double_t max, Char_t type) : DividedHisto1D(name, 1) {
     std::vector<TString> out;
-    out = HalStd::ExplodeString(name, ';');
+    out = Hal::Std::ExplodeString(name, ';');
     TString x_axis, y_axis;
     if (out.size() > 1) {
       name   = out[0];
@@ -1290,7 +1290,7 @@ namespace Hal {
                                  Double_t maxY,
                                  Char_t type) :
     DividedHisto2D(name, 2) {
-    std::vector<TString> out = HalStd::ExplodeString(name, ';');
+    std::vector<TString> out = Hal::Std::ExplodeString(name, ';');
     TString x_axis, y_axis, z_axis;
     if (out.size() > 1) {
       name   = out[0];
@@ -1343,7 +1343,7 @@ namespace Hal {
                                  Double_t maxZ,
                                  Char_t type) :
     DividedHisto3D(name) {
-    std::vector<TString> out = HalStd::ExplodeString(name, ';');
+    std::vector<TString> out = Hal::Std::ExplodeString(name, ';');
     TString x_axis, y_axis, z_axis;
     if (out.size() > 1) {
       name   = out[0];
@@ -1440,14 +1440,14 @@ namespace Hal {
   TH1D* DividedHisto2D::Projection2DTo1D(Double_t min, Double_t max, Option_t* opt) const {
     TString option = opt;
     TH2* histo     = NULL;
-    if (HalStd::FindParam(option, "num", kTRUE)) {
+    if (Hal::Std::FindParam(option, "num", kTRUE)) {
       histo = (TH2*) GetNum()->Clone();
-    } else if (HalStd::FindParam(option, "den", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "den", kTRUE)) {
       histo = (TH2*) GetDen()->Clone();
     } else {
       histo = (TH2*) GetHist(kTRUE);
     }
-    TH1D* projection = HalStd::GetProjection1D(histo, min, max, option);
+    TH1D* projection = Hal::Std::GetProjection1D(histo, min, max, option);
     delete histo;
     return projection;
   }
@@ -1455,20 +1455,20 @@ namespace Hal {
   TH1D* DividedHisto3D::Projection3DTo1D(Double_t min1, Double_t max1, Double_t min2, Double_t max2, Option_t* opt) const {
     TString option = opt;
     TH3* histo     = NULL;
-    if (HalStd::FindParam(option, "num", kTRUE)) {
+    if (Hal::Std::FindParam(option, "num", kTRUE)) {
       histo = (TH3*) GetNum()->Clone();
-    } else if (HalStd::FindParam(option, "den", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "den", kTRUE)) {
       histo = (TH3*) GetDen()->Clone();
-    } else if (HalStd::FindParam(option, "separate", kTRUE)) {
-      TH1D* num1d = HalStd::GetProjection1D((TH3*) fNum, min1, max1, min2, max2, option);
-      TH1D* den1d = HalStd::GetProjection1D((TH3*) fDen, min1, max1, min2, max2, option);
+    } else if (Hal::Std::FindParam(option, "separate", kTRUE)) {
+      TH1D* num1d = Hal::Std::GetProjection1D((TH3*) fNum, min1, max1, min2, max2, option);
+      TH1D* den1d = Hal::Std::GetProjection1D((TH3*) fDen, min1, max1, min2, max2, option);
       num1d->Divide(den1d);
       delete den1d;
       return num1d;
     } else {
       histo = (TH3*) GetHist(kTRUE);
     }
-    TH1D* projection = HalStd::GetProjection1D(histo, min1, max1, min2, max2, option);
+    TH1D* projection = Hal::Std::GetProjection1D(histo, min1, max1, min2, max2, option);
     delete histo;
     return projection;
   }

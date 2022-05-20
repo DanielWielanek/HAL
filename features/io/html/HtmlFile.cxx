@@ -13,8 +13,8 @@
 #include <TSystem.h>
 #include <fstream>
 
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdString.h"
 namespace Hal {
   HtmlFile::~HtmlFile() {}
 

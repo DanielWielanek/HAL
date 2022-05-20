@@ -11,7 +11,7 @@
 
 #include "CorrFitMapKstarRstar.h"
 #include "Cout.h"
-#include "HalStdHist.h"
+#include "StdHist.h"
 #include "Splines.h"
 
 #include <TAxis.h>
@@ -57,7 +57,7 @@ namespace Hal {
 
       TAxis* x            = cf_map2d->GetXaxis();
       TH1D* smeared_den   = (TH1D*) fDenominatorHistogram->Clone("temp");
-      TH1D* unsmeared_den = HalStd::SmearHistogram(smeared_den, fSmearingMap, "rev");
+      TH1D* unsmeared_den = Hal::Std::SmearHistogram(smeared_den, fSmearingMap, "rev");
 
       for (int j = 0; j <= fMaps[0]->GetNRbins() + 1; j++) {
         TH1D* unsmeared_num = (TH1D*) unsmeared_den->Clone();
@@ -74,7 +74,7 @@ namespace Hal {
         /*
          * now we have to make smeared numerator
          */
-        TH1D* smeared_num = HalStd::SmearHistogram(unsmeared_num, fSmearingMap, "");
+        TH1D* smeared_num = Hal::Std::SmearHistogram(unsmeared_num, fSmearingMap, "");
         delete unsmeared_num;
         smeared_num->Divide(smeared_den);
         /*

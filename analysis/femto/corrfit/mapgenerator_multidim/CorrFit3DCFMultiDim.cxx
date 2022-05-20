@@ -124,7 +124,7 @@ namespace Hal {
     if (thisCf->GetFrame() != cf->GetFrame()) { Cout::PrintInfo("CorrFitInfo incompatible frames !", EInfo::kImportantError); }
     TH3* testThis = (TH3*) thisCf->GetNum();
     TH3* testMap  = (TH3*) cf->GetNum();
-    if (!HalStd::AreSimilar(testThis, testMap, kFALSE)) {
+    if (!Hal::Std::AreSimilar(testThis, testMap, kFALSE)) {
       Cout::PrintInfo("CorrFitInfo incompatible histograms in CorrFitInfo and Femto3DCF !", EInfo::kLessError);
     }
     fFunctorXbins = testThis->GetXaxis()->GetNbins();

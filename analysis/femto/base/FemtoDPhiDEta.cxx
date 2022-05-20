@@ -18,7 +18,7 @@
 #include <TROOT.h>
 #include <TString.h>
 
-#include "HalStdString.h"
+#include "StdString.h"
 
 namespace Hal {
   FemtoDPhiDEta::FemtoDPhiDEta() : DividedHisto2D("#phi#eta", 2) {
@@ -82,16 +82,16 @@ namespace Hal {
 
   void FemtoDPhiDEta::Draw(Option_t* opt) {
     TString option = opt;
-    if (HalStd::FindParam(option, "num", kTRUE)) {
+    if (Hal::Std::FindParam(option, "num", kTRUE)) {
       GetNum()->Draw("SURF1");
-    } else if (HalStd::FindParam(option, "den", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "den", kTRUE)) {
       GetDen()->Draw("SURF1");
-    } else if (HalStd::FindParam(option, "all", kTRUE)) {
+    } else if (Hal::Std::FindParam(option, "all", kTRUE)) {
       TVirtualPad* c1 = gPad;
       c1->Divide(2, 2);
       c1->cd(1);
       Bool_t rebin = kTRUE;
-      if (HalStd::FindParam(option, "hd", kTRUE)) { rebin = kFALSE; }
+      if (Hal::Std::FindParam(option, "hd", kTRUE)) { rebin = kFALSE; }
       TH2* h       = (TH2*) GetHist(kTRUE);
       Int_t rebinX = 1;
       Int_t rebinY = 1;

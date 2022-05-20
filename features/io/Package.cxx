@@ -8,8 +8,8 @@
 #include "Package.h"
 
 #include "Cout.h"
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdString.h"
 #include "Parameter.h"
 
 #include <TBrowser.h>
@@ -86,7 +86,7 @@ namespace Hal {
     Cout::ShiftInStars(deep, "Main List", -1);
     Cout::ShiftDatabase(deep, 3, "Index", "ObjectType", "ObjectName");
     for (Int_t i = 0; i < fNo; i++) {
-      TString index = HalStd::RoundToString(i);
+      TString index = Hal::Std::RoundToString(i);
       TString type  = (fArrayObjects->At(i))->ClassName();
       TString name  = (fArrayObjects->At(i))->GetName();
       Cout::ShiftDatabase(deep, 3, index.Data(), type.Data(), name.Data());
@@ -95,7 +95,7 @@ namespace Hal {
     if (counter >= deep) {
       Cout::ShiftInStars(deep, "List of exotic objects", kGreen);
       for (int i = 0; i < fNo; i++) {
-        TString index = HalStd::RoundToString(i);
+        TString index = Hal::Std::RoundToString(i);
         TString type  = (fArrayObjects->At(i))->ClassName();
         TString name  = (fArrayObjects->At(i))->GetName();
         if (type == "TList") {
@@ -108,7 +108,7 @@ namespace Hal {
               ((Package*) list->At(j))->PrintInfo(counter, deep + 1);
             } else {
               // other object
-              TString Index = HalStd::RoundToString(j);
+              TString Index = Hal::Std::RoundToString(j);
               TString Type  = list->At(j)->ClassName();
               TString Name  = list->At(j)->GetName();
               Cout::ShiftDatabase(deep, 3, Index.Data(), Type.Data(), Name.Data());
@@ -281,7 +281,7 @@ namespace Hal {
     if (Index < 0) Index = 0;
     Cout::Text(final_text, "L");
     for (Int_t i = 0; i < fNo; i++) {
-      TString index = HalStd::RoundToString(i);
+      TString index = Hal::Std::RoundToString(i);
       TString type  = (fArrayObjects->At(i))->ClassName();
       TString name  = (fArrayObjects->At(i))->GetName();
       if (name == this->ClassName()) { ((Package*) fArrayObjects->At(i))->PrintStruct(I + 1, i); }

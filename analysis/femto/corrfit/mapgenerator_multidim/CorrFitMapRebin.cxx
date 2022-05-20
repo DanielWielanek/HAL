@@ -13,7 +13,7 @@
 #include "Femto1DCF.h"
 #include "Femto3DCF.h"
 #include "FemtoSHCF.h"
-#include "HalStdMath.h"
+#include "StdMath.h"
 
 #include <TFile.h>
 #include <TTree.h>
@@ -156,7 +156,7 @@ namespace Hal {
     for (int i = 0; i < sizeX; i++) {
       for (int j = 0; j < sizeY; j++) {
         for (int k = 0; k < sizeZ; k++) {
-          mapL[i][j][k] = HalStd::Bin3dToBin1d(sizeX, sizeY, i, j, k, kFALSE);
+          mapL[i][j][k] = Hal::Std::Bin3dToBin1d(sizeX, sizeY, i, j, k, kFALSE);
         }
       }
     }
@@ -168,7 +168,7 @@ namespace Hal {
     for (int i = 0; i < sizeXs; i++) {
       for (int j = 0; j < sizeYs; j++) {
         for (int k = 0; k < sizeZs; k++) {
-          mapS[i][j][k] = HalStd::Bin3dToBin1d(sizeXs, sizeYs, i, j, k, kFALSE);
+          mapS[i][j][k] = Hal::Std::Bin3dToBin1d(sizeXs, sizeYs, i, j, k, kFALSE);
           Float_t sum   = 0;
           for (int a = 0; a < fRebinX; a++) {
             const Int_t tX = i * fRebinX + a;

@@ -14,8 +14,8 @@
 #include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
-#include "HalStd.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdString.h"
 #include "Package.h"
 #include "Parameter.h"
 
@@ -30,7 +30,7 @@ namespace Hal {
 
   void PropertyMonitorXY::CreateHistograms() {
     TH1::AddDirectory(kFALSE);
-    TString title = Form("%s vs %s", HalStd::RemoveUnits(fYaxisName).Data(), HalStd::RemoveUnits(fXaxisName).Data());
+    TString title = Form("%s vs %s", Hal::Std::RemoveUnits(fYaxisName).Data(), Hal::Std::RemoveUnits(fXaxisName).Data());
     TString name;  // = Form("%s_vs_%s",
                    // fCut[0]->GetUnit(fOptionAxis[0]).Data(),fCut[1]->GetUnit(fOptionAxis[1]).Data());
     name         = "Passed";
@@ -104,7 +104,7 @@ namespace Hal {
   }
   //========================================================================
   EventFieldMonitorXY::EventFieldMonitorXY(Int_t fieldIDX, Int_t fiedIDY) :
-    PropertyMonitorXY("", "", ECutUpdate::kEventUpdate), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {}
+    PropertyMonitorXY("", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {}
 
   void EventFieldMonitorXY::Update(Bool_t passed, TObject* obj) {
     Event* ev = (Event*) obj;
@@ -123,7 +123,7 @@ namespace Hal {
   }
   //========================================================================
   TrackFieldMonitorXY::TrackFieldMonitorXY(Int_t fieldIDX, Int_t fiedIDY) :
-    PropertyMonitorXY(",", "", ECutUpdate::kTrackUpdate), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {}
+    PropertyMonitorXY(",", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {}
 
   void TrackFieldMonitorXY::Update(Bool_t passed, TObject* obj) {
     Track* tr = (Track*) obj;

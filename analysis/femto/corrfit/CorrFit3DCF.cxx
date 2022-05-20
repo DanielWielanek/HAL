@@ -29,9 +29,9 @@
 #include "Cout.h"
 #include "DividedHisto.h"
 #include "Femto3DCF.h"
-#include "HalStd.h"
-#include "HalStdHist.h"
-#include "HalStdString.h"
+#include "Std.h"
+#include "StdHist.h"
+#include "StdString.h"
 #include "Splines.h"
 
 namespace Hal {
@@ -179,18 +179,18 @@ namespace Hal {
     ParametersChanged();
     TString option = draw_option;
     if (gPad == NULL) new TCanvas();
-    if (HalStd::FindParam(option, "diag1") || HalStd::FindParam(option, "diag2")) {
-      if (HalStd::FindParam(option, "full")) {
+    if (Hal::Std::FindParam(option, "diag1") || Hal::Std::FindParam(option, "diag2")) {
+      if (Hal::Std::FindParam(option, "full")) {
         DrawDiagonalWithCF(option);
-      } else if (HalStd::FindParam(option, "same")) {
+      } else if (Hal::Std::FindParam(option, "same")) {
         DrawDiagonalOther(option);
       }
       return;
     }
 
-    if (HalStd::FindParam(option, "full")) {
+    if (Hal::Std::FindParam(option, "full")) {
       DrawFunctionWithCF(option);
-    } else if (HalStd::FindParam(option, "same")) {
+    } else if (Hal::Std::FindParam(option, "same")) {
       DrawPureFunction(option);
     } else {
       DrawOther(option);
@@ -333,7 +333,7 @@ namespace Hal {
       fOwnRangeMap = kFALSE;
     }
     if (fOwnRangeMap) {  // use own map
-      if (!HalStd::AreSimilar(fMask, fDenominatorHistogram, kFALSE)) {
+      if (!Hal::Std::AreSimilar(fMask, fDenominatorHistogram, kFALSE)) {
         delete fMask;
         fMask        = NULL;
         fOwnRangeMap = kFALSE;
@@ -343,7 +343,7 @@ namespace Hal {
       }
     } else {  // get own mask
       if (allocate == kFALSE)
-        if (!HalStd::AreSimilar(fMask, fDenominatorHistogram, kFALSE)) allocate = kTRUE;
+        if (!Hal::Std::AreSimilar(fMask, fDenominatorHistogram, kFALSE)) allocate = kTRUE;
       if (allocate) {
         fMask = new TH3I("mask",
                          "mask",
@@ -654,7 +654,7 @@ namespace Hal {
   }
 
   void CorrFit3DCF::DrawPureFunction(TString option) {
-    Bool_t drawNormalized = HalStd::FindParam(option, "norm", kTRUE);
+    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
     if (fDrawFunc.size() == 0) fDrawFunc.resize(3);
     fDrawFunc[0].first =
       new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], GetParametersNo(), this->ClassName(), "GetFunX");
@@ -691,7 +691,7 @@ namespace Hal {
     Double_t width = 0.0;
     if (fBinCalc) { width = 0.0; }
     width                 = 0;
-    Bool_t drawNormalized = HalStd::FindParam(option, "norm", kTRUE);
+    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
     Calculatef(width);
     Int_t middle_x = ((Femto3DCF*) fCF)->GetNum()->GetXaxis()->FindBin(0.0);
     Int_t middle_y = ((Femto3DCF*) fCF)->GetNum()->GetYaxis()->FindBin(0.0);
@@ -708,7 +708,7 @@ namespace Hal {
       new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], GetParametersNo(), this->ClassName(), "GetFunZ");
     for (int i = 0; i < 3; i++)
       SetParametersToTF1(GetTF1(i));
-    if (HalStd::FindParam(option, "rgb", kTRUE)) {
+    if (Hal::Std::FindParam(option, "rgb", kTRUE)) {
       GetTF1(0)->SetLineColor(kRed);
       GetTF1(1)->SetLineColor(kBlue);
       GetTF1(2)->SetLineColor(kGreen);
@@ -771,7 +771,7 @@ namespace Hal {
     long_func->Draw();
     GetTF1(2)->Draw("SAME");
     pad->cd(4);
-    if (HalStd::FindParam(option, "range")) {
+    if (Hal::Std::FindParam(option, "range")) {
       out_func->GetXaxis()->SetRangeUser(fRange[0], fRange[1]);
       side_func->GetXaxis()->SetRangeUser(fRange[2], fRange[3]);
       long_func->GetXaxis()->SetRangeUser(fRange[4], fRange[5]);
@@ -802,23 +802,23 @@ namespace Hal {
 
     const Int_t nPar      = GetParametersNo();
     TString className     = this->ClassName();
-    Bool_t drawNormalized = HalStd::FindParam(option, "norm", kTRUE);
+    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
     if (fDrawFunc.size() == 0) fDrawFunc.resize(3);
     fDrawFunc[0].first =
-      new TF1(HalStd::GetUniqueName("funcX"), this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
+      new TF1(Hal::Std::GetUniqueName("funcX"), this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
     fDrawFunc[1].first =
-      new TF1(HalStd::GetUniqueName("funcY"), this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
+      new TF1(Hal::Std::GetUniqueName("funcY"), this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
     fDrawFunc[2].first =
-      new TF1(HalStd::GetUniqueName("funcZ"), this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
+      new TF1(Hal::Std::GetUniqueName("funcZ"), this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
     for (int i = 0; i < 3; i++) {
       SetParametersToTF1(GetTF1(i));
-      GetTF1(i)->SetName(HalStd::GetUniqueName(GetTF1(i)->GetName()));
+      GetTF1(i)->SetName(Hal::Std::GetUniqueName(GetTF1(i)->GetName()));
       if (drawNormalized) GetTF1(i)->FixParameter(Norm(), 1);
       GetTF1(i)->SetLineColor(GetLineColor());
       GetTF1(i)->SetLineStyle(GetLineStyle());
       GetTF1(i)->SetLineWidth(GetLineWidth());
     }
-    if (HalStd::FindParam(option, "leg", kTRUE)) { legend_enabled = kTRUE; }
+    if (Hal::Std::FindParam(option, "leg", kTRUE)) { legend_enabled = kTRUE; }
 
     for (int i = 0; i < 3; i++) {
       pad->cd(i + 1);
@@ -853,8 +853,8 @@ namespace Hal {
     TString className = this->ClassName();
     Int_t no          = 7;
     Calculatef(0);
-    Bool_t drawNormalized = HalStd::FindParam(option, "norm", kTRUE);
-    if (HalStd::FindParam(option, "diag2")) { no = 13; }
+    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
+    if (Hal::Std::FindParam(option, "diag2")) { no = 13; }
 
     if (fDrawFunc.size() < no) fDrawFunc.resize(no);
     fDrawFunc[0].first = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
@@ -915,7 +915,7 @@ namespace Hal {
     // fill array to calculate cf integrated over projection
     Double_t width = 0.0;
     if (fBinCalc) { width = 0.0; }
-    Bool_t drawNormalized = HalStd::FindParam(option, "norm", kTRUE);
+    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
 
     Calculatef(width);
 
@@ -924,7 +924,7 @@ namespace Hal {
     const Int_t nPar  = GetParametersNo();
     TString className = this->ClassName();
     Int_t no          = 7;
-    if (HalStd::FindParam(option, "diag2")) {
+    if (Hal::Std::FindParam(option, "diag2")) {
       no = 13;
       if (gPad->GetListOfPrimitives()->GetEntries() < 14) pad->Divide(4, 4);
     } else {
@@ -976,7 +976,7 @@ namespace Hal {
     }
 
 
-    if (HalStd::FindParam(option, "rgb")) {
+    if (Hal::Std::FindParam(option, "rgb")) {
       if (no == 7) {
         GetTF1(0)->SetLineColor(kRed);
         GetTF1(1)->SetLineColor(kBlue);
@@ -988,7 +988,7 @@ namespace Hal {
       }
     }
     TH1D** h = nullptr;
-    if (HalStd::FindParam(option, "diag2")) {
+    if (Hal::Std::FindParam(option, "diag2")) {
       h = ((Femto3DCF*) fCF)->GetDiagProj("diag2", drawNormalized);
     } else {
       h = ((Femto3DCF*) fCF)->GetDiagProj("diag1", drawNormalized);
@@ -1011,7 +1011,7 @@ namespace Hal {
       GetTF1(i)->Draw("SAME");
     }
     pad->cd(no + 1);
-    if (HalStd::FindParam(option, "range")) {
+    if (Hal::Std::FindParam(option, "range")) {
       h[0]->GetXaxis()->SetRangeUser(fRange[0], fRange[1]);
       h[1]->GetXaxis()->SetRangeUser(fRange[2], fRange[3]);
       h[2]->GetXaxis()->SetRangeUser(fRange[4], fRange[5]);
@@ -1244,11 +1244,11 @@ namespace Hal {
 
     Int_t nbins;
     Double_t min, max;
-    HalStd::GetAxisPar(*h, nbins, min, max, "x");
+    Hal::Std::GetAxisPar(*h, nbins, min, max, "x");
     fXAxisf = 0.5 * (min + max);
-    HalStd::GetAxisPar(*h, nbins, min, max, "y");
+    Hal::Std::GetAxisPar(*h, nbins, min, max, "y");
     fYAxisf = 0.5 * (min + max);
-    HalStd::GetAxisPar(*h, nbins, min, max, "z");
+    Hal::Std::GetAxisPar(*h, nbins, min, max, "z");
     fZAxisf             = 0.5 * (min + max);
     const Femto3DCF* CF = static_cast<Femto3DCF*>(fCF);
     Int_t middle_x      = CF->GetNum()->GetXaxis()->FindBin(0.0);

@@ -18,7 +18,7 @@
 
 namespace Hal {
   TrackAna::TrackAna() : EventAna(), fTrackCollectionsNo(0), fCurrentTrackCollectionID(0), fTrackIndex(0), fCurrentTrack(NULL) {
-    fTiers = ECutUpdate::kTrackUpdate;
+    fTiers = ECutUpdate::kTrack;
   }
 
   TrackAna::TrackAna(const TrackAna& ana) :
@@ -71,7 +71,7 @@ namespace Hal {
     }
     for (int i = 0; i < eventCollections; i++) {
       for (int j = i * jump; j < (i + 1) * jump; j++) {
-        fCutContainer->LinkCollections(ECutUpdate::kEventUpdate, i, ECutUpdate::kTrackUpdate, j);
+        fCutContainer->LinkCollections(ECutUpdate::kEvent, i, ECutUpdate::kTrack, j);
       }
     }
   }

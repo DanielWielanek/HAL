@@ -6,14 +6,14 @@
  */
 
 #include "Cout.h"
-#include "HalStd.h"
+#include "Std.h"
 #include <TBrowser.h>
 #include <TCollection.h>
 #include <TNamed.h>
 #include <TPaveText.h>
 #include <TVirtualPad.h>
 
-#include "HalStdString.h"
+#include "StdString.h"
 #include "Parameter.h"
 
 #if !defined(__CINT__)
@@ -253,7 +253,7 @@ namespace Hal {
   }
 
   TString ParameterUInt::HTMLExtract(Int_t /*counter*/, TString /*dir*/) const {
-    return HalStd::RoundToString(fValue, 0, "separators");
+    return Hal::Std::RoundToString(fValue, 0, "separators");
   }
 
   ParameterUInt::~ParameterUInt() {}
@@ -300,7 +300,7 @@ namespace Hal {
   }
 
   TString ParameterULong::HTMLExtract(Int_t /*counter*/, TString /*dir*/) const {
-    return HalStd::RoundToString(fValue, 0, "separators");
+    return Hal::Std::RoundToString(fValue, 0, "separators");
   }
 
   ParameterULong::~ParameterULong() {}
@@ -349,7 +349,7 @@ namespace Hal {
   }
 
   TString ParameterULong64::HTMLExtract(Int_t /*counter*/, TString /*dir*/) const {
-    { return HalStd::RoundToString(fValue, 0, "separators"); }
+    { return Hal::Std::RoundToString(fValue, 0, "separators"); }
   }
 
   ParameterULong64::~ParameterULong64() {}
@@ -397,7 +397,7 @@ namespace Hal {
   }
 
   TString ParameterInt::HTMLExtract(Int_t /*counter*/, TString /*dir*/) const {
-    return HalStd::RoundToString(GetValue(), 0, "separators");
+    return Hal::Std::RoundToString(GetValue(), 0, "separators");
   }
 
   ParameterInt::~ParameterInt() {}

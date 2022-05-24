@@ -27,7 +27,6 @@ namespace Hal {
     Int_t fRegisteredFormats;
     Event** fDataFormatBuffered;     //[fRegisteredFormats]
     Event** fDataFormatNonBuffered;  //[fRegisteredFormats]
-    TObjArray* fAutoSupportedFormats;
     static DataFormatManager* fgInstance;
 
   public:
@@ -41,11 +40,6 @@ namespace Hal {
      */
     Int_t RegisterFormat();
     /**
-     * add new kind of supported format to automatical formats
-     * @param event instabce of class that is used for new format
-     */
-    void AddAutoSupportedFormat(Event* event);
-    /**
      * remove all stored formats and events
      */
     void Reset();
@@ -53,7 +47,7 @@ namespace Hal {
      * try to find anty kind of supported events in tree
      * @return pointer to supported format
      */
-    Event* FindAutoSupportedFormat();
+    Event* FindReaderFormat();
     /**
      * force overwrite format at given position
      * @param format event that represent new format

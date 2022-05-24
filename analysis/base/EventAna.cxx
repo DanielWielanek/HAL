@@ -231,7 +231,7 @@ namespace Hal {
     fTagList((TList*) ana.fTagList->Clone()),
     fInFileName(ana.fInFileName),
     fDataFormatManager(ana.fDataFormatManager) {
-    if (ana.fInit) { Cout::PrintInfo("This object has been initialized, this may result in crash", EInfo::kImportantWarning); }
+    if (ana.fInit) { Cout::PrintInfo("This object has been initialized, this may result in crash", EInfo::kWarning); }
     if (ana.fCutContainer) { fCutContainer = new CutContainer(*ana.fCutContainer); }
     fCurrentEventCollectionID = 0;
     fTaskID                   = fDataFormatManager->RegisterFormat();
@@ -385,13 +385,14 @@ namespace Hal {
       }
     } else {
       Cout::PrintInfo("L1 format is not set trying to find autosupported format", EInfo::kError);
-      Event* temp_format = formatManager->FindAutoSupportedFormat();
+      Event* temp_format = formatManager->FindReaderFormat();
       if (temp_format) {
 #ifdef HAL_DEBUG
         Cout::PrintInfo(Form("Format %s found and will be used for task %s", temp_format->GetFormatName().Data(), ClassName()),
                         EInfo::kDebugInfo);
 #endif
         SetFormat(temp_format);
+        fDirectAcces = kTRUE;
         return Task::EInitFlag::kSUCCESS;
       } else {
         Cout::PrintInfo("Format of data is not set, try to call SetFormat", EInfo::kError);
@@ -450,7 +451,7 @@ namespace Hal {
       fTagList           = (TList*) other.fTagList->Clone();
       fInFileName        = other.fInFileName;
       fDataFormatManager = other.fDataFormatManager;
-      if (fInit == kTRUE) { Cout::PrintInfo(Form("Copying initialized task  %s", this->ClassName()), EInfo::kImportantWarning); }
+      if (fInit == kTRUE) { Cout::PrintInfo(Form("Copying initialized task  %s", this->ClassName()), EInfo::kWarning); }
     }
     return *this;
   }

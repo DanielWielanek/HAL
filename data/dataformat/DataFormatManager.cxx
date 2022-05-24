@@ -10,6 +10,7 @@
 #include "DataFormatManager.h"
 
 #include "Cout.h"
+#include "DataManager.h"
 #include "Event.h"
 
 #include <TObjArray.h>
@@ -19,13 +20,12 @@ namespace Hal {
   DataFormatManager* DataFormatManager::fgInstance = NULL;
 
   DataFormatManager::DataFormatManager() :
-    fRegisteredFormats(0), fDataFormatBuffered(nullptr), fDataFormatNonBuffered(nullptr), fAutoSupportedFormats(nullptr) {
+    fRegisteredFormats(0), fDataFormatBuffered(nullptr), fDataFormatNonBuffered(nullptr){
     if (fgInstance) {
       Cout::PrintInfo("Singleton of DataFormatManager already exist, don't use constructor of DataFormatManager",
                       EInfo::kLowWarning);
       return;
     } else {
-      fAutoSupportedFormats = new TObjArray();
       fgInstance            = this;
     }
   }
@@ -90,25 +90,16 @@ namespace Hal {
     return fDataFormatNonBuffered[task_id]->GetFormatName();
   }
 
-  void DataFormatManager::AddAutoSupportedFormat(Event* event) {
-    TString new_classname = event->ClassName();
-    for (int i = 0; i < fAutoSupportedFormats->GetEntriesFast(); i++) {
-      TObject* temp          = fAutoSupportedFormats->UncheckedAt(i);
-      TString temp_classname = temp->ClassName();
-      if (temp_classname.EqualTo(new_classname)) {
-        Cout::PrintInfo(Form("%s already registered in autosupported formats", new_classname.Data()), EInfo::kInfo);
-        return;
+  Event* DataFormatManager::FindReaderFormat() {
+    DataManager* datamanager = DataManager::Instance();
+    TObject* obj             = datamanager->GetObject("HalEvent");
+    if (obj) {
+      Event* event = dynamic_cast<Event*>(datamanager->GetObject("HalEvent"));
+      if (event) {
+        if (event->ExistInTree()) return event;
       }
     }
-    fAutoSupportedFormats->AddLast(event);
-  }
-
-  Event* DataFormatManager::FindAutoSupportedFormat() {
-    for (int i = 0; i < fAutoSupportedFormats->GetEntriesFast(); i++) {
-      Event* event = (Event*) fAutoSupportedFormats->At(i);
-      if (event->ExistInTree()) return event;
-    }
-    return NULL;
+    return nullptr;
   }
 
   void DataFormatManager::Reset() {
@@ -120,7 +111,6 @@ namespace Hal {
   DataFormatManager::~DataFormatManager() {
     if (fDataFormatBuffered) delete[] fDataFormatBuffered;
     if (fDataFormatNonBuffered) delete[] fDataFormatNonBuffered;
-    delete fAutoSupportedFormats;
   }
 
   Bool_t DataFormatManager::FormatExist(Int_t task_id, EFormatDepth format_depth) const {

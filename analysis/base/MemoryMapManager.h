@@ -106,6 +106,7 @@ namespace Hal {
     MemoryMapManager(CutContainer* cont);
     /**
      * return pointer to current event
+     * @param update - when true update event by values from tree
      */
     Event* GetTemporaryEvent();
     /**

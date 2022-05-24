@@ -14,8 +14,8 @@
 #include "CutContainer.h"
 #include "DataFormatManager.h"
 #include "DataManager.h"
-#include "Std.h"
 #include "Link.h"
+#include "Std.h"
 #include "Track.h"
 
 #include <TMathBase.h>
@@ -33,17 +33,17 @@ namespace Hal {
     fTrackCollectionsNo(1),
     fMixSize(1),
     fEventToTrackNo(0),
-    fCounter(NULL),
-    fTotalTracks(NULL),
-    fReadyToMix(NULL),
-    fEvents(NULL),
-    fSumMap(NULL),
-    fIndexMap(NULL),
+    fCounter(nullptr),
+    fTotalTracks(nullptr),
+    fReadyToMix(nullptr),
+    fEvents(nullptr),
+    fSumMap(nullptr),
+    fIndexMap(nullptr),
     fSumMapSize(0),
     fMaxTrackCollectionNo(0),
-    fCurrentEvent(NULL),
-    fTrackMap(NULL),
-    fTrackCounter(NULL) {}
+    fCurrentEvent(nullptr),
+    fTrackMap(nullptr),
+    fTrackCounter(nullptr) {}
 
   MemoryMapManager::MemoryMapManager(CutContainer* cont) : MemoryMapManager() {
     fEventCollectionsNo = cont->GetEventCollectionsNo();
@@ -115,7 +115,7 @@ namespace Hal {
   void MemoryMapManager::SetMixSize(Int_t mix_size) { fMixSize = mix_size; }
 
   Event* MemoryMapManager::GetTemporaryEvent() {
-    fCurrentEvent->Update();
+    if (!fDirectAcces) fCurrentEvent->Update();
     if (fCurrentEvent->GetTotalTrackNo() > fTrackMapSize) {
       for (int i = 0; i < fEventCollectionsNo; i++) {
         ReloadMap(fCurrentEvent->GetTotalTrackNo() * 1.2);
@@ -125,6 +125,7 @@ namespace Hal {
   }
 
   void MemoryMapManager::Init(Int_t task_id, Bool_t use_source, Bool_t compress, Bool_t direct) {
+    fDirectAcces    = direct;
     fFormatID       = task_id;
     fUseCompression = compress;
     fEvents         = new EventArray*[fEventCollectionsNo];
@@ -139,7 +140,7 @@ namespace Hal {
       }
     }
     DataFormatManager* dataManager = DataFormatManager::Instance();
-    if (direct == kFALSE) {
+    if (fDirectAcces == kFALSE) {
       fCurrentEvent = dataManager->GetEventFromTree(fFormatID);
     } else {
       fCurrentEvent = (Event*) DataManager::Instance()->GetObject(dataManager->GetFormat(fFormatID)->ClassName());
@@ -163,6 +164,7 @@ namespace Hal {
   }
 
   void MemoryMapManager::Init(Int_t event_factor, Int_t task_id, Bool_t use_source, Bool_t compress, Bool_t direct) {
+    fDirectAcces    = direct;
     fFormatID       = task_id;
     fUseCompression = compress;
 
@@ -190,7 +192,7 @@ namespace Hal {
       }
     }
     DataFormatManager* dataManager = DataFormatManager::Instance();
-    if (direct == kFALSE) {
+    if (fDirectAcces == kFALSE) {
       fCurrentEvent = dataManager->GetEventFromTree(fFormatID);
     } else {
       fCurrentEvent = (Event*) DataManager::Instance()->GetObject(dataManager->GetFormat(fFormatID)->ClassName());

@@ -307,7 +307,7 @@ namespace Hal {
   }
 
   void TwoTrackAna::FinishEventIdentical() {
-    if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) == 0) {
+    if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) < 1) {
       if (fBackgroundMode == kMixedPairsID) { fMemoryMap->RejectLastEvent(fCurrentEventCollectionID); }
       return;
     }
@@ -349,7 +349,7 @@ namespace Hal {
         if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo) == 0) return;
         MakePairs_Charged3();
       } break;
-      default: Cout::PrintInfo("Unknown Background mode", EInfo::kImportantWarning); break;
+      default: Cout::PrintInfo("Unknown Background mode", EInfo::kWarning); break;
     }
   }
 
@@ -395,7 +395,7 @@ namespace Hal {
         MakePairs2_Charged3();
       } break;
 
-      default: Cout::PrintInfo("Unknown Background mode", EInfo::kImportantWarning); break;
+      default: Cout::PrintInfo("Unknown Background mode", EInfo::kWarning); break;
     }
   }
 

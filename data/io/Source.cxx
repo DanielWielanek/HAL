@@ -22,6 +22,10 @@ namespace Hal {
     if (fFileName.Length() != 0) { fManager = new RootIOManager(fFileName); }
   }
 
+  void RootSource::AddFriend(TString friendName) {
+    if (fManager != nullptr) { fManager->AddFriend(friendName); }
+  }
+
   RootSource::~RootSource() {
     if (fManager) delete fManager;
   }

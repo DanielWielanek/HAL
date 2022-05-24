@@ -22,6 +22,7 @@ namespace Hal {
 
   public:
     Source(TString name = "");
+    virtual void AddFriend(TString friendName = "") {};
     TString GetSourceName() const { return fFileName; };
     virtual IOManager* GetIOManager() const = 0;
     virtual ~Source();
@@ -33,6 +34,7 @@ namespace Hal {
 
   public:
     RootSource(TString name = "");
+    virtual void AddFriend(TString friendName = "");
     IOManager* GetIOManager() const;
     virtual ~RootSource();
     ClassDef(RootSource, 1)

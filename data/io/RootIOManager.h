@@ -20,12 +20,12 @@ class TBranch;
 namespace Hal {
 
   class RootIOManager : public IOManager {
-    TString fInFileName;
+    std::vector<TString> fInFileName;
     TString fOutFileName;
     TString fOutTreeName;
-    TFile* fInFile;
+    std::vector<TFile*> fInFile;
     TFile* fOutFile;
-    TTree* fInTree;
+    std::vector<TTree*> fInTree;
     TTree* fOutTree;
     std::vector<TString> fBranchList;
     std::vector<TBranch*> fInBranches;
@@ -41,6 +41,7 @@ namespace Hal {
     Bool_t Init();
     TObject* GetObject(const char* BrName);
     TFile* GetInFile();
+    void AddFriend(TString name) { fInFileName.push_back(name); };
     void UpdateBranches();
     void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
     void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);

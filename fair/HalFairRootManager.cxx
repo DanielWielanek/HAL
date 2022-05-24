@@ -11,24 +11,27 @@
 
 #include <FairRootManager.h>
 #include <RtypesCore.h>
+namespace Hal {
+  TObject* HalFairRootManager::GetObject(const char* BrName) { return FairRootManager::Instance()->GetObject(BrName); }
 
-TObject* HalFairRootManager::GetObject(const char* BrName) { return FairRootManager::Instance()->GetObject(BrName); }
+  TFile* HalFairRootManager::GetInFile() { return FairRootManager::Instance()->GetInFile(); }
 
-TFile* HalFairRootManager::GetInFile() { return FairRootManager::Instance()->GetInFile(); }
-
-void HalFairRootManager::UpdateBranches() { FairRootManager::Instance()->UpdateBranches(); }
+  void HalFairRootManager::UpdateBranches() { FairRootManager::Instance()->UpdateBranches(); }
 
 
-void HalFairRootManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
-  FairRootManager::Instance()->Register(name, folderName, obj, toFile);
-}
+  void HalFairRootManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
+    FairRootManager::Instance()->Register(name, folderName, obj, toFile);
+  }
 
-void HalFairRootManager::Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
-  FairRootManager::Instance()->Register(name, Foldername, obj, toFile);
-}
+  void HalFairRootManager::Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
+    FairRootManager::Instance()->Register(name, Foldername, obj, toFile);
+  }
 
-void HalFairRootManager::SetInChain(TChain* tempChain, Int_t ident) { FairRootManager::Instance()->SetInChain(tempChain, ident); }
+  void HalFairRootManager::SetInChain(TChain* tempChain, Int_t ident) {
+    FairRootManager::Instance()->SetInChain(tempChain, ident);
+  }
 
-Int_t HalFairRootManager::CheckBranch(const char* BrName) { return FairRootManager::Instance()->CheckBranch(BrName); }
+  Int_t HalFairRootManager::CheckBranch(const char* BrName) { return FairRootManager::Instance()->CheckBranch(BrName); }
 
-TList* HalFairRootManager::GetBranchNameList() { return FairRootManager::Instance()->GetBranchNameList(); }
+  TList* HalFairRootManager::GetBranchNameList() { return FairRootManager::Instance()->GetBranchNameList(); }
+}  // namespace Hal

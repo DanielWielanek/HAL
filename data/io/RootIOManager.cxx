@@ -22,23 +22,26 @@
 #include <TTree.h>
 
 namespace Hal {
-  RootIOManager::RootIOManager(TString name) :
-    fInFileName(name), fOutTreeName("HalTree"), fInFile(nullptr), fOutFile(nullptr), fInTree(nullptr), fOutTree(nullptr) {}
+  RootIOManager::RootIOManager(TString name) : fOutTreeName("HalTree"), fOutFile(nullptr), fOutTree(nullptr) {
+    fInFileName.push_back(name);
+  }
   Bool_t RootIOManager::Init() {
-    fInFile     = new TFile(fInFileName);
-    TList* list = fInFile->GetListOfKeys();
-    for (int i = 0; i < list->GetEntries(); i++) {
-      TKey* key    = (TKey*) list->At(i);
-      TString name = key->GetName();
-      TObject* obj = fInFile->Get(name);
-      fInTree      = dynamic_cast<TTree*>(obj);
-      if (fInTree) break;  // found ttree
-    }
-    if (fInTree == nullptr) return kFALSE;
-    TObjArray* list_branch = fInTree->GetListOfBranches();
-    for (int i = 0; i < list_branch->GetEntries(); i++) {
-      TBranch* branch = (TBranch*) list_branch->At(i);
-      fInBranches.push_back(branch);
+    for (unsigned int iFile = 0; iFile < fInFileName.size(); iFile++) {
+      fInFile.push_back(new TFile(fInFileName[iFile]));
+      TList* list = fInFile[iFile]->GetListOfKeys();
+      for (int i = 0; i < list->GetEntries(); i++) {
+        TKey* key    = (TKey*) list->At(i);
+        TString name = key->GetName();
+        TObject* obj = fInFile[iFile]->Get(name);
+        fInTree.push_back(dynamic_cast<TTree*>(obj));
+        if (fInTree[i]) break;  // found ttree
+      }
+      if (fInTree[iFile] == nullptr) return kFALSE;
+      TObjArray* list_branch = fInTree[iFile]->GetListOfBranches();
+      for (int i = 0; i < list_branch->GetEntries(); i++) {
+        TBranch* branch = (TBranch*) list_branch->At(i);
+        fInBranches.push_back(branch);
+      }
     }
 
     fOutFile = new TFile(fOutFileName, "recreate");
@@ -47,12 +50,14 @@ namespace Hal {
   }
 
   Int_t RootIOManager::GetEntries() const {
-    if (fInTree) return fInTree->GetEntries();
+    if (fInTree[0]) return fInTree[0]->GetEntries();
     return -1;
   }
 
   RootIOManager::~RootIOManager() {
-    if (fInFile) delete fInFile;
+    for (auto file : fInFile) {
+      if (file) delete file;
+    }
   }
   TObject* RootIOManager::GetObject(const char* BrName) {
     TObject* object = nullptr;
@@ -70,7 +75,7 @@ namespace Hal {
     return object;
   }
 
-  TFile* RootIOManager::GetInFile() { return fInFile; }
+  TFile* RootIOManager::GetInFile() { return fInFile[0]; }
 
   void RootIOManager::UpdateBranches() {}
 
@@ -124,7 +129,9 @@ namespace Hal {
   }
 
   Int_t Hal::RootIOManager::GetEntry(Int_t i) {
-    fInTree->GetEntry(i);
+    for (auto tree : fInTree) {
+      tree->GetEntry(i);
+    }
     return 1;
   }
 } /* namespace Hal */

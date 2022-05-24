@@ -30,5 +30,6 @@
 #pragma link C++ class Hal::EventAnaChain + ;
 #pragma link C++ class Hal::TrackAnaChain + ;
 #pragma link C++ class Hal::TwoTrackAnaChain + ;
+#pragma link C++ class Hal::Reader + ;
 
 #endif

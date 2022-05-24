@@ -12,8 +12,14 @@
 #include <TTask.h>
 
 namespace Hal {
-
+  class Package;
   class Task : public TTask {
+  protected:
+    /**
+     * go to subdirectory in output file
+     * @param name path to directory
+     */
+    void GoToDir(TString name);
 
   public:
     enum class EInitFlag { kSUCCESS, kERROR, kFATAL };

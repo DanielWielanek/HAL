@@ -125,11 +125,6 @@ namespace Hal {
      */
     void MarkAsInChain() { fInChain = kTRUE; };
     /**
-     * go to subdirectory in output file
-     * @param name path to directory
-     */
-    void GoToDir(TString name);
-    /**
      * add object to existing metadata list
      * @param main_pack pointer to package created by Report method
      * @param obj object to add
@@ -181,7 +176,7 @@ namespace Hal {
     void ClearMemory();
 #endif
     /**
-     * initialize task,  should aslo call parent Init (or at leas
+     * initialize task,  should aslo call parent Init (or at least
      * EventAna::Init)
      * @return status of initialization
      */

@@ -19,19 +19,18 @@
 namespace Hal {
   DataFormatManager* DataFormatManager::fgInstance = NULL;
 
-  DataFormatManager::DataFormatManager() :
-    fRegisteredFormats(0), fDataFormatBuffered(nullptr), fDataFormatNonBuffered(nullptr){
+  DataFormatManager::DataFormatManager() : fRegisteredFormats(0), fDataFormatBuffered(nullptr), fDataFormatNonBuffered(nullptr) {
     if (fgInstance) {
       Cout::PrintInfo("Singleton of DataFormatManager already exist, don't use constructor of DataFormatManager",
                       EInfo::kLowWarning);
       return;
     } else {
-      fgInstance            = this;
+      fgInstance = this;
     }
   }
 
   Event* DataFormatManager::GetEventFromTree(Int_t task_id) {
-    if (fDataFormatNonBuffered[task_id]->GetSource() == NULL) fDataFormatNonBuffered[task_id]->CreateSource();
+    if (fDataFormatNonBuffered[task_id]->GetSource() == nullptr) fDataFormatNonBuffered[task_id]->CreateSource();
     fDataFormatNonBuffered[task_id]->LinkWithTree();
     return fDataFormatNonBuffered[task_id];
   }
@@ -92,7 +91,15 @@ namespace Hal {
 
   Event* DataFormatManager::FindReaderFormat() {
     DataManager* datamanager = DataManager::Instance();
-    TObject* obj             = datamanager->GetObject("HalEvent");
+    TObject* obj             = nullptr;
+    Int_t leaf               = 0;
+    TString name             = Form("HalEvent_%i", leaf);
+    do {
+      name = Form("HalEvent_%i", ++leaf);
+      obj  = datamanager->GetObject(name);
+    } while (datamanager->GetObject(name) == nullptr);
+    if (obj == nullptr) { obj = datamanager->GetObject("HalEvent"); }
+
     if (obj) {
       Event* event = dynamic_cast<Event*>(datamanager->GetObject("HalEvent"));
       if (event) {

@@ -18,11 +18,15 @@ namespace Hal {
   class Task;
 
   class AnalysisManager : public TObject {
+    UInt_t fProcessedEvents;
     Source* fSource;
     TString fOutputFile;
     TString fOutTreeName;
     IOManager* fManager;
     std::vector<Task*> fTasks;
+    std::vector<Task*> fActiveTasks;
+    std::vector<Task*> fPassiveTasks;
+    void Finish();
 
   public:
     AnalysisManager();

@@ -289,22 +289,7 @@ namespace Hal {
   }
 
   void EventAna::FinishTask() {
-    Package* pack         = Report();
-    Package* metadata_new = new Package();
-    metadata_new->SetName("RunInfo");
-    metadata_new->AddObject(new ParameterString("Software ver", HAL_PHYSICALANALYSYS_VER));
-    metadata_new->AddObject(new ParameterString("Date", Hal::Std::GetDate(), 'f'));
-    metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
-    metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
-    metadata_new->AddObject(new ParameterString("Input file", GetInputFileName(), 'f'));
-    GoToDir("Info");
-    TDirectory* dir        = (TDirectory*) gFile;
-    TDirectory* metadatata = (TDirectory*) dir->Get("Info");
-    if (metadatata->Get("RunInfo")) {
-      delete metadata_new;
-    } else {
-      metadata_new->Write("RunInfo");
-    }
+    Package* pack = Report();
     GoToDir("Physics");
     pack->Write(Form("AnaPackage_%i", GetTaskID()));
     if (pack) { delete pack; }
@@ -334,16 +319,6 @@ namespace Hal {
         if (temp->GetString().EqualTo(obj_string->GetString())) { return; }
       }
       fTagList->AddLast(obj_string);
-    }
-  }
-
-  void EventAna::GoToDir(TString name) {
-    TDirectory* dir            = (TDirectory*) gFile;
-    std::vector<TString> array = Hal::Std::ExplodeString(name, '/');
-    for (int i = 0; i < (int) array.size(); i++) {
-      TDirectory* newdir = (TDirectory*) dir->FindObject(array[i]);
-      if (!newdir) { dir->mkdir(array[i]); }
-      dir->cd(array[i]);
     }
   }
 

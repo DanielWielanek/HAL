@@ -27,6 +27,7 @@ MemoryMapManager.cxx
 MultiTrackAna.cxx
 TrackAna.cxx
 TwoTrackAna.cxx
+Reader.cxx
 
 chains/EventAnaChain.cxx
 chains/TrackAnaChain.cxx

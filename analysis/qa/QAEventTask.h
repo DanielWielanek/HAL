@@ -6,8 +6,8 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
-#ifndef HALFEMTO_ANALYSIS_QA_HALQAEVENTTASK_H_
-#define HALFEMTO_ANALYSIS_QA_HALQAEVENTTASK_H_
+#ifndef HALQAEVENTTASK_H_
+#define HALQAEVENTTASK_H_
 
 #include "QAPlot.h"
 
@@ -43,4 +43,4 @@ namespace Hal {
     ClassDef(QAEventTask, 1)
   };
 }  // namespace Hal
-#endif /* HALFEMTO_ANALYSIS_QA_HALQAEVENTTASK_H_ */
+#endif /* HALQAEVENTTASK_H_ */

@@ -22,6 +22,7 @@ namespace Hal {
   class Event;
   class TrackAna;
   class TwoTrackAna;
+  class AnalysisManager;
 
   /**
    * basic class that might be used by nica macros, provides predefined format for given framework, predefined values of default
@@ -56,7 +57,7 @@ namespace Hal {
     Double_t GetDcaZMin() const { return fDCAz[0]; };
     Double_t GetDcaZMax() const { return fDCAz[1]; };
     Double_t GetPMax() const { return fPMax; };
-    virtual FairRunAna* GetRunAna(TString outFile, TString simFile, TString recoFile = "", TString parFile = "");
+    virtual AnalysisManager* GetAna(TString outFile, TString simFile, TString recoFile = "");
     virtual Event* GetFormat(eFormatType type, eAnaType ana = eAnaType::kDefault);
     /**
      * set default cuts for MC tracks if no ovewriten the PDG cuts are used

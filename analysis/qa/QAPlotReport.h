@@ -6,8 +6,8 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
-#ifndef HALFEMTO_ANALYSIS_QA_HALQAPLOTREPORT_H_
-#define HALFEMTO_ANALYSIS_QA_HALQAPLOTREPORT_H_
+#ifndef HALQAPLOTREPORT_H_
+#define HALQAPLOTREPORT_H_
 
 #include "HistogramManager.h"
 #include "HtmlTable.h"
@@ -214,4 +214,4 @@ namespace Hal {
     ClassDef(QAPlotReport, 1)
   };
 }  // namespace Hal
-#endif /* HALFEMTO_ANALYSIS_QA_HALQAPLOTREPORT_H_ */
+#endif /* HALQAPLOTREPORT_H_ */

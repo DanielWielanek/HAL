@@ -23,7 +23,7 @@ namespace Hal {
       }
     }
     if (Hal::Std::FindParam(option, "forced:")) {
-      Cout::PrintInfo("replacing HalFastCut by force !", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("replacing HalFastCut by force !", Hal::EInfo::kLowWarning);
       TRegexp reg("[9-0]+");
       option = option(reg);
       val    = option.Atoi();
@@ -63,12 +63,12 @@ namespace Hal {
     for (unsigned int i = 0; i < fLabels.size(); i++) {
       TString tmp = fLabels[i];
       if (tmp == label) {
-        Cout::PrintInfo(Form("Label %s already registered", label.Data()), Hal::EInfo::kLessWarning);
+        Cout::PrintInfo(Form("Label %s already registered", label.Data()), Hal::EInfo::kLowWarning);
         return;
       }
     }
     if (label.Contains(":") || label.Contains("NULL")) {
-      Cout::PrintInfo("Label can't contain ':' or NULL", Hal::EInfo::kLessError);
+      Cout::PrintInfo("Label can't contain ':' or NULL", Hal::EInfo::kError);
       return;
     }
     // to be sure that all arrays exist
@@ -91,7 +91,7 @@ namespace Hal {
       }
     }
     if (label_no == -1) {
-      Cout::PrintInfo(Form("Can't add string %s because there is no label ", label.Data()), Hal::EInfo::kImportantWarning);
+      Cout::PrintInfo(Form("Can't add string %s because there is no label ", label.Data()), Hal::EInfo::kWarning);
       return kFALSE;
     }
     fParameters[label_no].push_back(value);
@@ -103,8 +103,8 @@ namespace Hal {
       if (GetLabel(i).EqualTo(label)) {
         Int_t entries = fParameters[i].size();
         if (entries == 0 || entries <= no) {
-          if (entries == 0) Cout::PrintInfo(Form("No entries for label %s", label.Data()), Hal::EInfo::kLessWarning);
-          if (entries < no) Cout::PrintInfo(Form("Not enough entries for label %s", label.Data()), Hal::EInfo::kLessWarning);
+          if (entries == 0) Cout::PrintInfo(Form("No entries for label %s", label.Data()), Hal::EInfo::kLowWarning);
+          if (entries < no) Cout::PrintInfo(Form("Not enough entries for label %s", label.Data()), Hal::EInfo::kLowWarning);
           return "NULL";
         }
         return fParameters[i][no];

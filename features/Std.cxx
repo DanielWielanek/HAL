@@ -101,7 +101,7 @@ namespace Hal::Std {
       node = node->GetChild(arr[i]);
     }
     if (node == nullptr) {
-      Hal::Cout::PrintInfo(Form("Node %s not found in hal configuration file", par_name.Data()), Hal::EInfo::kLessWarning);
+      Hal::Cout::PrintInfo(Form("Node %s not found in hal configuration file", par_name.Data()), Hal::EInfo::kLowWarning);
       return "";
     }
     TString value = node->GetValue();
@@ -316,7 +316,7 @@ namespace Hal::Std {
       }
     }
 
-    Hal::Cout::PrintInfo("Hal plus not found!", Hal::EInfo::kLessError);
+    Hal::Cout::PrintInfo("Hal plus not found!", Hal::EInfo::kError);
     return "";
   }
 
@@ -347,7 +347,7 @@ namespace Hal::Std {
         return make_install;
       }
     }
-    Hal::Cout::PrintInfo("JSROOT not found!", Hal::EInfo::kLessError);
+    Hal::Cout::PrintInfo("JSROOT not found!", Hal::EInfo::kError);
     return "";
   }
 

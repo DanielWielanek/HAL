@@ -70,7 +70,7 @@ namespace Hal {
 
   HtmlCore::HtmlCore() {
     if (fgInstance != NULL) {
-      Cout::PrintInfo("Overwriting HalHTML !", Hal::EInfo::kLessError);
+      Cout::PrintInfo("Overwriting HalHTML !", Hal::EInfo::kError);
       return;
     } else {
       fMainDir   = "";
@@ -87,7 +87,7 @@ namespace Hal {
   }
 
   void HtmlCore::SetMainDir(TString name) {
-    if (name.Length() == 0) { Cout::PrintInfo("SetMainDir as null", Hal::EInfo::kLessWarning); }
+    if (name.Length() == 0) { Cout::PrintInfo("SetMainDir as null", Hal::EInfo::kLowWarning); }
     fMainDir = name;
     FixAddress(fMainDir);
   }

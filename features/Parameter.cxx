@@ -46,7 +46,7 @@ namespace Hal {
     } else if (mergemode == 'a') {
       fMergeMode = EParameterMerge::kAverage;
     } else {
-      Cout::PrintInfo("Wrong merge mode in Parameter", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("Wrong merge mode in Parameter", Hal::EInfo::kLowWarning);
     }
   }
 
@@ -58,7 +58,7 @@ namespace Hal {
     } else {
       Cout::PrintInfo(
         Form("Warning in merging name %s differ than %s in class %s", this->GetName(), obj->GetName(), this->ClassName()),
-        Hal::EInfo::kLessWarning);
+        Hal::EInfo::kLowWarning);
       return kTRUE;
     }
   }
@@ -92,7 +92,7 @@ namespace Hal {
         } break;
         case EParameterMerge::kEqual: {
           if (fValue != val_typed->GetValue()) {
-            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLessWarning);
+            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLowWarning);
           }
         } break;
         case EParameterMerge::kMultiply: {
@@ -114,7 +114,7 @@ namespace Hal {
           fValue = fValue * 0.5 + val_typed->GetValue() * 0.5;
         } break;
         default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kLessError);
+          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
           break;
       }
     }
@@ -138,7 +138,7 @@ namespace Hal {
         } break;
         case EParameterMerge::kEqual: {
           if (fValue != val_typed->GetValue()) {
-            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLessWarning);
+            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLowWarning);
           }
         } break;
         case EParameterMerge::kMultiply: {
@@ -160,7 +160,7 @@ namespace Hal {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
         default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kLessError);
+          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
           break;
       }
     }
@@ -185,11 +185,11 @@ namespace Hal {
         } break;
         case EParameterMerge::kEqual: {
           if (fValue.EqualTo(val_typed->GetValue()) == kFALSE) {
-            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLessWarning);
+            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLowWarning);
           }
         } break;
         case EParameterMerge::kMultiply: {
-          Cout::PrintInfo("Multiply flag in ParameterString", Hal::EInfo::kLessWarning);
+          Cout::PrintInfo("Multiply flag in ParameterString", Hal::EInfo::kLowWarning);
         } break;
         case EParameterMerge::kFirst: {
           // do nothing this->fValue = fValue;
@@ -204,7 +204,7 @@ namespace Hal {
           if (fValue.Length() > val_typed->GetValue().Length()) { fValue = val_typed->GetValue(); }
         } break;
         default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kLessError);
+          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
           break;
       }
     }
@@ -227,7 +227,7 @@ namespace Hal {
         } break;
         case EParameterMerge::kEqual: {
           if (fValue != val_typed->GetValue()) {
-            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLessWarning);
+            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLowWarning);
           }
         } break;
         case EParameterMerge::kMultiply: {
@@ -246,7 +246,7 @@ namespace Hal {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
         default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kLessError);
+          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
           break;
       }
     }
@@ -271,7 +271,7 @@ namespace Hal {
         } break;
         case EParameterMerge::kEqual: {
           if (fValue != val_typed->GetValue()) {
-            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLessWarning);
+            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLowWarning);
           }
         } break;
         case EParameterMerge::kMultiply: {
@@ -293,7 +293,7 @@ namespace Hal {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
         default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kLessError);
+          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
           break;
       }
     }
@@ -320,7 +320,7 @@ namespace Hal {
         } break;
         case EParameterMerge::kEqual: {
           if (fValue != val_typed->GetValue()) {
-            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLessWarning);
+            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLowWarning);
           }
         } break;
         case EParameterMerge::kMultiply: {
@@ -342,7 +342,7 @@ namespace Hal {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
         default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kLessError);
+          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
           break;
       }
     }
@@ -368,7 +368,7 @@ namespace Hal {
         } break;
         case EParameterMerge::kEqual: {
           if (fValue != val_typed->GetValue()) {
-            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLessWarning);
+            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLowWarning);
           }
         } break;
         case EParameterMerge::kMultiply: {
@@ -390,7 +390,7 @@ namespace Hal {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
         default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kLessError);
+          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
           break;
       }
     }
@@ -416,7 +416,7 @@ namespace Hal {
         } break;
         case EParameterMerge::kEqual: {
           if (fValue != val_typed->GetValue()) {
-            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLessWarning);
+            Cout::PrintInfo(Form("Differ values during adding %s", this->GetName()), Hal::EInfo::kLowWarning);
           }
         } break;
         case EParameterMerge::kMultiply: {
@@ -432,7 +432,7 @@ namespace Hal {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
         default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kLessError);
+          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
           break;
       }
     }

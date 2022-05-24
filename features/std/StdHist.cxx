@@ -217,12 +217,12 @@ namespace Hal {
       Bool_t bad_map = kFALSE;
       if (input_histogram->GetNbinsX() != smear_matrix->GetNbinsX()) {
         if (!option.Contains("forced"))
-          Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kImportantWarning);
+          Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kWarning);
         bad_map = kTRUE;
       }
       if (input_histogram->GetNbinsX() != smear_matrix->GetNbinsY()) {
         if (!option.Contains("forced"))
-          Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kImportantWarning);
+          Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kWarning);
         bad_map = kTRUE;
       }
       if (option.Contains("forced") && bad_map) {
@@ -568,7 +568,7 @@ namespace Hal {
 
     TH1D* GetDiagonalProjection1D(TH3* h, TString dir, Double_t start, Double_t start2) {
       if (h->GetNbinsX() != h->GetNbinsY() || h->GetNbinsX() != h->GetNbinsZ()) {
-        Hal::Cout::PrintInfo("Cannto make projection in nonsymetric histo", Hal::EInfo::kLessWarning);
+        Hal::Cout::PrintInfo("Cannto make projection in nonsymetric histo", Hal::EInfo::kLowWarning);
         return nullptr;
       }
       TString temp     = dir;
@@ -670,7 +670,7 @@ namespace Hal {
           newTitle = titleX + signFlag;
         }
       } else {
-        Hal::Cout::PrintInfo("Std::GetDiagonalProjection1D unknown option", Hal::EInfo::kLessWarning);
+        Hal::Cout::PrintInfo("Std::GetDiagonalProjection1D unknown option", Hal::EInfo::kLowWarning);
         delete res;
         return nullptr;
       }

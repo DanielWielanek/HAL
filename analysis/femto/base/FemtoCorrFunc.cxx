@@ -41,7 +41,7 @@ namespace Hal {
   void FemtoCorrFunc::Add(const Object* pack) {
     FemtoCorrFunc* other = (FemtoCorrFunc*) pack;
     if (other->fArray->GetSize() != fArray->GetSize()) {
-      Cout::PrintInfo("Cannot merge CorrFunc, sizes are different", EInfo::kLessError);
+      Cout::PrintInfo("Cannot merge CorrFunc, sizes are different", EInfo::kError);
       return;
     } else {
       for (int i = 0; i < fArray->GetSize(); i++) {
@@ -122,7 +122,7 @@ namespace Hal {
   void FemtoCorrFunc1D::SetBins(const std::initializer_list<double>& init) {
     if (fRange.GetSize() != (Int_t) init.size()) {
       Cout::PrintInfo(Form("Wrong size of array during call SetKtBins %i %i", fRange.GetSize(), (int) init.size()),
-                      EInfo::kLessError);
+                      EInfo::kError);
       return;
     }
     std::initializer_list<double>::iterator it;
@@ -178,13 +178,13 @@ namespace Hal {
   Bool_t FemtoCorrFunc2D::Check() {
     for (int i = 1; i < fRangeX.GetSize(); i++) {
       if (fRangeX[i] < fRangeX[i - 1]) {
-        Cout::PrintInfo(Form("Wrong order in X-axis in %s", this->ClassName()), EInfo::kImportantError);
+        Cout::PrintInfo(Form("Wrong order in X-axis in %s", this->ClassName()), EInfo::kCriticalError);
         return kFALSE;
       }
     }
     for (int i = 1; i < fRangeY.GetSize(); i++) {
       if (fRangeY[i] < fRangeY[i - 1]) {
-        Cout::PrintInfo(Form("Wrong order in Y-axis in %s", this->ClassName()), EInfo::kImportantError);
+        Cout::PrintInfo(Form("Wrong order in Y-axis in %s", this->ClassName()), EInfo::kCriticalError);
         return kFALSE;
       }
     }

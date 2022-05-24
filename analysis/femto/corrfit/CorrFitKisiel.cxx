@@ -36,7 +36,7 @@ namespace Hal {
 
   void CorrFitKisiel::Check() {
     CorrFit1DCF::Check();
-    if (fMaps.size() == 0) { Cout::PrintInfo("No maps loaded ", EInfo::kImportantError); }
+    if (fMaps.size() == 0) { Cout::PrintInfo("No maps loaded ", EInfo::kCriticalError); }
     if (IsParFixed(Radius())) {
       Cout::Text(Form("Radius fixed at %4.3f", GetRadius()));
     } else {

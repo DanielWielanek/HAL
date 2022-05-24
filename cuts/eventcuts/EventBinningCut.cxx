@@ -137,7 +137,7 @@ namespace Hal {
     for (unsigned int pos = 0; pos < init.size(); pos++) {
       fStepsNo.Set(pos, init[pos]);
       if (init[pos] == 0) {
-        Cout::PrintInfo("cannot have event bins with 0 binst at ", EInfo::kLessWarning);
+        Cout::PrintInfo("cannot have event bins with 0 binst at ", EInfo::kLowWarning);
       } else {
         fTotalBinsNo = fTotalBinsNo * init[pos];
       }

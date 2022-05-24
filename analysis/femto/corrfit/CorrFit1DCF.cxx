@@ -242,7 +242,7 @@ namespace Hal {
           mask = 0;
           fMask->SetBinContent(i, 0);
           if (warn) {
-            Cout::PrintInfo("empty bin,  mask must be changed", EInfo::kImportantWarning);
+            Cout::PrintInfo("empty bin,  mask must be changed", EInfo::kWarning);
             warn = kFALSE;
           }
         }

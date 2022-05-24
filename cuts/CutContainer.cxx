@@ -36,7 +36,7 @@ namespace Hal {
       case ECutUpdate::kTwoTrack: fSize = 3; break;
       case ECutUpdate::kTwoTrackBackground: fSize = 4; break;
       default: {
-        Cout::PrintInfo("Unknown update ration in CutContainer", EInfo::kLessError);
+        Cout::PrintInfo("Unknown update ration in CutContainer", EInfo::kError);
       } break;
     }
     fCutContainers   = new TObjArray*[fSize];
@@ -49,7 +49,7 @@ namespace Hal {
 
   CutContainer::CutContainer(const CutContainer& cont) :
     TObject(cont), fInit(kFALSE), fSize(cont.fSize), fTempCutMonitors(NULL), fCutContainers(NULL) {
-    if (cont.fInit == kTRUE) { Cout::PrintInfo("CutContainer already initialized", EInfo::kLessError); }
+    if (cont.fInit == kTRUE) { Cout::PrintInfo("CutContainer already initialized", EInfo::kError); }
     fCutContainers   = new TObjArray*[fSize];
     fTempCutMonitors = new TObjArray*[fSize];
     for (int i = 0; i < fSize; i++) {
@@ -130,7 +130,7 @@ namespace Hal {
         case ECutUpdate::kTwoTrack: update_ratio_name = "two_track"; break;
         case ECutUpdate::kTwoTrackBackground: update_ratio_name = "two_track<background>"; break;
         default:
-          Cout::PrintInfo(Form("Unknown update ratio for  %s", cut.CutName().Data()), EInfo::kLessWarning);
+          Cout::PrintInfo(Form("Unknown update ratio for  %s", cut.CutName().Data()), EInfo::kLowWarning);
           update_ratio_name = "unknown";
           break;
       }
@@ -139,7 +139,7 @@ namespace Hal {
                            "or cut monitors",
                            cut.ClassName(),
                            update_ratio_name.Data()),
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
       return;
     }
     // add to cut containers
@@ -178,7 +178,7 @@ namespace Hal {
     if (fSize <= static_cast<Int_t>(update)) {
       Cout::PrintInfo("CutContainer can't hold this cut because it's update ratio is to big, check fTries or call "
                       "SetOption(backround) before adding cuts or cut monitors",
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
       return;
     }
     fTempCutMonitors[static_cast<Int_t>(update)]->AddLast(monitor_copy);
@@ -194,12 +194,12 @@ namespace Hal {
 
   void CutContainer::LinkCollections(ECutUpdate opt_low, Int_t in_low, ECutUpdate opt_high, Int_t in_high) {
     if (opt_high == opt_low || opt_low > opt_high) {
-      Cout::PrintInfo("Wrong ECut Update in Link Collections", EInfo::kLessError);
+      Cout::PrintInfo("Wrong ECut Update in Link Collections", EInfo::kError);
     }
     if (static_cast<Int_t>(opt_high) >= fSize) {
-      Cout::PrintInfo("To big opt_high, link will be ingored", EInfo::kLessError);
+      Cout::PrintInfo("To big opt_high, link will be ingored", EInfo::kError);
     } else if (static_cast<Int_t>(opt_low) >= fSize) {
-      Cout::PrintInfo("To big opt_low, link will be ingored", EInfo::kLessError);
+      Cout::PrintInfo("To big opt_low, link will be ingored", EInfo::kError);
     }
     CutCollection* low  = NULL;
     CutCollection* high = NULL;
@@ -208,7 +208,7 @@ namespace Hal {
     } else if (opt_low == ECutUpdate::kTrack) {
       low = (CutCollection*) GetCutContainer(opt_low)->At(in_low);
     } else {
-      Cout::PrintInfo("Invalid opt_low argument in CutContainer::LinkCollections", EInfo::kLessError);
+      Cout::PrintInfo("Invalid opt_low argument in CutContainer::LinkCollections", EInfo::kError);
       return;
     }
     if (opt_high == ECutUpdate::kTrack) {
@@ -216,11 +216,11 @@ namespace Hal {
     } else if (opt_high == ECutUpdate::kTwoTrack || opt_high == ECutUpdate::kTwoTrackBackground) {
       high = (CutCollection*) GetCutContainer(opt_high)->At(in_high);
     } else {
-      Cout::PrintInfo("Invalid opt_high argument in CutContainer::LinkCollections", EInfo::kLessError);
+      Cout::PrintInfo("Invalid opt_high argument in CutContainer::LinkCollections", EInfo::kError);
       return;
     }
     if (low == NULL || high == NULL) {
-      Cout::PrintInfo("Cant link some collections", EInfo::kLessError);
+      Cout::PrintInfo("Cant link some collections", EInfo::kError);
       return;
     }
     high->AddPreviousAddr(in_low, 0);
@@ -239,9 +239,9 @@ namespace Hal {
 
   void CutContainer::VerifyOrder(TObjArray* obj) {
     for (int i = 0; i < obj->GetEntriesFast(); i++) {
-      if (obj->UncheckedAt(i) == NULL) { Cout::PrintInfo(Form("Null cutsubcontainers at %i", i), EInfo::kLessError); }
+      if (obj->UncheckedAt(i) == NULL) { Cout::PrintInfo(Form("Null cutsubcontainers at %i", i), EInfo::kError); }
       Int_t collection_no = ((CutCollection*) obj->UncheckedAt(i))->GetCollectionID();
-      if (collection_no != i) { Cout::PrintInfo(Form("Wrong order of cuts [%i]!=%i", i, collection_no), EInfo::kLessError); }
+      if (collection_no != i) { Cout::PrintInfo(Form("Wrong order of cuts [%i]!=%i", i, collection_no), EInfo::kError); }
     }
   }
 
@@ -262,7 +262,7 @@ namespace Hal {
 
   void CutContainer::Init(const Int_t task_id) {
     if (fInit == kTRUE) {
-      Cout::PrintInfo("CutContainer has been initialized before", EInfo::kLessWarning);
+      Cout::PrintInfo("CutContainer has been initialized before", EInfo::kLowWarning);
       return;
     }
     for (int i = 0; i < fSize; i++) {
@@ -276,7 +276,7 @@ namespace Hal {
           Int_t collection  = cutmon->GetCollectionID();
           if ((CutCollection*) (fCutContainers[k]->UncheckedAt(collection)) == NULL) {
             Cout::PrintInfo(Form(" Collection %i for cut monitor %s not found", collection, clone->ClassName()),
-                            EInfo::kLessError);
+                            EInfo::kError);
           } else {
             ((CutCollection*) (fCutContainers[k]->UncheckedAt(collection)))->AddCutMonitor(clone);
           }
@@ -386,7 +386,7 @@ namespace Hal {
                            "regular expression like {AxB} set initial collection no to 0",
                            cut.ClassName(),
                            cut.GetCutName(0).Data()),
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
       begin_collection = 0;
     }
     CutMonitor* temp_cut;
@@ -492,18 +492,18 @@ namespace Hal {
     if (this->fSize <= static_cast<Int_t>(update)) {
       Cout::PrintInfo("Cannot Make Dummy copy of CutCollection!lack of space "
                       "in  target cut container!",
-                      EInfo::kLessError);
+                      EInfo::kError);
       return;
     }
     if (other->fSize <= static_cast<Int_t>(update)) {
       Cout::PrintInfo("Cannot Make Dummy copy of CutCollection!! lack of "
                       "object in source cut container",
-                      EInfo::kLessError);
+                      EInfo::kError);
       return;
     }
     if (this->fInit == kTRUE || other->fInit == kFALSE) {
       Cout::PrintInfo("You can't copy sub containers from not initialized cut container to initialized cut container!! ",
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
     }
     for (int i = 0; i < other->GetCutContainer(update)->GetEntriesFast(); i++) {
       CutCollection* from = (CutCollection*) other->GetCutContainer(update)->UncheckedAt(i);
@@ -618,7 +618,7 @@ namespace Hal {
     switch (policy) {
       case ELinkPolicy::kOneToMany: {
         if (lowLinks != 1) {
-          Cout::PrintInfo("EventAna::LinkCollections one-to-many to much first collections!", EInfo::kLessError);
+          Cout::PrintInfo("EventAna::LinkCollections one-to-many to much first collections!", EInfo::kError);
           return kFALSE;
         }
         for (int i = 0; i < highLinks; i++) {
@@ -630,7 +630,7 @@ namespace Hal {
         if (lowLinks > highLinks) {
           Int_t jump = lowLinks / highLinks;
           if (lowLinks % highLinks) {
-            Cout::PrintInfo("EventAna::LinkCollections equal link cannot group cuts!", EInfo::kLessError);
+            Cout::PrintInfo("EventAna::LinkCollections equal link cannot group cuts!", EInfo::kError);
             return kFALSE;
           }
           for (int i = 0; i < highLinks; i++) {
@@ -642,7 +642,7 @@ namespace Hal {
         } else {
           Int_t jump = highLinks / lowLinks;
           if (highLinks % lowLinks) {
-            Cout::PrintInfo("EventAna::LinkCollections equal link cannot group cuts!", EInfo::kLessError);
+            Cout::PrintInfo("EventAna::LinkCollections equal link cannot group cuts!", EInfo::kError);
             return kFALSE;
           }
           for (int i = 0; i < lowLinks; i++) {

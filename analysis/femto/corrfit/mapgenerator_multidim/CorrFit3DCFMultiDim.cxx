@@ -119,13 +119,13 @@ namespace Hal {
     CorrFit3DCF::Check();
     CorrFitInfo* info = fFunctor->GetInfo();
     Femto3DCF* cf     = dynamic_cast<Femto3DCF*>(info->GetCf());
-    if (cf == nullptr) { Cout::PrintInfo("Cannot find 3DCF in CorrFitInfo !", EInfo::kImportantError); }
+    if (cf == nullptr) { Cout::PrintInfo("Cannot find 3DCF in CorrFitInfo !", EInfo::kCriticalError); }
     Femto3DCF* thisCf = (Femto3DCF*) fCF;
-    if (thisCf->GetFrame() != cf->GetFrame()) { Cout::PrintInfo("CorrFitInfo incompatible frames !", EInfo::kImportantError); }
+    if (thisCf->GetFrame() != cf->GetFrame()) { Cout::PrintInfo("CorrFitInfo incompatible frames !", EInfo::kCriticalError); }
     TH3* testThis = (TH3*) thisCf->GetNum();
     TH3* testMap  = (TH3*) cf->GetNum();
     if (!Hal::Std::AreSimilar(testThis, testMap, kFALSE)) {
-      Cout::PrintInfo("CorrFitInfo incompatible histograms in CorrFitInfo and Femto3DCF !", EInfo::kLessError);
+      Cout::PrintInfo("CorrFitInfo incompatible histograms in CorrFitInfo and Femto3DCF !", EInfo::kError);
     }
     fFunctorXbins = testThis->GetXaxis()->GetNbins();
     fFunctorYbins = testThis->GetYaxis()->GetNbins();

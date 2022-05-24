@@ -59,7 +59,7 @@ namespace Hal {
 
     Task::EInitFlag stat = TrackAna::Init();
     if (fV0Candiate == nullptr) {
-      Cout::PrintInfo("No VO candidate class!", EInfo::kLessError);
+      Cout::PrintInfo("No VO candidate class!", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
     TDatabasePDG* db       = TDatabasePDG::Instance();

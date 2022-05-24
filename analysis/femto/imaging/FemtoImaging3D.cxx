@@ -64,7 +64,7 @@ namespace Hal {
       fSource->GetZaxis()->SetTitle("r*_{long}");
       fKinematics = Femto::EKinematics::kPRF;
     } else if (fCF->GetFrame() == Femto::EKinematics::kLCMS) {
-      Cout::PrintInfo("Imaging doesn't work for LCMS ", EInfo::kImportantWarning);
+      Cout::PrintInfo("Imaging doesn't work for LCMS ", EInfo::kWarning);
       return;
       fSource->GetXaxis()->SetTitle("r_{out}");
       fSource->GetYaxis()->SetTitle("r_{side}");

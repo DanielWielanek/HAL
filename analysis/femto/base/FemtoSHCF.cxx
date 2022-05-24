@@ -461,7 +461,7 @@ namespace Hal {
 
   void FemtoSHCF::Browse(TBrowser* b) {
     if (fCFReal == NULL) {
-      Cout::PrintInfo("No correlation functions, call RecalculateCF", EInfo::kLessError);
+      Cout::PrintInfo("No correlation functions, call RecalculateCF", EInfo::kError);
       return;
     }
     for (int i = 0; i < fMaxJM; i++) {
@@ -580,9 +580,9 @@ namespace Hal {
       // val= (*covmcfc)[i];
       // if(TMath::IsNaN(val))nanfound =kTRUE;
     }
-    if (nanfound) { Cout::PrintInfo("NaN found in  numerator or denominator covariance matrix !", EInfo::kLessError); }
+    if (nanfound) { Cout::PrintInfo("NaN found in  numerator or denominator covariance matrix !", EInfo::kError); }
     return;
-    Cout::PrintInfo("Unpacking covariances", EInfo::kLessInfo);
+    Cout::PrintInfo("Unpacking covariances", EInfo::kDebugInfo);
     if (covmnum) { delete covmnum; }
     if (covmden) { delete covmden; }
     if (covmcfc) { delete covmcfc; }
@@ -757,11 +757,11 @@ namespace Hal {
   void FemtoSHCF::Add(const Object* pack) {
     FemtoSHCF* cf = (FemtoSHCF*) pack;
     if (cf->fMaxJM != fMaxJM) {
-      Cout::PrintInfo("Not compatible maxL numbers during merging FemtoSHCF", EInfo::kLessError);
+      Cout::PrintInfo("Not compatible maxL numbers during merging FemtoSHCF", EInfo::kError);
       return;
     }
     if (cf->fFrame != this->fFrame) {
-      Cout::PrintInfo("Incompatible frames !", EInfo::kLessError);
+      Cout::PrintInfo("Incompatible frames !", EInfo::kError);
       return;
     }
     for (int i = 0; i < fMaxJM; i++) {
@@ -794,7 +794,7 @@ namespace Hal {
 
   TH1D* FemtoSHCF::GetCubic(Option_t* opt, Bool_t R) const {
     if (fCFReal == NULL) {
-      Cout::PrintInfo("No correlation functions, call RecalculateCF", EInfo::kLessError);
+      Cout::PrintInfo("No correlation functions, call RecalculateCF", EInfo::kError);
       return NULL;
     }
     TString option = opt;
@@ -1150,23 +1150,23 @@ namespace Hal {
   void FemtoSHCF::RecalculateCF() {
 #ifndef DISABLE_GSL
     if (fDenImag == NULL) {
-      Cout::PrintInfo("No imaginary denominators!", EInfo::kLessError);
+      Cout::PrintInfo("No imaginary denominators!", EInfo::kError);
       return;
     }
     if (fDenReal == NULL) {
-      Cout::PrintInfo("No real denominators", EInfo::kLessError);
+      Cout::PrintInfo("No real denominators", EInfo::kError);
       return;
     }
     if (fNumReal == NULL) {
-      Cout::PrintInfo("No real numeraotrs", EInfo::kLessError);
+      Cout::PrintInfo("No real numeraotrs", EInfo::kError);
       return;
     }
     if (fNumImag == NULL) {
-      Cout::PrintInfo("No imaginary numerators", EInfo::kLessError);
+      Cout::PrintInfo("No imaginary numerators", EInfo::kError);
       return;
     }
 
-    Cout::PrintInfo("Computing SF correlation functions", EInfo::kLessInfo);
+    Cout::PrintInfo("Computing SF correlation functions", EInfo::kDebugInfo);
     if (fCFReal) {
       for (int i = 0; i < fMaxJM; i++)
         delete fCFReal[i];
@@ -1839,11 +1839,11 @@ namespace Hal {
   void FemtoSHCF::FastAdd(const FemtoSHCF* obj) {
     FemtoSHCF* cf = (FemtoSHCF*) obj;
     if (cf->fMaxJM != fMaxJM) {
-      Cout::PrintInfo("Not compatible maxL numbers during merging FemtoSHCF", EInfo::kLessError);
+      Cout::PrintInfo("Not compatible maxL numbers during merging FemtoSHCF", EInfo::kError);
       return;
     }
     if (cf->fFrame != this->fFrame) {
-      Cout::PrintInfo("Incompatible frames !", EInfo::kLessError);
+      Cout::PrintInfo("Incompatible frames !", EInfo::kError);
       return;
     }
     for (int i = 0; i < fMaxJM; i++) {

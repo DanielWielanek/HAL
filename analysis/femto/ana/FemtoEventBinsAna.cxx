@@ -47,7 +47,7 @@ namespace Hal {
       fEventBinnngsBinsNo->Set(i, mult);
       Bool_t ready = evcut->Init(GetTaskID());
       if (ready == kFALSE) {
-        Cout::PrintInfo(Form("Problem with initialization of  %s", evcut->ClassName()), EInfo::kLessError);
+        Cout::PrintInfo(Form("Problem with initialization of  %s", evcut->ClassName()), EInfo::kError);
         return Task::EInitFlag::kFATAL;
       }
     }

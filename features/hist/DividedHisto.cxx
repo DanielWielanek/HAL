@@ -113,12 +113,12 @@ namespace Hal {
         Double_t den   = fDen->Integral(binMinX, binMaxX);
         Double_t scale = 1.0;
         if (num == 0) {
-          Cout::PrintInfo("Numerator integral is zero, set scale to one", Hal::EInfo::kLessWarning);
+          Cout::PrintInfo("Numerator integral is zero, set scale to one", Hal::EInfo::kLowWarning);
         } else {
           scale = den / num;
         }
         if (fNormMin[i] == fNormMax[i]) {
-          Cout::PrintInfo(Form("Same norm min and norm max on %i axis", i), Hal::EInfo::kLessWarning);
+          Cout::PrintInfo(Form("Same norm min and norm max on %i axis", i), Hal::EInfo::kLowWarning);
           scale = 1.0;
         }
         if (scale == 0.0) scale = 1.0;
@@ -132,7 +132,7 @@ namespace Hal {
   void DividedHisto1D::AddNum(TH1* num, Option_t* opt) {
     if (fNumIsCloned && fNum != NULL) delete fNum;
     if (num == NULL) {
-      Cout::PrintInfo("HalDividedHisto  - trying to assign NULL Numerator", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("HalDividedHisto  - trying to assign NULL Numerator", Hal::EInfo::kLowWarning);
       fNum = NULL;
       return;
     }
@@ -149,7 +149,7 @@ namespace Hal {
   void DividedHisto1D::AddDen(TH1* den, Option_t* opt) {
     if (fDenIsCloned && fDen != NULL) delete fDen;
     if (den == NULL) {
-      Cout::PrintInfo("HalDividedHisto  - trying to assign NULL Denominator", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("HalDividedHisto  - trying to assign NULL Denominator", Hal::EInfo::kLowWarning);
       fDen = NULL;
       return;
     }
@@ -189,17 +189,17 @@ namespace Hal {
 
   void DividedHisto1D::SetNorm(Double_t min, Double_t max, Int_t axis) {
     if (axis < 0) {
-      Cout::PrintInfo("HalDividedHisto too small norm axis", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("HalDividedHisto too small norm axis", Hal::EInfo::kLowWarning);
       return;
     } else if (axis > fDim) {
-      Cout::PrintInfo(("HalDividedHist too large norm axis"), Hal::EInfo::kLessWarning);
+      Cout::PrintInfo(("HalDividedHist too large norm axis"), Hal::EInfo::kLowWarning);
       return;
     }
     if (min > max) {
-      Cout::PrintInfo("HalDividedHisto min> max", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("HalDividedHisto min> max", Hal::EInfo::kLowWarning);
       return;
     } else if (min == max) {
-      Cout::PrintInfo("HalDividedHisto min == max", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("HalDividedHisto min == max", Hal::EInfo::kLowWarning);
       return;
     }
     fNormMin[axis] = min;
@@ -211,17 +211,17 @@ namespace Hal {
   void DividedHisto1D::Add(const Object* h) {
     DividedHisto1D* div = (DividedHisto1D*) h;
     if (div->fDim != this->fDim) {
-      Cout::PrintInfo(Form("Invalid dimensions in %s and %s", this->ClassName(), h->ClassName()), Hal::EInfo::kImportantError);
+      Cout::PrintInfo(Form("Invalid dimensions in %s and %s", this->ClassName(), h->ClassName()), Hal::EInfo::kCriticalError);
     }
     for (int i = 0; i < fDim; i++) {
       if (this->fNormMin[i] != div->fNormMin[i]) {
-        Cout::PrintInfo("Invalid minimum values in HalDividedHisto", Hal::EInfo::kLessError);
+        Cout::PrintInfo("Invalid minimum values in HalDividedHisto", Hal::EInfo::kError);
       } else if (this->fNormMax[i] != div->fNormMax[i]) {
-        Cout::PrintInfo("Invalid maximum values in HalDividedHisto", Hal::EInfo::kLessError);
+        Cout::PrintInfo("Invalid maximum values in HalDividedHisto", Hal::EInfo::kError);
       }
     }
     if ((this->fScale == 0 && div->fScale != 0) || (this->fScale > 0 && div->fScale == 0)) {
-      Cout::PrintInfo(("Incompatibile scales !"), Hal::EInfo::kLessError);
+      Cout::PrintInfo(("Incompatibile scales !"), Hal::EInfo::kError);
       fScale = 1.0;
     }
     if (fScale == 0) {  // use norms
@@ -246,13 +246,13 @@ namespace Hal {
 
   Double_t DividedHisto1D::GetNormMin(Int_t no) const {
     if (no >= 0 && no < fDim) { return fNormMin[no]; }
-    Cout::PrintInfo(Form("%s::GetNormMin invalid no", ClassName()), Hal::EInfo::kLessWarning);
+    Cout::PrintInfo(Form("%s::GetNormMin invalid no", ClassName()), Hal::EInfo::kLowWarning);
     return 0;
   }
 
   Double_t DividedHisto1D::GetNormMax(Int_t no) const {
     if (no >= 0 && no < fDim) { return fNormMax[no]; }
-    Cout::PrintInfo(Form("%s::GetNormMax invalid no", ClassName()), Hal::EInfo::kLessWarning);
+    Cout::PrintInfo(Form("%s::GetNormMax invalid no", ClassName()), Hal::EInfo::kLowWarning);
     return 0;
   }
 
@@ -407,7 +407,7 @@ namespace Hal {
   void DividedHisto1D::Fold1D(Double_t val, Option_t* opt) {
     TString option = opt;
     if (fNum == NULL || fDen == NULL) {
-      Cout::PrintInfo("lack of numerator and/or denominator folding cannot be done", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("lack of numerator and/or denominator folding cannot be done", Hal::EInfo::kLowWarning);
       return;
     }
     TAxis* ax = NULL;
@@ -424,7 +424,7 @@ namespace Hal {
     if (TMath::Abs(cent - val) > 1E-10 && TMath::Abs(low - val) > 1E-10) {
       Cout::PrintInfo("value of folding is not equal a bin center of bin edge, folding "
                       "cannot be done",
-                      Hal::EInfo::kLessWarning);
+                      Hal::EInfo::kLowWarning);
       return;
     }
     Folding1D(val, opt);
@@ -479,7 +479,7 @@ namespace Hal {
       for (int i = 0; i < fDim; i++) {
         Double_t scale = 1.0;
         if (fNormMin[i] == fNormMax[i]) {
-          Cout::PrintInfo(Form("Same norm min and norm max on %i axis", i), Hal::EInfo::kLessWarning);
+          Cout::PrintInfo(Form("Same norm min and norm max on %i axis", i), Hal::EInfo::kLowWarning);
         } else {
           Int_t binMinX = fNum->GetXaxis()->FindBin(fNormMin[0]);
           Int_t binMaxX = fNum->GetXaxis()->FindBin(fNormMax[0]);
@@ -492,7 +492,7 @@ namespace Hal {
           binMaxY       = fDen->GetYaxis()->FindBin(fNormMax[1]);
           Double_t den  = ((TH2*) fDen)->Integral(binMinX, binMaxX, binMinY, binMaxY);
           if (den == 0) {
-            Cout::PrintInfo("Numerator integral is zero, set scale to one", Hal::EInfo::kLessWarning);
+            Cout::PrintInfo("Numerator integral is zero, set scale to one", Hal::EInfo::kLowWarning);
           } else {
             scale = den / num;
           }
@@ -649,7 +649,7 @@ namespace Hal {
   void DividedHisto2D::Fold2D(Double_t valX, Double_t valY, Option_t* opt) {
     TString option = opt;
     if (fNum == NULL || fDen == NULL) {
-      Cout::PrintInfo("lack of numerator and/or denominator folding cannot be done", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("lack of numerator and/or denominator folding cannot be done", Hal::EInfo::kLowWarning);
       return;
     }
     TAxis* ax = NULL;
@@ -703,7 +703,7 @@ namespace Hal {
       ay = fNum->GetZaxis();
     }
     if (ax == NULL || ay == NULL) {
-      Cout::PrintInfo("Wrong option in 2D folding", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("Wrong option in 2D folding", Hal::EInfo::kLowWarning);
       return;
     }
     Int_t binX     = ax->FindBin(valX);
@@ -715,13 +715,13 @@ namespace Hal {
     if (TMath::Abs(centX - valX) > 1E-10 && TMath::Abs(lowX - valX) > 1E-10) {
       Cout::PrintInfo("value of folding on X axis is not equal a bin center of bin edge, "
                       "folding cannot be done",
-                      Hal::EInfo::kLessWarning);
+                      Hal::EInfo::kLowWarning);
       return;
     }
     if (TMath::Abs(centY - valY) > 1E-10 && TMath::Abs(lowY - valY) > 1E-10) {
       Cout::PrintInfo("value of folding on Y axis is not equal a bin center of bin edge, "
                       "folding cannot be done",
-                      Hal::EInfo::kLessWarning);
+                      Hal::EInfo::kLowWarning);
       return;
     }
     Folding2D(valX, valY, option);
@@ -747,7 +747,7 @@ namespace Hal {
       for (int i = 0; i < fDim; i++) {
         Double_t scale = 1.0;
         if (fNormMin[i] == fNormMax[i]) {
-          Cout::PrintInfo(Form("Same norm min and norm max on %i axis", i), Hal::EInfo::kLessWarning);
+          Cout::PrintInfo(Form("Same norm min and norm max on %i axis", i), Hal::EInfo::kLowWarning);
           scale = 1.0;
         } else {
           Int_t binMinX = fNum->GetXaxis()->FindBin(fNormMin[0]);
@@ -769,7 +769,7 @@ namespace Hal {
           Double_t den = ((TH3*) fDen)->Integral(binMinX, binMaxX, binMinY, binMaxY, binMinZ, binMaxZ);
 
           if (den == 0) {
-            Cout::PrintInfo("Numerator integral is zero, set scale to one", Hal::EInfo::kLessWarning);
+            Cout::PrintInfo("Numerator integral is zero, set scale to one", Hal::EInfo::kLowWarning);
             scale = 1.0;
           } else {
             scale = den / num;
@@ -856,7 +856,7 @@ namespace Hal {
       Z     = fNum->GetXaxis();
     } else {
       X = Y = Z = NULL;
-      Cout::PrintInfo("Wrong option in  HalDividedHisto3D Folding", Hal::EInfo::kLessWarning);
+      Cout::PrintInfo("Wrong option in  HalDividedHisto3D Folding", Hal::EInfo::kLowWarning);
     }
     Double_t middle_bin = X->FindBin(val);
     middle_bin          = X->GetBinCenter(middle_bin);

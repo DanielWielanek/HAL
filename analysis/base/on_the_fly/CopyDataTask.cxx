@@ -28,7 +28,7 @@ namespace Hal {
 
   void CopyDataTask::SetFormat(Event* event) {
     if (fInputData) {
-      Cout::PrintInfo("Overwriting format in CopyDataTask", EInfo::kLessWarning);
+      Cout::PrintInfo("Overwriting format in CopyDataTask", EInfo::kLowWarning);
       fInputData = event;
     }
   }

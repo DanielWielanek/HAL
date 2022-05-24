@@ -109,12 +109,12 @@ namespace Hal {
     } else {
       for (int i = 0; i < fTaskNo; i++) {
         if (ana == fTask[i]) {
-          Cout::PrintInfo("Task already added", EInfo::kLessError);
+          Cout::PrintInfo("Task already added", EInfo::kError);
           return;
         }
       }
       if (dynamic_cast<MultiTrackAna*>(ana)) {
-        Cout::PrintInfo("Tasks with track buffering cannot be processed vy this task", EInfo::kLessError);
+        Cout::PrintInfo("Tasks with track buffering cannot be processed vy this task", EInfo::kError);
       }
       TrackAna** temp = fTask;
       fTask           = new TrackAna*[fTaskNo + 1];
@@ -158,7 +158,7 @@ namespace Hal {
       delete subtask_pack;
     }
     gFile->cd();
-    Cout::PrintInfo(Form("%s done, writing results", this->ClassName()), EInfo::kImportantInfo);
+    Cout::PrintInfo(Form("%s done, writing results", this->ClassName()), EInfo::kInfo);
   }
 
   void TrackAnaChain::GoToDir(TString name) {

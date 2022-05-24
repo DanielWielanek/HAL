@@ -42,7 +42,7 @@ namespace Hal {
 
   void MultiTrackAna::SetMixSize(Int_t to_mix) {
     if (to_mix < 1) {
-      Cout::PrintInfo("Wrong mix size in SetMixSize", EInfo::kImportantWarning);
+      Cout::PrintInfo("Wrong mix size in SetMixSize", EInfo::kWarning);
     } else {
       fMixSize = to_mix;
     }
@@ -82,9 +82,9 @@ namespace Hal {
     Task::EInitFlag stat = TrackAna::CheckFormat();
     if (stat == Task::EInitFlag::kFATAL) return stat;
     if (DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kBuffered) == nullptr) {
-      Cout::PrintInfo(Form("%s %s", this->ClassName(), ": Buffered format not set, fixing"), EInfo::kImportantWarning);
+      Cout::PrintInfo(Form("%s %s", this->ClassName(), ": Buffered format not set, fixing"), EInfo::kWarning);
       if (DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered) == nullptr) {
-        Cout::PrintInfo("Cannot fix, non-buffered format not present", EInfo::kLessError);
+        Cout::PrintInfo("Cannot fix, non-buffered format not present", EInfo::kError);
         return Task::EInitFlag::kFATAL;
       }
       SetFormatBuffered(DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered)->GetNewEvent());
@@ -98,7 +98,7 @@ namespace Hal {
       return Task::EInitFlag::kSUCCESS;
     } else {
       Cout::PrintInfo(Form("Format %s is not compatible with %s", nonBuf->GetFormatName().Data(), Buf->GetFormatName().Data()),
-                      EInfo::kLessError);
+                      EInfo::kError);
     }
     return Task::EInitFlag::kSUCCESS;
   }

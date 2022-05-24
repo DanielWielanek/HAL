@@ -115,7 +115,7 @@ namespace Hal {
         }
       }
     } else {
-      Cout::PrintInfo("wrong number of track collections, this might result in crash", EInfo::kLessError);
+      Cout::PrintInfo("wrong number of track collections, this might result in crash", EInfo::kError);
     }
   }
 
@@ -180,10 +180,10 @@ namespace Hal {
 
   void ChargedFluctuationsAna::AddCut(const TrackCut& pos, const TrackCut& neg, Option_t* opt) {
     if (pos.GetCollectionID() == neg.GetCollectionID()) {
-      Cout::PrintInfo("cannot add two cuts with the same collection ID by ChargedFluctuationsAna::AddCut!", EInfo::kLessWarning);
+      Cout::PrintInfo("cannot add two cuts with the same collection ID by ChargedFluctuationsAna::AddCut!", EInfo::kLowWarning);
     }
     if (TMath::Abs(pos.GetCollectionID() - neg.GetCollectionID()) != 1) {
-      Cout::PrintInfo("cannot add two cuts with delta collection ID!=1 by ChargedFluctuationsAna::AddCut!", EInfo::kLessWarning);
+      Cout::PrintInfo("cannot add two cuts with delta collection ID!=1 by ChargedFluctuationsAna::AddCut!", EInfo::kLowWarning);
     }
     TString option = CleanOpt(opt, -1);
     TrackAna::AddCut(pos, opt);
@@ -196,11 +196,11 @@ namespace Hal {
   ChargedFluctuationsAna::AddCutsAndMonitors(const CutsAndMonitors& posTrack, const CutsAndMonitors& negTrack, Option_t* opt) {
     if (posTrack.GetCut(0)->GetCollectionID() == negTrack.GetCut(0)->GetCollectionID()) {
       Cout::PrintInfo("cannot add two cuts with the same collection ID by NicaChargedFluctuationsAna::AddCut!",
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
     }
     if (TMath::Abs(posTrack.GetCut(0)->GetCollectionID() - negTrack.GetCut(0)->GetCollectionID()) != 1) {
       Cout::PrintInfo("cannot add two cuts with delta collection ID!=1 by NicaChargedFluctuationsAna::AddCut!",
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
     }
     for (int iCut = 0; iCut < posTrack.GetNCuts(); iCut++) {
       TrackAna::AddCut(*posTrack.GetCut(iCut), posTrack.GetCutOption(iCut));

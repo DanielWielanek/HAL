@@ -51,7 +51,7 @@ namespace Hal {
     if (fBMax < 0) {
       Cout::PrintInfo("Max impact  parameter in EventImpactCentralityCut is "
                       "<0 setting to 0",
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
       fBMax  = 0;
       fAlpha = 1.0;
     } else {

@@ -27,7 +27,7 @@ namespace Hal {
 
   void FemtoFastCut::Allocate() {
     if (fBins == 0) {
-      Cout::PrintInfo("No default value in FemtoFastCuts, put some default values", EInfo::kLessWarning);
+      Cout::PrintInfo("No default value in FemtoFastCuts, put some default values", EInfo::kLowWarning);
       fBins   = 1;
       fMin    = new Double_t[1];
       fMax    = new Double_t[1];
@@ -36,17 +36,17 @@ namespace Hal {
     }
     for (int i = 1; i < fBins; i++) {
       if (fMax[i - 1] > fMin[i]) {
-        Cout::PrintInfo("Overlaping bins in FemtoFastCuts, this lead to loosing pairs", EInfo::kLessWarning);
+        Cout::PrintInfo("Overlaping bins in FemtoFastCuts, this lead to loosing pairs", EInfo::kLowWarning);
       }
       if (fMin[i - 1] != fMax[i]) {
-        Cout::PrintInfo("Hole in FemtoFastCut, this might lead to loosing pairs", EInfo::kLessWarning);
+        Cout::PrintInfo("Hole in FemtoFastCut, this might lead to loosing pairs", EInfo::kLowWarning);
       }
     }
   }
 
   void FemtoFastCut::Init(FemtoPair* pair) {
     if (fBins == 0) {
-      Cout::PrintInfo("Empty femto fast cut, adding  large values", EInfo::kLessWarning);
+      Cout::PrintInfo("Empty femto fast cut, adding  large values", EInfo::kLowWarning);
       AddCutBin(-1E+9, 1E+9);
     }
     fMinTrue = new Double_t[fBins];
@@ -56,7 +56,7 @@ namespace Hal {
       fMaxTrue[i] = fMax[i];
     }
     fPair = pair;
-    if (fPair == NULL) { Cout::PrintInfo(Form("No FemtoPair in %s", this->ClassName()), EInfo::kImportantError); }
+    if (fPair == NULL) { Cout::PrintInfo(Form("No FemtoPair in %s", this->ClassName()), EInfo::kCriticalError); }
   }
 
   void FemtoFastCut::AddCutBin(Double_t min, Double_t max, Option_t* /*opt*/) {
@@ -78,7 +78,7 @@ namespace Hal {
   }
 
   FemtoFastCut::FemtoFastCut(const FemtoFastCut& copy) : TObject(copy) {
-    if (copy.fPair) Cout::PrintInfo("FemtoFastCut already initialized", EInfo::kImportantError);
+    if (copy.fPair) Cout::PrintInfo("FemtoFastCut already initialized", EInfo::kCriticalError);
     fPair = NULL;
     fBins = copy.fBins;
     fMin  = new Double_t[fBins];
@@ -258,7 +258,7 @@ namespace Hal {
       } else if (dMin < dMax) {
         fMinTrue[i] = -fMinTrue[i];
       } else {
-        Cout::PrintInfo(Form("Something is wrong with %s cut", this->ClassName()), EInfo::kImportantWarning);
+        Cout::PrintInfo(Form("Something is wrong with %s cut", this->ClassName()), EInfo::kWarning);
       }
     }
   }

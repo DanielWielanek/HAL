@@ -36,7 +36,7 @@ void preparetemplate();
 void rebin(TString opt);
 int main(int argc, char* argv[]) {
   if (argc < 2) {
-    Hal::Cout::PrintInfo("No arguments! run: nica-corrfit --help to get help", Hal::EInfo::kImportantError);
+    Hal::Cout::PrintInfo("No arguments! run: nica-corrfit --help to get help", Hal::EInfo::kCriticalError);
     return 0;
   }
   TString arg1 = argv[1];
@@ -80,7 +80,7 @@ inline void compress() {
   Int_t nJobs = setup.GetNJobs();
 
   if (!AllJobsCompleted(nJobs)) {
-    Hal::Cout::PrintInfo("Not all jobs are completed", Hal::EInfo::kLessError);
+    Hal::Cout::PrintInfo("Not all jobs are completed", Hal::EInfo::kError);
     Hal::Cout::Text("Do you really want to continue y/n?", "L");
     TString ans;
     std::cin >> ans;

@@ -103,7 +103,7 @@ namespace Hal {
     if (fSoftVer <= 201612) {
       Cout::PrintInfo("This file version might be not compatible wtih current version, use "
                       "macro/path/fix_files.C to fix it",
-                      Hal::EInfo::kImportantWarning);
+                      Hal::EInfo::kWarning);
     }
     TDirectory* tdir = (TDirectory*) file->Get("HalPhysics");
     //---------------------
@@ -146,7 +146,7 @@ namespace Hal {
         div2.AddContent(mainTable);
         fHTML->AddContent(div2);
       } else {
-        Cout::PrintInfo(Form("%s found in Physics but don't inherit from HalPackage", key_name.Data()), Hal::EInfo::kLessWarning);
+        Cout::PrintInfo(Form("%s found in Physics but don't inherit from HalPackage", key_name.Data()), Hal::EInfo::kLowWarning);
       }
     }
     // delete list;
@@ -184,7 +184,7 @@ namespace Hal {
     if (fSoftVer <= 201612) {
       Cout::PrintInfo("This file version might be not compatible wtih current version, use "
                       "macro/path/fix_files.C to fix it",
-                      Hal::EInfo::kImportantWarning);
+                      Hal::EInfo::kWarning);
     }
     TObject* object    = tdir->Get(packname);
     TString table_name = Form("task_table_%i", fTaskTableCounter++);
@@ -214,7 +214,7 @@ namespace Hal {
       fHTML->AddContent(div2);
     } else {
       Cout::PrintInfo(Form("%s found in HalPhysics but don't inherit from HalPackage", packname.Data()),
-                      Hal::EInfo::kLessWarning);
+                      Hal::EInfo::kLowWarning);
     }
     // delete list;
     file->Close();
@@ -267,7 +267,7 @@ namespace Hal {
       fHTML->AddContent(div2);
       pack_counter++;
     } else {
-      Cout::PrintInfo(Form("%s  is not proper Object", pack_ana->ClassName()), Hal::EInfo::kLessWarning);
+      Cout::PrintInfo(Form("%s  is not proper Object", pack_ana->ClassName()), Hal::EInfo::kLowWarning);
     }
     //----------------------
     fHTML->Save();
@@ -632,7 +632,7 @@ namespace Hal {
         desc  = "TwoTrackCollectionBackground";
         names = "Track TwoTracks (Background)";
         break;
-      default: Cout::PrintInfo("Unknown cut update during HTML export", Hal::EInfo::kLessWarning); break;
+      default: Cout::PrintInfo("Unknown cut update during HTML export", Hal::EInfo::kLowWarning); break;
     }
 
     TList* listA = (TList*) fCurrentCutContainer->GetObjectByName(group_name);
@@ -996,7 +996,7 @@ namespace Hal {
         desc  = "TwoTrackBackgroundCollection";
         names = "Track TwoTracks Background";
         break;
-      default: Cout::PrintInfo("Unhandled monitor group in HalPackage2HTML", Hal::EInfo::kLessWarning); break;
+      default: Cout::PrintInfo("Unhandled monitor group in HalPackage2HTML", Hal::EInfo::kLowWarning); break;
     }
     HtmlRow row;
     row.SetClass(Hal::HtmlTableRowStyles::TitleStyle());

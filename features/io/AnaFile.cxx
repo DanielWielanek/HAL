@@ -41,7 +41,7 @@ namespace Hal {
     if (SoftVer <= 201612) {
       Cout::PrintInfo("This file version might be not compatible wtih current version, use "
                       "macro/path/fix_files.C to fix it",
-                      Hal::EInfo::kImportantWarning);
+                      Hal::EInfo::kWarning);
     }
     TDirectory* PhysDir = (TDirectory*) fFile->Get("HalPhysics");
     fPhysKeys           = PhysDir->GetListOfKeys();
@@ -58,7 +58,7 @@ namespace Hal {
           fPhysKeys->RemoveAt(i);
         } else {
           fMainPackageArray->AddLast(dynamic_cast<Package*>(PhysDir->Get(name)));
-          if (FindCutContainer(0) == kFALSE) { Cout::PrintInfo("Cut container not found !", Hal::EInfo::kImportantWarning); }
+          if (FindCutContainer(0) == kFALSE) { Cout::PrintInfo("Cut container not found !", Hal::EInfo::kWarning); }
         }
       }
     } else {
@@ -74,7 +74,7 @@ namespace Hal {
       }
       fMaxPackID = fPhysKeys->GetEntries();
       for (int i = 0; i < fMaxPackID; i++) {
-        if (FindCutContainer(i) == kFALSE) { Cout::PrintInfo("Cut container not found !", Hal::EInfo::kImportantWarning); }
+        if (FindCutContainer(i) == kFALSE) { Cout::PrintInfo("Cut container not found !", Hal::EInfo::kWarning); }
       }
     }
     fMainPackageArray->Compress();
@@ -90,7 +90,7 @@ namespace Hal {
     if (SoftVer <= 201612) {
       Cout::PrintInfo("This file version might be not compatible wtih current version, use "
                       "macro/path/fix_files.C to fix it",
-                      Hal::EInfo::kImportantWarning);
+                      Hal::EInfo::kWarning);
     }
     TDirectory* PhysDir = (TDirectory*) fFile->Get("HalPhysics");
     fPhysKeys           = (TList*) PhysDir->GetListOfKeys()->Clone();
@@ -102,12 +102,12 @@ namespace Hal {
     if (id >= 0) {
       fMaxPackID = 1;
       if (id > fPhysKeys->GetEntries()) {
-        Cout::PrintInfo(Form("Package with id = %i  not found !", id), Hal::EInfo::kImportantWarning);
+        Cout::PrintInfo(Form("Package with id = %i  not found !", id), Hal::EInfo::kWarning);
         return;
       }
       TString name = ((TKey*) (fPhysKeys->At(id)))->GetName();
       fMainPackageArray->AddLast(dynamic_cast<Package*>(PhysDir->Get(name)));
-      if (FindCutContainer(0) == kFALSE) { Cout::PrintInfo("Cut container not found !", Hal::EInfo::kImportantWarning); }
+      if (FindCutContainer(0) == kFALSE) { Cout::PrintInfo("Cut container not found !", Hal::EInfo::kWarning); }
     } else {
       for (int i = 0; i < fPhysKeys->GetEntries(); i++) {
         TString name            = ((TKey*) (fPhysKeys->At(i)))->GetName();
@@ -121,7 +121,7 @@ namespace Hal {
       }
       fMaxPackID = fPhysKeys->GetEntries();
       for (int i = 0; i < fMaxPackID; i++) {
-        if (FindCutContainer(i) == kFALSE) { Cout::PrintInfo("Cut container not found !", Hal::EInfo::kImportantWarning); }
+        if (FindCutContainer(i) == kFALSE) { Cout::PrintInfo("Cut container not found !", Hal::EInfo::kWarning); }
       }
     }
     fMainPackageArray->Compress();
@@ -150,7 +150,7 @@ namespace Hal {
         unity = ((ParameterString*) mon->GetObjectByName("AxisY"))->GetValue();
         unitz = ((ParameterString*) mon->GetObjectByName("AxisZ"))->GetValue();
       } else {
-        Cout::PrintInfo("Oops, unknown Monitor :(", Hal::EInfo::kLessWarning);
+        Cout::PrintInfo("Oops, unknown Monitor :(", Hal::EInfo::kLowWarning);
       }
       Cout::Database(5, no.Data(), type.Data(), unitx.Data(), unity.Data(), unitz.Data());
     }
@@ -226,7 +226,7 @@ namespace Hal {
       }
     }
     if (not_switched) {
-      Cout::PrintInfo(Form("%s not found in HalPhysics", name.Data()), Hal::EInfo::kLessWarning);
+      Cout::PrintInfo(Form("%s not found in HalPhysics", name.Data()), Hal::EInfo::kLowWarning);
       return kFALSE;
     }
     return kTRUE;
@@ -279,7 +279,7 @@ namespace Hal {
       if (object->InheritsFrom("Hal::Package")) {
         Cout::Text(object->GetName(), "L");
       } else {
-        Cout::PrintInfo(Form("%s found in HalPhysics but don't inherit from HalPackage", name.Data()), Hal::EInfo::kLessWarning);
+        Cout::PrintInfo(Form("%s found in HalPhysics but don't inherit from HalPackage", name.Data()), Hal::EInfo::kLowWarning);
       }
     }
     file->Close();

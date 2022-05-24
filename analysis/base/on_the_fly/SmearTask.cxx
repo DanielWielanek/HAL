@@ -38,7 +38,7 @@ namespace Hal {
 
   void SmearTask::CheckCutContainerCollections() {
     if (fCutContainer->GetEventCollectionsNo() > 1) {
-      Cout::PrintInfo("Too many event collections, they will be removed! ", EInfo::kLessWarning);
+      Cout::PrintInfo("Too many event collections, they will be removed! ", EInfo::kLowWarning);
       for (int i = 1; i < fCutContainer->GetEventCollectionsNo(); i++)
         fCutContainer->RemoveCollection(ECutUpdate::kEvent, i);
     }
@@ -59,7 +59,7 @@ namespace Hal {
     if (formats->FormatExist(GetTaskID())) {
       const Event* temp = formats->GetFormat(GetTaskID());
       if (temp->InheritsFrom("Hal::EventSmeared")) {
-        Cout::PrintInfo("Cannot set smeared algorithm in smearing task", EInfo::kImportantError);
+        Cout::PrintInfo("Cannot set smeared algorithm in smearing task", EInfo::kCriticalError);
         return Task::EInitFlag::kFATAL;
       }
     }
@@ -71,19 +71,19 @@ namespace Hal {
     fCurrentEventSmeared->LinkWithTree();
     fCurrentEventSmeared->GetImgEvent()->Register(kFALSE);
     if (fEventAlgorithm == NULL) {
-      Cout::PrintInfo("No event smear algorithm, new will be added but do virtual", EInfo::kLessWarning);
+      Cout::PrintInfo("No event smear algorithm, new will be added but do virtual", EInfo::kLowWarning);
       fEventAlgorithm = new EventSmearVirtual();
     }
     if (fTrackAlgorithm == NULL) {
-      Cout::PrintInfo("No track smear algorithm, new will be added but do virtual", EInfo::kLessWarning);
+      Cout::PrintInfo("No track smear algorithm, new will be added but do virtual", EInfo::kLowWarning);
       fTrackAlgorithm = new TrackSmearVirtual();
     }
     if (fEventAlgorithm->Init() == Task::EInitFlag::kFATAL) {
-      Cout::PrintInfo("Failed to initialize EventSmear", EInfo::kLessError);
+      Cout::PrintInfo("Failed to initialize EventSmear", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
     if (fTrackAlgorithm->Init() == Task::EInitFlag::kFATAL) {
-      Cout::PrintInfo("Failed to initialize TrackSmear", EInfo::kLessError);
+      Cout::PrintInfo("Failed to initialize TrackSmear", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
     return stat;

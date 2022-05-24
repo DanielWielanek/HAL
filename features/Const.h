@@ -9,7 +9,7 @@
 #ifndef HALCONST_H_
 #define HALCONST_H_
 /**
- * const list it shuold be namespace but root don't use namespaces "out of box"
+ * const list it should be namespace but root don't use namespaces "out of box"
  *
  */
 #include "TObject.h"

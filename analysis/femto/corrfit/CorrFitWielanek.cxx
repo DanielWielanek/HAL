@@ -39,7 +39,7 @@ namespace Hal {
   }
 
   void CorrFitWielanek::CreateMap() {
-    if (fSource == NULL) { Cout::PrintInfo("No source emission funciont", EInfo::kImportantError); }
+    if (fSource == NULL) { Cout::PrintInfo("No source emission funciont", EInfo::kCriticalError); }
     if (fMaps.size() > 0) return;
     Double_t r_min = fParameters[Radius()].GetMin();
     Double_t r_max = fParameters[Radius()].GetMax();
@@ -94,7 +94,7 @@ namespace Hal {
 
   void CorrFitWielanek::SetSourceEmissionFunction(TF1* func) {
     if (fSource) {
-      Cout::PrintInfo("cannot set more source emission functions", EInfo::kImportantWarning);
+      Cout::PrintInfo("cannot set more source emission functions", EInfo::kWarning);
       return;
     }
     fSource = func;
@@ -102,14 +102,14 @@ namespace Hal {
 
   void CorrFitWielanek::SetSourceEmissionFunstion(Option_t* opt) {
     if (fSource) {
-      Cout::PrintInfo("cannot set more source emission functions", EInfo::kLessWarning);
+      Cout::PrintInfo("cannot set more source emission functions", EInfo::kLowWarning);
       return;
     } else {
       TString option = opt;
       if (option == "gaus") {
         fSource = new TF1("gaus", "[1]*x*x*exp(-x*x/[0]/[0]/4)", 2);
       } else {
-        Cout::PrintInfo(Form("Unkonw option in %s", this->ClassName()), EInfo::kLessWarning);
+        Cout::PrintInfo(Form("Unkonw option in %s", this->ClassName()), EInfo::kLowWarning);
       }
     }
   }

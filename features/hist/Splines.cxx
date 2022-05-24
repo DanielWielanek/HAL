@@ -221,7 +221,7 @@ namespace Hal {
     if (fXaxis->IsVariableBinSize() && fYaxis->IsVariableBinSize()) {
       Cout::PrintInfo("Bot axes have non-fixed bin size 2dim interpolation will probably not "
                       "work",
-                      Hal::EInfo::kImportantWarning);
+                      Hal::EInfo::kWarning);
     }
     TH2* temp_histo = (TH2*) h->Clone("temp_interpolation");
     Extrapolate(temp_histo, opt_int);

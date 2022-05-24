@@ -122,9 +122,9 @@ namespace Hal {
       default: break;
     }
     if (fIdentical) {
-      Cout::PrintInfo("IDENTICAL two track analysis enabled", EInfo::kLessInfo);
+      Cout::PrintInfo("IDENTICAL two track analysis enabled", EInfo::kDebugInfo);
     } else {
-      Cout::PrintInfo("NON-IDENTICAL two track analysis enabled", EInfo::kLessInfo);
+      Cout::PrintInfo("NON-IDENTICAL two track analysis enabled", EInfo::kDebugInfo);
     }
     return in;
   }
@@ -168,7 +168,7 @@ namespace Hal {
     if (mixsize > 0) fMixSize = mixsize;
     if (mixsize > 10) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("Mix size >10", EInfo::kLessInfo);
+      Cout::PrintInfo("Mix size >10", EInfo::kDebugInfo);
 #endif
     }
   }
@@ -187,9 +187,9 @@ namespace Hal {
     switch (fBackgroundMode) {
       case kCharged: {
         if (trackTrig < 2) {
-          Cout::PrintInfo("Not enough track collections", EInfo::kLessWarning);
+          Cout::PrintInfo("Not enough track collections", EInfo::kLowWarning);
         } else if (trackTrig > 3) {
-          Cout::PrintInfo("Too much track collections (>3) fixing ...", EInfo::kLessWarning);
+          Cout::PrintInfo("Too much track collections (>3) fixing ...", EInfo::kLowWarning);
           for (int i = 3; i < trackTrig; i++)
             fCutContainer->RemoveCollection(ECutUpdate::kTrack, i);
           trackTrig = fCutContainer->GetTrackCollectionsNo();
@@ -205,7 +205,7 @@ namespace Hal {
       default: {
         if (IdenticalParticles()) {
           if (trackTrig > 1) {
-            Cout::PrintInfo("Too much track collections (>1), fixing ..", EInfo::kLessWarning);
+            Cout::PrintInfo("Too much track collections (>1), fixing ..", EInfo::kLowWarning);
             for (int i = 1; i < trackTrig; i++)
               fCutContainer->RemoveCollection(ECutUpdate::kTrack, i);
             trackTrig = 1;
@@ -219,7 +219,7 @@ namespace Hal {
           }
         } else {
           if (trackTrig > 2) {
-            Cout::PrintInfo("To much track collections (more than 1) fixing", EInfo::kLessWarning);
+            Cout::PrintInfo("To much track collections (more than 1) fixing", EInfo::kLowWarning);
             for (int i = 2; i < trackTrig; i++)
               fCutContainer->RemoveCollection(ECutUpdate::kTrack, i);
             trackTrig = 2;
@@ -422,7 +422,7 @@ namespace Hal {
 #ifdef HAL_DEBUG
       Cout::PrintInfo(Form("Finish identical event with %i tracks",
                            fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID)),
-                      EInfo::kLessInfo);
+                      EInfo::kDebugInfo);
 #endif
       FinishEventIdentical();
     } else {
@@ -430,7 +430,7 @@ namespace Hal {
       Cout::PrintInfo(Form("Finish non-identical event with  %i %i tracks",
                            fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 0),
                            fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1)),
-                      EInfo::kLessInfo);
+                      EInfo::kDebugInfo);
 #endif
       FinishEventNonIdentical();
     }
@@ -543,7 +543,7 @@ namespace Hal {
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);  //
     Int_t tt_cut_no           = track_cuts->GetNextNo();
 #ifdef HAL_DEBUG
-    Cout::PrintInfo("Making pairs", EInfo::kLessInfo);
+    Cout::PrintInfo("Making pairs", EInfo::kDebugInfo);
 #endif
     for (int i = 0; i < nTrack; i++) {
       fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, i);
@@ -584,7 +584,7 @@ namespace Hal {
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID);
 #ifdef HAL_DEBUG
-    Cout::PrintInfo("Mixing event", EInfo::kLessInfo);
+    Cout::PrintInfo("Mixing event", EInfo::kDebugInfo);
 #endif
     for (int l = 0; l < fMixSize; l++) {
       if (l == fMemoryMap->GetCounter(fCurrentEventCollectionID)) continue;

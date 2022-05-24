@@ -42,7 +42,7 @@
  */
 int main(int argc, char* argv[]) {
   if (argc < 2) {
-    Hal::Cout::PrintInfo("No arguments! run: hal-report --help to get help", Hal::EInfo::kImportantError);
+    Hal::Cout::PrintInfo("No arguments! run: hal-report --help to get help", Hal::EInfo::kCriticalError);
     return 0;
   }
   TString arg1 = argv[1];
@@ -56,7 +56,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
   if (argc < 3) {
-    Hal::Cout::PrintInfo("No output file, export to SQL", Hal::EInfo::kLessWarning);
+    Hal::Cout::PrintInfo("No output file, export to SQL", Hal::EInfo::kLowWarning);
     Hal::PackageSql* sql = new Hal::PackageSql(argv[1]);
     delete sql;
     return 0;

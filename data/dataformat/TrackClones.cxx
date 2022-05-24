@@ -28,7 +28,7 @@ namespace Hal {
     if (fClones) { delete fClones; }
     fClones = NULL;
     fClones = (TClonesArray*) DataManager::Instance()->GetObject(fBranchName);
-    if (fClones == NULL) { Cout::PrintInfo(Form("Branch %s not found!", fBranchName.Data()), EInfo::kLessError); }
+    if (fClones == NULL) { Cout::PrintInfo(Form("Branch %s not found!", fBranchName.Data()), EInfo::kError); }
   }
 
   TrackClones::~TrackClones() {

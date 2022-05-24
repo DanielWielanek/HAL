@@ -82,7 +82,7 @@ namespace Hal {
     fFilename        = filename;
     TString www_path = Hal::Std::GetConfigParameter("www_path");
     if (www_path.Length() <= 0) {
-      Cout::PrintInfo("www_path not found in hal configruration file!", Hal::EInfo::kLessError);
+      Cout::PrintInfo("www_path not found in hal configruration file!", Hal::EInfo::kError);
       return;
     }
     TString datafile = Form("sqlite://%s/database.sqlite", www_path.Data());

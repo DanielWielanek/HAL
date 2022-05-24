@@ -17,7 +17,7 @@
 namespace Hal {
   Int_t Cout::fgLineLength      = 100;
   Cout* Cout::fgInstance        = NULL;
-  Hal::EInfo Cout::fVerboseMode = Hal::EInfo::kLessInfo;
+  Hal::EInfo Cout::fVerboseMode = Hal::EInfo::kDebugInfo;
   void Cout::Database(Int_t no, ...) {
     va_list ap;
     TString begin;
@@ -322,12 +322,12 @@ namespace Hal {
   void Cout::PrintInfo(TString text, Hal::EInfo status) {
     if (status < fVerboseMode) { return; }
     switch (status) {
-      case Hal::EInfo::kLessInfo: FailSucced(text, "INFO    ", kCyan); break;
-      case Hal::EInfo::kImportantInfo: FailSucced(text, "INFO!   ", kCyan); break;
-      case Hal::EInfo::kLessWarning: FailSucced(text, "WARNING ", kOrange); break;
-      case Hal::EInfo::kImportantWarning: PrintWarning(text); break;
-      case Hal::EInfo::kLessError: FailSucced(text, "ERROR   ", kRed); break;
-      case Hal::EInfo::kImportantError: PrintError(text); break;
+      case Hal::EInfo::kDebugInfo: FailSucced(text, "INFO    ", kCyan); break;
+      case Hal::EInfo::kInfo: FailSucced(text, "INFO!   ", kCyan); break;
+      case Hal::EInfo::kLowWarning: FailSucced(text, "WARNING ", kOrange); break;
+      case Hal::EInfo::kWarning: PrintWarning(text); break;
+      case Hal::EInfo::kError: FailSucced(text, "ERROR   ", kRed); break;
+      case Hal::EInfo::kCriticalError: PrintError(text); break;
     }
   }
 

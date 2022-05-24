@@ -53,7 +53,7 @@ namespace Hal {
     if (i < fNo && i >= 0)
       return fArrayObjects->At(i);
     else {
-      Cout::PrintInfo("No object at such index in HalPackage", Hal::EInfo::kImportantWarning);
+      Cout::PrintInfo("No object at such index in HalPackage", Hal::EInfo::kWarning);
       return NULL;
     }
   }
@@ -74,7 +74,7 @@ namespace Hal {
       }
     }
     Cout::PrintInfo(Form("object named %s not found in package %s", name.Data(), (fNameClass.GetString()).Data()),
-                    Hal::EInfo::kLessWarning);
+                    Hal::EInfo::kLowWarning);
     return NULL;
   }
 
@@ -149,8 +149,8 @@ namespace Hal {
   }
 
   void Package::SumOther(TObject* first, const TObject* second) {
-    Cout::PrintInfo("Not supported adding", Hal::EInfo::kLessWarning);
-    Cout::PrintInfo(Form("For class %s %s", second->ClassName(), first->ClassName()), Hal::EInfo::kLessWarning);
+    Cout::PrintInfo("Not supported adding", Hal::EInfo::kLowWarning);
+    Cout::PrintInfo(Form("For class %s %s", second->ClassName(), first->ClassName()), Hal::EInfo::kLowWarning);
   }
 
   void Package::SumPackages(TObject* first, const TObject* second) { ((Package*) first)->Add((Package*) second); }
@@ -176,7 +176,7 @@ namespace Hal {
       }
     }
     Cout::PrintInfo(Form("class %s not found in package %s", name.Data(), (fNameClass.GetString()).Data()),
-                    Hal::EInfo::kImportantWarning);
+                    Hal::EInfo::kWarning);
     return NULL;
   }
 
@@ -188,7 +188,7 @@ namespace Hal {
     if (stringA.EqualTo(stringB)) {
       // do nothing
     } else {
-      Cout::PrintInfo(Form("TObjString not compatible (%s vs %s", stringA.Data(), stringB.Data()), Hal::EInfo::kLessWarning);
+      Cout::PrintInfo(Form("TObjString not compatible (%s vs %s", stringA.Data(), stringB.Data()), Hal::EInfo::kLowWarning);
     }
   }
 
@@ -211,7 +211,7 @@ namespace Hal {
       fArrayObjects->AddLast(object);
       fNo++;
     } else {
-      Cout::PrintInfo("Cannot add NULL object to HalPackage", Hal::EInfo::kLessError);
+      Cout::PrintInfo("Cannot add NULL object to HalPackage", Hal::EInfo::kError);
     }
   }
 
@@ -219,7 +219,7 @@ namespace Hal {
     if (this->fNameClass.GetString().EqualTo(rhs.fNameClass.GetString())) {
       Cout::PrintInfo("Trying to merging incompatibile HalPackages ! This can result in "
                       "crash !",
-                      Hal::EInfo::kLessWarning);
+                      Hal::EInfo::kLowWarning);
     }
     for (Int_t i = 0; i < fNo; i++) {
       MergeObjects(this->fArrayObjects->At(i), rhs.fArrayObjects->At(i));
@@ -232,7 +232,7 @@ namespace Hal {
     TString name  = first->ClassName();
     TString name2 = second->ClassName();
     if (name != name2) {
-      Cout::PrintInfo(Form("No compatybile classes %s %s", first->ClassName(), second->ClassName()), Hal::EInfo::kImportantError);
+      Cout::PrintInfo(Form("No compatybile classes %s %s", first->ClassName(), second->ClassName()), Hal::EInfo::kCriticalError);
     }
     if (name == "HalPackage") {
       SumPackages(first, second);
@@ -256,12 +256,12 @@ namespace Hal {
     } else {
       Cout::PrintInfo("Trying to merging incompatibile HalPackages ! This can result in "
                       "crash !",
-                      Hal::EInfo::kLessWarning);
+                      Hal::EInfo::kLowWarning);
     }
     if (this->fNo != pack->fNo) {
       Cout::PrintInfo("Different number of object in HalPackageArray this may result in "
                       "crash!",
-                      Hal::EInfo::kLessWarning);
+                      Hal::EInfo::kLowWarning);
     }
     for (Int_t i = 0; i < fNo; i++) {
       TString name = (fArrayObjects->At(i)->ClassName());

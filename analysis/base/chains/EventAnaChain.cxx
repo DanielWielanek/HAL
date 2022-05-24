@@ -38,14 +38,14 @@ namespace Hal {
 
   void EventAnaChain::AddAnalysis(EventAna* ana) {
     if (dynamic_cast<MultiTrackAna*>(ana)) {
-      Cout::PrintInfo("Tasks with track buffering cannot be processed vy this task", EInfo::kImportantWarning);
+      Cout::PrintInfo("Tasks with track buffering cannot be processed vy this task", EInfo::kWarning);
       return;
     }
     if (dynamic_cast<TrackAna*>(ana)) {
       Cout::PrintInfo(Form("Task %s inherits from TrackAna, any features connected to "
                            "linking collections might not work correltly",
                            ana->ClassName()),
-                      EInfo::kLessError);
+                      EInfo::kError);
       return;
     }
     if (fTask == nullptr) {
@@ -56,7 +56,7 @@ namespace Hal {
     } else {
       for (int i = 0; i < fTaskNo; i++) {
         if (ana == fTask[i]) {
-          Cout::PrintInfo("Task already added", EInfo::kLessError);
+          Cout::PrintInfo("Task already added", EInfo::kError);
           return;
         }
       }
@@ -100,7 +100,7 @@ namespace Hal {
       fTask[i]->fMemoryMap = NULL;
     }
     gFile->cd();
-    Cout::PrintInfo(Form("%s done, writing results", this->ClassName()), EInfo::kImportantInfo);
+    Cout::PrintInfo(Form("%s done, writing results", this->ClassName()), EInfo::kInfo);
   }
 
   void EventAnaChain::ProcessEvent() {

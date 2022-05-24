@@ -261,7 +261,7 @@ namespace Hal {
   Bool_t Femto1DCFAnaMapMCRoco::Init() {
     if (fGeneratorRaw == nullptr) return kFALSE;
     if (fGeneratorRaw->GetSourceModel()->GetModelNumProp() != FemtoSourceModel::ENumProperty::kFullyAnalytical) {
-      Cout::PrintInfo(" Femto1DCFAnaMapMCRoco::Init - cannot use nonanalytical source emission function", EInfo::kLessWarning);
+      Cout::PrintInfo(" Femto1DCFAnaMapMCRoco::Init - cannot use nonanalytical source emission function", EInfo::kLowWarning);
       return kFALSE;
     }
     FemtoSourceModel* sourceModel = fGeneratorRaw->GetSourceModel();
@@ -277,7 +277,7 @@ namespace Hal {
       fModelType = EModelType::k3dModel;
     } else {
       Cout::PrintInfo(" Femto1DCFAnaMapMCRoco::Init - cannot use analytical model that not base from 1d or 3d source model",
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
       return kFALSE;
     }
 

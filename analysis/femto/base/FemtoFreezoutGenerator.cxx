@@ -37,7 +37,7 @@ namespace Hal {
 
   void FemtoFreezoutGenerator::Init() {
     if (fModel == NULL) {
-      Cout::PrintInfo("No freezout model !", EInfo::kLessWarning);
+      Cout::PrintInfo("No freezout model !", EInfo::kLowWarning);
       fModel = new FemtoSourceModelGauss1D();
     }
   }

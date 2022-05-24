@@ -54,11 +54,11 @@ namespace Hal {
     TParticlePDG* p1  = pid->GetParticle(pid1);
     TParticlePDG* p2  = pid->GetParticle(pid2);
     if (p1 == nullptr) {
-      Cout::PrintInfo(Form("Femto1DMapGenerator::SetPid cannot find PID1 = %i", pid1), EInfo::kLessWarning);
+      Cout::PrintInfo(Form("Femto1DMapGenerator::SetPid cannot find PID1 = %i", pid1), EInfo::kLowWarning);
       return;
     };
     if (p2 == nullptr) {
-      Cout::PrintInfo(Form("Femto1DMapGenerator::SetPid cannot find PID1 = %i", pid2), EInfo::kLessWarning);
+      Cout::PrintInfo(Form("Femto1DMapGenerator::SetPid cannot find PID1 = %i", pid2), EInfo::kLowWarning);
       return;
     };
     fPid1   = pid1;
@@ -103,11 +103,11 @@ namespace Hal {
     fPair = Femto::MakePair(fKinematics, fUseFake);
     fMap  = new DividedHisto2D("map", fKStarBins, fKStarMin, fKStarMax, fRBins, fRMin, fRMax, 'D');
     if (fWeight == nullptr) {
-      Cout::PrintInfo("Femto1DMapGenerator::Init lack of weight", EInfo::kImportantError);
+      Cout::PrintInfo("Femto1DMapGenerator::Init lack of weight", EInfo::kCriticalError);
       return kFALSE;
     }
     if (fGenerator == nullptr) {
-      Cout::PrintInfo("Femto1DMapGenerator::Init lack of generator", EInfo::kImportantError);
+      Cout::PrintInfo("Femto1DMapGenerator::Init lack of generator", EInfo::kCriticalError);
       return kFALSE;
     }
     fPair->SetPdg1(fPid1);

@@ -161,15 +161,15 @@ namespace Hal {
     }
     if (fUseMass) {
       if (fMass.size() == 0) {
-        Cout::PrintInfo("Mass used but mass is not set", EInfo::kLessError);
+        Cout::PrintInfo("Mass used but mass is not set", EInfo::kError);
         return Task::EInitFlag::kFATAL;
       } else {
         if ((unsigned int) (fTrackCollectionsNo) < fMass.size()) {
-          Cout::PrintInfo("Mass used, but some masses are not set", EInfo::kLessError);
+          Cout::PrintInfo("Mass used, but some masses are not set", EInfo::kError);
           fMass.resize(fTrackCollectionsNo);
         }
         for (int i = 0; i < fTrackCollectionsNo; i++) {
-          Cout::PrintInfo(Form("Mass at collection %i (%4.2f) is not valid", i, fMass.at(i)), EInfo::kLessError);
+          Cout::PrintInfo(Form("Mass at collection %i (%4.2f) is not valid", i, fMass.at(i)), EInfo::kError);
         }
       }
     }
@@ -247,7 +247,7 @@ namespace Hal {
       if (fCutContainer) {
         Cout::PrintInfo("You sent auto option without  event cuts, automatic configuration "
                         "will be work only for first even colllection",
-                        EInfo::kImportantWarning);
+                        EInfo::kWarning);
         event_collections = fCutContainer->GetEventCollectionsNo();
       }
       TrackPdgCut pion_p;

@@ -78,7 +78,7 @@ namespace Hal {
 
     if (fDisableFormatChecking == kFALSE) {
 #ifdef HAL_DEBUG3
-      Cout::PrintInfo("Format checking", EInfo::kLessInfo);
+      Cout::PrintInfo("Format checking", EInfo::kDebugInfo);
 #endif
       if (CheckFormat() == Task::EInitFlag::kFATAL) return Task::EInitFlag::kFATAL;
     }
@@ -119,19 +119,19 @@ namespace Hal {
         SetOption(arr[i]);
       }
     } else {
-      Cout::PrintInfo(Form("Invalid SetOption %s for class %s", option.Data(), this->ClassName()), EInfo::kLessWarning);
+      Cout::PrintInfo(Form("Invalid SetOption %s for class %s", option.Data(), this->ClassName()), EInfo::kLowWarning);
     }
   }
 
   Task::EInitFlag EventAna::InitCutContainer() {
     if (fCutContainer == NULL) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("Null Cut Container, building ...", EInfo::kLessInfo);
+      Cout::PrintInfo("Null Cut Container, building ...", EInfo::kDebugInfo);
 #endif
       InitNewCutContainer();
     }
 #ifdef HAL_DEBUG
-    Cout::PrintInfo("Checking Cut Containers ...", EInfo::kLessInfo);
+    Cout::PrintInfo("Checking Cut Containers ...", EInfo::kDebugInfo);
 #endif
     CheckCutContainerCollections();
     for (int i = 0; i < fCutContainer->GetSize(); i++) {
@@ -141,7 +141,7 @@ namespace Hal {
           for (int j = 0; j < fCutContainer->GetEventCollectionsNo(); j++) {
             empty_cont = fCutContainer->GetEventCollection(j);
             if (empty_cont == NULL) {
-              Cout::PrintInfo("NULL subcontainer for events", EInfo::kLessError);
+              Cout::PrintInfo("NULL subcontainer for events", EInfo::kError);
               return Task::EInitFlag::kFATAL;
             }
           }
@@ -150,7 +150,7 @@ namespace Hal {
           for (int j = 0; j < fCutContainer->GetTrackCollectionsNo(); j++) {
             empty_cont = fCutContainer->GetTrackCollection(j);
             if (empty_cont == NULL) {
-              Cout::PrintInfo("NULL subcontainer for tracks", EInfo::kLessError);
+              Cout::PrintInfo("NULL subcontainer for tracks", EInfo::kError);
               return Task::EInitFlag::kFATAL;
             }
           }
@@ -159,7 +159,7 @@ namespace Hal {
           for (int j = 0; j < fCutContainer->GetTwoTrackCollectionsNo(); j++) {
             empty_cont = fCutContainer->GetTwoTrackCollection(j);
             if (empty_cont == NULL) {
-              Cout::PrintInfo("NULL subcontainer for two-tracks", EInfo::kLessError);
+              Cout::PrintInfo("NULL subcontainer for two-tracks", EInfo::kError);
               return Task::EInitFlag::kFATAL;
             }
           }
@@ -168,7 +168,7 @@ namespace Hal {
           for (int j = 0; j < fCutContainer->GetTwoTrackCollectionsBackgroundNo(); j++) {
             empty_cont = fCutContainer->GetTwoTrackBackgroundCollection(j);
             if (empty_cont == NULL) {
-              Cout::PrintInfo("NULL subcontainer for background pairs", EInfo::kLessError);
+              Cout::PrintInfo("NULL subcontainer for background pairs", EInfo::kError);
               return Task::EInitFlag::kFATAL;
             }
           }
@@ -176,11 +176,11 @@ namespace Hal {
       }
     }
 #ifdef HAL_DEBUG
-    Cout::PrintInfo("Linking collections", EInfo::kLessInfo);
+    Cout::PrintInfo("Linking collections", EInfo::kDebugInfo);
 #endif
     LinkCollections();
 #ifdef HAL_DEBUG
-    Cout::PrintInfo("Initialization cut container", EInfo::kLessInfo);
+    Cout::PrintInfo("Initialization cut container", EInfo::kDebugInfo);
 #endif
     fCutContainer->Init(GetTaskID());
     return Task::EInitFlag::kSUCCESS;
@@ -199,7 +199,7 @@ namespace Hal {
   void EventAna::CheckCutContainerCollections() {
     if (fCutContainer->GetEventCollectionsNo() == 0) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("Adding virtual event cut", EInfo::kLessInfo);
+      Cout::PrintInfo("Adding virtual event cut", EInfo::kDebugInfo);
 #endif
       EventVirtualCut eventCut;
       fCutContainer->AddCut(eventCut, "fast");
@@ -240,12 +240,12 @@ namespace Hal {
 
   void EventAna::AddToAnaMetadata(Package* main_pack, TObject* obj) const {
     if (main_pack == NULL) {
-      Cout::PrintInfo("cannot call AddToMetadata if main_pack argument is NULL", EInfo::kLessWarning);
+      Cout::PrintInfo("cannot call AddToMetadata if main_pack argument is NULL", EInfo::kLowWarning);
       return;
     }
     Package* metadata_pack = (Package*) main_pack->GetObjectByName("Metadata");
     if (metadata_pack == NULL) {
-      Cout::PrintInfo("cannot add object in AddToMetadata package don't contain any Metadata object", EInfo::kLessWarning);
+      Cout::PrintInfo("cannot add object in AddToMetadata package don't contain any Metadata object", EInfo::kLowWarning);
       return;
     }
     metadata_pack->AddObject(obj);
@@ -309,7 +309,7 @@ namespace Hal {
     pack->Write(Form("AnaPackage_%i", GetTaskID()));
     if (pack) { delete pack; }
     gFile->cd();
-    Cout::PrintInfo(Form("%s done, writing results", this->ClassName()), EInfo::kLessInfo);
+    Cout::PrintInfo(Form("%s done, writing results", this->ClassName()), EInfo::kDebugInfo);
     // DataManager::Instance()->GetManager()->Fill();
     //	DataManager::Instance()->GetManager()->GetOutFile()->WriteKeys();
   }
@@ -372,29 +372,29 @@ namespace Hal {
     DataFormatManager* formatManager = DataFormatManager::Instance();
     SetInputFileName(DataManager::Instance()->GetInFile()->GetName());
 #ifdef HAL_DEBUG
-    Cout::PrintInfo(Form("Initialization format of task with ID = %i", GetTaskID()), EInfo::kLessInfo);
+    Cout::PrintInfo(Form("Initialization format of task with ID = %i", GetTaskID()), EInfo::kDebugInfo);
 #endif
     if (formatManager->FormatExist(GetTaskID(), EFormatDepth::kNonBuffered)) {
       TString name = formatManager->GetFormatName(GetTaskID(), EFormatDepth::kNonBuffered);
 #ifdef HAL_DEBUG
-      Cout::PrintInfo(Form("L1 Format is set to %s", name.Data()), EInfo::kLessInfo);
+      Cout::PrintInfo(Form("L1 Format is set to %s", name.Data()), EInfo::kDebugInfo);
 #endif
       if (!formatManager->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered)->ExistInTree()) {
-        Cout::PrintInfo("Format exists but not present in tree!", EInfo::kLessError);
+        Cout::PrintInfo("Format exists but not present in tree!", EInfo::kError);
         return Task::EInitFlag::kFATAL;
       }
     } else {
-      Cout::PrintInfo("L1 format is not set trying to find autosupported format", EInfo::kLessError);
+      Cout::PrintInfo("L1 format is not set trying to find autosupported format", EInfo::kError);
       Event* temp_format = formatManager->FindAutoSupportedFormat();
       if (temp_format) {
 #ifdef HAL_DEBUG
         Cout::PrintInfo(Form("Format %s found and will be used for task %s", temp_format->GetFormatName().Data(), ClassName()),
-                        EInfo::kLessInfo);
+                        EInfo::kDebugInfo);
 #endif
         SetFormat(temp_format);
         return Task::EInitFlag::kSUCCESS;
       } else {
-        Cout::PrintInfo("Format of data is not set, try to call SetFormat", EInfo::kLessError);
+        Cout::PrintInfo("Format of data is not set, try to call SetFormat", EInfo::kError);
       }
       return Task::EInitFlag::kFATAL;
     }
@@ -405,7 +405,7 @@ namespace Hal {
     fMemoryMap = new MemoryMapManager(fCutContainer);
     fMemoryMap->SetMixSize(fMixSize);
 #ifdef HAL_DEBUG
-    Cout::PrintInfo("Initialization MemoryMap", EInfo::kLessInfo);
+    Cout::PrintInfo("Initialization MemoryMap", EInfo::kDebugInfo);
 #endif
     fMemoryMap->Init(GetTaskID(), fKeepSource, fCompressEvents, fDirectAcces);
   }

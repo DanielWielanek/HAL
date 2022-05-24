@@ -61,7 +61,7 @@ namespace Hal {
 
   Double_t Fluctuation1D::GetCentralMoment(Int_t i) const {
     if (i < 1 || i > 6) {
-      Cout::PrintInfo("wrong mu index", EInfo::kLessWarning);
+      Cout::PrintInfo("wrong mu index", EInfo::kLowWarning);
       return 0;
     } else {
       return fM[i];
@@ -70,7 +70,7 @@ namespace Hal {
 
   Double_t Fluctuation1D::GetCentralMomentError(Int_t i) const {
     if (i < 1 || i > 6) {
-      Cout::PrintInfo("wrong mu index", EInfo::kLessWarning);
+      Cout::PrintInfo("wrong mu index", EInfo::kLowWarning);
       return 0;
     } else {
       return fMErr[i];
@@ -122,7 +122,7 @@ namespace Hal {
 
   Fluctuation1D::Fluctuation1D(TH1D* h) : Fluctuation1D() {
     if (h->InheritsFrom("TH2")) {
-      Cout::PrintInfo("Cannot  call Fluctuation1D(TH2D*)", EInfo::kLessWarning);
+      Cout::PrintInfo("Cannot  call Fluctuation1D(TH2D*)", EInfo::kLowWarning);
       return;
     }
     fHistogram = (TH1D*) h->Clone();
@@ -188,7 +188,7 @@ namespace Hal {
       fHistogram->Add(other->fHistogram);
       Recalculate();
     } else {
-      Cout::PrintInfo(Form("Cannot ddd %s to  %s", pack->ClassName(), this->ClassName()), EInfo::kLessWarning);
+      Cout::PrintInfo(Form("Cannot ddd %s to  %s", pack->ClassName(), this->ClassName()), EInfo::kLowWarning);
     }
   }
 

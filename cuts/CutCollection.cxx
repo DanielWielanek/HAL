@@ -66,7 +66,7 @@ namespace Hal {
   void CutCollection::AddCut(Cut* cut, Option_t* opt) {
     if (fDummy) return;
     if (cut == NULL) {
-      Cout::PrintInfo("Empty cut", EInfo::kLessWarning);
+      Cout::PrintInfo("Empty cut", EInfo::kLowWarning);
       return;
     }
     TString option    = opt;
@@ -75,7 +75,7 @@ namespace Hal {
       for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
         if (cut->CutName() == ((Cut*) fCuts->UncheckedAt(i))->CutName()) {
           Cout::PrintInfo(Form("Cut used %s in collection no %i, cut will be removed", cut->ClassName(), cut->GetCollectionID()),
-                          EInfo::kLessWarning);
+                          EInfo::kLowWarning);
           return;
         }
       }
@@ -87,7 +87,7 @@ namespace Hal {
                                  "removed",
                                  cut->ClassName(),
                                  cut->GetCollectionID()),
-                            EInfo::kLessWarning);
+                            EInfo::kLowWarning);
             return;
           }
         }
@@ -100,7 +100,7 @@ namespace Hal {
                                "removed",
                                cut->ClassName(),
                                cut->GetCollectionID()),
-                          EInfo::kLessWarning);
+                          EInfo::kLowWarning);
           return;
         }
       }
@@ -109,7 +109,7 @@ namespace Hal {
           if (cut->CutName() == ((Cut*) fCuts->UncheckedAt(i))->CutName()) {
             Cout::PrintInfo(
               Form("Cut used %s in collection no %i but cut will be removed", cut->ClassName(), cut->GetCollectionID()),
-              EInfo::kLessWarning);
+              EInfo::kLowWarning);
             return;
           }
         }
@@ -128,13 +128,13 @@ namespace Hal {
   void CutCollection::AddCutMonitor(CutMonitor* monitor) {
     if (fDummy) return;
     if (monitor == NULL) {
-      Cout::PrintInfo("Empty monitor", EInfo::kLessError);
+      Cout::PrintInfo("Empty monitor", EInfo::kError);
       return;
     }
 
     for (int i = 0; i < fCutMonitors->GetEntriesFast(); i++) {
       if (monitor == (CutMonitor*) fCutMonitors->UncheckedAt(i)) {
-        Cout::PrintInfo("Monitor cut used", EInfo::kLessWarning);
+        Cout::PrintInfo("Monitor cut used", EInfo::kLowWarning);
         return;
       }
     }
@@ -167,7 +167,7 @@ namespace Hal {
       return;
     }
     if (fInit) {
-      Cout::PrintInfo("CutCollection has been initialized", EInfo::kLessError);
+      Cout::PrintInfo("CutCollection has been initialized", EInfo::kError);
     } else {
       for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
         Bool_t ok = ((Cut*) fCuts->UncheckedAt(i))->Init(task_id);
@@ -291,7 +291,7 @@ namespace Hal {
     if (fInit == kTRUE) {
       Cout::PrintInfo("Cant replicate initialized CutCollection - this lead "
                       "to mess with cut monitors !",
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
     }
     CutCollection* clone = new CutCollection(fCutContainerArr, fContainerSize, fMode, new_collection);
     clone->fStep         = this->fStep;
@@ -336,7 +336,7 @@ namespace Hal {
       if (cutmon->ObjMonitor()) {
         Bool_t init = cutmon->Init(task_id);
         if (init == kFALSE) {
-          Cout::PrintInfo(Form("Problem with initalization  [%s]", cutmon->ClassName()), EInfo::kLessWarning);
+          Cout::PrintInfo(Form("Problem with initalization  [%s]", cutmon->ClassName()), EInfo::kLowWarning);
           fCutMonitors->RemoveAt(i);
         }
         continue;
@@ -347,16 +347,16 @@ namespace Hal {
         Cut* newCut = this->FindCut(cut);
         if (newCut) {
           if (newCut->GetCutSize() <= cutmon->GetCutParameter(0)) {
-            Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s]", newCut->ClassName()), EInfo::kLessWarning);
+            Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s]", newCut->ClassName()), EInfo::kLowWarning);
             Cout::PrintInfo(
               Form("Cut %s has only %i not %i parameters", newCut->ClassName(), newCut->GetCutSize(), cutmon->GetCutParameter(0)),
-              EInfo::kLessWarning);
+              EInfo::kLowWarning);
             fCutMonitors->RemoveAt(i);
           } else {
             cutmon->AddForcedCut(newCut, 0);
           }
         } else {
-          Cout::PrintInfo(Form("CutMonitorX [%s] not found!", cut.Data()), EInfo::kLessError);
+          Cout::PrintInfo(Form("CutMonitorX [%s] not found!", cut.Data()), EInfo::kError);
           fCutMonitors->RemoveAt(i);
         }
       } else if (monName == "CutMonitorXY") {
@@ -367,31 +367,31 @@ namespace Hal {
 
         if (Ncut1->GetEntries() == 0 || Ncut2->GetEntries() == 0) {
           Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s] vs [%s]", cut1_name.Data(), cut2_name.Data()),
-                          EInfo::kLessWarning);
-          if (Ncut1->GetEntries() == 0) { Cout::PrintInfo(Form("Cut %s not found", cut1_name.Data()), EInfo::kLessWarning); }
-          if (Ncut2->GetEntries() == 0) { Cout::PrintInfo(Form("Cut %s not found", cut2_name.Data()), EInfo::kLessWarning); }
+                          EInfo::kLowWarning);
+          if (Ncut1->GetEntries() == 0) { Cout::PrintInfo(Form("Cut %s not found", cut1_name.Data()), EInfo::kLowWarning); }
+          if (Ncut2->GetEntries() == 0) { Cout::PrintInfo(Form("Cut %s not found", cut2_name.Data()), EInfo::kLowWarning); }
           fCutMonitors->RemoveAt(i);
         } else if (Ncut1->GetEntriesFast() > 1 || Ncut2->GetEntriesFast() > 1 || prev_size > 1) {
           Cout::PrintInfo(
             Form("There is too many links or cuts cut monitor %s %s will be removed", cut1_name.Data(), cut2_name.Data()),
-            EInfo::kLessError);
+            EInfo::kError);
           fCutMonitors->RemoveAt(i);
         } else {
           Cut* cut1 = (Cut*) Ncut1->UncheckedAt(0);
           Cut* cut2 = (Cut*) Ncut2->UncheckedAt(0);
           if (cut1->GetCutSize() <= cutmon->GetCutParameter(0)) {
             Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s] vs [%s]", cut1_name.Data(), cut2_name.Data()),
-                            EInfo::kLessWarning);
+                            EInfo::kLowWarning);
             Cout::PrintInfo(
               Form("Cut %s has only %i not %i parameters", cut1->ClassName(), cut1->GetCutSize(), cutmon->GetCutParameter(0)),
-              EInfo::kLessWarning);
+              EInfo::kLowWarning);
             fCutMonitors->RemoveAt(i);
           } else if (cut2->GetCutSize() <= cutmon->GetCutParameter(1)) {
             Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s] vs [%s]", cut1_name.Data(), cut2_name.Data()),
-                            EInfo::kLessWarning);
+                            EInfo::kLowWarning);
             Cout::PrintInfo(
               Form("Cut %s has only %i not %i parameters", cut1->ClassName(), cut1->GetCutSize(), cutmon->GetCutParameter(1)),
-              EInfo::kLessWarning);
+              EInfo::kLowWarning);
             fCutMonitors->RemoveAt(i);
           } else {
             cutmon->AddForcedCut(cut1, 0);
@@ -412,13 +412,13 @@ namespace Hal {
         if (Ncut1->GetEntries() == 0 || Ncut2->GetEntries() == 0 || Ncut3->GetEntries() == 0) {
           Cout::PrintInfo(
             Form(" Problem with CutMonitorXYZ [%s] vs [%s] vs [%s]", cut1_name.Data(), cut2_name.Data(), cut3_name.Data()),
-            EInfo::kLessWarning);
-          if (Ncut1->GetEntries() == 0) Cout::PrintInfo(Form("Cut %s not found", cut1_name.Data()), EInfo::kLessWarning);
-          if (Ncut2->GetEntries() == 0) Cout::PrintInfo(Form("Cut %s not found", cut2_name.Data()), EInfo::kLessWarning);
-          if (Ncut3->GetEntries() == 0) Cout::PrintInfo(Form("Cut %s not found", cut3_name.Data()), EInfo::kLessWarning);
+            EInfo::kLowWarning);
+          if (Ncut1->GetEntries() == 0) Cout::PrintInfo(Form("Cut %s not found", cut1_name.Data()), EInfo::kLowWarning);
+          if (Ncut2->GetEntries() == 0) Cout::PrintInfo(Form("Cut %s not found", cut2_name.Data()), EInfo::kLowWarning);
+          if (Ncut3->GetEntries() == 0) Cout::PrintInfo(Form("Cut %s not found", cut3_name.Data()), EInfo::kLowWarning);
           fCutMonitors->RemoveAt(i);
         } else if (Ncut1->GetEntries() > 1 || Ncut2->GetEntries() > 1 || Ncut3->GetEntriesFast() > 1 || prev_size > 1) {
-          Cout::PrintInfo("There is too many links or cuts monitor %s %s will be removed", EInfo::kLessError);
+          Cout::PrintInfo("There is too many links or cuts monitor %s %s will be removed", EInfo::kError);
           fCutMonitors->RemoveAt(i);
         } else {
           Cut* cut1      = (Cut*) Ncut1->UncheckedAt(0);
@@ -435,7 +435,7 @@ namespace Hal {
             case 0: {
               Cout::PrintInfo("CutMonitorXYZ has no cuts compatible with "
                               "container that own it",
-                              EInfo::kLessWarning);
+                              EInfo::kLowWarning);
               fCutMonitors->RemoveAt(i);
             } break;
             case 1: {  // 1 local
@@ -444,7 +444,7 @@ namespace Hal {
                 cutmon->AddForcedCut(cut2, 1);
                 cutmon->AddForcedCut(cut3, 2);
               } else {
-                Cout::PrintInfo("Couldn't find compatible cuts for monitoring", EInfo::kLessWarning);
+                Cout::PrintInfo("Couldn't find compatible cuts for monitoring", EInfo::kLowWarning);
                 fCutMonitors->RemoveAt(i);
               }
             } break;
@@ -454,7 +454,7 @@ namespace Hal {
                 cutmon->AddForcedCut(cut1, 0);
                 cutmon->AddForcedCut(cut3, 2);
               } else {
-                Cout::PrintInfo("Couldn't find compatible cuts for monitoring", EInfo::kLessWarning);
+                Cout::PrintInfo("Couldn't find compatible cuts for monitoring", EInfo::kLowWarning);
                 fCutMonitors->RemoveAt(i);
               }
               break;
@@ -464,7 +464,7 @@ namespace Hal {
                 cutmon->AddForcedCut(cut1, 0);
                 cutmon->AddForcedCut(cut2, 1);
               } else {
-                Cout::PrintInfo("Couldn't find compatible cuts for monitoring", EInfo::kLessWarning);
+                Cout::PrintInfo("Couldn't find compatible cuts for monitoring", EInfo::kLowWarning);
                 fCutMonitors->RemoveAt(i);
               }
               break;
@@ -475,10 +475,10 @@ namespace Hal {
                                      cut1_name.Data(),
                                      cut2_name.Data(),
                                      cut3_name.Data()),
-                                EInfo::kLessWarning);
+                                EInfo::kLowWarning);
                 Cout::PrintInfo(
                   Form("Cut %s has only %i not %i parameters", cut1->ClassName(), cut1->GetCutSize(), cutmon->GetCutParameter(0)),
-                  EInfo::kLessWarning);
+                  EInfo::kLowWarning);
                 fCutMonitors->RemoveAt(i);
               } else if (cut2->GetCutSize() <= cutmon->GetCutParameter(1)) {
                 Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s] vs [%s] vs "
@@ -486,10 +486,10 @@ namespace Hal {
                                      cut1_name.Data(),
                                      cut2_name.Data(),
                                      cut3_name.Data()),
-                                EInfo::kLessWarning);
+                                EInfo::kLowWarning);
                 Cout::PrintInfo(
                   Form("Cut %s has only %i not %i parameters", cut2->ClassName(), cut2->GetCutSize(), cutmon->GetCutParameter(1)),
-                  EInfo::kLessWarning);
+                  EInfo::kLowWarning);
                 fCutMonitors->RemoveAt(i);
               } else if (cut3->GetCutSize() <= cutmon->GetCutParameter(2)) {
                 Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s] vs [%s] vs "
@@ -497,10 +497,10 @@ namespace Hal {
                                      cut1_name.Data(),
                                      cut2_name.Data(),
                                      cut3_name.Data()),
-                                EInfo::kLessWarning);
+                                EInfo::kLowWarning);
                 Cout::PrintInfo(
                   Form("Cut %s has only %i not %i parameters", cut3->ClassName(), cut3->GetCutSize(), cutmon->GetCutParameter(2)),
-                  EInfo::kLessWarning);
+                  EInfo::kLowWarning);
                 fCutMonitors->RemoveAt(i);
               } else {
                 cutmon->AddForcedCut(cut1, 0);
@@ -518,7 +518,7 @@ namespace Hal {
         delete Ncut3;
       } else {
         Cout::PrintInfo(Form("Problems with class name %s of cuts this is an critial error", monName.Data()),
-                        EInfo::kImportantError);
+                        EInfo::kCriticalError);
       }
     }
     fCutMonitors->Compress();
@@ -629,7 +629,7 @@ namespace Hal {
       case (ECutUpdate::kTwoTrackBackground): {
         mode = "TTRack mixed";
       } break;
-      default: Cout::PrintInfo("Unknown update mode inf CutCollection", EInfo::kLessWarning); break;
+      default: Cout::PrintInfo("Unknown update mode inf CutCollection", EInfo::kLowWarning); break;
     }
     Cout::Text(Form("Mode %s", mode.Data()), "L", kYellow);
     for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
@@ -792,7 +792,7 @@ namespace Hal {
     fCutContainerArr(0),
     fNextUsed(kFALSE),
     fPrevUsed(kFALSE) {
-    Cout::PrintInfo("default constructor of CutCollection should never be used !!", EInfo::kLessWarning);
+    Cout::PrintInfo("default constructor of CutCollection should never be used !!", EInfo::kLowWarning);
   }
 
   CutCollection* CutCollection::MakeNewCopy(TObjArray** container) const {

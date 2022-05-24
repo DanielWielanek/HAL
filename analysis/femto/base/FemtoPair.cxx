@@ -113,7 +113,7 @@ namespace Hal {
     }
     if (fUseImgMomenta) {
       if (event->InheritsFrom("Hal::ComplexEvent")) return kTRUE;
-      Cout::PrintInfo("Cannot use fake momenta without combiend event!", EInfo::kLessWarning);
+      Cout::PrintInfo("Cannot use fake momenta without combiend event!", EInfo::kLowWarning);
       return kFALSE;
     } else {
       return kTRUE;

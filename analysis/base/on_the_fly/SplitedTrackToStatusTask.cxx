@@ -36,7 +36,7 @@ namespace Hal {
       fCurrentEvent->Register(kFALSE);
       return Task::EInitFlag::kSUCCESS;
     }
-    Cout::PrintInfo(Form("Wrong format in %s", this->ClassName()), EInfo::kLessError);
+    Cout::PrintInfo(Form("Wrong format in %s", this->ClassName()), EInfo::kError);
     return Task::EInitFlag::kFATAL;
   }
 

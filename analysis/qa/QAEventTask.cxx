@@ -41,7 +41,7 @@ namespace Hal {
     Task::EInitFlag stat = EventAna::Init();
     if (stat == Task::EInitFlag::kFATAL) return stat;
     if (fTempEventPlot == nullptr) {
-      Cout::PrintInfo("Lack of Event QA", EInfo::kLessError);
+      Cout::PrintInfo("Lack of Event QA", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     } else {
       fEventQA = new TObjArray();

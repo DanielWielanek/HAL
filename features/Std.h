@@ -16,12 +16,12 @@ class TVirtualPad;
 
 namespace Hal {
   enum class EInfo {
-    kLessInfo         = 0,
-    kImportantInfo    = 1,
-    kLessWarning      = 2,
-    kImportantWarning = 3,
-    kLessError        = 4,
-    kImportantError   = 5
+    kDebugInfo         = 0,
+    kInfo    = 1,
+    kLowWarning      = 2,
+    kWarning = 3,
+    kError        = 4,
+    kCriticalError   = 5
   };
   enum class EFormatType { kSim = 0, kReco = 1, kComplexReco = 2, kComplexSim = 3 };
 

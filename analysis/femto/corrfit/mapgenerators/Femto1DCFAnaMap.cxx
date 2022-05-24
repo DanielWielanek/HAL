@@ -213,7 +213,7 @@ namespace Hal {
     if (stat == Task::EInitFlag::kFATAL) return Task::EInitFlag::kFATAL;
 
     if (fFreezoutGenerator == NULL) {
-      Cout::PrintInfo("No freezoug generator", EInfo::kLessError);
+      Cout::PrintInfo("No freezoug generator", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
     return stat;

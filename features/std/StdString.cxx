@@ -53,7 +53,7 @@ namespace Hal {
         if (fullArg.BeginsWith("--")) {
           std::vector<TString> vec = ExplodeString(fullArg, '=');
           if (vec.size() < 1) {
-            Hal::Cout::PrintInfo(Form("Problem with extraction of argument %s", fullArg.Data()), Hal::EInfo::kImportantWarning);
+            Hal::Cout::PrintInfo(Form("Problem with extraction of argument %s", fullArg.Data()), Hal::EInfo::kWarning);
           } else if (vec.size() != 2) {
             vec[0] = vec[0](2, vec[0].Length() - 2);
             res.push_back(std::pair<TString, TString>(vec[0], ""));

@@ -90,7 +90,7 @@ namespace Hal {
     const Event* event      = mngr->GetFormat(task_id, EFormatDepth::kBuffered);
     if (dynamic_cast<const ComplexEvent*>(event)) fComplexFormat = kTRUE;
     if (dynamic_cast<const ExpEvent*>(event)) {
-      Cout::PrintInfo("Experimental format cannot be used for residual weights", EInfo::kLessWarning);
+      Cout::PrintInfo("Experimental format cannot be used for residual weights", EInfo::kLowWarning);
       return kFALSE;
     }
     if (dynamic_cast<FemtoWeightGeneratorLednicky*>(fMainWeight)) { fWeightType = eWeightType::kLednicky; }

@@ -22,7 +22,7 @@ namespace Hal {
     fRegisteredFormats(0), fDataFormatBuffered(nullptr), fDataFormatNonBuffered(nullptr), fAutoSupportedFormats(nullptr) {
     if (fgInstance) {
       Cout::PrintInfo("Singleton of DataFormatManager already exist, don't use constructor of DataFormatManager",
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
       return;
     } else {
       fAutoSupportedFormats = new TObjArray();
@@ -61,19 +61,19 @@ namespace Hal {
       }
       return;
     }
-    if (task_id > fRegisteredFormats) { Cout::PrintInfo("Task id too big", EInfo::kImportantError); }
+    if (task_id > fRegisteredFormats) { Cout::PrintInfo("Task id too big", EInfo::kCriticalError); }
     switch (depth) {
       case EFormatDepth::kBuffered: {
-        if (fDataFormatBuffered[task_id] != NULL) { Cout::PrintInfo("Overwriting format", EInfo::kLessWarning); }
+        if (fDataFormatBuffered[task_id] != NULL) { Cout::PrintInfo("Overwriting format", EInfo::kLowWarning); }
         fDataFormatBuffered[task_id] = format;
       } break;
       case EFormatDepth::kNonBuffered: {
-        if (fDataFormatNonBuffered[task_id] != NULL) { Cout::PrintInfo("Overwriting format", EInfo::kLessWarning); }
+        if (fDataFormatNonBuffered[task_id] != NULL) { Cout::PrintInfo("Overwriting format", EInfo::kLowWarning); }
         fDataFormatNonBuffered[task_id] = format;
       } break;
       case EFormatDepth::kAll: {
-        if (fDataFormatBuffered[task_id] != NULL) { Cout::PrintInfo("Overwriting format", EInfo::kLessWarning); }
-        if (fDataFormatNonBuffered[task_id] != NULL) { Cout::PrintInfo("Overwriting format", EInfo::kLessWarning); }
+        if (fDataFormatBuffered[task_id] != NULL) { Cout::PrintInfo("Overwriting format", EInfo::kLowWarning); }
+        if (fDataFormatNonBuffered[task_id] != NULL) { Cout::PrintInfo("Overwriting format", EInfo::kLowWarning); }
         fDataFormatBuffered[task_id]    = format;
         fDataFormatNonBuffered[task_id] = format;
       } break;
@@ -96,7 +96,7 @@ namespace Hal {
       TObject* temp          = fAutoSupportedFormats->UncheckedAt(i);
       TString temp_classname = temp->ClassName();
       if (temp_classname.EqualTo(new_classname)) {
-        Cout::PrintInfo(Form("%s already registered in autosupported formats", new_classname.Data()), EInfo::kImportantInfo);
+        Cout::PrintInfo(Form("%s already registered in autosupported formats", new_classname.Data()), EInfo::kInfo);
         return;
       }
     }

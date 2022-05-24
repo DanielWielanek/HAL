@@ -258,7 +258,7 @@ namespace Hal {
     for (int i = 0; i < n; i++) {
       const char* name = va_arg(args, char*);
       if (!mngr->CheckBranch(name)) {
-        Cout::PrintInfo(Form("Check branch: %s, branch not found", name), EInfo::kLessWarning);
+        Cout::PrintInfo(Form("Check branch: %s, branch not found", name), EInfo::kLowWarning);
         return kFALSE;
       }
     }
@@ -304,7 +304,7 @@ namespace Hal {
       case DataFieldID::EEvent::kVertexT: return "V_{t} [s]"; break;
       case DataFieldID::EEvent::kEventId: return "EventID [ID]"; break;
     }
-    Cout::PrintInfo(Form("Event::GetFieldName cannot find field with fieldID  %i", fieldID), EInfo::kLessWarning);
+    Cout::PrintInfo(Form("Event::GetFieldName cannot find field with fieldID  %i", fieldID), EInfo::kLowWarning);
     return "[]";
   }
 

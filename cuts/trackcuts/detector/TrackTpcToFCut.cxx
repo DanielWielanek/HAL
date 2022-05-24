@@ -43,11 +43,11 @@ namespace Hal {
 
   Bool_t TrackTpcToFCut::Init(Int_t format_id) {
     if (fTpc->Init(format_id) == kFALSE) {
-      Cout::PrintInfo(Form("Cannot init %s becase TPC cut", ClassName()), EInfo::kImportantWarning);
+      Cout::PrintInfo(Form("Cannot init %s becase TPC cut", ClassName()), EInfo::kWarning);
       return kFALSE;
     }
     if (fToF->Init(format_id) == kFALSE) {
-      Cout::PrintInfo(Form("Cannot init %s because ToF cut", ClassName()), EInfo::kImportantWarning);
+      Cout::PrintInfo(Form("Cannot init %s because ToF cut", ClassName()), EInfo::kWarning);
       return kFALSE;
     }
     for (int i = 0; i < 7; i++) {

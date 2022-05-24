@@ -130,7 +130,7 @@ namespace Hal {
     for (int i = 1; i < fRange.GetSize(); i++) {
       if (fRange[i] < fRange[i - 1]) {
         Cout::PrintInfo(Form("Wrong order in %s %4.2f<%4.2f", this->ClassName(), fRange[i], fRange[i - 1]),
-                        EInfo::kImportantError);
+                        EInfo::kCriticalError);
         return kFALSE;
       }
     }

@@ -76,11 +76,11 @@ namespace Hal {
     if (!ana->InheritsFrom("Hal::TwoTrackAna")) {
       Cout::PrintInfo("Tasks that doesn't inherit from TwoTrackAna cannot be processed "
                       "vy this task",
-                      EInfo::kImportantWarning);
+                      EInfo::kWarning);
     }
     if (ana->fTiers != fTiers) {
       Cout::PrintInfo(Form("Task that is added must have the same trier %s will not be added", ana->ClassName()),
-                      EInfo::kImportantWarning);
+                      EInfo::kWarning);
       return;
     }
     if (fTask == NULL) {
@@ -91,7 +91,7 @@ namespace Hal {
     } else {
       for (int i = 0; i < fTaskNo; i++) {
         if (ana == fTask[i]) {
-          Cout::PrintInfo("Task already added", EInfo::kLessError);
+          Cout::PrintInfo("Task already added", EInfo::kError);
           return;
         }
       }
@@ -134,7 +134,7 @@ namespace Hal {
       delete subtask_pack;
     }
     gFile->cd();
-    Cout::PrintInfo(Form("%s done, writing results", this->ClassName()), EInfo::kImportantInfo);
+    Cout::PrintInfo(Form("%s done, writing results", this->ClassName()), EInfo::kInfo);
   }
 
   Task::EInitFlag TwoTrackAnaChain::Init() {
@@ -319,7 +319,7 @@ namespace Hal {
         if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) == 0) return;
         MakePairs2_Charged3();
       } break;
-      default: Cout::PrintInfo("Unknown Background mode", EInfo::kImportantError); break;
+      default: Cout::PrintInfo("Unknown Background mode", EInfo::kCriticalError); break;
     }
   }
 
@@ -381,7 +381,7 @@ namespace Hal {
         if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo) == 0) return;
         MakePairs_Charged3();
       } break;
-      default: Cout::PrintInfo("Unknown Background mode", EInfo::kImportantError); break;
+      default: Cout::PrintInfo("Unknown Background mode", EInfo::kCriticalError); break;
     }
   }
 

@@ -37,7 +37,7 @@ namespace Hal {
     if (phi == 0) return;
     if (fRangeX.GetSize() != (Int_t) init.size()) {
       Cout::PrintInfo(Form("Wrong size of array during call SetKtBins %i %i", fRangeX.GetSize(), (int) init.size()),
-                      EInfo::kLessError);
+                      EInfo::kError);
       return;
     }
     std::initializer_list<double>::iterator it;
@@ -151,7 +151,7 @@ namespace Hal {
     if (phi == 0) return;
     if (fRangeX.GetSize() != (Int_t) init.size()) {
       Cout::PrintInfo(Form("Wrong size of array during call SetKtBins %i %i", fRangeX.GetSize(), (int) init.size()),
-                      EInfo::kLessError);
+                      EInfo::kError);
       return;
     }
     std::initializer_list<double>::iterator it;

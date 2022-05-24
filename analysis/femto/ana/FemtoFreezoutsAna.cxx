@@ -300,7 +300,7 @@ namespace Hal {
 
   void FemtoFreezoutsAna::SetMomentumCut(Double_t cut) {
     if (fCut <= 0) {
-      Cout::PrintInfo("KSTar cut shouldn't be <=0", EInfo::kLessWarning);
+      Cout::PrintInfo("KSTar cut shouldn't be <=0", EInfo::kLowWarning);
       return;
     }
     fCut = cut;
@@ -309,7 +309,7 @@ namespace Hal {
   void FemtoFreezoutsAna::SetOption(Option_t* opt) {
     TString option = opt;
     if (option.BeginsWith("background:")) {
-      Cout::PrintInfo(Form("%s backgrounds are not supported", this->ClassName()), EInfo::kLessInfo);
+      Cout::PrintInfo(Form("%s backgrounds are not supported", this->ClassName()), EInfo::kDebugInfo);
       return;
     } else if (option.EqualTo("prf")) {
       fKinematicsMode = EMode::kPRF;
@@ -326,20 +326,20 @@ namespace Hal {
 
   void FemtoFreezoutsAna::AddCut(const Cut& cut, Option_t* opt) {
     if (cut.GetCollectionID() != 0 && cut.GetUpdateRatio() == ECutUpdate::kEvent) {
-      Cout::PrintInfo("This class not work with more than 1 event cut collection", EInfo::kLessWarning);
+      Cout::PrintInfo("This class not work with more than 1 event cut collection", EInfo::kLowWarning);
       return;
     }
     if (cut.GetCollectionID() >= 2 && cut.GetUpdateRatio() == ECutUpdate::kTrack) {
       Cout::PrintInfo("This class not work with more than 1 track collections (2 "
                       "in case of non idental HBT",
-                      EInfo::kLessWarning);
+                      EInfo::kLowWarning);
       return;
     }
     if (cut.GetUpdateRatio() == ECutUpdate::kTwoTrack) {
       if (cut.GetCollectionID() != 0) {
         Cout::PrintInfo("You are trying to add two track collection with tirgger "
                         ">0, it's not supported now, try add FemtoFastCut",
-                        EInfo::kLessWarning);
+                        EInfo::kLowWarning);
       }
     }
     TwoTrackAna::AddCut(cut, opt);

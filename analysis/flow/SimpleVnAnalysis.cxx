@@ -71,7 +71,7 @@ namespace Hal {
 
       default:
 #ifdef HAL_DEBUG
-        Cout::PrintInfo(Form("Wrong SetAxis option in %s", this->ClassName()), EInfo::kLessWarning);
+        Cout::PrintInfo(Form("Wrong SetAxis option in %s", this->ClassName()), EInfo::kLowWarning);
 #endif
         ;
         break;
@@ -82,11 +82,11 @@ namespace Hal {
     if (TrackAna::Init() == Task::EInitFlag::kSUCCESS) {
       // checking "fake collections"
       if (fVarX == NULL) {
-        Cout::PrintInfo("No FlowVariable on X", EInfo::kLessWarning);
+        Cout::PrintInfo("No FlowVariable on X", EInfo::kLowWarning);
         return Task::EInitFlag::kFATAL;
       }
       if (fVarY == NULL) {
-        Cout::PrintInfo("No FlowVariable on Y, it will be empty", EInfo::kLessWarning);
+        Cout::PrintInfo("No FlowVariable on Y, it will be empty", EInfo::kLowWarning);
         fVarY = new FlowVirtualVariable();
         SetAxis(1, 0, 1, 1);
       }
@@ -140,7 +140,7 @@ namespace Hal {
     if (fCutContainer->GetEventCollectionsNo() > 1) {
       for (int i = 1; i < fCutContainer->GetEventCollectionsNo(); i++)
         fCutContainer->RemoveCollection(ECutUpdate::kEvent, i);
-      Cout::PrintInfo("Only 1 event cut container allowed for SimpleVnAnalysis", EInfo::kLessError);
+      Cout::PrintInfo("Only 1 event cut container allowed for SimpleVnAnalysis", EInfo::kError);
     }
   }
 

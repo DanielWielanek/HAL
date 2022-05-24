@@ -63,11 +63,11 @@ namespace Hal {
     Int_t eventCollections = fCutContainer->GetEventCollectionsNo();
     Int_t jump             = trackCollections / eventCollections;
     if (jump == 0) {
-      Cout::PrintInfo("Too many event collections, some of them will be ignored", EInfo::kLessWarning);
+      Cout::PrintInfo("Too many event collections, some of them will be ignored", EInfo::kLowWarning);
       jump++;
     }
     if (trackCollections != jump * eventCollections) {
-      Cout::PrintInfo("Some track collections will be ignored", EInfo::kLessWarning);
+      Cout::PrintInfo("Some track collections will be ignored", EInfo::kLowWarning);
     }
     for (int i = 0; i < eventCollections; i++) {
       for (int j = i * jump; j < (i + 1) * jump; j++) {

@@ -64,7 +64,7 @@ namespace Hal {
         fTempTrackPlot = plot.MakeCopy();
       } break;
       default: {
-        Cout::PrintInfo("Unkown QAPlot::GetUpdateRatio()", EInfo::kLessWarning);
+        Cout::PrintInfo("Unkown QAPlot::GetUpdateRatio()", EInfo::kLowWarning);
       } break;
     }
   }
@@ -84,7 +84,7 @@ namespace Hal {
     if (stat == Task::EInitFlag::kFATAL) return stat;
     if (fTempEventPlot == nullptr) { fTempEventPlot = new QAPlot("Null", 0, 0, 0, ECutUpdate::kEvent); }
     if (fTempTrackPlot == nullptr) {
-      Cout::PrintInfo("Lack of Track QA", EInfo::kLessError);
+      Cout::PrintInfo("Lack of Track QA", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
     fEventQA = new TObjArray();

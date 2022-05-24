@@ -42,7 +42,7 @@ namespace Hal {
     if (!fCurrentEvent->GetSource()) {
       Cout::PrintInfo("Event don't have source - boost cannot be perfomed on "
                       " data",
-                      Hal::EInfo::kLessError);
+                      Hal::EInfo::kError);
       return Task::EInitFlag::kERROR;
     }
     return stat;

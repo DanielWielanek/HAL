@@ -26,7 +26,7 @@ namespace Hal {
       fAxisMax[opt]  = max;
       fAxisBins[opt] = bins;
     } else {
-      Cout::PrintInfo(Form("You cant configure more than %i axis in %s", fAxisNo + 1, this->ClassName()), EInfo::kLessWarning);
+      Cout::PrintInfo(Form("You cant configure more than %i axis in %s", fAxisNo + 1, this->ClassName()), EInfo::kLowWarning);
     }
   }
 
@@ -106,7 +106,7 @@ namespace Hal {
     }
     for (int i = 0; i < fAxisNo; i++) {
       if (fCut[i] == NULL) {
-        Cout::PrintInfo(Form("Missed cut %i %s in %s", i, fCutNames[i].Data(), this->ClassName()), EInfo::kLessError);
+        Cout::PrintInfo(Form("Missed cut %i %s in %s", i, fCutNames[i].Data(), this->ClassName()), EInfo::kError);
         return kFALSE;
       }
     }
@@ -115,7 +115,7 @@ namespace Hal {
         if (fCut[i]->GetUpdateRatio() != fCut[j]->GetUpdateRatio()) {
           Cout::PrintInfo("Not compatible update ratios this might cause wrong "
                           "results in CutMonitor",
-                          EInfo::kLessWarning);
+                          EInfo::kLowWarning);
         }
       }
     }
@@ -143,7 +143,7 @@ namespace Hal {
 
   void CutMonitor::AddCut(TString cut, Int_t parameter_no) {
     if (Hal::Std::FindParam(cut, "Cloned")) {
-      Cout::PrintInfo("You can't add Cloned Cuts to CutMonitor", EInfo::kLessWarning);
+      Cout::PrintInfo("You can't add Cloned Cuts to CutMonitor", EInfo::kLowWarning);
       return;
     }
     TClass* classdata = NULL;
@@ -156,7 +156,7 @@ namespace Hal {
     ECutUpdate newUpd = ECutUpdate::kNo;
 
     if (classdata == nullptr) {
-      Cout::PrintInfo(Form("Cannot find class %s", cut.Data()), EInfo::kLessWarning);
+      Cout::PrintInfo(Form("Cannot find class %s", cut.Data()), EInfo::kLowWarning);
     } else {
       if (classdata->InheritsFrom("Hal::EventCut")) newUpd = ECutUpdate::kEvent;
       if (classdata->InheritsFrom("Hal::TrackCut")) newUpd = ECutUpdate::kTrack;
@@ -180,7 +180,7 @@ namespace Hal {
     if (fAxisNo > 0) {
       SetAxis(bins, min, max, 0);
     } else {
-      Cout::PrintInfo("CutMonitor::X axis not found", EInfo::kLessWarning);
+      Cout::PrintInfo("CutMonitor::X axis not found", EInfo::kLowWarning);
     }
   }
 
@@ -188,7 +188,7 @@ namespace Hal {
     if (fAxisNo > 1) {
       SetAxis(bins, min, max, 1);
     } else {
-      Cout::PrintInfo("CutMonitor::Y axis not found", EInfo::kLessWarning);
+      Cout::PrintInfo("CutMonitor::Y axis not found", EInfo::kLowWarning);
     }
   }
 
@@ -196,7 +196,7 @@ namespace Hal {
     if (fAxisNo > 2) {
       SetAxis(bins, min, max, 2);
     } else {
-      Cout::PrintInfo("CutMonitor::Z axis not found", EInfo::kLessWarning);
+      Cout::PrintInfo("CutMonitor::Z axis not found", EInfo::kLowWarning);
     }
   }
 
@@ -223,7 +223,7 @@ namespace Hal {
     if (this != &other) {
       fCuts         = other.fCuts;
       fCollectionID = other.fCollectionID;
-      if (fAxisNo != other.fAxisNo) { Cout::PrintInfo("Copy incompatible cut monitors", EInfo::kLessWarning); }
+      if (fAxisNo != other.fAxisNo) { Cout::PrintInfo("Copy incompatible cut monitors", EInfo::kLowWarning); }
       for (int i = 0; i < fAxisNo; i++) {
         fAxisBins[i]   = other.fAxisBins[i];
         fOptionAxis[i] = other.fOptionAxis[i];

@@ -61,7 +61,7 @@ namespace Hal {
     SetParameterName(Rside(), "R_{side}");
     SetParameterName(Rlong(), "R_{long}");
     if (parameters < 3) {
-      Cout::PrintInfo(Form("%s must have at least 3 parameters", this->ClassName()), EInfo::kImportantWarning);
+      Cout::PrintInfo(Form("%s must have at least 3 parameters", this->ClassName()), EInfo::kWarning);
       return;
     }
     if (parameters > 3) fParameters[3].SetParName("#lambda");

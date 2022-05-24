@@ -93,7 +93,7 @@ void printHelp() {
 }
 int main(int argc, char* argv[]) {
   if (argc < 2) {
-    Hal::Cout::PrintInfo("No arguments! run: hal-jobs --help to get help", Hal::EInfo::kImportantError);
+    Hal::Cout::PrintInfo("No arguments! run: hal-jobs --help to get help", Hal::EInfo::kCriticalError);
     return 0;
   }
   std::vector<std::pair<TString, TString>> args = Hal::Std::ConvertMainArgs(argc, argv);

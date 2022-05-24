@@ -88,7 +88,7 @@ namespace Hal {
 
   void Cut::SetMinMax(Double_t min, Double_t max, Int_t i) {
     if (i > fSubCut.GetSize() || i < 0) {
-      Cout::PrintInfo(Form("Seting wrong parameter id (%i) in %s", i, ClassName()), EInfo::kLessError);
+      Cout::PrintInfo(Form("Seting wrong parameter id (%i) in %s", i, ClassName()), EInfo::kError);
       return;
     }
     fSubCut.SetMin(min, i);
@@ -126,11 +126,11 @@ namespace Hal {
 
   TObjArray* Cut::Split(Int_t n, Int_t i, Double_t shift) const {
     if (i >= fCutSize) {
-      Cout::PrintInfo(Form("Canot split %s along %i", this->ClassName(), n), EInfo::kLessWarning);
+      Cout::PrintInfo(Form("Canot split %s along %i", this->ClassName(), n), EInfo::kLowWarning);
       return NULL;
     }
     if (n <= 1) {
-      Cout::PrintInfo(Form("Canot split %s into %i partts", this->ClassName(), i), EInfo::kLessWarning);
+      Cout::PrintInfo(Form("Canot split %s into %i partts", this->ClassName(), i), EInfo::kLowWarning);
       return NULL;
     }
     TObjArray* cuts_array = new TObjArray();

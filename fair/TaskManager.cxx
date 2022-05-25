@@ -6,12 +6,12 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
+#include "TaskManager.h"
 #include "DataManager.h"
 #include "IOManager.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "RootManager.h"
-#include "TaskManager.h"
 
 #include "Source.h"
 #include "Std.h"
@@ -23,7 +23,7 @@
 #include <TFile.h>
 namespace Hal {
   namespace Fair {
-    TaskManager::TaskManager() : fProcessedEvents(0), fManager(nullptr) { fManager = new RootManager(); }
+    TaskManager::TaskManager() : fManager(nullptr), fProcessedEvents(0) { fManager = new RootManager(); }
 
     InitStatus TaskManager::Init() {
       fManager->Init();

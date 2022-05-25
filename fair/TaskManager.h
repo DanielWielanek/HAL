@@ -25,17 +25,18 @@ namespace Hal {
 namespace Hal {
   namespace Fair {
     class TaskManager : public ::FairTask {
-      UInt_t fProcessedEvents;
+    protected:
       IOManager* fManager;
       std::vector<::Hal::Task*> fTasks;
       std::vector<::Hal::Task*> fActiveTasks;
       std::vector<::Hal::Task*> fPassiveTasks;
+      UInt_t fProcessedEvents;
 
-    protected:
       virtual InitStatus Init();
 
     public:
       TaskManager();
+      virtual void AddTask(::Hal::Task* task) { fTasks.push_back(task); };
       virtual void Exec(Option_t* option);
       virtual void Finish();
       virtual ~TaskManager();

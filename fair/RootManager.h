@@ -30,7 +30,7 @@ namespace Hal {
       void SetInChain(TChain* tempChain, Int_t ident = -1);
       Int_t CheckBranch(const char* BrName);
       Int_t GetEntries() const { return -1; }
-      Int_t GetEntry(Int_t i) { return -1; };
+      Int_t GetEntry(Int_t /*i*/) { return -1; };
       virtual Bool_t Init() { return kTRUE; }
       TList* GetBranchNameList();
       virtual ~RootManager() {};

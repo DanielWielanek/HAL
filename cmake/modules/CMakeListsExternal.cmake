@@ -64,8 +64,10 @@ if(NOT GSL_FOUND)
   if(APPLE)
    set(GSL_DIR /usr/local)
   else()
-    unset(GSL_DIR)
+    #unset(GSL_DIR)
+    execute_process(COMMAND gsl-config --prefix OUTPUT_VARIABLE GSL_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
   endif()
+  
   find_package(GSL REQUIRED)
 endif()
 

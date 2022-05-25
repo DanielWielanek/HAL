@@ -27,7 +27,7 @@ namespace Hal {
 
   Long64_t Object::Merge(TCollection* collection) {
     if (collection) {
-      Object* pack = NULL;
+      Object* pack = nullptr;
       TIter iterator(collection);
       while ((pack = (Object*) iterator())) {
         Add(pack);

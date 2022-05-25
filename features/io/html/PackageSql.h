@@ -26,9 +26,9 @@ namespace Hal {
     Int_t fID;
     TString fFilename;
     Hal::Package* fRunInfo;
+    Bool_t HasDir(TString path);
     TString RemoveDir(TString path);
     TString RemoveDoubleDot(TString path);
-    Bool_t HasDir(TString path);
     TString GetPath(TString filename);
     void ExportTask(AnaFile* extr, Int_t file_id, Int_t task_id);
 

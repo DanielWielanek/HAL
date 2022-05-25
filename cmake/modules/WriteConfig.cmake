@@ -3,7 +3,7 @@ MACRO(GenerateConfig HAL HAL_PATH )
 	file(APPEND ${HAL} "export PATH=$ENV{PATH}\n")
 	file(APPEND ${HAL} "export LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}\n")
 	file(APPEND ${HAL} "export HAL=${HAL_PATH}\n")
-	file(APPEND ${HAL} "export PATH=\$PATH:\$NHAL/bin\n")
+	file(APPEND ${HAL} "export PATH=\$PATH:\$HAL/bin\n")
 	file(APPEND ${HAL} "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HAL_PATH}/lib\n")
 ENDMACRO(GenerateConfig)
 

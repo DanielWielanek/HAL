@@ -39,6 +39,7 @@ namespace Hal {
     virtual void Exec(Option_t* option);
     virtual void Finish();
     virtual ~HalFairAnalysisManager();
+    ClassDef(HalFairAnalysisManager, 1)
   };
 
 } /* namespace Hal */

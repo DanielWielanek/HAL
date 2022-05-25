@@ -10,6 +10,7 @@
 #include "AnalysisManager.h"
 
 #include "DataManager.h"
+#include "Field.h"
 #include "IOManager.h"
 #include "Package.h"
 #include "Parameter.h"
@@ -23,11 +24,14 @@
 #include <TFile.h>
 
 namespace Hal {
-  AnalysisManager::AnalysisManager() : fProcessedEvents(0), fSource(nullptr), fOutTreeName("HalTree"), fManager(nullptr) {}
+  AnalysisManager::AnalysisManager() :
+    fProcessedEvents(0), fField(nullptr), fSource(nullptr), fOutTreeName("HalTree"), fManager(nullptr) {}
 
   void AnalysisManager::Init() {
     if (fSource == nullptr) exit(0);
-    fManager         = fSource->GetIOManager();
+    fManager = fSource->GetIOManager();
+    if (fField == nullptr) { fField = new Field(); }
+    fManager->SetField(fField);
     DataManager* mng = DataManager::Instance();
     mng->SetManager(fManager);
     for (auto task : fTasks) {
@@ -107,6 +111,7 @@ namespace Hal {
     for (auto task : fTasks) {
       delete task;
     }
+    if (fField) delete fField;
   }
 
 }  // namespace Hal

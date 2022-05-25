@@ -23,6 +23,7 @@ namespace Hal {
     virtual Int_t GetEntries() const = 0;
     virtual Int_t GetEntry(Int_t i)  = 0;
     virtual Bool_t Init()            = 0;
+    virtual void SetField(Field* field) { fField = field; };
     virtual Field* GetField() const { return fField; };
     virtual void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile)      = 0;
     virtual void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) = 0;

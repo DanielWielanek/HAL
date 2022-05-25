@@ -18,7 +18,6 @@ namespace Hal {
 
   void HalFairRootManager::UpdateBranches() { FairRootManager::Instance()->UpdateBranches(); }
 
-
   void HalFairRootManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
     FairRootManager::Instance()->Register(name, folderName, obj, toFile);
   }

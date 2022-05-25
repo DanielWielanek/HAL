@@ -50,7 +50,7 @@
 #pragma link C++ class Hal::Task + ;
 #pragma link C++ class Hal::Source + ;
 #pragma link C++ class Hal::RootIOManager + ;
-#pragma link C++ class Hal::Field + ;
+#pragma link C++ class Hal::MagField + ;
 #pragma link C++ class Hal::DataManager + ;
 #pragma link C++ class Hal::AnalysisManager + ;
 #pragma link C++ class Hal::IOManager + ;

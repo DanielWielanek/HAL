@@ -19,7 +19,7 @@ class TList;
 class TChain;
 namespace Hal {
   class IOManager;
-  class Field;
+  class MagField;
   class DataManager : public TObject {
     IOManager* fManager;
 
@@ -38,7 +38,7 @@ namespace Hal {
     TObject* GetObject(const char* BrName);
     TFile* GetInFile();
     TList* GetBranchNameList();
-    virtual Field* GetField() const;
+    virtual MagField* GetField() const;
     virtual ~DataManager();
     ClassDef(DataManager, 1)
   };

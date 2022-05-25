@@ -13,12 +13,12 @@
 #include <TVector3.h>
 
 namespace Hal {
-  class Field : public TObject {
+  class MagField : public TObject {
   public:
-    Field();
+    MagField();
     TVector3 GetField(Double_t x, Double_t y, Double_t z) const { return TVector3(0, 0, 0); }
-    virtual ~Field();
-    ClassDef(Field, 1)
+    virtual ~MagField();
+    ClassDef(MagField, 1)
   };
 }  // namespace Hal
 #endif /* HAL_ANALYSIS_BASE_STEER_HALFIELD_H_ */

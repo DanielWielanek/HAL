@@ -10,8 +10,9 @@
 #include "AnalysisManager.h"
 
 #include "DataManager.h"
-#include "Field.h"
 #include "IOManager.h"
+#include "MagField.h"
+
 #include "Package.h"
 #include "Parameter.h"
 #include "Source.h"
@@ -30,7 +31,7 @@ namespace Hal {
   void AnalysisManager::Init() {
     if (fSource == nullptr) exit(0);
     fManager = fSource->GetIOManager();
-    if (fField == nullptr) { fField = new Field(); }
+    if (fField == nullptr) { fField = new MagField(); }
     fManager->SetField(fField);
     DataManager* mng = DataManager::Instance();
     mng->SetManager(fManager);

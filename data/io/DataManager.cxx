@@ -9,8 +9,8 @@
 
 #include "DataManager.h"
 
-#include "Field.h"
 #include "IOManager.h"
+#include "MagField.h"
 
 #include <RtypesCore.h>
 #include <TChain.h>
@@ -51,6 +51,6 @@ namespace Hal {
 
   TList* DataManager::GetBranchNameList() { return fManager->GetBranchNameList(); }
 
-  Field* DataManager::GetField() const { return fManager->GetField(); }
+  MagField* DataManager::GetField() const { return fManager->GetField(); }
   /****************************************************************************************************************************/
 }  // namespace Hal

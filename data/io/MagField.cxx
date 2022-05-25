@@ -6,13 +6,13 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
-#include "Field.h"
+#include "MagField.h"
 namespace Hal {
-  Field::Field() {
+  MagField::MagField() {
     // TODO Auto-generated constructor stub
   }
 
-  Field::~Field() {
+  MagField::~MagField() {
     // TODO Auto-generated destructor stub
   }
 

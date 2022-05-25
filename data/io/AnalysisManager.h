@@ -16,11 +16,11 @@ namespace Hal {
   class IOManager;
   class Source;
   class Task;
-  class Field;
+  class MagField;
 
   class AnalysisManager : public TObject {
     UInt_t fProcessedEvents;
-    Field* fField;
+    MagField* fField;
     Source* fSource;
     TString fOutputFile;
     TString fOutTreeName;
@@ -38,8 +38,8 @@ namespace Hal {
     void Run(Int_t start, Int_t end);
     void SetSource(Source* source) { fSource = source; };
     void SetOutput(TString name) { fOutputFile = name; };
-    Field* GetField() const { return fField; }
-    void SetField(Field* field) { fField = field; }
+    MagField* GetField() const { return fField; }
+    void SetField(MagField* field) { fField = field; }
     virtual ~AnalysisManager();
     ClassDef(AnalysisManager, 1)
   };

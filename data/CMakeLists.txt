@@ -52,7 +52,7 @@ dataformat/hiddeninfo/V0Track.cxx
 
 io/AnalysisManager.cxx
 io/DataManager.cxx
-io/Field.cxx
+io/MagField.cxx
 io/RootIOManager.cxx
 io/Source.cxx
 io/Task.cxx

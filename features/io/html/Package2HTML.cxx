@@ -213,8 +213,7 @@ namespace Hal {
       div2.AddContent(table2);
       fHTML->AddContent(div2);
     } else {
-      Cout::PrintInfo(Form("%s found in HalPhysics but don't inherit from HalPackage", packname.Data()),
-                      Hal::EInfo::kLowWarning);
+      Cout::PrintInfo(Form("%s found in HalPhysics but don't inherit from HalPackage", packname.Data()), Hal::EInfo::kLowWarning);
     }
     // delete list;
     file->Close();
@@ -442,13 +441,13 @@ namespace Hal {
       TObject* object        = pack->GetObject(i);
       TString nameClass      = object->ClassName();
       TString oryginal_class = object->GetName();
-      if (nameClass == "HalPackage") {
+      if (nameClass == "Hal::Package") {
         Package* subpack = (Package*) object;
         oryginal_class   = subpack->GetName();
         HtmlRow row;
         row.SetClass(styleCell);
-        if (oryginal_class == "HalMetadata") { row.SetClass(styleExtra); }
-        if (oryginal_class == "HalCutContainer") { row.SetClass(styleExtra); }
+        if (oryginal_class == "Hal::Metadata") { row.SetClass(styleExtra); }
+        if (oryginal_class == "Hal::CutContainer") { row.SetClass(styleExtra); }
         HtmlCell first_cell(Hal::Std::RoundToString(i));
         first_cell.SetColSpan(2);
         row.AddContent(first_cell);
@@ -458,7 +457,7 @@ namespace Hal {
         row.AddContent(HtmlCell(AddToUrl(inject, HtmlCore::HTMLExtract(object, i, path))));
         halTable.AddContent(row);
 
-      } else if (nameClass == "HalQAPlotReport") {
+      } else if (nameClass == "Hal::QAPlotReport") {
         Object* rep = (Object*) object;
         rep->HTMLExtractIntoTable(fTObjectCounter["qa"]++, halTable, path, inject);
       } else if (nameClass != "TList" || fListDeep != 0) {
@@ -1200,7 +1199,6 @@ namespace Hal {
     gROOT->SetBatch(batch);
   }
 
-
   TString Package2HTML::GetLink1D(TH1* h1, TH1* h2, Int_t no, TString path) const {
     TString url;
     path = Form("%s/th1_%i", path.Data(), no);
@@ -1247,42 +1245,42 @@ namespace Hal {
   }
 
   TString Package2HTML::GetLink3D(TH3* h1, TH3* h2, Int_t no, TString path) const {
-      TString url;
-        path = Form("%s/th1_%i", path.Data(), no);
-        gSystem->mkdir(path);
-        TString filename = Form("%s/histo.html", path.Data());
-        TCanvas* c1      = new TCanvas("cutmon", "cutmon", 0, 0, 800, 600);
-        c1->Divide(2, 1);
-        c1->cd(1);
-        h1->SetTitle(Form("%s (Passed)", h1->GetTitle()));
-        h1->Draw(Draw_3D_option);
-        c1->cd(2);
-        h2->SetTitle(Form("%s (Failed)", h2->GetTitle()));
-        h2->Draw(Draw_3D_option);
-        c1->SetName("cutmon");
-        c1->SaveAs(Form("%s/cutmon.root", path.Data()));
-        delete c1;
-        HtmlFile file(filename, kFALSE);
-        file.AddStringContent(HtmlCore::GetJsDiv("cutmon.root", "cutmon;1"));
-        file.Save();
-        return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
-
-      /*
     TString url;
-    gSystem->mkdir(Form("%s/th1_%i", path.Data(), no));
-    TString name = "histo";
-    TCanvas* c1  = new TCanvas(name, name, 0, 0, 800, 600);
-    gPad->SetLeftMargin(0.15);
-    THStack* stack = new THStack();
-    stack->Add(h1);
-    stack->Add(h2);
-    stack->Draw(Draw_3D_option);
-    c1->SaveAs(Form("%s/th1_%i/histo_0.png", path.Data(), no));
+    path = Form("%s/th1_%i", path.Data(), no);
+    gSystem->mkdir(path);
+    TString filename = Form("%s/histo.html", path.Data());
+    TCanvas* c1      = new TCanvas("cutmon", "cutmon", 0, 0, 800, 600);
+    c1->Divide(2, 1);
+    c1->cd(1);
+    h1->SetTitle(Form("%s (Passed)", h1->GetTitle()));
+    h1->Draw(Draw_3D_option);
+    c1->cd(2);
+    h2->SetTitle(Form("%s (Failed)", h2->GetTitle()));
+    h2->Draw(Draw_3D_option);
+    c1->SetName("cutmon");
+    c1->SaveAs(Form("%s/cutmon.root", path.Data()));
     delete c1;
-    delete stack;
-    TString filename = Form("%s/th1_%i/histo.html", path.Data(), no);
-    CreateImagePage(filename, "histo_%i.png", 1, Form("%s/th1_%i", path.Data(), no));
-    return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));*/
+    HtmlFile file(filename, kFALSE);
+    file.AddStringContent(HtmlCore::GetJsDiv("cutmon.root", "cutmon;1"));
+    file.Save();
+    return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
+
+    /*
+  TString url;
+  gSystem->mkdir(Form("%s/th1_%i", path.Data(), no));
+  TString name = "histo";
+  TCanvas* c1  = new TCanvas(name, name, 0, 0, 800, 600);
+  gPad->SetLeftMargin(0.15);
+  THStack* stack = new THStack();
+  stack->Add(h1);
+  stack->Add(h2);
+  stack->Draw(Draw_3D_option);
+  c1->SaveAs(Form("%s/th1_%i/histo_0.png", path.Data(), no));
+  delete c1;
+  delete stack;
+  TString filename = Form("%s/th1_%i/histo.html", path.Data(), no);
+  CreateImagePage(filename, "histo_%i.png", 1, Form("%s/th1_%i", path.Data(), no));
+  return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));*/
   }
 
   TString Package2HTML::GetLinkToCut(Hal::ECutUpdate update, Int_t collection_no, Int_t cut_no, Bool_t fast) const {
@@ -1416,8 +1414,7 @@ namespace Hal {
     else
       fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrack)] = 0;
     if (twotrack_collections_background_no) {
-      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackground)] =
-        twotrack_collections_background_no->GetValue();
+      fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackground)] = twotrack_collections_background_no->GetValue();
     } else {
       fCollectionsNo[static_cast<Int_t>(Hal::ECutUpdate::kTwoTrackBackground)] = 0;
     }

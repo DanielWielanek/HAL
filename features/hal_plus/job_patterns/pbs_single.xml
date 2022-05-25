@@ -1,27 +1,20 @@
-<nica-submitter>
+<hal-submitter>
 	<!--nodes here are mandatory -->
-	<settings>
-		<!--submit command -->
-		<submit>qsub ${NICA_JOB_FILE}</submit>
-		<!--job ids -->
-		<submit_start>1</submit_start>
-		<submit_end>1</submit_end>
-		<shell>#!/bin/bash</shell>
-	</settings>
-	<job_options array="no">
-		<!--number of nodes, cores per node walltime -->
-		<command>#PBS -l nodes=1:ppn=1,walltime=30:00</command>
-		<!--output logs ${NICA_JOB_ID} will be replaced by id -->
-		<command>#PBS -o logs/${NICA_JOB_ID}_log</command>
-		<!--error logs -->
-		<command>#PBS -e /dev/null</command>
-	</job_options>
-	<job_commands>
+	<parameters>
+	   <parameter name="HAL::PAR_SUBMIT" value="qsub ${HAL::CONST::JOB_FILE}"></parameter><!--submit command -->
+	</parameters>
+	<settings array="no" start="1" end="2" shell="#!/bin/bash" submit="${HAL::PAR_SUBMIT}" dir="jobs"></settings>
+	<commands>
 		<!--commands -->
-		<!-- ${NICA_JOB_ID} will be replaced by job ID -->
-		<command>export JOB_ID_NICA=${NICA_JOB_ID}</command>
-		<command>export TEMP_VAR=`nica-jobs --export=job_file.txt
-			--id=${NICA_JOB_ID} --par=0`</command>
+		 <!--number of nodes, cores per node walltime -->
+        <command>#PBS -l nodes=1:ppn=1,walltime=30:00</command>
+        <!--output logs ${HAL_JOB_ID} will be replaced by id -->
+        <command>#PBS -o logs/${HAL::CONST::JOB_ID}_log</command>
+        <!--error logs -->
+        <command>#PBS -e /dev/null</command>
+		<!-- ${HAL_JOB_ID} will be replaced by job ID -->
+		<command>export JOB_ID_HAL=${HAL::CONST::JOB_ID}</command>
+		<command>export TEMP_VAR=`hal-jobs --export=job_file.txt --id=${HAL::CONST::JOB_ID} --par=0`</command>
 		<command>root -l -b -q "macro()"</command>
-	</job_commands>
-</nica-submitter>
+	</commands>
+</hal-submitter>

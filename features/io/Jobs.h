@@ -13,14 +13,39 @@
 #include <TString.h>
 #include <vector>
 
+/**
+ * base class for job creation base on the input file that contains:
+ * PARAMETERS
+ * Here user define parameter name and parameter value, these values are later replaces
+ * e.g. if submit command is "qsub ${MY_PARAMETER} then string ${MY_PARAMETER} is replated by value of parameter called \
+ * MY_PARAMETER. Note: there are forbidden names of parameters used by the framework:
+ * HAL::CONST::PWD - points to current directory
+ * HAL::CONST::START - id of first job
+ * HAL::CONST::END - id of last job
+ * HAL::CONST::JOB_ID - id of current job (used when not in array mode)
+ * HAL::CONST::JOB_FILE - path to job file
+ * SETTINGS
+ * the setting node contain instruction how to call the command that execut job file/ files, following attributes are supported:
+ * * submit - command to submit script
+ * * start  - id of first job
+ * * end - id of last job
+ * * array - "yes" if job is in array mode, "no" if job is in normal mode (many scripts are created)
+ * * dir - path to the directory with job scripts
+ * * shell - shell command - defile value of first line in job script
+ * COMMANDS
+ * This section define the commands in script file that is send to the cluster.
+ */
+
 namespace Hal {
   class Jobs : public TObject {
     Bool_t fArray;
     Bool_t fDebugCommands;
+    TString fDir;
     TString fFile;
     TString fSubmitCommand;
     Int_t fStartJob, fEndJob;
     std::vector<TString> fCommands;
+    std::vector<std::pair<TString, TString>> fParameters;
     static Int_t GetNVariablesTxt(TString textfile);
     static Int_t GetNVariablesXML(TString xmlfile);
     static TString GetParameterTxt(TString textfile, Int_t job, Int_t var);

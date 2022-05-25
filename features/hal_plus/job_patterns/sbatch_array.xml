@@ -1,36 +1,32 @@
-<nica-submitter>
+<hal-submitter>
 	<!--nodes here are mandatory -->
-	<settings>
-		<!--submit command -->
-		<submit>sbatch ${NICA_JOB_FILE}</submit>
-		<!-- submit command for VIRGO <submit>sbatch --output=${NICA_PWD}/ana2021/%j.out 
-			--error=${NICA_PWD}/%j.errors --time=36:00:00 --array=${NICA_START_ARRAY}-${NICA_END_ARRAY} 
-			-p long -- ${NICA_PWD}/${NICA_JOB_FILE}</submit> -->
-		<submit_start>1</submit_start>
-		<submit_end>2</submit_end>
-		<shell>#!/bin/bash</shell>
-	</settings>
-	<job_options array="yes">
-		<!--array command in options, ${NICA_START_ARRAY}/${NICA_END_ARRAY} will 
+	<parameters>
+	<parameter name="SUBMIT_ARG" value="${SUBMIT_SIMPLE}"></parameter>
+	<parameter name="SUBMIT_SIMPLE" value="sbatch ${HAL::CONST::JOB_FILE}"></parameter>
+	<parameter name="SUBMIT_CUBE" value="sbatch --output=${HAL::CONST::PWD}/ana2021/%j.out 
+            --error=${HAL::CONST::PWD}/%j.errors --time=36:00:00 --array=${HAL::CONST::START}-${HAL::CONST::END} 
+            -p long -- ${HAL::CONST::PWD}/${HAL::CONST::JOB_FILE}"></parameter>
+	</parameters>
+	<settings start="1" end="1" submit="sbatch ${SUBMIT_ARG}" shell="#!/bin/bash" dir="jobs" array="yes"></settings>
+	<commands>
+		<!--array command in options, ${HAL_START_ARRAY}/${HAL_END_ARRAY} will 
 			be replaced by submit start/end -->
-		<command>#SBATCH --array=${NICA_START_ARRAY}-${NICA_END_ARRAY}</command>
+		<command>#SBATCH --array=${HAL::CONST::START}-${HAL::CONST::END}</command>
 		<!--walltime -->
 		<command>#SBATCH --time=01:30:00</command>
 		<!--errors logs -->
 		<command>#SBATCH -e errors/%j.err.log</command>
 		<!--output logs -->
 		<command>#SBATCH -o logs/%j.out.log</command>
-	</job_options>
-	<job_commands>
 		<!--to supress screen -->
 		<command>export DISPLAY=localhost:0.0</command>
 		<!--commands -->
 		<command>ONE=1</command>
-		<command>export JOB_ID_NICA=`expr $SLURM_ARRAY_TASK_ID + $ONE`</command>
-		<command>INDEX=$(printf "%05d" "$JOB_ID_NICA")</command>
+		<command>export JOB_ID_HAL=`expr $SLURM_ARRAY_TASK_ID + $ONE`</command>
+		<command>INDEX=$(printf "%05d" "$JOB_ID_HAL")</command>
 		<command>INFILE=/lustre/nyx/cbm/users/wielanek/mc/${INDEX}.tra.root</command>
-		<!-- ${NICA_PWD will be replaced by currend pwd path} -->
-		<command>cd ${NICA_PWD}</command>
+		<!-- ${HAL_PWD will be replaced by currend pwd path} -->
+		<command>cd ${HAL::CONST::PWD}</command>
 		<command>root -l -b -q "macro(\"$INPUTFILE\")"</command>
-	</job_commands>
-</nica-submitter>
+	</commands>
+</hal-submitter>

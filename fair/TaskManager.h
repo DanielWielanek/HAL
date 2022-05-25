@@ -23,25 +23,25 @@ namespace Hal {
 } /* namespace Hal */
 
 namespace Hal {
+  namespace Fair {
+    class TaskManager : public ::FairTask {
+      UInt_t fProcessedEvents;
+      IOManager* fManager;
+      std::vector<::Hal::Task*> fTasks;
+      std::vector<::Hal::Task*> fActiveTasks;
+      std::vector<::Hal::Task*> fPassiveTasks;
 
-  class HalFairAnalysisManager : public FairTask {
-    UInt_t fProcessedEvents;
-    IOManager* fManager;
-    std::vector<Task*> fTasks;
-    std::vector<Task*> fActiveTasks;
-    std::vector<Task*> fPassiveTasks;
+    protected:
+      virtual InitStatus Init();
 
-  protected:
-    virtual InitStatus Init();
-
-  public:
-    HalFairAnalysisManager();
-    virtual void Exec(Option_t* option);
-    virtual void Finish();
-    virtual ~HalFairAnalysisManager();
-    ClassDef(HalFairAnalysisManager, 1)
-  };
-
+    public:
+      TaskManager();
+      virtual void Exec(Option_t* option);
+      virtual void Finish();
+      virtual ~TaskManager();
+      ClassDef(TaskManager, 1)
+    };
+  }  // namespace Fair
 } /* namespace Hal */
 
 #endif /* HAL_FAIR_HALFAIRANALYSISMANAGER_H_ */

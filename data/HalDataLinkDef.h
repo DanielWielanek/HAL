@@ -38,6 +38,7 @@
 #pragma link C++ class Hal::EventInterface + ;
 #pragma link C++ class Hal::EventInterfaceAdvanced + ;
 #pragma link C++ class Hal::TrackInterface + ;
+#pragma link C++ class Hal::TrackInterfaceAdvanced + ;
 #pragma link C++ class Hal::McTrackInterface + ;
 #pragma link C++ class Hal::ExpEventInterface + ;
 #pragma link C++ class Hal::VirtualTrack + ;

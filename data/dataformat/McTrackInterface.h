@@ -9,9 +9,9 @@
 #ifndef HALMCTRACKINTERFACE_H_
 #define HALMCTRACKINTERFACE_H_
 
-#include "EventInterfaceAdvanced.h"
+#include "TrackInterfaceAdvanced.h"
 namespace Hal {
-  class McTrackInterface : public EventInterfaceAdvanced {
+  class McTrackInterface : public TrackInterfaceAdvanced {
   public:
     McTrackInterface();
     virtual Double_t GetStartX() const { return 0.; };

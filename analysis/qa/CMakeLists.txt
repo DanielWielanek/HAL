@@ -33,7 +33,7 @@ set(SRCS
    QAEventTask.cxx
    QATrackTask.cxx
    QAHistoSettings.cxx
- #  QACoreManager.cxx
+   QAManager.cxx
 )
 
 Set(HEADERS )

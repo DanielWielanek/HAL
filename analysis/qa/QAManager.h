@@ -9,13 +9,8 @@
 #ifndef HALFEMTO_ANALYSIS_QA_HALQACOREMANAGER_H_
 #define HALFEMTO_ANALYSIS_QA_HALQACOREMANAGER_H_
 
-#include <FairFileSource.h>
-#include <FairParRootFileIo.h>
-#include <FairRun.h>
-#include <FairRunAna.h>
-#include <FairRuntimeDb.h>
 #include <Rtypes.h>
-#include <RtypesCore.h>
+#include <TObject.h>
 #include <TString.h>
 
 namespace Hal {
@@ -30,7 +25,7 @@ namespace Hal {
    *
    */
 
-  class QACoreManager : public TObject {
+  class QAManager : public TObject {
   protected:
     Double_t fEta[2]   = {-1, 1};
     Double_t fPt[2]    = {0, 10};
@@ -45,7 +40,7 @@ namespace Hal {
     enum class eParticleType { kPrimaryOnly, kSecondaryOnly, kAll };
     enum class eFormatType { kSim, kReco, kComplex };
     enum class eAnaType { kDefault, kHbt };
-    QACoreManager() {};
+    QAManager() {};
     ePidCut ToPid(Int_t i);
     void UsePrimSecCut(Bool_t use) { fUsePrimSec = use; };
     void UsePidCut(Bool_t use) { fUsetPid = use; };
@@ -77,8 +72,8 @@ namespace Hal {
     virtual void SetRecoTrackCut(TrackAna* ana, ePidCut cut, eParticleType primary, TString flag = "");
     virtual void SetEventCut(TrackAna* ana, Int_t col, TString flag = "");
     virtual void SetPairCut(TwoTrackAna* ana, ePidCut pid1, ePidCut pid2);
-    virtual ~QACoreManager() {};
-    ClassDef(QACoreManager, 1)
+    virtual ~QAManager() {};
+    ClassDef(QAManager, 1)
   };
 }  // namespace Hal
 

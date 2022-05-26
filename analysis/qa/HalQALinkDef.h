@@ -18,7 +18,7 @@
 
 #pragma link C++ class Hal::QAEventTask + ;
 #pragma link C++ class Hal::QATrackTask + ;
-#pragma link C++ class Hal::QACoreManager + ;
+#pragma link C++ class Hal::QAManager + ;
 
 #pragma link C++ class Hal::QAHistoSettings + ;
 #pragma link C++ class std::vector < Hal::QAHistoSettings> + ;

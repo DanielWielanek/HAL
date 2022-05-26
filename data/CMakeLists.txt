@@ -32,6 +32,7 @@ dataformat/McTrack.cxx
 dataformat/EventInterface.cxx
 dataformat/EventInterfaceAdvanced.cxx
 dataformat/TrackInterface.cxx
+dataformat/TrackInterfaceAdvanced.cxx
 dataformat/McTrackInterface.cxx
 dataformat/VirtualTrack.cxx
 dataformat/VirtualEvent.cxx

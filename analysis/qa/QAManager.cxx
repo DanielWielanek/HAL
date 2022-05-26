@@ -7,7 +7,7 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 
-#include "QACoreManager.h"
+#include "QAManager.h"
 
 #include "AnalysisManager.h"
 #include "Const.h"
@@ -17,7 +17,7 @@
 #include "TrackPdgCut.h"
 
 namespace Hal {
-  void QACoreManager::SetMcTrackCut(TrackAna* ana, ePidCut cut, eParticleType primary, TString flag) {
+  void QAManager::SetMcTrackCut(TrackAna* ana, ePidCut cut, eParticleType primary, TString flag) {
     Int_t pid = 0;
     switch (cut) {
       case ePidCut::kPionPlus: {
@@ -54,13 +54,13 @@ namespace Hal {
       } break;
     }
   }
-  Event* QACoreManager::GetFormat(eFormatType /*type*/, eAnaType /*ana*/) { return nullptr; }
+  Event* QAManager::GetFormat(eFormatType /*type*/, eAnaType /*ana*/) { return nullptr; }
 
-  void QACoreManager::SetRecoTrackCut(TrackAna* /*ana*/, ePidCut /*cut*/, eParticleType /*primary*/, TString /*flag*/) {}
+  void QAManager::SetRecoTrackCut(TrackAna* /*ana*/, ePidCut /*cut*/, eParticleType /*primary*/, TString /*flag*/) {}
 
-  void QACoreManager::SetEventCut(TrackAna* /*ana*/, Int_t /*col*/, TString /*flag*/) {};
+  void QAManager::SetEventCut(TrackAna* /*ana*/, Int_t /*col*/, TString /*flag*/) {};
 
-  AnalysisManager* QACoreManager::GetAna(TString outFile, TString simFile, TString recoFile) {
+  AnalysisManager* QAManager::GetAna(TString outFile, TString simFile, TString recoFile) {
     AnalysisManager* run = new AnalysisManager();
     run->SetOutput(outFile);
     RootSource* source = new RootSource(simFile);
@@ -69,17 +69,17 @@ namespace Hal {
     return run;
   }
 
-  void QACoreManager::SetPairCut(TwoTrackAna* /*ana*/, ePidCut /*pid1*/, ePidCut /*pid2*/) {};
+  void QAManager::SetPairCut(TwoTrackAna* /*ana*/, ePidCut /*pid1*/, ePidCut /*pid2*/) {};
 
-  QACoreManager::ePidCut QACoreManager::ToPid(Int_t i) {
+  QAManager::ePidCut QAManager::ToPid(Int_t i) {
     switch (i) {
-      case 0: return QACoreManager::ePidCut::kPionPlus; break;
-      case 1: return QACoreManager::ePidCut::kPionMinus; break;
-      case 2: return QACoreManager::ePidCut::kKaonPlus; break;
-      case 3: return QACoreManager::ePidCut::kKaonMinus; break;
-      case 4: return QACoreManager::ePidCut::kProton; break;
-      case 5: return QACoreManager::ePidCut::kAntiProton; break;
-      default: return QACoreManager::ePidCut::kUnkown;
+      case 0: return QAManager::ePidCut::kPionPlus; break;
+      case 1: return QAManager::ePidCut::kPionMinus; break;
+      case 2: return QAManager::ePidCut::kKaonPlus; break;
+      case 3: return QAManager::ePidCut::kKaonMinus; break;
+      case 4: return QAManager::ePidCut::kProton; break;
+      case 5: return QAManager::ePidCut::kAntiProton; break;
+      default: return QAManager::ePidCut::kUnkown;
     }
   }
 }  // namespace Hal

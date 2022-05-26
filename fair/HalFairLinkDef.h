@@ -12,6 +12,6 @@
 #pragma link C++ namespace Hal::Fair;
 #pragma link C++ class Hal::Fair::Field + ;
 #pragma link C++ class Hal::Fair::RootManager + ;
-#pragma link C++ class Hal::Fair::QACoreManager + ;
+#pragma link C++ class Hal::Fair::QAManagerBasic + ;
 #pragma link C++ class Hal::Fair::TaskManager + ;
 #endif

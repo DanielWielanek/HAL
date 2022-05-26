@@ -24,7 +24,7 @@ set(SRCS
 
 Field.cxx
 RootManager.cxx
-QACoreManager.cxx
+QAManagerBasic.cxx
 TaskManager.cxx
 
 )

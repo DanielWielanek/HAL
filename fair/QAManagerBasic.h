@@ -6,22 +6,22 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
-#ifndef HAL_FAIR_QACOREMANAGER_H_
-#define HAL_FAIR_QACOREMANAGER_H_
+#ifndef HAL_FAIR_QAMANAGERBASIC_H_
+#define HAL_FAIR_QAMANAGERBASIC_H_
 
 #include <TString.h>
 
 class FairRunAna;
 namespace Hal {
   namespace Fair {
-    class QACoreManager {
+    class QAManagerBasic {
     public:
-      QACoreManager();
+      QAManagerBasic();
       virtual FairRunAna* GetRunAna(TString outFile, TString simFile, TString recoFile = "", TString parFile = "");
-      virtual ~QACoreManager();
-      ClassDef(QACoreManager, 1)
+      virtual ~QAManagerBasic();
+      ClassDef(QAManagerBasic, 1)
     };
   }  // namespace Fair
 } /* namespace Hal */
 
-#endif /* HAL_FAIR_QACOREMANAGER_H_ */
+#endif /* HAL_FAIR_QAMANAGERBASIC_H_ */

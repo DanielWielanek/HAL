@@ -7,7 +7,7 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 
-#include "QACoreManager.h"
+#include "QAManagerBasic.h"
 
 #include <FairFileSource.h>
 #include <FairParRootFileIo.h>
@@ -17,14 +17,15 @@
 
 namespace Hal {
   namespace Fair {
-    QACoreManager::QACoreManager() {
+    QAManagerBasic::QAManagerBasic() {
       // TODO Auto-generated constructor stub
     }
 
-    QACoreManager::~QACoreManager() {
+    QAManagerBasic::~QAManagerBasic() {
       // TODO Auto-generated destructor stub
     }
-    FairRunAna* QACoreManager::GetRunAna(TString outFile, TString simFile, TString recoFile, TString parFile) {
+
+    FairRunAna* QAManagerBasic::GetRunAna(TString outFile, TString simFile, TString recoFile, TString parFile) {
       if (simFile.Length() == 0) {
         simFile  = recoFile;
         recoFile = "";

@@ -17,3 +17,7 @@ create build directory inside of HAL
 cmake -DCMAKE_INSTALL_PREFIX=&lt;place to install&gt; -DCMAKE_CXX_STANDARD=17 ..
 </pre></code>
 If there will be error Boost not found set path to boost by adding to cmake -DBOOST_ROOT=&lt;path to boost&gt; -DBOOST_DIR=&lt;path to boost headers&gt;
+## additional parameters for cmake
+BOOST_ROOT - set path to boost package
+CMAKE_CXX_STANDARD - set cmake standard (recommended to 17)
+JSROOT_DIR - path to custom JavaScript Root

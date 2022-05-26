@@ -321,30 +321,20 @@ namespace Hal::Std {
   }
 
   TString GetJsRoot() {
-    TString hal_var    = gSystem->Getenv("HAL");
-    TString vmcworkdir = gSystem->Getenv("VMCWORKDIR");
-    TString jsrootdir  = gSystem->Getenv("JSROOT");
+    TString jsrootdir   = gSystem->Getenv("JSROOT");
+    TString rootdir     = gSystem->Getenv("ROOTSYS");
+    TString rootdirFair = rootdir + "/share/root/js/scripts/JSRootCore.js";
+    rootdir             = rootdir + "js/scripts/JSRootCore.js";
     std::vector<TString> location;
+    location.push_back(rootdirFair);
+    location.push_back(rootdir);
     TString mainVal = "";
-    if (jsrootdir.Length() > 0)
-      return jsrootdir;
-    else if (hal_var.Length() > 0) {
-      location.push_back("%s/share/jsroot/readme.md");
-      location.push_back("%s/jsroot/readme.md");
-      mainVal = hal_var;
-    } else {
-      location.push_back("%s/../jsroot/readme.md");
-      location.push_back("%s/external/Hal/jsroot/readme.md");
-      location.push_back("%s/external/jsroot/readme.md");
-      location.push_back("%s/build/jsroot/readme.md");
-      mainVal = vmcworkdir;
-    }
+    if (jsrootdir.Length() > 0) { return jsrootdir; }
 
-    for (unsigned int i = 0; i < location.size(); i++) {
-      TString make_install = Form(location[i].Data(), mainVal.Data());
-      if (FileExists(make_install)) {
-        make_install.ReplaceAll("readme.md", "");
-        return make_install;
+    for (auto place : location) {
+      if (FileExists(place)) {
+        place.ReplaceAll("scripts/JSRootCore.js", "");
+        return place;
       }
     }
     Hal::Cout::PrintInfo("JSROOT not found!", Hal::EInfo::kError);

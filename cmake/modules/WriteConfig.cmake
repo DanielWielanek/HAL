@@ -5,6 +5,9 @@ MACRO(GenerateConfig HAL HAL_PATH )
 	file(APPEND ${HAL} "export HAL=${HAL_PATH}\n")
 	file(APPEND ${HAL} "export PATH=\$PATH:\$HAL/bin\n")
 	file(APPEND ${HAL} "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HAL_PATH}/lib\n")
+	if(DEFINED JSROOT_DIR)
+	       file(APPEND ${HAL} "export JSROOT=${JSROOT_DIR}")
+	endif()
 ENDMACRO(GenerateConfig)
 
 

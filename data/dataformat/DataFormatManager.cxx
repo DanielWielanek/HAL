@@ -93,12 +93,17 @@ namespace Hal {
     DataManager* datamanager = DataManager::Instance();
     TObject* obj             = nullptr;
     Int_t leaf               = 0;
+    obj                      = datamanager->GetObject("HalEvent");
     TString name             = Form("HalEvent_%i", leaf);
+    TObject* obj2            = nullptr;
+    TObject* obj3            = nullptr;
     do {
       name = Form("HalEvent_%i", ++leaf);
-      obj  = datamanager->GetObject(name);
-    } while (datamanager->GetObject(name) == nullptr);
-    if (obj == nullptr) { obj = datamanager->GetObject("HalEvent"); }
+      obj2 = datamanager->GetObject(name);
+      name = Form("HalEvent_%i", leaf + 1);
+      obj3 = datamanager->GetObject(name);
+    } while (obj3 != nullptr);
+    if (obj2 != nullptr) { obj = obj2; }
 
     if (obj) {
       Event* event = dynamic_cast<Event*>(datamanager->GetObject("HalEvent"));

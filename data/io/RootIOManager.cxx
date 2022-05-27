@@ -25,6 +25,7 @@ namespace Hal {
   RootIOManager::RootIOManager(TString name) : fOutTreeName("HalTree"), fOutFile(nullptr), fOutTree(nullptr) {
     fInFileName.push_back(name);
   }
+
   Bool_t RootIOManager::Init() {
     for (unsigned int iFile = 0; iFile < fInFileName.size(); iFile++) {
       fInFile.push_back(new TFile(fInFileName[iFile]));
@@ -59,6 +60,7 @@ namespace Hal {
       if (file) delete file;
     }
   }
+
   TObject* RootIOManager::GetObject(const char* BrName) {
     TObject* object = nullptr;
     for (auto branch : fInBranches) {

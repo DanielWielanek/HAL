@@ -126,7 +126,7 @@ namespace Hal {
      * class with MagicTrack  your constructor should look like
      * MagicEvent():Event("MagicTrack"){... .
      */
-    Event(TString track_class, TString v0_class = "V0Track");
+    Event(TString track_class, TString v0_class = "Hal::V0Track");
 
   public:
     /**

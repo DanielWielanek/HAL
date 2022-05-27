@@ -22,7 +22,7 @@ namespace Hal {
     Double_t fB;
     virtual void ShallowCopyEvent(Event* event);
     virtual void ShallowCopyTracks(Event* event);
-    McEvent(TString track_classname, TString v0_class = "V0Track");
+    McEvent(TString track_classname, TString v0_class = "Hal::V0Track");
 
   public:
     McEvent();

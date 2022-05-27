@@ -28,7 +28,7 @@ namespace Hal {
 
   SmearedEvent::SmearedEvent(Event* event) :
     ComplexEvent("SmearedTrack", event->GetNewEvent(), new VirtualEvent()), fSmearing(kFALSE) {
-    if (event->InheritsFrom("Hal::MCEvent")) {
+    if (event->InheritsFrom("Hal::McEvent")) {
       fRealMC = kTRUE;
     } else {
       fRealMC = kFALSE;

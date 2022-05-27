@@ -23,7 +23,7 @@ namespace Hal {
   Int_t* ComplexEvent::fgSumMap        = nullptr;
   Int_t ComplexEvent::fgIndexArraySize = 0;
   Int_t ComplexEvent::fgSumMapSize     = 0;
-  ComplexEvent::ComplexEvent(Event* real, Event* img) : ComplexEvent("ComplexTrack", real, img) {
+  ComplexEvent::ComplexEvent(Event* real, Event* img) : ComplexEvent("Hal::ComplexTrack", real, img) {
     fSource = fRealEvent->GetSource();
   }
 

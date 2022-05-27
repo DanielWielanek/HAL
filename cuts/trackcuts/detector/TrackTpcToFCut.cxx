@@ -105,9 +105,9 @@ namespace Hal {
   TrackTpcToFCut::TrackTpcToFCut(const TrackTpcToFCut& other) :
     TrackExpCut(other), fThreshold(other.fThreshold), fTofOpt(other.fTofOpt) {
     TString tof_class = other.fToF->ClassName();
-    if (tof_class == "TrackToFMass2Cut") {
+    if (tof_class == "Hal::TrackToFMass2Cut") {
       fToF = new TrackToFMass2Cut(*other.fToF);
-    } else if (tof_class == "TrackTofMass2CutNoZeros") {
+    } else if (tof_class == "Hal::TrackTofMass2CutNoZeros") {
       fToF = new TrackTofMass2CutNoZeros(*other.fToF);
     }
     fTpc = new TrackTpcCut(*other.fTpc);

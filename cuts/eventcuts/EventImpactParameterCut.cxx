@@ -24,7 +24,7 @@ namespace Hal {
   Bool_t EventImpactParameterCut::Init(Int_t task_id) {
     if (EventCut::Init() == kFALSE) return kFALSE;
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id);
-    if (ev->InheritsFrom("Hal::MCEvent")) {
+    if (ev->InheritsFrom("Hal::McEvent")) {
       return kTRUE;
     } else {
       return kFALSE;
@@ -47,7 +47,7 @@ namespace Hal {
   Bool_t EventImpactCentralityCut::Init(Int_t task_id) {
     Bool_t stat     = EventCut::Init(task_id);
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id);
-    if (!ev->InheritsFrom("Hal::MCEvent")) { return kFALSE; }
+    if (!ev->InheritsFrom("Hal::McEvent")) { return kFALSE; }
     if (fBMax < 0) {
       Cout::PrintInfo("Max impact  parameter in EventImpactCentralityCut is "
                       "<0 setting to 0",

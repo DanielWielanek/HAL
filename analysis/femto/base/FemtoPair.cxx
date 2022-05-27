@@ -98,7 +98,7 @@ namespace Hal {
     const Event* event      = mngr->GetFormat(task_id);
     Track* tr               = event->GetNewTrack();
     Bool_t use_mc           = kFALSE;
-    if (tr->InheritsFrom("Hal::MCTrack")) { use_mc = kTRUE; }
+    if (tr->InheritsFrom("Hal::McTrack")) { use_mc = kTRUE; }
     Bool_t complex = kFALSE;
     if (tr->InheritsFrom("Hal::ComplexTrack")) { complex = kTRUE; }
     delete tr;

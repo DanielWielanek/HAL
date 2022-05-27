@@ -40,7 +40,7 @@ namespace Hal {
     fTotalV0s(0) {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
-    fV0sHiddenInfo = new TClonesArray("V0Track");
+    fV0sHiddenInfo = new TClonesArray("Hal::V0Track");
   }
 
   Event::Event(TString track_class, TString v0_class) :

@@ -18,7 +18,7 @@ namespace Hal {
 
   void McEvent::ShallowCopyEvent(Event* event) {
     Event::ShallowCopyEvent(event);
-    if (event->InheritsFrom("Hal::MCEvent")) fB = ((McEvent*) event)->GetImpactParameter();
+    if (event->InheritsFrom("Hal::McEvent")) fB = ((McEvent*) event)->GetImpactParameter();
   }
 
   McEvent::~McEvent() {}

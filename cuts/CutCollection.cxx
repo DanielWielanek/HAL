@@ -307,13 +307,13 @@ namespace Hal {
     }
     for (int i = 0; i < this->fCutMonitors->GetEntriesFast(); i++) {
       TString orig = fCutMonitors->UncheckedAt(i)->ClassName();
-      if (orig == "CutMonitorX") {
+      if (orig == "Hal::CutMonitorX") {
         CutMonitorX* cutmon = new CutMonitorX(*(CutMonitorX*) fCutMonitors->UncheckedAt(i));
         clone->AddCutMonitor(cutmon);
-      } else if (orig == "CutMonitorXY") {
+      } else if (orig == "Hal::CutMonitorXY") {
         CutMonitorXY* cutmon = new CutMonitorXY(*(CutMonitorXY*) fCutMonitors->UncheckedAt(i));
         clone->AddCutMonitor(cutmon);
-      } else if (orig == "CutMonitorXYZ") {
+      } else if (orig == "Hal::CutMonitorXYZ") {
         CutMonitorXYZ* cutmon = new CutMonitorXYZ(*(CutMonitorXYZ*) fCutMonitors->UncheckedAt(i));
         clone->AddCutMonitor(cutmon);
       } else {
@@ -342,7 +342,7 @@ namespace Hal {
         continue;
       }
       TString monName = cutmon->ClassName();
-      if (monName == "CutMonitorX") {
+      if (monName == "Hal::CutMonitorX") {
         TString cut = cutmon->GetCutName(0);
         Cut* newCut = this->FindCut(cut);
         if (newCut) {
@@ -356,10 +356,10 @@ namespace Hal {
             cutmon->AddForcedCut(newCut, 0);
           }
         } else {
-          Cout::PrintInfo(Form("CutMonitorX [%s] not found!", cut.Data()), EInfo::kError);
+          Cout::PrintInfo(Form("Hal::CutMonitorX [%s] not found!", cut.Data()), EInfo::kError);
           fCutMonitors->RemoveAt(i);
         }
-      } else if (monName == "CutMonitorXY") {
+      } else if (monName == "Hal::CutMonitorXY") {
         TString cut1_name = cutmon->GetCutName(0);
         TString cut2_name = cutmon->GetCutName(1);
         TObjArray* Ncut1  = LocateCuts(cut1_name);
@@ -402,7 +402,7 @@ namespace Hal {
         Ncut2->SetOwner(kFALSE);
         delete Ncut1;
         delete Ncut2;
-      } else if (monName == "CutMonitorXYZ") {
+      } else if (monName == "Hal::CutMonitorXYZ") {
         TString cut1_name = cutmon->GetCutName(0);
         TString cut2_name = cutmon->GetCutName(1);
         TString cut3_name = cutmon->GetCutName(2);
@@ -411,7 +411,7 @@ namespace Hal {
         TObjArray* Ncut3  = LocateCuts(cut3_name);
         if (Ncut1->GetEntries() == 0 || Ncut2->GetEntries() == 0 || Ncut3->GetEntries() == 0) {
           Cout::PrintInfo(
-            Form(" Problem with CutMonitorXYZ [%s] vs [%s] vs [%s]", cut1_name.Data(), cut2_name.Data(), cut3_name.Data()),
+            Form(" Problem with Hal::CutMonitorXYZ [%s] vs [%s] vs [%s]", cut1_name.Data(), cut2_name.Data(), cut3_name.Data()),
             EInfo::kLowWarning);
           if (Ncut1->GetEntries() == 0) Cout::PrintInfo(Form("Cut %s not found", cut1_name.Data()), EInfo::kLowWarning);
           if (Ncut2->GetEntries() == 0) Cout::PrintInfo(Form("Cut %s not found", cut2_name.Data()), EInfo::kLowWarning);
@@ -433,7 +433,7 @@ namespace Hal {
           ;
           switch (own_cuts) {
             case 0: {
-              Cout::PrintInfo("CutMonitorXYZ has no cuts compatible with "
+              Cout::PrintInfo("Hal::CutMonitorXYZ has no cuts compatible with "
                               "container that own it",
                               EInfo::kLowWarning);
               fCutMonitors->RemoveAt(i);
@@ -470,7 +470,7 @@ namespace Hal {
               break;
             default: {
               if (cut1->GetCutSize() <= cutmon->GetCutParameter(0)) {
-                Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s] vs [%s] vs "
+                Cout::PrintInfo(Form("Problem with initalization Hal::CutMonitorXY [%s] vs [%s] vs "
                                      "[%s]",
                                      cut1_name.Data(),
                                      cut2_name.Data(),
@@ -481,7 +481,7 @@ namespace Hal {
                   EInfo::kLowWarning);
                 fCutMonitors->RemoveAt(i);
               } else if (cut2->GetCutSize() <= cutmon->GetCutParameter(1)) {
-                Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s] vs [%s] vs "
+                Cout::PrintInfo(Form("Problem with initalization Hal::CutMonitorXY [%s] vs [%s] vs "
                                      "[%s]",
                                      cut1_name.Data(),
                                      cut2_name.Data(),
@@ -492,7 +492,7 @@ namespace Hal {
                   EInfo::kLowWarning);
                 fCutMonitors->RemoveAt(i);
               } else if (cut3->GetCutSize() <= cutmon->GetCutParameter(2)) {
-                Cout::PrintInfo(Form("Problem with initalization CutMonitorXY [%s] vs [%s] vs "
+                Cout::PrintInfo(Form("Problem with initalization Hal::CutMonitorXY [%s] vs [%s] vs "
                                      "[%s]",
                                      cut1_name.Data(),
                                      cut2_name.Data(),

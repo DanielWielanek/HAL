@@ -48,7 +48,7 @@ namespace Hal {
         name = Form("HalEvent_%i", ++leaf);
       }
     }
-    manager->Register(name, name, fEvent, kFALSE);
+    manager->Register(name, "HalEvents", fEvent, kFALSE);
     Cout::PrintInfo(Form("Register branch from reader called %s", name.Data()), EInfo::kInfo);
     return Task::EInitFlag::kSUCCESS;
   }

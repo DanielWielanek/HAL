@@ -38,7 +38,7 @@ set(SRCS
 
 Set(HEADERS )
 Set(LINKDEF HalQALinkDef.h)
-Set(LIBRARY_NAME QA)
+Set(LIBRARY_NAME HalQA)
 Set(DEPENDENCIES EG MathCore Physics Core HalAna )
 
 GENERATE_LIBRARY()

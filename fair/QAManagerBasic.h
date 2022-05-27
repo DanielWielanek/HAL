@@ -9,12 +9,13 @@
 #ifndef HAL_FAIR_QAMANAGERBASIC_H_
 #define HAL_FAIR_QAMANAGERBASIC_H_
 
+#include "QAManager.h"
 #include <TString.h>
 
 class FairRunAna;
 namespace Hal {
   namespace Fair {
-    class QAManagerBasic {
+    class QAManagerBasic : public ::Hal::QAManager {
     public:
       QAManagerBasic();
       virtual FairRunAna* GetRunAna(TString outFile, TString simFile, TString recoFile = "", TString parFile = "");

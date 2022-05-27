@@ -1,6 +1,7 @@
 Set(INCLUDE_DIRECTORIES
 ${HAL_FEATURES}
 ${HAL_DATA}
+${HAL_CORE}/analysis/qa
 ${HAL_CORE}/fair
 )
 
@@ -32,7 +33,7 @@ TaskManager.cxx
 Set(HEADERS )
 Set(LINKDEF HalFairLinkDef.h)
 Set(LIBRARY_NAME HalFair)
-Set(DEPENDENCIES HalData Base)
+Set(DEPENDENCIES HalQA Base)
 
 GENERATE_LIBRARY()
 

@@ -35,11 +35,11 @@
 #include "Cout.h"
 #include "FemtoPair.h"
 #include "FemtoYlm.h"
-#include "Std.h"
 #include "HtmlCore.h"
 #include "HtmlFile.h"
 #include "HtmlObject.h"
 #include "HtmlTable.h"
+#include "Std.h"
 
 //#define FULL_CALC
 //#define _FINISH_DEBUG_
@@ -1895,7 +1895,7 @@ namespace Hal {
     gSystem->MakeDirectory(Form("%s/divided_%i", dir.Data(), counter));
     TString filename = Form("%s/divided_%i/divided.html", dir.Data(), counter);
     HtmlFile file(filename, kFALSE);
-    HtmlTable table("", "nicatable", "");
+    HtmlTable table("", "haltable", "");
     HtmlRow row1("", "dark_blue", "");
     row1.AddContent(HtmlCell("label"));
     row1.AddContent(HtmlCellCol("value", 2));
@@ -1921,7 +1921,7 @@ namespace Hal {
       table.AddContent(row4);
     }
     file.AddContent(table);
-    HtmlTable table2("", "nicatable", "");
+    HtmlTable table2("", "haltable", "");
     HtmlRow row5("", "dark_blue", "");
     row5.AddContent(HtmlCell("No."));
     row5.AddContent(HtmlCell("Name/Value"));

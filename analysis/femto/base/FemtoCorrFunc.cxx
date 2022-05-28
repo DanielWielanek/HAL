@@ -10,9 +10,9 @@
 #include "FemtoCorrFunc.h"
 
 #include "Cout.h"
-#include "Std.h"
 #include "HtmlCore.h"
 #include "HtmlTable.h"
+#include "Std.h"
 
 #include <TBrowser.h>
 #include <TNamed.h>
@@ -90,7 +90,7 @@ namespace Hal {
     gSystem->MakeDirectory(path);
     TString filename = Form("%s/corrfunc.html", path.Data());
     HtmlFile file(filename, kFALSE);
-    HtmlTable table("", "nicatable", "");
+    HtmlTable table("", "haltable", "");
     HtmlRow row("", "dark_blue", "");
     row.AddContent(HtmlCellCol(fLabel, 2));
     row.AddContent(HtmlCell("value"));
@@ -150,7 +150,7 @@ namespace Hal {
     gSystem->MakeDirectory(path);
     TString filename = Form("%s/corrfunc.html", path.Data());
     HtmlFile file(filename, kFALSE);
-    HtmlTable table("", "nicatable", "");
+    HtmlTable table("", "haltable", "");
     HtmlRow row1;
     row1.AddContent(HtmlCell(Form("%s/%s", fLabelX.Data(), fLabelY.Data())));
 

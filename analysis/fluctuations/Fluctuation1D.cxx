@@ -147,7 +147,7 @@ namespace Hal {
     gSystem->MakeDirectory(path);
     TString filename = Form("%s/fluct.html", path.Data());
     HtmlFile file(filename, kFALSE);
-    HtmlTable table("", "nicatable", "");
+    HtmlTable table("", "haltable", "");
     HtmlRow row1("", "dark_blue", "");
     row1.AddContent(HtmlCell("label"));
     row1.AddContent(HtmlCellCol("value", 2));
@@ -161,7 +161,7 @@ namespace Hal {
     row2.AddContent(HtmlCellCol(Form("%i", fNSample), 2));
     table.AddContent(row3);
     file.AddContent(table);
-    HtmlTable table2("", "nicatable", "");
+    HtmlTable table2("", "haltable", "");
     HtmlRow row4("", "dark_blue", "");
     row4.AddContent(HtmlCell("No."));
     row4.AddContent(HtmlCell("Name/Value"));

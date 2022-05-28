@@ -115,7 +115,7 @@ namespace Hal {
     gSystem->MakeDirectory(dir);
     TString filename = Form("%s/corrfunc.html", path.Data());
     HtmlFile file(filename, kFALSE);
-    HtmlTable table("", "nicatable", "");
+    HtmlTable table("", "haltable", "");
     HtmlRow row;
     row.AddContent(HtmlCell(Form("%s/%s", fLabelX.Data(), fLabelY.Data())));
     for (int i = 0; i < fRangeY.GetSize() - 1; i++) {

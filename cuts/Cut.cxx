@@ -210,19 +210,19 @@ namespace Hal {
     TString option = opt;
     if (option.EqualTo("re")) {
       if (InheritsFrom("Hal::EventCut")) {
-        return Form("EventRealCut(%s)", ClassName());
+        return Form("Hal::EventRealCut(%s)", ClassName());
       } else if (InheritsFrom("Hal::TrackCut")) {
-        return Form("TrackRealCut(%s)", ClassName());
+        return Form("Hal::TrackRealCut(%s)", ClassName());
       } else if (InheritsFrom("Hal::TwoTrackCut")) {
-        return Form("TwoTrackRealCut(%s)", ClassName());
+        return Form("Hal::TwoTrackRealCut(%s)", ClassName());
       }
     } else if (option.EqualTo("im")) {
       if (InheritsFrom("Hal::EventCut")) {
-        return Form("EventImaginaryCut(%s)", ClassName());
+        return Form("Hal::EventImaginaryCut(%s)", ClassName());
       } else if (InheritsFrom("Hal::TrackCut")) {
-        return Form("TrackImaginaryCut(%s)", ClassName());
+        return Form("Hal::TrackImaginaryCut(%s)", ClassName());
       } else if (InheritsFrom("Hal::TwoTrackCut")) {
-        return Form("TwoTrackImaginaryCut(%s)", ClassName());
+        return Form("Hal::TwoTrackImaginaryCut(%s)", ClassName());
       }
     }
     return ClassName();

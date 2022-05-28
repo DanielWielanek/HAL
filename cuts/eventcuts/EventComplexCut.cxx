@@ -106,7 +106,7 @@ namespace Hal {
   }
 
   TString EventComplexCut::CutName(Option_t* /*opt*/) const {
-    return Form("EventComplexCut(%s,%s)", fRealCut->CutName().Data(), fImgCut->CutName().Data());
+    return Form("Hal::EventComplexCut(%s,%s)", fRealCut->CutName().Data(), fImgCut->CutName().Data());
   }
 
   EventComplexCut::~EventComplexCut() {

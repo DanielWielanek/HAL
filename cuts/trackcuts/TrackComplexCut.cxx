@@ -213,7 +213,7 @@ namespace Hal {
     return pack;
   }
 
-  TString TrackRealCut::CutName(Option_t* /*opt*/) const { return Form("TrackRealCut(%s)", fRealCut->CutName().Data()); }
+  TString TrackRealCut::CutName(Option_t* /*opt*/) const { return Form("Hal::TrackRealCut(%s)", fRealCut->CutName().Data()); }
 
   TrackRealCut::~TrackRealCut() {
     if (fRealCut) delete fRealCut;

@@ -907,15 +907,15 @@ namespace Hal {
   void CutCollection::MarkAsDummy() { fDummy = kTRUE; }
 
   ECutUpdate CutCollection::GetUpdateFromName(TString cutname) const {
-    if (cutname.BeginsWith("EventComplexCut")) return ECutUpdate::kEvent;
-    if (cutname.BeginsWith("TrackComplexCut")) return ECutUpdate::kTrack;
-    if (cutname.BeginsWith("TwoTrackComplexCut")) return ECutUpdate::kTwoTrack;
-    if (cutname.BeginsWith("EventRealCut")) return ECutUpdate::kEvent;
-    if (cutname.BeginsWith("TrackRealCut")) return ECutUpdate::kTrack;
-    if (cutname.BeginsWith("TwoTrackRealCut")) return ECutUpdate::kTwoTrack;
-    if (cutname.BeginsWith("EventImaginaryCut")) return ECutUpdate::kEvent;
-    if (cutname.BeginsWith("TrackImaginaryCut")) return ECutUpdate::kTrack;
-    if (cutname.BeginsWith("TwoTrackImaginaryCut")) return ECutUpdate::kTwoTrack;
+    if (cutname.BeginsWith("Hal::EventComplexCut")) return ECutUpdate::kEvent;
+    if (cutname.BeginsWith("Hal::TrackComplexCut")) return ECutUpdate::kTrack;
+    if (cutname.BeginsWith("Hal::TwoTrackComplexCut")) return ECutUpdate::kTwoTrack;
+    if (cutname.BeginsWith("Hal::EventRealCut")) return ECutUpdate::kEvent;
+    if (cutname.BeginsWith("Hal::TrackRealCut")) return ECutUpdate::kTrack;
+    if (cutname.BeginsWith("Hal::TwoTrackRealCut")) return ECutUpdate::kTwoTrack;
+    if (cutname.BeginsWith("Hal::EventImaginaryCut")) return ECutUpdate::kEvent;
+    if (cutname.BeginsWith("Hal::TrackImaginaryCut")) return ECutUpdate::kTrack;
+    if (cutname.BeginsWith("Hal::TwoTrackImaginaryCut")) return ECutUpdate::kTwoTrack;
     TClass* cl = TClass::GetClass(cutname, kFALSE, kTRUE);
     if (cl->InheritsFrom("Hal::EventCut")) {
       return ECutUpdate::kEvent;

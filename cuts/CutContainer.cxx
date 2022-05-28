@@ -193,9 +193,7 @@ namespace Hal {
   }
 
   void CutContainer::LinkCollections(ECutUpdate opt_low, Int_t in_low, ECutUpdate opt_high, Int_t in_high) {
-    if (opt_high == opt_low || opt_low > opt_high) {
-      Cout::PrintInfo("Wrong ECut Update in Link Collections", EInfo::kError);
-    }
+    if (opt_high == opt_low || opt_low > opt_high) { Cout::PrintInfo("Wrong ECut Update in Link Collections", EInfo::kError); }
     if (static_cast<Int_t>(opt_high) >= fSize) {
       Cout::PrintInfo("To big opt_high, link will be ingored", EInfo::kError);
     } else if (static_cast<Int_t>(opt_low) >= fSize) {
@@ -275,8 +273,7 @@ namespace Hal {
           CutMonitor* clone = cutmon->MakeCopy();
           Int_t collection  = cutmon->GetCollectionID();
           if ((CutCollection*) (fCutContainers[k]->UncheckedAt(collection)) == NULL) {
-            Cout::PrintInfo(Form(" Collection %i for cut monitor %s not found", collection, clone->ClassName()),
-                            EInfo::kError);
+            Cout::PrintInfo(Form(" Collection %i for cut monitor %s not found", collection, clone->ClassName()), EInfo::kError);
           } else {
             ((CutCollection*) (fCutContainers[k]->UncheckedAt(collection)))->AddCutMonitor(clone);
           }
@@ -547,21 +544,21 @@ namespace Hal {
     TString pattern  = "";
     if (clas->InheritsFrom("Hal::EventCut")) {
       if (flag == -1) {  // im
-        pattern = "EventImaginaryCut";
+        pattern = "Hal::EventImaginaryCut";
       } else {  // re
-        pattern = "EventRealCut";
+        pattern = "Hal::EventRealCut";
       }
     } else if (clas->InheritsFrom("Hal::TrackCut")) {
       if (flag == -1) {  // im
-        pattern = "TrackImaginaryCut";
+        pattern = "Hal::TrackImaginaryCut";
       } else {  // re
-        pattern = "TrackRealCut";
+        pattern = "Hal::TrackRealCut";
       }
     } else {
       if (flag == -1) {  // im
-        pattern = "TwoTrackImaginaryCut";
+        pattern = "Hal::TwoTrackImaginaryCut";
       } else {  // re
-        pattern = "TwoTrackRealCut";
+        pattern = "Hal::TwoTrackRealCut";
       }
     }
     mon->fCutNames[axis] = Form("%s(%s)", pattern.Data(), mon->GetCutName(axis).Data());

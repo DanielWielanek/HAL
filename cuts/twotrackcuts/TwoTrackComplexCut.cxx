@@ -214,7 +214,9 @@ namespace Hal {
     return pack;
   }
 
-  TString TwoTrackRealCut::CutName(Option_t* /*opt*/) const { return Form("TwoTrackRealCut(%s)", fRealCut->CutName().Data()); }
+  TString TwoTrackRealCut::CutName(Option_t* /*opt*/) const {
+    return Form("Hal::TwoTrackRealCut(%s)", fRealCut->CutName().Data());
+  }
 
   TwoTrackRealCut::~TwoTrackRealCut() {
     if (fRealCut) delete fRealCut;

@@ -196,6 +196,12 @@ namespace Hal {
       fCurrentEvent = dataManager->GetEventFromTree(fFormatID);
     } else {
       fCurrentEvent = (Event*) DataManager::Instance()->GetObject(dataManager->GetFormat(fFormatID)->ClassName());
+      if (fCurrentEvent == nullptr) {
+        Cout::PrintInfo(
+          Form("Format %s not found, trying to use HalEvent branch", dataManager->GetFormat(fFormatID)->ClassName()),
+          Hal::EInfo::kWarning);
+        fCurrentEvent = (Event*) DataManager::Instance()->GetObject("HalEvent");
+      }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];
     fSumMap       = new Int_t[fTrackMapSize];

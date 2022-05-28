@@ -40,16 +40,8 @@ namespace Hal {
     fEvent->CreateSource();
     fEvent->LinkWithTree();
     DataManager* manager = DataManager::Instance();
-    TString name         = "HalEvent";
-    if (manager->GetObject("HalEvent") != nullptr) {
-      Int_t leaf = 1;
-      name       = Form("HalEvent_%i", leaf);
-      while (manager->GetObject(name) != nullptr) {
-        name = Form("HalEvent_%i", ++leaf);
-      }
-    }
-    manager->Register(name, "HalEvents", fEvent, kFALSE);
-    Cout::PrintInfo(Form("Register branch from reader called %s", name.Data()), EInfo::kInfo);
+    manager->Register(fEvent->ClassName(), "HalEvents", fEvent, kFALSE);
+    Cout::PrintInfo(Form("Register branch from reader called %s", fEvent->ClassName()), EInfo::kInfo);
     return Task::EInitFlag::kSUCCESS;
   }
 

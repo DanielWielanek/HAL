@@ -13,7 +13,9 @@
 #include "DataManager.h"
 #include "Event.h"
 
+#include <TList.h>
 #include <TObjArray.h>
+#include <TObjString.h>
 #include <TString.h>
 
 namespace Hal {
@@ -91,27 +93,15 @@ namespace Hal {
 
   Event* DataFormatManager::FindReaderFormat() {
     DataManager* datamanager = DataManager::Instance();
-    TObject* obj             = nullptr;
-    Int_t leaf               = 0;
-    obj                      = datamanager->GetObject("HalEvent");
-    TString name             = Form("HalEvent_%i", leaf);
-    TObject* obj2            = nullptr;
-    TObject* obj3            = nullptr;
-    do {
-      name = Form("HalEvent_%i", ++leaf);
-      obj2 = datamanager->GetObject(name);
-      name = Form("HalEvent_%i", leaf + 1);
-      obj3 = datamanager->GetObject(name);
-    } while (obj3 != nullptr);
-    if (obj2 != nullptr) { obj = obj2; }
-
-    if (obj) {
-      Event* event = dynamic_cast<Event*>(datamanager->GetObject("HalEvent"));
-      if (event) {
-        if (event->ExistInTree()) return event;
-      }
+    Event* event             = nullptr;
+    TList* branchList        = datamanager->GetBranchNameList();
+    for (int i = 0; i < branchList->GetEntries(); i++) {
+      TObjString* name = (TObjString*) branchList->At(i);
+      TObject* temp    = datamanager->GetObject(name->GetString());
+      if (dynamic_cast<Hal::Event*>(temp)) { event = (Hal::Event*) temp; }
     }
-    return nullptr;
+    if (event == nullptr) { event = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent")); }
+    return event;
   }
 
   void DataFormatManager::Reset() {

@@ -25,7 +25,7 @@ table a:active, table a:hover {
 	white-space: wrap;
 }
 
-.nicatable {
+.haltable {
 	margin-left: auto;
 	margin-right: auto;
 	table-layout: auto;
@@ -82,14 +82,14 @@ tr:last-child td {
 	border-bottom: 0;
 }
 
-table.maintable table.nicatable tr:hover td {
+table.maintable table.haltable tr:hover td {
 	background: #f2f2f2;
 	background: -webkit-gradient(linear, left top, left bottom, from(#00000f2),
 		to(#f0f0f0));
 	background: -moz-linear-gradient(top, #0000f2, #f0f0f0);
 }
 
-table.nicatable tr:hover td {
+table.haltable tr:hover td {
 	background: #f2f2f2;
 	background: -webkit-gradient(linear, left top, left bottom, from(#00000f2),
 		to(#f0f0f0));

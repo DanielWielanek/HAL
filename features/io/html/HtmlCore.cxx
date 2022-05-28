@@ -264,10 +264,10 @@ namespace Hal {
     TString className = obj->ClassName();
     if (className.EqualTo("TObjString")) { return static_cast<TObjString*>(obj)->GetString(); }
     if (className.EqualTo("TVector2")) { return GetLinkVector(static_cast<TVector2*>(obj)); }
-    if (className.EqualTo("HalPackage")) {
+    if (className.EqualTo("Hal::Package")) {
       Package2HTML* pack = new Package2HTML(static_cast<Package*>(obj), Form("%s/pack_%i", dir.Data(), no), kFALSE);
       delete pack;
-      return HtmlCore::GetUrl(Form("pack_%i/index.html", no), "HalPackage");
+      return HtmlCore::GetUrl(Form("pack_%i/index.html", no), "Hal::Package");
     }
     if (obj->InheritsFrom("Hal::Object")) { return static_cast<Object*>(obj)->HTMLExtract(no, dir); }
     if (obj->InheritsFrom("TList")) { return GetLinkList(static_cast<TList*>(obj), no, dir); };
@@ -368,7 +368,7 @@ namespace Hal {
       table.AddContent(HtmlCell(object->ClassName()));
 
       table.AddContent(HtmlCell(addToUrl(list_dir, HTMLExtract(object, i, path))));
-      if (name == "HalPackage") {
+      if (name == "Hal::Package") {
         oryginal_class = ((Package*) object)->GetName();
         oryginal_class = Form("%s </br> [%s]", object->ClassName(), oryginal_class.Data());
         table.AddContent(HtmlCell(oryginal_class));

@@ -82,6 +82,7 @@ namespace Hal {
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetInFile()->GetName(), 'f'));
     TList* list = new TList();
+    list->SetName("Tasks");
     for (auto task : fTasks) {
       TString name  = task->ClassName();
       TString label = "Active";

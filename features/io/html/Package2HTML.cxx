@@ -100,11 +100,6 @@ namespace Hal {
       CreatePackageList(dummyCell, pack, eTableStyle::kMetaData, temp_dir, 2, "drawmerged");
       fHTML->AddStringContent(dummyCell.GetContent());
     }
-    if (fSoftVer <= 201612) {
-      Cout::PrintInfo("This file version might be not compatible wtih current version, use "
-                      "macro/path/fix_files.C to fix it",
-                      Hal::EInfo::kWarning);
-    }
     TDirectory* tdir = (TDirectory*) file->Get("HalPhysics");
     //---------------------
 
@@ -468,10 +463,10 @@ namespace Hal {
         row.AddContent(first_cell);
         row.AddContent(HtmlCell(object->ClassName()));
         row.AddContent(HtmlCell(oryginal_class));
-        row.AddContent(HtmlCell(AddToUrl(inject, HtmlCore::HTMLExtract(object, i, path))));
+        row.AddContent(HtmlCell(AddToUrl(inject, HtmlCore::HTMLExtract(object, fTObjectCounter["TList"]++, path))));
         halTable.AddContent(row);
       } else {
-        CreateListTable(halTable, (TList*) object, i, path, inject, styleCell);
+        CreateListTable(halTable, (TList*) object, fTObjectCounter["TList"]++, path, inject, styleCell);
       }
     }
     if (drawMerged) {

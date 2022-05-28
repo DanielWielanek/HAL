@@ -97,16 +97,16 @@ table.haltable tr:hover td {
 }
 
 /* button font */
-table.nicatable button {
+table.haltable button {
 	font-size: 15px;
 }
 
-table.maintable  table.nicatable button {
+table.maintable  table.haltable button {
 	font-size: 15px;
 }
 
 /* default style */
-table.nicatable td {
+table.haltable td {
 	background: -o-linear-gradient(bottom, #45efe1 5%, #c1f4f3 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #45efe1
 		), color-stop(1, #c1f4f3));
@@ -116,7 +116,7 @@ table.nicatable td {
 	background: -o-linear-gradient(top, #45efe1, c1f4f3);
 }
 
-table.maintable table.nicatable td {
+table.maintable table.haltable td {
 	background: -o-linear-gradient(bottom, #45efe1 5%, #c1f4f3 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #45efe1
 		), color-stop(1, #c1f4f3));
@@ -127,7 +127,7 @@ table.maintable table.nicatable td {
 }
 
 /* light blue style */
-table.nicatable tr.light_blue td {
+table.haltable tr.light_blue td {
 	background: -o-linear-gradient(bottom, #45efe1 5%, #c1f4f3 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #45efe1
 		), color-stop(1, #c1f4f3));
@@ -137,7 +137,7 @@ table.nicatable tr.light_blue td {
 	background: -o-linear-gradient(top, #45efe1, c1f4f3);
 }
 
-table.maintable table.nicatable tr.light_blue td {
+table.maintable table.haltable tr.light_blue td {
 	background: -o-linear-gradient(bottom, #45efe1 5%, #c1f4f3 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #45efe1
 		), color-stop(1, #c1f4f3));
@@ -148,7 +148,7 @@ table.maintable table.nicatable tr.light_blue td {
 }
 
 /* med blue style */
-table.nicatable tr.med_blue td {
+table.haltable tr.med_blue td {
 	background: -o-linear-gradient(bottom, #0090ff 5%, #45efe1 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #0090ff
 		), color-stop(1, #45efe1));
@@ -158,7 +158,7 @@ table.nicatable tr.med_blue td {
 	background: -o-linear-gradient(top, #0090ff, 45efe1);
 }
 
-table.maintable table.nicatable tr.med_blue td {
+table.maintable table.haltable tr.med_blue td {
 	background: -o-linear-gradient(bottom, #0090ff 5%, #45efe1 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #0090ff
 		), color-stop(1, #45efe1));
@@ -169,7 +169,7 @@ table.maintable table.nicatable tr.med_blue td {
 }
 
 /* green style */
-table.nicatable tr.green_ td {
+table.haltable tr.green_ td {
 	background: -o-linear-gradient(bottom, #3f7f00 5%, #00ff00 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3f7f00
 		), color-stop(1, #00ff00));
@@ -179,7 +179,7 @@ table.nicatable tr.green_ td {
 	background: -o-linear-gradient(top, #3f7f00, 00ff00);
 }
 
-table.maintable table.nicatable tr.green_ td {
+table.maintable table.haltable tr.green_ td {
 	background: -o-linear-gradient(bottom, #3f7f00 5%, #00ff00 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3f7f00
 		), color-stop(1, #00ff00));
@@ -190,7 +190,7 @@ table.maintable table.nicatable tr.green_ td {
 }
 
 /* dark green style */
-table.nicatable tr.dark_green td {
+table.haltable tr.dark_green td {
 	background: -o-linear-gradient(bottom, #3f7f00 5%, #32cd32 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3f7f00
 		), color-stop(1, #32cd32));
@@ -200,7 +200,7 @@ table.nicatable tr.dark_green td {
 	background: -o-linear-gradient(top, #3f7f00, #32cd32);
 }
 
-table.maintable table.nicatable tr.dark_green td {
+table.maintable table.haltable tr.dark_green td {
 	background: -o-linear-gradient(bottom, #3f7f00 5%, #32cd32 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3f7f00
 		), color-stop(1, #32cd32));
@@ -211,7 +211,7 @@ table.maintable table.nicatable tr.dark_green td {
 }
 
 /* dark blue style */
-table.nicatable tr.dark_blue td {
+table.haltable tr.dark_blue td {
 	background: -o-linear-gradient(bottom, #0009bc 5%, #0090ff 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #0009bc
 		), color-stop(1, #0090ff));
@@ -221,7 +221,7 @@ table.nicatable tr.dark_blue td {
 	background: -o-linear-gradient(top, #0009bc, 0090ff);
 }
 
-table.maintable table.nicatable tr.dark_blue td {
+table.maintable table.haltable tr.dark_blue td {
 	background: -o-linear-gradient(bottom, #0009bc 5%, #0090ff 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #0009bc
 		), color-stop(1, #0090ff));
@@ -232,7 +232,7 @@ table.maintable table.nicatable tr.dark_blue td {
 }
 
 /* yellow style */
-table.nicatable  tr.yellow_ td {
+table.haltable  tr.yellow_ td {
 	background: -o-linear-gradient(bottom, #ffaa56 5%, #ffff00 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ffaa56
 		), color-stop(1, #ffff00));
@@ -242,7 +242,7 @@ table.nicatable  tr.yellow_ td {
 	background: -o-linear-gradient(top, #ffaa56, ffff00);
 }
 
-table.maintable table.nicatable  tr.yellow_ td {
+table.maintable table.haltable  tr.yellow_ td {
 	background: -o-linear-gradient(bottom, #ffaa56 5%, #ffff00 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ffaa56
 		), color-stop(1, #ffff00));
@@ -253,7 +253,7 @@ table.maintable table.nicatable  tr.yellow_ td {
 }
 
 /* grey style */
-table.nicatable tr.grey_ td {
+table.haltable tr.grey_ td {
 	background: -o-linear-gradient(bottom, #808499 5%, #4c4c3e 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #808499
 		), color-stop(1, #4c4c3e));
@@ -264,7 +264,7 @@ table.nicatable tr.grey_ td {
 	color: #F0F0F0
 }
 
-table.maintable table.nicatable tr.grey_ td {
+table.maintable table.haltable tr.grey_ td {
 	background: -o-linear-gradient(bottom, #808499 5%, #4c4c3e 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #808499
 		), color-stop(1, #4c4c3e));
@@ -276,7 +276,7 @@ table.maintable table.nicatable tr.grey_ td {
 }
 
 /* red style */
-table.nicatable tr.red_ td {
+table.haltable tr.red_ td {
 	background: -o-linear-gradient(bottom, #ff0000 5%, #ffaaaa 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ff0000
 		), color-stop(1, #ffaaaa));
@@ -286,7 +286,7 @@ table.nicatable tr.red_ td {
 	background: -o-linear-gradient(top, #ff0000, ffaaaa);
 }
 
-table.maintable table.nicatable tr.red_ td {
+table.maintable table.haltable tr.red_ td {
 	background: -o-linear-gradient(bottom, #ff0000 5%, #ffaaaa 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ff0000
 		), color-stop(1, #ffaaaa));
@@ -297,7 +297,7 @@ table.maintable table.nicatable tr.red_ td {
 }
 
 /* violet style */
-table.nicatable tr.violet_ td {
+table.haltable tr.violet_ td {
 	background: -o-linear-gradient(bottom, #aa56ff 5%, #7f00ff 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #aa56ff
 		), color-stop(1, #7f00ff));
@@ -307,7 +307,7 @@ table.nicatable tr.violet_ td {
 	background: -o-linear-gradient(top, #aa56ff, 7f00ff);
 }
 
-table.maintable table.nicatable tr.violet_ td {
+table.maintable table.haltable tr.violet_ td {
 	background: -o-linear-gradient(bottom, #aa56ff 5%, #7f00ff 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #aa56ff
 		), color-stop(1, #7f00ff));

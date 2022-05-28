@@ -39,7 +39,7 @@ namespace Hal {
     fNameClass = (object->ClassName());
     if (cut_template) {
       TString temp = fNameClass.String();
-      TPRegexp regs("[A-z,0-9]+");
+      TPRegexp regs("[A-z,0-9,:]+");
       TString temp2 = temp(regs);
       fNameClass.SetString(temp2);
     }
@@ -175,8 +175,7 @@ namespace Hal {
       } else {
       }
     }
-    Cout::PrintInfo(Form("class %s not found in package %s", name.Data(), (fNameClass.GetString()).Data()),
-                    Hal::EInfo::kWarning);
+    Cout::PrintInfo(Form("class %s not found in package %s", name.Data(), (fNameClass.GetString()).Data()), Hal::EInfo::kWarning);
     return NULL;
   }
 

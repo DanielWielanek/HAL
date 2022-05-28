@@ -59,6 +59,7 @@ namespace Hal {
     for (auto file : fInFile) {
       if (file) delete file;
     }
+    if (fOutFile) delete fOutFile;
   }
 
   TObject* RootIOManager::GetObject(const char* BrName) {

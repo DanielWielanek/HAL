@@ -35,6 +35,7 @@ namespace Hal {
 
   public:
     RootIOManager(TString name);
+    void SetOutput(TString name) { fOutFileName = name; }
     void SetOutTreeName(TString name) { fOutTreeName = name; }
     Int_t GetEntries() const;
     Int_t GetEntry(Int_t i);

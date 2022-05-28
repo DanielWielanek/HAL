@@ -29,6 +29,7 @@ namespace Hal {
   RootSource::~RootSource() {
     if (fManager) delete fManager;
   }
+
   IOManager* RootSource::GetIOManager() const {
     { return fManager; };
   }

@@ -13,6 +13,7 @@
 #include "IOManager.h"
 #include "MagField.h"
 
+#include "Cout.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "Source.h"
@@ -33,6 +34,8 @@ namespace Hal {
     fManager = fSource->GetIOManager();
     if (fField == nullptr) { fField = new MagField(); }
     fManager->SetField(fField);
+    fManager->SetOutput(fOutputFile);
+    fManager->Init();
     DataManager* mng = DataManager::Instance();
     mng->SetManager(fManager);
     for (auto task : fTasks) {
@@ -45,6 +48,7 @@ namespace Hal {
           fActiveTasks.push_back(task);
         } break;
         case Task::EInitFlag::kFATAL: {
+          Cout::PrintInfo(Form("Failed to init %s", task->ClassName()), EInfo::kError);
           exit(0);
         } break;
       }
@@ -52,8 +56,10 @@ namespace Hal {
   }
 
   void AnalysisManager::Run(Int_t start, Int_t end) {
-    if (start < fManager->GetEntries()) return;
-    if (end < fManager->GetEntries()) { end = fManager->GetEntries(); }
+    if (start < 0) start = 0;
+    if (start > fManager->GetEntries()) { start = fManager->GetEntries(); }
+    if (end > fManager->GetEntries()) { end = fManager->GetEntries(); }
+    Cout::PrintInfo(Form("Run from %i to %i events", start, end), EInfo::kInfo);
     for (int i = start; i < end; i++) {
       ++fProcessedEvents;
       fManager->GetEntry(i);
@@ -74,6 +80,7 @@ namespace Hal {
         dir->cd(array[i]);
       }
     };
+
     Package* metadata_new = new Package();
     metadata_new->SetName("RunInfo");
     metadata_new->AddObject(new ParameterString("Software ver", HAL_PHYSICALANALYSYS_VER));
@@ -105,6 +112,7 @@ namespace Hal {
     for (auto task : fTasks) {
       task->FinishTask();
     }
+    Cout::PrintInfo("Analysis completed", EInfo::kInfo);
   }
 
   AnalysisManager::~AnalysisManager() {

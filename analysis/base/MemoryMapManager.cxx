@@ -195,12 +195,15 @@ namespace Hal {
     if (fDirectAcces == kFALSE) {
       fCurrentEvent = dataManager->GetEventFromTree(fFormatID);
     } else {
-      fCurrentEvent = (Event*) DataManager::Instance()->GetObject(dataManager->GetFormat(fFormatID)->ClassName());
-      if (fCurrentEvent == nullptr) {
-        Cout::PrintInfo(
-          Form("Format %s not found, trying to use HalEvent branch", dataManager->GetFormat(fFormatID)->ClassName()),
-          Hal::EInfo::kWarning);
-        fCurrentEvent = (Event*) DataManager::Instance()->GetObject("HalEvent");
+      TString branchName = dataManager->GetFormat(fFormatID)->ClassName();
+      std::vector<TString> patterns;
+      patterns.push_back(branchName);
+      patterns.push_back(branchName + ".");
+      patterns.push_back("HalEvent");
+      patterns.push_back("HalEvent.");
+      for (auto name : patterns) {
+        fCurrentEvent = (Event*) DataManager::Instance()->GetObject(name);
+        if (fCurrentEvent) break;
       }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];

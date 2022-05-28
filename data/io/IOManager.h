@@ -10,6 +10,7 @@
 #define HAL_FEATURES_IO_STEER_IOMANAGER_H_
 
 #include <TObject.h>
+#include <TString.h>
 
 class TChain;
 class TFile;
@@ -24,6 +25,7 @@ namespace Hal {
     virtual Int_t GetEntry(Int_t i)  = 0;
     virtual Bool_t Init()            = 0;
     virtual void SetField(MagField* field) { fField = field; };
+    virtual void SetOutput(TString name) {};
     virtual MagField* GetField() const { return fField; };
     virtual void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile)      = 0;
     virtual void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) = 0;

@@ -22,11 +22,9 @@ namespace Hal {
     UInt_t fProcessedEvents;
     Event* fEvent;
 
-  protected:
-    virtual Task::EInitFlag Init();
-
   public:
     Reader();
+    virtual Task::EInitFlag Init();
     virtual void Exec(Option_t* opt);
     /**
      * set format

@@ -290,7 +290,7 @@ namespace Hal {
 
   void EventAna::FinishTask() {
     Package* pack = Report();
-    GoToDir("Physics");
+    GoToDir("HalPhysics");
     pack->Write(Form("AnaPackage_%i", GetTaskID()));
     if (pack) { delete pack; }
     gFile->cd();

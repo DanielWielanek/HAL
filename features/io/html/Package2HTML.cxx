@@ -116,7 +116,7 @@ namespace Hal {
       TString table_name = Form("task_table_%i", fTaskTableCounter++);
       if (object->InheritsFrom("Hal::Package")) {
         Package* package      = (Package*) object;
-        Package* meta_data    = (Package*) (((Package*) object)->GetObjectByName("HalMetadata"));
+        Package* meta_data    = (Package*) (((Package*) object)->GetObjectByName("Metadata"));
         TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
         // object inherits form HalPackage - probably result of physical analysis
         HtmlDiv div;
@@ -191,7 +191,7 @@ namespace Hal {
     TString path       = Form("%s/superpack_0/", fDir.Data());
     if (object->InheritsFrom("Hal::Package")) {
       Package* package      = (Package*) object;
-      Package* meta_data    = (Package*) (((Package*) object)->GetObjectByName("HalMetadata"));
+      Package* meta_data    = (Package*) (((Package*) object)->GetObjectByName("Metadata"));
       TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
       HtmlDiv div;
       div.SetId("buttontableM_0");
@@ -241,7 +241,7 @@ namespace Hal {
     TString path       = fDir + "/superpack_0";
     if (pack_ana->InheritsFrom("Hal::Package")) {
       Package* package      = (Package*) pack_ana;
-      Package* meta_data    = (Package*) (((Package*) pack_ana)->GetObjectByName("HalMetadata"));
+      Package* meta_data    = (Package*) (((Package*) pack_ana)->GetObjectByName("Metadata"));
       TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
       HtmlDiv div1("buttontableM_0", "", "");
       HtmlTable table1("", "haltable", "");
@@ -281,9 +281,9 @@ namespace Hal {
     for (int i = 0; i < pack->GetEntries(); i++) {
       Package* cutpack  = (Package*) pack->GetObject(i);
       TString classname = cutpack->ClassName();
-      if (classname == "HalPackage") {  // possible canditate
+      if (classname == "Hal::Package") {  // possible canditate
         TString pack_class_name(cutpack->GetName(), strlen(cutpack->GetName()));
-        if (pack_class_name.EqualTo("HalCutContainer")) {
+        if (pack_class_name.EqualTo("Hal::CutContainer")) {
           fCurrentCutContainer  = cutpack;  // found break
           fCutContainerPosition = i + fCutContainerPosition;
           break;
@@ -294,7 +294,7 @@ namespace Hal {
     CreatePackageList(object, pack, eTableStyle::kStandard, path, 2);
     TString metadata = Form("%s/metadata/", path.Data());
     gSystem->mkdir(metadata);
-    CreatePackageList(object, (Package*) pack->GetObjectByName("HalMetadata"), eTableStyle::kMetaData, metadata, 3, "drawmerged");
+    CreatePackageList(object, (Package*) pack->GetObjectByName("Metadata"), eTableStyle::kMetaData, metadata, 3, "drawmerged");
     // //KURWA
 
     if (fCurrentCutContainer != NULL) {
@@ -958,8 +958,8 @@ namespace Hal {
       rowElement.AddContent(HtmlCell());
       rowElement.AddContent(HtmlCell(Form("%i", i)));
       rowElement.AddContent(HtmlCell(obj->ClassName()));
-      if (classname == "HalPackage") {
-        classname = Form("HalPackage  [%s] ",
+      if (classname == "Hal::Package") {
+        classname = Form("Hal::Package  [%s] ",
                          ((Package*) obj)->GetName());  //</br>
         rowElement.AddContent(HtmlCell(classname));
       } else {
@@ -1326,10 +1326,10 @@ namespace Hal {
 
   TString Package2HTML::GetGroupListName(Hal::ECutUpdate update) const {
     switch (update) {
-      case Hal::ECutUpdate::kEvent: return "HalEventCutCollectionList"; break;
-      case Hal::ECutUpdate::kTrack: return "HalTrackCutCollectionList"; break;
-      case Hal::ECutUpdate::kTwoTrack: return "HalTwoTrackCutCollectionList"; break;
-      case Hal::ECutUpdate::kTwoTrackBackground: return "HalTwoTrackBackgroundCutCollectionList"; break;
+      case Hal::ECutUpdate::kEvent: return "EventCutCollectionList"; break;
+      case Hal::ECutUpdate::kTrack: return "TrackCutCollectionList"; break;
+      case Hal::ECutUpdate::kTwoTrack: return "TwoTrackCutCollectionList"; break;
+      case Hal::ECutUpdate::kTwoTrackBackground: return "TwoTrackBackgroundCutCollectionList"; break;
       default: return ""; break;
     }
   }

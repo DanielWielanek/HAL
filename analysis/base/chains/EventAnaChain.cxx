@@ -81,15 +81,15 @@ namespace Hal {
     metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", GetInputFileName(), 'f'));
-    GoToDir("Info");
+    GoToDir("HalInfo");
     TDirectory* dir        = (TDirectory*) gFile;
-    TDirectory* metadatata = (TDirectory*) dir->Get("Info");
+    TDirectory* metadatata = (TDirectory*) dir->Get("HalInfo");
     if (metadatata->Get("RunInfo")) {
       delete metadata_new;
     } else {
       metadata_new->Write("RunInfo");
     }
-    GoToDir("Physics");
+    GoToDir("HalPhysics");
     pack->Write(Form("AnaPackage_%i", GetTaskID()));
     if (pack) { delete pack; }
     for (int i = 0; i < fTaskNo; i++) {

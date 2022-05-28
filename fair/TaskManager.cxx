@@ -82,9 +82,9 @@ namespace Hal {
       }
       metadata_new->AddObject(list);
 
-      GoToDir("Info");
+      GoToDir("HalInfo");
       TDirectory* dir        = (TDirectory*) gFile;
-      TDirectory* metadatata = (TDirectory*) dir->Get("Info");
+      TDirectory* metadatata = (TDirectory*) dir->Get("HalInfo");
       if (metadatata->Get("RunInfo")) {
         delete metadata_new;
       } else {

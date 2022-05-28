@@ -122,7 +122,7 @@ namespace Hal {
   }
 
   TString TwoTrackComplexCut::CutName(Option_t* /*opt*/) const {
-    return Form("TwoTrackComplexCut(%s,%s)", fRealCut->CutName().Data(), fImgCut->CutName().Data());
+    return Form("Hal::TwoTrackComplexCut(%s,%s)", fRealCut->CutName().Data(), fImgCut->CutName().Data());
   }
 
   TwoTrackComplexCut::~TwoTrackComplexCut() {
@@ -308,7 +308,7 @@ namespace Hal {
   }
 
   TString TwoTrackImaginaryCut::CutName(Option_t* /*opt*/) const {
-    return Form("TwoTrackImaginaryCut(%s)", fImgCut->CutName().Data());
+    return Form("Hal::TwoTrackImaginaryCut(%s)", fImgCut->CutName().Data());
   }
 
   TwoTrackImaginaryCut::~TwoTrackImaginaryCut() {

@@ -282,7 +282,11 @@ namespace Hal {
 #endif
     for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
       TString name2 = ((Cut*) fCuts->UncheckedAt(i))->CutName();
-      if (name2 == name) { return (Cut*) fCuts->UncheckedAt(i); }
+      if (name2 == name) {
+        return (Cut*) fCuts->UncheckedAt(i);
+      } else {
+        // Hal::Cout::PrintInfo(Form("try %s %s ", name.Data(), name2.Data()), EInfo::kDebugInfo);
+      }
     }  // cut not found in standard cuts, looking in complex cuts
     return NULL;
   }

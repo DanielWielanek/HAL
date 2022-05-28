@@ -130,7 +130,7 @@ namespace Hal {
   TrackComplexCut::TrackComplexCut(TrackCut* cut) : TrackComplexCut(cut, cut) {}
 
   TString TrackComplexCut::CutName(Option_t* /*opt*/) const {
-    return Form("TrackComplexCut(%s,%s)", fRealCut->CutName().Data(), fImgCut->CutName().Data());
+    return Form("Hal::TrackComplexCut(%s,%s)", fRealCut->CutName().Data(), fImgCut->CutName().Data());
   }
 
   TrackComplexCut::~TrackComplexCut() {
@@ -291,7 +291,9 @@ namespace Hal {
     return pack;
   }
 
-  TString TrackImaginaryCut::CutName(Option_t* /*opt*/) const { return Form("TrackImaginaryCut(%s)", fImgCut->CutName().Data()); }
+  TString TrackImaginaryCut::CutName(Option_t* /*opt*/) const {
+    return Form("Hal::TrackImaginaryCut(%s)", fImgCut->CutName().Data());
+  }
 
   TrackImaginaryCut::~TrackImaginaryCut() {
     if (fImgCut) delete fImgCut;

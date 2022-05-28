@@ -190,7 +190,7 @@ namespace Hal {
     return pack;
   }
 
-  TString EventRealCut::CutName(Option_t* /*opt*/) const { return Form("EventRealCut(%s)", fRealCut->CutName().Data()); }
+  TString EventRealCut::CutName(Option_t* /*opt*/) const { return Form("Hal::EventRealCut(%s)", fRealCut->CutName().Data()); }
 
   EventRealCut::~EventRealCut() {
     if (fRealCut) delete fRealCut;
@@ -269,7 +269,9 @@ namespace Hal {
     return pack;
   }
 
-  TString EventImaginaryCut::CutName(Option_t* /*opt*/) const { return Form("EventImaginaryCut(%s)", fImgCut->CutName().Data()); }
+  TString EventImaginaryCut::CutName(Option_t* /*opt*/) const {
+    return Form("Hal::EventImaginaryCut(%s)", fImgCut->CutName().Data());
+  }
 
   EventImaginaryCut::~EventImaginaryCut() {
     if (fImgCut) delete fImgCut;

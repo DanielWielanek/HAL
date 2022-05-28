@@ -17,7 +17,7 @@ namespace Hal {
 
   Bool_t TrackExpCut::Init(Int_t format_id) {
     if (TrackCut::Init(format_id) == kFALSE) return kFALSE;
-    if (FormatInhertis("ExpEvent", format_id) == kFALSE) return kFALSE;
+    if (FormatInhertis("Hal::ExpEvent", format_id) == kFALSE) return kFALSE;
     return kTRUE;
   }
 
@@ -35,7 +35,7 @@ namespace Hal {
   }
 
   Bool_t TrackExpCut::ToFAvaiable(Int_t format_id) const {
-    if (FormatInhertis("ExpEvent", format_id) == kFALSE) return kFALSE;
+    if (FormatInhertis("Hal::ExpEvent", format_id) == kFALSE) return kFALSE;
     const Event* ev = DataFormatManager::Instance()->GetFormat(format_id);
     Bool_t res      = kFALSE;
     ExpTrack* tr    = (ExpTrack*) ev->GetNewTrack();

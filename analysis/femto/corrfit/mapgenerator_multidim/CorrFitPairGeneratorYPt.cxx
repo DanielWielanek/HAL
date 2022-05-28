@@ -65,7 +65,7 @@ namespace Hal {
 
     fFile         = new TFile(fName, "recreate");
     fTree         = new TTree("pairs", "pairs");
-    fArray        = new TClonesArray("FemtoMicroPair", fMultiplicity);
+    fArray        = new TClonesArray("Hal::FemtoMicroPair", fMultiplicity);
     fRanges       = new Float_t[fBins + 1];
     fPairsControl = TH1D("cutof", "cutof", fBins, fMin, fMax);
     Float_t step  = (fMax - fMin) / ((Float_t) fBins);

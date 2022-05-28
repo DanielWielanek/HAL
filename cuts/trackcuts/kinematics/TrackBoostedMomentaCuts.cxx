@@ -8,8 +8,8 @@
  */
 #include "TrackBoostedMomentaCuts.h"
 
-#include "McTrack.h"
 #include "ComplexTrack.h"
+#include "McTrack.h"
 #include "Track.h"
 #include <TLorentzVector.h>
 
@@ -29,7 +29,7 @@ namespace Hal {
 
   Bool_t TrackBoostedDeltaPCut::Init(Int_t format_id) {
     fInit = kTRUE;
-    return FormatInhertis("ComplexEvent", format_id);
+    return FormatInhertis("Hal::ComplexEvent", format_id);
   }
 
   Bool_t TrackBoostedDeltaPCut::Pass(Track* track) {
@@ -71,7 +71,7 @@ namespace Hal {
 
   Bool_t TrackBoostedKinematcisCut::Init(Int_t format_id) {
     fInit = kTRUE;
-    if (FormatInhertis("MCEvent", format_id)) { return kTRUE; }
+    if (FormatInhertis("Hal::McEvent", format_id)) { return kTRUE; }
     return kFALSE;
   }
 

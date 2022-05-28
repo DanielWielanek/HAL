@@ -205,18 +205,18 @@ namespace Hal {
     TBranch* branchBackkground = fTree->GetBranch("FemtoBackground");
     switch (fMode) {
       case eDumpCalcMode::kSignalPairs: {
-        fPairsSignal = new TClonesArray("FemtoMicroPair");
+        fPairsSignal = new TClonesArray("Hal::FemtoMicroPair");
         if (branchSignal == nullptr) return kFALSE;
         branchSignal->SetAddress(&fPairsSignal);
       } break;
       case eDumpCalcMode::kBackgroundPairsOnly: {
-        fPairsBackground = new TClonesArray("FemtoMicroPair");
+        fPairsBackground = new TClonesArray("Hal::FemtoMicroPair");
         if (branchBackkground == nullptr) return kFALSE;
         branchBackkground->SetAddress(&fPairsBackground);
       } break;
       case eDumpCalcMode::kSignalBackgroundPairs: {
-        fPairsSignal     = new TClonesArray("FemtoMicroPair");
-        fPairsBackground = new TClonesArray("FemtoMicroPair");
+        fPairsSignal     = new TClonesArray("Hal::FemtoMicroPair");
+        fPairsBackground = new TClonesArray("Hal::FemtoMicroPair");
         if (branchSignal == nullptr || branchBackkground == nullptr) return kFALSE;
         branchSignal->SetAddress(&fPairsSignal);
         branchBackkground->SetAddress(&fPairsBackground);

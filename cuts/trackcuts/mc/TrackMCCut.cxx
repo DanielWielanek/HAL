@@ -8,20 +8,20 @@
  */
 #include "TrackMCCut.h"
 
-#include "McTrack.h"
 #include "DataFormatManager.h"
+#include "McTrack.h"
 
-namespace Hal{
+namespace Hal {
 
-TrackMCCut::TrackMCCut(const Int_t size) : TrackCut(size) {}
+  TrackMCCut::TrackMCCut(const Int_t size) : TrackCut(size) {}
 
-Bool_t TrackMCCut::Init(Int_t task_id) {
-  if (TrackCut::Init() == kFALSE) return kFALSE;
-  if (FormatInhertis("MCEvent", task_id)) { return kTRUE; }
-  return kFALSE;
-}
+  Bool_t TrackMCCut::Init(Int_t task_id) {
+    if (TrackCut::Init() == kFALSE) return kFALSE;
+    if (FormatInhertis("Hal::McEvent", task_id)) { return kTRUE; }
+    return kFALSE;
+  }
 
-TrackMCCut::~TrackMCCut() {
-  // TODO Auto-generated destructor stub
-}
-}
+  TrackMCCut::~TrackMCCut() {
+    // TODO Auto-generated destructor stub
+  }
+}  // namespace Hal

@@ -154,5 +154,5 @@ namespace Hal {
     return *this;
   }
 
-  Bool_t TwoTrackSailorCowboyCut::Init(Int_t formatId) { return FormatInhertis("ExpEventHelix", formatId); }
+  Bool_t TwoTrackSailorCowboyCut::Init(Int_t formatId) { return FormatInhertis("Hal::ExpEventHelix", formatId); }
 }  // namespace Hal

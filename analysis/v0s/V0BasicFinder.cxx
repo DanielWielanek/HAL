@@ -53,7 +53,7 @@ namespace Hal {
       fFirstV0Finder = kFALSE;
       fV0Tracks      = (TClonesArray*) mngr->GetObject("V0Tracks");
     } else {
-      fV0Tracks = new TClonesArray("V0Track");
+      fV0Tracks = new TClonesArray("Hal::V0Track");
       mngr->Register("V0Tracks", "V0", fV0Tracks, fWrite);
     }
 

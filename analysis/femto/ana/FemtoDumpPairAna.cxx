@@ -89,10 +89,10 @@ namespace Hal {
     Task::EInitFlag stat = FemtoBasicAna::Init();
     if (stat == Task::EInitFlag::kFATAL) return stat;
     DataManager* mngr = DataManager::Instance();
-    fSignalPairs      = new TClonesArray("FemtoMicroPair", 1000);
+    fSignalPairs      = new TClonesArray("Hal::FemtoMicroPair", 1000);
     mngr->Register("FemtoSignal", "FemtoPairs", fSignalPairs, kTRUE);
     if (fWriteBackground) {
-      fBackgroundPairs = new TClonesArray("FemtoMicroPair", 1000);
+      fBackgroundPairs = new TClonesArray("Hal::FemtoMicroPair", 1000);
       mngr->Register("FemtoBackground", "FemtoPairs", fBackgroundPairs, kTRUE);
     } else {
       if (IdenticalParticles())

@@ -28,27 +28,27 @@ namespace Hal {
   }
 
   void VirtualEvent::LinkWithTree() {
-    fVirtualEvent   = new VirtualEvent();
+    fVirtualEvent     = new VirtualEvent();
     DataManager* mngr = DataManager::Instance();
-    fVirtualEvent   = (VirtualEvent*) mngr->GetObject("VirtualEvent.");
+    fVirtualEvent     = (VirtualEvent*) mngr->GetObject("VirtualEvent.");
   }
 
   void VirtualEvent::RegisterInTree(TString prefix, Bool_t save) {
     if (fVirtualEvent == NULL) { fVirtualEvent = new VirtualEvent(); }
     DataManager* manager = DataManager::Instance();
-    TString branchname = "VirtualEvent..";
+    TString branchname   = "VirtualEvent..";
     if (prefix.Length() != 0) { branchname = prefix + branchname; }
     manager->Register(branchname, "VirtualEvent.", fVirtualEvent, save);
   }
 
   Bool_t VirtualEvent::ExistInTree() const {
-      DataManager* manager = DataManager::Instance();
+    DataManager* manager = DataManager::Instance();
     if (manager->CheckBranch("VirtualEvent.")) { return kTRUE; }
     return kFALSE;
   }
 
   VirtualEvent::VirtualEvent(const VirtualEvent& other) : Event(other) {
-    fTracks       = new TClonesArray("VirtualTrack", 1000);
+    fTracks       = new TClonesArray("Hal::VirtualTrack", 1000);
     fVirtualEvent = (VirtualEvent*) other.fVirtualEvent->Clone();
   }
 

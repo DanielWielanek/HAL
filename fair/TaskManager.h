@@ -17,6 +17,10 @@
 #include <RtypesCore.h>
 #include <TString.h>
 
+/**
+ * wrapper of task for FairRoot
+ * You should add all task for analysis here, and later add this task as to the FairRunAna
+ */
 namespace Hal {
   class IOManager;
   class Source;

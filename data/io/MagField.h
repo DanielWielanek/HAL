@@ -12,10 +12,20 @@
 #include <TObject.h>
 #include <TVector3.h>
 
+/**
+ * represents magnetic field
+ */
 namespace Hal {
   class MagField : public TObject {
   public:
     MagField();
+    /**
+     * return magnetic field at x,y,z
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
     TVector3 GetField(Double_t x, Double_t y, Double_t z) const { return TVector3(0, 0, 0); }
     virtual ~MagField();
     ClassDef(MagField, 1)

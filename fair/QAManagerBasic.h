@@ -12,6 +12,9 @@
 #include "QAManager.h"
 #include <TString.h>
 
+/**
+ * abstract class for QA in FairRoot-based frameworks
+ */
 class FairRunAna;
 namespace Hal {
   namespace Fair {

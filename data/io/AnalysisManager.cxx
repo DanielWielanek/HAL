@@ -29,7 +29,7 @@ namespace Hal {
   AnalysisManager::AnalysisManager() :
     fProcessedEvents(0), fField(nullptr), fSource(nullptr), fOutTreeName("HalTree"), fManager(nullptr) {}
 
-  void AnalysisManager::Init() {
+  Bool_t AnalysisManager::Init() {
     if (fSource == nullptr) exit(0);
     fManager = fSource->GetIOManager();
     if (fField == nullptr) { fField = new MagField(); }
@@ -53,6 +53,7 @@ namespace Hal {
         } break;
       }
     }
+    return kTRUE;
   }
 
   void AnalysisManager::Run(Int_t start, Int_t end) {

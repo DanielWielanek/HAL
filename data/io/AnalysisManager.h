@@ -12,6 +12,9 @@
 #include <TObject.h>
 #include <TString.h>
 
+/**
+ * represents analysis manager for data processing
+ */
 namespace Hal {
   class IOManager;
   class Source;
@@ -32,13 +35,45 @@ namespace Hal {
 
   public:
     AnalysisManager();
+    /**
+     * add task to analysis
+     * @param ana
+     */
     void AddTask(Task* ana) { fTasks.push_back(ana); };
-    void Init();
+    /**
+     * initalize run
+     */
+    Bool_t Init();
+    /**
+     * set name of the tree in output file
+     * @param name
+     */
     void SetOutTreeName(TString name) { fOutTreeName = name; }
+    /**
+     * process events from start to end -1
+     * @param start
+     * @param end
+     */
     void Run(Int_t start, Int_t end);
+    /**
+     * set source with data
+     * @param source
+     */
     void SetSource(Source* source) { fSource = source; };
+    /**
+     * set name of the output file
+     * @param name
+     */
     void SetOutput(TString name) { fOutputFile = name; };
+    /**
+     * set magnetic field
+     * @return
+     */
     MagField* GetField() const { return fField; }
+    /**
+     * get magnetic field
+     * @param field
+     */
     void SetField(MagField* field) { fField = field; }
     virtual ~AnalysisManager();
     ClassDef(AnalysisManager, 1)

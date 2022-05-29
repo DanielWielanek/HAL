@@ -13,6 +13,10 @@
 
 #include "IOManager.h"
 
+
+/**
+ * IO manager for FairRoot
+ */
 class TObject;
 class TFile;
 class TChain;

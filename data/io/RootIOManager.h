@@ -17,6 +17,9 @@
 
 class TTree;
 class TBranch;
+/**
+ * IO manager for ROOT files processed by AnalysisManager
+ */
 namespace Hal {
 
   class RootIOManager : public IOManager {
@@ -34,13 +37,42 @@ namespace Hal {
 
 
   public:
+    /**
+     *
+     * @param name file with data
+     */
     RootIOManager(TString name);
+    /**
+     * set name of the output file
+     * @param name
+     */
     void SetOutput(TString name) { fOutFileName = name; }
+    /**
+     * set name of the output tree
+     */
     void SetOutTreeName(TString name) { fOutTreeName = name; }
+    /**
+     *
+     * @return number of entries in file
+     */
     Int_t GetEntries() const;
-    Int_t GetEntry(Int_t i);
+    /**
+     * get entry from input root file
+     * @param i
+     * @return
+     */
+    virtual Int_t GetEntry(Int_t i);
     Bool_t Init();
+    /**
+     * return object from input file
+     * @param BrName
+     * @return
+     */
     TObject* GetObject(const char* BrName);
+    /**
+     * return pointer to the inputfile
+     * @return
+     */
     TFile* GetInFile();
     void AddFriend(TString name) { fInFileName.push_back(name); };
     void UpdateBranches();

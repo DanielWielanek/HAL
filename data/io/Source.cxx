@@ -14,12 +14,12 @@
 #include <TString.h>
 
 namespace Hal {
-  Source::Source(TString name) : fFileName(name) {}
+  Source::Source(TString name) { fFileName.push_back(name); }
 
   Source::~Source() {}
 
   RootSource::RootSource(TString name) : Source(name), fManager(nullptr) {
-    if (fFileName.Length() != 0) { fManager = new RootIOManager(fFileName); }
+    if (fFileName[0].Length() != 0) { fManager = new RootIOManager(fFileName[0]); }
   }
 
   void RootSource::AddFriend(TString friendName) {

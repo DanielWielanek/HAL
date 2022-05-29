@@ -12,7 +12,8 @@
 #include <TObject.h>
 
 /**
- * wrapper around FairRootManager
+ * wrapper around FairRootManager, represents almost all I/O operations
+ * by uisnt IOManager
  */
 class TFile;
 class TList;
@@ -30,10 +31,28 @@ namespace Hal {
     Int_t GetEntry(Int_t i);
     Int_t GetEntries() const;
     Bool_t Init();
+    /**
+     * register data
+     * @param name
+     * @param folderName
+     * @param obj
+     * @param toFile write in output file
+     */
     void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
+    /**
+     * register data
+     * @param name
+     * @param Foldername
+     * @param obj
+     * @param toFile write to output file
+     */
     void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
     void SetInChain(TChain* tempChain, Int_t ident = -1);
     void UpdateBranches();
+    /**
+     * set proper manager
+     * @param mngr
+     */
     void SetManager(IOManager* mngr) { fManager = mngr; }
     TObject* GetObject(const char* BrName);
     TFile* GetInFile();

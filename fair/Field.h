@@ -13,6 +13,9 @@
 
 #include <TVector3.h>
 
+/**
+ * interface to Fair magnetic field
+ */
 class FairField;
 namespace Hal {
   namespace Fair {

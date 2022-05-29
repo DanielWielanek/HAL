@@ -11,6 +11,9 @@
 
 #include <TTask.h>
 
+/**
+ * basic class that represents task
+ */
 namespace Hal {
   class Package;
   class Task : public TTask {
@@ -23,8 +26,18 @@ namespace Hal {
 
   public:
     enum class EInitFlag { kSUCCESS, kERROR, kFATAL };
+    /**
+     * default constructor
+     */
     Task();
+    /**
+     * initialize task
+     * @return flag of initization, if equal to ERROR task will not be executed, if FATAL analysis will be stopped
+     */
     virtual EInitFlag Init() { return EInitFlag::kSUCCESS; };
+    /**
+     * called at the end of analysis, writes data
+     */
     virtual void FinishTask() {};
     virtual ~Task();
     ClassDef(Task, 1)

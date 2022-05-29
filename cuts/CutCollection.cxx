@@ -175,7 +175,7 @@ namespace Hal {
 #ifdef HAL_DEBUG
           Cout::PrintInfo(
             Form("Failed to init %s in cut collection %i", ((Cut*) fCuts->UncheckedAt(i))->CutName().Data(), GetCollectionID()),
-            EInfo::kLessInfo);
+            EInfo::kDebugInfo);
 #endif
           fCuts->RemoveAt(i);
           fCuts->Compress();
@@ -185,7 +185,7 @@ namespace Hal {
           Cout::PrintInfo(Form("Succesfully  inited %s in cut collection %i",
                                ((Cut*) fCuts->UncheckedAt(i))->CutName().Data(),
                                GetCollectionID()),
-                          EInfo::kLessInfo);
+                          EInfo::kDebugInfo);
 #endif
         }
       }
@@ -196,7 +196,7 @@ namespace Hal {
           Cout::PrintInfo(Form("Failed to init %s in cut collection %i",
                                ((Cut*) fFastCuts->UncheckedAt(i))->CutName().Data(),
                                GetCollectionID()),
-                          EInfo::kLessInfo);
+                          EInfo::kDebugInfo);
 #endif
           fFastCuts->RemoveAt(i);
           fFastCuts->Compress();
@@ -206,12 +206,12 @@ namespace Hal {
           Cout::PrintInfo(Form("Succesfully inited %s in cut collection %i",
                                ((Cut*) fFastCuts->UncheckedAt(i))->CutName().Data(),
                                GetCollectionID()),
-                          EInfo::kLessInfo);
+                          EInfo::kDebugInfo);
 #endif
         }
       }
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("Initializing cut monitors", EInfo::kLessInfo);
+      Cout::PrintInfo("Initializing cut monitors", EInfo::kDebugInfo);
 #endif
       AdvancedMonitorInitialization(task_id);
       fInit = kTRUE;
@@ -278,7 +278,7 @@ namespace Hal {
 
   Cut* CutCollection::FindCut(TString name) const {
 #ifdef HAL_DEBUG
-    Cout::PrintInfo(Form("Looking for %s in subcontainer %i", name.Data(), GetCollectionID()), EInfo::kLessInfo);
+    Cout::PrintInfo(Form("Looking for %s in subcontainer %i", name.Data(), GetCollectionID()), EInfo::kDebugInfo);
 #endif
     for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
       TString name2 = ((Cut*) fCuts->UncheckedAt(i))->CutName();
@@ -605,13 +605,13 @@ namespace Hal {
       return arr;
     } else if (fPrevUsed) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("Looking for cuts in lower collections", EInfo::kLessInfo);
+      Cout::PrintInfo("Looking for cuts in lower collections", EInfo::kDebugInfo);
 #endif
       arr = LocateInLowerCollections(classname);
       return arr;
     } else {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("Cut not found cut and no lower collections present", EInfo::kLessInfo);
+      Cout::PrintInfo("Cut not found cut and no lower collections present", EInfo::kDebugInfo);
 #endif
       return arr;
     }

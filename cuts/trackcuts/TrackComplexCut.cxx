@@ -86,7 +86,7 @@ namespace Hal {
   Bool_t TrackComplexCut::Init(Int_t task_id) {
     if (!TrackCut::Init(task_id)) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo(Form("Failed to init cut %s", ClassName()), EInfo::kLessInfo);
+      Cout::PrintInfo(Form("Failed to init cut %s", ClassName()), EInfo::kDebugInfo);
 #endif
       return kFALSE;
     }
@@ -99,14 +99,14 @@ namespace Hal {
       ok += fRealCut->Init(task_id);
       if (ok == 0) {
 #ifdef HAL_DEBUG
-        Cout::PrintInfo(Form("Failed to init %s due to init %s", ClassName(), fRealCut->ClassName()), EInfo::kLessInfo);
+        Cout::PrintInfo(Form("Failed to init %s due to init %s", ClassName(), fRealCut->ClassName()), EInfo::kDebugInfo);
 #endif
       }
       manager->SetFormat(z->GetImgEvent(), task_id, EFormatDepth::kNonBuffered, kTRUE);
       Int_t dx = fImgCut->Init(task_id);
       if (dx == 0) {
 #ifdef HAL_DEBUG
-        Cout::PrintInfo(Form("Failed to init %s due to init %s", ClassName(), fImgCut->ClassName()), EInfo::kLessInfo);
+        Cout::PrintInfo(Form("Failed to init %s due to init %s", ClassName(), fImgCut->ClassName()), EInfo::kDebugInfo);
 #endif
       }
       ok += dx;

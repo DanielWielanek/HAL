@@ -91,7 +91,7 @@ namespace Hal {
     fMemoryMap      = new MemoryMapManager(fCutContainer);
     fMemoryMap->SetMixSize(fMixSize);
 #ifdef HAL_DEBUG
-    Cout::PrintInfo("Initialization MemoryMap", EInfo::kLessInfo);
+    Cout::PrintInfo("Initialization MemoryMap", EInfo::kDebugInfo);
 #endif
     fMemoryMap->Init(multi_factor, GetTaskID(), fKeepSource, fCompressEvents, fDirectAcces);
   }
@@ -148,17 +148,17 @@ namespace Hal {
     fCurrentEventCollectionID = DummyEventCol;
     if (IdenticalParticles()) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo(Format("Finish identical event with %i tracks",
+      Cout::PrintInfo(Form("Finish identical event with %i tracks",
                              fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID)),
-                      EInfo::kLessInfo);
+                      EInfo::kDebugInfo);
 #endif
       FinishEventIdentical();
     } else {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo(Format("Finish non-identical event with %i %i tracks",
+      Cout::PrintInfo(Form("Finish non-identical event with %i %i tracks",
                              fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 0),
                              fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1)),
-                      EInfo::kLessInfo);
+                      EInfo::kDebugInfo);
 #endif
       FinishEventNonIdentical();
     }

@@ -108,7 +108,7 @@ namespace Hal {
     fIndexMap     = new Int_t[size];
     fTrackMapSize = size;
 #ifdef HAL_DEBUG
-    Cout::PrintInfo("Reloading maps", EInfo::kLessInfo);
+    Cout::PrintInfo("Reloading maps", EInfo::kDebugInfo);
 #endif
   }
 

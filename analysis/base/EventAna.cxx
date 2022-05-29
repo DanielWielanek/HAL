@@ -77,13 +77,19 @@ namespace Hal {
     fPDG = TDatabasePDG::Instance();
 
     if (fDisableFormatChecking == kFALSE) {
-#ifdef HAL_DEBUG3
+#ifdef HAL_DEBUG
       Cout::PrintInfo("Format checking", EInfo::kDebugInfo);
 #endif
-      if (CheckFormat() == Task::EInitFlag::kFATAL) return Task::EInitFlag::kFATAL;
+      if (CheckFormat() == Task::EInitFlag::kFATAL) {
+        Cout::PrintInfo("Failed to check format", EInfo::kError);
+        return Task::EInitFlag::kFATAL;
+      }
     }
     Task::EInitFlag stat = InitCutContainer();
-    if (stat == Task::EInitFlag::kFATAL) return Task::EInitFlag::kFATAL;
+    if (stat == Task::EInitFlag::kFATAL) {
+      Cout::PrintInfo("Failed to init cut container", EInfo::kError);
+      return Task::EInitFlag::kFATAL;
+    }
     InitMemoryMap();
     fEventCollectionsNo = fCutContainer->GetEventCollectionsNo();
     if (!this->InheritsFrom("Hal::TrackAna") && !this->InheritsFrom("Hal::MultiTrackAna")) {

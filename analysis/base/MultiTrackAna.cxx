@@ -13,9 +13,9 @@
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "EventAna.h"
-#include "Std.h"
 #include "MemoryMapManager.h"
 #include "Parameter.h"
+#include "Std.h"
 
 #include <RtypesCore.h>
 #include <TString.h>
@@ -26,16 +26,16 @@ namespace Hal {
     if (Task::EInitFlag::kSUCCESS == TrackAna::Init()) {
       if (fMixSize < 1) {
 #ifdef HAL_DEBUG
-        Cout::PrintInfo("To small mix size, increasing to 1", EInfo::kLessInfo);
+        Cout::PrintInfo("To small mix size, increasing to 1", EInfo::kDebugInfo);
 #endif
         fMixSize = 1;
       }
 #ifdef HAL_DEBUG
-      Cout::PrintInfo(Form("Mix size is %i", fMixSize), EInfo::kLessInfo);
+      Cout::PrintInfo(Form("Mix size is %i", fMixSize), EInfo::kDebugInfo);
 #endif
-
       return Task::EInitFlag::kSUCCESS;
     } else {
+      Cout::PrintInfo("Failed to init TrackAna in MultiTrackAna", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
   }
@@ -93,7 +93,7 @@ namespace Hal {
     const Event* Buf    = DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kBuffered);
     if (Buf->IsCompatible(nonBuf)) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("Formats are compatible", EInfo::kLessInfo);
+      Cout::PrintInfo("Formats are compatible", EInfo::kDebugInfo);
 #endif
       return Task::EInitFlag::kSUCCESS;
     } else {

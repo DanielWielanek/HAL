@@ -59,7 +59,7 @@ namespace Hal {
   Bool_t PropertyMonitorXY::Init(Int_t task_id) {
     if (fInit) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kLessInfo);
+      Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kDebugInfo);
 #endif
       return kFALSE;
     }

@@ -103,13 +103,13 @@ namespace Hal {
     }
     if (ExtrackRegExp2(cut, opt)) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("CutContainer using ExtrackRegExp2", EInfo::kLessInfo);
+      Cout::PrintInfo("CutContainer using ExtrackRegExp2", EInfo::kDebugInfo);
 #endif
       return;
     }
     if (ExtractRegExp(cut, opt)) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("CutContainer using ExtrackRegExp", EInfo::kLessInfo);
+      Cout::PrintInfo("CutContainer using ExtrackRegExp", EInfo::kDebugInfo);
 #endif
       return;
     }
@@ -117,7 +117,7 @@ namespace Hal {
     ECutUpdate place = cut.GetUpdateRatio();
     if (CheckTwoTracksOptions(cut, opt)) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("CutContainer using CheckTwoTracksOptions", EInfo::kLessInfo);
+      Cout::PrintInfo("CutContainer using CheckTwoTracksOptions", EInfo::kDebugInfo);
 #endif
       return;
     }
@@ -285,17 +285,17 @@ namespace Hal {
         }
       }
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("Initializing cut collection", EInfo::kLessInfo);
+      Cout::PrintInfo("Initializing cut collection", EInfo::kDebugInfo);
 #endif
       for (int i = 0; i < fCutContainers[k]->GetEntriesFast(); i++) {
 #ifdef HAL_DEBUG
-        Cout::PrintInfo(Form("Initializing cut collection at %i", k), EInfo::kLessInfo);
+        Cout::PrintInfo(Form("Initializing cut collection at %i", k), EInfo::kDebugInfo);
 #endif
         ((CutCollection*) (fCutContainers[k]->UncheckedAt(i)))->Init(task_id);
       }
     }
 #ifdef HAL_DEBUG
-    Cout::PrintInfo("Deleting temporary cut monitors", EInfo::kLessInfo);
+    Cout::PrintInfo("Deleting temporary cut monitors", EInfo::kDebugInfo);
 #endif
     for (int i = 0; i < fSize; i++) {
       fTempCutMonitors[i]->Delete();

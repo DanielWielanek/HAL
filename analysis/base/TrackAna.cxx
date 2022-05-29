@@ -81,7 +81,7 @@ namespace Hal {
     Int_t trackCollections = fCutContainer->GetTrackCollectionsNo();
     if (trackCollections == 0) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("No track collections, virtual will be added", EInfo::kLessInfo);
+      Cout::PrintInfo("No track collections, virtual will be added", EInfo::kDebugInfo);
 #endif
       fCutContainer->AddCut(TrackVirtualCut(), "fast");
     }

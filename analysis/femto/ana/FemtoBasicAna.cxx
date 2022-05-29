@@ -158,7 +158,10 @@ namespace Hal {
       Cout::PrintInfo("Weight algorithm not initialized correctly", EInfo::kLowWarning);
     }
     // inilitalize array of histograms
-    if (InitArray() == kFALSE) return Task::EInitFlag::kFATAL;
+    if (InitArray() == kFALSE) {
+      Cout::PrintInfo(Form("Failed to init array in %s", ClassName()), EInfo::kError);
+      return Task::EInitFlag::kFATAL;
+    }
     if (fCFTemp) delete fCFTemp;
     fCFTemp = nullptr;
     // check freezout generator

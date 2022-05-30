@@ -26,10 +26,10 @@ namespace HalOTF {
     TFile* fInFile;
     TFile* fOutFile;
     TTree* fOutTree;
-    std::vector<TString> fBranchList;
-    std::vector<TBranch*> fInBranches;
-    std::vector<TBranch*> fOutBranches;
-    std::vector<std::pair<TString, TObject*>> fOutBranchesVirtual;
+
+  protected:
+    void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
+    void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
 
   public:
     IOManager(TString name = "root_virtual.root", Int_t entries = 1);
@@ -38,15 +38,9 @@ namespace HalOTF {
     Int_t GetEntries() const;
     Int_t GetEntry(Int_t i);
     Bool_t Init();
-    TObject* GetObject(const char* BrName);
     TFile* GetInFile();
     void AddFriend(TString /*name*/) {};
-    void UpdateBranches();
-    void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
-    void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
     void SetInChain(TChain* tempChain, Int_t ident = -1);
-    Int_t CheckBranch(const char* BrName);
-    TList* GetBranchNameList();
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

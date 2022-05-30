@@ -9,9 +9,10 @@
 #ifndef HAL_FEATURES_IO_STEER_IOMANAGER_H_
 #define HAL_FEATURES_IO_STEER_IOMANAGER_H_
 
+#include <TList.h>
 #include <TObject.h>
-#include <TString.h>
 
+class TList;
 class TChain;
 class TFile;
 /**
@@ -21,9 +22,36 @@ namespace Hal {
   class MagField;
   class IOManager : public TObject {
     MagField* fField;
+    TList* fList;
+    std::vector<std::pair<TString, TObject*>> fInBranches;
+    std::vector<std::pair<TString, TObject*>> fOutBranches;
+    std::vector<std::pair<TString, TObject*>> fOutVirtual;
+
+  protected:
+    enum class EBranchFlag { kAny, kIn, kOut, kVirtual };
+    void AddBranch(TString name, TObject* object, EBranchFlag flag);
+    std::pair<TString, TObject*> FindBranch(TString name, EBranchFlag flag) const;
+    virtual void RefreshBranchList() {};
+    /**
+     * interfal function for data registering
+     * @param name
+     * @param folderName
+     * @param obj
+     * @param toFile
+     */
+    virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) = 0;
+    /**
+     * internal function for data registering
+     * @param name
+     * @param Foldername
+     * @param obj
+     * @param toFile
+     */
+    virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) = 0;
 
   public:
-    IOManager() : fField(nullptr) {};
+    enum class EBranchStatus { kInput, kOutput, kVirtual, kNull };
+    IOManager() : fField(nullptr), fList(nullptr) {};
     /**
      *
      * @return number of entries in data
@@ -62,7 +90,7 @@ namespace Hal {
      * @param obj pointer to written object
      * @param toFile if true then data will be written to the output
      */
-    virtual void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) = 0;
+    void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
     /**
      * register data in output file
      * @param name name of the branch
@@ -70,7 +98,7 @@ namespace Hal {
      * @param obj pointer to written object
      * @param toFile if true then data will be written to the output
      */
-    virtual void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) = 0;
+    void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
     /**
      * not used
      * @param tempChain
@@ -80,19 +108,19 @@ namespace Hal {
     /**
      * not used
      */
-    virtual void UpdateBranches() = 0;
+    virtual void UpdateBranches() {};
     /**
      * return 1 if branch exists
      * @param BrName
      * @return
      */
-    virtual Int_t CheckBranch(const char* BrName) = 0;
+    EBranchStatus GetBranchStatus(const char* BrName);
     /**
      * return object from branch, return nullptr if object /branch does not exist
      * @param BrName
      * @return
      */
-    virtual TObject* GetObject(const char* BrName) = 0;
+    TObject* GetObject(const char* BrName);
     /**
      * return pointer to input root file
      * @return
@@ -102,8 +130,15 @@ namespace Hal {
      *
      * @return list to branches with data
      */
-    virtual TList* GetBranchNameList() = 0;
-    virtual ~IOManager() {};
+    TList* GetBranchNameList() {
+      RefreshBranchList();
+      return fList;
+    };
+    /**
+     * prints basic information about I/0
+     */
+    void PrintInfo();
+    virtual ~IOManager();
     ClassDef(IOManager, 1)
   };
 

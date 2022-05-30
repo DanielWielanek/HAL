@@ -27,7 +27,12 @@ namespace Hal {
   public:
     DataManager(IOManager* mngr = nullptr);
     static DataManager* Instance();
-    Int_t CheckBranch(const char* BrName);
+    /**
+     *
+     * @param BrName
+     * @return true if BrName exists
+     */
+    Bool_t CheckBranch(const char* BrName);
     Int_t GetEntry(Int_t i);
     Int_t GetEntries() const;
     Bool_t Init();
@@ -49,6 +54,7 @@ namespace Hal {
     void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
     void SetInChain(TChain* tempChain, Int_t ident = -1);
     void UpdateBranches();
+    void GetIOManagerInfo();
     /**
      * set proper manager
      * @param mngr

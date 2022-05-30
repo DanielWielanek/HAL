@@ -43,7 +43,10 @@ namespace Hal {
 
   void DataManager::UpdateBranches() { fManager->UpdateBranches(); }
 
-  Int_t DataManager::CheckBranch(const char* BrName) { return fManager->CheckBranch(BrName); }
+  Bool_t DataManager::CheckBranch(const char* BrName) {
+    if (fManager->GetBranchStatus(BrName) != IOManager::EBranchStatus::kNull) return kTRUE;
+    return kFALSE;
+  }
 
   TObject* DataManager::GetObject(const char* BrName) { return fManager->GetObject(BrName); }
 
@@ -52,5 +55,8 @@ namespace Hal {
   TList* DataManager::GetBranchNameList() { return fManager->GetBranchNameList(); }
 
   MagField* DataManager::GetField() const { return fManager->GetField(); }
+
+  void DataManager::GetIOManagerInfo() { fManager->PrintInfo(); }
+
   /****************************************************************************************************************************/
 }  // namespace Hal

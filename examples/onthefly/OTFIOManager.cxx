@@ -38,75 +38,17 @@ namespace HalOTF {
     gSystem->Exec(Form("rm %s", fInFileName.Data()));
   }
 
-  TObject* IOManager::GetObject(const char* BrName) {
-    TObject* object = nullptr;
-    for (auto branch : fInBranches) {
-      TString name = branch->GetName();
-      if (name.EqualTo(BrName)) { branch->SetAddress(&object); }
-    }
-    for (auto branch : fOutBranches) {
-      TString name = branch->GetName();
-      if (name.EqualTo(BrName)) { branch->SetAddress(&object); }
-    }
-    for (auto branch : fOutBranchesVirtual) {
-      if (branch.first.EqualTo(BrName)) { object = branch.second; }
-    }
-    return object;
-  }
-
   TFile* IOManager::GetInFile() { return fInFile; }
 
-  void IOManager::UpdateBranches() {}
-
-  void IOManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
-    Hal::Cout::PrintInfo(Form("REGISTER %s", name), Hal::EInfo::kLowWarning);
-    if (toFile) {
-      TBranch* br = fOutTree->Branch(name, obj);
-      fOutBranches.push_back(br);
-    } else {
-      fOutBranchesVirtual.push_back(std::pair<TString, TObject*>(name, obj));
-    }
+  void IOManager::RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
+    if (toFile) { TBranch* br = fOutTree->Branch(name, obj); }
   }
 
-  void IOManager::Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
-    if (toFile) {
-      TBranch* br = fOutTree->Branch(name, obj);
-      fOutBranches.push_back(br);
-    } else {
-      fOutBranchesVirtual.push_back(std::pair<TString, TObject*>(name, obj));
-    }
+  void IOManager::RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
+    if (toFile) { TBranch* br = fOutTree->Branch(name, obj); }
   }
 
   void IOManager::SetInChain(TChain* tempChain, Int_t ident) {}
-
-  Int_t IOManager::CheckBranch(const char* BrName) {
-    for (auto branch : fInBranches) {
-      TString name = branch->GetName();
-      if (name.EqualTo(BrName)) { return 1; }
-    }
-    for (auto branch : fOutBranches) {
-      TString name = branch->GetName();
-      if (name.EqualTo(BrName)) { return 1; }
-    }
-    for (auto branch : fOutBranchesVirtual) {
-      if (branch.first.EqualTo(BrName)) { return 1; }
-    }
-    return 0;
-  }
-
-  TList* IOManager::GetBranchNameList() {
-    TList* l = new TList();
-    for (auto branch : fInBranches) {
-      l->AddLast(new TObjString(branch->GetName()));
-    }
-    for (auto branch : fOutBranches) {
-      l->AddLast(new TObjString(branch->GetName()));
-    }
-    for (auto branch : fOutBranchesVirtual) {
-      l->AddLast(new TObjString(branch.first));
-    }
-    return l;
-  }
 
   Int_t IOManager::GetEntry(Int_t i) {
     if (i < fEntries) return 1;

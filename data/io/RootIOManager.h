@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <RtypesCore.h>
+#include <TList.h>
 #include <TString.h>
 
 class TTree;
@@ -23,18 +24,19 @@ class TBranch;
 namespace Hal {
 
   class RootIOManager : public IOManager {
+    Int_t fEntries;
     std::vector<TString> fInFileName;
     TString fOutFileName;
     TString fOutTreeName;
-    std::vector<TFile*> fInFile;
     TFile* fOutFile;
-    std::vector<TTree*> fInTree;
     TTree* fOutTree;
-    std::vector<TString> fBranchList;
-    std::vector<TBranch*> fInBranches;
-    std::vector<TBranch*> fOutBranches;
-    std::vector<std::pair<TString, TObject*>> fOutBranchesVirtual;
+    std::vector<TFile*> fInFile;
+    std::vector<TChain*> fInChain;
+    std::vector<TObject**> fObjects;
 
+  protected:
+    virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
+    virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
 
   public:
     /**
@@ -64,23 +66,13 @@ namespace Hal {
     virtual Int_t GetEntry(Int_t i);
     Bool_t Init();
     /**
-     * return object from input file
-     * @param BrName
-     * @return
-     */
-    TObject* GetObject(const char* BrName);
-    /**
      * return pointer to the inputfile
      * @return
      */
     TFile* GetInFile();
     void AddFriend(TString name) { fInFileName.push_back(name); };
     void UpdateBranches();
-    void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
-    void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
     void SetInChain(TChain* tempChain, Int_t ident = -1);
-    Int_t CheckBranch(const char* BrName);
-    TList* GetBranchNameList();
     virtual ~RootIOManager();
     ClassDef(RootIOManager, 1)
   };

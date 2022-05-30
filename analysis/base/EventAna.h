@@ -250,7 +250,7 @@ namespace Hal {
     /**
      * set format option
      *  - kCompress - compress buffered events
-     *  - kDirectAcces - read preprocesed event from tree (that inherits from
+     *  - kDirectAcces - read preprocessed event from tree (that inherits from
      * Event)
      *  - kKeepSource - keep original structure in memory
      * @param option

@@ -26,11 +26,7 @@ namespace HalOTF {
 
   void McEvent::Update() {
     McEventInterface* s = (McEventInterface*) fSource;
-    std::cout << "SOURCE " << s->GetMcEvent() << std::endl;  // KURWA
-    TClonesArray* a = s->GetMcEvent()->GetArray();
-    std::cout << a << std::endl;
-    std::cout << a->ClassName() << std::endl;
-    fTotalTracksNo = s->GetMcEvent()->GetNTracks();
+    fTotalTracksNo      = s->GetMcEvent()->GetNTracks();
     fTracks->Clear();
     fTracks->ExpandCreateFast(fTotalTracksNo);
     OTF::McEvent* ev = s->GetMcEvent();

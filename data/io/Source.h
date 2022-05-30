@@ -38,7 +38,7 @@ namespace Hal {
      *
      * @return name of the source data (usually root file)
      */
-    TString GetSourceName() const { return fFileName; };
+    TString GetSourceName() const { return fFileName[0]; };
     /**
      *
      * @return IO Manager that is used to acces the data

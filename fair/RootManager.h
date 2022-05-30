@@ -24,19 +24,21 @@ class TList;
 namespace Hal {
   namespace Fair {
     class RootManager : public IOManager {
+    protected:
+      virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
+      virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
+      virtual void RefreshBranchList();
+
     public:
       RootManager() {};
       TObject* GetObject(const char* BrName);
       TFile* GetInFile();
       void UpdateBranches();
-      void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
-      void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
       void SetInChain(TChain* tempChain, Int_t ident = -1);
       Int_t CheckBranch(const char* BrName);
       Int_t GetEntries() const { return -1; }
       Int_t GetEntry(Int_t /*i*/) { return -1; };
       virtual Bool_t Init() { return kTRUE; }
-      TList* GetBranchNameList();
       virtual ~RootManager() {};
       ClassDef(RootManager, 1)
     };

@@ -143,7 +143,14 @@ namespace Hal {
     if (fDirectAcces == kFALSE) {
       fCurrentEvent = dataManager->GetEventFromTree(fFormatID);
     } else {
-      fCurrentEvent = (Event*) DataManager::Instance()->GetObject(dataManager->GetFormat(fFormatID)->ClassName());
+      TString branchName = dataManager->GetFormat(fFormatID)->ClassName();
+      std::vector<TString> patterns;
+      patterns.push_back(branchName);
+      patterns.push_back(branchName + ".");
+      for (auto name : patterns) {
+        fCurrentEvent = (Event*) DataManager::Instance()->GetObject(name);
+        if (fCurrentEvent) break;
+      }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];
     fSumMap       = new Int_t[fTrackMapSize];
@@ -199,11 +206,9 @@ namespace Hal {
       std::vector<TString> patterns;
       patterns.push_back(branchName);
       patterns.push_back(branchName + ".");
-      patterns.push_back("HalEvent");
-      patterns.push_back("HalEvent.");
       for (auto name : patterns) {
         fCurrentEvent = (Event*) DataManager::Instance()->GetObject(name);
-        if (fCurrentEvent) break;
+        if (fCurrentEvent) { break; }
       }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];

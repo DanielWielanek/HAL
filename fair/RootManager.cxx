@@ -11,6 +11,10 @@
 
 #include <FairRootManager.h>
 #include <RtypesCore.h>
+#include <TCollection.h>
+#include <TList.h>
+#include <TObjString.h>
+
 namespace Hal {
   namespace Fair {
     TObject* RootManager::GetObject(const char* BrName) { return FairRootManager::Instance()->GetObject(BrName); }
@@ -19,20 +23,29 @@ namespace Hal {
 
     void RootManager::UpdateBranches() { FairRootManager::Instance()->UpdateBranches(); }
 
-    void RootManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
+    void RootManager::SetInChain(TChain* tempChain, Int_t ident) { FairRootManager::Instance()->SetInChain(tempChain, ident); }
+
+    void RootManager::RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
       FairRootManager::Instance()->Register(name, folderName, obj, toFile);
     }
 
-    void RootManager::Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
+    void RootManager::RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
       FairRootManager::Instance()->Register(name, Foldername, obj, toFile);
     }
 
-    void RootManager::SetInChain(TChain* tempChain, Int_t ident) {
-      FairRootManager::Instance()->SetInChain(tempChain, ident);
+    void RootManager::RefreshBranchList() {
+      TList* l = FairRootManager::Instance()->GetBranchNameList();
+      if (l->GetEntries() > fList->GetEntries()) {
+        for (int i = 0; i < l->GetEntries(); i++) {
+          TObjString* name = (TObjString*) l->At(i);
+          Bool_t found     = kFALSE;
+          for (int j = 0; j < fList->GetEntries(); j++) {
+            TObjString* name2 = (TObjString*) fList->At(j);
+            if (name->GetString().EqualTo(name2->GetString())) found = kTRUE;
+          }
+          if (!found) { fList->AddLast(new TObjString(*name)); }
+        }
+      }
     }
-
-    Int_t RootManager::CheckBranch(const char* BrName) { return FairRootManager::Instance()->CheckBranch(BrName); }
-
-    TList* RootManager::GetBranchNameList() { return FairRootManager::Instance()->GetBranchNameList(); }
   }  // namespace Fair
 }  // namespace Hal

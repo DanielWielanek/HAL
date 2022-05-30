@@ -20,7 +20,6 @@
 #include <TList.h>
 #include <TNamed.h>
 #include <TObjString.h>
-#include <iostream>
 
 namespace Hal {
 
@@ -48,8 +47,7 @@ namespace Hal {
     switch (flag) {
       case EBranchFlag::kIn: {
         for (auto branch : fInBranches) {
-          std::cout << "Compare " << branch.first << " " << name << (branch.first.EqualTo(name)) << std::endl;
-          if (branch.first.EqualTo(name)) return branch;
+         if (branch.first.EqualTo(name)) return branch;
         }
       } break;
       case EBranchFlag::kOut: {
@@ -64,9 +62,7 @@ namespace Hal {
       } break;
       default: {
         for (auto branch : fInBranches) {
-          std::cout << "Compare " << branch.first << " " << name << (branch.first.EqualTo(name)) << " " << branch.second
-                    << std::endl;
-          if (branch.first.EqualTo(name)) return branch;
+         if (branch.first.EqualTo(name)) return branch;
         }
         for (auto branch : fOutBranches) {
           if (branch.first.EqualTo(name)) return branch;

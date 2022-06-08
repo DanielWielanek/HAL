@@ -52,6 +52,7 @@ namespace Hal {
     Double_t EvalNumError(Double_t q, Double_t R) const;
     Double_t EvalNumErrorBin(Int_t x, Int_t y) const { return fSplined->ErrorBin(x, y) * 1.5; }
     Femto::EKinematics GetFrame() const { return fFrame; };
+    TH2D* GetHisto() const { return fHisto2d; }
     CorrFitMapKstarRstar& operator=(const CorrFitMapKstarRstar& other);
     virtual ~CorrFitMapKstarRstar();
     ClassDef(CorrFitMapKstarRstar, 1)

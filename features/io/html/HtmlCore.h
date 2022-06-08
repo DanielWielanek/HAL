@@ -138,6 +138,10 @@ namespace Hal {
      * be used
      */
     static void CopyCss(TString dir, TString css_name = "table.css");
+    /**
+     * copy Javascript files to given directory
+     * @param dir
+     */
     static void CopyJs(TString dir);
     /**
      * extract this object into HTML

@@ -54,6 +54,7 @@ hist/HistogramManager.cxx
 hist/MultiGraph.cxx
 hist/Splines.cxx
 hist/ChiSqMap2D.cxx
+hist/FastHist.cxx
 
 std/StdHist.cxx
 std/StdString.cxx

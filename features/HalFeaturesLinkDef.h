@@ -97,6 +97,10 @@
 #pragma link C++ class Hal::HistogramManager_4_1D < TH1I> + ;
 #pragma link C++ class Hal::HistogramManager_4_2D < TH2I> + ;
 #pragma link C++ class Hal::HistogramManager_4_3D < TH3I> + ;
+#pragma link C++ class Hal::FastHist + ;
+#pragma link C++ class Hal::FastHist1D + ;
+#pragma link C++ class Hal::FastHist2D + ;
+#pragma link C++ class Hal::FastHist3D + ;
 
 //=============================
 #pragma link C++ class Hal::ObjectMatrix_1 + ;
@@ -142,7 +146,7 @@
 
 #pragma link C++ class Hal::Minimizer + ;
 #pragma link C++ class Hal::FitParam + ;
-#pragma link C++ class std::vector < Hal::HalFitParam> + ;
+#pragma link C++ class std::vector < Hal::FitParam> + ;
 
 
 //#pragma link C++ class HalParameter+;

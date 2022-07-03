@@ -17,7 +17,7 @@
 namespace Hal {
   namespace Femto {
 
-    inline Double_t FmToGeV() { return 5.0760003; };
+    inline Double_t FmToGeV() { return 5.06842372; };
 
     enum class EKinematics {
       kPRF,   //!< kPRF

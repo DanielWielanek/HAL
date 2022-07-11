@@ -13,6 +13,7 @@
 
 #include "Array.h"
 #include "DividedHisto.h"
+#include "FemtoYlmIndexes.h"
 
 #include <TMath.h>
 #include <TString.h>
@@ -25,6 +26,7 @@ namespace Hal {
    * class for storing sphercial harmonics correlation functions
    */
   class FemtoSHCF : public DividedHisto1D {
+    friend class CorrFitSCHF;
     const Int_t fMaxJM;
     TH1D** fNumReal;  //[fMaxJM] Real parts of Ylm components of the numerator
     TH1D** fNumImag;  // [fMaxJM]Imaginary parts of Ylm components of the numerator
@@ -35,23 +37,18 @@ namespace Hal {
     TH1D** fCFReal;  //[fMaxJM] real CF's
     TH1D** fCFImag;  //[fMaxJM] img CF's
     Int_t fFactorialsSize;
-    Int_t fMaxL;
     Array_1<Double_t>* covmnum;  // Covariance matrix for the numerator
     Array_1<Double_t>* covmden;  // Covariance matrix for the denominator
     Array_1<Double_t>* covmcfc;  // Covariance matrix for the  CF
     Double_t fNormPurity;        //
     Double_t fNormRadius;        //
     Double_t fNormBohr;          //
-    Double_t* fEls;              //[fMaxJM]
-    Double_t* fEms;              //[fMaxJM]
-    Double_t* fElsi;             //[fMaxJM]
-    Double_t* fEmsi;             //[fMaxJM]
     Double_t* fFactorials;       //[fFactorialsSize]
     TH3D* fCfcov;                //
+    FemtoYlmIndexes fLmVals;
 
     Double_t Sil(Double_t n) const;
     Double_t Sil2(Double_t n) const;
-    Int_t GetIndexForLM(int el, int em) const;
     Int_t GetBin(int qbin, int ilmzero, int zeroimag, int ilmprim, int primimag) const;
     Double_t Sqr(Double_t val1, Double_t val2) const;
     TH1D* Histo(int ilm, int em, Option_t* opt, Double_t scale) const;
@@ -88,7 +85,7 @@ namespace Hal {
      * fast adding histograms without recalculation of CF's
      * @param obj
      */
-    void FastAdd(const FemtoSHCF* obj);
+    virtual void FastAdd(const FemtoSHCF* obj);
 
   public:
     /** default constructor for streamer
@@ -109,8 +106,8 @@ namespace Hal {
      * @param other
      */
     FemtoSHCF(const FemtoSHCF& other);
-    void FillNumObj(TObject* obj);
-    void FillDenObj(TObject* obj);
+    virtual void FillNumObj(TObject* obj);
+    virtual void FillDenObj(TObject* obj);
     /**
      * primitive constructor to conver angular Femto3DCF into SH CF
      * @param cf

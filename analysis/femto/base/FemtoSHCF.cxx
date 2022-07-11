@@ -55,17 +55,13 @@ namespace Hal {
     fCFReal(NULL),
     fCFImag(NULL),
     fFactorialsSize(0),
-    fMaxL(0),
     covmnum(NULL),
     covmden(NULL),
     covmcfc(NULL),
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
-    fEls(NULL),
-    fEms(NULL),
-    fElsi(NULL),
-    fEmsi(NULL),
+    fLmVals(FemtoYlmIndexes(1)),
     fFactorials(NULL),
     fCfcov(NULL) {
     gSystem->Load("libgsl.so");
@@ -83,45 +79,19 @@ namespace Hal {
     fCFReal(NULL),
     fCFImag(NULL),
     fFactorialsSize((maxL + 1) * 4),
-    fMaxL(maxL),
     covmnum(NULL),
     covmden(NULL),
     covmcfc(NULL),
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
-    fEls(NULL),
-    fEms(NULL),
-    fElsi(NULL),
-    fEmsi(NULL),
+    fLmVals(FemtoYlmIndexes(maxL)),
     fFactorials(NULL),
     fCfcov(NULL) {
     SetNorm(0, 0.5, 0);
     FemtoYlm* ylm = FemtoYlm::Instance();
     ylm->InitializeYlms();
-    int el = 0;
-    int em = 0;
-    int il = 0;
-    fEls   = new Double_t[fMaxJM];
-    fEms   = new Double_t[fMaxJM];
-    fElsi  = new Double_t[fMaxJM];
-    fEmsi  = new Double_t[fMaxJM];
-    do {
-      fEls[il]  = el;
-      fEms[il]  = em;
-      fElsi[il] = (int) el;
-      fEmsi[il] = (int) em;
 
-#ifdef _FINISH_DEBUG_
-      std::cout << "il el em " << il << " " << fElsi[il] << " " << fEmsi[il] << std::endl;
-#endif
-      em++;
-      il++;
-      if (em > el) {
-        el++;
-        em = -el;
-      }
-    } while (el <= maxL);
     fNumReal = new TH1D*[fMaxJM];
     fNumImag = new TH1D*[fMaxJM];
     fDenReal = new TH1D*[fMaxJM];
@@ -142,13 +112,13 @@ namespace Hal {
     }
 
     for (int ihist = 0; ihist < fMaxJM; ihist++) {
-      TString hname   = Form("NumReYlm%i%i", (int) fElsi[ihist], (int) fEmsi[ihist]);
+      TString hname   = Form("NumReYlm%i%i", fLmVals.GetElsi(ihist), fLmVals.GetEmsi(ihist));
       fNumReal[ihist] = new TH1D(hname, hname, bins, min, max);
-      hname           = Form("NumImYlm%i%i", (int) fElsi[ihist], (int) fEmsi[ihist]);
+      hname           = Form("NumImYlm%i%i", fLmVals.GetElsi(ihist), fLmVals.GetEmsi(ihist));
       fNumImag[ihist] = new TH1D(hname, hname, bins, min, max);
-      hname           = Form("DenReYlm%i%i", (int) fElsi[ihist], (int) fEmsi[ihist]);
+      hname           = Form("DenReYlm%i%i", fLmVals.GetElsi(ihist), fLmVals.GetEmsi(ihist));
       fDenReal[ihist] = new TH1D(hname, hname, bins, min, max);
-      hname           = Form("DenImYlm%i%i", (int) fElsi[ihist], (int) fEmsi[ihist]);
+      hname           = Form("DenImYlm%i%i", (int) fLmVals.GetElsi(ihist), fLmVals.GetEmsi(ihist));
       fDenImag[ihist] = new TH1D(hname, hname, bins, min, max);
       fNumReal[ihist]->GetXaxis()->SetName(x_name);
       fNumReal[ihist]->GetYaxis()->SetName(y_name);
@@ -195,10 +165,10 @@ namespace Hal {
     fMaxJM(other.fMaxJM),
     fFrame(other.fFrame),
     fFactorialsSize(other.fFactorialsSize),
-    fMaxL(other.fMaxL),
     fNormPurity(other.fNormPurity),
     fNormRadius(other.fNormRadius),
-    fNormBohr(other.fNormBohr) {
+    fNormBohr(other.fNormBohr),
+    fLmVals(other.fLmVals) {
     if (other.fNumReal) {
       fNumReal = new TH1D*[fMaxJM];
       fNumImag = new TH1D*[fMaxJM];
@@ -210,31 +180,9 @@ namespace Hal {
         fDenReal[i] = (TH1D*) other.fDenReal[i]->Clone();
         fDenImag[i] = (TH1D*) other.fDenImag[i]->Clone();
       }
-      fEls          = new Double_t[fMaxJM];
-      fEms          = new Double_t[fMaxJM];
-      fElsi         = new Double_t[fMaxJM];
-      fEmsi         = new Double_t[fMaxJM];
+
       FemtoYlm* ylm = FemtoYlm::Instance();
       ylm->InitializeYlms();
-      int el = 0;
-      int em = 0;
-      int il = 0;
-      do {
-        fEls[il]  = el;
-        fEms[il]  = em;
-        fElsi[il] = (int) el;
-        fEmsi[il] = (int) em;
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "il el em " << il << " " << fElsi[il] << " " << fEmsi[il] << std::endl;
-#endif
-        em++;
-        il++;
-        if (em > el) {
-          el++;
-          em = -el;
-        }
-      } while (el <= fMaxL);
       Double_t fac   = 1;
       fFactorials[0] = 1;
       for (int iter = 1; iter < fFactorialsSize; iter++) {
@@ -262,53 +210,47 @@ namespace Hal {
   }
 
   TH1D* FemtoSHCF::GetCFRe(int el, int em) const {
-    if (GetIndexForLM(el, em) >= 0 && fCFReal != NULL) {
-      return fCFReal[GetIndexForLM(el, em)];
+    if (fLmVals.GetIndex(el, em) >= 0 && fCFReal != NULL) {
+      return fCFReal[fLmVals.GetIndex(el, em)];
     } else {
       return NULL;
     }
   }
 
   TH1D* FemtoSHCF::GetCFIm(int el, int em) const {
-    if (GetIndexForLM(el, em) >= 0 && fCFImag != NULL) {
-      return fCFImag[GetIndexForLM(el, em)];
+    if (fLmVals.GetIndex(el, em) >= 0 && fCFImag != NULL) {
+      return fCFImag[fLmVals.GetIndex(el, em)];
     } else {
       return NULL;
     }
   }
 
   TH1D* FemtoSHCF::GetNumRe(int el, int em) const {
-    if (GetIndexForLM(el, em) >= 0)
-      return fNumReal[GetIndexForLM(el, em)];
+    if (fLmVals.GetIndex(el, em) >= 0)
+      return fNumReal[fLmVals.GetIndex(el, em)];
     else
       return NULL;
   }
 
   TH1D* FemtoSHCF::GetNumIm(int el, int em) const {
-    if (GetIndexForLM(el, em) >= 0)
-      return fNumImag[GetIndexForLM(el, em)];
+    if (fLmVals.GetIndex(el, em) >= 0)
+      return fNumImag[fLmVals.GetIndex(el, em)];
     else
       return NULL;
   }
 
   TH1D* FemtoSHCF::GetDenRe(int el, int em) const {
-    if (GetIndexForLM(el, em) >= 0)
-      return fDenReal[GetIndexForLM(el, em)];
+    if (fLmVals.GetIndex(el, em) >= 0)
+      return fDenReal[fLmVals.GetIndex(el, em)];
     else
       return NULL;
   }
 
   TH1D* FemtoSHCF::GetDenIm(int el, int em) const {
-    if (GetIndexForLM(el, em) >= 0)
-      return fDenImag[GetIndexForLM(el, em)];
+    if (fLmVals.GetIndex(el, em) >= 0)
+      return fDenImag[fLmVals.GetIndex(el, em)];
     else
       return NULL;
-  }
-
-  Int_t FemtoSHCF::GetIndexForLM(int el, int em) const {
-    for (int iter = 0; iter < fMaxJM; iter++)
-      if ((el == fElsi[iter]) && (em == fEmsi[iter])) return iter;
-    return -1;
   }
 
   Int_t FemtoSHCF::GetBin(int qbin, int ilmzero, int zeroimag, int ilmprim, int primimag) const {
@@ -363,38 +305,40 @@ namespace Hal {
     if (gPad == NULL) { new TCanvas(); }
     TVirtualPad* pad = gPad;
     gPad->Clear();
-    TVirtualPad* temp_pad = gPad;
-    pad->Divide(GetL() + 1, GetL() + 1);
-    int pad_id = 1;
-    for (int i = 0; i <= GetL(); i++) {
-      int I = i;
-      for (int j = 0; j <= GetL(); j++) {
-        int J = j - i;
-        if (j <= i) I = i;
-        pad->cd(pad_id++);
-        gPad->SetBottomMargin(0.025);
-        gPad->SetTopMargin(0.025);
-        gPad->SetLeftMargin(0.025);
-        gPad->SetRightMargin(0.025);
-        TH1D* cfr = GetCFRe(I, J);  // GetHisto(I,J,kTRUE,"re");
-        TH1D* cfi = GetCFIm(I, J);  // GetHisto(I,J,kTRUE,"im");
-        if (cfi) cfi->SetLineColor(kRed);
-        if (cfi && cfr) {
+
+
+    auto drawSub = [](Int_t l, Int_t m, const FemtoSHCF* thiz) {
+      gPad->SetBottomMargin(0.045);
+      gPad->SetTopMargin(0.025);
+      gPad->SetLeftMargin(0.045);
+      gPad->SetRightMargin(0.025);
+      TH1D* cfr = thiz->GetCFRe(l, m);  // GetHisto(I,J,kTRUE,"re");
+      TH1D* cfi = thiz->GetCFIm(l, m);  // GetHisto(I,J,kTRUE,"im");
+      if (cfi) cfi->SetLineColor(kRed);
+      if (cfi && cfr) {
+        cfr->SetMinimum(0);
+        double max = cfr->GetBinContent(cfr->GetMaximumBin());
+        double min = cfr->GetBinContent(cfr->GetMinimumBin());
+        if (min < 0) {
+          cfr->SetMinimum(-1);
+        } else {
           cfr->SetMinimum(0);
-          double max = cfr->GetBinContent(cfr->GetMaximumBin());
-          double min = cfr->GetBinContent(cfr->GetMinimumBin());
-          if (min < 0) {
-            cfr->SetMinimum(-1);
-          } else {
-            cfr->SetMinimum(0);
-          }
-          if (max < 1) { cfr->SetMaximum(1); }
-          cfr->SetStats(kFALSE);
-          cfr->SetName(Form("%4.5f", gRandom->Rndm()));
-          cfr->Draw();
-          cfi->Draw("SAME");
         }
-        I++;
+        if (max < 1) { cfr->SetMaximum(1); }
+        cfr->SetStats(kFALSE);
+        cfr->SetName(Form("%4.5f", gRandom->Rndm()));
+        cfr->Draw();
+        cfi->Draw("SAME");
+      }
+    };
+
+    TVirtualPad* temp_pad = gPad;
+    gPad->Divide(GetL() * 2 - 1, GetL());
+
+    for (int l = 0; l < GetL(); l++) {
+      for (int m = -l; m <= l; m++) {
+        temp_pad->cd(fLmVals.GetPadId(l, m));
+        drawSub(l, m, this);
       }
     }
     gPad = temp_pad;
@@ -450,13 +394,13 @@ namespace Hal {
   }
 
   void FemtoSHCF::GetElEmForIndex(int aIndex, double& aEl, double& aEm) const {
-    aEl = fEls[aIndex];
-    aEm = fEms[aIndex];
+    aEl = fLmVals.GetEls(aIndex);
+    aEm = fLmVals.GetEms(aIndex);
   }
 
   void FemtoSHCF::GetElEmForIndex(int aIndex, int& aEl, int& aEm) const {
-    aEl = fEls[aIndex];
-    aEm = fEms[aIndex];
+    aEl = fLmVals.GetElsi(aIndex);
+    aEm = fLmVals.GetEmsi(aIndex);
   }
 
   void FemtoSHCF::Browse(TBrowser* b) {
@@ -1807,8 +1751,8 @@ namespace Hal {
     /// fix CF by using T(l'm) = T(l,-m)*
     for (int l = 0; l <= GetL(); l++) {
       for (int m = -l; m < 0; m++) {
-        Int_t from = GetIndexForLM(l, -m);
-        Int_t to   = GetIndexForLM(l, m);
+        Int_t from = fLmVals.GetIndex(l, -m);
+        Int_t to   = fLmVals.GetIndex(l, m);
         for (int i = 1; i <= fCFReal[from]->GetNbinsX(); i++) {
           fCFReal[to]->SetBinContent(i, fCFReal[from]->GetBinContent(i));
           fCFReal[to]->SetBinError(i, fCFReal[from]->GetBinError(i));
@@ -1884,10 +1828,6 @@ namespace Hal {
     if (covmnum) delete covmnum;
     if (covmden) delete covmden;
     if (covmcfc) delete covmcfc;
-    if (fEls) delete[] fEls;
-    if (fEms) delete[] fEms;
-    if (fElsi) delete[] fElsi;
-    if (fEmsi) delete[] fEmsi;
     if (fCfcov) delete fCfcov;
   }
 
@@ -1987,7 +1927,7 @@ namespace Hal {
   void FemtoSHCF::FillNumObj(TObject* obj) {
     FemtoPair* pair = (FemtoPair*) obj;
     Double_t kv     = TMath::Sqrt(pair->GetX() * pair->GetX() + pair->GetY() * pair->GetY() + pair->GetZ() * pair->GetZ());
-    std::complex<double>* YlmBuffer = FemtoYlm::YlmUpToL(fMaxL, pair->GetX(), pair->GetY(), pair->GetZ());
+    std::complex<double>* YlmBuffer = FemtoYlm::YlmUpToL(fLmVals.GetL(), pair->GetX(), pair->GetY(), pair->GetZ());
     for (int ilm = 0; ilm < GetMaxJM(); ilm++) {
       fNumReal[ilm]->Fill(kv, real(YlmBuffer[ilm]) * pair->GetWeight());
       fNumImag[ilm]->Fill(kv, -imag(YlmBuffer[ilm]) * pair->GetWeight());
@@ -2016,7 +1956,7 @@ namespace Hal {
   void FemtoSHCF::FillDenObj(TObject* obj) {
     FemtoPair* pair = (FemtoPair*) obj;
     Double_t kv     = TMath::Sqrt(pair->GetX() * pair->GetX() + pair->GetY() * pair->GetY() + pair->GetZ() * pair->GetZ());
-    std::complex<double>* YlmBuffer = FemtoYlm::YlmUpToL(fMaxL, pair->GetX(), pair->GetY(), pair->GetZ());
+    std::complex<double>* YlmBuffer = FemtoYlm::YlmUpToL(fLmVals.GetL(), pair->GetX(), pair->GetY(), pair->GetZ());
     for (int ilm = 0; ilm < GetMaxJM(); ilm++) {
       fDenReal[ilm]->Fill(kv, real(YlmBuffer[ilm]) * pair->GetWeight());
       fDenImag[ilm]->Fill(kv, -imag(YlmBuffer[ilm]) * pair->GetWeight());

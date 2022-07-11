@@ -12,10 +12,13 @@
 #include "CorrFit3DCF.h"
 
 #include "Array.h"
+#include "FemtoYlmIndexes.h"
 
 #include <complex>
+#include <vector>
 
-
+class TH1D;
+class TH3D;
 class TClonesArray;
 namespace Hal {
   class CorrFitSHCF : public CorrFitFunc {
@@ -27,33 +30,35 @@ namespace Hal {
     static const Int_t fgRlong;
     static const Int_t fgLambda;
     static const Int_t fgNorm;
-    Int_t fL, fMaxJM, fSamples, fBins;
-    Array_2<Double_t>* fIntegralsRe;
-    Array_2<Double_t>* fIntegralsIm;
-    Array_1<Double_t>* fX;
-    Array_1<Double_t>* fY;
-    Array_1<Double_t>* fZ;
-    Array_1<Int_t>* fBinMin;
-    Array_1<Int_t>* fBinMax;
-    Double_t* fEls;   //[fMaxJM]
-    Double_t* fEms;   //[fMaxJM]
-    Double_t* fElsi;  //[fMaxJM]
-    Double_t* fEmsi;  //[fMaxJM]
+    Bool_t fPhysical;
+
+    Int_t fBins;
     Int_t fBinRange[2];
-    TClonesArray* fCFHistogramsRe;
-    TClonesArray* fCFHistogramsIm;
-    TClonesArray* fNumeratorsRe;
-    TClonesArray* fNumeratorsIm;
-    mutable std::complex<double>* fYlmBuffer;  //[fMaxJM]
-    void PrepareIntegrals();
+
+    Double_t fAxisMin;
+    Double_t fAxisStepOver;
+    TH3D* fCovCF;
+    std::vector<TH1D*> fCFHistogramsRe;
+    std::vector<TH1D*> fCFHistogramsIm;
+    std::vector<std::vector<Double_t>> fSqrErrorsIm;
+    std::vector<std::vector<Double_t>> fSqrErrorsRe;
+    mutable std::vector<std::vector<std::vector<Double_t>>> fCalculatedRe;
+    mutable std::vector<std::vector<std::vector<Double_t>>> fCalculatedIm;
+    std::vector<std::complex<double>> fYlmValBuffer;
+    TObject* fPrevCF;
+
 
   protected:
-    CorrFit3DCF* f3d;
+    Int_t fMaxJM;
+    mutable std::complex<double>* fYlmBuffer;  //[fMaxJM]
+    FemtoYlmIndexes fLmVals;
+    virtual void Prepare(TObject* obj);
+    virtual void Check();
     /**
      * called for each calculation of chi2 or loglikehood minimalization - used
      * for recalculation CF is parameters are changed
      */
-    virtual void RecalculateFunction() const { f3d->RecalculateFunction(); };
+    virtual void RecalculateFunction() const;
     /**
      * not implemented !
      */
@@ -65,7 +70,7 @@ namespace Hal {
      */
     void SetErrors(TH1* /*num*/, const TH1* /*den*/) const {};
     void EstimateActiveBins();
-    Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
+    virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
     double GetChiTFD(const double* /*par*/) const { return 0; };
     double GetChiTF(const double* par) const;
     double GetLogTFD(const double* /*par*/) const { return 0; };
@@ -88,10 +93,23 @@ namespace Hal {
      * @param opt
      */
     virtual void Fit(TObject* histo);
-    Int_t GetIndexForLM(int el, int em) const;
+    /**
+     * return value of theoretical cf from interpolation
+     * @param q
+     * @param elm
+     * @return
+     */
+    Double_t GetCFValRe(Double_t q, Int_t elm) const;
+    /**
+     * return value of theoretical cf from interpolation
+     * @param q
+     * @param elm
+     * @return
+     */
+    Double_t GetCFValIm(Double_t q, Int_t elm) const;
 
   public:
-    CorrFitSHCF(CorrFit3DCF* f = NULL);
+    CorrFitSHCF(Int_t parNo = 3);
     /**
      * set range fo fitting
      * @param x_min min. value in out direction

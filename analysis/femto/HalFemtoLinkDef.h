@@ -131,6 +131,8 @@
 #pragma link C++ class Hal::FemtoImaging3D + ;
 
 #pragma link C++ class Hal::CorrFitSHCF + ;
+#pragma link C++ class Hal::CorrFitSHFrom3D + ;
+#pragma link C++ class Hal::FemtoYlmIndexes + ;
 #pragma link C++ class Hal::FemtoYlm + ;
 #pragma link C++ class Hal::FemtoSHCF + ;
 #endif

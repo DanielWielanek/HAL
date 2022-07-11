@@ -41,6 +41,8 @@ ana/FemtoFreezoutsAna.cxx
 ana/FemtoDumpPairAna.cxx
 ana/FemtoEventBinsAna.cxx
 
+base/FemtoYlm.cxx
+base/FemtoYlmIndexes.cxx
 base/FemtoDPhiDEta.cxx
 base/Femto1DCF.cxx
 base/Femto3DCF.cxx
@@ -88,7 +90,7 @@ corrfit/fittingfunctions/CorrFit3DCFGaussCross.cxx
 corrfit/fittingfunctions/CorrFit1DCFCumac.cxx
 corrfit/fittingfunctions/CorrFit3DCFBowlerSinyukov.cxx
 corrfit/fittingfunctions/CorrFit3DCFBowlerSinyukovExtra.cxx
-
+corrfit/sh/CorrFitSHFrom3D.cxx
 
 
 weights/FemtoFsiParsed.cxx

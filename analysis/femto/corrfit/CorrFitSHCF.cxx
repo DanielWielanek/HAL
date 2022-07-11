@@ -32,47 +32,53 @@ namespace Hal {
   const Int_t CorrFitSHCF::fgLambda = 3;
   const Int_t CorrFitSHCF::fgNorm   = 4;
 
-  CorrFitSHCF::CorrFitSHCF(CorrFit3DCF* f) :
-    CorrFitFunc(f->GetParametersNo(), 10),
-    fL(0),
+  Double_t CorrFitSHCF::GetCFValRe(Double_t q, Int_t elm) const {
+    Int_t bin = (q - fAxisMin) * fAxisStepOver;
+    if (bin >= fBins) return 1;
+    return fCalculatedRe[elm][bin][0] + fCalculatedRe[elm][bin][1] * q + fCalculatedRe[elm][bin][2] * q * q;
+  }
+
+  Double_t CorrFitSHCF::GetCFValIm(Double_t q, Int_t elm) const {
+    Int_t bin = (q - fAxisMin) * fAxisStepOver;
+    if (bin >= fBins) return 1;
+    return fCalculatedIm[elm][bin][0] + fCalculatedIm[elm][bin][1] * q + fCalculatedIm[elm][bin][2] * q * q;
+  }
+
+  CorrFitSHCF::CorrFitSHCF(Int_t parNo) :
+    CorrFitFunc(parNo, 1),
+    fPhysical(kFALSE),
     fMaxJM(0),
-    fSamples(10000),
-    fBins(0),
-    fIntegralsRe(NULL),
-    fIntegralsIm(NULL),
-    fX(NULL),
-    fY(NULL),
-    fZ(NULL),
-    fBinMin(NULL),
-    fBinMax(NULL),
-    fEls(NULL),
-    fEms(NULL),
-    fElsi(NULL),
-    fEmsi(NULL),
-    fYlmBuffer(NULL),
-    f3d(f) {
+    fBins(1),
+    fLmVals(FemtoYlmIndexes(0)),
+    fAxisMin(0),
+    fAxisStepOver(0),
+    fCovCF(nullptr),
+    fPrevCF(nullptr),
+    fYlmBuffer(nullptr) {
+    SetParameterName(0, "R_{out}");
+    SetParameterName(1, "R_{side}");
+    SetParameterName(2, "R_{long}");
+    SetParameterName(3, "#lambda");
+    SetParameterName(4, "N");
     for (int i = 0; i < GetParametersNo(); i++) {
-      SetParameterName(i, f3d->GetParameterName(i));
       SetRange(0, 1);
     }
-    fCFHistogramsRe = new TClonesArray("TH1D");
-    fCFHistogramsIm = new TClonesArray("TH1D");
-    fNumeratorsRe   = new TClonesArray("TH1D");
-    fNumeratorsIm   = new TClonesArray("TH1D");
     fBinRange[0] = fBinRange[1] = 0;
-    fBinMin = fBinMax = NULL;
   }
 
   void CorrFitSHCF::EstimateActiveBins() {
     fActiveBins = 0;
+    if (fMask) delete fMask;
+    fMask      = new TH1D("mask", "mask", fMaxJM * fNumeratorHistogram->GetNbinsX(), 0, 1);
+    Int_t jump = fNumeratorHistogram->GetNbinsX();
+
     for (int i = fBinRange[0]; i < fBinRange[1]; i++) {
-      TH1D* T = (TH1D*) fCFHistogramsRe->UncheckedAt(0);
-      if (T->GetBinContent(i) < fThreshold) continue;
+      TH1* num = fNumeratorHistogram;
+      if (num->GetBinContent(i) < fThreshold) continue;
       for (int j = 0; j < fMaxJM; j++) {
-        if (i < fBinMin->Get(j)) continue;
-        if (i > fBinMax->Get(j)) continue;
-        fActiveBins += 2;
+        fMask->SetBinContent(jump * j + i, 1);
       }
+      fActiveBins += fMaxJM * 2;  // x2 bo im + re
     }
     Double_t free_parameters = 0;
     for (int i = 0; i < GetParametersNo(); i++) {
@@ -85,44 +91,87 @@ namespace Hal {
     Double_t f = 0.0;
     Double_t A, C;
     Double_t e, chi; /* FIXME */
-    for (int i = 0; i < GetParametersNo(); i++) {
-      fTempParamsEval[i] = par[i];
-      if (f3d) f3d->fTempParamsEval[i] = par[i];
-    }
-    if (f3d) f3d->ParametersChanged();
     ParametersChanged();
+    Int_t bins = fNumeratorHistogram->GetNbinsX();
+    Double_t Q[1];
+    switch (fLmVals.GetL()) {
+      case 1: {
+        for (int i = 1; i <= bins; i++) {
+          if (fMask->GetBinContent(i) == 0) continue;
+          Q[0]          = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
+          Double_t cf00 = fCFHistogramsRe[0]->GetBinContent(i);
+          Double_t er00 = fCFHistogramsRe[0]->GetBinError(i);
+          Double_t th00 = GetCFValRe(Q[0], 0);
+          chi += (cf00 - th00) * (cf00 - th00) / (er00 * er00);
+        }
+      } break;
+      case 2: {
+        Int_t indexes[2];
+        Double_t c_meas[2];
+        Double_t c_theo[2];
+        Double_t c_error[2];
+        indexes[0]       = fLmVals.GetIndex(0, 0);
+        indexes[1]       = fLmVals.GetIndex(1, 1);
+        Int_t covIndex00 = fLmVals.GetIndex(0, 0);
+        Int_t covIndex11 = fLmVals.GetIndex(1, 1);
+        for (int i = 1; i <= bins; i++) {
+          if (fMask->GetBinContent(i) == 0) continue;
+          Q[0] = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
+          for (int j = 0; j < 2; j++) {
+            c_meas[j]  = fCFHistogramsRe[indexes[j]]->GetBinContent(i);
+            c_theo[j]  = GetCFValRe(Q[0], indexes[j]);
+            c_error[j] = fCFHistogramsRe[indexes[j]]->GetBinError(i);
+          }
+          Double_t cov11 = fCovCF->GetBinContent(i, covIndex00 + 1, covIndex11 + 1);
+          chi += (c_meas[0] - c_theo[0]) * (c_meas[0] - c_theo[0]) / (c_error[0] * c_error[0]);  // c00 therm
+          chi += (c_meas[1] - c_theo[1]) * (c_meas[1] - c_theo[1]) / (c_error[1] * c_error[1]);  // c11 therm
+          chi +=
+            -2. * cov11 * (c_meas[0] - c_theo[0]) * (c_meas[1] - c_theo[1]) / (c_error[0] * c_error[1] * (1 - cov11 * cov11));
+        }
+      } break;
+      case 3: {
+        Int_t indexes[3];
+        Double_t c_meas[3];
+        Double_t c_theo[3];
+        Double_t c_error[3];
+        indexes[0] = fLmVals.GetIndex(0, 0);
 
-    for (int i = fBinRange[0]; i < fBinRange[1]; i++) {
-      TH1D* T = (TH1D*) fCFHistogramsRe->UncheckedAt(0);
-      Double_t R[1];
-      R[0] = T->GetXaxis()->GetBinCenter(i);
-      if (T->GetBinContent(i) < fThreshold) continue;
-      CalculateCF(R, par);  // calculate CF(el,elm) at R
-      for (int j = 0; j < fMaxJM; j++) {
-        if (i < fBinMin->Get(j)) continue;
-        if (i > fBinMax->Get(j)) continue;
-        TH1D* re = (TH1D*) fCFHistogramsRe->UncheckedAt(j);
-        TH1D* im = (TH1D*) fCFHistogramsIm->UncheckedAt(i);
-        A        = re->GetBinContent(i);
-        e        = re->GetBinError(i);
-        C        = fYlmBuffer[j].real();
-        chi      = A - C;
-        f += chi * chi / e * e;
+        indexes[1] = fLmVals.GetIndex(2, 0);
+        indexes[2] = fLmVals.GetIndex(2, 2);
 
-        A   = re->GetBinContent(i);
-        e   = re->GetBinError(i);
-        C   = fYlmBuffer[j].real();
-        chi = A - C;
-        f += chi * chi / e * e;
+        Int_t covIndex00 = fLmVals.GetIndex(0, 0);
+        Int_t covIndex20 = fLmVals.GetIndex(2, 0);
+        Int_t covIndex22 = fLmVals.GetIndex(2, 2);
 
-        A   = im->GetBinContent(i);
-        e   = im->GetBinError(i);
-        C   = fYlmBuffer[j].real();
-        chi = A - C;
-        f += chi * chi / e * e;
-      }
+        for (int i = 1; i <= bins; i++) {
+          if (fMask->GetBinContent(i) == 0) continue;
+          Q[0] = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
+          for (int j = 0; j < 3; j++) {
+            c_meas[j]  = fCFHistogramsRe[indexes[j]]->GetBinContent(i);
+            c_theo[j]  = GetCFValRe(Q[0], indexes[j]);
+            c_error[j] = fCFHistogramsRe[indexes[j]]->GetBinError(i);
+          }
+          Double_t cov2000 = fCovCF->GetBinContent(i, 1 + covIndex00, 1 + covIndex20);
+          Double_t cov2200 = fCovCF->GetBinContent(i, 1 + covIndex00, 1 + covIndex20);
+          Double_t cov2220 = fCovCF->GetBinContent(i, 1 + covIndex20, 1 + covIndex22);
+
+          chi += (c_meas[0] - c_theo[0]) * (c_meas[0] - c_theo[0]) / (c_error[0] * c_error[0]);  // c00 therm
+          chi += (c_meas[1] - c_theo[1]) * (c_meas[1] - c_theo[1]) / (c_error[1] * c_error[1]);  // c20 therm
+          chi += (c_meas[2] - c_theo[2]) * (c_meas[2] - c_theo[2]) / (c_error[2] * c_error[2]);  // c22 therm
+          chi += -2. * cov2000 * (c_meas[0] - c_theo[0]) * (c_meas[1] - c_theo[1])
+                 / (c_error[0] * c_error[1] * (1 - cov2000 * cov2000));
+          chi += -2. * cov2200 * (c_meas[0] - c_theo[0]) * (c_meas[2] - c_theo[2])
+                 / (c_error[0] * c_error[2] * (1 - cov2200 * cov2200));
+          chi += -2. * cov2220 * (c_meas[2] - c_theo[2]) * (c_meas[1] - c_theo[1])
+                 / (c_error[2] * c_error[1] * (1 - cov2220 * cov2220));
+          // Double_t cov22 = fCovCF->GetBinContent(i, 1, 1);
+        }
+      } break;
+      default: {  // general equation - very slow
+
+      } break;
     }
-    return f;
+    return chi;
   }
 
   void CorrFitSHCF::ReadParametersName() {
@@ -151,16 +200,15 @@ namespace Hal {
     Int_t re = params[GetParametersNo() + 2];
     Double_t R[1];
     R[0] = x[0];
-    CalculateCF(R, params);  // calculate CF(el,elm) at R
     if (re == 1) {
-      return fYlmBuffer[GetIndexForLM(l, m)].real();
+      return GetCFValRe(x[0], fLmVals.GetIndex(l, m));
     } else {
-      return fYlmBuffer[GetIndexForLM(l, m)].imag();
+      return GetCFValIm(x[0], fLmVals.GetIndex(l, m));
     }
   }
 
   void CorrFitSHCF::SetFuncRange(Double_t x_min, Double_t x_max, Int_t el, Int_t em) {
-    Int_t l           = GetIndexForLM(el, em);
+    Int_t l           = fLmVals.GetIndex(el, em);
     fRange[l * 2]     = x_min;
     fRange[l * 2 + 1] = x_max;
   }
@@ -170,160 +218,80 @@ namespace Hal {
       fTempParamsEval[i] = GetParameter(i);
     RecalculateFunction();
     TString option = draw_option;
-    if (gPad == NULL) {
+    Int_t L        = fLmVals.GetL();
+    if (gPad == nullptr) {
       new TCanvas();
       gPad->Clear();
-      gPad->Divide(fL + 1, fL + 1);
+      gPad->Divide(L + 1, L + 1);
     }
     TVirtualPad* pad = gPad;
     ((FemtoSHCF*) fCF)->Draw();
-    //	Bool_t full = kTRUE;
-    Int_t pad_id = 0;
-    for (int i = 0; i <= fL; i++) {
-      int I = i;
-      for (int j = 0; j <= fL; j++) {
-        int J = j - i;
-        if (j <= i) I = i;
-        pad->cd(pad_id++);
-        gPad->SetBottomMargin(0.025);
-        gPad->SetTopMargin(0.025);
-        gPad->SetLeftMargin(0.025);
-        gPad->SetRightMargin(0.025);
-        TF1* f_re = GetFittingFunction(I, J, kTRUE);
+
+    TVirtualPad* temp_pad = gPad;
+    // gPad->Divide(fL* 2 - 1, fL);
+
+    for (int l = 0; l < L; l++) {
+      for (int m = -l; m <= l; m++) {
+        temp_pad->cd(fLmVals.GetPadId(l, m));
+        TF1* f_re = GetFittingFunction(l, m, kTRUE);
         f_re->SetLineColor(kBlue);
-        TF1* f_im = GetFittingFunction(I, J, kTRUE);
+        TF1* f_im = GetFittingFunction(l, m, kTRUE);
         f_im->SetLineColor(kBlue);
         f_re->Draw("SAME");
         f_im->Draw("SAME");
-        I++;
       }
     }
+    gPad = temp_pad;
   }
 
   Double_t CorrFitSHCF::Eval(Double_t /*x*/, Double_t /*y*/, Double_t /*z*/) { return 0; }
 
   void CorrFitSHCF::Fit(TObject* histo) {
-    fL     = ((FemtoSHCF*) histo)->GetL();
-    fMaxJM = (fL + 1) * (fL + 1);
-    fCFHistogramsRe->Clear();
-    fCFHistogramsIm->Clear();
-    fCF = histo;
-    PrepareIntegrals();
+    if (fPrevCF == histo) {  // refit?
+
+    } else {
+      fPrevCF       = histo;
+      const Int_t L = ((FemtoSHCF*) histo)->GetL();
+      fMaxJM        = (L + 1) * (L + 1);
+      if (fCFHistogramsIm.size() > 0) {
+        for (auto i : fCFHistogramsIm)
+          delete i;
+        for (auto i : fCFHistogramsRe)
+          delete i;
+      }
+      fLmVals.Resize(L);
+      fCovCF = ((FemtoSHCF*) fPrevCF)->GetCovCF();
+      fCFHistogramsIm.clear();
+      fCFHistogramsRe.clear();
+      Double_t min, max;
+      Int_t nbins;
+      Hal::Std::GetAxisPar(*fNumeratorHistogram, nbins, min, max, "x");
+      fBins         = nbins;
+      fAxisMin      = min;
+      fAxisStepOver = (max - min) / fBins;
+      fCF           = histo;
+      fSqrErrorsRe.clear();
+      fSqrErrorsRe.resize(fMaxJM);
+      fCalculatedRe.resize(fMaxJM);
+      fCalculatedIm.resize(fMaxJM);
+      for (int i = 0; i < fMaxJM; i++) {
+        fCalculatedRe[i].resize(fBins);
+        fCalculatedIm[i].resize(fBins);
+        for (int j = 0; j < fBins; j++) {
+          fCalculatedRe[i][j].resize(3);
+          fCalculatedIm[i][j].resize(3);
+        }
+      }
+      for (int i = 0; i < fMaxJM; i++) {
+        for (int j = 0; j <= fNumeratorHistogram->GetNbinsX(); j++) {
+          fSqrErrorsRe[i].push_back(1.0 / TMath::Sqrt(fCFHistogramsRe[i]->GetBinError(j)));
+        }
+      }
+    }
     CorrFitFunc::Fit(histo);
   }
 
-  void CorrFitSHCF::PrepareIntegrals() {
-    Cout::DebugInfo(4);
-    if (fIntegralsRe) {
-      delete fIntegralsRe;
-      delete fIntegralsIm;
-      delete fX;
-      delete fY;
-      delete fZ;
-      delete fYlmBuffer;
-      delete fBinMin;
-      delete fBinMax;
-      delete fYlmBuffer;
-      delete[] fEls;
-      delete[] fEms;
-      delete[] fElsi;
-      delete[] fEmsi;
-    }
-    Cout::DebugInfo(5);
-    fEls    = new Double_t[fMaxJM];
-    fEms    = new Double_t[fMaxJM];
-    fElsi   = new Double_t[fMaxJM];
-    fEmsi   = new Double_t[fMaxJM];
-    int elx = 0;
-    int emx = 0;
-    int ilx = 0;
-    Cout::DebugInfo(6);
-    do {
-      fEls[ilx]  = elx;
-      fEms[ilx]  = emx;
-      fElsi[ilx] = (int) elx;
-      fEmsi[ilx] = (int) emx;
-      emx++;
-      ilx++;
-      if (emx > elx) {
-        elx++;
-        emx = -elx;
-      }
-    } while (elx <= fL);
-    Cout::DebugInfo(7);
-    fBinMin      = new Array_1<Int_t>(fMaxJM);
-    fBinMax      = new Array_1<Int_t>(fMaxJM);
-    fBinRange[0] = 1E+4;
-    Cout::DebugInfo(8);
-    Int_t pos = 0;
-    for (int el = 0; el < fL; el++) {
-      for (int em = -el; em <= el; em++) {
-        TH1D* im                                       = ((FemtoSHCF*) fCF)->GetCFIm(el, em);
-        TH1D* re                                       = ((FemtoSHCF*) fCF)->GetCFRe(el, em);
-        TH1D* imn                                      = ((FemtoSHCF*) fCF)->GetNumIm(el, em);
-        TH1D* ren                                      = ((FemtoSHCF*) fCF)->GetNumRe(el, em);
-        *((TH1D*) fCFHistogramsIm->ConstructedAt(pos)) = *im;
-        *((TH1D*) fCFHistogramsRe->ConstructedAt(pos)) = *re;
-        *((TH1D*) fNumeratorsRe->ConstructedAt(pos))   = *imn;
-        *((TH1D*) fNumeratorsIm->ConstructedAt(pos))   = *ren;
-        (*fBinMin)[pos]                                = im->GetXaxis()->FindBin(fRange[pos * 2]);
-        (*fBinMax)[pos]                                = im->GetXaxis()->FindBin(fRange[pos * 2 + 1]);
-        delete imn;
-        delete ren;
-        delete im;
-        delete re;
-        fBinRange[0] = TMath::Min(fBinRange[0], (*fBinMin)[pos]);
-        fBinRange[1] = TMath::Max(fBinRange[1], (*fBinMax)[pos]);
-        pos++;
-      }
-    }
-    Cout::DebugInfo(9);
-    fYlmBuffer   = new std::complex<double>[fMaxJM];
-    fIntegralsRe = new Array_2<Double_t>(fMaxJM, fSamples);
-    fIntegralsIm = new Array_2<Double_t>(fMaxJM, fSamples);
-    fX           = new Array_1<Double_t>(fSamples);
-    fY           = new Array_1<Double_t>(fSamples);
-    fZ           = new Array_1<Double_t>(fSamples);
-    Double_t x, y, z;
-    Cout::DebugInfo(19);
-    for (int i = 0; i < fSamples; i++) {
-      gRandom->Sphere(x, y, z, 1.0);
-      (*fX)[i]                        = x;
-      (*fY)[i]                        = y;
-      (*fZ)[i]                        = z;
-      std::complex<double>* YlmBuffer = FemtoYlm::YlmUpToL(fL, x, y, z);
-      for (int j = 0; j < fMaxJM; j++) {
-        (*fIntegralsRe)[j][i] = real(YlmBuffer[j]);
-        (*fIntegralsIm)[j][i] = -imag(YlmBuffer[j]);
-      }
-    }
-  }
-
-  Double_t CorrFitSHCF::CalculateCF(const Double_t* x, const Double_t* params) const {
-    Double_t R = x[0] / TMath::Sqrt(3.0);
-    Double_t X[3];
-    for (int j = 0; j < fMaxJM; j++) {
-      Double_t Re = 0;
-      Double_t Im = 0;
-      for (int i = 0; i < fSamples; i++) {
-        X[0]        = fX->Get(i) * R;
-        X[1]        = fY->Get(i) * R;
-        X[2]        = fZ->Get(i) * R;
-        Double_t cf = f3d->CalculateCF(X, params);
-        Re += cf * (*fIntegralsRe)[j][i];
-        Im += cf * (*fIntegralsRe)[j][i];
-      }
-      fYlmBuffer[j].real(Re);
-      fYlmBuffer[j].real(Im);
-    }
-    return 0;
-  }
-
-  Int_t CorrFitSHCF::GetIndexForLM(int el, int em) const {
-    for (int iter = 0; iter < fMaxJM; iter++)
-      if ((el == fElsi[iter]) && (em == fEmsi[iter])) return iter;
-    return -1;
-  }
+  Double_t CorrFitSHCF::CalculateCF(const Double_t* x, const Double_t* params) const { return 0; }
 
   TF1* CorrFitSHCF::GetFittingFunction(Int_t el, Int_t em, Bool_t re) const {
     TF1* r = GetFittingFunction("");
@@ -337,24 +305,87 @@ namespace Hal {
     return r;
   }
 
-  CorrFitSHCF::~CorrFitSHCF() {
-    if (fIntegralsRe) {
-      delete fIntegralsRe;
-      delete fIntegralsIm;
-      delete fX;
-      delete fY;
-      delete fZ;
-      delete fYlmBuffer;
-      delete fBinMin;
-      delete fBinMax;
-      delete[] fEls;
-      delete[] fEms;
-      delete[] fElsi;
-      delete[] fEmsi;
+  void CorrFitSHCF::Check() {}
+
+  void CorrFitSHCF::Prepare(TObject* obj) {
+    fNDF    = 0;
+    fChi[0] = 0;
+    fChi[1] = 0;
+
+    fCF                   = nullptr;
+    fDenominatorHistogram = nullptr;
+    if (fCorrelationFunctionHistogram) delete fCorrelationFunctionHistogram;
+    fCorrelationFunctionHistogram = nullptr;
+
+
+    fCF                           = obj;
+    fDenominatorHistogram         = ((DividedHisto1D*) fCF)->GetDen();
+    fNumeratorHistogram           = ((DividedHisto1D*) fCF)->GetNum();
+    fCorrelationFunctionHistogram = ((DividedHisto1D*) fCF)->GetHist(kFALSE);
+
+    fCorrelationFunctionHistogram->SetDirectory(0);
+
+    FemtoSHCF* cf = static_cast<FemtoSHCF*>(fCF);
+    fKinematics   = cf->GetFrame();
+
+    Int_t L = cf->GetL();
+    fLmVals.Resize(L);
+    fMaxJM = (cf->GetL() + 1) * (cf->GetL() + 1);
+    if (fCFHistogramsRe.size() == 0) {
+      for (int i = 0; i < fMaxJM; i++) {
+        fCFHistogramsRe.push_back(cf->GetCFRe(fLmVals.GetEls(i), fLmVals.GetEms(i)));
+        fCFHistogramsIm.push_back(cf->GetCFIm(fLmVals.GetEls(i), fLmVals.GetEms(i)));
+      }
+
+      if (fYlmBuffer) delete[] fYlmBuffer;
+      fYlmBuffer = new std::complex<double>[fMaxJM];
     }
-    delete fCFHistogramsRe;
-    delete fCFHistogramsIm;
-    delete fNumeratorsIm;
-    delete fNumeratorsRe;
+  }
+
+  void CorrFitSHCF::RecalculateFunction() const {
+    Double_t half    = fNumeratorHistogram->GetXaxis()->GetBinWidth(1) * 0.5;
+    const Int_t bins = fNumeratorHistogram->GetXaxis()->GetNbins();
+    std::vector<std::complex<double>> fPrev, fNext, fCurrent;
+    fPrev.resize(fMaxJM);
+    fNext.resize(fMaxJM);
+    fCurrent.resize(fMaxJM);
+    Double_t a, b, c;
+    for (int i = 1; i <= fNumeratorHistogram->GetNbinsX(); i++) {
+      Double_t q      = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
+      Double_t q_low  = q - half;
+      Double_t q_mid  = q;
+      Double_t q_high = q + half;
+      if (i != 1) {  // use prev bin
+        fPrev = fNext;
+      } else {
+        CalculateCF(&q_low, fTempParamsEval);
+        fPrev = fYlmValBuffer;
+      }
+      CalculateCF(&q_mid, fTempParamsEval);
+      fCurrent = fYlmValBuffer;
+      CalculateCF(&q_high, fTempParamsEval);
+      fNext = fYlmValBuffer;
+      for (int j = 0; j < fMaxJM; j++) {
+        Hal::Std::FitParabola(q_low, q_mid, q_high, fPrev[j].real(), fCurrent[j].real(), fNext[j].real(), a, b, c);
+        fCalculatedRe[j][i][0] = a;
+        fCalculatedRe[j][i][1] = b;
+        fCalculatedRe[j][i][2] = c;
+        Hal::Std::FitParabola(q_low, q_mid, q_high, fPrev[j].imag(), fCurrent[j].imag(), fNext[j].imag(), a, b, c);
+        fCalculatedIm[j][i][0] = a;
+        fCalculatedIm[j][i][1] = b;
+        fCalculatedIm[j][i][2] = c;
+      }
+    }
+  }
+
+  CorrFitSHCF::~CorrFitSHCF() {
+    if (fCFHistogramsIm.size() > 0) {
+      for (auto i : fCFHistogramsIm)
+        delete i;
+      for (auto i : fCFHistogramsRe)
+        delete i;
+    }
+    if (fYlmBuffer) delete[] fYlmBuffer;
+    fCovCF = nullptr;
   }
 }  // namespace Hal

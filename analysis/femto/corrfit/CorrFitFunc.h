@@ -156,7 +156,7 @@ namespace Hal {
     /**
      * clear all histograms, and functions
      */
-    void Prepare(TObject* obj);
+    virtual void Prepare(TObject* obj);
     /**
      * fit funcion by steps, usefull only for 1D fits
      * @param step - step of fitting

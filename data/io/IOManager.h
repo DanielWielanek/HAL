@@ -21,6 +21,7 @@ class TFile;
 namespace Hal {
   class MagField;
   class IOManager : public TObject {
+  protected:
     MagField* fField;
     TList* fList;
     std::vector<std::pair<TString, TObject*>> fInBranches;

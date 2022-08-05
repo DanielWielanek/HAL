@@ -22,9 +22,11 @@
 #include <TObjArray.h>
 #include <TRandom.h>
 #include <TString.h>
+#include <iostream>
 
 #include "FemtoSHCF.h"
 #include "FemtoYlm.h"
+#include "StdString.h"
 namespace Hal {
   const Int_t CorrFitSHCF::fgRout   = 0;
   const Int_t CorrFitSHCF::fgRside  = 1;
@@ -46,7 +48,7 @@ namespace Hal {
 
   CorrFitSHCF::CorrFitSHCF(Int_t parNo) :
     CorrFitFunc(parNo, 1),
-    fPhysical(kFALSE),
+    fCalcMode(eCalcMode::kFullCalc),
     fMaxJM(0),
     fBins(1),
     fLmVals(FemtoYlmIndexes(0)),
@@ -94,8 +96,14 @@ namespace Hal {
     ParametersChanged();
     Int_t bins = fNumeratorHistogram->GetNbinsX();
     Double_t Q[1];
-    switch (fLmVals.GetL()) {
-      case 1: {
+    chi = -1;
+    switch (fCalcMode) {
+      case eCalcMode::kFullCalc: {
+        /* TODO implemenet full calc */
+      } break;
+      case eCalcMode::kPhysical1dId: {
+        /*  take into account only 00*/
+        chi = 0;
         for (int i = 1; i <= bins; i++) {
           if (fMask->GetBinContent(i) == 0) continue;
           Q[0]          = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
@@ -105,7 +113,9 @@ namespace Hal {
           chi += (cf00 - th00) * (cf00 - th00) / (er00 * er00);
         }
       } break;
-      case 2: {
+      case eCalcMode::kPhysical1dNonId: {
+        /* take into account only 00 and 11  */
+        chi = 0;
         Int_t indexes[2];
         Double_t c_meas[2];
         Double_t c_theo[2];
@@ -129,7 +139,9 @@ namespace Hal {
             -2. * cov11 * (c_meas[0] - c_theo[0]) * (c_meas[1] - c_theo[1]) / (c_error[0] * c_error[1] * (1 - cov11 * cov11));
         }
       } break;
-      case 3: {
+      case eCalcMode::kPhysical3d: {
+        chi = 0;
+        /* take into account only 00, 20 and 22 */
         Int_t indexes[3];
         Double_t c_meas[3];
         Double_t c_theo[3];
@@ -166,9 +178,6 @@ namespace Hal {
                  / (c_error[2] * c_error[1] * (1 - cov2220 * cov2220));
           // Double_t cov22 = fCovCF->GetBinContent(i, 1, 1);
         }
-      } break;
-      default: {  // general equation - very slow
-
       } break;
     }
     return chi;
@@ -265,28 +274,42 @@ namespace Hal {
       fCFHistogramsRe.clear();
       Double_t min, max;
       Int_t nbins;
+      fNumeratorHistogram = (TH1D*) ((FemtoSHCF*) fPrevCF)->GetNum();
       Hal::Std::GetAxisPar(*fNumeratorHistogram, nbins, min, max, "x");
       fBins         = nbins;
       fAxisMin      = min;
       fAxisStepOver = (max - min) / fBins;
       fCF           = histo;
-      fSqrErrorsRe.clear();
-      fSqrErrorsRe.resize(fMaxJM);
       fCalculatedRe.resize(fMaxJM);
       fCalculatedIm.resize(fMaxJM);
       for (int i = 0; i < fMaxJM; i++) {
-        fCalculatedRe[i].resize(fBins);
-        fCalculatedIm[i].resize(fBins);
-        for (int j = 0; j < fBins; j++) {
+        fCalculatedRe[i].resize(fBins + 1);
+        fCalculatedIm[i].resize(fBins + 1);
+        for (int j = 0; j <= fBins; j++) {
           fCalculatedRe[i][j].resize(3);
           fCalculatedIm[i][j].resize(3);
         }
       }
+      fDrawFunc.resize(fMaxJM);
       for (int i = 0; i < fMaxJM; i++) {
-        for (int j = 0; j <= fNumeratorHistogram->GetNbinsX(); j++) {
-          fSqrErrorsRe[i].push_back(1.0 / TMath::Sqrt(fCFHistogramsRe[i]->GetBinError(j)));
-        }
+        TVirtualPad* pad = gPad;
+
+        TString name = Form("fx l=%i m=%i", fLmVals.GetElsi(i), fLmVals.GetEmsi(i));
+        TF1* fdrawRe =
+          new TF1(name, this, &CorrFitSHCF::GetDrawableRe, fRange[0], fRange[1], GetParametersNo() + 1, this->ClassName(), name);
+        fdrawRe->FixParameter(GetParametersNo(), i);
+        // TF1* fdrawIm =
+        //  new TF1(name, this, &CorrFitSHCF::GetDrawableRe, fRange[0], fRange[1], GetParametersNo() + 1, this->ClassName(),
+        //  name);
+        // fdrawIm->FixParameter(GetParametersNo(), i);
+        pad->cd(fLmVals.GetPadId(fLmVals.GetElsi(i), fLmVals.GetEmsi(i)));
+        fDrawFunc[i].first  = fdrawRe;
+        fDrawFunc[i].second = gPad;
+        gPad                = pad;
       }
+
+      // fDrawFunc[0].first =
+      //   new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], GetParametersNo(), this->ClassName(), "GetFunX");
     }
     CorrFitFunc::Fit(histo);
   }
@@ -350,6 +373,7 @@ namespace Hal {
     fNext.resize(fMaxJM);
     fCurrent.resize(fMaxJM);
     Double_t a, b, c;
+    std::vector<Int_t> indexes = GetIndexesForCalc(fCalcMode);
     for (int i = 1; i <= fNumeratorHistogram->GetNbinsX(); i++) {
       Double_t q      = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
       Double_t q_low  = q - half;
@@ -365,7 +389,7 @@ namespace Hal {
       fCurrent = fYlmValBuffer;
       CalculateCF(&q_high, fTempParamsEval);
       fNext = fYlmValBuffer;
-      for (int j = 0; j < fMaxJM; j++) {
+      for (auto j : indexes) {
         Hal::Std::FitParabola(q_low, q_mid, q_high, fPrev[j].real(), fCurrent[j].real(), fNext[j].real(), a, b, c);
         fCalculatedRe[j][i][0] = a;
         fCalculatedRe[j][i][1] = b;
@@ -387,5 +411,44 @@ namespace Hal {
     }
     if (fYlmBuffer) delete[] fYlmBuffer;
     fCovCF = nullptr;
+  }
+  Double_t CorrFitSHCF::GetDrawableIm(Double_t* x, Double_t* params) const {
+    Int_t bin  = (x[0] - fAxisMin) * fAxisStepOver;
+    Double_t q = x[0];
+    Int_t elm  = params[GetParametersNo()];
+    if (bin >= fBins) return 1;
+    return fCalculatedRe[elm][bin][0] + fCalculatedRe[elm][bin][1] * q + fCalculatedRe[elm][bin][2] * q * q;
+  }
+
+  Double_t CorrFitSHCF::GetDrawableRe(Double_t* x, Double_t* params) const {
+    Int_t bin  = (x[0] - fAxisMin) * fAxisStepOver;
+    Double_t q = x[0];
+    if (bin >= fBins) return 1;
+    Int_t elm = params[GetParametersNo()];
+    return fCalculatedRe[elm][bin][0] + fCalculatedRe[elm][bin][1] * q + fCalculatedRe[elm][bin][2] * q * q;
+  }
+  std::vector<Int_t> CorrFitSHCF::GetIndexesForCalc(eCalcMode c) const {
+    Int_t Lmax = fLmVals.GetL();
+    std::vector<Int_t> vals;
+    switch (c) {
+      case eCalcMode::kPhysical1dId: {
+        vals.push_back(0);
+      } break;
+      case eCalcMode::kPhysical1dNonId: {
+        vals.push_back(fLmVals.GetIndex(0, 0));
+        vals.push_back(fLmVals.GetIndex(1, 1));
+      } break;
+      case eCalcMode::kPhysical3d: {
+        vals.push_back(fLmVals.GetIndex(0, 0));
+        vals.push_back(fLmVals.GetIndex(2, 0));
+        vals.push_back(fLmVals.GetIndex(2, 2));
+      } break;
+      case eCalcMode::kFullCalc: {
+        for (int i = 0; i < fMaxJM; i++) {
+          vals.push_back(i);
+        }
+      } break;
+    }
+    return vals;
   }
 }  // namespace Hal

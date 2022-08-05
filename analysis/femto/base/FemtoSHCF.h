@@ -273,6 +273,7 @@ namespace Hal {
     Array_1<Float_t>* ExportToFlatNum() const;
     virtual void Add(const Object* pack);
     virtual Long64_t Merge(TCollection* collection);
+    void MakeDummyCov();
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual ~FemtoSHCF();
     ClassDef(FemtoSHCF, 4)

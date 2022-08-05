@@ -40,6 +40,7 @@
 #include "HtmlObject.h"
 #include "HtmlTable.h"
 #include "Std.h"
+#include "StdString.h"
 
 //#define FULL_CALC
 //#define _FINISH_DEBUG_
@@ -301,13 +302,19 @@ namespace Hal {
     }
   }
 
-  void FemtoSHCF::Draw(Option_t* /*opt*/) {
+  void FemtoSHCF::Draw(Option_t* opt) {
     if (gPad == NULL) { new TCanvas(); }
     TVirtualPad* pad = gPad;
     gPad->Clear();
 
+    TString option  = opt;
+    Bool_t drawImg  = kTRUE;
+    Bool_t drawReal = kTRUE;
+    if (Hal::Std::FindParam(option, "im", kTRUE)) drawReal = kFALSE;
+    if (Hal::Std::FindParam(option, "re", kTRUE)) drawImg = kFALSE;
 
-    auto drawSub = [](Int_t l, Int_t m, const FemtoSHCF* thiz) {
+
+    auto drawSub = [](Int_t l, Int_t m, const FemtoSHCF* thiz, Bool_t dImg, Bool_t dReal, TString opT) {
       gPad->SetBottomMargin(0.045);
       gPad->SetTopMargin(0.025);
       gPad->SetLeftMargin(0.045);
@@ -327,18 +334,23 @@ namespace Hal {
         if (max < 1) { cfr->SetMaximum(1); }
         cfr->SetStats(kFALSE);
         cfr->SetName(Form("%4.5f", gRandom->Rndm()));
-        cfr->Draw();
-        cfi->Draw("SAME");
+        if (dImg && dReal) {
+          cfr->Draw(opT);
+          cfi->Draw("SAME" + opT);
+        } else {
+          if (dImg) cfi->Draw(opT);
+          if (dReal) cfr->Draw(opT);
+        }
       }
     };
 
     TVirtualPad* temp_pad = gPad;
-    gPad->Divide(GetL() * 2 - 1, GetL());
+    gPad->Divide(GetL() + 1, GetL() + 1);
 
-    for (int l = 0; l < GetL(); l++) {
+    for (int l = 0; l <= GetL(); l++) {
       for (int m = -l; m <= l; m++) {
         temp_pad->cd(fLmVals.GetPadId(l, m));
-        drawSub(l, m, this);
+        drawSub(l, m, this, drawImg, drawReal, option);
       }
     }
     gPad = temp_pad;
@@ -1158,7 +1170,10 @@ namespace Hal {
       std::cout << "Detected calculated covariance matrix. Do not recalculate !!!" << std::endl;
       //  recalccov = 0;
     }
-    if (fNum->GetEntries() == 0) return;  // no data, CF is empdy
+    if (fNum->GetEntries() == 0) {
+      std::cout << "Emtpy numerator, stop calculating cF" << std::endl;
+      return;  // no data, CF is empdy
+    }
     double normfactor = 1.0;
     // TODO Fix/improvenormalization
     double normbinmax = 0;  // fDenReal[0]->FindBin(fNormMax);
@@ -2004,6 +2019,21 @@ namespace Hal {
     return data;
   }
 
+  void FemtoSHCF::MakeDummyCov() {
+    Cout::Text("FemtoSHCF::MakeDummyCov", "M", kRed);
+    for (int i = 0; i < fNum->GetNbinsX(); i++) {
+      for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++) {
+        for (int ilmzero2 = 0; ilmzero2 < GetMaxJM(); ilmzero2++) {
+          Int_t gbin       = GetBin(i, ilmzero, 0, ilmzero2, 1);
+          (*covmnum)[gbin] = 0;
+        }
+      }
+      for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++) {
+        Int_t gbin       = GetBin(i, ilmzero, 0, ilmzero, 1);
+        (*covmnum)[gbin] = 1;
+      }
+    }
+  }
   void FemtoSHCF::Rebin(Int_t ngroup, Option_t* opt) { std::cout << "REBIN of SHCF not implented !" << std::endl; }
 
   void FemtoSHCF::Fit(CorrFitSHCF* fit) { fit->Fit(this); }

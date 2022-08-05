@@ -27,6 +27,7 @@
 #include <TLegend.h>
 #include <TList.h>
 #include <TObjArray.h>
+#include <TVirtualPad.h>
 
 #include "Std.h"
 #include "StdString.h"
@@ -148,8 +149,11 @@ namespace Hal {
     Bool_t set_limits = ExtrDraw(option, draw_min, draw_max);
 
     if (Hal::Std::FindParam(option, "full") && Hal::Std::FindParam(option, "ee")) {
-      TH1* cf        = GetTHForDrawing(drawNormalized);
+      if (fDrawFunc.size() == 0) fDrawFunc.resize(1);
+      TH1* cf = GetTHForDrawing(drawNormalized);
+
       TF1* draw_func = GetFunctionForDrawing();
+
       cf->SetMarkerStyle(kFullSquare);
       TH1* cf2 = (TH1*) cf->Clone("sys_err");
       cf2->SetFillStyle(3001);
@@ -168,6 +172,8 @@ namespace Hal {
 
       cf2->Draw("E2");
       cf->Draw("SAME");
+      fDrawFunc[0].first  = draw_func;
+      fDrawFunc[0].second = gPad;
       if (drawNormalized) draw_func->SetParameter(Norm(), 1);
       draw_func->Draw("SAME");
       TLegend* leg = GetLegendForDrawing();

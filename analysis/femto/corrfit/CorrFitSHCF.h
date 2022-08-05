@@ -22,6 +22,10 @@ class TH3D;
 class TClonesArray;
 namespace Hal {
   class CorrFitSHCF : public CorrFitFunc {
+  public:
+    enum class eCalcMode { kPhysical1dId, kPhysical1dNonId, kPhysical3d, kFullCalc };
+
+  private:
     friend class Femto1DCF;
     friend class Femto3DCF;
     friend class FemtoSHCF;
@@ -30,18 +34,17 @@ namespace Hal {
     static const Int_t fgRlong;
     static const Int_t fgLambda;
     static const Int_t fgNorm;
-    Bool_t fPhysical;
+    eCalcMode fCalcMode;
 
     Int_t fBins;
     Int_t fBinRange[2];
+
 
     Double_t fAxisMin;
     Double_t fAxisStepOver;
     TH3D* fCovCF;
     std::vector<TH1D*> fCFHistogramsRe;
     std::vector<TH1D*> fCFHistogramsIm;
-    std::vector<std::vector<Double_t>> fSqrErrorsIm;
-    std::vector<std::vector<Double_t>> fSqrErrorsRe;
     mutable std::vector<std::vector<std::vector<Double_t>>> fCalculatedRe;
     mutable std::vector<std::vector<std::vector<Double_t>>> fCalculatedIm;
     std::vector<std::complex<double>> fYlmValBuffer;
@@ -50,6 +53,7 @@ namespace Hal {
 
   protected:
     Int_t fMaxJM;
+    std::vector<Int_t> GetIndexesForCalc(eCalcMode c) const;
     mutable std::complex<double>* fYlmBuffer;  //[fMaxJM]
     FemtoYlmIndexes fLmVals;
     virtual void Prepare(TObject* obj);
@@ -93,6 +97,8 @@ namespace Hal {
      * @param opt
      */
     virtual void Fit(TObject* histo);
+    Double_t GetDrawableIm(Double_t* x, Double_t* params) const;
+    Double_t GetDrawableRe(Double_t* x, Double_t* params) const;
     /**
      * return value of theoretical cf from interpolation
      * @param q

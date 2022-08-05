@@ -123,6 +123,19 @@ namespace Hal {
     f->Close();
   }
 
+  void Femto1DMapGenerator::SetQBins(Int_t bins, Double_t qmin, Double_t qmax, Bool_t center) {
+    if (center == kFALSE) {
+      fKStarBins = bins;
+      fKStarMin  = qmin;
+      fKStarMax  = qmax;
+    } else {
+      fKStarBins  = bins + 1;
+      Double_t dx = (qmax - qmin) / ((double) bins);
+      fKStarMin   = qmin - dx;
+      fKStarMax   = qmax + dx;
+    }
+  }
+
   Femto1DMapGenerator::~Femto1DMapGenerator() {
     if (fPair) delete fPair;
     if (fGenerator) delete fGenerator;

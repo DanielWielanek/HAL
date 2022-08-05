@@ -18,7 +18,7 @@
 namespace Hal {
   class FemtoPair;
   class McTrack;
-  class FemtoWeightGeneratorResidual : FemtoWeightGenerator {
+  class FemtoWeightGeneratorResidual : public FemtoWeightGenerator {
     FemtoWeightGeneratorResidual();
     FemtoWeightGenerator* fMainWeight;
     FemtoPair* fResPair;

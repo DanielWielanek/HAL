@@ -86,7 +86,23 @@ namespace Hal {
       fRange[1] = fRange[3] = fRange[5] = max;
     }
   }
-
+  void CorrFitFunc::Draw(Option_t* draw_option) {
+    if (fDrawOptionSet || fDrawFunc.size() > 0) {
+      std::cout << "CorrFitFunc::Draw Canot set CorrFitDrawOptions when function was set or draw options were set" << std::endl;
+    } else {
+      fDrawOptions   = CorrFitDrawOptions(draw_option);
+      fDrawOptionSet = kTRUE;
+    }
+    Paint(kFALSE, kTRUE);
+  };
+  void CorrFitFunc::SetDrawOption(CorrFitDrawOptions options) {
+    if (fDrawOptionSet || fDrawFunc.size() > 0) {
+      std::cout << "Canot set CorrFitDrawOptions when function was set or draw options were set" << std::endl;
+      return;
+    }
+    fDrawOptions   = options;
+    fDrawOptionSet = kTRUE;
+  }
   void CorrFitFunc::SetupFunction(TF1* f) const {
     for (int i = 0; i < GetParametersNo(); i++) {
       f->SetParName(i, fParameters[i].GetName());
@@ -511,25 +527,30 @@ namespace Hal {
   }
 
   void CorrFitFunc::UpdateLegend() {
-    TString chi_s, chindf_s, ndf_s;
-    Double_t chi    = GetChiSquare();
-    Double_t chindf = GetChiNDF();
-    Double_t ndf    = GetNDF();
-    if (chi <= 1000)
-      chi_s = Form("%4.3f", chi);
-    else
-      chi_s = Hal::Std::RoundToString(chi, 2, "prefix");
-    if (chindf <= 1000) {
-      chindf_s = Form("%4.3f", chindf);
-    } else {
-      chindf_s = Hal::Std::RoundToString(chindf, 2, "prefix");
+    if (fDrawOptions.DrawLegend() == kFALSE) return;
+    TString chi_label = "";
+    if (fDrawOptions.Chi2()) {
+      if (fLegend) fChi[0] = GetChiTF(fTempParamsEval);  // legend present, we have to recalcuate chi2
+      TString chi_s, chindf_s, ndf_s;
+      Double_t chi    = GetChiSquare();
+      Double_t chindf = GetChiNDF();
+      Double_t ndf    = GetNDF();
+      if (chi <= 1000)
+        chi_s = Form("%4.3f", chi);
+      else
+        chi_s = Hal::Std::RoundToString(chi, 2, "prefix");
+      if (chindf <= 1000) {
+        chindf_s = Form("%4.3f", chindf);
+      } else {
+        chindf_s = Hal::Std::RoundToString(chindf, 2, "prefix");
+      }
+      if (ndf <= 1000) {
+        ndf_s = Form("%i", (int) ndf);
+      } else {
+        ndf_s = Hal::Std::RoundToString(ndf, 2, "prefix");
+      }
+      chi_label = Form("#chi^{2}/NDF %s (%s/%s)", chindf_s.Data(), chi_s.Data(), ndf_s.Data());
     }
-    if (ndf <= 1000) {
-      ndf_s = Form("%i", (int) ndf);
-    } else {
-      ndf_s = Hal::Std::RoundToString(ndf, 2, "prefix");
-    }
-    TString chi_label = Form("#chi^{2}/NDF %s (%s/%s)", chindf_s.Data(), chi_s.Data(), ndf_s.Data());
     std::vector<TString> label;
     for (int i = 0; i < GetParametersNo(); i++) {
       if (IsParFixed(i)) {
@@ -539,27 +560,24 @@ namespace Hal {
           "%s %4.3f#pm%4.3f", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue(), fParameters[i].GetError()));
       }
     }
-    label.push_back(chi_label);
-
-
+    if (chi_label.Length() > 0) label.push_back(chi_label);
     if (fLegend == nullptr) {
-      fLegend = new TLegend(0.7, 0.7, 0.95, 0.95);
-      fLegend->SetHeader(GetName());
-      for (int i = 0; i < GetParametersNo(); i++) {
-        if (IsParFixed(i)) {
-          fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, label[i], ""));
-        } else {
-          fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, label[i], ""));
-        }
+      if (fDrawOptions.LegendPos()) {
+        fLegend = new TLegend(
+          fDrawOptions.GetLegendPos(0), fDrawOptions.GetLegendPos(1), fDrawOptions.GetLegendPos(2), fDrawOptions.GetLegendPos(3));
+      } else {
+        fLegend = new TLegend(0.7, 0.7, 0.95, 0.95);
       }
-      fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, label[label.size() - 1], ""));
+      fLegend->SetHeader(GetName());
+      for (auto str : label) {
+        fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, str, ""));
+      }
     } else {
-      for (int i = 0; i < GetParametersNo(); i++) {
+      for (unsigned int i = 0; i < label.size(); i++) {
         TLegendEntry* ent = fLegendEntries[i];
         ent->SetLabel(label[i]);
         ent->SetTextColor(kGreen);
       }
-      fLegendEntries[fLegendEntries.size() - 1]->SetLabel(chi_label);
     }
   }
 }  // namespace Hal

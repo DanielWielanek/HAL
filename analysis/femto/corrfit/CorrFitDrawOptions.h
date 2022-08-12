@@ -16,20 +16,23 @@ namespace Hal {
 
   class CorrFitDrawOptions {
   public:
-    enum eCommon { kNorm = 0, kSame = 1, kNumError = 3, kLegend = 4, kDrawCF = 5 };
-    enum e3d { kRgb = 6, kDiag1 = 7, kDiag2 = 8 };
+    enum eCommon { kNorm = 0, kSame = 1, kNumError = 2, kLegend = 3, kDrawCF = 4, kDrawChi2 = 5 };
+    enum e3d { kRgb = 101, kDiag1 = 102, kDiag2 = 103 };
 
   private:
-    Bool_t fAutoNorm   = {kFALSE};
-    Bool_t fSame       = {kFALSE};
-    Bool_t fDrawCF     = {kFALSE};
-    Bool_t fDrawNumErr = {kFALSE};
-    Bool_t fDrawLegend = {kFALSE};
-    Bool_t fDiag1      = {kFALSE};
-    Bool_t fDiag2      = {kFALSE};
-    Bool_t fRgb        = {kFALSE};
+    Bool_t fAutoNorm     = {kFALSE};
+    Bool_t fSame         = {kFALSE};
+    Bool_t fDrawCF       = {kFALSE};
+    Bool_t fDrawNumErr   = {kFALSE};
+    Bool_t fDrawLegend   = {kFALSE};
+    Bool_t fDrawChi2     = {kFALSE};
+    Bool_t fDiag1        = {kFALSE};
+    Bool_t fDiag2        = {kFALSE};
+    Bool_t fRgb          = {kFALSE};
+    Bool_t fLegendPosSet = {kFALSE};
     Double_t fMin = {0}, fMax = {0};
     Double_t fRangeMin = {0}, fRangeMax = {0};
+    Double_t fXLegend[4] = {0, 0, 0, 0};
     TString fRawCommand;
 
   protected:
@@ -57,8 +60,12 @@ namespace Hal {
     Bool_t Diag1() const { return fDiag1; }
     Bool_t Diag2() const { return fDiag2; };
     Bool_t Rgb() const { return fRgb; }
+    Bool_t Chi2() const { return fDrawChi2; }
+    Bool_t LegendPos() const { return (fXLegend[0] == fXLegend[1] ? kFALSE : kTRUE); }
     Double_t GetMax() const { return fMax; }
     Double_t GetMin() const { return fMin; }
+    Double_t GetLegendPos(Int_t id) const;
+    void SetLegendPos(Double_t x1, Double_t x2, Double_t y1, Double_t y2);
     void SetAutoNorm(Bool_t autoNorm = kTRUE) { fAutoNorm = autoNorm; }
     void SetDrawCf(Bool_t drawCf = kTRUE) { fDrawCF = drawCf; }
     void SetDrawLegend(Bool_t drawLegend = kTRUE) { fDrawLegend = drawLegend; }

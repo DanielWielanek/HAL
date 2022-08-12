@@ -57,7 +57,7 @@ namespace Hal {
 
   void CorrFit1DCF::Paint(Bool_t repaint, Bool_t refresh) {
     if (repaint)
-      if (gPad == NULL) {
+      if (gPad == nullptr) {
         TCanvas* c = new TCanvas();
         c->cd();
       }
@@ -66,7 +66,7 @@ namespace Hal {
     }
     // TODO fFittedFunction->SetParameter(par,val);
     ParametersChanged();
-    UpdateLegend();
+
     if (fDrawFunc.size() == 0) {
       fDrawFunc.resize(1);
       fDrawFunc[0].first  = GetFunctionForDrawing();
@@ -89,7 +89,9 @@ namespace Hal {
     } else {
       GetTF1(0)->Draw("SAME");
     }
-    if (fDrawOptions.DrawLegend()) fLegend->Draw("SAME");
+    UpdateLegend();
+    if (fLegend) fLegend->Draw("SAME");
+
     if (refresh) {
       gPad->Modified(kTRUE);
       gPad->Update();

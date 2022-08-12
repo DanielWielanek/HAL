@@ -36,6 +36,7 @@ namespace Hal {
     friend class Femto1DCF;
     friend class Femto3DCF;
     friend class FemtoSHCF;
+    Bool_t fDrawOptionSet = {kFALSE};
 
   protected:
     /**
@@ -251,16 +252,17 @@ namespace Hal {
      */
     void SetMaxIteration(Int_t max) { fMaxIterations = max; };
     /**
+     * set draw options
+     * @param options
+     */
+    void SetDrawOption(CorrFitDrawOptions options);
+    /**
      * draw this function
      * @param draw_option like for TF1 + optional "leg" to draw with legend, or
      * "full" to draw optimized you can also specify range of drawed function by
      * {min,max} eg. {1,2.0} /TODO implement in 3D also
      */
-    void Draw(Option_t* draw_option = "full") {
-      fDrawOptions = CorrFitDrawOptions(draw_option);
-      Paint(kFALSE, kTRUE);
-    };
-
+    void Draw(Option_t* draw_option = "full");
     /**
      * set range of CF's
      * @param min lower range limit

@@ -229,14 +229,15 @@ namespace Hal {
 
       f.second = gPad;
     }
-    std::cout << " pads " << padX << " " << padY << " " << fDrawOptions.Diag1() << " " << fDrawOptions.Diag2() << std::endl;
     UpdateLegend();
     fTempPad->cd(legendPad);
-    fLegend->SetX1(0.05);
-    fLegend->SetX2(0.95);
-    fLegend->SetY1(0.05);
-    fLegend->SetY2(0.95);
-    fLegend->Draw();
+    if (fDrawOptions.DrawLegend()) {
+      fLegend->SetX1(0.05);
+      fLegend->SetX2(0.95);
+      fLegend->SetY1(0.05);
+      fLegend->SetY2(0.95);
+      fLegend->Draw();
+    }
 
 
     //  if (refresh) {

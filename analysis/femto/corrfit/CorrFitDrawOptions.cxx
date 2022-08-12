@@ -6,11 +6,16 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
+
 #include "CorrFitDrawOptions.h"
-#include "Std.h"
+
 #include "StdString.h"
 
+#include <initializer_list>
+#include <iostream>
+
 #include <TRegexp.h>
+
 namespace Hal {
 
   CorrFitDrawOptions::CorrFitDrawOptions() {
@@ -30,6 +35,8 @@ namespace Hal {
     fDrawLegend = Hal::Std::FindParam(options, "leg", kTRUE);
     fDiag1      = Hal::Std::FindParam(options, "diag1", kTRUE);
     fDiag2      = Hal::Std::FindParam(options, "diag2", kTRUE);
+    fDrawChi2   = Hal::Std::FindParam(options, "chi2", kTRUE);
+    fRgb        = Hal::Std::FindParam(options, "rgb", kTRUE);
 
     if (options == "full") {
       fDrawCF     = kTRUE;
@@ -74,6 +81,12 @@ namespace Hal {
     CheckConflicts();
   }
 
+  void CorrFitDrawOptions::SetLegendPos(Double_t x1, Double_t x2, Double_t y1, Double_t y2) {
+    fXLegend[0] = x1;
+    fXLegend[1] = x2;
+    fXLegend[3] = y1;
+    fXLegend[4] = y2;
+  }
   void CorrFitDrawOptions::SetIntOpt(Int_t opt) {
     //    enum eCommon { kNorm = 0, kSame = 1, kNumError = 3, kLegend = 4 };
     // enum e3d { kRgb = 5 };
@@ -86,7 +99,13 @@ namespace Hal {
       case kDiag1: fDrawLegend = kTRUE; break;
       case kDiag2: fDrawCF = kTRUE; break;
       case kRgb: fRgb = kTRUE; break;
+      case kDrawChi2: fDrawChi2 = kTRUE; break;
     }
+  }
+
+  Double_t CorrFitDrawOptions::GetLegendPos(Int_t id) const {
+    if (id < 0 || id > 3) return 0;
+    return fXLegend[id];
   }
 
   void CorrFitDrawOptions::CheckConflicts() {

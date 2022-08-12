@@ -44,6 +44,7 @@ set(HAL_GEN
 
 set(HAL_ANA
 	${HAL_CORE}/analysis/base
+	${HAL_CORE}/analysis/base/dump
 	${HAL_CORE}/analysis/base/chains
 	${HAL_CORE}/analysis/base/on_the_fly
 	${HAL_CORE}/analysis/base/on_the_fly/smear_codes

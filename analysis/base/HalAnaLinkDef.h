@@ -31,5 +31,6 @@
 #pragma link C++ class Hal::TrackAnaChain + ;
 #pragma link C++ class Hal::TwoTrackAnaChain + ;
 #pragma link C++ class Hal::Reader + ;
+#pragma link C++ class Hal::TrackColDumAna + ;
 
 #endif

@@ -28,7 +28,7 @@ MultiTrackAna.cxx
 TrackAna.cxx
 TwoTrackAna.cxx
 Reader.cxx
-
+dump/TrackColDumAna.cxx
 chains/EventAnaChain.cxx
 chains/TrackAnaChain.cxx
 chains/TwoTrackAnaChain.cxx

@@ -70,19 +70,19 @@ namespace Hal {
   void Femto1DMapGenerator::SetRBins(Int_t bins, Double_t rmin, Double_t rmax, Bool_t center) {
     if (center) {
       fRBins = bins + 1;
-      fRadiiBins.MakeBigger(bins);
+      fRadiiBins.MakeBigger(bins + 1);
       Double_t dr = (rmax - rmin) / (Double_t)(bins);
       fRMin       = rmin - dr * 0.5;
       fRMax       = rmax + dr * 0.5;
       for (int i = 0; i < fRBins; i++) {
-        fRMin = rmin + dr * i;
+        fRadiiBins[i] = fRMin + dr * i + dr * 0.5;
       }
     } else {
       fRBins = bins;
       fRadiiBins.MakeBigger(bins);
       fRMin       = rmin;
       fRMax       = rmax;
-      Double_t dr = (fRMax - fRMin) / (Double_t)(bins - 1);
+      Double_t dr = (fRMax - fRMin) / (Double_t)(bins);
       for (int i = 0; i < fRBins; i++) {
         fRadiiBins[i] = fRMin + dr * i + dr * 0.5;
       }
@@ -121,19 +121,6 @@ namespace Hal {
     CorrFitMapKstarRstarDiv* map = new CorrFitMapKstarRstarDiv(*fMap, fKinematics);
     map->Write("map");
     f->Close();
-  }
-
-  void Femto1DMapGenerator::SetQBins(Int_t bins, Double_t qmin, Double_t qmax, Bool_t center) {
-    if (center == kFALSE) {
-      fKStarBins = bins;
-      fKStarMin  = qmin;
-      fKStarMax  = qmax;
-    } else {
-      fKStarBins  = bins + 1;
-      Double_t dx = (qmax - qmin) / ((double) bins);
-      fKStarMin   = qmin - dx;
-      fKStarMax   = qmax + dx;
-    }
   }
 
   Femto1DMapGenerator::~Femto1DMapGenerator() {

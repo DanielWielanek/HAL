@@ -19,6 +19,7 @@
 #include <TString.h>
 
 #include "Std.h"
+#define _HAL_COMPRESS_HIDDEN_INFO_
 
 class TDatabasePDG;
 namespace Hal {
@@ -26,6 +27,7 @@ namespace Hal {
   class McEvent;
   class ComplexEvent;
   class SmearedEvent;
+
   /**
    * Abstract class for storing events. It contains representation of basic
    * paramters, and Track array. \warning You should not use base constructor
@@ -114,6 +116,11 @@ namespace Hal {
      * @param event
      */
     virtual void ShallowCopyHiddenInfo(Event* event);
+    /**
+     * copy hidden v0s
+     * @param event
+     */
+    virtual void ShallowCopyHiddenInfo(Event* event, Int_t* map, Int_t* mapID, Int_t map_size);
     /**
      *
      * @param n number of branches, names of branches
@@ -335,6 +342,18 @@ namespace Hal {
      * @return pointer to hidden info
      */
     inline TClonesArray* GetV0HiddenInfo() const { return fV0sHiddenInfo; };
+    /**
+     * add v0track and track without checking the size of v0 hidden info and track
+     * @param v0Track
+     * @param track track associated with given v0
+     */
+    Track* AddV0Fast(V0Track* v0Track);
+    /**
+     * add v0 track and track with checking the size of containers
+     * @param v0Track
+     * @return
+     */
+    Track* AddV0(V0Track* v0Track);
     /**
      * default destructor
      */

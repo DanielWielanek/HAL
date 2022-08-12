@@ -20,10 +20,12 @@
 
 namespace Hal {
   class Event;
+
   /**
    * basic abstract class for storing information about tracks
    */
   class Track : public TObject {
+    friend class Event;
 
   protected:
     /**
@@ -167,6 +169,11 @@ namespace Hal {
     inline Double_t GetCharge() const { return fCharge; };
     /**
      *
+     * @return id of hidden info
+     */
+    inline Int_t GetHiddenInfoId() const { return fHiddenInfo; };
+    /**
+     *
      * @return track id
      */
     virtual Int_t GetID() const { return fID; };
@@ -243,6 +250,11 @@ namespace Hal {
      * @param map
      */
     void TranslateLinks(Int_t* map);
+    /**
+     * translate links of this track into new links
+     * @param vec
+     */
+    void TranslateLinksVec(const std::vector<int>& vec);
     /**
      *
      * @return true if particle has 3 dependendecies (probably V0)

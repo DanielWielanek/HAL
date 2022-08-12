@@ -47,6 +47,7 @@ namespace Hal {
     fHiddenInfo = other->fHiddenInfo;
     fType       = other->fType;
   }
+
   void Track::CopyAllData(Track* other) {
     fEvent  = other->fEvent;
     fThisID = other->fThisID;
@@ -79,23 +80,37 @@ namespace Hal {
   void Track::TranslateLinks(Int_t* map) {
     if (IsGoodSecondary()) { SetMotherIndex(map[GetMotherIndex()]); }
     if (IsGoodV0()) {
-      GetV0Info()->SetPosId(map[GetV0Info()->GetPosId()]);
-      GetV0Info()->SetNegId(map[GetV0Info()->GetNegId()]);
+      auto v0Info = GetV0Info();
+      v0Info->SetPosId(map[GetV0Info()->GetPosId()]);
+      v0Info->SetNegId(map[GetV0Info()->GetNegId()]);
+      v0Info->SetTrackId(GetThisID());
     }
   }
-
+  void Track::TranslateLinksVec(const std::vector<int>& vec) {
+    if (IsGoodSecondary()) { SetMotherIndex(vec.at(GetMotherIndex())); }
+    if (IsGoodV0()) {
+      auto v0Info = GetV0Info();
+      v0Info->SetPosId(vec.at(GetV0Info()->GetPosId()));
+      v0Info->SetNegId(vec.at(GetV0Info()->GetNegId()));
+      v0Info->SetTrackId(GetThisID());
+    }
+  }
   void Track::SetLinks(std::vector<int>& vec) {
     this->SetThisID(vec[0]);
     if (IsGoodSecondary()) {
       SetMotherIndex(vec[1]);
       if (IsGoodV0()) {
-        GetV0Info()->SetPosId(vec[2]);
-        GetV0Info()->SetNegId(vec[3]);
+        auto v0Info = GetV0Info();
+        v0Info->SetTrackId(GetThisID());
+        v0Info->SetPosId(vec[2]);
+        v0Info->SetNegId(vec[3]);
       }
     } else {
       if (IsGoodV0()) {
-        GetV0Info()->SetPosId(vec[1]);
-        GetV0Info()->SetNegId(vec[2]);
+        auto v0Info = GetV0Info();
+        v0Info->SetTrackId(GetThisID());
+        v0Info->SetPosId(vec[1]);
+        v0Info->SetNegId(vec[2]);
       }
     }
   }

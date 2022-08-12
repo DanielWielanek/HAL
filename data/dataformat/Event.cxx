@@ -169,7 +169,11 @@ namespace Hal {
 
   void Event::CopyCompress(Event* event, Int_t* map, Int_t* mapID, Int_t map_size) {
     ShallowCopyEvent(event);
+#ifdef _HAL_COMPRESS_HIDDEN_INFO_
+    ShallowCopyHiddenInfo(event, map, mapID, map_size);
+#else
     ShallowCopyHiddenInfo(event);
+#endif
     ShallowCopyCompressTracks(event, map, mapID, map_size);
     if (fSource) {
       EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fSource);
@@ -230,6 +234,25 @@ namespace Hal {
     fTracks->Clear();
     fTotalTracksNo = map_size;
     fTracks->ExpandCreateFast(fTotalTracksNo);
+#ifdef _HAL_COMPRESS_HIDDEN_INFO_
+    for (int i = 0; i < map_size; i++) {
+      Track* to   = (Track*) fTracks->UncheckedAt(i);
+      Track* from = (Track*) event->fTracks->UncheckedAt(map[i]);
+      to->ResetTrack(i, this);
+      to->CopyData(from);
+      // to->TranslateLinks(mapID);
+    }
+    for (int i = 0; i < fTotalV0s; i++) {
+      V0Track* v0     = (V0Track*) fV0sHiddenInfo->UncheckedAt(i);
+      Track* to       = (Track*) fTracks->UncheckedAt(v0->GetTrackId());
+      to->fHiddenInfo = i;
+    }
+    for (int i = 0; i < fTotalTracksNo; i++) {
+      Track* to = (Track*) fTracks->UncheckedAt(i);
+      to->TranslateLinks(mapID);
+    }
+  }
+#else
     for (int i = 0; i < map_size; i++) {
       Track* to   = (Track*) fTracks->UncheckedAt(i);
       Track* from = (Track*) event->fTracks->UncheckedAt(map[i]);
@@ -237,7 +260,7 @@ namespace Hal {
       to->CopyData(from);
       to->TranslateLinks(mapID);
     }
-  }
+#endif
 
   Track* Event::GetNewTrack() const {
     TClass* cl = fTracks->GetClass();
@@ -309,6 +332,7 @@ namespace Hal {
   }
 
   void Event::ShallowCopyHiddenInfo(Event* event) {
+    fV0sHiddenInfo->Clear();
     fV0sHiddenInfo->ExpandCreateFast(event->fTotalV0s);
     fTotalV0s = event->fTotalV0s;
     for (int i = 0; i < fTotalV0s; i++) {
@@ -318,4 +342,38 @@ namespace Hal {
     }
   }
 
+  void Event::ShallowCopyHiddenInfo(Event* event, Int_t* map, Int_t* mapID, Int_t map_size) {
+    fTotalV0s = 0;
+    if (event->GetTotalV0No() == 0) return;
+    fV0sHiddenInfo->ExpandCreateFast(event->fTotalV0s);
+    fV0sHiddenInfo->Clear();
+    for (int i = 0; i < event->GetTotalV0No(); i++) {
+      V0Track* v0   = (V0Track*) event->GetV0HiddenInfo()->UncheckedAt(i);
+      Int_t trackId = v0->GetTrackId();
+      if (mapID[trackId] > -1) {
+        V0Track* to = (V0Track*) fV0sHiddenInfo->UncheckedAt(fTotalV0s);
+        to->CopyData(v0);
+        to->SetTrackId(mapID[trackId]);  // set link to new track
+        fTotalV0s++;
+      }
+    }
+  }
+
+  Track* Event::AddV0Fast(V0Track* v0Track) {
+    Track* tr = (Track*) fTracks->UncheckedAt(fTotalTracksNo++);
+    tr->SetThisID(fTotalTracksNo - 1);
+    V0Track* to = (V0Track*) fV0sHiddenInfo->UncheckedAt(fTotalV0s++);
+    to->CopyData(v0Track);
+    to->SetTrackId(fTotalTracksNo);
+    return tr;
+  }
+
+  Track* Event::AddV0(V0Track* v0Track) {
+    Track* tr = (Track*) fTracks->ConstructedAt(fTotalTracksNo++);
+    tr->SetThisID(fTotalTracksNo - 1);
+    V0Track* to = (V0Track*) fV0sHiddenInfo->ConstructedAt(fTotalV0s++);
+    to->CopyData(v0Track);
+    to->SetTrackId(fTotalTracksNo - 1);
+    return tr;
+  }
 }  // namespace Hal

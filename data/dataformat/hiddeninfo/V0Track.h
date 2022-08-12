@@ -18,6 +18,7 @@
  */
 namespace Hal {
   class V0Track : public TObject {
+    Int_t fTrackId;
     Int_t fPosId;
     Int_t fNegId;
     Int_t fAssumedPdg;
@@ -43,6 +44,16 @@ namespace Hal {
      * @param v
      */
     virtual void CopyData(V0Track* v);
+    /**
+     * set id of track in event
+     * @param id
+     */
+    void SetTrackId(Int_t id) { fTrackId = id; }
+    /**
+     * get id of track in event
+     * @return
+     */
+    inline Int_t GetTrackId() const { return fTrackId; }
     /**
      *
      * @return assumed PDG of this particle

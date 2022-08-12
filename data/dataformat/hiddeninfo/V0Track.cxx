@@ -11,6 +11,7 @@
 #include "ExpEvent.h"
 namespace Hal {
   V0Track::V0Track() :
+    fTrackId(-1),
     fPosId(-1),
     fNegId(-1),
     fS1(0),
@@ -59,6 +60,7 @@ namespace Hal {
   void V0Track::SetPxPyPzMNeg(Double_t px, Double_t py, Double_t pz, Double_t m) { fMomNeg.SetXYZM(px, py, pz, m); }
 
   void V0Track::CopyData(V0Track* v) {
+    fTrackId       = v->fTrackId;
     fPosId         = v->fPosId;
     fNegId         = v->fNegId;
     fS1            = v->fS1;

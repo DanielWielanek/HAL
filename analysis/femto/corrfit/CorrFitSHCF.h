@@ -113,6 +113,13 @@ namespace Hal {
      * @return
      */
     Double_t GetCFValIm(Double_t q, Int_t elm) const;
+    /**
+     * additional option for bin drawing
+     * @param draw_option
+     * @param width number of bins in projection  if negative then function is
+     * calculated as average at middle bin and edges
+     */
+    void Paint(Bool_t repaint, Bool_t refresh);
 
   public:
     CorrFitSHCF(Int_t parNo = 3);
@@ -126,20 +133,6 @@ namespace Hal {
      * @param z_max max. value in long direction
      */
     void SetFuncRange(Double_t x_min, Double_t x_max, Int_t el, Int_t em);
-    /**
-     *
-     * @param draw_option if full(then draw fitted and fitting function, if
-     * "cotains" range then only fitted range is drawn (event if correlation
-     * function is beyond fitting range)
-     */
-    void Draw(Option_t* draw_option = "full") { DrawAdv(draw_option, 0); };
-    /**
-     * additional option for bin drawing
-     * @param draw_option
-     * @param width number of bins in projection  if negative then function is
-     * calculated as average at middle bin and edges
-     */
-    void DrawAdv(Option_t* draw_option, Int_t width);
     /**
      *
      * @return Rout

@@ -222,34 +222,49 @@ namespace Hal {
     fRange[l * 2 + 1] = x_max;
   }
 
-  void CorrFitSHCF::DrawAdv(Option_t* draw_option, Int_t /*width*/) {
+  void CorrFitSHCF::Paint(Bool_t repaint, Bool_t refresh) {
+    Int_t L = fLmVals.GetL();
+    if (repaint)
+      if (gPad == nullptr) {
+        new TCanvas();
+        gPad->Clear();
+        gPad->Divide(L + 1, L + 1);
+      }
     for (int i = 0; i < GetParametersNo(); i++)
       fTempParamsEval[i] = GetParameter(i);
     RecalculateFunction();
-    TString option = draw_option;
-    Int_t L        = fLmVals.GetL();
-    if (gPad == nullptr) {
-      new TCanvas();
-      gPad->Clear();
-      gPad->Divide(L + 1, L + 1);
-    }
     TVirtualPad* pad = gPad;
-    ((FemtoSHCF*) fCF)->Draw();
+    if (fDrawOptions.DrawCf()) ((FemtoSHCF*) fCF)->Draw();
 
     TVirtualPad* temp_pad = gPad;
     // gPad->Divide(fL* 2 - 1, fL);
-
-    for (int l = 0; l < L; l++) {
-      for (int m = -l; m <= l; m++) {
-        temp_pad->cd(fLmVals.GetPadId(l, m));
-        TF1* f_re = GetFittingFunction(l, m, kTRUE);
-        f_re->SetLineColor(kBlue);
-        TF1* f_im = GetFittingFunction(l, m, kTRUE);
-        f_im->SetLineColor(kBlue);
-        f_re->Draw("SAME");
-        f_im->Draw("SAME");
+    if (!repaint) {
+      for (int l = 0; l < L; l++) {
+        for (int m = -l; m <= l; m++) {
+          temp_pad->cd(fLmVals.GetPadId(l, m));
+          TF1* f_re = GetFittingFunction(l, m, kTRUE);
+          f_re->SetLineColor(kBlue);
+          TF1* f_im = GetFittingFunction(l, m, kTRUE);
+          f_im->SetLineColor(kBlue);
+          f_re->Draw("SAME");
+          f_im->Draw("SAME");
+          std::pair<TF1*, TVirtualPad*> pair_re, pair_im;
+          pair_re.first  = f_re;
+          pair_re.second = gPad;
+          pair_im.first  = f_im;
+          pair_im.second = gPad;
+          fDrawFunc.push_back(pair_re);
+          fDrawFunc.push_back(pair_im);
+        }
       }
     }
+    if (refresh) {
+      for (auto i : fDrawFunc) {
+        // just do nothing?
+      }
+    }
+
+
     gPad = temp_pad;
   }
 

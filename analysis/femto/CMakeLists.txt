@@ -59,6 +59,7 @@ base/source_models/FemtoSourceModelGauss.cxx
 base/source_models/FemtoSourceModelGausMt.cxx
 base/source_models/FemtoSourceModelNumerical1D.cxx
 
+corrfit/CorrFitDrawOptions.cxx
 corrfit/CorrFit.cxx
 corrfit/CorrFitFunc.cxx
 corrfit/CorrFitMath1DCF.cxx

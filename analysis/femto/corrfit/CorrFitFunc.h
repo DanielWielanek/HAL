@@ -13,6 +13,7 @@
 #include "CorrFit.h"
 
 #include "Array.h"
+#include "CorrFitDrawOptions.h"
 #include "FemtoConst.h"
 
 #include <Rtypes.h>
@@ -82,6 +83,22 @@ namespace Hal {
      * user provided fitting map
      */
     Bool_t fOwnRangeMap;
+    /**
+     * pointers to legend entries
+     */
+    std::vector<TLegendEntry*> fLegendEntries;
+    /**
+     * pointer to legend if exists
+     */
+    TLegend* fLegend = {nullptr};
+    /**
+     * draw options
+     */
+    CorrFitDrawOptions fDrawOptions;
+    /**
+     * array of TH1 used for drawing
+     */
+    std::vector<TH1*> fDrawHistograms;
     /**
      * pointer to correlation function
      */
@@ -195,6 +212,12 @@ namespace Hal {
      */
     virtual void SetErrors(TH1* num, const TH1* den) const = 0;
     /**
+     * draw this function but use corrfit draw options instead of string
+     * @param repaint - if true repaint instead of paint new objects
+     * @param refresh - set true if this is the last Paint method this method refresh pads
+     */
+    virtual void Paint(Bool_t repaint, Bool_t refresh) = 0;
+    /**
      * calculate error of correlation function
      * @param Num numerator value
      * @param NumErr numeratora error
@@ -209,7 +232,6 @@ namespace Hal {
                    const Double_t DenErr,
                    Double_t& cf,
                    Double_t& cfe) const;
-    Bool_t ExtrDraw(TString& pattern, Double_t& min, Double_t& max) const;
 
   public:
     /**
@@ -234,7 +256,11 @@ namespace Hal {
      * "full" to draw optimized you can also specify range of drawed function by
      * {min,max} eg. {1,2.0} /TODO implement in 3D also
      */
-    virtual void Draw(Option_t* /*draw_option*/ = "full") {};
+    void Draw(Option_t* draw_option = "full") {
+      fDrawOptions = CorrFitDrawOptions(draw_option);
+      Paint(kFALSE, kTRUE);
+    };
+
     /**
      * set range of CF's
      * @param min lower range limit
@@ -320,6 +346,8 @@ namespace Hal {
     TF1* GetFittedFunction() const;
     TH1* GetFitMask() const { return fMask; }
     CorrFitHDFunc* GetHD() const { return fHDMaps; };
+    virtual void Repaint() { Paint(kTRUE, kTRUE); };
+    void UpdateLegend();
     virtual ~CorrFitFunc();
     ClassDef(CorrFitFunc, 1)
   };

@@ -17,6 +17,7 @@
 #include "FemtoSHCF.h"
 #include "Minimizer.h"
 #include "Splines.h"
+#include "Std.h"
 #include "StdString.h"
 
 #include <Math/Factory.h>
@@ -27,6 +28,8 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TH3.h>
+#include <TLegend.h>
+#include <TLegendEntry.h>
 #include <TMath.h>
 #include <TMathBase.h>
 #include <TRegexp.h>
@@ -369,6 +372,9 @@ namespace Hal {
     fDenominatorHistogram = nullptr;
     if (fCorrelationFunctionHistogram) delete fCorrelationFunctionHistogram;
     fCorrelationFunctionHistogram = nullptr;
+    if (fLegend) delete fLegend;
+    for (auto& i : fDrawHistograms)
+      delete i;
   }
 
   Int_t CorrFitFunc::GetFreeParamsNo() const {
@@ -419,29 +425,6 @@ namespace Hal {
       }
     }
     return f;
-  }
-
-  Bool_t CorrFitFunc::ExtrDraw(TString& pattern, Double_t& min, Double_t& max) const {
-    TRegexp regexp("{[-+]?[0-9]*\\.?[0-9]*,[-+]?[0-9]*\\.?[0-9]*}");
-    TString expr = pattern(regexp);
-    if (expr.Length() > 1) {
-      TRegexp low_expr("{[-+]?[0-9]*\\.?[0-9]*,");
-      TRegexp high_expr(",[-+]?[0-9]*\\.?[0-9]*}");
-      TString first = expr(low_expr);
-      first.ReplaceAll(",", "");
-      first.ReplaceAll("{", "");
-      TString last = expr(high_expr);
-      last.ReplaceAll(",", "");
-      last.ReplaceAll("}", "");
-      min = first.Atof();
-      max = last.Atof();
-      pattern.ReplaceAll(expr, "");
-      return kTRUE;
-    } else {
-      min = 0;
-      max = 0;
-      return kFALSE;
-    }
   }
 
   void CorrFitFunc::DummyNumericalFunction() {
@@ -525,5 +508,58 @@ namespace Hal {
     EstimateActiveBins();
     if (fMinAlgo == kDefaultAlgo) fMinAlgo = kMinuitScan;
     DummyNumericalFunction();
+  }
+
+  void CorrFitFunc::UpdateLegend() {
+    TString chi_s, chindf_s, ndf_s;
+    Double_t chi    = GetChiSquare();
+    Double_t chindf = GetChiNDF();
+    Double_t ndf    = GetNDF();
+    if (chi <= 1000)
+      chi_s = Form("%4.3f", chi);
+    else
+      chi_s = Hal::Std::RoundToString(chi, 2, "prefix");
+    if (chindf <= 1000) {
+      chindf_s = Form("%4.3f", chindf);
+    } else {
+      chindf_s = Hal::Std::RoundToString(chindf, 2, "prefix");
+    }
+    if (ndf <= 1000) {
+      ndf_s = Form("%i", (int) ndf);
+    } else {
+      ndf_s = Hal::Std::RoundToString(ndf, 2, "prefix");
+    }
+    TString chi_label = Form("#chi^{2}/NDF %s (%s/%s)", chindf_s.Data(), chi_s.Data(), ndf_s.Data());
+    std::vector<TString> label;
+    for (int i = 0; i < GetParametersNo(); i++) {
+      if (IsParFixed(i)) {
+        label.push_back(Form("%s %4.3f (fixed)", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue()));
+      } else {
+        label.push_back(Form(
+          "%s %4.3f#pm%4.3f", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue(), fParameters[i].GetError()));
+      }
+    }
+    label.push_back(chi_label);
+
+
+    if (fLegend == nullptr) {
+      fLegend = new TLegend(0.7, 0.7, 0.95, 0.95);
+      fLegend->SetHeader(GetName());
+      for (int i = 0; i < GetParametersNo(); i++) {
+        if (IsParFixed(i)) {
+          fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, label[i], ""));
+        } else {
+          fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, label[i], ""));
+        }
+      }
+      fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, label[label.size() - 1], ""));
+    } else {
+      for (int i = 0; i < GetParametersNo(); i++) {
+        TLegendEntry* ent = fLegendEntries[i];
+        ent->SetLabel(label[i]);
+        ent->SetTextColor(kGreen);
+      }
+      fLegendEntries[fLegendEntries.size() - 1]->SetLabel(chi_label);
+    }
   }
 }  // namespace Hal

@@ -18,7 +18,8 @@
 #include <utility>
 #include <vector>
 
-
+class TLegend;
+class TLegendEntry;
 class TF1;
 class TVirtualPad;
 
@@ -147,6 +148,13 @@ namespace Hal {
      * @param val
      */
     void OverwriteParam(Int_t par, Double_t val) { fParameters[par].SetFittedValue(val); }
+    /**
+     * copy current parameters into given TF1
+     * @param f function to set
+     * @param copyNumPar copy values of parameters
+     * @param copyGraphPar copy graphical settings of this function (line color etc.)
+     */
+    void CopyParamsToTF1(TF1* f, Bool_t copyNumPar = kTRUE, Bool_t copyGrapPar = kTRUE) const;
 
   public:
     CorrFit(Int_t parameters_no = 2);
@@ -276,6 +284,7 @@ namespace Hal {
      * CF by information from histogram edges
      */
     void SetCalculationOption(ECalcOption f) { fBinCalc = f; }
+
     virtual ~CorrFit();
     ClassDef(CorrFit, 2)
   };

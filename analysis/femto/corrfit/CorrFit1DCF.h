@@ -59,12 +59,7 @@ namespace Hal {
      * @return TH1D used for drawing function
      *
      */
-    virtual TH1* GetTHForDrawing(Bool_t normalize) const;
-    /**
-     *
-     * @return TLegend with fit parameters for drawing
-     */
-    virtual TLegend* GetLegendForDrawing() const;
+    virtual void MakeTHForDrawing();
     /**
      * functions used for drawing
      * @param x value of momentum difference
@@ -90,6 +85,8 @@ namespace Hal {
     virtual Double_t CalculateCF(const Double_t* /*x*/, const Double_t* /*params*/) const { return 1; };
     virtual void Fit(TObject* histo);
 
+    virtual void Paint(Bool_t repaint = kTRUE, Bool_t refresh = kTRUE);
+
   public:
     /** default constructor
      *
@@ -102,7 +99,6 @@ namespace Hal {
      * @return vallue of CF
      */
     virtual Double_t Eval(Double_t q) const;
-    virtual void Draw(Option_t* draw_option = "full+norm");
     /**
      * set limits of fitted radii
      * @param min minimal value

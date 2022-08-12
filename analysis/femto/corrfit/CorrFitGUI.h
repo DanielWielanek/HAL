@@ -65,7 +65,6 @@ namespace Hal {
   class CorrFitGUI : public TGMainFrame {
     CorrFit* fFunc;
     CorrFitParButton** fSliders;
-    TGCheckButton* fNormStyle;
     CorrFitChiSelector* fPairChi1;
     CorrFitChiSelector* fPairChi2;
     TGCheckButton* fChiMin;

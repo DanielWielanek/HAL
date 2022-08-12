@@ -29,6 +29,7 @@
 #include <TObjArray.h>
 #include <TVirtualPad.h>
 
+#include "CorrFitDrawOptions.h"
 #include "Std.h"
 #include "StdString.h"
 
@@ -141,45 +142,31 @@ namespace Hal {
     return CalculateCF(x, params);
   }
 
-  void CorrFitKisiel::Draw(Option_t* draw_option) {
-    TString option        = draw_option;
-    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
-    Double_t Rmid         = 0.5 * (fMaps[0]->GetRmax() + fMaps[0]->GetKstarMin());
-    Double_t draw_min, draw_max;
-    Bool_t set_limits = ExtrDraw(option, draw_min, draw_max);
-
-    if (Hal::Std::FindParam(option, "full") && Hal::Std::FindParam(option, "ee")) {
-      if (fDrawFunc.size() == 0) fDrawFunc.resize(1);
-      TH1* cf = GetTHForDrawing(drawNormalized);
-
-      TF1* draw_func = GetFunctionForDrawing();
-
-      cf->SetMarkerStyle(kFullSquare);
-      TH1* cf2 = (TH1*) cf->Clone("sys_err");
-      cf2->SetFillStyle(3001);
-      cf2->SetFillColor(kGray + 2);
-      for (int iX = 1; iX <= cf->GetNbinsX(); iX++) {
-        Double_t k = cf2->GetXaxis()->GetBinCenter(iX);
-        cf2->SetBinError(iX, fMaps[0]->EvalNumErrorBin(iX, 1));
+  void CorrFitKisiel::Paint(Bool_t repaint, Bool_t refresh) {
+    CorrFit1DCF::Paint(repaint, kFALSE);
+    if (fDrawOptions.DrawNumErr() && fDrawOptions.DrawCf()) {
+      if (fOldNumErr == nullptr) { fOldNumErr = (TH1D*) fDrawHistograms[0]->Clone("sys_err"); }
+      fOldNumErr->SetFillStyle(3001);
+      fOldNumErr->SetFillColor(kGray + 2);
+      Double_t norm = 1;
+      if (fDrawOptions.AutoNorm()) { norm = GetNorm(); }
+      for (int iX = 1; iX <= fDrawHistograms[0]->GetNbinsX(); iX++) {
+        Double_t k = fOldNumErr->GetXaxis()->GetBinCenter(iX);
+        fOldNumErr->SetBinContent(iX, fDrawHistograms[0]->GetBinContent(iX));
+        fOldNumErr->SetBinError(iX, fMaps[0]->EvalNumErrorBin(iX, 1) * norm);
       }
 
-      cf2->SetMarkerSize(0);
-      cf2->SetMinimum(0);
-      if (set_limits) {
-        cf2->SetMinimum(draw_min);
-        cf2->SetMaximum(draw_max);
+      fOldNumErr->SetMarkerSize(0);
+      fOldNumErr->SetMinimum(0);
+      if (fDrawOptions.DrawMinMax()) {
+        fOldNumErr->SetMinimum(fDrawOptions.GetMin());
+        fOldNumErr->SetMaximum(fDrawOptions.GetMax());
       }
-
-      cf2->Draw("E2");
-      cf->Draw("SAME");
-      fDrawFunc[0].first  = draw_func;
-      fDrawFunc[0].second = gPad;
-      if (drawNormalized) draw_func->SetParameter(Norm(), 1);
-      draw_func->Draw("SAME");
-      TLegend* leg = GetLegendForDrawing();
-      leg->Draw("SAME");
-    } else {
-      CorrFit1DCF::Draw(draw_option);
+      fOldNumErr->Draw("SAME+E2");
+    }
+    if (refresh) {
+      gPad->Modified(kTRUE);
+      gPad->Update();
     }
   }
 

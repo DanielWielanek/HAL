@@ -42,11 +42,6 @@ namespace Hal {
       fSliders[i] = new CorrFitParButton(this, 200, 40);
       fSliders[i]->Init(this, name, fFunc->GetParamConf(i));
     }
-    fNormStyle = new TGCheckButton(this, "Normalized to initial norm");
-    fNormStyle->SetOn();
-    fNormStyle->Connect("Toggled(Bool_t)", ClassName(), this, "ApplyParams()");
-    AddFrame(fNormStyle, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
-
 
     TGHorizontalFrame* legendFrame = new TGHorizontalFrame(this, width, 40);
     TGLabel* lab1                  = new TGLabel(legendFrame, "Par. Name");
@@ -89,19 +84,10 @@ namespace Hal {
       fFunc->OverwriteParam(i, fSliders[i]->GetValue());
       fFunc->fTempParamsEval[i] = fSliders[i]->GetValue();
     }
-    if (fNormStyle->IsOn()) {
-      fFunc->OverwriteParam(fNormIndex, fSliders[fNormIndex]->GetValue() / fInitalNorm);
-      fFunc->fTempParamsEval[fNormIndex] = fSliders[fNormIndex]->GetValue() / fInitalNorm;
-    }
+
     fFunc->ParametersChanged();
-    std::vector<std::pair<TF1*, TVirtualPad*>> vec = fFunc->GetDrawFunctions();
-    for (auto val : vec) {
-      for (int i = 0; i < fFunc->GetParametersNo(); i++) {
-        val.first->FixParameter(i, fFunc->GetParameter(i));
-      }
-      val.second->Modified();
-      val.second->Update();
-    }
+    auto func = dynamic_cast<CorrFitFunc*>(fFunc);
+    if (func) { func->Repaint(); }
   }
 
   CorrFitGUI::~CorrFitGUI() { Cleanup(); }

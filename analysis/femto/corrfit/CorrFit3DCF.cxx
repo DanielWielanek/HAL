@@ -29,10 +29,10 @@
 #include "Cout.h"
 #include "DividedHisto.h"
 #include "Femto3DCF.h"
+#include "Splines.h"
 #include "Std.h"
 #include "StdHist.h"
 #include "StdString.h"
-#include "Splines.h"
 
 namespace Hal {
   const Int_t CorrFit3DCF::fgRout   = 0;
@@ -171,30 +171,83 @@ namespace Hal {
     fRange[5] = z_max;
   }
 
-  void CorrFit3DCF::DrawAdv(Option_t* draw_option, Int_t width) {
+  void CorrFit3DCF::Paint(Bool_t repaint, Bool_t refresh) {
     for (int i = 0; i < GetParametersNo(); i++) {
       fTempParamsEval[i] = GetParameter(i);
     }
     // TODO fFittedFunction->SetParameter(par,val);
     ParametersChanged();
-    TString option = draw_option;
-    if (gPad == NULL) new TCanvas();
-    if (Hal::Std::FindParam(option, "diag1") || Hal::Std::FindParam(option, "diag2")) {
-      if (Hal::Std::FindParam(option, "full")) {
-        DrawDiagonalWithCF(option);
-      } else if (Hal::Std::FindParam(option, "same")) {
-        DrawDiagonalOther(option);
+    if (!repaint) Calculatef(0);
+    if (gPad == nullptr) new TCanvas();
+    fTempPad     = gPad;
+    EDrawMode dm = EDrawMode::kNormal;
+    Int_t padX = 0, padY = 0;
+    Int_t legendPad = 0;
+    if (fDrawOptions.Diag1()) {
+      dm        = EDrawMode::kDiagonal1;
+      padX      = 3;
+      padY      = 3;
+      legendPad = 9;
+    } else if (fDrawOptions.Diag2()) {
+      dm        = EDrawMode::kDiagonal2;
+      padX      = 4;
+      padY      = 4;
+      legendPad = 15;
+    } else {
+      dm        = EDrawMode::kNormal;
+      padX      = 2;
+      padY      = 2;
+      legendPad = 4;
+    }
+    GetTF1s(!repaint, dm);
+    if (fDrawOptions.DrawCf()) { GetTH1s(dm); }
+
+
+    Color_t colz[13] = {kRed, kBlue, kGreen, kViolet, kOrange, kCyan, kBlack, kGray, kMagenta, kYellow + 1, kPink, kAzure, kTeal};
+    if (fDrawOptions.Rgb()) {
+      int count = 0;
+      for (auto f : fDrawFunc) {
+        if (count < 13) { f.first->SetLineColor(colz[count++]); }
       }
-      return;
     }
 
-    if (Hal::Std::FindParam(option, "full")) {
-      DrawFunctionWithCF(option);
-    } else if (Hal::Std::FindParam(option, "same")) {
-      DrawPureFunction(option);
-    } else {
-      DrawOther(option);
+    if (!repaint) { fTempPad->Divide(padX, padY); }
+
+    int pad = 0;
+    for (auto f : fDrawFunc) {
+      fTempPad->cd(++pad);
+      if (fDrawOptions.DrawCf()) {
+        if (fDrawOptions.AutoNorm() && fOldNorm != 0) { fDrawHistograms[pad - 1]->Scale(fOldNorm / GetNorm()); }
+        if (fDrawOptions.DrawMinMax()) {
+          fDrawHistograms[pad - 1]->SetMinimum(fDrawOptions.GetMin());
+          fDrawHistograms[pad - 1]->SetMaximum(fDrawOptions.GetMax());
+        }
+        fDrawHistograms[pad - 1]->Draw("same");
+      }
+      if (fDrawOptions.AutoNorm()) { f.first->SetParameter(Norm(), 1); }
+      f.first->Draw("SAME");
+
+      f.second = gPad;
     }
+    std::cout << " pads " << padX << " " << padY << " " << fDrawOptions.Diag1() << " " << fDrawOptions.Diag2() << std::endl;
+    UpdateLegend();
+    fTempPad->cd(legendPad);
+    fLegend->SetX1(0.05);
+    fLegend->SetX2(0.95);
+    fLegend->SetY1(0.05);
+    fLegend->SetY2(0.95);
+    fLegend->Draw();
+
+
+    //  if (refresh) {
+    for (int i = 0; i < fDrawFunc.size(); i++) {
+      fTempPad->cd(i + 1);
+      gPad->Modified();
+      gPad->Update();
+    }
+    //}
+    gPad     = fTempPad;
+    fOldNorm = GetNorm();
   }
 
   void CorrFit3DCF::SetParametersToTF1(TF1* f) const {
@@ -653,387 +706,96 @@ namespace Hal {
     }
   }
 
-  void CorrFit3DCF::DrawPureFunction(TString option) {
-    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
-    if (fDrawFunc.size() == 0) fDrawFunc.resize(3);
-    fDrawFunc[0].first =
-      new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], GetParametersNo(), this->ClassName(), "GetFunX");
-    fDrawFunc[1].first =
-      new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], GetParametersNo(), this->ClassName(), "GetFunY");
-    fDrawFunc[2].first =
-      new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], GetParametersNo(), this->ClassName(), "GetFunZ");
-    SetParametersToTF1(GetTF1(0));
-    SetParametersToTF1(GetTF1(1));
-    SetParametersToTF1(GetTF1(2));
-    for (int i = 0; i < 3; i++) {
-      GetTF1(i)->SetLineColor(GetLineColor());
-      GetTF1(i)->SetLineStyle(GetLineStyle());
-      GetTF1(i)->SetLineWidth(GetLineWidth());
-      if (drawNormalized) GetTF1(i)->FixParameter(Norm(), 1);
-    }
-    TVirtualPad* pad = gPad;
-    pad->cd(1);
-    fDrawFunc[0].second = gPad;
-    GetTF1(0)->Draw("SAME");
-    pad->cd(2);
-    fDrawFunc[1].second = gPad;
-    GetTF1(1)->Draw("SAME");
-    pad->cd(3);
-    fDrawFunc[2].second = gPad;
-    GetTF1(2)->Draw("SAME");
-    gPad = pad;
-  }
-
-  void CorrFit3DCF::DrawFunctionWithCF(TString option) {
-    Double_t draw_min, draw_max;
-    Bool_t set_limits = ExtrDraw(option, draw_min, draw_max);
-    // fill array to calculate cf integrated over projection
-    Double_t width = 0.0;
-    if (fBinCalc) { width = 0.0; }
-    width                 = 0;
-    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
-    Calculatef(width);
-    Int_t middle_x = ((Femto3DCF*) fCF)->GetNum()->GetXaxis()->FindBin(0.0);
-    Int_t middle_y = ((Femto3DCF*) fCF)->GetNum()->GetYaxis()->FindBin(0.0);
-    Int_t middle_z = ((Femto3DCF*) fCF)->GetNum()->GetZaxis()->FindBin(0.0);
-
-    TVirtualPad* pad = gPad;
-    if (gPad->GetListOfPrimitives()->GetEntries() < 4) pad->Divide(2, 2);
-    if (fDrawFunc.size() == 0) fDrawFunc.resize(3);
-    fDrawFunc[0].first =
-      new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], GetParametersNo(), this->ClassName(), "GetFunX");
-    fDrawFunc[1].first =
-      new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], GetParametersNo(), this->ClassName(), "GetFunY");
-    fDrawFunc[2].first =
-      new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], GetParametersNo(), this->ClassName(), "GetFunZ");
-    for (int i = 0; i < 3; i++)
-      SetParametersToTF1(GetTF1(i));
-    if (Hal::Std::FindParam(option, "rgb", kTRUE)) {
-      GetTF1(0)->SetLineColor(kRed);
-      GetTF1(1)->SetLineColor(kBlue);
-      GetTF1(2)->SetLineColor(kGreen);
-    } else {
-      for (int i = 0; i < 3; i++) {
-        GetTF1(i)->SetLineColor(GetLineColor());
-        GetTF1(i)->SetLineWidth(GetLineWidth());
-        GetTF1(i)->SetLineStyle(GetLineStyle());
-      }
-    }
-    TH1D* out_func =
-      ((Femto3DCF*) fCF)
-        ->GetProjection1D(middle_y - width, middle_y + width, middle_z - width, middle_z + width, "x+bins+autoname");
-    out_func->SetMarkerStyle(kFullCircle);
-    out_func->SetTitle("out func");
-    out_func->SetMinimum(0);
-    out_func->SetStats(kFALSE);
-    TH1D* side_func =
-      ((Femto3DCF*) fCF)
-        ->GetProjection1D(middle_x - width, middle_x + width, middle_z - width, middle_z + width, "y+bins+autoname");
-    side_func->SetMarkerStyle(kFullCircle);
-    side_func->SetTitle("side func");
-    side_func->SetMinimum(0);
-    side_func->SetStats(kFALSE);
-    TH1D* long_func =
-      ((Femto3DCF*) fCF)
-        ->GetProjection1D(middle_x - width, middle_x + width, middle_y - width, middle_y + width, "z+bins+autoname");
-    long_func->SetMarkerStyle(kFullCircle);
-    long_func->SetTitle("long func");
-    long_func->SetMinimum(0);
-    long_func->SetStats(kFALSE);
-
-    if (drawNormalized) {
-      out_func->Scale(1.0 / GetNorm());
-      GetTF1(0)->FixParameter(Norm(), 1);
-      side_func->Scale(1.0 / GetNorm());
-      GetTF1(1)->SetParameter(Norm(), 1);
-      long_func->Scale(1.0 / GetNorm());
-      GetTF1(2)->SetParameter(Norm(), 1);
-    }
-    if (set_limits) {
-      out_func->SetMinimum(draw_min);
-      out_func->SetMaximum(draw_max);
-      side_func->SetMinimum(draw_min);
-      side_func->SetMaximum(draw_max);
-      long_func->SetMinimum(draw_min);
-      long_func->SetMaximum(draw_max);
-    }
-
-    pad->cd(1);
-    out_func->Draw();
-    fDrawFunc[0].second = gPad;
-    GetTF1(0)->Draw("SAME");
-    pad->cd(2);
-    fDrawFunc[1].second = gPad;
-    side_func->Draw();
-    GetTF1(1)->Draw("SAME");
-    pad->cd(3);
-    fDrawFunc[2].second = gPad;
-    long_func->Draw();
-    GetTF1(2)->Draw("SAME");
-    pad->cd(4);
-    if (Hal::Std::FindParam(option, "range")) {
-      out_func->GetXaxis()->SetRangeUser(fRange[0], fRange[1]);
-      side_func->GetXaxis()->SetRangeUser(fRange[2], fRange[3]);
-      long_func->GetXaxis()->SetRangeUser(fRange[4], fRange[5]);
-    }
-    TLegend* leg = new TLegend(0.05, 0.05, 0.95, 0.95);
-    leg->SetHeader("3D Corrfit");
-    for (int i = 0; i < GetParametersNo(); i++) {
-      if (IsParFixed(i)) {
-        leg->AddEntry(
-          (TObject*) 0x0, Form("%s %4.3f (fixed)", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue()), "");
-      } else {
-        leg->AddEntry(
-          (TObject*) 0x0,
-          Form(
-            "%s %4.3f#pm%4.3f", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue(), fParameters[i].GetError()),
-          "");
-      }
-    }
-    leg->AddEntry((TObject*) 0x0, Form("#chi^{2}/NDF %4.1f (%4.1f/%i)", GetChiNDF(), GetChiSquare(), (int) GetNDF()), "");
-    leg->Draw();
-    gPad = pad;
-  }
-
-  void CorrFit3DCF::DrawOther(TString option) {
-    Bool_t legend_enabled = kFALSE;
-    TVirtualPad* pad      = gPad;
-    if (gPad->GetListOfPrimitives()->GetEntries() < 4) pad->Divide(2, 2);
-
-    const Int_t nPar      = GetParametersNo();
-    TString className     = this->ClassName();
-    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
-    if (fDrawFunc.size() == 0) fDrawFunc.resize(3);
-    fDrawFunc[0].first =
-      new TF1(Hal::Std::GetUniqueName("funcX"), this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
-    fDrawFunc[1].first =
-      new TF1(Hal::Std::GetUniqueName("funcY"), this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
-    fDrawFunc[2].first =
-      new TF1(Hal::Std::GetUniqueName("funcZ"), this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
-    for (int i = 0; i < 3; i++) {
-      SetParametersToTF1(GetTF1(i));
-      GetTF1(i)->SetName(Hal::Std::GetUniqueName(GetTF1(i)->GetName()));
-      if (drawNormalized) GetTF1(i)->FixParameter(Norm(), 1);
-      GetTF1(i)->SetLineColor(GetLineColor());
-      GetTF1(i)->SetLineStyle(GetLineStyle());
-      GetTF1(i)->SetLineWidth(GetLineWidth());
-    }
-    if (Hal::Std::FindParam(option, "leg", kTRUE)) { legend_enabled = kTRUE; }
-
-    for (int i = 0; i < 3; i++) {
-      pad->cd(i + 1);
-      fDrawFunc[i].second = gPad;
-      GetTF1(i)->Draw(option);
-    }
-    pad->cd(4);
-    if (legend_enabled) {
-      TLegend* leg = new TLegend(0.05, 0.05, 0.95, 0.95);
-      leg->SetHeader("3D Corrfit");
-
-      for (int i = 0; i < GetParametersNo(); i++) {
-        if (IsParFixed(i)) {
-          leg->AddEntry(
-            (TObject*) 0x0, Form("%s %4.3f (fixed)", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue()), "");
-        } else {
-          leg->AddEntry(
-            (TObject*) 0x0,
-            Form(
-              "%s %4.3f#pm%4.3f", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue(), fParameters[i].GetError()),
-            "");
-        }
-      }
-      leg->AddEntry((TObject*) 0x0, Form("#chi^{2}/NDF %4.1f (%4.1f/%i)", GetChiNDF(), GetChiSquare(), (int) GetNDF()), "");
-      leg->Draw();
-    }
-    gPad = pad;
-  }
-
-  void CorrFit3DCF::DrawDiagonalOther(TString option) {
+  void CorrFit3DCF::GetTF1s(Bool_t makeNew, EDrawMode drawMode) {
     const Int_t nPar  = GetParametersNo();
     TString className = this->ClassName();
-    Int_t no          = 7;
-    Calculatef(0);
-    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
-    if (Hal::Std::FindParam(option, "diag2")) { no = 13; }
+    if (makeNew) {
+      switch (drawMode) {
+        case EDrawMode::kNormal: {
+          fDrawFunc.resize(3);
+          fDrawFunc[0].first = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
+          fDrawFunc[1].first = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
+          fDrawFunc[2].first = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
+        } break;
+        case EDrawMode::kDiagonal1: {
+          fDrawFunc.resize(7);
+          fDrawFunc[0].first = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
+          fDrawFunc[1].first = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
+          fDrawFunc[2].first = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
+          fDrawFunc[3].first =
+            new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
+          fDrawFunc[4].first =
+            new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunXZpp");
+          fDrawFunc[5].first =
+            new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunYZpp");
+          fDrawFunc[6].first =
+            new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
 
-    if (fDrawFunc.size() < no) fDrawFunc.resize(no);
-    fDrawFunc[0].first = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
-    fDrawFunc[1].first = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
-    fDrawFunc[2].first = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
-    if (no == 7) {
-      fDrawFunc[3].first =
-        new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
-      fDrawFunc[4].first =
-        new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunXZpp");
-      fDrawFunc[5].first =
-        new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunYZpp");
-      fDrawFunc[6].first =
-        new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
-    } else {
-      fDrawFunc[3].first =
-        new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
-      fDrawFunc[4].first =
-        new TF1("funcXY+-", this, &CorrFit3DCF::GetFunXYpm, fRange[0], fRange[1], nPar, className, "GetFunXYpm");
-      fDrawFunc[5].first =
-        new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunYZpp");
-      fDrawFunc[6].first =
-        new TF1("funcYZ+-", this, &CorrFit3DCF::GetFunYZpm, fRange[2], fRange[3], nPar, className, "GetFunYZpm");
-      fDrawFunc[7].first =
-        new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunXZpp");
-      fDrawFunc[8].first =
-        new TF1("funcXZ+-", this, &CorrFit3DCF::GetFunXZpm, fRange[4], fRange[5], nPar, className, "GetFunXZpm");
-      fDrawFunc[9].first =
-        new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
-      fDrawFunc[10].first =
-        new TF1("funcXYZ+-+", this, &CorrFit3DCF::GetFunXYZpmp, fRange[0], fRange[1], nPar, className, "GetFunXYZpmp");
-      fDrawFunc[11].first =
-        new TF1("funcXYZ+--", this, &CorrFit3DCF::GetFunXYZpmm, fRange[0], fRange[1], nPar, className, "GetFunXYZpmm");
-      fDrawFunc[12].first =
-        new TF1("funcXYZ++-", this, &CorrFit3DCF::GetFunXYZppm, fRange[0], fRange[1], nPar, className, "GetFunXYZppm");
-    }
+        } break;
+        case EDrawMode::kDiagonal2: {
+          fDrawFunc.resize(13);
+          fDrawFunc[0].first = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
+          fDrawFunc[1].first = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
+          fDrawFunc[2].first = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
+          fDrawFunc[3].first =
+            new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
+          fDrawFunc[4].first =
+            new TF1("funcXY+-", this, &CorrFit3DCF::GetFunXYpm, fRange[0], fRange[1], nPar, className, "GetFunXYpm");
+          fDrawFunc[5].first =
+            new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunYZpp");
+          fDrawFunc[6].first =
+            new TF1("funcYZ+-", this, &CorrFit3DCF::GetFunYZpm, fRange[2], fRange[3], nPar, className, "GetFunYZpm");
+          fDrawFunc[7].first =
+            new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunXZpp");
+          fDrawFunc[8].first =
+            new TF1("funcXZ+-", this, &CorrFit3DCF::GetFunXZpm, fRange[4], fRange[5], nPar, className, "GetFunXZpm");
+          fDrawFunc[9].first =
+            new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
+          fDrawFunc[10].first =
+            new TF1("funcXYZ+-+", this, &CorrFit3DCF::GetFunXYZpmp, fRange[0], fRange[1], nPar, className, "GetFunXYZpmp");
+          fDrawFunc[11].first =
+            new TF1("funcXYZ+--", this, &CorrFit3DCF::GetFunXYZpmm, fRange[0], fRange[1], nPar, className, "GetFunXYZpmm");
+          fDrawFunc[12].first =
+            new TF1("funcXYZ++-", this, &CorrFit3DCF::GetFunXYZppm, fRange[0], fRange[1], nPar, className, "GetFunXYZppm");
 
-    for (int i = 0; i < no; i++) {
-      SetParametersToTF1(GetTF1(i));
-      GetTF1(i)->SetLineColor(GetLineColor());
-      GetTF1(i)->SetLineStyle(GetLineStyle());
-      GetTF1(i)->SetLineWidth(GetLineWidth());
-      if (drawNormalized) GetTF1(i)->SetParameter(Norm(), 1);
+        } break;
+      }
+      if (fDrawOptions.DrawCf()) {}
     }
-
-    TVirtualPad* pad = gPad;
-    for (int i = 0; i < no; i++) {
-      pad->cd(i + 1);
-      fDrawFunc[i].second = gPad;
-      GetTF1(i)->Draw("SAME");
+    for (auto func_pad : fDrawFunc) {
+      SetParametersToTF1(func_pad.first);
+      func_pad.first->SetLineColor(GetLineColor());
+      func_pad.first->SetLineStyle(GetLineStyle());
+      func_pad.first->SetLineWidth(GetLineWidth());
     }
-    gPad = pad;
+  }
+  void CorrFit3DCF::GetTH1s(EDrawMode drawMode) {
+    if (fDrawHistograms.size() > 0) return;
+    switch (drawMode) {
+      case EDrawMode::kNormal: {
+        fDrawHistograms.resize(3);
+        TH1D** arr = ((Femto3DCF*) fCF)->GetDiagProj("cf", kFALSE);
+        for (int i = 0; i < 3; i++)
+          fDrawHistograms[i] = arr[i];
+        delete[] arr;
+      } break;
+      case EDrawMode::kDiagonal1: {
+        fDrawHistograms.resize(7);
+        TH1D** arr = ((Femto3DCF*) fCF)->GetDiagProj("diag1", kFALSE);
+        for (int i = 0; i < 7; i++)
+          fDrawHistograms[i] = arr[i];
+        delete[] arr;
+      } break;
+      case EDrawMode::kDiagonal2: {
+        fDrawHistograms.resize(13);
+        TH1D** arr = ((Femto3DCF*) fCF)->GetDiagProj("diag2", kFALSE);
+        for (int i = 0; i < 13; i++)
+          fDrawHistograms[i] = arr[i];
+        delete[] arr;
+      } break;
+    }
   }
 
-  void CorrFit3DCF::DrawDiagonalWithCF(TString option) {
-    Double_t draw_min, draw_max;
-    Bool_t set_limits = ExtrDraw(option, draw_min, draw_max);
-    // fill array to calculate cf integrated over projection
-    Double_t width = 0.0;
-    if (fBinCalc) { width = 0.0; }
-    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
-
-    Calculatef(width);
-
-    TVirtualPad* pad = gPad;
-
-    const Int_t nPar  = GetParametersNo();
-    TString className = this->ClassName();
-    Int_t no          = 7;
-    if (Hal::Std::FindParam(option, "diag2")) {
-      no = 13;
-      if (gPad->GetListOfPrimitives()->GetEntries() < 14) pad->Divide(4, 4);
-    } else {
-      if (gPad->GetListOfPrimitives()->GetEntries() < 8) pad->Divide(4, 2);
-    }
-    if (fDrawFunc.size() < no) fDrawFunc.resize(no);
-    fDrawFunc[0].first = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
-    fDrawFunc[1].first = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
-    fDrawFunc[2].first = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
-    if (no == 7) {
-      fDrawFunc[3].first =
-        new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
-      fDrawFunc[4].first =
-        new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunXZpp");
-      fDrawFunc[5].first =
-        new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunYZpp");
-      fDrawFunc[6].first =
-        new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
-    } else {
-      fDrawFunc[3].first =
-        new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
-      fDrawFunc[4].first =
-        new TF1("funcXY+-", this, &CorrFit3DCF::GetFunXYpm, fRange[0], fRange[1], nPar, className, "GetFunXYpm");
-      fDrawFunc[5].first =
-        new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunYZpp");
-      fDrawFunc[6].first =
-        new TF1("funcYZ+-", this, &CorrFit3DCF::GetFunYZpm, fRange[2], fRange[3], nPar, className, "GetFunYZpm");
-      fDrawFunc[7].first =
-        new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunXZpp");
-      fDrawFunc[8].first =
-        new TF1("funcXZ+-", this, &CorrFit3DCF::GetFunXZpm, fRange[4], fRange[5], nPar, className, "GetFunXZpm");
-      fDrawFunc[9].first =
-        new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
-      fDrawFunc[10].first =
-        new TF1("funcXYZ+-+", this, &CorrFit3DCF::GetFunXYZpmp, fRange[0], fRange[1], nPar, className, "GetFunXYZpmp");
-      fDrawFunc[11].first =
-        new TF1("funcXYZ+--", this, &CorrFit3DCF::GetFunXYZpmm, fRange[0], fRange[1], nPar, className, "GetFunXYZpmm");
-      fDrawFunc[12].first =
-        new TF1("funcXYZ++-", this, &CorrFit3DCF::GetFunXYZppm, fRange[0], fRange[1], nPar, className, "GetFunXYZppm");
-    }
-
-
-    for (int i = 0; i < no; i++) {
-      SetParametersToTF1(GetTF1(i));
-      GetTF1(i)->SetLineColor(GetLineColor());
-      GetTF1(i)->SetLineStyle(GetLineStyle());
-      GetTF1(i)->SetLineWidth(GetLineWidth());
-      if (drawNormalized) GetTF1(i)->SetParameter(Norm(), 1);
-    }
-
-
-    if (Hal::Std::FindParam(option, "rgb")) {
-      if (no == 7) {
-        GetTF1(0)->SetLineColor(kRed);
-        GetTF1(1)->SetLineColor(kBlue);
-        GetTF1(2)->SetLineColor(kGreen);
-        GetTF1(3)->SetLineColor(kViolet);
-        GetTF1(4)->SetLineColor(kOrange);
-        GetTF1(5)->SetLineColor(kCyan);
-        GetTF1(6)->SetLineColor(kBlack);
-      }
-    }
-    TH1D** h = nullptr;
-    if (Hal::Std::FindParam(option, "diag2")) {
-      h = ((Femto3DCF*) fCF)->GetDiagProj("diag2", drawNormalized);
-    } else {
-      h = ((Femto3DCF*) fCF)->GetDiagProj("diag1", drawNormalized);
-    }
-
-    for (int i = 0; i < no; i++) {
-      if (drawNormalized) h[i]->Scale(1.0 / GetNorm());
-      h[i]->SetMarkerStyle(kFullCircle);
-      h[i]->SetMinimum(0);
-      h[i]->SetStats(kFALSE);
-      if (set_limits) {
-        h[i]->SetMinimum(draw_min);
-        h[i]->SetMaximum(draw_max);
-      }
-    }
-    for (int i = 0; i < no; i++) {
-      pad->cd(1 + i);
-      h[i]->Draw();
-      fDrawFunc[i].second = gPad;
-      GetTF1(i)->Draw("SAME");
-    }
-    pad->cd(no + 1);
-    if (Hal::Std::FindParam(option, "range")) {
-      h[0]->GetXaxis()->SetRangeUser(fRange[0], fRange[1]);
-      h[1]->GetXaxis()->SetRangeUser(fRange[2], fRange[3]);
-      h[2]->GetXaxis()->SetRangeUser(fRange[4], fRange[5]);
-    }
-    TLegend* leg = new TLegend(0.05, 0.05, 0.95, 0.95);
-    leg->SetHeader("3D Corrfit");
-    for (int i = 0; i < GetParametersNo(); i++) {
-      if (IsParFixed(i)) {
-        leg->AddEntry(
-          (TObject*) 0x0, Form("%s %4.3f (fixed)", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue()), "");
-      } else {
-        leg->AddEntry(
-          (TObject*) 0x0,
-          Form(
-            "%s %4.3f#pm%4.3f", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue(), fParameters[i].GetError()),
-          "");
-      }
-    }
-    leg->AddEntry((TObject*) 0x0, Form("#chi^{2}/NDF %4.1f (%4.1f/%i)", GetChiNDF(), GetChiSquare(), (int) GetNDF()), "");
-    leg->Draw();
-    gPad = pad;
-  }
 
   Double_t CorrFit3DCF::GetFunXYpp(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);

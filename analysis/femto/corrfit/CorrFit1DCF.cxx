@@ -17,19 +17,21 @@
 #include <TF1.h>
 #include <TH1.h>
 #include <TLegend.h>
+#include <TLegendEntry.h>
 #include <TMath.h>
 #include <TNamed.h>
 #include <TString.h>
 
 #include "Array.h"
 #include "CorrFit1DCF.h"
+#include "CorrFitDrawOptions.h"
 #include "CorrFitHDFunc.h"
 #include "Cout.h"
 #include "Femto1DCF.h"
+#include "Splines.h"
 #include "Std.h"
 #include "StdHist.h"
 #include "StdString.h"
-#include "Splines.h"
 
 namespace Hal {
   const Int_t CorrFit1DCF::fgRinv   = 0;
@@ -53,56 +55,44 @@ namespace Hal {
     return fDenominatorHistogram->GetBinContent(bin);
   }
 
-  void CorrFit1DCF::Draw(Option_t* draw_option) {
-    TString option = draw_option;
-    if (gPad == NULL) {
-      TCanvas* c = new TCanvas();
-      c->cd();
-    }
+  void CorrFit1DCF::Paint(Bool_t repaint, Bool_t refresh) {
+    if (repaint)
+      if (gPad == NULL) {
+        TCanvas* c = new TCanvas();
+        c->cd();
+      }
     for (int i = 0; i < GetParametersNo(); i++) {
       fTempParamsEval[i] = GetParameter(i);
     }
     // TODO fFittedFunction->SetParameter(par,val);
     ParametersChanged();
-    if (fDrawFunc.size() == 0) fDrawFunc.resize(1);
-    Double_t draw_min, draw_max;
-    Bool_t set_limits     = ExtrDraw(option, draw_min, draw_max);
-    Bool_t drawNormalized = Hal::Std::FindParam(option, "norm", kTRUE);
-    Bool_t drawFull       = Hal::Std::FindParam(option, "full", kTRUE);
-    Bool_t drawSame       = Hal::Std::FindParam(option, "same", kTRUE);
-    if (drawFull) {
-      TH1* cf = GetTHForDrawing(drawNormalized);
-      cf->SetMarkerStyle(kFullSquare);
-      fDrawFunc[0].first = GetFunctionForDrawing();
-      if (drawNormalized) fDrawFunc[0].first->SetParameter(Norm(), 1);
-      if (set_limits) {
-        cf->SetMaximum(draw_max);
-        cf->SetMinimum(draw_min);
-      }
-      cf->Draw();
-      fDrawFunc[0].first->Draw("SAME");
+    UpdateLegend();
+    if (fDrawFunc.size() == 0) {
+      fDrawFunc.resize(1);
+      fDrawFunc[0].first  = GetFunctionForDrawing();
       fDrawFunc[0].second = gPad;
-      TLegend* leg        = GetLegendForDrawing();
-      leg->Draw("SAME");
-    } else if (drawSame) {
-      fDrawFunc[0].first = GetFunctionForDrawing();
-      if (drawNormalized) GetTF1(0)->SetParameter(Norm(), 1);
+    }
+    CopyParamsToTF1(GetTF1(0), kTRUE, kTRUE);
+    if (fDrawOptions.DrawCf()) {
+      MakeTHForDrawing();
+      if (fDrawOptions.AutoNorm()) { fDrawHistograms[0]->Scale(1.0 / GetNorm()); }
+      fDrawHistograms[0]->SetMarkerStyle(kFullSquare);
+      if (fDrawOptions.DrawMinMax()) {
+        fDrawHistograms[0]->SetMinimum(fDrawOptions.GetMin());
+        fDrawHistograms[0]->SetMaximum(fDrawOptions.GetMax());
+      }
+      fDrawHistograms[0]->Draw("SAME");
+    }
+    if (fDrawOptions.AutoNorm()) {
+      GetTF1(0)->SetParameter(Norm(), 1);
       GetTF1(0)->Draw("SAME");
     } else {
-      fDrawFunc[0].first = GetFunctionForDrawing();
-      for (int i = 0; i < GetParametersNo(); i++) {
-        GetTF1(0)->FixParameter(i, GetParameter(i));
-      }
-      Bool_t draw_leg = kFALSE;
-      if (Hal::Std::FindParam(option, "leg", kTRUE)) draw_leg = kTRUE;
-
-      if (drawNormalized) GetTF1(0)->SetParameter(Norm(), 1);
-      fDrawFunc[0].second = gPad;
-      GetTF1(0)->Draw(option);
-      if (draw_leg) {
-        TLegend* leg = GetLegendForDrawing();
-        leg->Draw("SAME");
-      }
+      GetTF1(0)->Draw("SAME");
+    }
+    if (fDrawOptions.DrawLegend()) fLegend->Draw("SAME");
+    if (refresh) {
+      gPad->Modified(kTRUE);
+      gPad->Update();
     }
   }
 
@@ -301,50 +291,21 @@ namespace Hal {
     return draw_func;
   }
 
-  TH1* CorrFit1DCF::GetTHForDrawing(Bool_t normalize) const {
-    TH1* cf = (TH1*) ((Femto1DCF*) fCF)->GetHist(kFALSE);
-    cf->SetName(Hal::Std::GetUniqueName(cf->GetName()));
-    if (normalize) cf->Scale(1.0 / GetNorm());
-    cf->SetStats(kFALSE);
-    cf->SetMinimum(0);
-    return cf;
-  }
-
-  TLegend* CorrFit1DCF::GetLegendForDrawing() const {
-    TLegend* leg = new TLegend(0.7, 0.7, 0.95, 0.95);
-    leg->SetHeader("1D Corrfit");
-    for (int i = 0; i < GetParametersNo(); i++) {
-      if (IsParFixed(i)) {
-        leg->AddEntry(
-          (TObject*) 0x0, Form("%s %4.3f (fixed)", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue()), "");
-      } else {
-        leg->AddEntry(
-          (TObject*) 0x0,
-          Form(
-            "%s %4.3f#pm%4.3f", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue(), fParameters[i].GetError()),
-          "");
-      }
+  void CorrFit1DCF::MakeTHForDrawing() {
+    if (fDrawHistograms.size() == 0) {
+      TH1* h = (TH1*) ((Femto1DCF*) fCF)->GetHist(kFALSE);
+      h->SetName(Hal::Std::GetUniqueName(h->GetName()));
+      h->SetMinimum(0);
+      h->SetStats(kFALSE);
+      fDrawHistograms.push_back(h);
     }
-    TString chi_s, chindf_s, ndf_s;
-    Double_t chi    = GetChiSquare();
-    Double_t chindf = GetChiNDF();
-    Double_t ndf    = GetNDF();
-    if (chi <= 1000)
-      chi_s = Form("%4.3f", chi);
-    else
-      chi_s = Hal::Std::RoundToString(chi, 2, "prefix");
-    if (chindf <= 1000) {
-      chindf_s = Form("%4.3f", chindf);
-    } else {
-      chindf_s = Hal::Std::RoundToString(chindf, 2, "prefix");
+    TH1* cf = (TH1*) ((Femto1DCF*) fCF)->GetHist(kFALSE);  // TODO direct calculate without creation of TH1
+    fDrawHistograms[0]->ResetStats();
+    for (int i = 1; i <= fDrawHistograms[0]->GetNbinsX(); i++) {
+      fDrawHistograms[0]->SetBinContent(i, cf->GetBinContent(i));
+      fDrawHistograms[0]->SetBinError(i, cf->GetBinError(i));
     }
-    if (ndf <= 1000) {
-      ndf_s = Form("%i", (int) ndf);
-    } else {
-      ndf_s = Hal::Std::RoundToString(ndf, 2, "prefix");
-    }
-    leg->AddEntry((TObject*) 0x0, Form("#chi^{2}/NDF %s (%s/%s)", chindf_s.Data(), chi_s.Data(), ndf_s.Data()), "");
-    return leg;
+    delete cf;
   }
 
   Double_t CorrFit1DCF::EvalCF(const Double_t* x, const Double_t* params) const {

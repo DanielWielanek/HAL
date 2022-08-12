@@ -9,6 +9,7 @@
 #include "CorrFit.h"
 
 #include "Cout.h"
+#include <TF1.h>
 
 namespace Hal {
   CorrFit::CorrFit(Int_t parameters_no) :
@@ -174,6 +175,22 @@ namespace Hal {
     Cout::Stars(kWhite);
   }
 
-  CorrFit::~CorrFit() { /*delete[] fTempParamsEval;*/
+  void CorrFit::CopyParamsToTF1(TF1* f, Bool_t numPar, Bool_t graphPar) const {
+    if (numPar)
+      for (int i = 0; i < GetParametersNo(); i++) {
+        f->FixParameter(i, GetParameter(i));
+        f->SetParName(i, GetParameterName(i));
+      }
+    if (graphPar) {
+      f->SetLineColor(GetLineColor());
+      f->SetLineStyle(GetLineStyle());
+      f->SetLineWidth(GetLineWidth());
+    }
+  }
+  CorrFit::~CorrFit() {
+    for (auto f : fDrawFunc) {
+      if (f.first != nullptr) { delete f.first; }
+    }
+    /*delete[] fTempParamsEval;*/
   }
 }  // namespace Hal

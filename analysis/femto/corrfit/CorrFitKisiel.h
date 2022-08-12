@@ -19,7 +19,8 @@
 #include <TString.h>
 #include <vector>
 
-class AnaFile;
+class TH1D;
+
 class TClonesArray;
 
 /**
@@ -27,11 +28,13 @@ class TClonesArray;
  * those used in A. Kisiel's CorrFit
  */
 namespace Hal {
+  class AnaFile;
   class CorrFitKisiel : public CorrFit1DCF {
 
   protected:
     std::vector<CorrFitMapKstarRstar*> fMaps;
     Bool_t fSkipError;
+    TH1D* fOldNumErr = {nullptr};
     virtual void Check();
     virtual Double_t GetNumericalError(Int_t binX) const {
       if (fSkipError) return 0;
@@ -39,15 +42,11 @@ namespace Hal {
     };
     virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
     virtual Double_t CalculateCFExtrapolated(const Double_t* x, const Double_t* params) const;
+    virtual void Paint(Bool_t repaint = kTRUE, Bool_t refresh = kTRUE);
 
   public:
     CorrFitKisiel(Int_t params = 3);
-    /**
-     * l
-     * @param draw_option @see CorrFit1DCF, with option full+ee also numerical
-     * errors are drawn as boxes around CF markers
-     */
-    virtual void Draw(Option_t* draw_option = "full+ee");
+
     /**
      * skip numerical errrors during calculations
      */

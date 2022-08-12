@@ -14,6 +14,7 @@
 
 
 class TH3;
+class TH1D;
 /**
  * abstract class for fitting 3-dim correlation function
  */
@@ -33,6 +34,7 @@ namespace Hal {
     };
 
   private:
+    enum class EDrawMode { kNormal, kDiagonal1, kDiagonal2 };
     friend class CorrFitMath3DCF;
     friend class CorrFitSHCF;
     static const Int_t fgRout;
@@ -68,10 +70,14 @@ namespace Hal {
     void Calculatef(Double_t width);
 
   protected:
+    TVirtualPad* fTempPad = {nullptr};
+    Double_t fOldNorm     = {1};
     /**
      * processed currednly binX, binY and binZ;
      */
     mutable Int_t fBinX, fBinY, fBinZ;
+    virtual void GetTF1s(Bool_t makeNew, EDrawMode drawMode);
+    virtual void GetTH1s(EDrawMode drawMode);
     /**
      * called for each calculation of chi2 or loglikehood minimalization - used
      * for recalculation CF is parameters are changed
@@ -131,6 +137,7 @@ namespace Hal {
      * @return numerical error for given bin
      */
     virtual Double_t GetNumericalError(Int_t /*x*/, Int_t /*y*/, Int_t /*z*/) const { return 0; };
+    virtual void Paint(Bool_t repaint, Bool_t refresh);
 
   public:
     /**
@@ -148,20 +155,6 @@ namespace Hal {
      * @param z_max max. value in long direction
      */
     void SetFuncRange(Double_t x_min, Double_t x_max, Double_t y_min, Double_t y_max, Double_t z_min, Double_t z_max);
-    /**
-     *
-     * @param draw_option if full(then draw fitted and fitting function, if
-     * "cotains" range then only fitted range is drawn (event if correlation
-     * function is beyond fitting range)
-     */
-    void Draw(Option_t* draw_option = "full+rgb") { DrawAdv(draw_option, 0); };
-    /**
-     * additional option for bin drawing
-     * @param draw_option
-     * @param width number of bins in projection  if negative then function is
-     * calculated as average at middle bin and edges
-     */
-    void DrawAdv(Option_t* draw_option, Int_t width);
     /**
      * set radii limits (out,side, and long)
      * @param min

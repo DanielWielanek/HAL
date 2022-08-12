@@ -66,7 +66,7 @@
 #pragma link C++ class Hal::CorrFIt1DCFCumacLamLam + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacPLam + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacK0K0 + ;
-
+#pragma link C++ class Hal::CorrFitDrawOptions + ;
 
 #pragma link C++ class Hal::CorrFitParamsSetup + ;
 #pragma link C++ class Hal::CorrFit3DCFMultiDim + ;

@@ -46,6 +46,11 @@ namespace Hal {
     fCharge     = other->fCharge;
     fHiddenInfo = other->fHiddenInfo;
     fType       = other->fType;
+    if (IsV0()) {
+      Event* ev   = GetEvent();
+      V0Track* v0 = (V0Track*) GetEvent()->fV0sHiddenInfo->UncheckedAt(GetEvent()->fV0sHiddenInfo->GetEntriesFast());
+      v0->CopyData(other->GetV0Info());
+    }
   }
 
   void Track::CopyAllData(Track* other) {
@@ -138,7 +143,8 @@ namespace Hal {
       else
         SETBIT(fType, kV0Daughters);
       fHiddenInfo = fEvent->GetTotalV0No();
-      fEvent->fV0sHiddenInfo->ConstructedAt(fHiddenInfo);
+      fEvent->fTotalV0s++;
+      fEvent->fV0sHiddenInfo->ConstructedAt(fEvent->fV0sHiddenInfo->GetEntriesFast());
     } else {
       CLRBIT(fType, kV0);
     }

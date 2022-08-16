@@ -76,7 +76,7 @@ namespace Hal {
     Int_t GetNegId() const { return fNegId; }
     /**
      *
-     * @return index of positve daughter in track array
+     * @return index of positive daughter in track array
      */
     Int_t GetPosId() const { return fPosId; }
     /**
@@ -159,7 +159,7 @@ namespace Hal {
     const TLorentzVector& GetMomNeg() const { return fMomNeg; }
     /**
      *
-     * @return momenum of V0
+     * @return momentum of V0
      */
     const TLorentzVector& GetMom() const { return fMom; }
     /**
@@ -168,6 +168,11 @@ namespace Hal {
      */
     const TVector3& GetDecay() const { return fDecay; }
     /**
+     * set momentum of positive daugther
+     * @param positiveDaughter
+     */
+    void SetMomentumPos(const TLorentzVector& positiveDaughter) { fMomPos = positiveDaughter; }
+    /**
      * set momenum of postive daugher
      * @param px
      * @param py
@@ -175,6 +180,11 @@ namespace Hal {
      * @param m mass of positive daughter
      */
     void SetPxPyPzMPos(Double_t px, Double_t py, Double_t pz, Double_t m);
+    /**
+     * set momentum of positive daugther
+     * @param positiveDaughter
+     */
+    void SetMomentumNeg(const TLorentzVector& negativeDaughter) { fMomNeg = negativeDaughter; }
     /**
      * set momentum of negative daughter
      * @param px
@@ -191,6 +201,11 @@ namespace Hal {
      */
     void SetDecayPos(Double_t x, Double_t y, Double_t z);
     /**
+     * set decay position
+     * @param pos
+     */
+    void SetDecayPos(const TVector3& pos) { fDecay = pos; }
+    /**
      * set momentum of V0
      * @param px
      * @param py
@@ -205,6 +220,11 @@ namespace Hal {
      * @param z
      */
     void SetDCA(Double_t x, Double_t y, Double_t z);
+    /**
+     * set dca of v0
+     * @param dca
+     */
+    void SetDCA(const TVector3& dca) { fPos = dca; }
     /**
      * set armenteros alpha
      * @param alpha

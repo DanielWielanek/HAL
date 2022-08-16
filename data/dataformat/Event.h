@@ -19,7 +19,6 @@
 #include <TString.h>
 
 #include "Std.h"
-#define _HAL_COMPRESS_HIDDEN_INFO_
 
 class TDatabasePDG;
 namespace Hal {
@@ -111,16 +110,6 @@ namespace Hal {
      * @param event event to copy
      */
     virtual void ShallowCopyEvent(Event* event);
-    /**
-     * copy hidden v0s
-     * @param event
-     */
-    virtual void ShallowCopyHiddenInfo(Event* event);
-    /**
-     * copy hidden v0s
-     * @param event
-     */
-    virtual void ShallowCopyHiddenInfo(Event* event, Int_t* map, Int_t* mapID, Int_t map_size);
     /**
      *
      * @param n number of branches, names of branches

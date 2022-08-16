@@ -126,7 +126,7 @@ namespace Hal {
 
   FemtoSourceModel3D::~FemtoSourceModel3D() {}
 
-  void FemtoSourceModel::Print(Option_t* option) const {
+  void FemtoSourceModel::Print(Option_t* /*option*/) const {
     Cout::Text(ClassName(), "L");
     Cout::Database(2, "ParName", "Value");
     for (int i = 0; i < GetNpar(); i++) {

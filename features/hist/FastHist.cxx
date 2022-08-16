@@ -11,7 +11,17 @@
 
 namespace Hal {
   FastHist::FastHist(TString name, TString title) :
-    fAxisNameX(""), fAxisNameY(""), fAxisNameZ(""), fBinsNoX(0), fBinsNoY(0), fBinsNoZ(0), fTotalBinsNo(0), fValues(nullptr) {}
+    fAxisNameX(""),
+    fAxisNameY(""),
+    fAxisNameZ(""),
+    fTitle(title),
+    fBinsNoX(0),
+    fBinsNoY(0),
+    fBinsNoZ(0),
+    fTotalBinsNo(0),
+    fValues(nullptr) {
+    SetName(name);
+  }
 
   FastHist::~FastHist() {
     if (fValues) delete[] fValues;
@@ -19,7 +29,6 @@ namespace Hal {
 
   FastHist1D::FastHist1D(TString name, TString title, Int_t nbins, Double_t min, Double_t max) : FastHist(name, title) {
     fBinsNoX = nbins + 2;
-
     if (nbins != 0) {
       fValues = new Double_t[fBinsNoX];
       fMinX   = min;
@@ -48,7 +57,7 @@ namespace Hal {
     } else if (bin > fBinsNoX - 1) {
       bin = fBinsNoX - 1;
     }
-    fValues[bin] + w;
+    fValues[bin] += w;
   }
 
   TH1* FastHist1D::GetTH1() const {

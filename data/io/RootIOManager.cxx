@@ -81,15 +81,15 @@ namespace Hal {
 
   void RootIOManager::UpdateBranches() {}
 
-  void RootIOManager::RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
-    if (toFile) { TBranch* br = fOutTree->Branch(name, obj); }
+  void RootIOManager::RegisterInternal(const char* name, const char* /*folderName*/, TNamed* obj, Bool_t toFile) {
+    if (toFile) { fOutTree->Branch(name, obj); }
   }
 
-  void RootIOManager::RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
-    if (toFile) { TBranch* br = fOutTree->Branch(name, obj); }
+  void RootIOManager::RegisterInternal(const char* name, const char* /*Foldername*/, TCollection* obj, Bool_t toFile) {
+    if (toFile) { fOutTree->Branch(name, obj); }
   }
 
-  void RootIOManager::SetInChain(TChain* tempChain, Int_t ident) {}
+  void RootIOManager::SetInChain(TChain* /*tempChain*/, Int_t /*ident*/) {}
 
   Int_t Hal::RootIOManager::GetEntry(Int_t i) {
     fInChain[0]->GetEntry(i);

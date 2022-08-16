@@ -45,7 +45,7 @@ namespace Hal {
     return Task::EInitFlag::kSUCCESS;
   }
 
-  void Reader::Exec(Option_t* opt) {
+  void Reader::Exec(Option_t* /*opt*/) {
     fProcessedEvents++;
     fEvent->Update();
   }

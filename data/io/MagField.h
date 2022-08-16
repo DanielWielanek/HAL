@@ -26,7 +26,7 @@ namespace Hal {
      * @param z
      * @return
      */
-    TVector3 GetField(Double_t x, Double_t y, Double_t z) const { return TVector3(0, 0, 0); }
+    TVector3 GetField(Double_t /*x*/, Double_t /*y*/, Double_t /*z*/) const { return TVector3(0, 0, 0); }
     virtual ~MagField();
     ClassDef(MagField, 1)
   };

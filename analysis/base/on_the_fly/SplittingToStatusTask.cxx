@@ -13,8 +13,8 @@
 #include "ComplexTrack.h"
 #include "DataFormatManager.h"
 #include "Event.h"
-#include "Std.h"
 #include "MemoryMapManager.h"
+#include "Std.h"
 #include "Track.h"
 
 #include <RtypesCore.h>
@@ -43,8 +43,9 @@ namespace Hal {
     fCurrentEvent    = fMemoryMap->GetTemporaryEvent();
     ComplexEvent* ev = static_cast<ComplexEvent*>(fCurrentEvent);
     Event* im        = ev->GetImgEvent();
-    Event* rec       = ev->GetRealEvent();
-    if (fSplitFlag.size() < im->GetTotalTrackNo()) fSplitFlag.resize(im->GetTotalTrackNo());
+    //    Event* rec       = ev->GetRealEvent();
+    int size = fSplitFlag.size();
+    if (size < im->GetTotalTrackNo()) fSplitFlag.resize(im->GetTotalTrackNo());
 
     for (int i = 0; i < im->GetTotalTrackNo(); i++)
       fSplitFlag[i] = 0;

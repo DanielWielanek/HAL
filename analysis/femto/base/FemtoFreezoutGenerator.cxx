@@ -14,9 +14,9 @@
 
 #include "Cout.h"
 #include "FemtoSourceModelGauss.h"
-#include "Std.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Std.h"
 
 namespace Hal {
   FemtoFreezoutGenerator::FemtoFreezoutGenerator() : fModel(nullptr) {}
@@ -170,7 +170,7 @@ namespace Hal {
 
   FemtoFreezoutGeneratorPRF::FemtoFreezoutGeneratorPRF(const FemtoSourceModel& model) : FemtoFreezoutGenerator(model) {}
 
-  void FemtoFreezoutGenerator::Print(Option_t* option) const {
+  void FemtoFreezoutGenerator::Print(Option_t* /*option*/) const {
     Cout::Text(ClassName(), "L");
     if (fModel) {
       fModel->Print();

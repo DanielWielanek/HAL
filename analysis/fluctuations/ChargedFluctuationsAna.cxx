@@ -68,14 +68,14 @@ namespace Hal {
     TString parName = ev->GetFieldName(fEventPar);
     for (int i = 0; i < fEventCollectionsNo; i++) {
       TString eventName = Form("Event [%i]", i);
-      if (i < fEventLabels.size()) { eventName = fEventLabels[i]; }
+      if (i < (int) fEventLabels.size()) { eventName = fEventLabels[i]; }
       for (int j = 0; j < fTrackColsHalf; j++) {
         Int_t posColl      = 2 * j;
         Int_t negColl      = 2 * j + 1;
         TString trackNameA = Form("Track [%i]", posColl);
         TString trackNameB = Form("Track [%i]", negColl);
-        if (posColl < fTrackLabels.size()) { trackNameA = fTrackLabels[posColl]; }
-        if (negColl < fTrackLabels.size()) { trackNameB = fTrackLabels[negColl]; }
+        if (posColl < (int) fTrackLabels.size()) { trackNameA = fTrackLabels[posColl]; }
+        if (negColl < (int) fTrackLabels.size()) { trackNameB = fTrackLabels[negColl]; }
 
         TH3D* h = fHistogram->At(i, j);
         h->SetTitle(Form("%s %s vs %s", eventName.Data(), trackNameA.Data(), trackNameB.Data()));
@@ -140,7 +140,6 @@ namespace Hal {
 
   void ChargedFluctuationsAna::SetEventLabels(const std::initializer_list<TString>& init) {
     std::initializer_list<TString>::iterator it;
-    Int_t pos = 0;
     for (it = init.begin(); it != init.end(); ++it) {
       fEventLabels.push_back(*it);
     }
@@ -148,7 +147,6 @@ namespace Hal {
 
   void ChargedFluctuationsAna::SetTrackLabels(const std::initializer_list<TString>& init) {
     std::initializer_list<TString>::iterator it;
-    Int_t pos = 0;
     for (it = init.begin(); it != init.end(); ++it) {
       fTrackLabels.push_back(*it);
     }
@@ -159,7 +157,6 @@ namespace Hal {
     fEventMin  = min;
     fEventMax  = max;
   }
-
 
   TString ChargedFluctuationsAna::CleanOpt(Option_t* opt, Int_t cut) const {
     TString newOpt = opt;
@@ -177,7 +174,6 @@ namespace Hal {
     return newOpt;
   }
 
-
   void ChargedFluctuationsAna::AddCut(const TrackCut& pos, const TrackCut& neg, Option_t* opt) {
     if (pos.GetCollectionID() == neg.GetCollectionID()) {
       Cout::PrintInfo("cannot add two cuts with the same collection ID by ChargedFluctuationsAna::AddCut!", EInfo::kLowWarning);
@@ -192,8 +188,9 @@ namespace Hal {
 
   void ChargedFluctuationsAna::SetEventprop(Int_t evProp) { fEventPar = evProp; }
 
-  void
-  ChargedFluctuationsAna::AddCutsAndMonitors(const CutsAndMonitors& posTrack, const CutsAndMonitors& negTrack, Option_t* opt) {
+  void ChargedFluctuationsAna::AddCutsAndMonitors(const CutsAndMonitors& posTrack,
+                                                  const CutsAndMonitors& negTrack,
+                                                  Option_t* /*opt*/) {
     if (posTrack.GetCut(0)->GetCollectionID() == negTrack.GetCut(0)->GetCollectionID()) {
       Cout::PrintInfo("cannot add two cuts with the same collection ID by NicaChargedFluctuationsAna::AddCut!",
                       EInfo::kLowWarning);

@@ -578,6 +578,10 @@ namespace Hal {
       case ECutUpdate::kTwoTrackBackground: {
         return GetTwoTrackCollectionsBackgroundNo();
       } break;
+      case ECutUpdate::kNo: {
+        return 0;
+        // DO nothing
+      } break;
     }
     return 0;
   }

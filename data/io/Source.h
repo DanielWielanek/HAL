@@ -33,7 +33,7 @@ namespace Hal {
      * add friend file to analysis (friend file will be processed  together with other friends and this file
      * @param friendName
      */
-    virtual void AddFriend(TString friendName = "") {};
+    virtual void AddFriend(TString /*friendName*/ = "") {};
     /**
      *
      * @return name of the source data (usually root file)

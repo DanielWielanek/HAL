@@ -106,7 +106,8 @@ namespace Hal {
     }
   }
 
-  void HtmlCore::HTMLExtractIntoTable(TObject* obj, Int_t no, HtmlTable& table, TString dir, TString rel_dir) {
+  void
+  HtmlCore::HTMLExtractIntoTable(TObject* /*obj*/, Int_t /*no*/, HtmlTable& /*table*/, TString /*dir*/, TString /*rel_dir*/) {
     /**TODO
   if (dynamic_cast<TList*>(obj)) {
     TList* list = static_cast<TList*>(obj);
@@ -158,7 +159,7 @@ namespace Hal {
     return;
   };
 
-  Bool_t HtmlCore::CanBeTableElement(TObject* obj) { return kFALSE; }
+  Bool_t HtmlCore::CanBeTableElement(TObject* /*obj*/) { return kFALSE; }
 
   TString HtmlCore::GetUrl(TString adress, TString text) { return Form("<a href=\"%s\">%s</a>", adress.Data(), text.Data()); }
 

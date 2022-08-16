@@ -21,11 +21,11 @@
 #include <vector>
 
 #include "Cout.h"
-#include "StdString.h"
 #include "HtmlCore.h"
 #include "HtmlDiv.h"
 #include "HtmlFile.h"
 #include "HtmlTable.h"
+#include "StdString.h"
 namespace Hal {
   QAPlotReport::QAPlotReport() :
     fExtraInfo(nullptr), fOriginName("OriginName", ""), f1dHistos(nullptr), f2dHistos(nullptr), f3dHistos(nullptr) {}
@@ -315,7 +315,7 @@ namespace Hal {
     HtmlCore::FixAddress(subdir);
     gSystem->mkdir(path);
 
-    Int_t max = TMath::Max(GetSize1D(), TMath::Max(GetSize2D(), GetSize3D()));
+    // Int_t max = TMath::Max(GetSize1D(), TMath::Max(GetSize2D(), GetSize3D()));
 
     TString className = Form("med_blue qa_%i", no);
 
@@ -351,7 +351,7 @@ namespace Hal {
     data.no        = no;
     data.table     = &table;
 
-    auto makeRow = [](Int_t nu, Int_t dim, TH1* h, constRowData dat) {
+    auto makeRow = [](Int_t nu, TH1* h, constRowData dat) {
       HtmlRow rowElement2("", dat.className, "display:none");
       TString url      = dat.rep->ExportHistogramToFile(dat.path, dat.subDir, nu, h);
       TString boxname  = Form("cb_%i_%i_%i", dat.no, dat.dim, nu);
@@ -371,7 +371,7 @@ namespace Hal {
       rE.AddContent(HtmlCellCol("Histograms 1D", 4));
       table.AddContent(rE);
       for (int i = 0; i < GetSize1D(); i++) {
-        makeRow(i, 1, f1dHistos->At(i), data);
+        makeRow(i, f1dHistos->At(i), data);
       }
     }
     if (GetSize2D() > 0) {
@@ -380,7 +380,7 @@ namespace Hal {
       rE.AddContent(HtmlCellCol("Histograms 2D", 4));
       table.AddContent(rE);
       for (int i = 0; i < GetSize2D(); i++) {
-        makeRow(i, 2, f2dHistos->At(i), data);
+        makeRow(i, f2dHistos->At(i), data);
       }
     }
     if (GetSize3D() > 0) {
@@ -389,7 +389,7 @@ namespace Hal {
       rE.AddContent(HtmlCellCol("Histograms 3D", 4));
       table.AddContent(rE);
       for (int i = 0; i < GetSize3D(); i++) {
-        makeRow(i, 3, f3dHistos->At(i), data);
+        makeRow(i, f3dHistos->At(i), data);
       }
     }
     /*

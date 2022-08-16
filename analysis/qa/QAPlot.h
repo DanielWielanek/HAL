@@ -71,37 +71,37 @@ namespace Hal {
      * @param h histogram to fill
      * @param no id filled histogram
      */
-    virtual void FillTrackCustom1D(Track* track, TH1D* h, Int_t no) {};
+    virtual void FillTrackCustom1D(Track* /*track*/, TH1D* /*h*/, Int_t /*no*/) {};
     /**
      * @param event event to fill
      * @param h histogram to fill
      * @param no id filled histogram
      */
-    virtual void FillEventCustom1D(Event* event, TH1D* h, Int_t no) {};
+    virtual void FillEventCustom1D(Event* /*event*/, TH1D* /*h*/, Int_t /*no*/) {};
     /**
      * @param track track to fill
      * @param h histogram to fill
      * @param no id filled histogram
      */
-    virtual void FillTrackCustom2D(Track* track, TH2D* h, Int_t no) {};
+    virtual void FillTrackCustom2D(Track* /*track*/, TH2D* /*h*/, Int_t /*no*/) {};
     /**
      * @param event event to fill
      * @param h histogram to fill
      * @param no id filled histogram
      */
-    virtual void FillEventCustom2D(Event* event, TH2D* h, Int_t no) {};
+    virtual void FillEventCustom2D(Event* /*event*/, TH2D* /*h*/, Int_t /*no*/) {};
     /**
      * @param track track to fill
      * @param h histogram to fill
      * @param no id filled histogram
      */
-    virtual void FillTrackCustom3D(Track* track, TH3D* h, Int_t no) {};
+    virtual void FillTrackCustom3D(Track* /*track*/, TH3D* /*h*/, Int_t /*no*/) {};
     /**
      * @param event event to fill
      * @param h histogram to fill
      * @param no id filled histogram
      */
-    virtual void FillEventCustom3D(Event* event, TH3D* h, Int_t no) {};
+    virtual void FillEventCustom3D(Event* /*event*/, TH3D* /*h*/, Int_t /*no*/) {};
 
   public:
     QAPlot();

@@ -14,16 +14,16 @@ namespace Hal {
     fTrackId(-1),
     fPosId(-1),
     fNegId(-1),
+    fAssumedPdg(0),
+    fAssumedPdgPos(0),
+    fAssumedPdgNeg(0),
     fS1(0),
     fS2(0),
     fAlpha(0),
     fPtArm(0),
     fDauDist(0),
     fDecLenght(0),
-    fCosAngle(0),
-    fAssumedPdg(0),
-    fAssumedPdgPos(0),
-    fAssumedPdgNeg(0) {}
+    fCosAngle(0) {}
 
   V0Track::~V0Track() {}
 

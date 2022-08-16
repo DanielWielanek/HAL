@@ -200,7 +200,7 @@ namespace Hal {
   }
 
   CutMonitor* CutsAndMonitors::MakeCutMonitor(Int_t request_no) const {
-    if (request_no < 0 || request_no > fCutMonitorRequests.size()) return nullptr;
+    if (request_no < 0 || request_no > (int) fCutMonitorRequests.size()) return nullptr;
     CutMonitorRequest req = fCutMonitorRequests[request_no];
     auto TransformOpt     = [](TString opt) {
       if (Hal::Std::FindParam(opt, "re")) {
@@ -267,7 +267,7 @@ namespace Hal {
   void CutsAndMonitors::MakeCutMonitors(Option_t* opt) {
     AddAllCutMonitorRequests(opt);
     if (GetNRequest() != 0) {
-      for (unsigned int iMon = 0; iMon < GetNRequest(); iMon++) {
+      for (int iMon = 0; iMon < GetNRequest(); iMon++) {
         CutMonitor* mon = MakeCutMonitor(iMon);
         if (mon != nullptr) { AddRawCutMonitor(mon); }
       }

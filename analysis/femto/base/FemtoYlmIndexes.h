@@ -20,8 +20,8 @@
 namespace Hal {
 
   class FemtoYlmIndexes : public TObject {
-    Int_t fMaxJM;
     Int_t fL;
+    Int_t fMaxJM;
     Double_t* fEls;  //[fMaxJM]
     Double_t* fEms;  //[fMaxJM]
     Int_t* fElsi;    //[fMaxJM]

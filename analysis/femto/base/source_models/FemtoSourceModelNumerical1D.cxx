@@ -16,11 +16,10 @@ namespace Hal {
   FemtoSourceModelNumerical1D::FemtoSourceModelNumerical1D() : ff(0), fRawDistribution(nullptr) {}
 
   FemtoSourceModelNumerical1D::FemtoSourceModelNumerical1D(const FemtoSourceModelNumerical1D& other) :
-    FemtoSourceModel1D(other), fRawDistribution(nullptr) {
+    FemtoSourceModel1D(other), ff(other.ff), fRawDistribution(nullptr) {
     if (other.fRawDistribution) fRawDistribution = (TH1D*) other.fRawDistribution->Clone();
     fRandomDistributionX = other.fRandomDistributionX;
     fRandomDistributionY = other.fRandomDistributionY;
-    ff                   = other.ff;
   }
 
   void FemtoSourceModelNumerical1D::SetRadiusDistribution(TH1D& distribution) {
@@ -43,7 +42,7 @@ namespace Hal {
 
   FemtoSourceModel* FemtoSourceModelNumerical1D::MakeCopy() const { return new FemtoSourceModelNumerical1D(*this); }
 
-  void FemtoSourceModelNumerical1D::GenerateCoordinates(FemtoPair* Pair) {
+  void FemtoSourceModelNumerical1D::GenerateCoordinates(FemtoPair* /*Pair*/) {
     Double_t randVal = gRandom->Rndm();
     Int_t i          = 0;
     while (randVal > fRandomDistributionY[i])
@@ -66,7 +65,7 @@ namespace Hal {
     if (fRawDistribution) delete fRawDistribution;
   }
 
-  Double_t FemtoSourceModelNumerical1D::GetProbDensity1d(const Double_t r, const Double_t* params) const {
+  Double_t FemtoSourceModelNumerical1D::GetProbDensity1d(const Double_t r, const Double_t* /*params*/) const {
     Int_t bin = fRawDistribution->GetXaxis()->FindBin(r);
     return fRawDistribution->GetBinContent(bin);
   }

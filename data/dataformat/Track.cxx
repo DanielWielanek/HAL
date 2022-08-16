@@ -47,7 +47,6 @@ namespace Hal {
     fHiddenInfo = other->fHiddenInfo;
     fType       = other->fType;
     if (IsV0()) {
-      Event* ev   = GetEvent();
       V0Track* v0 = (V0Track*) GetEvent()->fV0sHiddenInfo->UncheckedAt(GetEvent()->fV0sHiddenInfo->GetEntriesFast());
       v0->CopyData(other->GetV0Info());
     }

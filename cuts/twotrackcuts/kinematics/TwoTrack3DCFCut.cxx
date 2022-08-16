@@ -85,9 +85,9 @@ namespace Hal {
     Double_t tGamma = tE / tMt;
     if (fFrame == 0) {  // use LCMS
       Double_t particle1lcms_pz = tGamma * (pz1 - tBeta * e1);
-      Double_t particle1lcms_e  = tGamma * (e1 - tBeta * pz1);
+      // Double_t particle1lcms_e  = tGamma * (e1 - tBeta * pz1);
       Double_t particle2lcms_pz = tGamma * (pz2 - tBeta * e2);
-      Double_t particle2lcms_e  = tGamma * (e2 - tBeta * pz2);
+      // Double_t particle2lcms_e  = tGamma * (e2 - tBeta * pz2);
 
       Double_t particle1lcms_px = (px1 * tPx + py1 * tPy) / tPt;
       Double_t particle1lcms_py = (-px1 * tPy + py1 * tPx) / tPt;
@@ -135,7 +135,7 @@ namespace Hal {
     return *this;
   }
 
-  Bool_t TwoTrack3DCFCut::Init(Int_t int1) {
+  Bool_t TwoTrack3DCFCut::Init(Int_t /*int1*/) {
     if (fMap == nullptr) return kFALSE;
     TDatabasePDG* db = TDatabasePDG::Instance();
     TParticlePDG* p1 = db->GetParticle(fPID1);

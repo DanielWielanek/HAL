@@ -78,7 +78,7 @@ namespace Hal {
      * set name of the output file
      * @param name
      */
-    virtual void SetOutput(TString name) {};
+    virtual void SetOutput(TString /*name*/) {};
     /**
      * return magnetic field for this data
      * @return

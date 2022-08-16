@@ -11,15 +11,15 @@
 
 #include "TrackCut.h"
 
-namespace Hal{
+namespace Hal {
 
-class TrackPdgBinCut : public TrackCut {
-public:
-  TrackPdgBinCut();
-  virtual Bool_t Pass(Track* track);
-  virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
-  virtual ~TrackPdgBinCut();
-  ClassDef(TrackPdgBinCut, 1);
-};
-}
+  class TrackPdgBinCut : public TrackCut {
+  public:
+    TrackPdgBinCut();
+    virtual Bool_t Pass(Track* track);
+    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels() const;
+    virtual ~TrackPdgBinCut();
+    ClassDef(TrackPdgBinCut, 1);
+  };
+}  // namespace Hal
 #endif /* HALTRACKPDGBINCUT_H_ */

@@ -77,7 +77,7 @@ namespace Hal {
     fNPoint = points;
   }
 
-  void FitParam::Print(Option_t* option) const {
+  void FitParam::Print(Option_t* /*option*/) const {
     std::cout << "PARAM " << GetParName() << std::endl;
     TString disc = "no", fix = "no";
     if (IsDiscrete()) disc = "yes";
@@ -89,7 +89,7 @@ namespace Hal {
     std::cout << Form("\tNPoints %i  NDx %4.4f", GetNPoints(), GetDParam()) << std::endl;
     std::cout << Form("\tMap Min: %4.4f   Map Max: %4.4f", GetMapMin(), GetMapMax()) << std::endl;
     std::cout << "\tValues ";
-    for (int i = 0; i < GetValues().size(); i++) {
+    for (unsigned int i = 0; i < GetValues().size(); i++) {
       std::cout << GetValue(i) << " ";
     }
     std::cout << std::endl;

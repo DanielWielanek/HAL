@@ -216,13 +216,11 @@ namespace Hal {
       TString option = opt;
       Bool_t bad_map = kFALSE;
       if (input_histogram->GetNbinsX() != smear_matrix->GetNbinsX()) {
-        if (!option.Contains("forced"))
-          Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kWarning);
+        if (!option.Contains("forced")) Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kWarning);
         bad_map = kTRUE;
       }
       if (input_histogram->GetNbinsX() != smear_matrix->GetNbinsY()) {
-        if (!option.Contains("forced"))
-          Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kWarning);
+        if (!option.Contains("forced")) Hal::Cout::PrintInfo("Incompatible histograms for smearing", Hal::EInfo::kWarning);
         bad_map = kTRUE;
       }
       if (option.Contains("forced") && bad_map) {
@@ -745,7 +743,7 @@ namespace Hal {
         const Int_t nBins = x.GetNbins();
         Int_t binFold     = x.FindBin(val);
         Double_t center   = x.GetBinCenter(binFold);
-        Double_t low      = x.GetBinLowEdge(binFold);
+        //  Double_t low      = x.GetBinLowEdge(binFold);
         std::vector<int> foldBinMap(nBins + 1);
         Int_t shift = 0;
         if (val != center) shift = 1;

@@ -53,7 +53,7 @@ namespace Hal {
      * if true then histogram are filled without sign (e.g. with abs(kstar))
      * @param ignore
      */
-    void IgnoreSign(Bool_t ignore = kTRUE) { fIgnoreSign = kTRUE; };
+    void IgnoreSign(Bool_t ignore = kTRUE) { fIgnoreSign = ignore; };
     /**
      * set range of R bins
      * @param bins

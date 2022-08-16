@@ -38,6 +38,9 @@ namespace Hal {
       case ePidCut::kAntiProton: {
         pid = -Const::ProtonPID();
       } break;
+      case ePidCut::kUnkown: {
+        pid = 0;
+      } break;
     }
     TrackPdgCut pdgCut;
     pdgCut.SetMinAndMax(pid);
@@ -52,6 +55,7 @@ namespace Hal {
         prim.AcceptOnlyNonPrimaries();
         ana->AddCut(prim, flag);
       } break;
+      default: break;
     }
   }
   Event* QAManager::GetFormat(eFormatType /*type*/, eAnaType /*ana*/) { return nullptr; }

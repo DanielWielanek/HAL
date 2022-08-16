@@ -67,11 +67,11 @@ namespace Hal {
   }
 
   ComplexEvent::ComplexEvent(const ComplexEvent& other) : Event(other) {
-    fImgEvent   = other.fImgEvent->GetNewEvent();
-    fRealEvent  = other.fRealEvent->GetNewEvent();
-    *fImgEvent  = *other.fImgEvent;
-    *fRealEvent = *other.fRealEvent;
-    fSource     = fRealEvent->fSource;
+    fImgEvent  = other.fImgEvent->GetNewEvent();
+    fRealEvent = other.fRealEvent->GetNewEvent();
+    fImgEvent->CopyData(other.fImgEvent);
+    fRealEvent->CopyData(other.fRealEvent);
+    fSource = fRealEvent->fSource;
   }
 
   void ComplexEvent::Clear(Option_t* /*opt*/) {
@@ -244,7 +244,7 @@ namespace Hal {
       return GetRealEvent()->GetFieldName(fieldID - DataFieldID::ReStep) + " (re)";
     }
     switch (fieldID) {
-      case DataFieldID::EComplexEvent::kDeltaRPhi: "#Delta #phi [rad]"; break;
+      case DataFieldID::EComplexEvent::kDeltaRPhi: return "#Delta #phi [rad]"; break;
       case DataFieldID::EComplexEvent::kDeltaVertexXY: return "#Delta V_{XY} [cm]"; break;
       case DataFieldID::EComplexEvent::kDeltaVertexX: return "#Delta V_{X} [cm]"; break;
       case DataFieldID::EComplexEvent::kDeltaVertexY: return "#Delta V_{Y} [cm]"; break;

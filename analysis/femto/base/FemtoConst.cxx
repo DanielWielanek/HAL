@@ -498,6 +498,69 @@ namespace Hal {
           switch (ndim) {
             case 1: {
               switch (ax) {
+                case 0: return "k* [GeV/c]"; break;
+                case 1: return "dN_{pairs}/dk*"; break;
+                case 3: return "CF(k*)"; break;
+              }
+            } break;
+            case 3: {
+              switch (ax) {
+                case 0: return "k*_{out} [GeV/c]"; break;
+                case 1: return "k*_{side} [GeV/c]"; break;
+                case 2: return "k*_{long} [GeV/c]"; break;
+                case 3: return "CF(k*)"; break;
+              }
+            } break;
+          }
+        } break;
+        case EKinematics::kLCMS: {
+          switch (ndim) {
+            case 1: {
+              switch (ax) {
+                case 0: return "q_{inv} [GeV/c]"; break;
+                case 1: return "dN_{pairs}/dq_{inv}"; break;
+                case 3: return "CF(q_{inv})"; break;
+              }
+            } break;
+            case 3: {
+              switch (ax) {
+                case 0: return "q_{out} [GeV/c]"; break;
+                case 1: return "q_{side} [GeV/c]"; break;
+                case 2: return "q_{long} [GeV/c]"; break;
+                case 3: return "CF(q)"; break;
+              }
+            } break;
+          }
+        } break;
+        case EKinematics::kSH_PRF: {
+          switch (ax) {
+            case 0: return "k* [GeV/c]"; break;
+            case 1: return "#phi*"; break;
+            case 2: return "#theta*"; break;
+            case 3: return "CF(k*)"; break;
+          }
+        } break;
+        case EKinematics::kSH_LCMS: {
+          switch (ax) {
+            case 0: return "q_{inv} [GeV/c]"; break;
+            case 1: return "#phi_{inv}"; break;
+            case 2: return "#theta_{inv}"; break;
+            case 3: return "CF(q_{inv})"; break;
+          }
+        } break;
+        case EKinematics::kPHIETA: {
+          switch (ax) {
+            case 0: return "#Delta#phi"; break;
+            case 1: return "#Delta#eta"; break;
+            case 2: return "dN_{pairs}/dN_{#Delta#phi#Delta#eta}"; break;
+            case 3: return "C(#Delta#phi,#Delta#eta)"; break;
+          }
+          break;
+        }
+        case EKinematics::kPRFL: {
+          switch (ndim) {
+            case 1: {
+              switch (ax) {
                 case 0: return "k* [GeV/c]";
                 case 1: return "dN_{pairs}/dk*";
                 case 3: return "CF(k*)";
@@ -513,50 +576,6 @@ namespace Hal {
             } break;
           }
         } break;
-        case EKinematics::kLCMS: {
-          switch (ndim) {
-            case 1: {
-              switch (ax) {
-                case 0: return "q_{inv} [GeV/c]";
-                case 1: return "dN_{pairs}/dq_{inv}";
-                case 3: return "CF(q_{inv})";
-              }
-            } break;
-            case 3: {
-              switch (ax) {
-                case 0: return "q_{out} [GeV/c]";
-                case 1: return "q_{side} [GeV/c]";
-                case 2: return "q_{long} [GeV/c]";
-                case 3: return "CF(q)";
-              }
-            } break;
-          }
-        } break;
-        case EKinematics::kSH_PRF: {
-          switch (ax) {
-            case 0: return "k* [GeV/c]";
-            case 1: return "#phi*";
-            case 2: return "#theta*";
-            case 3: return "CF(k*)";
-          }
-        } break;
-        case EKinematics::kSH_LCMS: {
-          switch (ax) {
-            case 0: return "q_{inv} [GeV/c]";
-            case 1: return "#phi_{inv}";
-            case 2: return "#theta_{inv}";
-            case 3: return "CF(q_{inv})";
-          }
-        } break;
-        case EKinematics::kPHIETA: {
-          switch (ax) {
-            case 0: return "#Delta#phi";
-            case 1: return "#Delta#eta";
-            case 2: return "dN_{pairs}/dN_{#Delta#phi#Delta#eta}";
-            case 3: return "C(#Delta#phi,#Delta#eta)";
-          }
-          break;
-        }
       }
       return "";
     }

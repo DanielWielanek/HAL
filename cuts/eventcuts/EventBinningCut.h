@@ -40,7 +40,7 @@ namespace Hal {
     const EventCut* GetCut() const { return (EventCut*) fEventCut->MakeCopy(); };
     Int_t GetBinsNo() const { return fTotalBinsNo; };
     virtual Package* Report() const;
-    virtual Bool_t Pass(Event* event) { return kTRUE; };
+    virtual Bool_t Pass(Event* /*event*/) { return kTRUE; };
     virtual Int_t CheckBin(Event* event);
     virtual Bool_t Init(Int_t task_id);
     virtual ~EventBinningCut();

@@ -48,7 +48,7 @@ namespace Hal {
     if (lower > upper) {
       double temp = upper;
       upper       = lower;
-      lower       = upper;
+      lower       = temp;
     }
     if (fParameters.size() <= ivar) { fParameters.resize(ivar + 1); }
     fParameters[ivar].SetRange(lower, upper);
@@ -74,14 +74,14 @@ namespace Hal {
   void Minimizer::InitFit() {
     fNonConstMap.clear();
     fNCalls = 0;
-    for (Int_t i = 0; i < fParameters.size(); i++) {
+    for (unsigned int i = 0; i < fParameters.size(); i++) {
       if (!fParameters[i].IsFixed()) { fNonConstMap.push_back(i); }
     }
     auto lambda = [](Int_t a, Int_t b) -> bool { return a < b; };
     std::sort(fNonConstMap.begin(), fNonConstMap.end(), lambda);
 
     Cout::Database(6, "ParName", "MinMap", "MaxMap", "Steps", "Min", "Max");
-    for (int i = 0; i < fParameters.size(); i++) {
+    for (unsigned int i = 0; i < fParameters.size(); i++) {
       if (fParameters[i].IsFixed()) {
         Cout::Database(2, fParameters[i].GetParName().Data(), Form("%4.4f", fParameters[i].GetStartVal()));
       } else {
@@ -96,13 +96,13 @@ namespace Hal {
     }
 
     // round minimum
-    for (int i = 0; i < fParameters.size(); i++) {
+    for (unsigned int i = 0; i < fParameters.size(); i++) {
       fParameters[i].SetIsDiscrete(kTRUE);  // all parameters must be discrete
       fParameters[i].Init();
       fParameters[i].Print();
     }
     Cout::Database(6, "ParName", "MinMap", "MaxMap", "Steps", "Min", "Max");
-    for (int i = 0; i < fParameters.size(); i++) {
+    for (unsigned int i = 0; i < fParameters.size(); i++) {
       if (fParameters[i].IsFixed()) {
         Cout::Database(2, fParameters[i].GetParName().Data(), Form("%4.4f", fParameters[i].GetStartVal()));
       } else {
@@ -190,7 +190,7 @@ namespace Hal {
     }
     /** make loop over other parameters **/
     Int_t pairID = fNonConstMap[param];
-    for (int i = 0; i < fParameters[pairID].GetValues().size(); i++) {
+    for (unsigned int i = 0; i < fParameters[pairID].GetValues().size(); i++) {
       fTempParams[pairID] = fParameters[pairID].GetValues()[i];
       Bool_t val          = LoopOverParameter(param + 1);
       if (val == kFALSE) return kFALSE;
@@ -199,7 +199,7 @@ namespace Hal {
   }
 
   void Minimizer::EstimateErrors() {
-    for (unsigned int i = 0; i < GetNParams(); i++) {
+    for (int i = 0; i < GetNParams(); i++) {
       if (IsFixed(i)) {
         fQuantumFits[i] = fParamsMin[i];
         fSmoothFits[i]  = fParamsMin[i];
@@ -229,7 +229,7 @@ namespace Hal {
       return;
     }
 
-    for (unsigned int i = 0; i < GetNParams(); i++)
+    for (int i = 0; i < GetNParams(); i++)
       fTempParams[i] = fParamsMin[i];
     if (x1 >= fParameters[par].GetMapMin()) {
       fTempParams[par] = x1;
@@ -268,7 +268,7 @@ namespace Hal {
       min              = min_x;
       C                = C - min_chi * 1.1;
       // ten minimizer daje bledy o polowe mniejsze dlaczego?
-      /**
+
        * przykladowo w pewnej analizie robilem skok o 1, mama chi2 znajduje minimum
        * na 4 ale jak to sie fituje parabola (jak robi to minimizer) to minimum jest
        * na 4.15 w efekcie najmniejsza wartoscia z paraboli jest 4.15 z dwoma
@@ -352,7 +352,7 @@ namespace Hal {
 
 
       std::cout << "par\t";
-      for (int i = 0; i < fParameters.size(); i++) {
+      for (unsigned int i = 0; i < fParameters.size(); i++) {
         std::cout << fTempParams[i] << " ";
         debug << fTempParams[i] << " ";
       }
@@ -379,7 +379,7 @@ namespace Hal {
       Double_t chi = (*fFunc)(fTempParams);
       if (fTrace) {
         std::cout << "par\t";
-        for (int i = 0; i < fParameters.size(); i++) {
+        for (unsigned int i = 0; i < fParameters.size(); i++) {
           std::cout << fTempParams[i] << " ";
           debug << fTempParams[i] << " ";
         }
@@ -398,7 +398,7 @@ namespace Hal {
           std::cout << "similiar" << std::endl;
         } else {
           std::cout << "smaller" << std::endl;
-          for (int i = 0; i < paramsMin.size(); i++)
+          for (unsigned int i = 0; i < paramsMin.size(); i++)
             paramsMin[i] = fTempParams[i];
           similarMin    = 0;
           bad_direction = 0;
@@ -462,7 +462,7 @@ namespace Hal {
           chi_vector[i] = fGlobMin / fNDF;
         }
       }
-      for (int k = 0; k < paramsMin.size(); k++) {
+      for (unsigned int k = 0; k < paramsMin.size(); k++) {
         fTempParams[k] = paramsMin[k];
       }
     }
@@ -481,7 +481,7 @@ namespace Hal {
     // estimate approx stat. error
     auto lenght = [](const std::vector<Double_t>& v) -> Double_t {
       Double_t L = 0;
-      for (int i = 0; i < v.size(); i++) {
+      for (unsigned int i = 0; i < v.size(); i++) {
         L += v[i] * v[i];
       }
       return TMath::Abs(L);
@@ -499,7 +499,7 @@ namespace Hal {
       x1 = fTempParams[poz] - fParameters[poz].GetDParam();
       x2 = fTempParams[poz];
       x3 = fTempParams[poz] + fParameters[poz].GetDParam();
-      for (int j = 0; j < state_vector.size(); j++) {
+      for (unsigned int j = 0; j < state_vector.size(); j++) {
         Double_t L = lenght(state_vector[j]);
         if (L != 1) continue;
         if (state_vector[j][i] == 1) { chi_high = chi_vector[j]; }
@@ -525,14 +525,14 @@ namespace Hal {
   void Minimizer::MinimizeScan() {
     // set start parameters
     InitFit();
-    for (int i = 0; i < fParameters.size(); i++) {
+    for (unsigned int i = 0; i < fParameters.size(); i++) {
       fTempParams[i] = fParameters[i].GetMin();
     }
     // calculate parameters array
     fGlobMin = DBL_MAX;
 
     LoopOverParameter(0);
-    for (unsigned int i = 0; i < GetNParams(); i++) {
+    for (int i = 0; i < GetNParams(); i++) {
       fTempParams[i] = fParamsMin[i];
       fSmoothFits[i] = fParamsMin[i];
     }
@@ -543,7 +543,7 @@ namespace Hal {
 
   void Minimizer::ChangeStateVector(std::vector<Int_t>& vec) {
     std::vector<Int_t> temp = vec;
-    for (int i = 0; i < vec.size(); i++) {
+    for (unsigned int i = 0; i < vec.size(); i++) {
       vec[i + 1] = temp[i];
     }
     vec[0] = temp[temp.size() - 1];

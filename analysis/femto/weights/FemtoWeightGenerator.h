@@ -177,7 +177,7 @@ namespace Hal {
      * @param type
      * @return
      */
-    virtual Bool_t IsPairSupported(Femto::EPairType type) const { return kFALSE; };
+    virtual Bool_t IsPairSupported(Femto::EPairType /*type*/) const { return kFALSE; };
     virtual void Print(Option_t* option = "") const;
     virtual Package* Report() const;
     virtual ~FemtoWeightGenerator();

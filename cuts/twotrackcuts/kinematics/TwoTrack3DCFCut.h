@@ -29,7 +29,7 @@ namespace Hal {
     };
     void UseLCMS() { fFrame = 0; };
     void UsePRF() { fFrame = 1; };
-    void UseAbs(Bool_t abs = kTRUE) { fAbs = kTRUE; };
+    void UseAbs(Bool_t abs = kTRUE) { fAbs = abs; };
     virtual Bool_t Init(Int_t);
     virtual Cut* MakeCopy() const;
     virtual Bool_t Pass(TwoTrack* pair);

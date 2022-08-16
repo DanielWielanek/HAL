@@ -14,8 +14,8 @@
 #include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
-#include "StdHist.h"
 #include "HistogramManager.h"
+#include "StdHist.h"
 #include "Track.h"
 
 #include <TH1.h>
@@ -42,7 +42,7 @@ namespace Hal {
   }
 
   QAPlot::QAPlot(TString name, Int_t oneDimHist, Int_t twoDimHist, Int_t threeDimHist, ECutUpdate upd) :
-    fReport(nullptr), fUpdate(upd) {
+    fUpdate(upd), fReport(nullptr) {
     SetName(name);
     fSettings[0].resize(oneDimHist, QAHistoSettings(1));
     fSettings[1].resize(twoDimHist, QAHistoSettings(2));
@@ -50,12 +50,12 @@ namespace Hal {
   }
 
   void QAPlot::SetAxis1D(Int_t no, Int_t nbinsX, Double_t minX, Double_t maxX) {
-    if (no >= fSettings[0].size()) return;
+    if (no >= (int) fSettings[0].size()) return;
     fSettings[0][no].SetXaxis(nbinsX, minX, maxX);
   }
 
   void QAPlot::SetAxis2D(Int_t no, Int_t nbinsX, Double_t minX, Double_t maxX, Int_t nbinsY, Double_t minY, Double_t maxY) {
-    if (no >= fSettings[1].size()) return;
+    if (no >= (int) fSettings[1].size()) return;
     fSettings[1][no].SetXaxis(nbinsX, minX, maxX);
     fSettings[1][no].SetYaxis(nbinsY, minY, maxY);
   }
@@ -70,7 +70,7 @@ namespace Hal {
                          Int_t nbinsZ,
                          Double_t minZ,
                          Double_t maxZ) {
-    if (no >= fSettings[2].size()) return;
+    if (no >= (int) fSettings[2].size()) return;
     fSettings[2][no].SetXaxis(nbinsX, minX, maxX);
     fSettings[2][no].SetYaxis(nbinsY, minY, maxY);
     fSettings[2][no].SetZaxis(nbinsZ, minZ, maxZ);
@@ -82,7 +82,7 @@ namespace Hal {
     switch (fUpdate) {
       case ECutUpdate::kEvent: {
         for (int j = 0; j < 3; j++) {
-          for (int i = 0; i < fSettings[j].size(); i++) {
+          for (unsigned int i = 0; i < fSettings[j].size(); i++) {
             if (fSettings[j][i].IsCustom()) continue;
             Int_t fieldIDx = fSettings[j][i].GetFillFlagX();
 
@@ -120,7 +120,7 @@ namespace Hal {
         }
 
         for (int j = 0; j < 3; j++) {
-          for (int i = 0; i < fSettings[j].size(); i++) {
+          for (unsigned int i = 0; i < fSettings[j].size(); i++) {
             if (fSettings[j][i].IsCustom()) continue;
             Int_t fieldIDx = fSettings[j][i].GetFillFlagX();
 
@@ -144,6 +144,7 @@ namespace Hal {
         if (re_track) delete re_track;
         if (im_track) delete im_track;
       } break;
+      default: break;
     }
 
     fReport = new QAPlotReport(GetName(), GetSize1D(), GetSize2D(), GetSize3D());

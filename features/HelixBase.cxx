@@ -27,8 +27,8 @@ namespace Hal {
     fY0(0),
     fZ0(0),
     fPhi0(0),
-    fPhiSin(0),
     fPhiCos(0),
+    fPhiSin(0),
     fLambda(0),
     fLambdaCos(0),
     fLambdaSin(0),
@@ -308,10 +308,10 @@ namespace Hal {
     Double_t Phase = TMath::ATan2(fYc - fY0, fXc - fX0) + TMath::Pi();
     if (Phase < -TMath::Pi()) { Phase += TMath::TwoPi(); }
     if (Phase > TMath::Pi()) { Phase -= TMath::TwoPi(); }
-    Double_t CosPhase  = TMath::Cos(Phase);
-    Double_t SinPhase  = TMath::Sin(Phase);
-    Double_t period    = 0;
-    Bool_t Singularity = kFALSE;
+    Double_t CosPhase = TMath::Cos(Phase);
+    Double_t SinPhase = TMath::Sin(Phase);
+    Double_t period   = 0;
+    // Bool_t Singularity = kFALSE;
 
     if (fCurv == 0) {
       s      = (dy * CosPhase - dx * SinPhase) / fLambdaCos;

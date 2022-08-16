@@ -39,13 +39,12 @@ namespace Hal {
   }
 
   void OptionConverter::RegisterOption(TString option, Int_t no) {
-    int size = fNames.size();
     fNames.push_back(option);
     fValues.push_back(no);
   }
 
   Bool_t OptionConverter::GetString(TString& string, Int_t value) const {
-    if (value > 0 && value < fNames.size()) {
+    if (value > 0 && value < (int) fNames.size()) {
       string = fNames[value];
       return kTRUE;
     } else {
@@ -125,7 +124,7 @@ namespace Hal {
   void OptionArray::Print(Option_t* /*opt*/) const {
     for (unsigned int i = 0; i < fLabels.size(); i++) {
       Cout::Text(Form("Label %s", fLabels[i].Data()), "L", kYellow);
-      for (int j = 0; j < fParameters[i].size(); j++) {
+      for (unsigned int j = 0; j < fParameters[i].size(); j++) {
         TString val = fParameters[i][j];
         Cout::Text(val, "R", kGreen);
       }

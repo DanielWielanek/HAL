@@ -4,7 +4,9 @@ Set(HAL_VERSION 0)
 Set(HAL_MAJOR_VERSION 1)
 project(Hal)
 enable_language(Fortran)
-
+#for test only
+#set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+Set(CMAKE_CXX_STANDARD 17)
 
 if (DEFINED ENV{SIMPATH})
     include(cmake/modules/CMakeFairRoot.cmake)

@@ -35,7 +35,7 @@ EndMacro(SetFairBase)
 
 Macro(CheckFairCXX)
  If(NOT _HAS_CXX11_FLAG)
-      Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++11. NicaFemto can only be compiled with compilers supporting C++11. Please install such an compiler.")
+      Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++11. HAL can only be compiled with compilers supporting C++11. Please install such an compiler.")
     EndIf()
     
     Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --cxxflags OUTPUT_VARIABLE _res_fairsoft_config OUTPUT_STRIP_TRAILING_WHITESPACE)

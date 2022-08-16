@@ -15,7 +15,6 @@ SET(FAIRROOT_LIBRARY_PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES}
 
 include(CheckCXXCompilerFlag)
 
-
 include(FairMacros)
 include(Hal)
 include(CheckCompiler)
@@ -43,7 +42,7 @@ endif()
 Set(Boost_NO_SYSTEM_PATHS TRUE)
 Set(Boost_NO_BOOST_CMAKE TRUE)
 
-Message("-- Looking for Boost ...")
+#Message("-- Looking for Boost ...")
   # If an older version of boost is found both of the variables below are
   # cached and in a second cmake run, a good boost version is found even 
   # if the version is to old. 
@@ -51,12 +50,14 @@ Message("-- Looking for Boost ...")
   # for boost.
 Unset(Boost_INCLUDE_DIR CACHE)
 Unset(Boost_LIBRARY_DIRS CACHE)
-find_package(Boost 1.48 COMPONENTS program_options thread system timer serialization regex log log_setup filesystem)
-If (Boost_FOUND)
-  Set(Boost_Avail 1)
-Else (Boost_FOUND)
-  Set(Boost_Avail 0)
-EndIf (Boost_FOUND)
+
+#boost not neeeded
+#find_package(Boost 1.48 COMPONENTS program_options thread system timer serialization regex log log_setup filesystem)
+#If (Boost_FOUND)
+#  Set(Boost_Avail 1)
+#Else (Boost_FOUND)
+#  Set(Boost_Avail 0)
+#EndIf (Boost_FOUND)
 
 Message("-- Looking for GSL ...")
 find_package(GSL)
@@ -75,7 +76,7 @@ endif()
   
   Set(SYSTEM_INCLUDE_DIRECTORIES
     ${ROOT_INCLUDE_DIR}
-    ${Boost_INCLUDE_DIRS}
+ #   ${Boost_INCLUDE_DIRS}
   )
   Set(ROOT_INCLUDE_PATH
         ${BASE_INCLUDE_DIRECTORIES}

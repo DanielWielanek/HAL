@@ -5,8 +5,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules"  ${CMAKE_MODULE_PATH})
 include(HalMacros)
 SetFairBase()
 SET(FAIRROOT_LIBRARY_PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES} VERSION "${HAL_VERSION}" SOVERSION "${HAL_MAJOR_VERSION}")
-    
-include(CheckCXX11Features)
+
 include(FairMacros)
 include(Hal)
 include(CheckCompiler)
@@ -44,20 +43,20 @@ Set(Boost_NO_BOOST_CMAKE TRUE)
 Set(BOOST_ROOT ${SIMPATH})
 Set(GSL_DIR ${SIMPATH})
 
-Message("-- Looking for Boost ...")
+#Message("-- Looking for Boost ...")
 # If an older version of boost is found both of the variables below are
 # cached and in a second cmake run, a good boost version is found even 
 # if the version is to old. 
 # To overcome this problem both variables are cleared before checking
 # for boost.
-Unset(Boost_INCLUDE_DIR CACHE)
-Unset(Boost_LIBRARY_DIRS CACHE)
-find_package(Boost 1.48 COMPONENTS program_options thread system timer serialization regex log log_setup filesystem)
-If (Boost_FOUND)
-  Set(Boost_Avail 1)
-Else (Boost_FOUND)
-  Set(Boost_Avail 0)
-EndIf (Boost_FOUND)
+#Unset(Boost_INCLUDE_DIR CACHE)
+#Unset(Boost_LIBRARY_DIRS CACHE)
+#find_package(Boost 1.48 COMPONENTS program_options thread system timer serialization regex log log_setup filesystem)
+#If (Boost_FOUND)
+#  Set(Boost_Avail 1)
+#Else (Boost_FOUND)
+#  Set(Boost_Avail 0)
+#EndIf (Boost_FOUND)
 
 Message("-- Looking for GSL ...")
 find_package(GSL)

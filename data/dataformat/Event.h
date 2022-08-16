@@ -332,18 +332,6 @@ namespace Hal {
      */
     inline TClonesArray* GetV0HiddenInfo() const { return fV0sHiddenInfo; };
     /**
-     * add v0track and track without checking the size of v0 hidden info and track
-     * @param v0Track
-     * @param track track associated with given v0
-     */
-    Track* AddV0Fast(V0Track* v0Track);
-    /**
-     * add v0 track and track with checking the size of containers
-     * @param v0Track
-     * @return
-     */
-    Track* AddV0(V0Track* v0Track);
-    /**
      * default destructor
      */
     virtual ~Event();

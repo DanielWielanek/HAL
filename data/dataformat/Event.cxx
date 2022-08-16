@@ -213,7 +213,7 @@ namespace Hal {
         } else {
           from->SetSecondary(kFALSE);
         }
-        from->SetV0(kFALSE, kFALSE);
+        from->EnableV0(kFALSE, kFALSE);
         from->SetMomentum(interface->GetPz(), interface->GetPy(), interface->GetPz(), interface->GetE());
       }
       delete interface;
@@ -311,21 +311,4 @@ namespace Hal {
     return "[]";
   }
 
-  Track* Event::AddV0Fast(V0Track* v0Track) {
-    Track* tr = (Track*) fTracks->UncheckedAt(fTotalTracksNo++);
-    tr->SetThisID(fTotalTracksNo - 1);
-    V0Track* to = (V0Track*) fV0sHiddenInfo->UncheckedAt(fTotalV0s++);
-    to->CopyData(v0Track);
-    to->SetTrackId(fTotalTracksNo);
-    return tr;
-  }
-
-  Track* Event::AddV0(V0Track* v0Track) {
-    Track* tr = (Track*) fTracks->ConstructedAt(fTotalTracksNo++);
-    tr->SetThisID(fTotalTracksNo - 1);
-    V0Track* to = (V0Track*) fV0sHiddenInfo->ConstructedAt(fTotalV0s++);
-    to->CopyData(v0Track);
-    to->SetTrackId(fTotalTracksNo - 1);
-    return tr;
-  }
 }  // namespace Hal

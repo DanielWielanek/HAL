@@ -147,7 +147,7 @@ namespace Hal {
      * @param v0 if true mark particle as V0, otherwise mark as normal particle
      * @param daughters  - true if daughters ID's are known
      */
-    void SetV0(Bool_t v0, Bool_t daughters = kTRUE);
+    void EnableV0(Bool_t v0, Bool_t daughters = kTRUE);
     /**
      * set particle mother index
      * @param index

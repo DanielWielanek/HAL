@@ -135,15 +135,14 @@ namespace Hal {
     }
   }
 
-  void Track::SetV0(Bool_t v0, Bool_t good) {
+  void Track::EnableV0(Bool_t v0, Bool_t good) {
     if (v0) {
       SETBIT(fType, kV0);
       if (good)
         SETBIT(fType, kV0Daughters);
       else
-        SETBIT(fType, kV0Daughters);
-      fHiddenInfo = fEvent->GetTotalV0No();
-      fEvent->fTotalV0s++;
+        CLRBIT(fType, kV0Daughters);
+      fHiddenInfo = fEvent->fV0sHiddenInfo->GetEntriesFast();
       fEvent->fV0sHiddenInfo->ConstructedAt(fEvent->fV0sHiddenInfo->GetEntriesFast());
     } else {
       CLRBIT(fType, kV0);

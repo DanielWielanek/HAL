@@ -48,7 +48,6 @@ namespace Hal {
      * @param pid2
      */
     void SetPid(Int_t pid1, Int_t pid2);
-    void SetQBins(Int_t bins, Double_t qmin, Double_t qmax, Bool_t center);
     /**
      * if true then histogram are filled without sign (e.g. with abs(kstar))
      * @param ignore

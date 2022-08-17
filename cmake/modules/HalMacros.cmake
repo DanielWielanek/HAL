@@ -32,35 +32,6 @@ Macro(SetFairBase)
     endif(FAIRROOTPATH)
 EndMacro(SetFairBase)
 
-
-Macro(CheckFairCXX)
- If(NOT _HAS_CXX11_FLAG)
-      Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++11. HAL can only be compiled with compilers supporting C++11. Please install such an compiler.")
-    EndIf()
-    
-    Execute_process(COMMAND $ENV{SIMPATH}/bin/fairsoft-config --cxxflags OUTPUT_VARIABLE _res_fairsoft_config OUTPUT_STRIP_TRAILING_WHITESPACE)
-    String(FIND ${_res_fairsoft_config} "-std=c++11" POS_C++11)
-    If(${POS_C++11} EQUAL -1)
-      String(FIND ${_res_fairsoft_config} "-std=c++14" POS_C++11)
-      If(${POS_C++11} EQUAL -1)
-        String(FIND ${_res_fairsoft_config} "-std=c++17" POS_C++11)
-        If(${POS_C++11} EQUAL -1)
-          Message(FATAL_ERROR "FairSoft wasn't compiled with support for c++11 or above. Please recompile FairSoft with a compiler which supports c++11, c++14 or c++17.")
-        EndIf()
-      EndIf()
-    EndIf()
-EndMacro(CheckFairCXX)
-
-Macro(CheckNoFairCXX)
-SET(CXX_STANDARD_REQUIRED C++11)
- If(NOT _HAS_CXX11_FLAG)
-   #   Message(FATAL_ERROR "The used C++ compiler (${CMAKE_CXX_COMPILER}) does not support C++11. HAL can only be compiled with compilers supporting C++11. Please install such an compiler.")
-    EndIf()
-    
-EndMacro(CheckNoFairCXX)
-
-
-
 Macro(PathInfo)
  Option(USE_PATH_INFO "Information from PATH and LD_LIBRARY_PATH are used." OFF)
     If(USE_PATH_INFO)

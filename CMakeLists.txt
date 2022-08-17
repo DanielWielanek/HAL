@@ -6,7 +6,12 @@ project(Hal)
 enable_language(Fortran)
 #for test only
 #set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-Set(CMAKE_CXX_STANDARD 17)
+
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+    Message(WARNING "CMAke standard not set, setting to 17")
+    Set(CMAKE_CXX_STANDARD 17)
+endif()
+
 
 if (DEFINED ENV{SIMPATH})
     include(cmake/modules/CMakeFairRoot.cmake)

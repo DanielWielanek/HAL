@@ -10,8 +10,7 @@ include(FairMacros)
 include(Hal)
 include(CheckCompiler)
 include(WriteConfig)
-    
-CheckFairCXX()
+
 PathInfo()
    
 Set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")

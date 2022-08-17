@@ -20,8 +20,8 @@ include(Hal)
 include(CheckCompiler)
 include(WriteConfig)
 
-   CheckNoFairCXX()
-   PathInfo()
+
+PathInfo()
    
 Set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
 Set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")

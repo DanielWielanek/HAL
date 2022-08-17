@@ -110,6 +110,10 @@ namespace Hal {
       Cout::PrintInfo("Femto1DMapGenerator::Init lack of generator", EInfo::kCriticalError);
       return kFALSE;
     }
+    if (fRadiiBins.GetSize() < 1) {
+      Cout::PrintInfo("Femto1DMapGenerator::Init lack of rbins ! did you call SetRBins?", EInfo::kCriticalError);
+      return kFALSE;
+    }
     fPair->SetPdg1(fPid1);
     fPair->SetPdg2(fPid2);
     if (fIgnoreSign) fPair->UseAbs();

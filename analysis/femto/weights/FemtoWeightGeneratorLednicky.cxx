@@ -256,50 +256,32 @@ ClassImp(FemtoWeightGeneratorLednicky)
 
   FemtoWeightGeneratorLednicky::FemtoWeightGeneratorLednicky(const FemtoWeightGeneratorLednicky& aWeight) :
     FemtoWeightGenerator(aWeight),
-    fWei(0),
-    fWein(0),
-    fWeif(0),
-    fWeightDen(0),
-    fItest(0),
-    fIch(1),
-    fIqs(1),
-    fIsi(1),
-    fI3c(0),
-    fNuclMass(1.),
-    fNuclCharge(0.),
-    fSphereApp(false),
-    fT0App(false),
-    fLL(0),
-    fNuclChargeSign(1),
-    fSwap(0),
-    fLLMax(30),
-    fNumProcessPair(0),
-    fNumbNonId(0) {
+    fWei(aWeight.fWei),
+    fWein(aWeight.fWein),
+    fWeif(aWeight.fWeif),
+    fWeightDen(aWeight.fWeightDen),
+    fItest(aWeight.fItest),
+    fIch(aWeight.fIch),
+    fIqs(aWeight.fIqs),
+    fIsi(aWeight.fIsi),
+    fI3c(aWeight.fI3c),
+    fNuclMass(aWeight.fNuclMass),
+    fNuclCharge(aWeight.fNuclCharge),
+    fSphereApp(aWeight.fSphereApp),
+    fT0App(aWeight.fT0App),
+    fLL(aWeight.fLL),
+    fNuclChargeSign(aWeight.fNuclChargeSign),
+    fSwap(aWeight.fSwap),
+    fLLMax(aWeight.fLLMax),
+    fNS(aWeight.fNS),
+    fNumProcessPair(nullptr),
+    fNumbNonId(aWeight.fNumbNonId),
+    fKpKmModel(aWeight.fKpKmModel),
+    fPhi_OffOn(aWeight.fPhi_OffOn),
+    fNS_4(aWeight.fNS_4) {
     // copy constructor
-    fWei       = aWeight.fWei;
-    fWein      = aWeight.fWein;
-    fWeif      = aWeight.fWeif;
-    fWeightDen = aWeight.fWeightDen;
 
-    fItest          = aWeight.fItest;
-    fIch            = aWeight.fIch;
-    fIqs            = aWeight.fIqs;
-    fIsi            = aWeight.fIsi;
-    fI3c            = aWeight.fI3c;
-    fNuclMass       = aWeight.fNuclMass;
-    fNuclCharge     = aWeight.fNuclCharge;
-    fSphereApp      = aWeight.fSphereApp;
-    fT0App          = aWeight.fT0App;
-    fLL             = aWeight.fLL;
-    fNuclChargeSign = aWeight.fNuclChargeSign;
-    fSwap           = aWeight.fSwap;
-    fNumProcessPair = aWeight.fNumProcessPair;
-    fNumbNonId      = aWeight.fNumbNonId;
     fNumProcessPair = new int[fLLMax + 1];
-    fNS             = aWeight.fNS;
-    fKpKmModel      = aWeight.fKpKmModel;
-    fPhi_OffOn      = aWeight.fPhi_OffOn;
-    fNS_4           = aWeight.fNS_4;
     int i;
     for (i = 1; i <= fLLMax; i++) {
       fNumProcessPair[i] = 0;

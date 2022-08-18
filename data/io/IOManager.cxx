@@ -39,7 +39,6 @@ namespace Hal {
         return;
       } break;
     }
-    if (fList == nullptr) fList = new TList();
     fList->AddLast(new TObjString(name));
   }
 
@@ -47,7 +46,7 @@ namespace Hal {
     switch (flag) {
       case EBranchFlag::kIn: {
         for (auto branch : fInBranches) {
-         if (branch.first.EqualTo(name)) return branch;
+          if (branch.first.EqualTo(name)) return branch;
         }
       } break;
       case EBranchFlag::kOut: {
@@ -62,7 +61,7 @@ namespace Hal {
       } break;
       default: {
         for (auto branch : fInBranches) {
-         if (branch.first.EqualTo(name)) return branch;
+          if (branch.first.EqualTo(name)) return branch;
         }
         for (auto branch : fOutBranches) {
           if (branch.first.EqualTo(name)) return branch;

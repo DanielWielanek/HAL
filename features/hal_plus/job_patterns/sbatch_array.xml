@@ -7,7 +7,7 @@
             --error=${HAL::CONST::PWD}/%j.errors --time=36:00:00 --array=${HAL::CONST::START}-${HAL::CONST::END} 
             -p long -- ${HAL::CONST::PWD}/${HAL::CONST::JOB_FILE}"></parameter>
 	</parameters>
-	<settings start="1" end="1" submit="sbatch ${SUBMIT_ARG}" shell="#!/bin/bash" dir="jobs" array="yes"></settings>
+	<settings start="1" end="1" submit="${SUBMIT_ARG}" shell="#!/bin/bash" dir="jobs" array="yes"></settings>
 	<commands>
 		<!--array command in options, ${HAL_START_ARRAY}/${HAL_END_ARRAY} will 
 			be replaced by submit start/end -->

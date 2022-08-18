@@ -34,20 +34,20 @@
  * 3. submit_end the id of last job
  * 4. shell - the shell, first line in script sent to the computing cluster
  * ## job_options
- * Options of the jobs. In princle they are added to the scripts just like commands.
- * Here use can also specifty \b array \b atrribute, if it set to "yes" only one job file is prepared and sent to the cluster -
+ * Options of the jobs. In principle they are added to the scripts just like commands.
+ * Here use can also specify \b array \b attribute, if it set to "yes" only one job file is prepared and sent to the cluster -
  this is so called
- * job array, othewrite many separate jobs arer send. The size of array/number of jobs is defined by \b submit_start and \b
+ * job array, overwrite many separate jobs after send. The size of array/number of jobs is defined by \b submit_start and \b
  submit_end .
  * ## job_commands
- * The lines that will be writen to the job file,in principle they are commands executed by a job script..
+ * The lines that will be written to the job file,in principle they are commands executed by a job script..
  * \note Some of job_commands should not be changed e.g.
  * \ export JOB_ID_HAL=`expr $SLURM_ARRAY_TASK_ID + $ONE` in sbatch_array is the only way to get unique_id for each job in array
 
  * # export option
  * hal jobs has the option \b --export=<data_file> --id=<id> --par=<par_id> returns the parameter number \b par_id \b for job
  number \b par_id from \b data_file.
- * The data file migth look like this.
+ * The data file might look like this.
  * \verbatim
 =======_HAL_JOBS_INPUT_FILE_=======
 NVAR 2 NJOBS 3

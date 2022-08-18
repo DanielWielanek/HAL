@@ -38,10 +38,7 @@ namespace Hal {
       Int_t CheckBranch(const char* BrName);
       Int_t GetEntries() const { return -1; }
       Int_t GetEntry(Int_t /*i*/) { return -1; };
-      virtual Bool_t Init() {
-        fList = new TList();
-        return kTRUE;
-      }
+      virtual Bool_t Init() { return kTRUE; }
       virtual ~RootManager() {};
       ClassDef(RootManager, 1)
     };

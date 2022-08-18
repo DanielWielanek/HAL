@@ -52,7 +52,7 @@ namespace Hal {
 
   public:
     enum class EBranchStatus { kInput, kOutput, kVirtual, kNull };
-    IOManager() : fField(nullptr), fList(nullptr) {};
+    IOManager() : fField(nullptr), fList(new TList()) {};
     /**
      *
      * @return number of entries in data

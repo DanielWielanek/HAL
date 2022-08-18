@@ -14,10 +14,11 @@ make & make install
 2. Without FairRoot
 create build directory inside of HAL
 <pre><code>
-cmake -DCMAKE_INSTALL_PREFIX=&lt;place to install&gt; -DCMAKE_CXX_STANDARD=17 ..
+cmake -DCMAKE_INSTALL_PREFIX=&lt;place to install&gt; ..
 </pre></code>
-If there will be error Boost not found set path to boost by adding to cmake -DBOOST_ROOT=&lt;path to boost&gt; -DBOOST_DIR=&lt;path to boost headers&gt;
 ## additional parameters for cmake
-BOOST_ROOT - set path to boost package
-CMAKE_CXX_STANDARD - set cmake standard (recommended to 17)
+CMAKE_CXX_STANDARD - set cmake standard  by hand (default is 17) - note: this standard should be compatbile with standard used for ROOT compilation. To check ROOT compilation flag type 
+&lt;root-config --cflags&gt; e.g.: if output contains -std=c++17 it means that your ROOT was compiled with standard 17. 
+
+ROOT that you have on compuer
 JSROOT_DIR - path to custom JavaScript Root

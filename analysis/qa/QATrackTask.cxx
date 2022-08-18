@@ -82,7 +82,7 @@ namespace Hal {
   Task::EInitFlag QATrackTask::Init() {
     Task::EInitFlag stat = TrackAna::Init();
     if (stat == Task::EInitFlag::kFATAL) return stat;
-    if (fTempEventPlot == nullptr) { fTempEventPlot = new QAPlot("Null", 0, 0, 0, ECutUpdate::kEvent); }
+    if (fTempEventPlot == nullptr) { fTempEventPlot = new QAPlot("Null", ECutUpdate::kEvent); }
     if (fTempTrackPlot == nullptr) {
       Cout::PrintInfo("Lack of Track QA", EInfo::kError);
       return Task::EInitFlag::kFATAL;

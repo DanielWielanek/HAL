@@ -28,7 +28,7 @@ namespace Hal {
 
   QAPlot::QAPlot() : fUpdate(ECutUpdate::kNo), fReport(nullptr) {}
 
-  QAPlot::QAPlot(ECutUpdate upd) : QAPlot("", 0, 0, 0, upd) {};
+  QAPlot::QAPlot(ECutUpdate upd) : QAPlot("", upd) {};
 
   QAPlot::~QAPlot() {
     if (fReport) delete fReport;
@@ -173,7 +173,7 @@ namespace Hal {
     return rep;
   }
 
-  Int_t QAPlot::AddTH1(TString name, const QAPlotAxis& x, TString flag = "") {
+  Int_t QAPlot::AddTH1(TString name, const QAPlotAxis& x, TString flag) {
     Int_t old_size = fSettings[0].size();
     fSettings[0].push_back(QAHistoSettings(1));
     fSettings[0][old_size].SetName(name);
@@ -184,7 +184,7 @@ namespace Hal {
     return old_size;
   }
 
-  Int_t QAPlot::AddTH2(TString name, const QAPlotAxis& x, const QAPlotAxis& y, TString flag = "") {
+  Int_t QAPlot::AddTH2(TString name, const QAPlotAxis& x, const QAPlotAxis& y, TString flag) {
     Int_t old_size = fSettings[1].size();
     fSettings[1].push_back(QAHistoSettings(2));
     fSettings[1][old_size].SetName(name);
@@ -197,7 +197,7 @@ namespace Hal {
     return old_size;
   }
 
-  Int_t QAPlot::AddTH3(TString name, const QAPlotAxis& x, const QAPlotAxis& y, const QAPlotAxis& z, TString flag = "") {
+  Int_t QAPlot::AddTH3(TString name, const QAPlotAxis& x, const QAPlotAxis& y, const QAPlotAxis& z, TString flag) {
     Int_t old_size = fSettings[2].size();
     fSettings[2].push_back(QAHistoSettings(3));
     fSettings[2][old_size].SetName(name);

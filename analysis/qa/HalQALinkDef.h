@@ -15,6 +15,7 @@
 
 #pragma link C++ class Hal::QAPlot + ;
 #pragma link C++ class Hal::QAPlotReport + ;
+#pragma link C++ class Hal::QAPlotAxis + ;
 
 #pragma link C++ class Hal::QAEventTask + ;
 #pragma link C++ class Hal::QATrackTask + ;

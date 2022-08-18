@@ -34,6 +34,7 @@ set(SRCS
    QATrackTask.cxx
    QAHistoSettings.cxx
    QAManager.cxx
+   QAPlotAxis.cxx
 )
 
 Set(HEADERS )

@@ -28,6 +28,7 @@
 namespace Hal {
   class Track;
   class Event;
+  class QAPlotAxis;
 
   class QAPlot : public TNamed {
     ECutUpdate fUpdate;
@@ -109,161 +110,36 @@ namespace Hal {
     /**
      *
      * @param name name of  QA
-     * @param oneDimHist number of 1d histograms
-     * @param twoDimHist number of 2d histograms
-     * @param threeDimHist number of 3d histograms
      */
-    QAPlot(TString name, Int_t oneDimHist, Int_t twoDimHist, Int_t threeDimHist, ECutUpdate upd);
+    QAPlot(TString name, ECutUpdate upd);
     /**
-     * adds TH1 histogram
-     * @param name
-     * @param flagIDx - ID of variable filled on x-axis, set negative to define histogram as "customized"
-     * @param flag flag that define operations on QA plots e.g.:
-     * 0/1 mean this histogram is equal to histo[0]/histo[1]
-     * @return number of created histogram
+     * Add TH1 histogram
+     * @param name name and title  of histogram
+     * @param x
      */
-    Int_t AddTH1(TString name, Int_t flagIDx, TString flag = "");
+    Int_t AddTH1(TString name, const QAPlotAxis& x, TString flag = "");
     /**
-     * adds TH2 histogram
-     * @param name
-     * @param flag flag that define operations on QA plots e.g.:
-     * 0/1 mean this histogram is equal to histo[0]/histo[1]
-     * @param flagIDx - ID of variable filled on x-axis, set negative to define histogram as "customized"
-     * @param flagIDy - ID of variable filled on y-axis, set negative to define histogram as "customized"
-     * @return number of created histogram
+     * Add TH2 histogram
+     * @param name name and title  of histogram
+     * @param x
+     * @param y
+     * @param flag
      */
-    Int_t AddTH2(TString name, Int_t flagIDx, Int_t flagIDy, TString flag = "");
+    Int_t AddTH2(TString name, const QAPlotAxis& x, const QAPlotAxis& y, TString flag = "");
     /**
-     * adds TH3 histogram
-     * @param name
-     * @param flag flag that define operations on QA plots e.g.:
-     * 0/1 mean this histogram is equal to histo[0]/histo[1]
-     * @param flagIDx - ID of variable filled on x-axis, set negative to define histogram as "customized"
-     * @param flagIDy - ID of variable filled on y-axis, set negative to define histogram as "customized"
-     * @param flagIDz - ID of variable filled onz-axis, set negative to define histogram as "customized"
-     * @return number of created histogram
+     * Add TH3 histogram
+     * @param name name and title  of histogram
+     * @param x
+     * @param y
+     * @param z
+     * @param flag
      */
-    Int_t AddTH3(TString name, Int_t flagIDx, Int_t flagIDy, Int_t flagIDz, TString flag = "");
-    /**
-     * adds TH1 histogram
-     * @param name
-     * @param flagIDx - ID of variable filled on x-axis, set negative to define histogram as "customized"
-     * @param flag flag that define operations on QA plots e.g.:
-     * 0/1 mean this histogram is equal to histo[0]/histo[1]
-     *    * @param nBinsX - number of bins in X-axis
-     * @param minX - minimum on X-axis
-     * @param maxX - maximum on X-axis
-     * @return number of created histogram
-     */
-    Int_t AddTH1(TString name, Int_t flagIDx, Int_t nbinsX, Double_t min, Double_t max, TString flag = "");
-    /**
-     * adds TH2 histogram
-     * @param name
-     * @param flag flag that define operations on QA plots e.g.:
-     * 0/1 mean this histogram is equal to histo[0]/histo[1]
-     * @param flagIDx - ID of variable filled on x-axis, set negative to define histogram as "customized"
-     * @param flagIDy - ID of variable filled on y-axis, set negative to define histogram as "customized"
-     *    * @param nBinsX - number of bins in X-axis
-     * @param minX - minimum on X-axis
-     * @param maxX - maximum on X-axis
-     * @param nBinsY - number of bins in Y-axis
-     * @param minY - minimum on Y-axis
-     * @param maxY - maximum on Y-axis
-     * @return number of created histogram
-     */
-    Int_t AddTH2(TString name,
-                 Int_t flagIDx,
-                 Int_t flagIDy,
-                 Int_t nbinsX,
-                 Double_t minX,
-                 Double_t maxX,
-                 Int_t nbinsY,
-                 Double_t minY,
-                 Double_t maxY,
-                 TString flag = "");
-    /**
-     * adds TH3 histogram
-     * @param name
-     * @param flag flag that define operations on QA plots e.g.:
-     * 0/1 mean this histogram is equal to histo[0]/histo[1]
-     * @param flagIDx - ID of variable filled on x-axis, set negative to define histogram as "customized"
-     * @param flagIDy - ID of variable filled on y-axis, set negative to define histogram as "customized"
-     * @param flagIDz - ID of variable filled onz-axis, set negative to define histogram as "customized"
-     * @param nBinsX - number of bins in X-axis
-     * @param minX - minimum on X-axis
-     * @param maxX - maximum on X-axis
-     * @param nBinsY - number of bins in Y-axis
-     * @param minY - minimum on Y-axis
-     * @param maxY - maximum on Y-axis
-     * @param nBinsZ - number of bins in Z-axis
-     * @param minZ- minimum on Z-axis
-     * @param maxZ - maximum on Z-axis
-     * @return number of created histogram
-     */
-    Int_t AddTH3(TString name,
-                 Int_t flagIDx,
-                 Int_t flagIDy,
-                 Int_t flagIDz,
-                 Int_t nbinsX,
-                 Double_t minX,
-                 Double_t maxX,
-                 Int_t nbinsY,
-                 Double_t minY,
-                 Double_t maxY,
-                 Int_t nbinsZ,
-                 Double_t minZ,
-                 Double_t maxZ,
-                 TString flag = "");
-
-
+    Int_t AddTH3(TString name, const QAPlotAxis& x, const QAPlotAxis& y, const QAPlotAxis& z, TString flag = "");
     /**
      * makes copy of this class
      * @return
      */
     virtual QAPlot* MakeCopy() const { return (QAPlot*) this->Clone(); };
-    /**
-     * configure axies of 1D histogram
-     * @param no
-     * @param nbinsX
-     * @param minX
-     * @param maxX
-     */
-    void SetAxis1D(Int_t no, Int_t nbinsX, Double_t minX, Double_t maxX);
-    /**
-     * configure axes of 2D histogram
-     * @param no
-     * @param nbinsX
-     * @param minX
-     * @param maxX
-     * @param nbinsY
-     * @param minY
-     * @param maxY
-     */
-    void SetAxis2D(Int_t no, Int_t nbinsX, Double_t minX, Double_t maxX, Int_t nbinsY, Double_t minY, Double_t maxY);
-    /**
-     * configure axes of 3D histogram
-     * @param no
-     * @param nbinsX
-     * @param minX
-     * @param maxX
-     * @param nbinsY
-     * @param minY
-     * @param maxY
-     * @param nbinsZ
-     * @param minZ
-     * @param maxZ
-     */
-    void SetAxis3D(Int_t no,
-                   Int_t nbinsX,
-                   Double_t minX,
-                   Double_t maxX,
-                   Int_t nbinsY,
-                   Double_t minY,
-                   Double_t maxY,
-                   Int_t nbinsZ,
-                   Double_t minZ,
-                   Double_t maxZ);
-
     /**
      * init QA plot, if used in task then task id should be provided
      * @param id_task

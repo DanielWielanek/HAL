@@ -15,6 +15,7 @@
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "HistogramManager.h"
+#include "QAPlotAxis.h"
 #include "StdHist.h"
 #include "Track.h"
 
@@ -41,40 +42,7 @@ namespace Hal {
     }
   }
 
-  QAPlot::QAPlot(TString name, Int_t oneDimHist, Int_t twoDimHist, Int_t threeDimHist, ECutUpdate upd) :
-    fUpdate(upd), fReport(nullptr) {
-    SetName(name);
-    fSettings[0].resize(oneDimHist, QAHistoSettings(1));
-    fSettings[1].resize(twoDimHist, QAHistoSettings(2));
-    fSettings[2].resize(threeDimHist, QAHistoSettings(3));
-  }
-
-  void QAPlot::SetAxis1D(Int_t no, Int_t nbinsX, Double_t minX, Double_t maxX) {
-    if (no >= (int) fSettings[0].size()) return;
-    fSettings[0][no].SetXaxis(nbinsX, minX, maxX);
-  }
-
-  void QAPlot::SetAxis2D(Int_t no, Int_t nbinsX, Double_t minX, Double_t maxX, Int_t nbinsY, Double_t minY, Double_t maxY) {
-    if (no >= (int) fSettings[1].size()) return;
-    fSettings[1][no].SetXaxis(nbinsX, minX, maxX);
-    fSettings[1][no].SetYaxis(nbinsY, minY, maxY);
-  }
-
-  void QAPlot::SetAxis3D(Int_t no,
-                         Int_t nbinsX,
-                         Double_t minX,
-                         Double_t maxX,
-                         Int_t nbinsY,
-                         Double_t minY,
-                         Double_t maxY,
-                         Int_t nbinsZ,
-                         Double_t minZ,
-                         Double_t maxZ) {
-    if (no >= (int) fSettings[2].size()) return;
-    fSettings[2][no].SetXaxis(nbinsX, minX, maxX);
-    fSettings[2][no].SetYaxis(nbinsY, minY, maxY);
-    fSettings[2][no].SetZaxis(nbinsZ, minZ, maxZ);
-  }
+  QAPlot::QAPlot(TString name, ECutUpdate upd) : fUpdate(upd), fReport(nullptr) { SetName(name); }
 
   Bool_t QAPlot::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
@@ -205,36 +173,42 @@ namespace Hal {
     return rep;
   }
 
-  Int_t QAPlot::AddTH1(TString name, Int_t flagIDx, TString flag) {
+  Int_t QAPlot::AddTH1(TString name, const QAPlotAxis& x, TString flag = "") {
     Int_t old_size = fSettings[0].size();
     fSettings[0].push_back(QAHistoSettings(1));
     fSettings[0][old_size].SetName(name);
     fSettings[0][old_size].SetTitle(name);
     fSettings[0][old_size].SetFlag(flag);
-    fSettings[0][old_size].SetFillFlagX(flagIDx);
+    fSettings[0][old_size].SetFillFlagX(x.GetFlag());
+    fSettings[0][old_size].SetXaxis(x.GetNBins(), x.GetMin(), x.GetMax());
     return old_size;
   }
 
-  Int_t QAPlot::AddTH2(TString name, Int_t flagIDx, Int_t flagIDy, TString flag) {
+  Int_t QAPlot::AddTH2(TString name, const QAPlotAxis& x, const QAPlotAxis& y, TString flag = "") {
     Int_t old_size = fSettings[1].size();
     fSettings[1].push_back(QAHistoSettings(2));
     fSettings[1][old_size].SetName(name);
     fSettings[1][old_size].SetTitle(name);
     fSettings[1][old_size].SetFlag(flag);
-    fSettings[1][old_size].SetFillFlagX(flagIDx);
-    fSettings[1][old_size].SetFillFlagY(flagIDy);
+    fSettings[1][old_size].SetFillFlagX(x.GetFlag());
+    fSettings[1][old_size].SetFillFlagY(y.GetFlag());
+    fSettings[1][old_size].SetXaxis(x.GetNBins(), x.GetMin(), x.GetMax());
+    fSettings[1][old_size].SetYaxis(y.GetNBins(), y.GetMin(), y.GetMax());
     return old_size;
   }
 
-  Int_t QAPlot::AddTH3(TString name, Int_t flagIDx, Int_t flagIDy, Int_t flagIDz, TString flag) {
+  Int_t QAPlot::AddTH3(TString name, const QAPlotAxis& x, const QAPlotAxis& y, const QAPlotAxis& z, TString flag = "") {
     Int_t old_size = fSettings[2].size();
     fSettings[2].push_back(QAHistoSettings(3));
     fSettings[2][old_size].SetName(name);
     fSettings[2][old_size].SetTitle(name);
     fSettings[2][old_size].SetFlag(flag);
-    fSettings[2][old_size].SetFillFlagX(flagIDx);
-    fSettings[2][old_size].SetFillFlagY(flagIDy);
-    fSettings[2][old_size].SetFillFlagZ(flagIDz);
+    fSettings[2][old_size].SetFillFlagX(x.GetFlag());
+    fSettings[2][old_size].SetFillFlagY(y.GetFlag());
+    fSettings[2][old_size].SetFillFlagZ(z.GetFlag());
+    fSettings[2][old_size].SetXaxis(x.GetNBins(), x.GetMin(), x.GetMax());
+    fSettings[2][old_size].SetYaxis(y.GetNBins(), y.GetMin(), y.GetMax());
+    fSettings[2][old_size].SetZaxis(z.GetNBins(), z.GetMin(), z.GetMax());
     return old_size;
   }
 
@@ -298,43 +272,4 @@ namespace Hal {
     }
   }
 
-  Int_t QAPlot::AddTH1(TString name, Int_t flagIDx, Int_t nbinsX, Double_t min, Double_t max, TString flag) {
-    Int_t no = AddTH1(name, flagIDx, flag);
-    SetAxis1D(no, nbinsX, min, max);
-    return no;
-  }
-
-  Int_t QAPlot::AddTH2(TString name,
-                       Int_t flagIDx,
-                       Int_t flagIDy,
-                       Int_t nbinsX,
-                       Double_t minX,
-                       Double_t maxX,
-                       Int_t nbinsY,
-                       Double_t minY,
-                       Double_t maxY,
-                       TString flag) {
-    Int_t no = AddTH2(name, flagIDx, flagIDy, flag);
-    SetAxis2D(no, nbinsX, minX, maxX, nbinsY, minY, maxY);
-    return no;
-  }
-
-  Int_t QAPlot::AddTH3(TString name,
-                       Int_t flagIDx,
-                       Int_t flagIDy,
-                       Int_t flagIDz,
-                       Int_t nbinsX,
-                       Double_t minX,
-                       Double_t maxX,
-                       Int_t nbinsY,
-                       Double_t minY,
-                       Double_t maxY,
-                       Int_t nbinsZ,
-                       Double_t minZ,
-                       Double_t maxZ,
-                       TString flag) {
-    Int_t no = AddTH3(name, flagIDx, flagIDy, flagIDz, flag);
-    SetAxis3D(no, nbinsX, minX, maxX, nbinsY, minY, maxY, nbinsZ, minZ, maxZ);
-    return no;
-  }
 }  // namespace Hal

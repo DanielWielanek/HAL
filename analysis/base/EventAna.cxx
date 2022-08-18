@@ -372,6 +372,7 @@ namespace Hal {
         Cout::PrintInfo(Form("Format %s found and will be used for task %s", temp_format->GetFormatName().Data(), ClassName()),
                         EInfo::kDebugInfo);
 #endif
+        Cout::PrintInfo("L1 format autosupported has been found", EInfo::kInfo);
         SetFormat(temp_format);
         fDirectAcces = kTRUE;
         return Task::EInitFlag::kSUCCESS;

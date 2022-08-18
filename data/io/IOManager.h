@@ -121,7 +121,7 @@ namespace Hal {
      * @param BrName
      * @return
      */
-    TObject* GetObject(const char* BrName);
+    virtual TObject* GetObject(const char* BrName);
     /**
      * return pointer to input root file
      * @return

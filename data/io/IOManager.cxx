@@ -120,6 +120,8 @@ namespace Hal {
   void IOManager::PrintInfo() {
     Cout::PrintInfo(Form("IO Manager %s", ClassName()), EInfo::kInfo);
     if (GetInFile()) { Cout::PrintInfo(Form("Input file %s", GetInFile()->GetName()), EInfo::kInfo); }
+    UpdateBranches();
+    RefreshBranchList();
     Cout::Database(2, "Branch Name", "Type");
     for (auto branch : fInBranches) {
       Cout::Database(2, branch.first.Data(), "INPUT");

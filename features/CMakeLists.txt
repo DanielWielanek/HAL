@@ -82,6 +82,11 @@ Install(DIRECTORY hal_plus
         PATTERN ".svn" EXCLUDE
        )
 
+Set(HDRS "")
+CHANGE_FILE_EXTENSION(*.cxx *.h HDRS "${SRCS}")
+Install(FILES ${HDRS}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Hal/
+)
 #making executables
 
 

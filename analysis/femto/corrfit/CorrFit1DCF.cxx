@@ -33,6 +33,8 @@
 #include "StdHist.h"
 #include "StdString.h"
 
+#include <iostream>
+
 namespace Hal {
   const Int_t CorrFit1DCF::fgRinv   = 0;
   const Int_t CorrFit1DCF::fgLambda = 1;

@@ -66,6 +66,10 @@ Set(HEADERS )
 Set(LINKDEF HalDataLinkDef.h)
 Set(LIBRARY_NAME HalData)
 Set(DEPENDENCIES HalFeatures)
-
+Set(HDRS "")
+CHANGE_FILE_EXTENSION(*.cxx *.h HDRS "${SRCS}")
+Install(FILES ${HDRS}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/include/Hal/
+)
 GENERATE_LIBRARY()
 

@@ -295,7 +295,7 @@ Macro(GENERATE_LIBRARY)
     CHECK_HEADERS("${Int_SRCS}" "${_INCLUDE_DIRS}" ${HeaderRuleName})
   EndIf(IWYU_FOUND)
 
-  install(FILES ${HDRS} DESTINATION include)
+  install(FILES ${HDRS} DESTINATION include/Hal)
 
   If(LINKDEF)
     If( IS_ABSOLUTE ${LINKDEF})

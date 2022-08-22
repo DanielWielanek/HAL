@@ -187,18 +187,6 @@ namespace Hal {
     return f;
   }
 
-  void CorrFit1DCF::ReadParametersName() {
-    switch (fKinematics) {
-      case Femto::EKinematics::kLCMS:
-        if (GetParameterName(Radius()) == "R") SetParameterName(Radius(), "R_{inv}");
-        break;
-      case Femto::EKinematics::kPRF:
-        if (GetParameterName(Radius()) == "R") SetParameterName(Radius(), "R*");
-        break;
-      default: break;
-    }
-  }
-
   Double_t CorrFit1DCF::GetFunDrawable(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
     return EvalCF(x, params);

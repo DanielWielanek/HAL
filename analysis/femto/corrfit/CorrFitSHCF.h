@@ -78,7 +78,6 @@ namespace Hal {
     double GetChiTFD(const double* /*par*/) const { return 0; };
     double GetChiTF(const double* par) const;
     double GetLogTFD(const double* /*par*/) const { return 0; };
-    void ReadParametersName();
     TF1* GetFittingFunction(Option_t* opt) const;
     TF1* GetFittingFunction(Int_t el, Int_t em, Bool_t re = kTRUE) const;
     Double_t GetFun(Double_t* x, Double_t* params) const;

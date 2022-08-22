@@ -104,7 +104,6 @@ namespace Hal {
     double GetChiTFD(const double* par) const;
     double GetChiTF(const double* par) const;
     double GetLogTFD(const double* par) const;
-    void ReadParametersName();
     /**
      * return evaluated value of denominator at point x,y,z
      * @param x out momentum difference

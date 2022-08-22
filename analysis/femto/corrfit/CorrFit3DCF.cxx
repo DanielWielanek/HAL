@@ -269,21 +269,6 @@ namespace Hal {
     }
   }
 
-  void CorrFit3DCF::ReadParametersName() {
-    switch (fKinematics) {
-      case Femto::EKinematics::kLCMS:
-        // do noting
-        break;
-      case Femto::EKinematics::kPRF:
-        // TODO Improve this replacement
-        if (fParameters[Rout()].GetParName().EqualTo("R_{out}")) SetParameterName(Rout(), "R*_{out}");
-        if (fParameters[Rside()].GetParName().EqualTo("R_{side}")) SetParameterName(Rside(), "R*_{side}");
-        if (fParameters[Rlong()].GetParName().EqualTo("R_{long}")) SetParameterName(Rlong(), "R*_{long}");
-        break;
-      default: break;
-    }
-  }
-
   double CorrFit3DCF::GetChiTFD(const double* /*par*/) const {
     Double_t f = 0.0;
     Double_t A, B, C;

@@ -109,10 +109,6 @@ namespace Hal {
      */
     void ChangeParametersNo();
     /**
-     * set name of parameters if they depend on used frame
-     */
-    virtual void ReadParametersName() = 0;
-    /**
      * used to recalculate parameters
      */
     virtual void ParametersChanged() const {};

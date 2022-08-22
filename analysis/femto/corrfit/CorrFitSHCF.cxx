@@ -182,22 +182,6 @@ namespace Hal {
     }
     return chi;
   }
-
-  void CorrFitSHCF::ReadParametersName() {
-    switch (fKinematics) {
-      case Femto::EKinematics::kLCMS:
-        // do noting
-        break;
-      case Femto::EKinematics::kPRF:
-        // TODO Improve this replacement
-        if (fParameters[Rout()].GetParName().EqualTo("R_{out}")) SetParameterName(Rout(), "R*_{out}");
-        if (fParameters[Rside()].GetParName().EqualTo("R_{side}")) SetParameterName(Rside(), "R*_{side}");
-        if (fParameters[Rlong()].GetParName().EqualTo("R_{long}")) SetParameterName(Rlong(), "R*_{long}");
-        break;
-      default: break;
-    }
-  }
-
   TF1* CorrFitSHCF::GetFittingFunction(Option_t* /*opt*/) const {
     return new TF1(
       "funcFitted", this, &CorrFitSHCF::GetFun, fRange.Get(0), fRange.Get(1), GetParametersNo() + 3, this->ClassName(), "GetFun");

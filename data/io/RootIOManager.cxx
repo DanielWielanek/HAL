@@ -77,7 +77,12 @@ namespace Hal {
     if (fOutFile) delete fOutFile;
   }
 
-  TFile* RootIOManager::GetInFile() { return fInFile[0]; }
+  TFile* RootIOManager::GetInFile() {
+    if (fInFile.size() > 0)
+      return fInFile[0];
+    else
+      return nullptr;
+  }
 
   void RootIOManager::UpdateBranches() {}
 

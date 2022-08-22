@@ -351,7 +351,11 @@ namespace Hal {
 
   Task::EInitFlag EventAna::CheckFormat() {
     DataFormatManager* formatManager = DataFormatManager::Instance();
-    SetInputFileName(DataManager::Instance()->GetInFile()->GetName());
+    if (DataManager::Instance()->GetInFile()) {
+      SetInputFileName(DataManager::Instance()->GetInFile()->GetName());
+    } else {
+      Cout::PrintInfo("Cannot find name of input file", EInfo::kLowWarning);
+    }
 #ifdef HAL_DEBUG
     Cout::PrintInfo(Form("Initialization format of task with ID = %i", GetTaskID()), EInfo::kDebugInfo);
 #endif

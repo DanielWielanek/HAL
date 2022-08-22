@@ -70,14 +70,14 @@ namespace Hal {
     TVector3 Bin1dToBin3d(Int_t nbinsX, Int_t nBinsY, Int_t bin, Bool_t root_number = kTRUE);
     /**
      * round given value to the closest step
-     * @param points number of points
+     * @param areas number of areas
      * @param min lower edge of values
      * @param max higher edge of values
      * @param val value to round
-     * @param type '=' round to the neares, '+' round to the upper edge , '-' round to the lower value in range
+     * @param type '=' round to the nearest, '+' round to the upper edge , '-' round to the lower value in range
      * @return rounded value
      */
-    Double_t Discretize(Int_t points, Double_t min, Double_t max, Double_t val, Char_t type);
+    Double_t Discretize(Int_t areas, Double_t min, Double_t max, Double_t val, Char_t type);
     /**
      * return statistical uncertaindy of x operator y as
      * @param operator + - / or *

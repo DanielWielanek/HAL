@@ -80,9 +80,13 @@ namespace Hal {
       }
     }
 
-    Double_t Discretize(Int_t points, Double_t min, Double_t max, Double_t val, Char_t type) {
-      Double_t step_size = (max - min) / ((Double_t) points - 1.0);
+    Double_t Discretize(Int_t areas, Double_t min, Double_t max, Double_t val, Char_t type) {
+      Double_t step_size = (max - min) / ((Double_t) areas);
       Double_t step      = (val - min) / step_size;
+      if (areas <= 1) {
+        step      = 0;
+        step_size = 0;
+      }
       switch (type) {
         case '+': {
           step = TMath::Ceil(step);

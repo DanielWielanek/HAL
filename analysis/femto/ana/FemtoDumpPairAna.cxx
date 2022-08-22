@@ -90,10 +90,10 @@ namespace Hal {
     if (stat == Task::EInitFlag::kFATAL) return stat;
     DataManager* mngr = DataManager::Instance();
     fSignalPairs      = new TClonesArray("Hal::FemtoMicroPair", 1000);
-    mngr->Register("FemtoSignal", "FemtoPairs", fSignalPairs, kTRUE);
+    mngr->Register("FemtoSignal.", "FemtoPairs", fSignalPairs, kTRUE);
     if (fWriteBackground) {
       fBackgroundPairs = new TClonesArray("Hal::FemtoMicroPair", 1000);
-      mngr->Register("FemtoBackground", "FemtoPairs", fBackgroundPairs, kTRUE);
+      mngr->Register("FemtoBackground.", "FemtoPairs", fBackgroundPairs, kTRUE);
     } else {
       if (IdenticalParticles())
         fBackgroundMode = kNoBackgroundID;

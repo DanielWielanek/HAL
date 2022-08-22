@@ -201,8 +201,8 @@ namespace Hal {
       }
     }
     if (fTree == nullptr) return kFALSE;
-    TBranch* branchSignal      = fTree->GetBranch("FemtoSignal");
-    TBranch* branchBackkground = fTree->GetBranch("FemtoBackground");
+    TBranch* branchSignal      = fTree->GetBranch("FemtoSignal.");
+    TBranch* branchBackkground = fTree->GetBranch("FemtoBackground.");
     switch (fMode) {
       case eDumpCalcMode::kSignalPairs: {
         fPairsSignal = new TClonesArray("Hal::FemtoMicroPair");

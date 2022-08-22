@@ -72,7 +72,7 @@ namespace Hal {
     for (float i = 0; i < fBins + 1; i++)
       fRanges[((int) i)] = fMin + step * i;
 
-    fTree->Branch("FemtoSignal", &fArray);
+    fTree->Branch("FemtoSignal.", &fArray);
     TDatabasePDG* pid = TDatabasePDG::Instance();
     TParticlePDG* p1  = pid->GetParticle(fPid1);
     TParticlePDG* p2  = pid->GetParticle(fPid2);

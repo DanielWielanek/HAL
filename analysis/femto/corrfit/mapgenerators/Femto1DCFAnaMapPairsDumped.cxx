@@ -80,11 +80,11 @@ namespace Hal {
       }
     }
     if (fTree == nullptr) return kFALSE;
-    TBranch* br  = fTree->GetBranch("FemtoSignal");
+    TBranch* br  = fTree->GetBranch("FemtoSignal.");
     fPairsSignal = new TClonesArray("Hal::FemtoMiniPair");
     br->SetAddress(&fPairsSignal);
     if (fUseBackground) {
-      br               = fTree->GetBranch("FemtoBackground");
+      br               = fTree->GetBranch("FemtoBackground.");
       fPairsBackground = new TClonesArray("Hal::FemtoMiniPair");
       br->SetAddress(&fPairsBackground);
     }

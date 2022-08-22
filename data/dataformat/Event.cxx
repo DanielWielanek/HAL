@@ -138,7 +138,7 @@ namespace Hal {
 
   void Event::Register(Bool_t write) {
     DataManager* ioManager = DataManager::Instance();
-    ioManager->Register(this->ClassName(), "", this, write);
+    ioManager->Register(Form("%s.", this->ClassName()), "HalEvents", this, write);
   }
 
   void Event::Boost(Double_t vx, Double_t vy, Double_t vz) {

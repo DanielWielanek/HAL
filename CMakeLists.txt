@@ -12,8 +12,7 @@ if(NOT DEFINED CMAKE_CXX_STANDARD)
     Set(CMAKE_CXX_STANDARD 17)
 endif()
 
-
-if (DEFINED ENV{SIMPATH} AND NOT DEFINED FORCE_VANILIA)
+if (DEFINED ENV{SIMPATH})
     include(cmake/modules/CMakeFairRoot.cmake)
   else()
     include(cmake/modules/CMakeListsExternal.cmake)

@@ -29,15 +29,18 @@ namespace Hal {
   void FitParam::Init() {
     if (IsDiscrete()) {
       fValues.clear();
-      if (fDParam == 0) fDParam = (fMapMax - fMapMin) / (fNPoint - 1.);
-      if (fNPoint == 0) fNPoint = (fMapMax - fMapMin) / fDParam + 1;
-      fMin   = Hal::Std::Discretize(fNPoint, fMapMin, fMapMax, fMin, '-');
-      fMax   = Hal::Std::Discretize(fNPoint, fMapMin, fMapMax, fMax, '+');
-      fStart = Hal::Std::Discretize(fNPoint, fMapMin, fMapMax, fStart, '=');
-      for (double i = fMapMin; i <= fMapMax; i += fDParam) {
-        fValues.push_back(i);
+      if (fNPoint == 0) {
+        std::cout << " cannot have npoint = 0" << std::endl;
+        exit(0);
       }
       if (IsFixed()) { fMin = fMax; }
+      fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
+      fMin   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMin, '-');  // npoint -1 because we have n-1 areas than points
+      fMax   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMax, '+');
+      fStart = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fStart, '=');
+      for (double i = fMin; i <= fMax; i += fDParam) {
+        fValues.push_back(i);
+      }
     } else {
       fDParam = 0.01;
       fValues.clear();
@@ -63,10 +66,7 @@ namespace Hal {
   }
 
   void FitParam::SetMapRange(Double_t min, Double_t max, Int_t points) {
-    if (points <= 1)
-      SetIsFixed(kTRUE);
-    else
-      SetIsFixed(kFALSE);
+    if (points <= 1) SetIsFixed(kTRUE);  // to not go into some infinite loops
     if (min > max) {
       Double_t temp = max;
       max           = min;

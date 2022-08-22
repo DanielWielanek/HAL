@@ -11,6 +11,7 @@
 #include "FitParam.h"
 
 #include "Array.h"
+#include "MinimizerStepConf.h"
 
 #include "Math/Minimizer.h"
 
@@ -62,7 +63,7 @@ namespace Hal {
   private:
     static Minimizer* fgInstance;
     std::vector<FitParam> fParameters;  //!
-    std::vector<Double_t> fParamsMin;      // found minimum
+    std::vector<Double_t> fParamsMin;   // found minimum
     std::vector<Int_t> fNonConstMap;
 
     ROOT::Math::IMultiGenFunction* fFunc;
@@ -141,6 +142,7 @@ namespace Hal {
     virtual bool SetVariableLimits(unsigned int ivar, double lower, double upper);
     virtual bool Minimize();
     virtual void Reset();
+    virtual void SetParamConf(const MinimizerStepConf& conf);
     virtual double MinValue() const { return 0; };
     virtual const double* X() const;
     virtual const double* Errors() const { return fErrors; }

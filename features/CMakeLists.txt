@@ -62,6 +62,7 @@ std/StdMath.cxx
 
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx
+minimizer/MinimizerStepConf.cxx
 )
 install(FILES ${EXT_HEADERS}
         DESTINATION include

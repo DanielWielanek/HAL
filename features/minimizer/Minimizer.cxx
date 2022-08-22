@@ -40,6 +40,7 @@ namespace Hal {
     if (fParameters.size() <= ivar) { fParameters.resize(ivar + 1); }
     fParameters[ivar].SetParName(name);
     fParameters[ivar].SetRange(val, val);
+    fParameters[ivar].SetIsFixed(kTRUE);
     return true;
   }
 
@@ -52,6 +53,7 @@ namespace Hal {
     }
     if (fParameters.size() <= ivar) { fParameters.resize(ivar + 1); }
     fParameters[ivar].SetRange(lower, upper);
+    fParameters[ivar].SetIsFixed(kFALSE);
     return true;
   }
 
@@ -61,10 +63,7 @@ namespace Hal {
     fParameters[ivar].SetParName(name);
     fParameters[ivar].SetRange(lower, upper);
     fParameters[ivar].SetMapRange(lower, upper, (upper - lower) / step + 1);
-
-    std::cout << "***" << name << " " << val << " " << step << " " << lower << " " << upper << "x" << (upper - lower) / step + 1
-              << std::endl;
-    std::cout << "MAP STEP " << fParameters[ivar].GetNPoints() << " " << step << std::endl;
+    fParameters[ivar].SetIsFixed(kFALSE);
     return false;
   }
 
@@ -79,8 +78,8 @@ namespace Hal {
     }
     auto lambda = [](Int_t a, Int_t b) -> bool { return a < b; };
     std::sort(fNonConstMap.begin(), fNonConstMap.end(), lambda);
-
-    Cout::Database(6, "ParName", "MinMap", "MaxMap", "Steps", "Min", "Max");
+    Cout::PrintInfo("BEFOR INIT ", EInfo::kLowWarning);
+    Cout::Database(6, "ParName", "MinMap", "MaxMap", "Points", "Min", "Max");
     for (unsigned int i = 0; i < fParameters.size(); i++) {
       if (fParameters[i].IsFixed()) {
         Cout::Database(2, fParameters[i].GetParName().Data(), Form("%4.4f", fParameters[i].GetStartVal()));
@@ -99,9 +98,10 @@ namespace Hal {
     for (unsigned int i = 0; i < fParameters.size(); i++) {
       fParameters[i].SetIsDiscrete(kTRUE);  // all parameters must be discrete
       fParameters[i].Init();
-      fParameters[i].Print();
+      // fParameters[i].Print();
     }
-    Cout::Database(6, "ParName", "MinMap", "MaxMap", "Steps", "Min", "Max");
+    Cout::PrintInfo("AFTER INIT ", EInfo::kLowWarning);
+    Cout::Database(6, "ParName", "MinMap", "MaxMap", "Points", "Min", "Max");
     for (unsigned int i = 0; i < fParameters.size(); i++) {
       if (fParameters[i].IsFixed()) {
         Cout::Database(2, fParameters[i].GetParName().Data(), Form("%4.4f", fParameters[i].GetStartVal()));
@@ -167,6 +167,8 @@ namespace Hal {
   void Minimizer::SetFunction(const ROOT::Math::IMultiGenFunction& func) {
     fFunc = const_cast<ROOT::Math::IMultiGenFunction*>(&func);
   }
+
+  void Minimizer::SetParamConf(const MinimizerStepConf& conf) { conf.SetParameters(fParameters); }
 
   Minimizer::~Minimizer() {
     if (fQuantumFits) {
@@ -250,7 +252,7 @@ namespace Hal {
     Double_t min_Fit = -b / (2.0 * a);
 
 
-    std::cout << " pAR " << x1 << " " << x2 << " " << x3 << " " << y1 << " " << y2 << " " << y3 << " " << a << std::endl;
+    //   std::cout << " pAR " << x1 << " " << x2 << " " << x3 << " " << y1 << " " << y2 << " " << y3 << " " << a << std::endl;
 
     quantumMin = fParamsMin[par];
     min        = min_Fit;

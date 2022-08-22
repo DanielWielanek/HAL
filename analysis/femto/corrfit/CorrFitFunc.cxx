@@ -95,7 +95,7 @@ namespace Hal {
     }
     Paint(kFALSE, kTRUE);
   };
-  void CorrFitFunc::SetDrawOption(CorrFitDrawOptions options) {
+  void CorrFitFunc::SetDrawOption(const CorrFitDrawOptions& options) {
     if (fDrawOptionSet || fDrawFunc.size() > 0) {
       std::cout << "Canot set CorrFitDrawOptions when function was set or draw options were set" << std::endl;
       return;
@@ -491,9 +491,10 @@ namespace Hal {
       } else {
         Double_t lower = GetParMin(i);
         Double_t upper = GetParMax(i);
-        min->SetLimitedVariable(i, name, 0.5 * (lower + upper), 1.0, lower, upper);
+        min->SetLimitedVariable(i, name, 0.5 * (lower + upper), (upper - lower), lower, upper);
       }
     }
+    min->SetParamConf(fDiscretteMinimzerConf);
   }
 
   void CorrFitFunc::Fit(TObject* histo) {
@@ -501,7 +502,6 @@ namespace Hal {
     // checking ranges &other stuff
     Check();
     // set par names depending on frame
-    ReadParametersName();
     // init params
     for (int i = 0; i < fParameters.size(); i++) {
       fParameters[i].Init();
@@ -516,7 +516,6 @@ namespace Hal {
     // checking ranges &other stuff
     Check();
     // set par names depending on frame
-    ReadParametersName();
     // init params
     for (int i = 0; i < fParameters.size(); i++) {
       fParameters[i].Init();

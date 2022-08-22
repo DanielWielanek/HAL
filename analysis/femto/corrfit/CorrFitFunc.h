@@ -15,6 +15,7 @@
 #include "Array.h"
 #include "CorrFitDrawOptions.h"
 #include "FemtoConst.h"
+#include "MinimizerStepConf.h"
 
 #include <Rtypes.h>
 #include <RtypesCore.h>
@@ -120,6 +121,8 @@ namespace Hal {
      * fitting mask
      */
     TH1* fMask;
+
+    MinimizerStepConf fDiscretteMinimzerConf;
     /**
      * extrapolated function
      */
@@ -255,7 +258,7 @@ namespace Hal {
      * set draw options
      * @param options
      */
-    void SetDrawOption(CorrFitDrawOptions options);
+    void SetDrawOption(const CorrFitDrawOptions& options);
     /**
      * draw this function
      * @param draw_option like for TF1 + optional "leg" to draw with legend, or
@@ -278,6 +281,11 @@ namespace Hal {
      * @param
      */
     void SetFittingMask(TH1* map);
+    /**
+     * set minimizer configuration (used only for fit with discrette parametrization and Hal::Minimizer
+     * @param conf
+     */
+    void SetMinimizerConf(const MinimizerStepConf& conf) { fDiscretteMinimzerConf = conf; };
     /**
      *
      * @return numbers of free parameters

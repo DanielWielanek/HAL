@@ -70,8 +70,7 @@ namespace Hal {
     void Calculatef(Double_t width);
 
   protected:
-    TVirtualPad* fTempPad = {nullptr};
-    Double_t fOldNorm     = {1};
+    Double_t fOldNorm = {1};
     /**
      * processed currednly binX, binY and binZ;
      */

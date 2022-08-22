@@ -94,6 +94,10 @@ namespace Hal {
      */
     TLegend* fLegend = {nullptr};
     /**
+     * pointer to pad with function
+     */
+    TVirtualPad* fTempPad = {nullptr};
+    /**
      * draw options
      */
     CorrFitDrawOptions fDrawOptions;

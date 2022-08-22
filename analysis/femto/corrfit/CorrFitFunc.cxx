@@ -33,6 +33,7 @@
 #include <TMath.h>
 #include <TMathBase.h>
 #include <TRegexp.h>
+#include <TVirtualPad.h>
 #include <iostream>
 #include <string>
 #include <vector>

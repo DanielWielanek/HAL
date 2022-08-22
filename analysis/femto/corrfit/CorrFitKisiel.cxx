@@ -165,8 +165,8 @@ namespace Hal {
       fOldNumErr->Draw("SAME+E2");
     }
     if (refresh) {
-      gPad->Modified(kTRUE);
-      gPad->Update();
+      fTempPad->Modified(kTRUE);
+      fTempPad->Update();
     }
   }
 

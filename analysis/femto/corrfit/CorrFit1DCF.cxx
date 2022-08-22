@@ -59,8 +59,9 @@ namespace Hal {
     if (repaint)
       if (gPad == nullptr) {
         TCanvas* c = new TCanvas();
-        c->cd();
+        fTempPad   = c->cd();
       }
+    if (fTempPad == nullptr) { fTempPad = gPad; }
     for (int i = 0; i < GetParametersNo(); i++) {
       fTempParamsEval[i] = GetParameter(i);
     }
@@ -70,7 +71,7 @@ namespace Hal {
     if (fDrawFunc.size() == 0) {
       fDrawFunc.resize(1);
       fDrawFunc[0].first  = GetFunctionForDrawing();
-      fDrawFunc[0].second = gPad;
+      fDrawFunc[0].second = fTempPad;
     }
     CopyParamsToTF1(GetTF1(0), kTRUE, kTRUE);
     if (fDrawOptions.DrawCf()) {
@@ -90,11 +91,14 @@ namespace Hal {
       GetTF1(0)->Draw("SAME");
     }
     UpdateLegend();
-    if (fLegend) fLegend->Draw("SAME");
+    if (fLegend) {
+      fTempPad->cd();
+      fLegend->Draw("SAME");
+    }
 
     if (refresh) {
-      gPad->Modified(kTRUE);
-      gPad->Update();
+      fTempPad->Modified(kTRUE);
+      fTempPad->Update();
     }
   }
 

@@ -178,8 +178,11 @@ namespace Hal {
     // TODO fFittedFunction->SetParameter(par,val);
     ParametersChanged();
     if (!repaint) Calculatef(0);
-    if (gPad == nullptr) new TCanvas();
-    fTempPad     = gPad;
+    if (gPad == nullptr) {
+      new TCanvas();
+      fTempPad = gPad;
+    }
+    if (fTempPad == nullptr) fTempPad = gPad;
     EDrawMode dm = EDrawMode::kNormal;
     Int_t padX = 0, padY = 0;
     Int_t legendPad = 0;

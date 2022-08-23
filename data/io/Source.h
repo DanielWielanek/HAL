@@ -30,7 +30,12 @@ namespace Hal {
      */
     Source(TString name = "");
     /**
-     * add friend file to analysis (friend file will be processed  together with other friends and this file
+     * add  file to analysis
+     * @param friendName
+     */
+    virtual void AddFile(TString /*friendName*/ = "") {};
+    /**
+     * add  file to analysis (friend file will be processed  together with other friends and this file
      * @param friendName
      */
     virtual void AddFriend(TString /*friendName*/ = "") {};
@@ -56,7 +61,8 @@ namespace Hal {
 
   public:
     RootSource(TString name = "");
-    virtual void AddFriend(TString friendName = "");
+    virtual void AddFile(TString fileName = "");
+    virtual void AddFriend(TString friendName = "", Int_t level = 0);
     IOManager* GetIOManager() const;
     virtual ~RootSource();
     ClassDef(RootSource, 1)

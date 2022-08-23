@@ -26,6 +26,7 @@ namespace Hal {
   class RootIOManager : public IOManager {
     Int_t fEntries;
     std::vector<TString> fInFileName;
+    std::vector<std::vector<TString>> fFriendName;
     TString fOutFileName;
     TString fOutTreeName;
     TFile* fOutFile;
@@ -35,6 +36,7 @@ namespace Hal {
     std::vector<TObject**> fObjects;
 
   protected:
+    TString GetChain(TFile* file) const;
     virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
     virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
 
@@ -70,7 +72,8 @@ namespace Hal {
      * @return
      */
     TFile* GetInFile();
-    void AddFriend(TString name) { fInFileName.push_back(name); };
+    void AddFile(TString name) { fInFileName.push_back(name); };
+    void AddFriend(TString friendName, Int_t level);
     void UpdateBranches();
     void SetInChain(TChain* tempChain, Int_t ident = -1);
     virtual ~RootIOManager();

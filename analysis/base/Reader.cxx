@@ -40,7 +40,7 @@ namespace Hal {
     fEvent->CreateSource();
     fEvent->LinkWithTree();
     DataManager* manager = DataManager::Instance();
-    manager->Register(fEvent->ClassName(), "HalEvents", fEvent, kFALSE);
+    manager->Register("HalEvent.", "HalEvents", fEvent, kFALSE);
     Cout::PrintInfo(Form("Register branch from reader called %s", fEvent->ClassName()), EInfo::kInfo);
     return Task::EInitFlag::kSUCCESS;
   }

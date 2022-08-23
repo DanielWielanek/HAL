@@ -147,6 +147,7 @@ namespace Hal {
       std::vector<TString> patterns;
       patterns.push_back(branchName);
       patterns.push_back(branchName + ".");
+      patterns.push_back("HalEvent.");  // find reader class
       for (auto name : patterns) {
         fCurrentEvent = (Event*) DataManager::Instance()->GetObject(name);
         if (fCurrentEvent) break;
@@ -206,6 +207,7 @@ namespace Hal {
       std::vector<TString> patterns;
       patterns.push_back(branchName);
       patterns.push_back(branchName + ".");
+      patterns.push_back("HalEvent.");  // find reader class
       for (auto name : patterns) {
         fCurrentEvent = (Event*) DataManager::Instance()->GetObject(name);
         if (fCurrentEvent) { break; }

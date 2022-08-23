@@ -94,13 +94,14 @@ namespace Hal {
   Event* DataFormatManager::FindReaderFormat() {
     DataManager* datamanager = DataManager::Instance();
     Event* event             = nullptr;
-    TList* branchList        = datamanager->GetBranchNameList();
+    event                    = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent."));
+    if (event != nullptr) return event;
+    TList* branchList = datamanager->GetBranchNameList();
     for (int i = 0; i < branchList->GetEntries(); i++) {
       TObjString* name = (TObjString*) branchList->At(i);
       TObject* temp    = datamanager->GetObject(name->GetString());
       if (dynamic_cast<Hal::Event*>(temp)) { event = (Hal::Event*) temp; }
     }
-    if (event == nullptr) { event = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent")); }
     return event;
   }
 

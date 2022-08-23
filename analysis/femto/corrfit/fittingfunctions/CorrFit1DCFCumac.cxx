@@ -362,7 +362,6 @@ namespace Hal {
     Double_t fkM = (fk / r).Rho();
 
     Double_t strong = params[Assymetry()] * (fkM * fkM + 4. * fk.Re() / (fPis * r) * F1(qr) - 2.0 * fk.Im() * F2(qr) / r);
-    return strong * 2.;
     return params[Norm()] * (1 + params[Lambda()] * (TMath::Exp(-qr * qr) + strong));
   }
 

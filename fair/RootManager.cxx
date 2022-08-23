@@ -12,6 +12,7 @@
 #include <FairRootManager.h>
 #include <RtypesCore.h>
 #include <TCollection.h>
+#include <TFile.h>
 #include <TList.h>
 #include <TObjString.h>
 

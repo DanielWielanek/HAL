@@ -88,11 +88,7 @@ namespace Hal {
     metadata_new->AddObject(new ParameterString("Date", Hal::Std::GetDate(), 'f'));
     metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
-    if (DataManager::Instance()->GetInFile()->GetName()) {
-      metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetInFile()->GetName(), 'f'));
-    } else {
-      metadata_new->AddObject(new ParameterString("Input file", "Unknown", 'f'));
-    }
+    metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetInputFileName(), 'f'));
 
     TList* list = new TList();
     list->SetName("Tasks");

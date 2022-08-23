@@ -56,6 +56,8 @@ namespace Hal {
 
   MagField* DataManager::GetField() const { return fManager->GetField(); }
 
+  TString DataManager::GetInputFileName() const { return fManager->GetInputFileName(); };
+
   void DataManager::GetIOManagerInfo() { fManager->PrintInfo(); }
 
   /****************************************************************************************************************************/

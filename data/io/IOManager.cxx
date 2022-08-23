@@ -119,11 +119,18 @@ namespace Hal {
 
   void IOManager::PrintInfo() {
     Cout::PrintInfo(Form("IO Manager %s", ClassName()), EInfo::kInfo);
+    TString inFile = "";
     if (GetInFile()) {
+      inFile = GetInFile()->GetName();
       Cout::PrintInfo(Form("Input file %s", GetInFile()->GetName()), EInfo::kInfo);
     } else {
-      Cout::PrintInfo("Cannot get name of input file", EInfo::kInfo);
+      Cout::PrintInfo("Cannot get name of input file from file", EInfo::kInfo);
     }
+    if (!inFile.EqualTo(GetInputFileName()) && inFile.Length() > 0) {
+      TString label = Form("IOManager input file %s, TFile input name %s", GetInputFileName().Data(), inFile.Data());
+      Cout::PrintInfo(label, EInfo::kInfo);
+    }
+
     UpdateBranches();
     RefreshBranchList();
     Cout::Database(2, "Branch Name", "Type");

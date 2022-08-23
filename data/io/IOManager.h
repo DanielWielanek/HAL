@@ -24,6 +24,7 @@ namespace Hal {
   protected:
     MagField* fField;
     TList* fList;
+    TString fInputName;
     std::vector<std::pair<TString, TObject*>> fInBranches;
     std::vector<std::pair<TString, TObject*>> fOutBranches;
     std::vector<std::pair<TString, TObject*>> fOutVirtual;
@@ -52,7 +53,7 @@ namespace Hal {
 
   public:
     enum class EBranchStatus { kInput, kOutput, kVirtual, kNull };
-    IOManager() : fField(nullptr), fList(new TList()) {};
+    IOManager() : fField(nullptr), fList(new TList()), fInputName("unknown") {};
     /**
      *
      * @return number of entries in data
@@ -70,6 +71,11 @@ namespace Hal {
      */
     virtual Bool_t Init() = 0;
     /**
+     *
+     * @return name of main input file name if avaiable
+     */
+    TString GetInputFileName() const { return fInputName; }
+    /**
      * set magnetic field
      * @param field
      */
@@ -79,6 +85,11 @@ namespace Hal {
      * @param name
      */
     virtual void SetOutput(TString /*name*/) {};
+    /**
+     *  set input file name
+     * @param name
+     */
+    void SetInputName(TString name) { fInputName = name; }
     /**
      * return magnetic field for this data
      * @return

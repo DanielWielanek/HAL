@@ -62,6 +62,7 @@ namespace Hal {
     void SetManager(IOManager* mngr) { fManager = mngr; }
     TObject* GetObject(const char* BrName);
     TFile* GetInFile();
+    TString GetInputFileName() const;
     TList* GetBranchNameList();
     virtual MagField* GetField() const;
     virtual ~DataManager();

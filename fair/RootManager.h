@@ -30,7 +30,7 @@ namespace Hal {
       virtual void RefreshBranchList();
 
     public:
-      RootManager() {};
+      RootManager();
       TObject* GetObject(const char* BrName);
       TFile* GetInFile();
       void UpdateBranches();

@@ -31,6 +31,7 @@ namespace Hal {
     fInFileName.push_back(name);
     SetInputName(name);
   }
+
   TString RootIOManager::GetChain(TFile* file) const {
     TList* list       = file->GetListOfKeys();
     TString chainName = "";
@@ -45,12 +46,13 @@ namespace Hal {
     }
     return chainName;
   }
+
   Bool_t RootIOManager::Init() {
-    TFile* f = new TFile(fInFileName[0]);
-    fInFile.push_back(f);
-    f->Close();
+    SetInputName(fInFileName[0]);
     std::vector<TString> chainNames;
+    TFile* f = new TFile(fInFileName[0]);
     chainNames.push_back(GetChain(f));  // get chain name from main files
+    f->Close();
     if (chainNames[0].Length() == 0) return kFALSE;
     TChain* mainChain = new TChain(chainNames[0]);
     for (auto file : fInFileName) {
@@ -118,6 +120,7 @@ namespace Hal {
     if (fFriendName.size() <= level) fFriendName.resize(level + 1);
     fFriendName[level].push_back(friendName);
   }
+
   void RootIOManager::UpdateBranches() {}
 
   void RootIOManager::RegisterInternal(const char* name, const char* /*folderName*/, TNamed* obj, Bool_t toFile) {

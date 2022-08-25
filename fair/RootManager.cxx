@@ -39,18 +39,27 @@ namespace Hal {
     }
 
     void RootManager::RefreshBranchList() {
-      TList* l = FairRootManager::Instance()->GetBranchNameList();
-      if (l->GetEntries() > fList->GetEntries()) {
-        for (int i = 0; i < l->GetEntries(); i++) {
-          TObjString* name = (TObjString*) l->At(i);
-          Bool_t found     = kFALSE;
-          for (int j = 0; j < fList->GetEntries(); j++) {
-            TObjString* name2 = (TObjString*) fList->At(j);
-            if (name->GetString().EqualTo(name2->GetString())) found = kTRUE;
-          }
-          if (!found) { fList->AddLast(new TObjString(*name)); }
+      FairRootManager* mngr = FairRootManager::Instance();
+      TList* l              = mngr->GetBranchNameList();
+      for (int i = 0; i < l->GetEntries(); i++) {
+        TString name = ((TObjString*) l->At(i))->GetString();
+        Int_t stat   = mngr->CheckBranch(name);
+        TObject* obj = mngr->GetObject(name);
+        switch (stat) {
+          case 0:  // not exist
+            break;
+          case 1:  // in file
+            AddBranch(name, obj, EBranchFlag::kIn);
+            break;
+          case 2:  // memory
+            AddBranch(name, obj, EBranchFlag::kVirtual);
+            break;
         }
       }
+    }
+    Bool_t RootManager::Init() {
+      RefreshBranchList();
+      return kTRUE;
     }
   }  // namespace Fair
 }  // namespace Hal

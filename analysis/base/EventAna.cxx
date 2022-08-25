@@ -371,6 +371,10 @@ namespace Hal {
     DataFormatManager* formatManager = DataFormatManager::Instance();
     DataManager* datamanager         = DataManager::Instance();
     SetInputFileName(DataManager::Instance()->GetInputFileName());
+    if (formatManager->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered) == nullptr) {
+      Cout::PrintInfo("Format is not set, switching to reader", EInfo::kError);
+      SetFormatOption(EFormatOption::kReaderAccess);
+    }
     if (TESTBIT(fFormatOption, eBitFormat::kReader)) {  // use reader data
       Event* event = nullptr;
       event        = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent."));

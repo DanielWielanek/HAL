@@ -27,11 +27,8 @@
 
 
 namespace Hal {
-  TwoTrackAnaChain::TwoTrackAnaChain(Bool_t use_background) : fTaskNo(0), fTask(NULL) {
-    if (use_background) {
-      fTiers          = ECutUpdate::kTwoTrackBackground;
-      fBackgroundMode = kMixedPairs;
-    }
+  TwoTrackAnaChain::TwoTrackAnaChain(Bool_t use_background) : TwoTrackAna(use_background), fTaskNo(0), fTask(NULL) {
+    if (use_background) { fBackgroundMode = kMixedPairs; }
   }
 
   TwoTrackAnaChain::TwoTrackAnaChain() : fTaskNo(0), fTask(NULL) {}

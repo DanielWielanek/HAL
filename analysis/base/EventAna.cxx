@@ -35,33 +35,28 @@
 
 namespace Hal {
 
-  EventAna::EventAna() :
+  EventAna::EventAna(ECutUpdate tiers) :
     Task(),
-    fCompressEvents(kFALSE),
-    fDirectAcces(kFALSE),
-    fKeepSource(kFALSE),
-    fDisableFormatChecking(kFALSE),
     fProcessedEvents(0),
     fMixSize(1),
     fEventCollectionsNo(0),
     fCurrentEventCollectionID(0),
-    fTiers(ECutUpdate::kEvent),
-    fPDG(NULL),
+    fTiers(tiers),
+    fPDG(nullptr),
     fCutContainer(NULL),
-    fMemoryMap(NULL),
-    fCurrentEvent(NULL),
+    fMemoryMap(nullptr),
+    fCurrentEvent(nullptr),
     fComment(""),
     fInit(kFALSE),
     fInChain(kFALSE),
-    fTagList(NULL),
     fTaskID(0),
     fInFileName(""),
-    fDataFormatManager(NULL) {
-    fTagList = new TList();
-    fTagList->SetName("Tags");
-    fTagList->SetOwner(kTRUE);
+    fDataFormatManager(nullptr) {
     fTaskID            = DataFormatManager::Instance()->RegisterFormat();
     fDataFormatManager = DataFormatManager::Instance();
+    SetFormatOption(EFormatOption::kStandardAcess);
+    SetFormatOption(EFormatOption::kNoKeepSource);
+    SetFormatOption(EFormatOption::kNoCompress);
     AddTags("ana");
 #ifdef _HAL_CLEAR_BUFFER_
     fIsLastTask = kFALSE;
@@ -76,7 +71,7 @@ namespace Hal {
     /* trying to set magfield */
     fPDG = TDatabasePDG::Instance();
 
-    if (fDisableFormatChecking == kFALSE) {
+    if (TESTBIT(fFormatOption, eBitFormat::kChecking) == kTRUE) {
 #ifdef HAL_DEBUG
       Cout::PrintInfo("Format checking", EInfo::kDebugInfo);
 #endif
@@ -215,14 +210,12 @@ namespace Hal {
   void EventAna::SetFormat(Event* format, EFormatDepth format_depth) {
     DataFormatManager* dataFormat = DataFormatManager::Instance();
     dataFormat->SetFormat(format, GetTaskID(), format_depth);
+    SetFormatOption(EFormatOption::kNoReaderAcces);
   }
 
   EventAna::EventAna(const EventAna& ana) :
     Task(),
-    fCompressEvents(ana.fCompressEvents),
-    fDirectAcces(ana.fDirectAcces),
-    fKeepSource(ana.fKeepSource),
-    fDisableFormatChecking(ana.fDisableFormatChecking),
+    fFormatOption(ana.fFormatOption),
     fProcessedEvents(ana.fProcessedEvents),
     fMixSize(ana.fMixSize),
     fEventCollectionsNo(ana.fEventCollectionsNo),
@@ -234,7 +227,6 @@ namespace Hal {
     fComment(""),
     fInit(kFALSE),
     fInChain(ana.fInChain),
-    fTagList((TList*) ana.fTagList->Clone()),
     fInFileName(ana.fInFileName),
     fDataFormatManager(ana.fDataFormatManager) {
     if (ana.fInit) { Cout::PrintInfo("This object has been initialized, this may result in crash", EInfo::kWarning); }
@@ -260,11 +252,10 @@ namespace Hal {
   EventAna::~EventAna() {
     DataFormatManager* dataManager = DataFormatManager::Instance();
     dataManager->Reset();
-    fCurrentEvent = NULL;
-    if (fTagList) delete fTagList;
+    fCurrentEvent = nullptr;
     if (fCutContainer) delete fCutContainer;
     if (fMemoryMap) delete fMemoryMap;
-    fDataFormatManager = NULL;
+    fDataFormatManager = nullptr;
   }
 
   Package* EventAna::Report() const {
@@ -288,7 +279,11 @@ namespace Hal {
         new ParameterString("DataTypeBuf", dataManager->GetFormatName(GetTaskID(), EFormatDepth::kNonBuffered)));
       ana_metadata->AddObject(event_bufferend->Report());
     }
-    ana_metadata->AddObject(fTagList);
+    TList* tagList = new TList();
+    for (auto str : fTagList) {
+      tagList->AddLast(new TObjString(str));
+    }
+    ana_metadata->AddObject(tagList);
     pack->AddObject(ana_metadata);
     pack->AddObject(fCutContainer->Report());
     return pack;
@@ -318,13 +313,10 @@ namespace Hal {
       TString second_part(tag(begin + 1, lenght));
       AddTags(second_part);
     } else {
-      TObjString* obj_string = new TObjString();
-      obj_string->SetString(tag);
-      for (int i = 0; i < fTagList->GetEntries(); i++) {
-        TObjString* temp = (TObjString*) fTagList->At(i);
-        if (temp->GetString().EqualTo(obj_string->GetString())) { return; }
+      for (auto str : fTagList) {
+        if (str.EqualTo(tag)) return;
       }
-      fTagList->AddLast(obj_string);
+      fTagList.push_back(tag);
     }
   }
 
@@ -340,46 +332,78 @@ namespace Hal {
 
   void EventAna::SetFormatOption(EFormatOption option) {
     switch (option) {
-      case kDirectAccess: fDirectAcces = kTRUE; break;
-      case kNoDirectAcces: fDirectAcces = kFALSE; break;
-      case kCompress: fCompressEvents = kTRUE; break;
-      case kNoCompress: fCompressEvents = kFALSE; break;
-      case kKeepSource: fKeepSource = kTRUE; break;
-      case kNoKeepSource: fKeepSource = kFALSE; break;
+      case EFormatOption::kDirectAccess: {
+        SETBIT(fFormatOption, eBitFormat::kDirectAcesss);  // direct access
+        CLRBIT(fFormatOption, eBitFormat::kReader);        // disable reader
+        CLRBIT(fFormatOption, eBitFormat::kSource);        // disable source (probably is not stored by direct access class
+      } break;
+      case EFormatOption::kNoDirectAccess: {
+        CLRBIT(fFormatOption, eBitFormat::kDirectAcesss);  // no direct access
+      } break;
+      case EFormatOption::kNoReaderAcces: {
+        CLRBIT(fFormatOption, eBitFormat::kReader);  // reader disabled access
+      } break;
+      case EFormatOption::kCompress: {
+        SETBIT(fFormatOption, eBitFormat::kCompression);
+      } break;
+      case EFormatOption::kNoCompress: {
+        CLRBIT(fFormatOption, eBitFormat::kCompression);
+      } break;
+      case EFormatOption::kKeepSource: {
+        SETBIT(fFormatOption, eBitFormat::kSource);
+      } break;
+      case EFormatOption::kNoKeepSource: {
+        CLRBIT(fFormatOption, eBitFormat::kSource);
+      } break;
+      case EFormatOption::kReaderAccess: {
+        SETBIT(fFormatOption, eBitFormat::kReader);
+        CLRBIT(fFormatOption, eBitFormat::kDirectAcesss);
+      } break;
+      case EFormatOption::kStandardAcess: {
+        CLRBIT(fFormatOption, eBitFormat::kDirectAcesss);  // no direct access
+        CLRBIT(fFormatOption, eBitFormat::kReader);        // no reader
+
+      } break;
     };
   }
 
   Task::EInitFlag EventAna::CheckFormat() {
     DataFormatManager* formatManager = DataFormatManager::Instance();
+    DataManager* datamanager         = DataManager::Instance();
     SetInputFileName(DataManager::Instance()->GetInputFileName());
-#ifdef HAL_DEBUG
-    Cout::PrintInfo(Form("Initialization format of task with ID = %i", GetTaskID()), EInfo::kDebugInfo);
-#endif
-    if (formatManager->FormatExist(GetTaskID(), EFormatDepth::kNonBuffered)) {
-      TString name = formatManager->GetFormatName(GetTaskID(), EFormatDepth::kNonBuffered);
-#ifdef HAL_DEBUG
-      Cout::PrintInfo(Form("L1 Format is set to %s", name.Data()), EInfo::kDebugInfo);
-#endif
-      if (!formatManager->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered)->ExistInTree()) {
-        Cout::PrintInfo("Format exists but not present in tree!", EInfo::kError);
-        return Task::EInitFlag::kFATAL;
+    if (TESTBIT(fFormatOption, eBitFormat::kReader)) {  // use reader data
+      Event* event = nullptr;
+      event        = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent."));
+      if (event) {
+        Cout::PrintInfo("L1 format from reader has been found", EInfo::kInfo);
+        SetFormat(event);
+        return Task::EInitFlag::kSUCCESS;
       }
     } else {
-      Cout::PrintInfo("L1 format is not set trying to find autosupported format", EInfo::kError);
-      Event* temp_format = formatManager->FindReaderFormat();
-      if (temp_format) {
-#ifdef HAL_DEBUG
-        Cout::PrintInfo(Form("Format %s found and will be used for task %s", temp_format->GetFormatName().Data(), ClassName()),
-                        EInfo::kDebugInfo);
-#endif
-        Cout::PrintInfo("L1 format autosupported has been found", EInfo::kInfo);
-        SetFormat(temp_format);
-        fDirectAcces = kTRUE;
-        return Task::EInitFlag::kSUCCESS;
-      } else {
-        Cout::PrintInfo("Format of data is not set, try to call SetFormat", EInfo::kError);
+      if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {  // direct access to data by classname.
+        TString branchName = formatManager->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered)->ClassName();
+        std::vector<TString> patterns;
+        patterns.push_back(branchName);
+        patterns.push_back(branchName + ".");
+        Bool_t foundFormat = kFALSE;
+        for (auto name : patterns) {
+          Hal::Event* event = dynamic_cast<Hal::Event*>(DataManager::Instance()->GetObject(name));
+          if (event) {
+            foundFormat = kTRUE;
+            break;
+          }
+        }
+        if (!foundFormat) {
+          Cout::PrintInfo(Form("Could not find direct access format %s", branchName.Data()), EInfo::kError);
+          return Task::EInitFlag::kFATAL;
+        }
+      } else {  // not direct access nor reader, standard way
+        Bool_t exist = formatManager->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered)->ExistInTree();
+        if (!exist) {
+          Cout::PrintInfo("The format is present but does not exist in the tree!", EInfo::kError);
+          return Task::EInitFlag::kFATAL;
+        }
       }
-      return Task::EInitFlag::kFATAL;
     }
     return Task::EInitFlag::kSUCCESS;
   }
@@ -390,7 +414,16 @@ namespace Hal {
 #ifdef HAL_DEBUG
     Cout::PrintInfo("Initialization MemoryMap", EInfo::kDebugInfo);
 #endif
-    fMemoryMap->Init(GetTaskID(), fKeepSource, fCompressEvents, fDirectAcces);
+    std::vector<TString> brName;
+    if (TESTBIT(fFormatOption, eBitFormat::kReader)) {
+      brName.push_back("HalEvent.");
+    } else if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {
+      TString evName = DataFormatManager::Instance()->GetFormat(GetTaskID())->ClassName();
+      brName.push_back(Form("%s.", evName.Data()));
+      brName.push_back(evName);
+    }
+    fMemoryMap->Init(
+      GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kSource), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
   }
 
   void EventAna::AddCutsAndMonitors(const CutsAndMonitors& monCuts) {
@@ -403,34 +436,35 @@ namespace Hal {
   }
 
   EventAna& EventAna::operator=(const EventAna& other) {
+    if (this->fTiers != other.fTiers) {
+      Cout::PrintInfo(Form("Cannot assign %s to %s, different tiers no", this->ClassName(), other.ClassName()), EInfo::kError);
+      return *this;
+    }
     if (this != &other) {
-      fCompressEvents           = other.fCompressEvents;
-      fDirectAcces              = other.fDirectAcces;
-      fKeepSource               = other.fKeepSource;
+      fFormatOption             = other.fFormatOption;
       fProcessedEvents          = other.fProcessedEvents;
       fMixSize                  = other.fMixSize;
       fEventCollectionsNo       = other.fEventCollectionsNo;
       fCurrentEventCollectionID = other.fCurrentEventCollectionID;
-      fTiers                    = other.fTiers;
       fPDG                      = other.fPDG;
       if (fCutContainer) {
         delete fCutContainer;
-        fCutContainer = NULL;
+        fCutContainer = nullptr;
       }
       if (fMemoryMap) {
         delete fMemoryMap;
-        fMemoryMap = NULL;
+        fMemoryMap = nullptr;
       }
       if (other.fCutContainer) fCutContainer = (CutContainer*) other.fCutContainer->Clone();
       if (other.fMemoryMap) fMemoryMap = (MemoryMapManager*) other.fMemoryMap->Clone();
       fTaskID                    = DataFormatManager::Instance()->RegisterFormat();
       DataFormatManager* manager = DataFormatManager::Instance();
       if (manager->FormatExist(other.fTaskID)) { SetFormat(manager->GetNewEvent(other.fTaskID)); }
-      fCurrentEvent      = NULL;
+      fCurrentEvent      = nullptr;
       fComment           = other.fComment;
       fInit              = other.fInit;
       fInChain           = other.fInChain;
-      fTagList           = (TList*) other.fTagList->Clone();
+      fTagList           = other.fTagList;
       fInFileName        = other.fInFileName;
       fDataFormatManager = other.fDataFormatManager;
       if (fInit == kTRUE) { Cout::PrintInfo(Form("Copying initialized task  %s", this->ClassName()), EInfo::kWarning); }

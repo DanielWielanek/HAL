@@ -11,6 +11,7 @@
 #include "Cout.h"
 #include "CutCollection.h"
 #include "CutContainer.h"
+#include "DataFormatManager.h"
 #include "EventBinningCut.h"
 #include "EventVirtualCut.h"
 #include "MemoryMapManager.h"
@@ -93,7 +94,19 @@ namespace Hal {
 #ifdef HAL_DEBUG
     Cout::PrintInfo("Initialization MemoryMap", EInfo::kDebugInfo);
 #endif
-    fMemoryMap->Init(multi_factor, GetTaskID(), fKeepSource, fCompressEvents, fDirectAcces);
+    std::vector<TString> brName;
+    if (TESTBIT(fFormatOption, eBitFormat::kReader)) {
+      brName.push_back("HalEvent.");
+    } else if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {
+      TString evName = DataFormatManager::Instance()->GetFormat(GetTaskID())->ClassName();
+      brName.push_back(Form("%s.", evName.Data()));
+      brName.push_back(evName);
+    }
+    fMemoryMap->Init(multi_factor,
+                     GetTaskID(),
+                     TESTBIT(fFormatOption, eBitFormat::kSource),
+                     TESTBIT(fFormatOption, eBitFormat::kCompression),
+                     brName);
   }
 
   Int_t FemtoEventBinsAna::GetEventBin() {
@@ -149,15 +162,15 @@ namespace Hal {
     if (IdenticalParticles()) {
 #ifdef HAL_DEBUG
       Cout::PrintInfo(Form("Finish identical event with %i tracks",
-                             fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID)),
+                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID)),
                       EInfo::kDebugInfo);
 #endif
       FinishEventIdentical();
     } else {
 #ifdef HAL_DEBUG
       Cout::PrintInfo(Form("Finish non-identical event with %i %i tracks",
-                             fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 0),
-                             fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1)),
+                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 0),
+                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1)),
                       EInfo::kDebugInfo);
 #endif
       FinishEventNonIdentical();

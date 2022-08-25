@@ -34,7 +34,7 @@
 
 namespace Hal {
   FemtoBasicAna::FemtoBasicAna() :
-    TwoTrackAna(),
+    TwoTrackAna(kTRUE),
     fPdg1(0),
     fPdg2(0),
     fUseImgMomenta(kFALSE),
@@ -47,7 +47,6 @@ namespace Hal {
     fCFs(nullptr),
     fCFTemp(nullptr) {
     fMixSize        = 2;
-    fTiers          = ECutUpdate::kTwoTrackBackground;
     fBackgroundMode = kMixedPairs;
     AddTags("femto hbt");
   }
@@ -315,10 +314,16 @@ namespace Hal {
   void FemtoBasicAna::InitMemoryMap() {
     fMemoryMap = new MemoryMapManager(fCutContainer);
     fMemoryMap->SetMixSize(fMixSize);
-#ifdef HAL_DEBUG
-    Cout::PrintInfo("Initialization MemoryMap", EInfo::kDebugInfo);
-#endif
-    fMemoryMap->Init(1, GetTaskID(), fKeepSource, fCompressEvents, fDirectAcces);
+    std::vector<TString> brName;
+    if (TESTBIT(fFormatOption, eBitFormat::kReader)) {
+      brName.push_back("HalEvent.");
+    } else if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {
+      TString evName = DataFormatManager::Instance()->GetFormat(GetTaskID())->ClassName();
+      brName.push_back(Form("%s.", evName.Data()));
+      brName.push_back(evName);
+    }
+    fMemoryMap->Init(
+      1, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kSource), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
   }
 
   void FemtoBasicAna::ProcessEvent() {

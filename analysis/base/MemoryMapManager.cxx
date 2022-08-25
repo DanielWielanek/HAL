@@ -124,8 +124,12 @@ namespace Hal {
     return fCurrentEvent;
   }
 
-  void MemoryMapManager::Init(Int_t task_id, Bool_t use_source, Bool_t compress, Bool_t direct) {
-    fDirectAcces    = direct;
+  void MemoryMapManager::Init(Int_t task_id, Bool_t use_source, Bool_t compress, std::vector<TString> direct) {
+    if (direct.size() > 0) {
+      fDirectAcces = kTRUE;
+    } else {
+      fDirectAcces = kFALSE;
+    }
     fFormatID       = task_id;
     fUseCompression = compress;
     fEvents         = new EventArray*[fEventCollectionsNo];
@@ -140,17 +144,16 @@ namespace Hal {
       }
     }
     DataFormatManager* dataManager = DataFormatManager::Instance();
+
     if (fDirectAcces == kFALSE) {
       fCurrentEvent = dataManager->GetEventFromTree(fFormatID);
     } else {
-      TString branchName = dataManager->GetFormat(fFormatID)->ClassName();
-      std::vector<TString> patterns;
-      patterns.push_back(branchName);
-      patterns.push_back(branchName + ".");
-      patterns.push_back("HalEvent.");  // find reader class
-      for (auto name : patterns) {
-        fCurrentEvent = (Event*) DataManager::Instance()->GetObject(name);
-        if (fCurrentEvent) break;
+      for (auto brName : direct) {
+        Event* ev = dynamic_cast<Event*>(DataManager::Instance()->GetObject(brName));
+        if (ev) {
+          fCurrentEvent = ev;
+          break;
+        }
       }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];
@@ -171,8 +174,13 @@ namespace Hal {
     }
   }
 
-  void MemoryMapManager::Init(Int_t event_factor, Int_t task_id, Bool_t use_source, Bool_t compress, Bool_t direct) {
-    fDirectAcces    = direct;
+  void
+  MemoryMapManager::Init(Int_t event_factor, Int_t task_id, Bool_t use_source, Bool_t compress, std::vector<TString> direct) {
+    if (direct.size() > 0) {
+      fDirectAcces = kTRUE;
+    } else {
+      fDirectAcces = kFALSE;
+    }
     fFormatID       = task_id;
     fUseCompression = compress;
 
@@ -203,14 +211,12 @@ namespace Hal {
     if (fDirectAcces == kFALSE) {
       fCurrentEvent = dataManager->GetEventFromTree(fFormatID);
     } else {
-      TString branchName = dataManager->GetFormat(fFormatID)->ClassName();
-      std::vector<TString> patterns;
-      patterns.push_back(branchName);
-      patterns.push_back(branchName + ".");
-      patterns.push_back("HalEvent.");  // find reader class
-      for (auto name : patterns) {
-        fCurrentEvent = (Event*) DataManager::Instance()->GetObject(name);
-        if (fCurrentEvent) { break; }
+      for (auto brName : direct) {
+        Event* ev = dynamic_cast<Event*>(DataManager::Instance()->GetObject(brName));
+        if (ev) {
+          fCurrentEvent = ev;
+          break;
+        }
       }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];

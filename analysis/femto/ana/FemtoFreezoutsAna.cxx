@@ -49,7 +49,6 @@ namespace Hal {
     fHistograms3d(nullptr) {
     fBackgroundMode = kNoBackground;
     fMixSize        = 1;
-    fTiers          = ECutUpdate::kTwoTrack;
     fKinematicsMode = EMode::kPRF;
     for (int i = 0; i < 3; i++) {
       fBins[i]     = 100;

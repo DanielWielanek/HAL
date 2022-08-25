@@ -37,10 +37,16 @@ namespace Hal {
     friend EventAnaChain;
 
   protected:
-    Bool_t fCompressEvents;
-    Bool_t fDirectAcces;
-    Bool_t fKeepSource;
-    Bool_t fDisableFormatChecking;
+    /**
+     * map of format options in bit
+     * BIT(0) - disable /enable compression
+     * BIT(1) - disable/enable source
+     * BIT(2) - direct access
+     * BIT(3) - disable/enable reader
+     * BIT(4) - disable/enable format checking
+     */
+    Int_t fFormatOption;
+    enum eBitFormat { kCompression = 0, kSource = 1, kDirectAcesss = 2, kReader = 3, kChecking = 4 };
     /**
      * number of processed events
      */
@@ -61,7 +67,7 @@ namespace Hal {
      * number of tiers in CutContainer, used during creating first cut, if
      * number is too small some cut's will not be added and code my crash
      */
-    ECutUpdate fTiers;
+    const ECutUpdate fTiers;
     /**
      * pointer to instance of  TDatabasePDG
      */
@@ -101,12 +107,13 @@ namespace Hal {
      */
     virtual void InitMemoryMap();
 
+
   private:
     /**
      * true if this task is in chain
      */
     Bool_t fInChain;
-    TList* fTagList;
+    std::vector<TString> fTagList;
     Int_t fTaskID;
     TString fInFileName;
     DataFormatManager* fDataFormatManager;  //->
@@ -142,7 +149,7 @@ namespace Hal {
     virtual Task::EInitFlag CheckFormat();
     /**
      *
-     * @return ID of task (and usally andformat) used in this task (each task have
+     * @return ID of task (and usually and format) used in this task (each task have
      * own ID even if use the same format
      */
     inline Int_t GetTaskID() const { return fTaskID; };
@@ -181,13 +188,29 @@ namespace Hal {
      * @return status of initialization
      */
     virtual Task::EInitFlag Init();
+    /**
+     * constructor for derived classes
+     * @param tiers
+     */
+    EventAna(ECutUpdate tiers);
 
   public:
-    enum EFormatOption { kCompress, kNoCompress, kKeepSource, kNoKeepSource, kDirectAccess, kNoDirectAcces };
+    enum class EFormatOption {
+      kCompress,
+      kNoCompress,
+      kKeepSource,
+      kNoKeepSource,
+      kDirectAccess,
+      kNoDirectAccess,
+      kReaderAccess,
+      kNoReaderAcces,
+      kDisableChecking,
+      kStandardAcess
+    };
     /**
      * basic constructor
      */
-    EventAna();
+    EventAna() : EventAna(ECutUpdate::kEvent) {};
     /**
      * copy constructor
      * @param ana
@@ -277,10 +300,6 @@ namespace Hal {
      * default dtor
      */
     virtual ~EventAna();
-    /**
-     * skip format checking, should not be used in typical analysis
-     */
-    void DisableFormatChecking() { fDisableFormatChecking = kTRUE; };
     ClassDef(EventAna, 1)
   };
 }  // namespace Hal

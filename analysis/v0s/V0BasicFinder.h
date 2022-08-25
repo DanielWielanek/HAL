@@ -11,8 +11,6 @@
 
 #include "CutMonitor.h"
 #include "TrackAna.h"
-#include "TrackCut.h"
-#include "TwoTrackCut.h"
 
 #include <Rtypes.h>
 #include <RtypesCore.h>
@@ -21,6 +19,8 @@ class TClonesArray;
 
 namespace Hal {
   class V0Candidate;
+  class TrackCut;
+  class TwoTrackCut;
 
   /**
    * basic class for finding V0 particles

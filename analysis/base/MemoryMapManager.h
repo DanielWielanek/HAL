@@ -124,20 +124,20 @@ namespace Hal {
      * @param task_id data format (and  task id)
      * @param use_source if true then original structure is copied into memory
      * @param compress - if true then evets will be compressed
-     * @param direct  - if true then direct reading Event-ana class from tree
+     * @param direct  - name of branch if direct access is used
      * is performed
      */
-    void Init(Int_t task_id, Bool_t use_source, Bool_t compress, Bool_t direct);
+    void Init(Int_t task_id, Bool_t use_source, Bool_t compress, std::vector<TString> direct);
     /**
      * initialize this manager
      * @param event_factor - numer of artificial multiplication of event triggers
      * @param task_id data format (and  task id)
      * @param use_source if true then original structure is copied into memory
      * @param compress - if true then evets will be compressed
-     * @param direct  - if true then direct reading Event-ana class from tree
+     * @param direct  -name of branch if direct access is used
      * is performed
      */
-    void Init(Int_t event_factor, Int_t task_id, Bool_t use_source, Bool_t compress, Bool_t direct);
+    void Init(Int_t event_factor, Int_t task_id, Bool_t use_source, Bool_t compress, std::vector<TString> direct);
     /**
      * add track to map
      * @param event_collection even collection number

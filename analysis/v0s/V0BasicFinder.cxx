@@ -33,7 +33,7 @@
 
 namespace Hal {
   V0BasicFinder::V0BasicFinder() :
-    TrackAna(),
+    TrackAna(ECutUpdate::kTwoTrack),
     fPosPdg(2212),
     fNegPdg(-211),
     fV0Pdg(3312),
@@ -43,9 +43,7 @@ namespace Hal {
     fFirstV0Finder(kTRUE),
     fWrite(kFALSE),
     fV0Candiate(nullptr),
-    fV0Tracks(nullptr) {
-    fTiers = ECutUpdate::kTwoTrack;
-  }
+    fV0Tracks(nullptr) {}
 
   Task::EInitFlag V0BasicFinder::Init() {
     DataManager* mngr = DataManager::Instance();

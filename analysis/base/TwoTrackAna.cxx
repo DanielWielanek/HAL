@@ -22,7 +22,7 @@
 
 namespace Hal {
   TwoTrackAna::TwoTrackAna(Bool_t use_background) :
-    MultiTrackAna(),
+    MultiTrackAna((use_background ? ECutUpdate::kTwoTrackBackground : ECutUpdate::kTwoTrackBackground)),
     fNonIdIsSet(kFALSE),
     fSignedBoth(kTRUE),
     fIdentical(kTRUE),
@@ -37,11 +37,6 @@ namespace Hal {
     fTwoTrackCollectionsNoBackground(0),
     fCurrentSignalPair(NULL),
     fCurrentBackgroundPair(NULL) {
-    if (use_background) {
-      fTiers = ECutUpdate::kTwoTrackBackground;
-    } else {
-      fTiers = ECutUpdate::kTwoTrack;
-    }
     fMixSize = 1;
     AddTags("twotrack");
   }
@@ -141,22 +136,16 @@ namespace Hal {
       fNonIdIsSet = kTRUE;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionMixed())) {
       fBackgroundMode = kMixedPairs;
-      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionPerfect())) {
       fBackgroundMode = kPerfectPairs;
-      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionRotated())) {
       fBackgroundMode = kRotatedPairs;
-      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionHemisphere())) {
       fBackgroundMode = kHemispherePairs;
-      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionNoBackground())) {
       fBackgroundMode = kNoBackground;
-      fTiers          = ECutUpdate::kTwoTrack;
     } else if (opt.EqualTo(TwoTrackAna::BackgroundOptionCharge())) {
       fBackgroundMode = kCharged;
-      fTiers          = ECutUpdate::kTwoTrackBackground;
     } else if (opt.EqualTo("disable:signs_sum")) {
       fSignedBoth = kFALSE;
     } else {
@@ -358,7 +347,7 @@ namespace Hal {
     fCurrentTrack2CollectionNo = fCurrentTrackCollectionID + 1;
     Int_t tr1                  = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
     Int_t tr2                  = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
-    if (tr1 == 0 || tr2 == 0) {
+    if (tr1 == 0 || tr2 == 0) {  // TODO should we mix pairless events?
       if (fBackgroundMode == kMixedPairsNID) { fMemoryMap->RejectLastEvent(fCurrentEventCollectionID); }
       return;
     }

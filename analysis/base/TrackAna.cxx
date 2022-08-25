@@ -17,9 +17,8 @@
 #include "TrackVirtualCut.h"
 
 namespace Hal {
-  TrackAna::TrackAna() : EventAna(), fTrackCollectionsNo(0), fCurrentTrackCollectionID(0), fTrackIndex(0), fCurrentTrack(NULL) {
-    fTiers = ECutUpdate::kTrack;
-  }
+  TrackAna::TrackAna(ECutUpdate tiers) :
+    EventAna(tiers), fTrackCollectionsNo(0), fCurrentTrackCollectionID(0), fTrackIndex(0), fCurrentTrack(nullptr) {}
 
   TrackAna::TrackAna(const TrackAna& ana) :
     EventAna(ana),

@@ -25,6 +25,11 @@ namespace Hal {
     virtual Task::EInitFlag Init();
     virtual Task::EInitFlag CheckFormat();
     virtual Package* Report() const;
+    /**
+     * ctor for derived classes
+     * @param tiers
+     */
+    MultiTrackAna(ECutUpdate tiers);
 
   public:
     MultiTrackAna();

@@ -51,9 +51,11 @@ namespace Hal {
     virtual void CheckCutContainerCollections();
     virtual Task::EInitFlag Init();
     virtual Package* Report() const;
+    TrackAna(ECutUpdate tiers);
 
   public:
-    TrackAna();
+    TrackAna() : TrackAna(ECutUpdate::kTrack) {};
+
     /**
      * copy ctor
      * @param ana

@@ -64,7 +64,13 @@ namespace Hal {
      * @param rhs
      * @return
      */
-    Array_1<T>& operator=(Array_1<T> const& rhs);
+    Array_1<T>& operator=(const Array_1<T>& rhs);
+    /**
+     *
+     * @param rhs
+     * @return
+     */
+    Array_1<T>& operator+=(const Array_1<T>& rhs);
     /**
      *
      * @return size of this array
@@ -138,7 +144,11 @@ namespace Hal {
      * @param rhs to copy
      * @return
      */
-    Array_2<T>& operator=(Array_2<T> const& rhs);
+    Array_2<T>& operator=(const Array_2<T>& rhs);
+    /**
+     *
+     */
+    Array_2<T>& operator+=(const Array_2<T>& rhs);
     /**
      *
      * @return size of this array (last dimension)
@@ -203,7 +213,13 @@ namespace Hal {
      * @param rhs to copy
      * @return
      */
-    Array_3<T>& operator=(Array_3<T> const& rhs);
+    Array_3<T>& operator=(const Array_3<T>& rhs);
+    /**
+     *
+     * @param rhs
+     * @return
+     */
+    Array_3<T>& operator+=(const Array_3<T>& rhs);
     /**
      *
      * @param A 1st index
@@ -270,7 +286,13 @@ namespace Hal {
      * @param rhs to copy
      * @return
      */
-    Array_4<T>& operator=(Array_4<T> const& rhs);
+    Array_4<T>& operator=(const Array_4<T>& rhs);
+    /**
+     *
+     * @param rhs
+     * @return
+     */
+    Array_4<T>& operator+=(const Array_4<T>& rhs);
     /**
      *
      * @return size of this array (last dimension)

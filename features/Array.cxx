@@ -39,8 +39,9 @@ namespace Hal {
     for (int i = 0; i < fSize; i++)
       fArray[i] = "";
   }
+
   template<typename T>
-  Array_1<T>& Array_1<T>::operator=(Array_1<T> const& rhs) {
+  Array_1<T>& Array_1<T>::operator=(const Array_1<T>& rhs) {
     if (this != &rhs) {
       if (rhs.fSize != this->fSize) {
         if (fArray) delete[] fArray;
@@ -52,6 +53,20 @@ namespace Hal {
       }
       for (int i = 0; i < fSize; i++) {
         this->fArray[i] = rhs.fArray[i];
+      }
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_1<T>& Array_1<T>::operator+=(const Array_1<T>& rhs) {
+    if (this != &rhs) {
+      if (rhs.fSize == this->fSize) {
+        for (int i = 0; i < fSize; i++) {
+          this->fArray[i] += rhs.fArray[i];
+        }
+      } else {
+        std::cout << __FILE__ << " " << __LINE__ << "different sizes of arrays!" << std::endl;
       }
     }
     return *this;
@@ -100,7 +115,7 @@ namespace Hal {
   }
 
   template<typename T>
-  Array_2<T>& Array_2<T>::operator=(Array_2<T> const& rhs) {
+  Array_2<T>& Array_2<T>::operator=(const Array_2<T>& rhs) {
     if (this != &rhs) {
       if (this->fSize != rhs.fSize) {
         if (fArray) delete[] fArray;
@@ -112,6 +127,20 @@ namespace Hal {
       }
       for (int i = 0; i < fSize; i++) {
         fArray[i] = rhs.fArray[i];
+      }
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_2<T>& Array_2<T>::operator+=(const Array_2<T>& rhs) {
+    if (this != &rhs) {
+      if (this->fSize != rhs.fSize) {
+        std::cout << __LINE__ << " " << __FILE__ << " incompatible arrays" << std::endl;
+        return *this;
+      }
+      for (int i = 0; i < fSize; i++) {
+        fArray[i] += rhs.fArray[i];
       }
     }
     return *this;
@@ -152,7 +181,7 @@ namespace Hal {
   }
 
   template<typename T>
-  Array_3<T>& Array_3<T>::operator=(Array_3<T> const& rhs) {
+  Array_3<T>& Array_3<T>::operator=(const Array_3<T>& rhs) {
     if (this != &rhs) {
       if (this->fSize != rhs.fSize) {
         if (fArray) delete[] fArray;
@@ -164,6 +193,17 @@ namespace Hal {
       }
       for (int i = 0; i < fSize; i++) {
         fArray[i] = rhs.fArray[i];
+      }
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_3<T>& Array_3<T>::operator+=(const Array_3<T>& rhs) {
+    if (this != &rhs) {
+      if (this->fSize != rhs.fSize) { return *this; }
+      for (int i = 0; i < fSize; i++) {
+        fArray[i] += rhs.fArray[i];
       }
     }
     return *this;
@@ -204,7 +244,7 @@ namespace Hal {
   }
 
   template<typename T>
-  Array_4<T>& Array_4<T>::operator=(Array_4<T> const& rhs) {
+  Array_4<T>& Array_4<T>::operator=(const Array_4<T>& rhs) {
     if (this != &rhs) {
       if (this->fSize != rhs.fSize) {
         if (fArray) delete[] fArray;
@@ -216,6 +256,17 @@ namespace Hal {
       }
       for (int i = 0; i < fSize; i++) {
         fArray[i] = rhs.fArray[i];
+      }
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_4<T>& Array_4<T>::operator+=(const Array_4<T>& rhs) {
+    if (this != &rhs) {
+      if (this->fSize != rhs.fSize) { return *this; }
+      for (int i = 0; i < fSize; i++) {
+        fArray[i] += rhs.fArray[i];
       }
     }
     return *this;

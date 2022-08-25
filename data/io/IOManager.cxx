@@ -26,15 +26,12 @@ namespace Hal {
   void IOManager::AddBranch(TString name, TObject* object, EBranchFlag flag) {
     for (auto str : fInBranches) {
       if (str.first.EqualTo(name)) return;
-      if (str.second == object) return;
     }
     for (auto str : fOutBranches) {
       if (str.first.EqualTo(name)) return;
-      if (str.second == object) return;
     }
     for (auto str : fOutVirtual) {
       if (str.first.EqualTo(name)) return;
-      if (str.second == object) return;
     }
     switch (flag) {
       case EBranchFlag::kIn: {

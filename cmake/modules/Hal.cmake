@@ -60,6 +60,7 @@ set(HAL_HBT
 	${HAL_CORE}/analysis/femto/imaging
 	${HAL_CORE}/analysis/femto/base/source_models
 	${HAL_CORE}/analysis/femto/base/corrfunc
+	${HAL_CORE}/analysis/femto/base/shmath
 	${HAL_CORE}/analysis/femto
 )
 

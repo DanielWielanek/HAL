@@ -133,8 +133,12 @@
 #pragma link C++ class Hal::CorrFitSHCF + ;
 #pragma link C++ class Hal::CorrFitSHFrom3D + ;
 #pragma link C++ class Hal::FemtoYlmIndexes + ;
-#pragma link C++ class Hal::FemtoYlm + ;
 #pragma link C++ class Hal::FemtoSHCF + ;
+
+#pragma link C++ class Hal::FemtoSHSlice + ;
+#pragma link C++ class Hal::FemtoYlmMath + ;
+#pragma link C++ class Hal::FemtoYlmSolver + ;
+
 #endif
 
 //#pragma link C++ class Led+;

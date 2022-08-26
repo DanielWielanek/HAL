@@ -34,12 +34,14 @@
 #include "CorrFitSHCF.h"
 #include "Cout.h"
 #include "FemtoPair.h"
-#include "FemtoYlm.h"
+#include "FemtoSHSlice.h"
+#include "FemtoYlmSolver.h"
 #include "HtmlCore.h"
 #include "HtmlFile.h"
 #include "HtmlObject.h"
 #include "HtmlTable.h"
 #include "Std.h"
+#include "StdHist.h"
 #include "StdString.h"
 
 //#define FULL_CALC
@@ -56,14 +58,10 @@ namespace Hal {
     fCFReal(NULL),
     fCFImag(NULL),
     fFactorialsSize(0),
-    covmnum(NULL),
-    covmden(NULL),
-    covmcfc(NULL),
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
     fLmVals(FemtoYlmIndexes(1)),
-    fFactorials(NULL),
     fCfcov(NULL) {
     gSystem->Load("libgsl.so");
     gSystem->Load("libgslcblas.so");
@@ -80,18 +78,13 @@ namespace Hal {
     fCFReal(NULL),
     fCFImag(NULL),
     fFactorialsSize((maxL + 1) * 4),
-    covmnum(NULL),
-    covmden(NULL),
-    covmcfc(NULL),
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
     fLmVals(FemtoYlmIndexes(maxL)),
-    fFactorials(NULL),
+    fLmMath(),
     fCfcov(NULL) {
     SetNorm(0, 0.5, 0);
-    FemtoYlm* ylm = FemtoYlm::Instance();
-    ylm->InitializeYlms();
 
     fNumReal = new TH1D*[fMaxJM];
     fNumImag = new TH1D*[fMaxJM];
@@ -135,19 +128,10 @@ namespace Hal {
       fDenImag[ihist]->Sumw2();
     }
 
-    fFactorials    = new Double_t[fFactorialsSize];
-    Double_t fac   = 1;
-    fFactorials[0] = 1;
-    for (int iter = 1; iter < fFactorialsSize; iter++) {
-      fac *= iter;
-      fFactorials[iter] = fac;
-    }
-    covmnum = new Array_1<Double_t>();
-    covmden = new Array_1<Double_t>();
-    covmcfc = new Array_1<Double_t>();
-    covmnum->MakeBigger(fMaxJM * 4 * fMaxJM * bins);
-    covmden->MakeBigger(fMaxJM * 4 * fMaxJM * bins);
-    covmcfc->MakeBigger(fMaxJM * 4 * fMaxJM * bins);
+    fCovNum.MakeBigger(bins, fMaxJM * 2, fMaxJM * 2);
+    fCovDen.MakeBigger(bins, fMaxJM * 2, fMaxJM * 2);
+    fCovCf.MakeBigger(bins, fMaxJM * 2, fMaxJM * 2);
+
 
     gSystem->Load("libgsl.so");
     gSystem->Load("libgslcblas.so");
@@ -156,9 +140,7 @@ namespace Hal {
       case Femto::EKinematics::kLCMS: AddLabel("lcms"); break;
       default: break;
     }
-    std::cout << "ARRAYS\t" << (*covmnum)[0] << " " << (*covmden)[0] << std::endl;
     RecalculateCF();
-    std::cout << "ARRAYS\t" << (*covmnum)[0] << " " << (*covmden)[0] << std::endl;
   }
 
   FemtoSHCF::FemtoSHCF(const FemtoSHCF& other) :
@@ -181,15 +163,6 @@ namespace Hal {
         fDenReal[i] = (TH1D*) other.fDenReal[i]->Clone();
         fDenImag[i] = (TH1D*) other.fDenImag[i]->Clone();
       }
-
-      FemtoYlm* ylm = FemtoYlm::Instance();
-      ylm->InitializeYlms();
-      Double_t fac   = 1;
-      fFactorials[0] = 1;
-      for (int iter = 1; iter < fFactorialsSize; iter++) {
-        fac *= iter;
-        fFactorials[iter] = fac;
-      }
     }
 
     if (other.fCFReal) {
@@ -200,11 +173,9 @@ namespace Hal {
         fCFImag[i] = (TH1D*) other.fCFImag[i]->Clone();
       }
     }
-    if (other.covmden) {
-      covmden = new Array_1<Double_t>(*other.covmden);
-      covmnum = new Array_1<Double_t>(*other.covmnum);
-      covmcfc = new Array_1<Double_t>(*other.covmcfc);
-    }
+    fCovNum = other.fCovNum;
+    fCovDen = other.fCovDen;
+    fCovCf  = other.fCovCf;
     if (other.fCfcov) { fCfcov = (TH3D*) other.fCfcov->Clone(); }
     UnpackCovariances();
     RecalculateCF();
@@ -254,10 +225,6 @@ namespace Hal {
       return NULL;
   }
 
-  Int_t FemtoSHCF::GetBin(int qbin, int ilmzero, int zeroimag, int ilmprim, int primimag) const {
-    return (qbin * fMaxJM * fMaxJM * 4 + (ilmprim * 2 + primimag) * fMaxJM * 2 + ilmzero * 2 + zeroimag);
-  }
-
   void FemtoSHCF::SetNumRe(TH1D** histograms, Bool_t clone) {
     if (clone) {
       if (fNumReal == NULL) fNumReal = new TH1D*[fMaxJM];
@@ -303,54 +270,76 @@ namespace Hal {
   }
 
   void FemtoSHCF::Draw(Option_t* opt) {
-    if (gPad == NULL) { new TCanvas(); }
+    if (gPad == nullptr) { new TCanvas(); }
     TVirtualPad* pad = gPad;
-    gPad->Clear();
+    // gPad->Clear();??
 
     TString option  = opt;
     Bool_t drawImg  = kTRUE;
     Bool_t drawReal = kTRUE;
+    Bool_t drawNeg  = kTRUE;
     if (Hal::Std::FindParam(option, "im", kTRUE)) drawReal = kFALSE;
     if (Hal::Std::FindParam(option, "re", kTRUE)) drawImg = kFALSE;
+    if (Hal::Std::FindParam(option, "short", kTRUE)) drawNeg = kFALSE;
+    Bool_t range00 = kFALSE;
+    Bool_t range11 = kFALSE;
 
-
-    auto drawSub = [](Int_t l, Int_t m, const FemtoSHCF* thiz, Bool_t dImg, Bool_t dReal, TString opT) {
+    auto drawSub = [&](Int_t l, Int_t m, const FemtoSHCF* thiz, Bool_t dImg, Bool_t dReal, TString opT) {
       gPad->SetBottomMargin(0.045);
       gPad->SetTopMargin(0.025);
       gPad->SetLeftMargin(0.045);
       gPad->SetRightMargin(0.025);
       TH1D* cfr = thiz->GetCFRe(l, m);  // GetHisto(I,J,kTRUE,"re");
       TH1D* cfi = thiz->GetCFIm(l, m);  // GetHisto(I,J,kTRUE,"im");
-      if (cfi) cfi->SetLineColor(kRed);
-      if (cfi && cfr) {
+      if (cfr == nullptr) return;
+      if (cfi == nullptr) return;
+      cfr->SetMinimum(0);
+      double max = cfr->GetBinContent(cfr->GetMaximumBin());
+      double min = cfr->GetBinContent(cfr->GetMinimumBin());
+      if (min < 0) {
+        cfr->SetMinimum(-1);
+      } else {
         cfr->SetMinimum(0);
-        double max = cfr->GetBinContent(cfr->GetMaximumBin());
-        double min = cfr->GetBinContent(cfr->GetMinimumBin());
-        if (min < 0) {
-          cfr->SetMinimum(-1);
-        } else {
-          cfr->SetMinimum(0);
-        }
-        if (max < 1) { cfr->SetMaximum(1); }
-        cfr->SetStats(kFALSE);
-        cfr->SetName(Form("%4.5f", gRandom->Rndm()));
-        if (dImg && dReal) {
-          cfr->Draw(opT);
-          cfi->Draw("SAME" + opT);
-        } else {
-          if (dImg) cfi->Draw(opT);
-          if (dReal) cfr->Draw(opT);
-        }
+      }
+      if (max < 1) { cfr->SetMaximum(1); }
+      cfr->SetStats(kFALSE);
+      cfr->SetName(Form("%4.5f", gRandom->Rndm()));
+      if (fColzSet) {
+        Hal::Std::SetColor(*cfr, fColRe);
+        Hal::Std::SetColor(*cfi, fColIm);
+      } else {
+        Hal::Std::SetColor(*cfr, kBlue);
+        Hal::Std::SetColor(*cfi, kRed);
+      }
+      cfr->SetMarkerStyle(GetNum()->GetMarkerStyle());
+      cfi->SetMarkerStyle(GetNum()->GetMarkerStyle());
+      cfr->SetMarkerSize(GetNum()->GetMarkerSize());
+      cfi->SetMarkerSize(GetNum()->GetMarkerSize());
+      cfr->SetObjectStat(kFALSE);
+      cfi->SetObjectStat(kFALSE);
+      if (dImg && dReal) {
+        cfr->Draw(opT);
+        cfi->Draw("SAME" + opT);
+      } else {
+        if (dImg) cfi->Draw(opT);
+        if (dReal) cfr->Draw(opT);
       }
     };
 
     TVirtualPad* temp_pad = gPad;
-    gPad->Divide(GetL() + 1, GetL() + 1);
+    Int_t padsNo          = Hal::Std::GetListOfSubPads(temp_pad);
+    Int_t req             = (GetL() + 1) * (GetL() + 1);
+    if (padsNo == req) {
+      // do nothing we have enough pads
+    } else {
+      gPad->Clear();
+      gPad->Divide(GetL() + 1, GetL() + 1);
+    }
 
     for (int l = 0; l <= GetL(); l++) {
       for (int m = -l; m <= l; m++) {
         temp_pad->cd(fLmVals.GetPadId(l, m));
-        drawSub(l, m, this, drawImg, drawReal, option);
+        if ((m < 0 && drawNeg) || m >= 0) drawSub(l, m, this, drawImg, drawReal, option);
       }
     }
     gPad = temp_pad;
@@ -374,49 +363,19 @@ namespace Hal {
                       GetMaxJM() * 2 - 0.5);
 
     double tK;
-    for (int ibin = 1; ibin <= fCfcov->GetNbinsX(); ibin++)
+    for (int ibin = 1; ibin <= fCfcov->GetNbinsX(); ibin++) {
+      const int binCov = ibin - 1;
       for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++)
         for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
-          tK = (*covmcfc)[GetBin(ibin - 1, ilmz / 2, ilmz % 2, ilmp / 2, ilmp % 2)];
-          // 	tE = fCFReal[0]->GetEntries();
-          // 	if (ilmz%2) {
-          // 	  if (ilmp%2) {
-          // 	    tB =
-          // fCFImag[ilmz/2]->GetBinContent(ibin)*fCFImag[ilmp/2]->GetBinContent(ibin);
-          // 	  }
-          // 	  else {
-          // 	    tB =
-          // fCFImag[ilmz/2]->GetBinContent(ibin)*fCFReal[ilmp/2]->GetBinContent(ibin);
-          // 	  }
-          // 	}
-          // 	else {
-          // 	  if (ilmp%2) {
-          // 	    tB =
-          // fCFReal[ilmz/2]->GetBinContent(ibin)*fCFImag[ilmp/2]->GetBinContent(ibin);
-          // 	  }
-          // 	  else {
-          // 	    tB =
-          // fCFReal[ilmz/2]->GetBinContent(ibin)*fCFReal[ilmp/2]->GetBinContent(ibin);
-          // 	  }
-          // 	}
-
+          tK = fCovCf[binCov][ilmz][ilmp];
           fCfcov->SetBinContent(ibin, ilmz + 1, ilmp + 1, tK);
         }
+    }
     fCfcov->SetBinContent(0, 0, 0, 1.0);
   }
 
-  void FemtoSHCF::GetElEmForIndex(int aIndex, double& aEl, double& aEm) const {
-    aEl = fLmVals.GetEls(aIndex);
-    aEm = fLmVals.GetEms(aIndex);
-  }
-
-  void FemtoSHCF::GetElEmForIndex(int aIndex, int& aEl, int& aEm) const {
-    aEl = fLmVals.GetElsi(aIndex);
-    aEm = fLmVals.GetEmsi(aIndex);
-  }
-
   void FemtoSHCF::Browse(TBrowser* b) {
-    if (fCFReal == NULL) {
+    if (fCFReal == nullptr) {
       Cout::PrintInfo("No correlation functions, call RecalculateCF", EInfo::kError);
       return;
     }
@@ -468,246 +427,6 @@ namespace Hal {
       fLabels->SetName("Labels");
     }
     fLabels->AddLast(new TObjString(label));
-  }
-
-  void FemtoSHCF::GetIndependentLM(int ibin, int& el, int& em, int& im) const {
-    int cbin = ibin;
-    if (cbin == 0) {
-      el = 0;
-      em = 0;
-      im = 0;
-      return;
-    } else
-      cbin--;
-    if (cbin == 0) {
-      el = 2;
-      em = 0;
-      im = 0;
-      return;
-    } else
-      cbin--;
-    im = cbin % 2;
-    el = 2;
-    em = cbin / 2 + 1;
-    return;
-  }
-
-  void FemtoSHCF::InvertYlmIndependentMatrix(double* inmat, double* outmat) {
-    // Invert the Ylm matrix by inverting only the matrix
-    // with independent elements and filling in the rest
-    // according to sign rules
-    double mU[GetMaxJM() * GetMaxJM() * 4];
-    int isize = PackYlmMatrixIndependentOnly(inmat, mU);
-    //  cout << "Independent count " << isize << std::endl;
-#ifndef DISABLE_GSL
-    gsl_matrix_view matU = gsl_matrix_view_array(mU, isize, isize);
-#endif
-    // Identity matrix helper for inversion
-    double mI[GetMaxJM() * GetMaxJM() * 4];
-    for (int iterm = 0; iterm < isize; iterm++)
-      for (int iterp = 0; iterp < isize; iterp++)
-        if (iterm == iterp)
-          mI[iterm * isize + iterp] = 1.0;
-        else
-          mI[iterm * isize + iterp] = 0.0;
-#ifndef DISABLE_GSL
-    gsl_matrix_view matI = gsl_matrix_view_array(mI, isize, isize);
-    // Invert the matrix
-    gsl_blas_dtrsm(CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit, 1.0, &matU.matrix, &matI.matrix);
-#else
-    std::cout << "GLS NOT ENABLED!" << std::endl;
-#endif
-    UnPackYlmMatrixIndependentOnly(mI, outmat, isize);
-  }
-
-  void FemtoSHCF::UnpackCovariances() {
-    Bool_t nanfound = kFALSE;
-    for (int i = 0; i < covmnum->GetSize(); i++) {
-      Double_t val = (*covmnum)[i];
-      if (TMath::IsNaN(val)) {
-        std::cout << "Nan at " << i << std::endl;
-        nanfound = kTRUE;
-      }
-      val = (*covmden)[i];
-      if (TMath::IsNaN(val)) {
-        std::cout << "Dan at " << i << std::endl;
-        nanfound = kTRUE;
-      }
-      // val= (*covmcfc)[i];
-      // if(TMath::IsNaN(val))nanfound =kTRUE;
-    }
-    if (nanfound) { Cout::PrintInfo("NaN found in  numerator or denominator covariance matrix !", EInfo::kError); }
-    return;
-    Cout::PrintInfo("Unpacking covariances", EInfo::kDebugInfo);
-    if (covmnum) { delete covmnum; }
-    if (covmden) { delete covmden; }
-    if (covmcfc) { delete covmcfc; }
-    covmnum = new Array_1<Double_t>();
-    covmden = new Array_1<Double_t>();
-    covmcfc = new Array_1<Double_t>();
-    covmnum->MakeBigger(fMaxJM * 4 * fMaxJM * GetNum()->GetNbinsX());
-    covmden->MakeBigger(fMaxJM * 4 * fMaxJM * GetNum()->GetNbinsX());
-    covmcfc->MakeBigger(fMaxJM * 4 * fMaxJM * GetNum()->GetNbinsX());
-    //	Bool_t nanfound = kFALSE;
-    /*
-     if (fCovNum) {
-     for (int ibin = 1; ibin <= fCovNum->GetNbinsX(); ibin++){
-     for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++){
-     for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++){
-     (*covmnum)[GetBin(ibin - 1, ilmz / 2, ilmz % 2, ilmp / 2,
-     ilmp % 2)] = fCovNum->GetBinContent(ibin, ilmz + 1,
-     ilmp + 1);
-     if(TMath::IsNaN(fCovNum->GetBinContent(ibin, ilmz + 1,
-     ilmp + 1))){
-     nanfound = kTRUE;
-     }
-     }
-     }
-     }
-     }
-
-     if(nanfound){
-     Cout::InStars("NaN found in  numerator covariance matrix
-     !",EInfo::kLessError);
-     }
-     nanfound = kFALSE;
-     if (fCovDen) {
-     for (int ibin = 1; ibin <= fCovDen->GetNbinsX(); ibin++){
-     for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++){
-     for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++){
-     (*covmden)[GetBin(ibin - 1, ilmz / 2, ilmz % 2, ilmp / 2,
-     ilmp % 2)] = fCovDen->GetBinContent(ibin, ilmz + 1,
-     ilmp + 1);
-     if(TMath::IsNaN( fCovDen->GetBinContent(ibin, ilmz + 1,ilmp + 1))){
-     nanfound = kTRUE;
-     }
-     }
-     }
-     }
-     }
-     if(nanfound){
-     Cout::InStars("NaN found in  denominator covariance matrix
-     !",EInfo::kLessError);
-     }
-     */
-    /*  if (covcfc) {
-     for (int ibin=1; ibin<=covcfc->GetNbinsX(); ibin++)
-     for (int ilmz=0; ilmz<GetMaxJM()*2; ilmz++)
-     for (int ilmp=0; ilmp<GetMaxJM()*2; ilmp++)
-     covmcfc[GetBin(ibin-1, ilmz/2, ilmz%2, ilmp/2, ilmp%2)] =
-     covcfc->GetBinContent(ibin, ilmz+1, ilmp+1);
-     }*/
-  }
-
-  void FemtoSHCF::GetMtilde(std::complex<double>* aMat, double* aMTilde) {
-    // Create the Mtilde for a given q bin
-    double lzero, mzero;
-    double lprim, mprim;
-    double lbis, mbis;
-
-    int lzeroi, mzeroi;
-    int lprimi, mprimi;
-    int lbisi, mbisi;
-
-    for (int iz = 0; iz < GetMaxJM() * 2; iz++)
-      for (int ip = 0; ip < GetMaxJM() * 2; ip++)
-        aMTilde[iz * GetMaxJM() * 2 + ip] = 0.0;
-
-    for (int izero = 0; izero < GetMaxJM(); izero++) {
-      GetElEmForIndex(izero, lzero, mzero);
-      GetElEmForIndex(izero, lzeroi, mzeroi);
-      //     if (mzero < 0)
-      //       continue;
-      for (int ibis = 0; ibis < GetMaxJM(); ibis++) {
-        GetElEmForIndex(ibis, lbis, mbis);
-        GetElEmForIndex(ibis, lbisi, mbisi);
-
-        //       if (mbis<0) continue;
-
-        std::complex<double> val = std::complex<double>(0.0, 0.0);
-        std::complex<double> mcomp[fMaxJM];
-        for (int iprim = 0; iprim < GetMaxJM(); iprim++) {
-          GetElEmForIndex(iprim, lprim, mprim);
-          GetElEmForIndex(iprim, lprimi, mprimi);
-
-          // 	if (mprim < 0 ) continue;
-
-          if (abs(mzeroi) % 2)
-            mcomp[iprim] = std::complex<double>(-1.0, 0.0);  // (-1)^m
-          else
-            mcomp[iprim] = std::complex<double>(1.0, 0.0);
-
-          mcomp[iprim] *= sqrt((2 * lzero + 1) * (2 * lprim + 1) * (2 * lbis + 1));  // P1
-          mcomp[iprim] *= WignerSymbol(lzero, 0, lprim, 0, lbis, 0);                 // W1
-          mcomp[iprim] *= WignerSymbol(lzero, -mzero, lprim, mprim, lbis,
-                                       mbis);  // W2
-          mcomp[iprim] *= aMat[iprim];
-          //	if (
-          val += mcomp[iprim];
-        }
-
-        aMTilde[(izero * 2) * (2 * GetMaxJM()) + (ibis * 2)]     = real(val);
-        aMTilde[(izero * 2 + 1) * (2 * GetMaxJM()) + (ibis * 2)] = imag(val);
-        if (imag(val) != 0.0)
-          aMTilde[(izero * 2) * (2 * GetMaxJM()) + (ibis * 2 + 1)] = -imag(val);
-        else
-          aMTilde[(izero * 2) * (2 * GetMaxJM()) + (ibis * 2 + 1)] = 0.0;
-        aMTilde[(izero * 2 + 1) * (2 * GetMaxJM()) + (ibis * 2 + 1)] = real(val);
-      }
-    }
-  }
-
-  void FemtoSHCF::UnPackYlmMatrixIndependentOnly(double* inmat, double* outmat, int insize) {
-    int lmax = sqrt(insize) - 1;
-    //  cout << "lmax is  " << lmax << std::endl;
-    if (0) { lmax *= 2; }
-    int tmax = (lmax + 1) * (lmax + 1) * 2;
-    int indexfrom[tmax];
-    int multfrom[tmax];
-
-    int el, em;
-    for (int iter = 0; iter < tmax; iter++) {
-      int im = iter % 2;
-      GetElEmForIndex(iter / 2, el, em);
-      if (em == 0) {
-        if (im == 1) {
-          indexfrom[iter] = 0;
-          multfrom[iter]  = 0;
-        } else {
-          indexfrom[iter] = el * el;
-          multfrom[iter]  = 1;
-        }
-      } else if (em < 0) {
-        indexfrom[iter] = (el * el) + (-em) * 2 - 1;
-        if (im) indexfrom[iter]++;
-        if ((-em) % 2)
-          if (im)
-            multfrom[iter] = 1;
-          else
-            multfrom[iter] = -1;
-        else if (im)
-          multfrom[iter] = -1;
-        else
-          multfrom[iter] = 1;
-      } else if (em > 0) {
-        indexfrom[iter] = (el * el) + (em) *2 - 1;
-        if (im) indexfrom[iter]++;
-        multfrom[iter] = 1;
-      }
-    }
-
-    //   cout << "From Mult " << std::endl;
-    //   for (int iter=0; iter<tmax; iter++)
-    //     cout << indexfrom[iter] << " ";
-    //   cout << std::endl;
-    //   for (int iter=0; iter<tmax; iter++)
-    //     cout << multfrom[iter] << " ";
-    //   cout << std::endl;
-
-    for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++)
-      for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++)
-        outmat[ilmz * GetMaxJM() * 2 + ilmp] =
-          inmat[(indexfrom[ilmz] * insize) + indexfrom[ilmp]] * multfrom[ilmz] * multfrom[ilmp];
   }
 
   void FemtoSHCF::Add(const Object* pack) {
@@ -970,137 +689,6 @@ namespace Hal {
     return cf;
   }
 
-  int FemtoSHCF::PackYlmVectorIndependentOnly(double* invec, double* outvec) const {
-    int ioutcount = 0;
-    int em, el;
-    for (int ilm = 0; ilm < GetMaxJM(); ilm++) {
-      GetElEmForIndex(ilm, el, em);
-      if (em < 0) continue;
-      outvec[ioutcount++] = invec[ilm * 2];
-      if (em == 0) continue;
-      outvec[ioutcount++] = invec[ilm * 2 + 1];
-    }
-    return ioutcount;
-  }
-
-  double FemtoSHCF::ClebschGordan(double aJot1, double aEm1, double aJot2, double aEm2, double aJot, double aEm) const {
-    int mint, maxt;
-    double cgc = 0.0;
-    int titer;
-    double coef;
-
-    maxt = lrint(aJot1 + aJot2 - aJot);
-    mint = 0;
-    if (lrint(aJot1 - aEm1) < maxt) maxt = lrint(aJot1 - aEm1);
-    if (lrint(aJot2 + aEm2) < maxt) maxt = lrint(aJot2 + aEm2);
-    if (lrint(-(aJot - aJot2 + aEm1)) > mint) mint = lrint(-(aJot - aJot2 + aEm1));
-    if (lrint(-(aJot - aJot1 - aEm2)) > mint) mint = lrint(-(aJot - aJot1 - aEm2));
-
-    for (titer = mint; titer <= maxt; titer++) {
-      coef = TMath::Power(-1, titer);
-      coef *= TMath::Sqrt((2 * aJot + 1) * fFactorials[lrint(aJot1 + aEm1)] * fFactorials[lrint(aJot1 - aEm1)]
-                          * fFactorials[lrint(aJot2 + aEm2)] * fFactorials[lrint(aJot2 - aEm2)] * fFactorials[lrint(aJot + aEm)]
-                          * fFactorials[lrint(aJot - aEm)]);
-      coef /= (fFactorials[titer] * fFactorials[lrint(aJot1 + aJot2 - aJot - titer)] * fFactorials[lrint(aJot1 - aEm1 - titer)]
-               * fFactorials[lrint(aJot2 + aEm2 - titer)] * fFactorials[lrint(aJot - aJot2 + aEm1 + titer)]
-               * fFactorials[lrint(aJot - aJot1 - aEm2 + titer)]);
-
-      cgc += coef;
-    }
-
-    cgc *= DeltaJ(aJot1, aJot2, aJot);
-
-    return cgc;
-  }
-
-  double FemtoSHCF::WignerSymbol(double aJot1, double aEm1, double aJot2, double aEm2, double aJot, double aEm) const {
-    if (lrint(aEm1 + aEm2 + aEm) != 0.0) return 0.0;
-    double cge = ClebschGordan(aJot1, aEm1, aJot2, aEm2, aJot, -aEm);
-    if (lrint(abs(aJot1 - aJot2 - aEm)) % 2) cge *= -1.0;
-    cge /= sqrt(2 * aJot + 1);
-
-    if (cge == -0.0) cge = 0.0;
-
-    return cge;
-  }
-
-  double FemtoSHCF::DeltaJ(double aJot1, double aJot2, double aJot) const {
-    if ((aJot1 + aJot2 - aJot) < 0) {
-      //    cout << "J1+J2-J3 < 0 !!!" << " " << aJot1 << " " << aJot2 << " " <<
-      //    aJot << std::endl;
-      return 0;
-    }
-    if ((aJot1 - aJot2 + aJot) < 0) {
-      //    cout << "J1-J2+J3 < 0 !!!" << " " << aJot1 << " " << aJot2 << " " <<
-      //    aJot << std::endl;
-      return 0;
-    }
-    if ((-aJot1 + aJot2 + aJot) < 0) {
-      //    cout << "-J1+J2+J3 < 0 !!!" << " " << aJot1 << " " << aJot2 << " " <<
-      //    aJot << std::endl;
-      return 0;
-    }
-    if ((aJot1 + aJot2 + aJot + 1) < 0) {
-      //    cout << "J1+J2+J3+1 < 0 !!!" << " " << aJot1 << " " << aJot2 << " " <<
-      //    aJot << std::endl;
-      return 0;
-    }
-    double res = TMath::Sqrt(1.0 * fFactorials[lrint(aJot1 + aJot2 - aJot)] * fFactorials[lrint(aJot1 - aJot2 + aJot)]
-                             * fFactorials[lrint(-aJot1 + aJot2 + aJot)] / fFactorials[lrint(aJot1 + aJot2 + aJot + 1)]);
-
-    return res;
-  }
-
-  int FemtoSHCF::PackYlmMatrixIndependentOnly(double* inmat, double* outmat) const {
-    int ioutcountz = 0;
-    int ioutcountp = 0;
-    int emz, elz;
-    int emp, elp;
-    int finalsize = 0;
-
-    for (int ilm = 0; ilm < GetMaxJM(); ilm++) {
-      GetElEmForIndex(ilm, elz, emz);
-      if (emz < 0) continue;
-      finalsize++;
-      if (emz == 0) continue;
-      finalsize++;
-    }
-
-    //  cout << "Final size " << finalsize << std::endl;
-
-    for (int ilmz = 0; ilmz < GetMaxJM(); ilmz++) {
-      GetElEmForIndex(ilmz, elz, emz);
-      ioutcountp = 0;
-
-      if (emz < 0) continue;
-      for (int ilmp = 0; ilmp < GetMaxJM(); ilmp++) {
-        GetElEmForIndex(ilmp, elp, emp);
-        if (emp < 0) continue;
-        outmat[ioutcountz * finalsize + ioutcountp] = inmat[GetBin(0, ilmz, 0, ilmp, 0)];
-        ioutcountp++;
-        if (emp == 0) continue;
-        outmat[ioutcountz * finalsize + ioutcountp] = inmat[GetBin(0, ilmz, 0, ilmp, 1)];
-        ioutcountp++;
-      }
-      ioutcountz++;
-
-      if (emz == 0) continue;
-      ioutcountp = 0;
-      for (int ilmp = 0; ilmp < GetMaxJM(); ilmp++) {
-        GetElEmForIndex(ilmp, elp, emp);
-        if (emp < 0) continue;
-        outmat[ioutcountz * finalsize + ioutcountp] = inmat[GetBin(0, ilmz, 1, ilmp, 0)];
-        ioutcountp++;
-        if (emp == 0) continue;
-        outmat[ioutcountz * finalsize + ioutcountp] = inmat[GetBin(0, ilmz, 1, ilmp, 1)];
-        ioutcountp++;
-      }
-      ioutcountz++;
-    }
-
-    return ioutcountz;
-  }
-
   TH3D* FemtoSHCF::GetCovCF() const { return fCfcov; }
 
   void FemtoSHCF::RecalculateCF() {
@@ -1139,34 +727,24 @@ namespace Hal {
     for (int i = 0; i < fMaxJM; i++) {
       TString name = fNumReal[i]->GetName();
       name.ReplaceAll("Num", "CF");
-      fCFReal[i] = new TH1D(name,
-                            name,
-                            fNumReal[i]->GetNbinsX(),
-                            fNumReal[i]->GetXaxis()->GetBinLowEdge(1),
-                            fNumReal[i]->GetXaxis()->GetBinUpEdge(fNumReal[i]->GetNbinsX()));
+      Int_t nbins;
+      Double_t min, max;
+      Std::GetAxisPar(*fNumReal[i], nbins, min, max, "x");
+      fCFReal[i] = new TH1D(name, name, nbins, min, max);
       name       = fNumImag[i]->GetName();
       name.ReplaceAll("Num", "CF");
-      fCFImag[i] = new TH1D(name,
-                            name,
-                            fNumImag[i]->GetNbinsX(),
-                            fNumImag[i]->GetXaxis()->GetBinLowEdge(1),
-                            fNumImag[i]->GetXaxis()->GetBinUpEdge(fNumReal[i]->GetNbinsX()));
+      fCFImag[i] = new TH1D(name, name, nbins, min, max);
       fCFImag[i]->SetLineColor(kRed);
-      fCFImag[i]->SetLineColor(kRed);
+      fCFImag[i]->SetMarkerColor(kRed);
       int el, em;
-      GetElEmForIndex(i, el, em);
+      el = fLmVals.GetElsi(i);
+      em = fLmVals.GetEmsi(i);
       fCFReal[i]->GetYaxis()->SetTitle(Form("C^{%i}_{%i}", el, em));
       fCFReal[i]->SetTitle(Form("CF^{%i}_{%i} Re", el, em));
       fCFImag[i]->GetYaxis()->SetTitle(Form("C^{%i}_{%i}", el, em));
       fCFImag[i]->SetTitle(Form("CF^{%i}_{%i} Im", el, em));
     }
-
-    std::complex<double> tMq0[fMaxJM];
-    std::complex<double> tTq0[fMaxJM];
-    double tMTilde[fMaxJM * fMaxJM * 4];
-    //	std::complex<double> tCq0[fMaxJM];
-    int recalccov = 1;
-    if ((covmnum) && ((*covmnum)[0] > 0.0)) {
+    if ((fCovNum[0][0][0] > 0.0)) {
       std::cout << "Detected calculated covariance matrix. Do not recalculate !!!" << std::endl;
       //  recalccov = 0;
     }
@@ -1174,609 +752,11 @@ namespace Hal {
       std::cout << "Emtpy numerator, stop calculating cF" << std::endl;
       return;  // no data, CF is empdy
     }
-    double normfactor = 1.0;
-    // TODO Fix/improvenormalization
-    double normbinmax = 0;  // fDenReal[0]->FindBin(fNormMax);
-    double normbinmin = 0;  // fDenReal[0]->FindBin(fNormMin);
-    if (normbinmax > 0) {
-      double sksum = 0.0;
-      double wksum = 0.0;
 
-      double sk, wk, ks;
-      if (normbinmin < 1) normbinmin = 1;
-      if (normbinmax > fDenReal[0]->GetNbinsX()) normbinmax = fDenReal[0]->GetNbinsX();
-      for (int ib = normbinmin; ib <= normbinmax; ib++) {
-        ks = fDenReal[0]->GetXaxis()->GetBinCenter(ib);
-        sk = fNumReal[0]->GetBinContent(ib)
-             / (fDenReal[0]->GetBinContent(ib) * (1.0 - fNormPurity / (fNormRadius * fNormBohr * ks * ks)));
-        wk = fNumReal[0]->GetBinContent(ib);
-        sksum += sk * wk;
-        wksum += wk;
-      }
-      normfactor *= sksum / wksum;
-      normfactor /= fNumReal[0]->GetEntries() / fDenReal[0]->GetEntries();
-    }
-
-    for (int ibin = 1; ibin <= fNumReal[0]->GetNbinsX(); ibin++) {
-      for (int ilm = 0; ilm < fMaxJM; ilm++) {
-        //      cout << fNumImag[ilm]->GetBinContent(ibin) << std::endl;
-        if (recalccov) {
-          tMq0[ilm] = std::complex<double>(fDenReal[ilm]->GetBinContent(ibin) / (fDenReal[0]->GetEntries() / normfactor),
-                                           fDenImag[ilm]->GetBinContent(ibin) / (fDenReal[0]->GetEntries() / normfactor));
-          tTq0[ilm] = std::complex<double>(fNumReal[ilm]->GetBinContent(ibin) / fNumReal[0]->GetEntries(),
-                                           fNumImag[ilm]->GetBinContent(ibin) / fNumReal[0]->GetEntries());
-        } else {
-          tMq0[ilm] = std::complex<double>(fDenReal[ilm]->GetBinContent(ibin) / normfactor,
-                                           fDenImag[ilm]->GetBinContent(ibin) / normfactor);
-          tTq0[ilm] = std::complex<double>(fNumReal[ilm]->GetBinContent(ibin), fNumImag[ilm]->GetBinContent(ibin));
-        }
-        //      cout << imag(tTq0[ilm]) << std::endl;
-      }
-
-      // Calculate the proper error matrix for T
-      // from the temporary covariance matrices
-      //    int tabshift = (ibin-1)*GetMaxJM()*GetMaxJM()*4;
-      if (recalccov) {
-        for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++)
-          for (int ilmprim = 0; ilmprim < GetMaxJM(); ilmprim++) {
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 0)])) {
-              // 	    cout << "NaN !!!! RR " << ilmzero << " " << ilmprim <<
-              // std::endl; 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 1)])) {
-              // 	    cout << "NaN !!!! RI " << ilmzero << " " << ilmprim <<
-              // std::endl; 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 0)])) {
-              // 	    cout << "NaN !!!! IR " << ilmzero << " " << ilmprim <<
-              // std::endl; 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 1)])) {
-              // 	    cout << "NaN !!!! II " << ilmzero << " " << ilmprim <<
-              // std::endl; 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 0)] /= fNumReal[0]->GetEntries();
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 1)] /= fNumReal[0]->GetEntries();
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 0)] /= fNumReal[0]->GetEntries();
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 1)] /= fNumReal[0]->GetEntries();
-
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 0)])) {
-              // 	    cout << "NaN !!!! RR" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 1)])) {
-              // 	    cout << "NaN !!!! RI" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 0)])) {
-              // 	    cout << "NaN !!!! IR" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 1)])) {
-              // 	    cout << "NaN !!!! II" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 0)] -= real(tTq0[ilmzero]) * real(tTq0[ilmprim]);
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 1)] -= real(tTq0[ilmzero]) * imag(tTq0[ilmprim]);
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 0)] -= imag(tTq0[ilmzero]) * real(tTq0[ilmprim]);
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 1)] -= imag(tTq0[ilmzero]) * imag(tTq0[ilmprim]);
-
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 0)])) {
-              // 	    cout << "NaN !!!! RR" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 1)])) {
-              // 	    cout << "NaN !!!! RI" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 0)])) {
-              // 	    cout << "NaN !!!! IR" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 1)])) {
-              // 	    cout << "NaN !!!! II" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 0)] /= (fNumReal[0]->GetEntries() - 1);
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 1)] /= (fNumReal[0]->GetEntries() - 1);
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 0)] /= (fNumReal[0]->GetEntries() - 1);
-            (*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 1)] /= (fNumReal[0]->GetEntries() - 1);
-
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 0)])) {
-              // 	    cout << "NaN !!!! RR" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 0, ilmprim, 1)])) {
-              // 	    cout << "NaN !!!! RI" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 0)])) {
-              // 	    cout << "NaN !!!! IR" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-            if (std::isnan((*covmnum)[GetBin(ibin - 1, ilmzero, 1, ilmprim, 1)])) {
-              // 	    cout << "NaN !!!! II" << std::endl;
-              // 	    cout << fNumReal[0]->GetEntries() << " "
-              // 		 << real(tTq0[ilmzero]) << " "
-              // 		 << real(tTq0[ilmprim]) << " "
-              // 		 << imag(tTq0[ilmzero]) << " "
-              // 		 << imag(tTq0[ilmprim]) << " " << std::endl;
-            }
-          }
-      }
-
-      GetMtilde(tMq0, tMTilde);
-
-      // Perform the solution for the correlation function itself and the errors
-      //     cout << "=============================" << std::endl;
-      //     cout << "C calculation for bin " << (ibin-1) << std::endl;
-      //     cout << std::endl;
-      //     cout << "Input: " << std::endl;
-      //     cout << "T vector " << std::endl;
-      //     for (int ilm=0; ilm<GetMaxJM(); ilm++)
-      //       cout << real(tTq0[ilm]) << " " << imag(tTq0[ilm]) << "   ";
-      //     cout << std::endl << "M vector " << std::endl;
-      //     for (int ilm=0; ilm<GetMaxJM(); ilm++)
-      //       cout << real(tMq0[ilm]) << " " << imag(tMq0[ilm]) << "   ";
-      //     cout << std::endl;
-
-      if (fNumReal[0]->GetBinContent(ibin) > 0) {
-        // Rewrite the new way to use the solving wherever there is inversion
-        double mDeltaT[fMaxJM * fMaxJM * 4];
-        for (int ilmzero = 0; ilmzero < GetMaxJM() * 2; ilmzero++)
-          for (int ilmprim = 0; ilmprim < GetMaxJM() * 2; ilmprim++)
-            mDeltaT[(ilmzero * fMaxJM * 2) + ilmprim] =
-              ((*covmnum)[GetBin(ibin - 1, ilmzero / 2, ilmzero % 2, ilmprim / 2, ilmprim % 2)]);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "Delta T matrix " << std::endl;
-        for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
-          for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mDeltaT[ilmz * GetMaxJM() * 2 + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        double mDeltaTPacked[fMaxJM * fMaxJM * 4];
-        int msize = PackYlmMatrixIndependentOnly(mDeltaT, mDeltaTPacked);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "Delta T matrix packed " << std::endl;
-        for (int ilmz = 0; ilmz < msize; ilmz++) {
-          for (int ilmp = 0; ilmp < msize; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mDeltaTPacked[ilmz * msize + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        // (1) Solve (DeltaT)^1 Mtilde = Q
-
-        // Prepare halper matrices
-
-        double mM[fMaxJM * fMaxJM * 4];
-        double mMPacked[fMaxJM * fMaxJM * 4];
-        for (int iter = 0; iter < fMaxJM * fMaxJM * 4; iter++)
-          mM[iter] = tMTilde[iter];
-        PackYlmMatrixIndependentOnly(mM, mMPacked);
-
-        gsl_matrix_view matM = gsl_matrix_view_array(mMPacked, msize, msize);
-#ifdef _FINISH_DEBUG_
-        std::cout << "Mtilde matrix " << std::endl;
-        for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
-          for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mM[ilmz * GetMaxJM() * 2 + ilmp];
-          }
-          std::cout << std::endl;
-        }
-
-        std::cout << "Mtilde matrix packed " << std::endl;
-        for (int ilmz = 0; ilmz < msize; ilmz++) {
-          for (int ilmp = 0; ilmp < msize; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mMPacked[ilmz * msize + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        // Inverting matrix DeltaT.
-
-        double mU[fMaxJM * fMaxJM * 4];
-        InvertYlmIndependentMatrix(mDeltaT, mU);
-
-        double mDTInvertedPacked[fMaxJM * fMaxJM * 4];
-        PackYlmMatrixIndependentOnly(mU, mDTInvertedPacked);
-
-        gsl_matrix_view matDTI = gsl_matrix_view_array(mDTInvertedPacked, msize, msize);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "Delta T matrix inverted packed " << std::endl;
-        for (int ilmz = 0; ilmz < msize; ilmz++) {
-          for (int ilmp = 0; ilmp < msize; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mDTInvertedPacked[ilmz * msize + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        // (2) Multiply DeltaT^1 M = Q
-        double mQ[fMaxJM * fMaxJM * 4];
-        for (int iter = 0; iter < msize * msize; iter++)
-          mQ[iter] = 0.0;
-        gsl_matrix_view matQ = gsl_matrix_view_array(mQ, msize, msize);
-
-        gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &matDTI.matrix, &matM.matrix, 0.0, &matQ.matrix);
-
-        double mTest[fMaxJM * fMaxJM * 4];
-        gsl_matrix_view matTest = gsl_matrix_view_array(mTest, msize, msize);
-
-        double mF[fMaxJM * fMaxJM * 4];
-        for (int iter = 0; iter < fMaxJM * fMaxJM * 4; iter++)
-          mF[iter] = mDeltaTPacked[iter];
-        gsl_matrix_view matF = gsl_matrix_view_array(mF, msize, msize);
-
-        gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &matF.matrix, &matQ.matrix, 0.0, &matTest.matrix);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "Test matrix packed - compare to Mtilde" << std::endl;
-        for (int ilmz = 0; ilmz < msize; ilmz++) {
-          for (int ilmp = 0; ilmp < msize; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mTest[ilmz * msize + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        // (2) Multiply Mtilde^T Q = P
-
-        double mP[fMaxJM * fMaxJM * 4];
-        for (int iter = 0; iter < fMaxJM * fMaxJM * 4; iter++)
-          mP[iter] = 0;
-
-        gsl_matrix_view matP = gsl_matrix_view_array(mP, msize, msize);
-
-        gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &matM.matrix, &matQ.matrix, 0.0, &matP.matrix);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "P matrix packed " << std::endl;
-        for (int ilmz = 0; ilmz < msize; ilmz++) {
-          for (int ilmp = 0; ilmp < msize; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mP[ilmz * msize + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        // (3) Solve P^-1 Mtilde^T = R
-        double mPUnpacked[fMaxJM * fMaxJM * 4];
-        UnPackYlmMatrixIndependentOnly(mP, mPUnpacked, msize);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "P matrix unpacked " << std::endl;
-        for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
-          for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mPUnpacked[ilmz * GetMaxJM() * 2 + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        // Invert the P matrix
-
-        double mPInverted[fMaxJM * fMaxJM * 4];
-        InvertYlmIndependentMatrix(mPUnpacked, mPInverted);
-
-        double mPInvertedPacked[fMaxJM * fMaxJM * 4];
-        PackYlmMatrixIndependentOnly(mPInverted, mPInvertedPacked);
-
-        gsl_matrix_view matPI = gsl_matrix_view_array(mPInvertedPacked, msize, msize);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "P matrix inverted packed " << std::endl;
-        for (int ilmz = 0; ilmz < msize; ilmz++) {
-          for (int ilmp = 0; ilmp < msize; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mPInvertedPacked[ilmz * msize + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        //       //      gsl_matrix_view matR = gsl_matrix_view_array(mR, msize,
-        //       msize);
-
-        //       double mG[fMaxJM*fMaxJM*4];
-        //       for (int iter=0; iter<fMaxJM*fMaxJM*4; iter++)
-        // 	mG[iter] = mP[iter];
-        //       gsl_matrix_view matG = gsl_matrix_view_array(mG, msize, msize);
-
-        //       // Decomposing the M matrix
-        //       gsl_linalg_SV_decomp(&matG.matrix, &matS.matrix, &vecST.vector,
-        //       &vecWT.vector);
-
-        //       for (int itert=0; itert<msize; itert++) {
-        // 	for (int iterm=0; iterm<msize; iterm++)
-        // 	  vCT[iterm] = mMPacked[iterm*msize + itert];
-        // 	  // Transvere !!!      ^^^^^         ^^^^^
-
-        // 	// Solving the problem
-        // 	gsl_linalg_SV_solve(&matG.matrix, &matS.matrix, &vecST.vector,
-        // &vecCT.vector, &vecXT.vector);
-
-        // 	for (int iterm=0; iterm<msize; iterm++)
-        // 	  mR[itert*msize + iterm] = vXT[iterm];
-        //       }
-
-        double mR[fMaxJM * fMaxJM * 4];
-        for (int ir = 0; ir < fMaxJM * fMaxJM * 4; ir++)
-          mR[ir] = 0.0;
-        gsl_matrix_view matR = gsl_matrix_view_array(mR, msize, msize);
-
-        // (2) Multiply P^-1 M (Trans) = R
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "Matrix M Packed " << std::endl;
-        for (int ilmz = 0; ilmz < msize; ilmz++) {
-          for (int ilmp = 0; ilmp < msize; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mMPacked[ilmz * msize + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &matPI.matrix, &matM.matrix, 1.0, &matR.matrix);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "R matrix packed " << std::endl;
-
-        for (int ilmz = 0; ilmz < msize; ilmz++) {
-          for (int ilmp = 0; ilmp < msize; ilmp++) {
-            std::cout.precision(3);
-            std::cout.width(10);
-            std::cout << mR[ilmz * msize + ilmp];
-          }
-          std::cout << std::endl;
-        }
-#endif
-
-        // (4) Solve DeltaT^-1 T = L
-        double vL[fMaxJM * 2];
-        gsl_vector_view vecL = gsl_vector_view_array(vL, msize);
-
-        //       // Decomposing the M matrix
-        //       gsl_linalg_SV_decomp(&matF.matrix, &matS.matrix, &vecST.vector,
-        //       &vecWT.vector);
-
-        double vB[fMaxJM * 2];
-        for (int iter = 0; iter < GetMaxJM(); iter++) {
-          vB[iter * 2]     = real(tTq0[iter]);
-          vB[iter * 2 + 1] = imag(tTq0[iter]);
-        }
-
-        double vBPacked[fMaxJM * 2];
-        PackYlmVectorIndependentOnly(vB, vBPacked);
-
-        gsl_vector_view vecB = gsl_vector_view_array(vBPacked, msize);
-
-        //       // Solving the problem
-        //       gsl_linalg_SV_solve(&matF.matrix, &matS.matrix, &vecST.vector,
-        //       &vecB.vector, &vecL.vector);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "L vector packed " << std::endl;
-        for (int ilmp = 0; ilmp < msize; ilmp++) {
-          std::cout.precision(3);
-          std::cout.width(10);
-          std::cout << vL[ilmp];
-        }
-        std::cout << std::endl;
-#endif
-
-        // Multiply DeltaT^-1 T = L
-
-        gsl_blas_dgemv(CblasNoTrans, 1.0, &matDTI.matrix, &vecB.vector, 0.0, &vecL.vector);
-
-        // (5) Multiply R L = C
-
-        double vY[fMaxJM * 2];
-        for (int iter = 0; iter < GetMaxJM() * 2; iter++) {
-          vY[iter] = 0.0;
-        }
-
-        // Prepare inputs for solving the problem
-        gsl_vector_view vecY = gsl_vector_view_array(vY, msize);
-
-        gsl_blas_dgemv(CblasNoTrans, 1.0, &matR.matrix, &vecL.vector, 0.0, &vecY.vector);
-
-#ifdef _FINISH_DEBUG_
-        std::cout << "C vector packed " << std::endl;
-        for (int ilmp = 0; ilmp < msize; ilmp++) {
-          std::cout.precision(3);
-          std::cout.width(10);
-          std::cout << vY[ilmp];
-        }
-        std::cout << std::endl;
-#endif
-        int mpack = 0;
-        int el, em;
-        for (int ilm = 0; ilm < fMaxJM; ilm++) {
-          // 	fCFReal[ilm]->SetBinContent(ibin, vC[mpack++]);
-          GetElEmForIndex(ilm, el, em);
-          if ((el % 2) == 1) {
-            fCFReal[ilm]->SetBinContent(ibin, 0.0);
-            fCFImag[ilm]->SetBinContent(ibin, 0.0);
-          }
-
-#ifdef FULL_CALC
-          fCFReal[ilm]->SetBinContent(ibin, fNumReal[ilm]->GetBinContent(ibin) / fDenReal[ilm]->GetBinContent(ibin));
-          fCFImag[ilm]->SetBinContent(ibin, fNumImag[ilm]->GetBinContent(ibin) / fDenImag[ilm]->GetBinContent(ibin));
-
-#else
-          if (em < 0) {
-            fCFReal[ilm]->SetBinContent(ibin, 0.0);
-            fCFImag[ilm]->SetBinContent(ibin, 0.0);
-          } else {
-            fCFReal[ilm]->SetBinContent(ibin, vY[mpack++]);
-            if (em == 0)
-              fCFImag[ilm]->SetBinContent(ibin, 0);
-            else
-              //	  fCFImag[ilm]->SetBinContent(ibin, vC[mpack++]);
-              fCFImag[ilm]->SetBinContent(ibin, vY[mpack++]);
-          }
-
-#endif
-        }
-
-        // invert the P matrix to get C errors
-        //      double mS[fMaxJM*fMaxJM*4];
-
-        //       for (int iterz=0; iterz<msize; iterz++)
-        // 	for (int iterp=0; iterp<msize; iterp++)
-        // 	  if (iterp == iterz)
-        // 	    mS[iterz*msize + iterp] = 1.0;
-        // 	  else
-        // 	    mS[iterz*msize + iterp] = 0.0;
-
-        //      gsl_matrix_view matS = gsl_matrix_view_array(mS, msize, msize);
-
-        // Invert V
-
-        //       gsl_blas_dtrsm(CblasLeft, CblasUpper, CblasNoTrans,
-        //       CblasNonUnit, 1.0, &matP.matrix, &matS.matrix);
-
-        mpack = 0;
-        for (int ilm = 0; ilm < fMaxJM; ilm++) {
-          GetElEmForIndex(ilm, el, em);
-          if (em < 0) {
-            fCFReal[ilm]->SetBinError(ibin, 0);
-            fCFImag[ilm]->SetBinError(ibin, 0);
-          } else {
-            fCFReal[ilm]->SetBinError(ibin, sqrt(fabs(mPInvertedPacked[mpack * msize + mpack])));
-            mpack++;
-            if (em == 0)
-              fCFImag[ilm]->SetBinError(ibin, 0);
-            else {
-              fCFImag[ilm]->SetBinError(ibin, sqrt(fabs(mPInvertedPacked[mpack * msize + mpack])));
-              mpack++;
-            }
-          }
-        }
-
-        for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
-          for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
-            if (ilmp > ilmz)
-              (*covmcfc)[GetBin(ibin - 1, ilmz / 2, ilmz % 2, ilmp / 2, ilmp % 2)] = mPInverted[ilmz * GetMaxJM() * 2 + ilmp];
-            else
-              (*covmcfc)[GetBin(ibin - 1, ilmz / 2, ilmz % 2, ilmp / 2, ilmp % 2)] = mPInverted[ilmp * GetMaxJM() * 2 + ilmz];
-          }
-        }
-      } else {
-        for (int ilm = 0; ilm < fMaxJM; ilm++) {
-          fCFReal[ilm]->SetBinError(ibin, 0);
-          fCFImag[ilm]->SetBinError(ibin, 0);
-        }
-
-        for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
-          for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
-            (*covmcfc)[GetBin(ibin - 1, ilmz / 2, ilmz % 2, ilmp / 2, ilmp % 2)] = 0.0;
-          }
-        }
-      }
-    }
-    /// fix CF by using T(l'm) = T(l,-m)*
-    for (int l = 0; l <= GetL(); l++) {
-      for (int m = -l; m < 0; m++) {
-        Int_t from = fLmVals.GetIndex(l, -m);
-        Int_t to   = fLmVals.GetIndex(l, m);
-        for (int i = 1; i <= fCFReal[from]->GetNbinsX(); i++) {
-          fCFReal[to]->SetBinContent(i, fCFReal[from]->GetBinContent(i));
-          fCFReal[to]->SetBinError(i, fCFReal[from]->GetBinError(i));
-          fCFImag[to]->SetBinContent(i, -fCFImag[from]->GetBinContent(i));
-          fCFImag[to]->SetBinError(i, fCFImag[from]->GetBinError(i));
-        }
-      }
-    }
-
+    //=====================================================
+    FemtoYlmSolver solver(GetL(), this);
+    solver.SetNormalizationArea(0, 0);
+    solver.Solve(kTRUE);
     PackCfcCovariance();
 #else
     std::cout << "GLS NOT ENABLED!" << std::endl;
@@ -1811,26 +791,11 @@ namespace Hal {
       fDenReal[i]->Add(cf->fDenReal[i]);
       fDenImag[i]->Add(cf->fDenImag[i]);
     }
-    covmcfc->Add(*cf->covmcfc);
-    covmden->Add(*cf->covmden);
-    covmnum->Add(*cf->covmnum);
+    fCovCf += obj->fCovCf;
+    fCovNum += obj->fCovNum;
+    fCovDen += obj->fCovDen;
     fNum->Add(cf->fNum);
     fDen->Add(cf->fDen);
-  }
-
-  Double_t FemtoSHCF::Sil(Double_t n) const {
-    if (n == 0)
-      return 1;
-    else
-      return n * Sil(n - 1);
-  }
-
-  Double_t FemtoSHCF::Sil2(Double_t n) const {
-    if (n <= 1) {
-      return 1;
-    } else {
-      return n * Sil2(n - 2);
-    }
   }
 
   FemtoSHCF::~FemtoSHCF() {
@@ -1840,9 +805,6 @@ namespace Hal {
     if (fDenImag) delete[] fDenImag;
     if (fCFReal) delete[] fCFReal;
     if (fCFImag) delete[] fCFImag;
-    if (covmnum) delete covmnum;
-    if (covmden) delete covmden;
-    if (covmcfc) delete covmcfc;
     if (fCfcov) delete fCfcov;
   }
 
@@ -1942,7 +904,7 @@ namespace Hal {
   void FemtoSHCF::FillNumObj(TObject* obj) {
     FemtoPair* pair = (FemtoPair*) obj;
     Double_t kv     = TMath::Sqrt(pair->GetX() * pair->GetX() + pair->GetY() * pair->GetY() + pair->GetZ() * pair->GetZ());
-    std::complex<double>* YlmBuffer = FemtoYlm::YlmUpToL(fLmVals.GetL(), pair->GetX(), pair->GetY(), pair->GetZ());
+    std::complex<double>* YlmBuffer = fLmMath.YlmUpToL(fLmVals.GetMaxL(), pair->GetX(), pair->GetY(), pair->GetZ());
     for (int ilm = 0; ilm < GetMaxJM(); ilm++) {
       fNumReal[ilm]->Fill(kv, real(YlmBuffer[ilm]) * pair->GetWeight());
       fNumImag[ilm]->Fill(kv, -imag(YlmBuffer[ilm]) * pair->GetWeight());
@@ -1954,15 +916,13 @@ namespace Hal {
     if (nqbin < fNum->GetNbinsX()) {
       Double_t weight2 = pair->GetWeight() * pair->GetWeight();
       for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++) {
+        const int twoilmzero = ilmzero * 2;
         for (int ilmprim = 0; ilmprim < GetMaxJM(); ilmprim++) {
-          Int_t gbin       = GetBin(nqbin, ilmzero, 0, ilmprim, 0);
-          (*covmnum)[gbin] = (*covmnum)[gbin] + real(YlmBuffer[ilmzero]) * real(YlmBuffer[ilmprim]) * weight2;
-          gbin             = GetBin(nqbin, ilmzero, 0, ilmprim, 1);
-          (*covmnum)[gbin] = (*covmnum)[gbin] + real(YlmBuffer[ilmzero]) * -imag(YlmBuffer[ilmprim]) * weight2;
-          gbin             = GetBin(nqbin, ilmzero, 1, ilmprim, 0);
-          (*covmnum)[gbin] = (*covmnum)[gbin] - imag(YlmBuffer[ilmzero]) * real(YlmBuffer[ilmprim]) * weight2;
-          gbin             = GetBin(nqbin, ilmzero, 1, ilmprim, 1);
-          (*covmnum)[gbin] = (*covmnum)[gbin] - imag(YlmBuffer[ilmzero]) * -imag(YlmBuffer[ilmprim]) * weight2;
+          const int twoilmprim = ilmprim * 2;
+          fCovNum[nqbin][twoilmzero][twoilmprim] += real(YlmBuffer[ilmzero]) * real(YlmBuffer[ilmprim]) * weight2;
+          fCovNum[nqbin][twoilmzero][twoilmprim + 1] += real(YlmBuffer[ilmzero]) * -imag(YlmBuffer[ilmprim]) * weight2;
+          fCovNum[nqbin][twoilmzero + 1][twoilmprim] -= imag(YlmBuffer[ilmzero]) * real(YlmBuffer[ilmprim]) * weight2;
+          fCovNum[nqbin][twoilmzero + 1][twoilmprim + 1] -= imag(YlmBuffer[ilmzero]) * -imag(YlmBuffer[ilmprim]) * weight2;
         }
       }
     }
@@ -1971,7 +931,7 @@ namespace Hal {
   void FemtoSHCF::FillDenObj(TObject* obj) {
     FemtoPair* pair = (FemtoPair*) obj;
     Double_t kv     = TMath::Sqrt(pair->GetX() * pair->GetX() + pair->GetY() * pair->GetY() + pair->GetZ() * pair->GetZ());
-    std::complex<double>* YlmBuffer = FemtoYlm::YlmUpToL(fLmVals.GetL(), pair->GetX(), pair->GetY(), pair->GetZ());
+    std::complex<double>* YlmBuffer = fLmMath.YlmUpToL(fLmVals.GetMaxL(), pair->GetX(), pair->GetY(), pair->GetZ());
     for (int ilm = 0; ilm < GetMaxJM(); ilm++) {
       fDenReal[ilm]->Fill(kv, real(YlmBuffer[ilm]) * pair->GetWeight());
       fDenImag[ilm]->Fill(kv, -imag(YlmBuffer[ilm]) * pair->GetWeight());
@@ -1983,15 +943,13 @@ namespace Hal {
     if (nqbin < fDen->GetNbinsX()) {
       Double_t weight2 = pair->GetWeight() * pair->GetWeight();
       for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++) {
+        const int twoilmzero = ilmzero * 2;
         for (int ilmprim = 0; ilmprim < GetMaxJM(); ilmprim++) {
-          Int_t gbin       = GetBin(nqbin, ilmzero, 0, ilmprim, 0);
-          (*covmden)[gbin] = (*covmden)[gbin] + real(YlmBuffer[ilmzero]) * real(YlmBuffer[ilmprim]) * weight2;
-          gbin             = GetBin(nqbin, ilmzero, 0, ilmprim, 1);
-          (*covmden)[gbin] = (*covmden)[gbin] + real(YlmBuffer[ilmzero]) * -imag(YlmBuffer[ilmprim]) * weight2;
-          gbin             = GetBin(nqbin, ilmzero, 1, ilmprim, 0);
-          (*covmden)[gbin] = (*covmden)[gbin] - imag(YlmBuffer[ilmzero]) * real(YlmBuffer[ilmprim]) * weight2;
-          gbin             = GetBin(nqbin, ilmzero, 1, ilmprim, 1);
-          (*covmden)[gbin] = (*covmden)[gbin] - imag(YlmBuffer[ilmzero]) * -imag(YlmBuffer[ilmprim]) * weight2;
+          const int twoilmprim = ilmprim * 2;
+          fCovDen[nqbin][twoilmzero][twoilmprim] += real(YlmBuffer[ilmzero]) * real(YlmBuffer[ilmprim]) * weight2;
+          fCovDen[nqbin][twoilmzero][twoilmprim + 1] += real(YlmBuffer[ilmzero]) * -imag(YlmBuffer[ilmprim]) * weight2;
+          fCovDen[nqbin][twoilmzero + 1][twoilmprim] -= imag(YlmBuffer[ilmzero]) * real(YlmBuffer[ilmprim]) * weight2;
+          fCovDen[nqbin][twoilmzero + 1][twoilmprim + 1] -= imag(YlmBuffer[ilmzero]) * -imag(YlmBuffer[ilmprim]) * weight2;
         }
       }
     }
@@ -2019,24 +977,28 @@ namespace Hal {
     return data;
   }
 
+
   void FemtoSHCF::MakeDummyCov() {
     Cout::Text("FemtoSHCF::MakeDummyCov", "M", kRed);
     for (int i = 0; i < fNum->GetNbinsX(); i++) {
       for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++) {
         for (int ilmzero2 = 0; ilmzero2 < GetMaxJM(); ilmzero2++) {
-          Int_t gbin       = GetBin(i, ilmzero, 0, ilmzero2, 1);
-          (*covmnum)[gbin] = 0;
+          //   Int_t gbin       = GetBin(i, ilmzero, 0, ilmzero2, 1);
+          //   (*covmnum)[gbin] = 0;
         }
       }
       for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++) {
-        Int_t gbin       = GetBin(i, ilmzero, 0, ilmzero, 1);
-        (*covmnum)[gbin] = 1;
+        //  Int_t gbin       = GetBin(i, ilmzero, 0, ilmzero, 1);
+        // (*covmnum)[gbin] = 1;
       }
     }
   }
   void FemtoSHCF::Rebin(Int_t ngroup, Option_t* opt) { std::cout << "REBIN of SHCF not implented !" << std::endl; }
 
-  void FemtoSHCF::Fit(CorrFitSHCF* fit) { fit->Fit(this); }
+  void FemtoSHCF::Fit(CorrFitSHCF* fit) {  // fit->Fit(this); //
+  }
 
-  void FemtoSHCF::FitDummy(CorrFitSHCF* fit) { fit->FitDummy(this); }
+  void FemtoSHCF::FitDummy(CorrFitSHCF* fit) {
+    // fit->FitDummy(this);
+  }
 }  // namespace Hal

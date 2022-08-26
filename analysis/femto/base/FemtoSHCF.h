@@ -14,6 +14,7 @@
 #include "Array.h"
 #include "DividedHisto.h"
 #include "FemtoYlmIndexes.h"
+#include "FemtoYlmMath.h"
 
 #include <TMath.h>
 #include <TString.h>
@@ -21,12 +22,16 @@
 
 namespace Hal {
   class CorrFitSHCF;
+  class FemtoSHSlice;
+  class FemtoYlmSolver;
 
   /**
    * class for storing sphercial harmonics correlation functions
    */
   class FemtoSHCF : public DividedHisto1D {
     friend class CorrFitSCHF;
+    friend class FemtoSHSlice;
+    friend class FemtoYlmSolver;
     const Int_t fMaxJM;
     TH1D** fNumReal;  //[fMaxJM] Real parts of Ylm components of the numerator
     TH1D** fNumImag;  // [fMaxJM]Imaginary parts of Ylm components of the numerator
@@ -37,34 +42,23 @@ namespace Hal {
     TH1D** fCFReal;  //[fMaxJM] real CF's
     TH1D** fCFImag;  //[fMaxJM] img CF's
     Int_t fFactorialsSize;
-    Array_1<Double_t>* covmnum;  // Covariance matrix for the numerator
-    Array_1<Double_t>* covmden;  // Covariance matrix for the denominator
-    Array_1<Double_t>* covmcfc;  // Covariance matrix for the  CF
-    Double_t fNormPurity;        //
-    Double_t fNormRadius;        //
-    Double_t fNormBohr;          //
-    Double_t* fFactorials;       //[fFactorialsSize]
-    TH3D* fCfcov;                //
+    Array_3<Double_t> fCovNum;
+    Array_3<Double_t> fCovDen;
+    Array_3<Double_t> fCovCf;
+    Double_t fNormPurity;  //
+    Double_t fNormRadius;  //
+    Double_t fNormBohr;    //
+    TH3D* fCfcov;          //
     FemtoYlmIndexes fLmVals;
+    FemtoYlmMath fLmMath;
+    Bool_t fColzSet = {kFALSE};
+    Color_t fColRe  = {kBlue};
+    Color_t fColIm  = {kRed};
 
-    Double_t Sil(Double_t n) const;
-    Double_t Sil2(Double_t n) const;
-    Int_t GetBin(int qbin, int ilmzero, int zeroimag, int ilmprim, int primimag) const;
     Double_t Sqr(Double_t val1, Double_t val2) const;
     TH1D* Histo(int ilm, int em, Option_t* opt, Double_t scale) const;
     void PackCfcCovariance();
-    void UnpackCovariances();
-    void GetElEmForIndex(int aIndex, double& aEl, double& aEm) const;
-    void GetElEmForIndex(int aIndex, int& aEl, int& aEm) const;
-    void GetMtilde(std::complex<double>* aMat, double* aMTilde);
-    void InvertYlmIndependentMatrix(double* inmat, double* outmat);
-    void UnPackYlmMatrixIndependentOnly(double* inmat, double* outmat, int insize);
-    void GetIndependentLM(int ibin, int& el, int& em, int& im) const;
-    int PackYlmMatrixIndependentOnly(double* inmat, double* outmat) const;
-    int PackYlmVectorIndependentOnly(double* invec, double* outvec) const;
-    double WignerSymbol(double aJot1, double aEm1, double aJot2, double aEm2, double aJot, double aEm) const;
-    double ClebschGordan(double aJot1, double aEm1, double aJot2, double aEm2, double aJot, double aEm) const;
-    double DeltaJ(double aJot1, double aJot2, double aJot) const;
+    void UnpackCovariances() {};
     /**
      * return histogram
      * @param el l
@@ -106,6 +100,11 @@ namespace Hal {
      * @param other
      */
     FemtoSHCF(const FemtoSHCF& other);
+    void SetCFColz(Color_t re, Color_t im) {
+      fColRe   = re;
+      fColIm   = im;
+      fColzSet = kTRUE;
+    }
     virtual void FillNumObj(TObject* obj);
     virtual void FillDenObj(TObject* obj);
     /**
@@ -276,7 +275,7 @@ namespace Hal {
     void MakeDummyCov();
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual ~FemtoSHCF();
-    ClassDef(FemtoSHCF, 4)
+    ClassDef(FemtoSHCF, 5)
   };
 }  // namespace Hal
 #endif /* HALFEMTOSHCF_H_ */

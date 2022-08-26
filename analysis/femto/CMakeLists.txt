@@ -41,8 +41,6 @@ ana/FemtoFreezoutsAna.cxx
 ana/FemtoDumpPairAna.cxx
 ana/FemtoEventBinsAna.cxx
 
-base/FemtoYlm.cxx
-base/FemtoYlmIndexes.cxx
 base/FemtoDPhiDEta.cxx
 base/Femto1DCF.cxx
 base/Femto3DCF.cxx
@@ -58,6 +56,10 @@ base/source_models/FemtoSourceModelExp.cxx
 base/source_models/FemtoSourceModelGauss.cxx
 base/source_models/FemtoSourceModelGausMt.cxx
 base/source_models/FemtoSourceModelNumerical1D.cxx
+base/shmath/FemtoSHSlice.cxx
+base/shmath/FemtoYlmIndexes.cxx
+base/shmath/FemtoYlmMath.cxx
+base/shmath/FemtoYlmSolver.cxx
 
 corrfit/CorrFitDrawOptions.cxx
 corrfit/CorrFit.cxx
@@ -113,7 +115,6 @@ imaging/FemtoImaging.cxx
 imaging/FemtoImaging1D.cxx
 imaging/FemtoImaging3D.cxx
 base/FemtoSHCF.cxx
-base/FemtoYlm.cxx
 corrfit/CorrFitSHCF.cxx
 )
 

@@ -10,8 +10,8 @@
 #include "CorrFitSHFrom3D.h"
 
 #include "FemtoSHCF.h"
-#include "FemtoYlm.h"
 #include "FemtoYlmIndexes.h"
+#include "FemtoYlmMath.h"
 
 #include <complex>
 
@@ -31,7 +31,7 @@ namespace Hal {
     Double_t sphericalQ[3] = {par[1], x[0], x[1]};
     ShToCart(cartesianQ, sphericalQ);  // r costheta, phi
     Double_t fx                     = Calc3DCartesian(cartesianQ, par + 2);
-    std::complex<double>* YlmBuffer = Hal::FemtoYlm::YlmUpToL(fLmVals.GetL(), x[0], x[1]);
+    std::complex<double>* YlmBuffer = fYlmmMath.YlmUpToL(fLmVals.GetMaxL(), x[0], x[1]);
     Int_t index                     = par[0];
     Double_t val                    = fx * YlmBuffer[index].real();
     return val;

@@ -25,7 +25,6 @@
 #include <iostream>
 
 #include "FemtoSHCF.h"
-#include "FemtoYlm.h"
 #include "StdString.h"
 namespace Hal {
   const Int_t CorrFitSHCF::fgRout   = 0;
@@ -207,7 +206,7 @@ namespace Hal {
   }
 
   void CorrFitSHCF::Paint(Bool_t repaint, Bool_t refresh) {
-    Int_t L = fLmVals.GetL();
+    Int_t L = fLmVals.GetMaxL();
     if (repaint)
       if (gPad == nullptr) {
         new TCanvas();
@@ -427,7 +426,7 @@ namespace Hal {
     return fCalculatedRe[elm][bin][0] + fCalculatedRe[elm][bin][1] * q + fCalculatedRe[elm][bin][2] * q * q;
   }
   std::vector<Int_t> CorrFitSHCF::GetIndexesForCalc(eCalcMode c) const {
-    Int_t Lmax = fLmVals.GetL();
+    Int_t Lmax = fLmVals.GetMaxL();
     std::vector<Int_t> vals;
     switch (c) {
       case eCalcMode::kPhysical1dId: {

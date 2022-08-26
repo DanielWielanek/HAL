@@ -10,6 +10,8 @@
 #define HAL_ANALYSIS_FEMTO_CORRFIT_SH_CORRFITSHFROM3D_H_
 
 #include "CorrFitSHCF.h"
+
+#include "FemtoYlmMath.h"
 /**
  * class for calculation of CF from known 3D func
  * very slow !!
@@ -21,6 +23,7 @@ namespace Hal {
   class CorrFitSHFrom3D : public CorrFitSHCF {
 
   protected:
+    mutable FemtoYlmMath fYlmmMath;
     mutable TF2* fHarmonic;
     Double_t Integral(Double_t q, Double_t ilm) const;
     virtual Double_t Calc3DCartesian(Double_t* x, Double_t* par) const;

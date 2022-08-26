@@ -14,6 +14,7 @@
 #include <TArray.h>
 #include <TAxis.h>
 #include <TCollection.h>
+#include <TColor.h>
 #include <TDirectory.h>
 #include <TH1.h>
 #include <TH2.h>
@@ -23,7 +24,10 @@
 #include <TMatrixDfwd.h>
 #include <TMatrixT.h>
 #include <TNamed.h>
+#include <TObjArray.h>
+#include <TROOT.h>
 #include <TRandom.h>
+#include <TVirtualPad.h>
 #include <iostream>
 
 #include "Cout.h"
@@ -863,5 +867,42 @@ namespace Hal {
       x->SetTitleOffset(space);
     }
 
+    Int_t GetAntiColor(Int_t col) {
+      if (col < 0) return -1;
+
+      // Get list of all defined colors
+      TObjArray* colors = (TObjArray*) ::ROOT::GetROOT()->GetListOfColors();
+      Int_t ncolors     = colors->GetSize();
+      // Get existing color at index n
+      TColor* color = nullptr;
+      if (col < ncolors) color = (TColor*) colors->At(col);
+      if (!color) return -1;
+
+      // Get the rgb of the new bright color corresponding to color n
+      Float_t r, g, b;
+
+      color->GetRGB(r, g, b);
+      r = 1.0 - r;
+      b = 1.0 - b;
+      g = 1.0 - g;
+
+      // Build the bright color (unless the slot nb is already used)
+      Int_t nb       = col + 150;
+      TColor* colorb = nullptr;
+      if (nb < ncolors) colorb = (TColor*) colors->At(nb);
+      if (colorb) return nb;
+      colorb = new TColor(nb, r, g, b);
+      colorb->SetName(Form("%s_bright", color->GetName()));
+      colors->AddAtAndExpand(colorb, nb);
+      return nb;
+    }
+    Int_t GetListOfSubPads(TVirtualPad* pad) {
+      TList* l      = pad->GetListOfPrimitives();
+      Int_t subpads = 0;
+      for (int i = 0; i < l->GetEntries(); i++) {
+        if (dynamic_cast<TVirtualPad*>(l->At(i))) subpads++;
+      }
+      return subpads;
+    }
   }  // namespace Std
 }  // namespace Hal

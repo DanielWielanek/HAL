@@ -17,6 +17,7 @@ class TH1D;
 class TH2;
 class TH2D;
 class TH3;
+class TVirtualPad;
 
 namespace Hal {
   namespace Std {
@@ -213,7 +214,18 @@ namespace Hal {
      * @param opt - axis, can be 'x', 'y' or 'z'
      */
     void SetHistogramAxes(TH1& h, Double_t titleSize = 0.05, Double_t labelSize = 0.05, Double_t space = 1.0, Char_t opt = 'x');
-
+    /**
+     * get index of oposite color
+     * @param col
+     * @return
+     */
+    Int_t GetAntiColor(Int_t col);
+    /**
+     * calculate the number of subpads
+     * @param pad
+     * @return
+     */
+    Int_t GetListOfSubPads(TVirtualPad* pad);
   }  // namespace Std
 }  // namespace Hal
 #endif /* HALSTDHIST_H_ */

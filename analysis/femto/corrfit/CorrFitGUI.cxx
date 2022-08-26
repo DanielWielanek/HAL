@@ -55,15 +55,23 @@ namespace Hal {
 
     AddFrame(legendFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
 
+
     fPairChi1 = new CorrFitChiSelector(this, width, 100);
     fPairChi2 = new CorrFitChiSelector(this, width, 100);
     fPairChi1->Init(this, fFunc);
     fPairChi2->Init(this, fFunc);
 
-
-    fChiMin = new TGCheckButton(this, "Draw Chi min");
+    TGHorizontalFrame* chiFrame = new TGHorizontalFrame(this, width, 40);
+    fChiMin                     = new TGCheckButton(chiFrame, "Draw Chi min");
     fChiMin->SetOn(kFALSE);
-    AddFrame(fChiMin, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
+    fChiLogz = new TGCheckButton(chiFrame, "Draw Chi logZ");
+    fChiLogz->SetOn(kFALSE);
+    fChiFit = new TGCheckButton(chiFrame, "Draw Fit par");
+    fChiFit->SetOn(kTRUE);
+    chiFrame->AddFrame(fChiMin, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
+    chiFrame->AddFrame(fChiLogz, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
+    chiFrame->AddFrame(fChiFit, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
+    AddFrame(chiFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
 
     TGHorizontalFrame* applyFrame = new TGHorizontalFrame(this, width, 40);
     TGTextButton* draw            = new TGTextButton(applyFrame, "&Draw chi");
@@ -227,11 +235,16 @@ namespace Hal {
     ApplyParams();
     TVirtualPad* pad = gPad;
     TCanvas* c       = new TCanvas();
-    if (fChiMin->IsOn()) {
-      chi->Draw("min");
-    } else {
-      chi->Draw();
+    TString opt      = "";
+    if (fChiMin->IsOn()) opt = "min";
+    if (!fChiFit->IsOn()) {
+      if (opt.Length() == 0)
+        opt = "nolin";
+      else
+        opt = opt + "+nolin";
     }
+    chi->Draw(opt);
+    if (fChiLogz->IsOn()) { gPad->SetLogz(); }
     gPad = pad;
   }
 

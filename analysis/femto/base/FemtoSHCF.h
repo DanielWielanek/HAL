@@ -41,7 +41,6 @@ namespace Hal {
 
     TH1D** fCFReal;  //[fMaxJM] real CF's
     TH1D** fCFImag;  //[fMaxJM] img CF's
-    Int_t fFactorialsSize;
     Array_3<Double_t> fCovNum;
     Array_3<Double_t> fCovDen;
     Array_3<Double_t> fCovCf;

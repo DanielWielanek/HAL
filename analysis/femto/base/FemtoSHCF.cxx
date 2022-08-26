@@ -50,19 +50,18 @@ namespace Hal {
   FemtoSHCF::FemtoSHCF() :
     DividedHisto1D(),
     fMaxJM(0),
-    fNumReal(NULL),
-    fNumImag(NULL),
-    fDenReal(NULL),
-    fDenImag(NULL),
+    fNumReal(nullptr),
+    fNumImag(nullptr),
+    fDenReal(nullptr),
+    fDenImag(nullptr),
     fFrame(Femto::EKinematics::kLCMS),
-    fCFReal(NULL),
-    fCFImag(NULL),
-    fFactorialsSize(0),
+    fCFReal(nullptr),
+    fCFImag(nullptr),
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
     fLmVals(FemtoYlmIndexes(1)),
-    fCfcov(NULL) {
+    fCfcov(nullptr) {
     gSystem->Load("libgsl.so");
     gSystem->Load("libgslcblas.so");
   }
@@ -70,20 +69,19 @@ namespace Hal {
   FemtoSHCF::FemtoSHCF(TString name, Int_t maxL, Int_t bins, Double_t min, Double_t max, Femto::EKinematics kinematics) :
     DividedHisto1D(name, bins, min, max),
     fMaxJM((maxL + 1) * (maxL + 1)),
-    fNumReal(NULL),
-    fNumImag(NULL),
-    fDenReal(NULL),
-    fDenImag(NULL),
+    fNumReal(nullptr),
+    fNumImag(nullptr),
+    fDenReal(nullptr),
+    fDenImag(nullptr),
     fFrame(kinematics),
-    fCFReal(NULL),
-    fCFImag(NULL),
-    fFactorialsSize((maxL + 1) * 4),
+    fCFReal(nullptr),
+    fCFImag(nullptr),
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
     fLmVals(FemtoYlmIndexes(maxL)),
     fLmMath(),
-    fCfcov(NULL) {
+    fCfcov(nullptr) {
     SetNorm(0, 0.5, 0);
 
     fNumReal = new TH1D*[fMaxJM];
@@ -147,7 +145,6 @@ namespace Hal {
     DividedHisto1D(other),
     fMaxJM(other.fMaxJM),
     fFrame(other.fFrame),
-    fFactorialsSize(other.fFactorialsSize),
     fNormPurity(other.fNormPurity),
     fNormRadius(other.fNormRadius),
     fNormBohr(other.fNormBohr),
@@ -182,18 +179,18 @@ namespace Hal {
   }
 
   TH1D* FemtoSHCF::GetCFRe(int el, int em) const {
-    if (fLmVals.GetIndex(el, em) >= 0 && fCFReal != NULL) {
+    if (fLmVals.GetIndex(el, em) >= 0 && fCFReal != nullptr) {
       return fCFReal[fLmVals.GetIndex(el, em)];
     } else {
-      return NULL;
+      return nullptr;
     }
   }
 
   TH1D* FemtoSHCF::GetCFIm(int el, int em) const {
-    if (fLmVals.GetIndex(el, em) >= 0 && fCFImag != NULL) {
+    if (fLmVals.GetIndex(el, em) >= 0 && fCFImag != nullptr) {
       return fCFImag[fLmVals.GetIndex(el, em)];
     } else {
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -201,33 +198,33 @@ namespace Hal {
     if (fLmVals.GetIndex(el, em) >= 0)
       return fNumReal[fLmVals.GetIndex(el, em)];
     else
-      return NULL;
+      return nullptr;
   }
 
   TH1D* FemtoSHCF::GetNumIm(int el, int em) const {
     if (fLmVals.GetIndex(el, em) >= 0)
       return fNumImag[fLmVals.GetIndex(el, em)];
     else
-      return NULL;
+      return nullptr;
   }
 
   TH1D* FemtoSHCF::GetDenRe(int el, int em) const {
     if (fLmVals.GetIndex(el, em) >= 0)
       return fDenReal[fLmVals.GetIndex(el, em)];
     else
-      return NULL;
+      return nullptr;
   }
 
   TH1D* FemtoSHCF::GetDenIm(int el, int em) const {
     if (fLmVals.GetIndex(el, em) >= 0)
       return fDenImag[fLmVals.GetIndex(el, em)];
     else
-      return NULL;
+      return nullptr;
   }
 
   void FemtoSHCF::SetNumRe(TH1D** histograms, Bool_t clone) {
     if (clone) {
-      if (fNumReal == NULL) fNumReal = new TH1D*[fMaxJM];
+      if (fNumReal == nullptr) fNumReal = new TH1D*[fMaxJM];
       for (int i = 0; i < fMaxJM; i++) {
         fNumReal[i] = (TH1D*) histograms[i]->Clone();
       }
@@ -238,7 +235,7 @@ namespace Hal {
 
   void FemtoSHCF::SetNumIm(TH1D** histograms, Bool_t clone) {
     if (clone) {
-      if (fNumImag == NULL) fNumImag = new TH1D*[fMaxJM];
+      if (fNumImag == nullptr) fNumImag = new TH1D*[fMaxJM];
       for (int i = 0; i < fMaxJM; i++) {
         fNumImag[i] = (TH1D*) histograms[i]->Clone();
       }
@@ -249,7 +246,7 @@ namespace Hal {
 
   void FemtoSHCF::SetDenRe(TH1D** histograms, Bool_t clone) {
     if (clone) {
-      if (fDenReal == NULL) fDenReal = new TH1D*[fMaxJM];
+      if (fDenReal == nullptr) fDenReal = new TH1D*[fMaxJM];
       for (int i = 0; i < fMaxJM; i++) {
         fDenReal[i] = (TH1D*) histograms[i]->Clone();
       }
@@ -260,7 +257,7 @@ namespace Hal {
 
   void FemtoSHCF::SetDenIm(TH1D** histograms, Bool_t clone) {
     if (clone) {
-      if (fDenImag == NULL) fDenImag = new TH1D*[fMaxJM];
+      if (fDenImag == nullptr) fDenImag = new TH1D*[fMaxJM];
       for (int i = 0; i < fMaxJM; i++) {
         fDenImag[i] = (TH1D*) histograms[i]->Clone();
       }
@@ -398,8 +395,8 @@ namespace Hal {
 
   void FemtoSHCF::NormalizeBy(int el, int em, Option_t* opt) {
     TString option = opt;
-    TH1D* num      = NULL;
-    TH1D* den      = NULL;
+    TH1D* num      = nullptr;
+    TH1D* den      = nullptr;
     if (option.EqualTo("re")) {
       num = GetNumRe(el, em);
       den = GetDenRe(el, em);
@@ -422,7 +419,7 @@ namespace Hal {
   }
 
   void FemtoSHCF::AddLabel(TString label) {
-    if (fLabels == NULL) {
+    if (fLabels == nullptr) {
       fLabels = new TList();
       fLabels->SetName("Labels");
     }
@@ -452,7 +449,7 @@ namespace Hal {
 
   TH1D* FemtoSHCF::GetHisto(int el, int em, Bool_t norm, Option_t* opt) const {
     TString option = opt;
-    TH1D* cf       = NULL;
+    TH1D* cf       = nullptr;
     if (option.EqualTo("re")) {
       cf = GetCFRe(el, em);
     } else {
@@ -468,17 +465,17 @@ namespace Hal {
   }
 
   TH1D* FemtoSHCF::GetCubic(Option_t* opt, Bool_t R) const {
-    if (fCFReal == NULL) {
+    if (fCFReal == nullptr) {
       Cout::PrintInfo("No correlation functions, call RecalculateCF", EInfo::kError);
-      return NULL;
+      return nullptr;
     }
     TString option = opt;
-    if (option.Length() > GetL()) return NULL;
-    TH1D* cf  = NULL;
-    TH1D* cf2 = NULL;
-    TH1D* cf3 = NULL;
-    TH1D* cf4 = NULL;
-    TH1D* cf5 = NULL;
+    if (option.Length() > GetL()) return nullptr;
+    TH1D* cf  = nullptr;
+    TH1D* cf2 = nullptr;
+    TH1D* cf3 = nullptr;
+    TH1D* cf4 = nullptr;
+    TH1D* cf5 = nullptr;
     if (option.Length() == 1) {
       Double_t scale1 = 2.0 * Sqr(1, 3);
       Double_t scale2 = Sqr(2, 3);
@@ -643,7 +640,7 @@ namespace Hal {
         cf5 = Histo(4, -4, "re", scale235);
       }
     }
-    if (cf == NULL) return NULL;
+    if (cf == nullptr) return nullptr;
     if (cf2) {
       cf->Add(cf2);
       delete cf2;
@@ -693,19 +690,19 @@ namespace Hal {
 
   void FemtoSHCF::RecalculateCF() {
 #ifndef DISABLE_GSL
-    if (fDenImag == NULL) {
+    if (fDenImag == nullptr) {
       Cout::PrintInfo("No imaginary denominators!", EInfo::kError);
       return;
     }
-    if (fDenReal == NULL) {
+    if (fDenReal == nullptr) {
       Cout::PrintInfo("No real denominators", EInfo::kError);
       return;
     }
-    if (fNumReal == NULL) {
+    if (fNumReal == nullptr) {
       Cout::PrintInfo("No real numeraotrs", EInfo::kError);
       return;
     }
-    if (fNumImag == NULL) {
+    if (fNumImag == nullptr) {
       Cout::PrintInfo("No imaginary numerators", EInfo::kError);
       return;
     }
@@ -765,7 +762,7 @@ namespace Hal {
 
   Long64_t FemtoSHCF::Merge(TCollection* collection) {
     if (collection) {
-      FemtoSHCF* pack = NULL;
+      FemtoSHCF* pack = nullptr;
       TIter iterator(collection);
       while ((pack = (FemtoSHCF*) iterator())) {
         FastAdd(pack);

@@ -68,6 +68,8 @@ namespace Hal {
     CorrFitChiSelector* fPairChi1;
     CorrFitChiSelector* fPairChi2;
     TGCheckButton* fChiMin;
+    TGCheckButton* fChiLogz;
+    TGCheckButton* fChiFit;
     Double_t fInitalNorm;
     const Int_t fNormIndex;
     void SetParams();

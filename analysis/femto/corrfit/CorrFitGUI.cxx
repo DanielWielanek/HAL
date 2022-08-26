@@ -138,7 +138,7 @@ namespace Hal {
       gui->AddFrame(this, new TGLayoutHints(kLHintsTop | kLHintsExpandX, 5, 5, 5, 5));
     } else {
       fNumberEntry = new TGNumberEntry(rightLabel,
-                                       parConf.GetStartVal(),
+                                       parConf.GetFittedValue(),
                                        5,
                                        -1,
                                        TGNumberFormat::EStyle::kNESReal,

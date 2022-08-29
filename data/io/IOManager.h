@@ -21,10 +21,12 @@ class TFile;
 namespace Hal {
   class MagField;
   class IOManager : public TObject {
-  protected:
+  private:
     MagField* fField;
-    TList* fList;
+    TList* fBranchNameList;
     TString fInputName;
+
+  protected:
     std::vector<std::pair<TString, TObject*>> fInBranches;
     std::vector<std::pair<TString, TObject*>> fOutBranches;
     std::vector<std::pair<TString, TObject*>> fOutVirtual;
@@ -53,7 +55,7 @@ namespace Hal {
 
   public:
     enum class EBranchStatus { kInput, kOutput, kVirtual, kNull };
-    IOManager() : fField(nullptr), fList(new TList()), fInputName("unknown") {};
+    IOManager() : fField(nullptr), fBranchNameList(new TList()), fInputName("unknown") {};
     /**
      *
      * @return number of entries in data
@@ -144,7 +146,7 @@ namespace Hal {
      */
     TList* GetBranchNameList() {
       RefreshBranchList();
-      return fList;
+      return fBranchNameList;
     };
     /**
      * prints basic information about I/0

@@ -48,7 +48,7 @@ namespace Hal {
         return;
       } break;
     }
-    fList->AddLast(new TObjString(name));
+    fBranchNameList->Add(new TObjString(name));
   }
 
   std::pair<TString, TObject*> IOManager::FindBranch(TString name, EBranchFlag flag) const {
@@ -154,9 +154,7 @@ namespace Hal {
     }
   }
 
-  IOManager::~IOManager() {
-    if (fList) delete fList;
-  }
+  IOManager::~IOManager() {}
 
 }  // namespace Hal
 

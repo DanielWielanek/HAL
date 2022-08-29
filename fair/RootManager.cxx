@@ -19,32 +19,32 @@
 namespace Hal {
   namespace Fair {
     RootManager::RootManager() {
-      FairRootManager* mngr = FairRootManager::Instance();
-      if (mngr->GetInFile()) { SetInputName(mngr->GetInFile()->GetName()); }
+      fFairManager = FairRootManager::Instance();
+      if (fFairManager->GetInFile()) { SetInputName(fFairManager->GetInFile()->GetName()); }
     }
-    TObject* RootManager::GetObject(const char* BrName) { return FairRootManager::Instance()->GetObject(BrName); }
+    TObject* RootManager::GetObject(const char* BrName) { return fFairManager->GetObject(BrName); }
 
-    TFile* RootManager::GetInFile() { return FairRootManager::Instance()->GetInFile(); }
+    TFile* RootManager::GetInFile() { return fFairManager->GetInFile(); }
 
-    void RootManager::UpdateBranches() { FairRootManager::Instance()->UpdateBranches(); }
+    void RootManager::UpdateBranches() { fFairManager->UpdateBranches(); }
 
-    void RootManager::SetInChain(TChain* tempChain, Int_t ident) { FairRootManager::Instance()->SetInChain(tempChain, ident); }
+    void RootManager::SetInChain(TChain* tempChain, Int_t ident) { fFairManager->SetInChain(tempChain, ident); }
 
     void RootManager::RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
-      FairRootManager::Instance()->Register(name, folderName, obj, toFile);
+      fFairManager->Register(name, folderName, obj, toFile);
     }
 
     void RootManager::RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
-      FairRootManager::Instance()->Register(name, Foldername, obj, toFile);
+      fFairManager->Register(name, Foldername, obj, toFile);
     }
 
     void RootManager::RefreshBranchList() {
-      FairRootManager* mngr = FairRootManager::Instance();
-      TList* l              = mngr->GetBranchNameList();
+      fFairManager = FairRootManager::Instance();
+      TList* l     = fFairManager->GetBranchNameList();
       for (int i = 0; i < l->GetEntries(); i++) {
         TString name = ((TObjString*) l->At(i))->GetString();
-        Int_t stat   = mngr->CheckBranch(name);
-        TObject* obj = mngr->GetObject(name);
+        Int_t stat   = fFairManager->CheckBranch(name);
+        TObject* obj = fFairManager->GetObject(name);
         switch (stat) {
           case 0:  // not exist
             break;
@@ -57,7 +57,12 @@ namespace Hal {
         }
       }
     }
+
     Bool_t RootManager::Init() {
+      if (fFairManager == nullptr) {
+        fFairManager = FairRootManager::Instance();
+        if (fFairManager->GetInFile()) { SetInputName(fFairManager->GetInFile()->GetName()); }
+      }
       RefreshBranchList();
       return kTRUE;
     }

@@ -28,7 +28,7 @@ namespace Hal {
 
 namespace Hal {
   namespace Fair {
-    class TaskManager : public ::FairTask {
+    class TaskManager : public FairTask {
     protected:
       IOManager* fManager;
       std::vector<::Hal::Task*> fTasks;

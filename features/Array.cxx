@@ -73,6 +73,96 @@ namespace Hal {
   }
 
   template<typename T>
+  Array_1<T>& Array_1<T>::operator+=(const Array_1<T>& rhs) {
+    if (rhs.GetSize() != this->GetSize()) return *this;
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] += rhs.fArray[i];
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_1<T>& Array_1<T>::operator-=(const Array_1<T>& rhs) {
+    if (rhs.GetSize() != this->GetSize()) return *this;
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] -= rhs.fArray[i];
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_1<T>& Array_1<T>::operator+(const Array_1<T>& rhs) {
+    if (rhs.GetSize() != this->GetSize()) return *this;
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] += rhs.fArray[i];
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_1<T>& Array_1<T>::operator-(const Array_1<T>& rhs) {
+    if (rhs.GetSize() != this->GetSize()) return *this;
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] -= rhs.fArray[i];
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_1<T>& Array_1<T>::operator*(const T& val) {
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] *= val;
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_1<T>& Array_1<T>::operator/(const T& val) {
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] /= val;
+    }
+    return *this;
+  }
+  template<typename T>
+  Array_1<T>& Array_1<T>::operator*=(const T& val) {
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] *= val;
+    }
+    return *this;
+  }
+
+  template<typename T>
+  Array_1<T>& Array_1<T>::operator/=(const T& val) {
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] /= val;
+    }
+    return *this;
+  }
+
+  template<typename T>
+  T Array_1<T>::FindMin(Int_t& index) const {
+    T min = std::numeric_limits<T>::max();
+    for (int i = 0; i < fSize; i++) {
+      if (min > fArray[i]) {
+        index = i;
+        min   = fArray[i];
+      }
+    }
+    return min;
+  }
+
+  template<typename T>
+  T Array_1<T>::FindMax(Int_t& index) const {
+    T max = std::numeric_limits<T>::min();
+    for (int i = 0; i < fSize; i++) {
+      if (max > fArray[i]) {
+        index = i;
+        max   = fArray[i];
+      }
+    }
+    return max;
+  }
+  template<typename T>
   void Array_1<T>::Add(Array_1<T> const& rhs) {
     if (fSize == rhs.fSize) {
       for (int i = 0; i < fSize; i++) {

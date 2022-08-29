@@ -71,6 +71,25 @@ namespace Hal {
      * @return
      */
     Array_1<T>& operator+=(const Array_1<T>& rhs);
+
+    Array_1<T>& operator-=(const Array_1<T>& rhs);
+
+    Array_1<T>& operator+(const Array_1<T>& rhs);
+
+    Array_1<T>& operator-(const Array_1<T>& rhs);
+
+    Array_1<T>& operator*(const T& val);
+
+    Array_1<T>& operator/(const T& val);
+
+    Array_1<T>& operator*=(const T& val);
+
+    Array_1<T>& operator/=(const T& val);
+
+    T FindMin(Int_t& index) const;
+
+    T FindMax(Int_t& index) const;
+
     /**
      *
      * @return size of this array

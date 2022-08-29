@@ -59,10 +59,11 @@ namespace Hal {
 
   protected:
     Int_t fMaxJM;
-    inline FemtoSHCF* GetSH() const { return (FemtoSHCF*) (fCF); }
-    std::vector<Int_t> GetIndexesForCalc(eCalcMode c) const;
+
     mutable std::complex<double>* fYlmBuffer;  //[fMaxJM]
     FemtoYlmIndexes fLmVals;
+    inline FemtoSHCF* GetSH() const { return (FemtoSHCF*) (fCF); }
+    std::vector<Int_t> GetIndexesForCalc(eCalcMode c) const;
     virtual void PrepareRaw();
     virtual void Check();
     /**
@@ -82,6 +83,13 @@ namespace Hal {
     void SetErrors(TH1* /*num*/, const TH1* /*den*/) const {};
     void EstimateActiveBins();
     virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
+    /**
+     * additional option for bin drawing
+     * @param draw_option
+     * @param width number of bins in projection  if negative then function is
+     * calculated as average at middle bin and edges
+     */
+    virtual void Paint(Bool_t repaint, Bool_t refresh);
     double GetChiTFD(const double* /*par*/) const { return 0; };
     double GetChiTF(const double* par) const;
     double GetLogTFD(const double* /*par*/) const { return 0; };
@@ -113,13 +121,7 @@ namespace Hal {
      * @return
      */
     Double_t GetCFValIm(Double_t q, Int_t elm) const;
-    /**
-     * additional option for bin drawing
-     * @param draw_option
-     * @param width number of bins in projection  if negative then function is
-     * calculated as average at middle bin and edges
-     */
-    void Paint(Bool_t repaint, Bool_t refresh);
+
 
   public:
     CorrFitSHCF(Int_t parNo = 3);

@@ -42,6 +42,7 @@ namespace Hal {
      */
     virtual void CalculateNumErrors(TH1* /*h*/) {};
     virtual Double_t GetNumericalError(Int_t /*binX*/) const { return 0; };
+    void PrepareRaw();
     void EstimateActiveBins();
     void RecalculateSmoothFunction() const;
     void SetErrors(TH1* num, const TH1* den) const;

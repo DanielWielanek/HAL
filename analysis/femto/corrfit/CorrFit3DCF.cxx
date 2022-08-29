@@ -272,6 +272,17 @@ namespace Hal {
     }
   }
 
+  void CorrFit3DCF::PrepareRaw() {
+    Prepare();
+    if (fCorrelationFunctionHistogram) delete fCorrelationFunctionHistogram;
+    fDenominatorHistogram         = ((DividedHisto1D*) fCF)->GetDen();
+    fNumeratorHistogram           = ((DividedHisto1D*) fCF)->GetNum();
+    fCorrelationFunctionHistogram = ((DividedHisto1D*) fCF)->GetHist(kFALSE);
+    fCorrelationFunctionHistogram->SetDirectory(0);
+    fKinematics = static_cast<Femto3DCF*>(fCF)->GetFrame();
+    if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc3D();
+  }
+
   double CorrFit3DCF::GetChiTFD(const double* /*par*/) const {
     Double_t f = 0.0;
     Double_t A, B, C;
@@ -496,7 +507,6 @@ namespace Hal {
     Int_t bin_maxZ = h->GetXaxis()->FindBin(fRange[5]);
 
     Int_t xok, yok, zok;
-
 
     for (int i = 1; i <= h->GetNbinsX(); i++) {
       if (i >= bin_minX && i <= bin_maxX)
@@ -758,6 +768,7 @@ namespace Hal {
       func_pad.first->SetLineWidth(GetLineWidth());
     }
   }
+
   void CorrFit3DCF::GetTH1s(EDrawMode drawMode) {
     if (fDrawHistograms.size() > 0) return;
     switch (drawMode) {
@@ -784,7 +795,6 @@ namespace Hal {
       } break;
     }
   }
-
 
   Double_t CorrFit3DCF::GetFunXYpp(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
@@ -1055,4 +1065,5 @@ namespace Hal {
       cf->CFMapHD()[i][j][k] = CF;
     }
   }
+
 }  // namespace Hal

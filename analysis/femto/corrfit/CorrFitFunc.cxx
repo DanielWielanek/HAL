@@ -116,6 +116,12 @@ namespace Hal {
     f->SetRange(fRange.Get(0), fRange.Get(2), fRange.Get(4), fRange.Get(1), fRange.Get(3), fRange.Get(5));
   }
 
+  void CorrFitFunc::Prepare() {
+    fNDF    = 0;
+    fChi[0] = 0;
+    fChi[1] = 0;
+  }
+
   void CorrFitFunc::Check() {
     for (int i = 0; i < fDim; i++) {
       if (fRange[2 * i] == fRange[2 * i + 1]) {  // ranges on given axis are the same, fixing
@@ -135,34 +141,6 @@ namespace Hal {
         }
       }
     }
-  }
-
-  void CorrFitFunc::Prepare(TObject* obj) {
-    fNDF    = 0;
-    fChi[0] = 0;
-    fChi[1] = 0;
-
-    fCF                   = nullptr;
-    fDenominatorHistogram = nullptr;
-    if (fCorrelationFunctionHistogram) delete fCorrelationFunctionHistogram;
-    fCorrelationFunctionHistogram = nullptr;
-
-
-    fCF                           = obj;
-    fDenominatorHistogram         = ((DividedHisto1D*) fCF)->GetDen();
-    fNumeratorHistogram           = ((DividedHisto1D*) fCF)->GetNum();
-    fCorrelationFunctionHistogram = ((DividedHisto1D*) fCF)->GetHist(kFALSE);
-
-    fCorrelationFunctionHistogram->SetDirectory(0);
-    if (fCF->InheritsFrom("Hal::Femto1DCF")) {
-      fKinematics = static_cast<Femto1DCF*>(fCF)->GetFrame();
-      if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc1D();
-    }
-    if (fCF->InheritsFrom("Hal::Femto3DCF")) {
-      fKinematics = static_cast<Femto3DCF*>(fCF)->GetFrame();
-      if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc3D();
-    }
-    if (fCF->InheritsFrom("Hal::FemtoSHCF")) fKinematics = static_cast<FemtoSHCF*>(fCF)->GetFrame();
   }
 
   void CorrFitFunc::CalcError(const Double_t Num,
@@ -499,7 +477,12 @@ namespace Hal {
   }
 
   void CorrFitFunc::Fit(TObject* histo) {
-    Prepare(histo);
+    if (histo == fCF) {
+      Prepare();
+    } else {
+      fCF = histo;
+      PrepareRaw();
+    }
     // checking ranges &other stuff
     Check();
     // set par names depending on frame
@@ -513,7 +496,12 @@ namespace Hal {
   }
 
   void CorrFitFunc::FitDummy(TObject* histo) {
-    Prepare(histo);
+    if (fCF != histo) {
+      fCF = histo;
+      PrepareRaw();
+    } else {
+      Prepare();
+    }
     // checking ranges &other stuff
     Check();
     // set par names depending on frame

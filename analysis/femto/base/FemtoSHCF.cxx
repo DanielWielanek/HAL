@@ -34,6 +34,7 @@
 #include "CorrFitSHCF.h"
 #include "Cout.h"
 #include "FemtoPair.h"
+#include "FemtoSHCF.h"
 #include "FemtoSHSlice.h"
 #include "FemtoYlmSolver.h"
 #include "HtmlCore.h"

@@ -179,9 +179,14 @@ namespace Hal {
      */
     virtual void Check();
     /**
-     * clear all histograms, and functions
+     * clear fit, and functions when old cf is used
+     * (cleaning histograms is not required)
      */
-    virtual void Prepare(TObject* obj);
+    virtual void Prepare();
+    /**
+     * prepare histograms when new fit is called
+     */
+    virtual void PrepareRaw() = 0;
     /**
      * fit funcion by steps, usefull only for 1D fits
      * @param step - step of fitting

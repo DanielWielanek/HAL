@@ -100,6 +100,7 @@ namespace Hal {
     void CalculateUltradiagonalBins(TH3* h);
     void CalculateSliceBins(TH3* h);
     void CalculateThresholdBins();
+    void PrepareRaw();
     double GetChiTFD(const double* par) const;
     double GetChiTF(const double* par) const;
     double GetLogTFD(const double* par) const;

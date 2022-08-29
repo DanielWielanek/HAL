@@ -9,7 +9,7 @@
 #ifndef HALCORRFITSHCF_H_
 #define HALCORRFITSHCF_H_
 
-#include "CorrFit3DCF.h"
+#include "CorrFitFunc.h"
 
 #include "Array.h"
 #include "FemtoYlmIndexes.h"
@@ -19,8 +19,10 @@
 
 class TH1D;
 class TH3D;
+
 class TClonesArray;
 namespace Hal {
+  class FemtoSHCF;
   class CorrFitSHCF : public CorrFitFunc {
   public:
     enum class eCalcMode { kPhysical1dId, kPhysical1dNonId, kPhysical3d, kFullCalc };
@@ -43,20 +45,25 @@ namespace Hal {
     Double_t fAxisMin;
     Double_t fAxisStepOver;
     TH3D* fCovCF;
+    /*
+     * arrays wit cfs
+     */
     std::vector<TH1D*> fCFHistogramsRe;
     std::vector<TH1D*> fCFHistogramsIm;
-    mutable std::vector<std::vector<std::vector<Double_t>>> fCalculatedRe;
-    mutable std::vector<std::vector<std::vector<Double_t>>> fCalculatedIm;
+    /**
+     * arrays with polynomials that presents cf
+     */
+    mutable Array_3<Double_t> fCalculatedRe;
+    mutable Array_3<Double_t> fCalculatedIm;
     std::vector<std::complex<double>> fYlmValBuffer;
-    TObject* fPrevCF;
-
 
   protected:
     Int_t fMaxJM;
+    inline FemtoSHCF* GetSH() const { return (FemtoSHCF*) (fCF); }
     std::vector<Int_t> GetIndexesForCalc(eCalcMode c) const;
     mutable std::complex<double>* fYlmBuffer;  //[fMaxJM]
     FemtoYlmIndexes fLmVals;
-    virtual void Prepare(TObject* obj);
+    virtual void PrepareRaw();
     virtual void Check();
     /**
      * called for each calculation of chi2 or loglikehood minimalization - used
@@ -66,7 +73,7 @@ namespace Hal {
     /**
      * not implemented !
      */
-    virtual void RecalculateSmoothFunction() const {};
+    virtual void RecalculateSmoothFunction() const { RecalculateFunction(); };
     /**
      * recompute errors in num by using information from den histogram
      * @param num
@@ -90,12 +97,6 @@ namespace Hal {
      * @return numerical error for given bin
      */
     virtual Double_t GetNumericalError(Int_t /*x*/, Int_t /*y*/, Int_t /*z*/) const { return 0; };
-    /**
-     * make fit
-     * @param histo
-     * @param opt
-     */
-    virtual void Fit(TObject* histo);
     Double_t GetDrawableIm(Double_t* x, Double_t* params) const;
     Double_t GetDrawableRe(Double_t* x, Double_t* params) const;
     /**

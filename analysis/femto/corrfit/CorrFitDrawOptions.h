@@ -30,6 +30,8 @@ namespace Hal {
     Bool_t fDiag2        = {kFALSE};
     Bool_t fRgb          = {kFALSE};
     Bool_t fLegendPosSet = {kFALSE};
+    Bool_t fDrawRealOnly = {kTRUE};
+    Bool_t fDrawNegative = {kFALSE};
     Double_t fMin = {0}, fMax = {0};
     Double_t fRangeMin = {0}, fRangeMax = {0};
     Double_t fXLegend[4] = {0, 0, 0, 0};

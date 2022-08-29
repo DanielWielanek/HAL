@@ -110,6 +110,17 @@ namespace Hal {
     }
   }
 
+  void CorrFit1DCF::PrepareRaw() {
+    Prepare();
+    if (fCorrelationFunctionHistogram) delete fCorrelationFunctionHistogram;
+    fDenominatorHistogram         = ((DividedHisto1D*) fCF)->GetDen();
+    fNumeratorHistogram           = ((DividedHisto1D*) fCF)->GetNum();
+    fCorrelationFunctionHistogram = ((DividedHisto1D*) fCF)->GetHist(kFALSE);
+    fCorrelationFunctionHistogram->SetDirectory(0);
+    fKinematics = static_cast<Femto1DCF*>(fCF)->GetFrame();
+    if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc1D();
+  }
+
   double CorrFit1DCF::GetChiTFD(const double* /*par*/) const {
     Double_t f = 0.0;
     Double_t A, B, C;

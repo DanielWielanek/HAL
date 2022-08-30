@@ -10,18 +10,17 @@
 #ifndef HALEVENTIMPACTPARAMETERCUT_H_
 #define HALEVENTIMPACTPARAMETERCUT_H_
 
-#include "EventCut.h"
+#include "EventMcCut.h"
 /**
  * check impact parameter value
  */
 
 namespace Hal {
-  class EventImpactParameterCut : public EventCut {
+  class EventImpactParameterCut : public EventMcCut {
   protected:
   public:
     EventImpactParameterCut();
     virtual Bool_t Pass(Event* event);
-    virtual Bool_t Init(Int_t task_id);
     virtual ~EventImpactParameterCut();
     ClassDef(EventImpactParameterCut, 1)
   };
@@ -29,7 +28,7 @@ namespace Hal {
   /**
    * check centrality of event by simple calculations that use impact parameter
    */
-  class EventImpactCentralityCut : public EventCut {
+  class EventImpactCentralityCut : public EventMcCut {
     Double_t fBMax;
     Double_t fAlpha;
     Double_t ImpactToCentrality(const Double_t impact);

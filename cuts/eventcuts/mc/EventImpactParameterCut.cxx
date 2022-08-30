@@ -14,26 +14,16 @@
 #include "McEvent.h"
 
 namespace Hal {
-  EventImpactParameterCut::EventImpactParameterCut() : EventCut(1) { SetUnitName("Impact Parameter [fm]"); }
+  EventImpactParameterCut::EventImpactParameterCut() : EventMcCut(1) { SetUnitName("Impact Parameter [fm]"); }
 
   Bool_t EventImpactParameterCut::Pass(Event* event) {
     SetValue(((McEvent*) event)->GetImpactParameter());
     return Validate();
   }
 
-  Bool_t EventImpactParameterCut::Init(Int_t task_id) {
-    if (EventCut::Init() == kFALSE) return kFALSE;
-    const Event* ev = DataFormatManager::Instance()->GetFormat(task_id);
-    if (ev->InheritsFrom("Hal::McEvent")) {
-      return kTRUE;
-    } else {
-      return kFALSE;
-    }
-  }
-
   EventImpactParameterCut::~EventImpactParameterCut() {}
 
-  EventImpactCentralityCut::EventImpactCentralityCut() : EventCut(1), fBMax(-1), fAlpha(0) { SetUnitName("Centrality [%]"); }
+  EventImpactCentralityCut::EventImpactCentralityCut() : EventMcCut(1), fBMax(-1), fAlpha(0) { SetUnitName("Centrality [%]"); }
 
   void EventImpactCentralityCut::SetBMax(Double_t bmax) { fBMax = bmax; }
 

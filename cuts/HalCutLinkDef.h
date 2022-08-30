@@ -51,6 +51,9 @@
 #pragma link C++ class Hal::EventVertexCut + ;
 #pragma link C++ class Hal::EventBinningCut + ;
 #pragma link C++ class Hal::EventPrimaryTracksNoCut + ;
+#pragma link C++ class Hal::EventExpCut + ;
+#pragma link C++ class Hal::EventMcCut + ;
+#pragma link C++ class Hal::EventRunCut + ;
 
 // Track Cut
 #pragma link C++ class Hal::TrackBasicToFCut + ;

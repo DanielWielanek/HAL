@@ -15,7 +15,10 @@ set(HAL_FEATURES
 set(HAL_CUTS
     ${HAL_CORE}/cuts
     ${HAL_CORE}/cuts/eventcuts
+    ${HAL_CORE}/cuts/eventcuts/detector
+    ${HAL_CORE}/cuts/eventcuts/general
     ${HAL_CORE}/cuts/trackcuts
+    ${HAL_CORE}/cuts/trackcuts/mc
     ${HAL_CORE}/cuts/trackcuts/detector
     ${HAL_CORE}/cuts/trackcuts/kinematics
     ${HAL_CORE}/cuts/trackcuts/mc

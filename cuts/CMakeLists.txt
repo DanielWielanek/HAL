@@ -33,16 +33,19 @@ TwoTrackCut.cxx
 CutsAndMonitors.cxx
 CutMonitorRequest.cxx
 #EVENT CUTS
-eventcuts/EventImpactParameterCut.cxx
+eventcuts/mc/EventImpactParameterCut.cxx
 eventcuts/EventModuloCut.cxx
-eventcuts/EventMultiplicityCut.cxx
-eventcuts/EventPhiCut.cxx
-eventcuts/EventPtMaxCut.cxx
+eventcuts/general/EventMultiplicityCut.cxx
+eventcuts/general/EventPrimaryTracksNoCut.cxx
+eventcuts/general/EventPhiCut.cxx
+eventcuts/general/EventPtMaxCut.cxx
+eventcuts/general/EventVertexCut.cxx
+eventcuts/detector/EventRunCut.cxx
 eventcuts/EventVirtualCut.cxx
 eventcuts/EventComplexCut.cxx
-eventcuts/EventVertexCut.cxx
 eventcuts/EventBinningCut.cxx
-eventcuts/EventPrimaryTracksNoCut.cxx
+eventcuts/EventExpCut.cxx
+eventcuts/EventMcCut.cxx
 #HAL TRACK CUT
 trackcuts/detector/TrackBasicToFCut.cxx
 trackcuts/detector/TrackToFMass2Cut.cxx
@@ -104,10 +107,10 @@ twotrackcuts/kinematics/TwoTrack3DCFCut.cxx
 twotrackcuts/kinematics/PairEtaPtCut.cxx
 twotrackcuts/compound/TwoTrackAntiSplittingCut.cxx
 twotrackcuts/TwoTrackComplexCut.cxx
-twotrackcuts/TwoTrackFemtoQinvCut.cxx
+twotrackcuts/kinematics/TwoTrackFemtoQinvCut.cxx
 twotrackcuts/detector/TwoTrackSailorCowboyCut.cxx
 
-twotrackcuts/TwoTrackRadialDistanceCut.cxx
+twotrackcuts/detector/TwoTrackRadialDistanceCut.cxx
 twotrackcuts/TwoTrackDebugCut.cxx
 twotrackcuts/mc/TwoTrackFemtoPRFCut.cxx
 twotrackcuts/mc/PdgBinPairCut.cxx

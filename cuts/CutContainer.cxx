@@ -608,6 +608,9 @@ namespace Hal {
         v.SetCollectionID(col);
         AddCut(v, "bckg");
       } break;
+      case ECutUpdate::kNo: {
+        /* do nothing */
+      } break;
     }
   }
 

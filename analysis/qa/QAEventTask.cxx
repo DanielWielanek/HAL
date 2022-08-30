@@ -61,7 +61,7 @@ namespace Hal {
     for (int i = 0; i < fEventCollectionsNo; i++) {
       QAPlot* plot               = (QAPlot*) fEventQA->UncheckedAt(i);
       QAPlotReport* event_report = plot->GetReport();
-      if (i < fEventColNames.size()) {
+      if (i < (int) fEventColNames.size()) {
         event_report->SetName(fEventColNames[i]);
       } else {
         event_report->SetName(Form("Ev %i", i));

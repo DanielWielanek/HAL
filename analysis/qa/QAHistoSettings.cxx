@@ -31,7 +31,7 @@ namespace Hal {
     return GetName();
   }
 
-  void QAHistoSettings::Print(Option_t* option) const {
+  void QAHistoSettings::Print(Option_t* /*option*/) const {
     std::cout << "== QAHistoSettings ==" << std::endl;
     std::cout << "Ndim: " << fSize << std::endl;
     std::cout << "Custom: " << fCustom << std::endl;

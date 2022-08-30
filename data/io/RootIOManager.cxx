@@ -72,7 +72,7 @@ namespace Hal {
       ff->Close();
     }
 
-    ULong_t ent1 = fInChain[0]->GetEntries();
+    Long64_t ent1 = fInChain[0]->GetEntries();
     for (auto friendChain : fInChain) {
       if (ent1 != friendChain->GetEntries()) { Cout::PrintInfo("Different number of entries in chains", EInfo::kWarning); }
     }
@@ -117,7 +117,7 @@ namespace Hal {
 
   void RootIOManager::AddFriend(TString friendName, Int_t level) {
     if (level < 0) return;
-    if (fFriendName.size() <= level) fFriendName.resize(level + 1);
+    if (int(fFriendName.size()) <= level) fFriendName.resize(level + 1);
     fFriendName[level].push_back(friendName);
   }
 

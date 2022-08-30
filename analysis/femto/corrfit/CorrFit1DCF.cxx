@@ -132,7 +132,7 @@ namespace Hal {
       fBinX = cf->GetBin(i);
       A     = fNumeratorHistogram->GetBinContent(fBinX);
       B     = fDenominatorHistogram->GetBinContent(fBinX);
-      x     = fDenominatorHistogram->GetBinCenter(fBinX);
+      //  x     = fDenominatorHistogram->GetBinCenter(fBinX);
       Double_t Cf, ecf;
       CalcError(A, fNumeratorHistogram->GetBinError(fBinX), B, fDenominatorHistogram->GetBinError(fBinX), Cf, ecf);
       C   = cf->GetBinCFVal(fBinX, useHD);
@@ -157,10 +157,10 @@ namespace Hal {
     Bool_t useHD        = kFALSE;
     if (fBinCalc == kExtrapolated) useHD = kTRUE;
     for (int i = 0; i < cf->GetNbins(); i++) {
-      fBinX         = cf->GetBin(i);
-      A             = fNumeratorHistogram->GetBinContent(fBinX);
-      B             = fDenominatorHistogram->GetBinContent(fBinX);
-      x             = fDenominatorHistogram->GetBinCenter(fBinX);
+      fBinX = cf->GetBin(i);
+      A     = fNumeratorHistogram->GetBinContent(fBinX);
+      B     = fDenominatorHistogram->GetBinContent(fBinX);
+      //  x             = fDenominatorHistogram->GetBinCenter(fBinX);
       C             = cf->GetBinCFVal(fBinX, useHD);
       Double_t logA = (C * (A + B)) / (A * (C + 1.0));
       Double_t logB = (A + B) / (B * (C + 1.0));
@@ -183,9 +183,9 @@ namespace Hal {
     Bool_t useHD        = kFALSE;
     if (fBinCalc == kExtrapolated) useHD = kTRUE;
     for (int i = 0; i < Cf->GetNbins(); i++) {
-      fBinX          = Cf->GetBin(i);
-      Double_t cf    = fCorrelationFunctionHistogram->GetBinContent(fBinX);
-      x              = fDenominatorHistogram->GetBinCenter(fBinX);
+      fBinX       = Cf->GetBin(i);
+      Double_t cf = fCorrelationFunctionHistogram->GetBinContent(fBinX);
+      // x              = fDenominatorHistogram->GetBinCenter(fBinX);
       C              = Cf->GetBinCFVal(fBinX, useHD);
       Double_t ea    = fCorrelationFunctionHistogram->GetBinError(fBinX);
       Double_t eb    = GetNumericalError(fBinX);
@@ -315,10 +315,6 @@ namespace Hal {
 
   Double_t CorrFit1DCF::EvalCF(const Double_t* x, const Double_t* params) const {
     if (fBinCalc == kExtrapolated) {
-      Double_t X[3];
-      X[0]             = fDenominatorHistogram->GetXaxis()->GetBinLowEdge(fBinX);
-      X[1]             = fDenominatorHistogram->GetXaxis()->GetBinCenter(fBinX);
-      X[2]             = fDenominatorHistogram->GetXaxis()->GetBinUpEdge(fBinX);
       Double_t val     = 0;
       const Int_t bin0 = fBinX * 2 - 2;
       for (int i = 0; i < 3; i++) {
@@ -331,7 +327,6 @@ namespace Hal {
   }
 
   void CorrFit1DCF::RecalculateSmoothFunction() const {
-    Double_t half       = fDenominatorHistogram->GetXaxis()->GetBinWidth(1);
     CorrFitHDFunc1D* cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
     Double_t X[1];
     for (int i = 0; i < cf->GetBinsHD().GetSize(); i++) {

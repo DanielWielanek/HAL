@@ -84,9 +84,10 @@ namespace Hal {
   void CorrFitDrawOptions::SetLegendPos(Double_t x1, Double_t x2, Double_t y1, Double_t y2) {
     fXLegend[0] = x1;
     fXLegend[1] = x2;
-    fXLegend[3] = y1;
-    fXLegend[4] = y2;
+    fXLegend[2] = y1;
+    fXLegend[3] = y2;
   }
+
   void CorrFitDrawOptions::SetIntOpt(Int_t opt) {
     //    enum eCommon { kNorm = 0, kSame = 1, kNumError = 3, kLegend = 4 };
     // enum e3d { kRgb = 5 };

@@ -487,7 +487,7 @@ namespace Hal {
     Check();
     // set par names depending on frame
     // init params
-    for (int i = 0; i < fParameters.size(); i++) {
+    for (unsigned int i = 0; i < fParameters.size(); i++) {
       fParameters[i].Init();
     }
     EstimateActiveBins();
@@ -506,7 +506,7 @@ namespace Hal {
     Check();
     // set par names depending on frame
     // init params
-    for (int i = 0; i < fParameters.size(); i++) {
+    for (unsigned int i = 0; i < fParameters.size(); i++) {
       fParameters[i].Init();
     }
     EstimateActiveBins();

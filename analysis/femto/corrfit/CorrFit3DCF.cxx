@@ -243,13 +243,13 @@ namespace Hal {
     }
 
 
-    //  if (refresh) {
-    for (int i = 0; i < fDrawFunc.size(); i++) {
-      fTempPad->cd(i + 1);
-      gPad->Modified();
-      gPad->Update();
+    if (refresh) {  //?
+      for (unsigned int i = 0; i < fDrawFunc.size(); i++) {
+        fTempPad->cd(i + 1);
+        gPad->Modified();
+        gPad->Update();
+      }
     }
-    //}
     gPad     = fTempPad;
     fOldNorm = GetNorm();
   }
@@ -287,10 +287,7 @@ namespace Hal {
     Double_t f = 0.0;
     Double_t A, B, C;
     Double_t e, e1, e2, chi; /* FIXME */
-    Int_t binX_max = fCorrelationFunctionHistogram->GetNbinsX();
-    Int_t binY_max = fCorrelationFunctionHistogram->GetNbinsY();
-    Int_t binZ_max = fCorrelationFunctionHistogram->GetNbinsZ();
-    Bool_t useHD   = kFALSE;
+    Bool_t useHD = kFALSE;
     if (fBinCalc == kExtrapolated) useHD = kTRUE;
     CorrFitHDFunc3D* cf = static_cast<CorrFitHDFunc3D*>(fHDMaps);
     for (int i = 0; i < cf->GetNBins(); i++) {
@@ -318,7 +315,7 @@ namespace Hal {
     return f;
   }
 
-  double CorrFit3DCF::GetChiTF(const double* par) const {
+  double CorrFit3DCF::GetChiTF(const double* /*par*/) const {
     Double_t f = 0.0;
     Double_t A, B, C;
     Double_t e, e2, chi;
@@ -349,7 +346,7 @@ namespace Hal {
     return f;
   }
 
-  double CorrFit3DCF::GetLogTFD(const double* par) const {
+  double CorrFit3DCF::GetLogTFD(const double* /*par*/) const {
     Double_t f = 0.0;
     Double_t A, B, C;
     Bool_t useHD = kFALSE;
@@ -679,7 +676,7 @@ namespace Hal {
       for (int i = 1; i <= nBinX; i++) {
 
         Int_t a = i;
-        Int_t b = nBinX - i + 1;
+        // Int_t b = nBinX - i + 1;
         // diagonals
         if (h->GetBinContent(a, a, a) == 1) h->SetBinContent(a, a, a, -1);
 
@@ -696,6 +693,7 @@ namespace Hal {
   }
 
   void CorrFit3DCF::MakeDiagonal(EFitExtraMask flag, TH3* h) {
+    fFitMaskFlag = flag;
     if (fFitMaskFlag == EFitExtraMask::kSlice) {
       CalculateSliceBins(h);
     } else if (fFitMaskFlag == EFitExtraMask::kDiagonalSlice || fFitMaskFlag == EFitExtraMask::kDiagonalSliceIgnored) {
@@ -1048,7 +1046,6 @@ namespace Hal {
   }
 
   void CorrFit3DCF::RecalculateSmoothFunction() const {
-    Double_t half       = fDenominatorHistogram->GetXaxis()->GetBinWidth(1);
     CorrFitHDFunc3D* cf = static_cast<CorrFitHDFunc3D*>(fHDMaps);
     Double_t X[3];
     for (int a = 0; a < cf->GetBinsHDX().GetSize(); a++) {

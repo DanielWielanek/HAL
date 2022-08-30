@@ -362,7 +362,9 @@ namespace Hal {
       case EFormatOption::kStandardAcess: {
         CLRBIT(fFormatOption, eBitFormat::kDirectAcesss);  // no direct access
         CLRBIT(fFormatOption, eBitFormat::kReader);        // no reader
-
+      } break;
+      case EFormatOption::kDisableChecking: {
+        CLRBIT(fFormatOption, eBitFormat::kChecking);
       } break;
     };
   }

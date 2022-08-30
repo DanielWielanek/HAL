@@ -80,11 +80,7 @@ namespace Hal {
       }
 #endif
     };
-    auto colDis = []() {
-#ifdef __linux__
-      std::cout << "\e[0;0m" << std::endl;
-#endif
-    };
+
 
     for (unsigned int i = 0; i < fMaps.size(); i++) {
       fMaps[i]->SetFrameScale(fKinematics);
@@ -151,7 +147,6 @@ namespace Hal {
       Double_t norm = 1;
       if (fDrawOptions.AutoNorm()) { norm = GetNorm(); }
       for (int iX = 1; iX <= fDrawHistograms[0]->GetNbinsX(); iX++) {
-        Double_t k = fOldNumErr->GetXaxis()->GetBinCenter(iX);
         fOldNumErr->SetBinContent(iX, fDrawHistograms[0]->GetBinContent(iX));
         fOldNumErr->SetBinError(iX, fMaps[0]->EvalNumErrorBin(iX, 1) * norm);
       }

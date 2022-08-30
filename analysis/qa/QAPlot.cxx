@@ -213,21 +213,21 @@ namespace Hal {
   }
 
   void QAPlot::FillTrack(Track* track) {
-    for (int i = 0; i < fSettings[0].size(); i++) {
+    for (unsigned int i = 0; i < fSettings[0].size(); i++) {
       if (fSettings[0][i].IsCustom()) {
         FillTrackCustom1D(track, (TH1D*) Get1D(i), i);
       } else {
         Get1D(i)->Fill(track->GetFieldVal(fSettings[0][i].GetFillFlagX()));
       }
     }
-    for (int i = 0; i < fSettings[1].size(); i++) {
+    for (unsigned int i = 0; i < fSettings[1].size(); i++) {
       if (fSettings[1][i].IsCustom()) {
         FillTrackCustom2D(track, (TH2D*) Get2D(i), i);
       } else {
         Get2D(i)->Fill(track->GetFieldVal(fSettings[1][i].GetFillFlagX()), track->GetFieldVal(fSettings[1][i].GetFillFlagY()));
       }
     }
-    for (int i = 0; i < fSettings[2].size(); i++) {
+    for (unsigned int i = 0; i < fSettings[2].size(); i++) {
       if (fSettings[2][i].IsCustom()) {
         FillTrackCustom3D(track, (TH3D*) Get3D(i), i);
       } else {
@@ -264,7 +264,7 @@ namespace Hal {
     }
   }
 
-  void QAPlot::Print(Option_t* opt) const {
+  void QAPlot::Print(Option_t* /*opt*/) const {
     for (int i = 0; i < 3; i++) {
       for (unsigned int j = 0; j < fSettings[i].size(); j++) {
         fSettings[i][j].Print();

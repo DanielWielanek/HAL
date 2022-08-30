@@ -108,6 +108,14 @@ namespace Hal {
     return *this;
   }
 
+  template<>
+  Array_1<Bool_t>& Array_1<Bool_t>::operator*(const Bool_t& val) {
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] = fArray[i] && val;
+    }
+    return *this;
+  }
+
   template<typename T>
   Array_1<T>& Array_1<T>::operator/(const T& val) {
     for (int i = 0; i < GetSize(); i++) {
@@ -115,11 +123,19 @@ namespace Hal {
     }
     return *this;
   }
-  template<typename T>
 
+  template<typename T>
   Array_1<T>& Array_1<T>::operator*=(const T& val) {
     for (int i = 0; i < GetSize(); i++) {
       fArray[i] *= val;
+    }
+    return *this;
+  }
+
+  template<>
+  Array_1<Bool_t>& Array_1<Bool_t>::operator*=(const Bool_t& val) {
+    for (int i = 0; i < GetSize(); i++) {
+      fArray[i] = fArray[i] && val;
     }
     return *this;
   }

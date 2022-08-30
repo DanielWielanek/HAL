@@ -6,7 +6,7 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
-#include "shmath/FemtoYlmSolver.h"
+#include "FemtoYlmSolver.h"
 
 #include "Cout.h"
 #include "FemtoSHCF.h"
@@ -232,7 +232,7 @@ namespace Hal {
   }
 
   FemtoYlmSolver::FemtoYlmSolver(Int_t maxL, FemtoSHCF* cf) :
-    fMaxJM((maxL + 1) * (maxL + 1)), fMaxL(maxL), fFactorialsSize((maxL + 1) * 4), fCF(cf), fSlice(FemtoSHSlice(maxL)) {
+    fMaxJM((maxL + 1) * (maxL + 1)), fFactorialsSize((maxL + 1) * 4), fMaxL(maxL), fSlice(FemtoSHSlice(maxL)), fCF(cf) {
     fLmVals.Resize(maxL);
     fFactorials.resize(fFactorialsSize);
     fMaxJM2_4      = 4.0 * fMaxJM * fMaxJM;
@@ -700,7 +700,6 @@ namespace Hal {
   }
 
   void FemtoYlmSolver::UpdateCF(Int_t bin) {
-    int l, m;
     for (int j = 0; j < fMaxJM; j++) {
       fCF->fCFReal[j]->SetBinContent(bin, fSlice.fCFReal[j]);
       fCF->fCFImag[j]->SetBinContent(bin, fSlice.fCFImag[j]);
@@ -733,8 +732,9 @@ namespace Hal {
     TH1* den0   = fCF->fDenReal[0];
     fNormFactor = 1.0;
     // TODO Fix/improvenormalization
-    double normbinmax = 0;  // fDenReal[0]->FindBin(fNormMax);
-    double normbinmin = 0;  // fDenReal[0]->FindBin(fNormMin);
+    double normbinmax = min;  // fDenReal[0]->FindBin(fNormMax);
+    double normbinmin = max;  // fDenReal[0]->FindBin(fNormMin);
+
     if (normbinmax > 0) {
       double sksum = 0.0;
       double wksum = 0.0;

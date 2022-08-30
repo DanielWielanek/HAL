@@ -63,6 +63,7 @@ namespace Hal {
     if (fParameters.size() <= ivar) { fParameters.resize(ivar + 1); }
     fParameters[ivar].SetParName(name);
     fParameters[ivar].SetRange(lower, upper);
+    fParameters[ivar].SetStartVal(val);
     fParameters[ivar].SetMapRange(lower, upper, (upper - lower) / step + 1);
     fParameters[ivar].SetIsFixed(kFALSE);
     return false;
@@ -601,7 +602,7 @@ namespace Hal {
 
       // double calc centroid
 
-      for (unsigned i = 0; i < fFreePars; i++) {
+      for (int i = 0; i < fFreePars; i++) {
         centroid[i] = 0;
         for (int j = 0; j < fFreePars + 1; j++) {
           if (j == largest_chi) continue;
@@ -621,7 +622,7 @@ namespace Hal {
       if (chi_r <= min_chi) {  // expand
       }
 
-      double second_worst_chi = 0;
+      // double second_worst_chi = 0; //ntot used warning
       for (int i = 0; i < fFreePars; i++) {
         centroid[i] = 0;
         for (int j = 0; j < fFreePars + 1; j++) {
@@ -635,7 +636,7 @@ namespace Hal {
 
     futurePar = centroid + (centroid - worstPar);
     copyPars(futurePar);
-    double chi_r = (*fFunc)(fTempParams);
+    // double chi_r = (*fFunc)(fTempParams); not used warning
     // TO DO complete this https://codesachin.wordpress.com/2016/01/16/nelder-mead-optimization/
 
     EstimateErrors();

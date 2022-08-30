@@ -13,7 +13,7 @@
 #include <TH1D.h>
 #include <iostream>
 namespace Hal {
-  FemtoSourceModelNumerical1D::FemtoSourceModelNumerical1D() : ff(0), fRawDistribution(nullptr) {}
+  FemtoSourceModelNumerical1D::FemtoSourceModelNumerical1D() : fRawDistribution(nullptr), ff(0) {}
 
   FemtoSourceModelNumerical1D::FemtoSourceModelNumerical1D(const FemtoSourceModelNumerical1D& other) :
     FemtoSourceModel1D(other), ff(other.ff), fRawDistribution(nullptr) {

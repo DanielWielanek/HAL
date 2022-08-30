@@ -38,7 +38,7 @@ namespace Hal {
     return init;
   }
 
-  void SplittingToStatusTask::Exec(Option_t* opt) {
+  void SplittingToStatusTask::Exec(Option_t* /*opt*/) {
     fProcessedEvents++;
     fCurrentEvent    = fMemoryMap->GetTemporaryEvent();
     ComplexEvent* ev = static_cast<ComplexEvent*>(fCurrentEvent);

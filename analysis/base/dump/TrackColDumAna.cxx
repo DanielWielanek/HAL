@@ -61,7 +61,7 @@ namespace Hal {
       }
     }
     fMemoryMap->BufferEvent(fCurrentEventCollectionID);
-    int tracks = fMemoryMap->GetTemporaryTotalTracksNo();
+    // int tracks = fMemoryMap->GetTemporaryTotalTracksNo();
   }
 
 

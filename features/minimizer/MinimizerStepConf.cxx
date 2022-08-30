@@ -19,7 +19,7 @@ namespace Hal {
     // TODO Auto-generated destructor stub
   }
 
-  void MinimizerStepConf::ConfigureParameter(TString name, Double_t step, Double_t min, Double_t max, TString option) {
+  void MinimizerStepConf::ConfigureParameter(TString name, Double_t step, Double_t min, Double_t max, TString /*option*/) {
     if (step <= 0) step = 0.01;
     if (min > max) {
       Double_t temp = min;

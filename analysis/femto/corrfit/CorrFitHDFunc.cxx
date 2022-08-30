@@ -28,7 +28,6 @@ namespace Hal {
 
   CorrFitHDFunc1D::CorrFitHDFunc1D() : CorrFitHDFunc(1) {}
 
-
   void CorrFitHDFunc::RecalcHDBin(Int_t newSize) {
     newSize     = newSize * 2 + 1;
     Int_t count = 1;
@@ -39,6 +38,7 @@ namespace Hal {
       if (i % 2 == 0) count++;
     }
   }
+
   void CorrFitHDFunc1D::SetMask(TH1* mask, TH1* denominator, Bool_t hd) {
     Int_t maxBins = mask->GetNbinsX() * 2 + 1;
     fDenominatorHD.Resize(maxBins);                        //+1 to keep compatible with bin id
@@ -176,7 +176,6 @@ namespace Hal {
       Int_t xbin0  = GetBinHD(BinX);
       Int_t ybin0  = GetBinHD(BinY);
       Int_t zbin0  = GetBinHD(BinZ);
-      Double_t X[3];
       for (int i = -1; i < 2; i++) {
         for (int j = -1; j < 2; j++) {
           for (int k = -1; k < 2; k++) {

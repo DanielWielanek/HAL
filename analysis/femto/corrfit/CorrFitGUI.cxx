@@ -133,7 +133,7 @@ namespace Hal {
       }
 
       fComboBox = new TGComboBox(rightLabel);
-      for (int i = 0; i < fSteps.size(); i++) {
+      for (unsigned int i = 0; i < fSteps.size(); i++) {
         fComboBox->AddEntry(Form("%4.3f", fSteps[i]), i);
       }
       fComboBox->Resize(70, 20);
@@ -235,7 +235,8 @@ namespace Hal {
     ApplyParams();
     TVirtualPad* pad = gPad;
     TCanvas* c       = new TCanvas();
-    TString opt      = "";
+    c->cd();
+    TString opt = "";
     if (fChiMin->IsOn()) opt = "min";
     if (!fChiFit->IsOn()) {
       if (opt.Length() == 0)
@@ -244,6 +245,8 @@ namespace Hal {
         opt = opt + "+nolin";
     }
     chi->Draw(opt);
+    c->Modified();
+    c->Update();
     if (fChiLogz->IsOn()) { gPad->SetLogz(); }
     gPad = pad;
   }

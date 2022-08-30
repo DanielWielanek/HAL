@@ -9,6 +9,7 @@
 
 #include "Minimizer.h"
 
+#include "Array.h"
 #include "Cout.h"
 #include "Std.h"
 #include <Math/IFunctionfwd.h>
@@ -72,13 +73,18 @@ namespace Hal {
 
   void Minimizer::InitFit() {
     fNonConstMap.clear();
-    fNCalls = 0;
+    fNCalls   = 0;
+    fFreePars = 0;
     for (unsigned int i = 0; i < fParameters.size(); i++) {
-      if (!fParameters[i].IsFixed()) { fNonConstMap.push_back(i); }
+      if (!fParameters[i].IsFixed()) {
+        fNonConstMap.push_back(i);
+      } else {
+        fFreePars++;
+      }
     }
     auto lambda = [](Int_t a, Int_t b) -> bool { return a < b; };
     std::sort(fNonConstMap.begin(), fNonConstMap.end(), lambda);
-    Cout::PrintInfo("BEFOR INIT ", EInfo::kLowWarning);
+    Cout::PrintInfo("BEFORE INIT ", EInfo::kLowWarning);
     Cout::Database(6, "ParName", "MinMap", "MaxMap", "Points", "Min", "Max");
     for (unsigned int i = 0; i < fParameters.size(); i++) {
       if (fParameters[i].IsFixed()) {
@@ -126,7 +132,10 @@ namespace Hal {
     fErrors      = new double[GetNParams()];
     fParamsMin.resize(GetNParams());
     fTempParams = new double[GetNParams()];
-    fGlobMin    = DBL_MAX;
+    for (int i = 0; i < GetNParams(); i++) {
+      if (fParameters[i].IsFixed()) { fTempParams[i] = fParameters[i].GetStartVal(); }
+    }
+    fGlobMin = DBL_MAX;
   }
 
   void Minimizer::Reset() { fParameters.clear(); }
@@ -543,6 +552,95 @@ namespace Hal {
     FinishFit();
   }
 
+
+  void Minimizer::MinimizeNelderMead() {
+    InitFit();
+    // meat
+    Hal::Array_2<Double_t> vertices;
+    vertices.MakeBigger(fFreePars + 1, fFreePars);
+    Hal::Array_1<Double_t> chiMap;
+    chiMap.MakeBigger(fFreePars + 1);
+    Hal::Array_1<Double_t> centroid, futurePar, worstPar;
+    centroid.MakeBigger(fFreePars);
+    futurePar.MakeBigger(fFreePars);
+    worstPar.MakeBigger(fFreePars);
+    for (int i = 0; i < fFreePars; i++) {
+      for (int j = 0; j < fFreePars; j++) {
+        vertices[i][j] = fParameters[fNonConstMap[i]].GetMin();
+      }
+    }
+    for (int j = 0; j < fFreePars; j++) {
+      vertices[fFreePars][j] = fParameters[fNonConstMap[0]].GetMax();
+    }
+
+    auto copyPars = [&](const Hal::Array_1<Double_t>& val) {
+      for (int i = 0; i < fFreePars; i++) {
+        //    fTempParams[fNonConstMap[i]] = fParameters[i].FindClosest(val[i]);
+      }
+    };
+
+    // calcualte first vertices
+    for (int i = 0; i < fFreePars + 1; i++) {
+      for (int j = 0; j < fFreePars; j++) {
+        copyPars(vertices[i]);
+      }
+      chiMap[i] = (*fFunc)(fTempParams);
+    }
+
+    Bool_t found = kTRUE;
+    while (found) {
+      int largest_chi, lowest_chi;
+      double max_chi = chiMap.FindMax(largest_chi);
+      double min_chi = chiMap.FindMin(lowest_chi);
+      // find worse vertice
+      double almost_max_chi = 0;
+      for (int i = 0; i < fFreePars + 1; i++) {
+        if (chiMap[i] > almost_max_chi && chiMap[i] != max_chi) { almost_max_chi = chiMap[i]; }
+      }
+      worstPar = vertices[largest_chi];
+
+      // double calc centroid
+
+      for (unsigned i = 0; i < fFreePars; i++) {
+        centroid[i] = 0;
+        for (int j = 0; j < fFreePars + 1; j++) {
+          if (j == largest_chi) continue;
+          centroid += vertices[i];
+        }
+        centroid = centroid / double(fFreePars);
+      }
+      // do reflection
+      futurePar = centroid + (centroid - worstPar);
+      copyPars(futurePar);
+      double chi_r = (*fFunc)(fTempParams);
+
+      if (chi_r < almost_max_chi && chi_r > min_chi) {
+        vertices[largest_chi] = futurePar;
+        continue;
+      }
+      if (chi_r <= min_chi) {  // expand
+      }
+
+      double second_worst_chi = 0;
+      for (int i = 0; i < fFreePars; i++) {
+        centroid[i] = 0;
+        for (int j = 0; j < fFreePars + 1; j++) {
+          if (j == largest_chi) continue;
+          centroid += vertices[i];
+          centroid += vertices[i];
+        }
+        centroid = centroid / double(fFreePars);
+      }
+    }
+
+    futurePar = centroid + (centroid - worstPar);
+    copyPars(futurePar);
+    double chi_r = (*fFunc)(fTempParams);
+    // TO DO complete this https://codesachin.wordpress.com/2016/01/16/nelder-mead-optimization/
+
+    EstimateErrors();
+    FinishFit();
+  }
   void Minimizer::ChangeStateVector(std::vector<Int_t>& vec) {
     std::vector<Int_t> temp = vec;
     for (unsigned int i = 0; i < vec.size(); i++) {
@@ -561,4 +659,6 @@ namespace Hal {
     fParameters[ivar].SetMax(max);
     return true;
   }
+
+
 }  // namespace Hal

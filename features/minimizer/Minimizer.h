@@ -69,6 +69,7 @@ namespace Hal {
     ROOT::Math::IMultiGenFunction* fFunc;
     eMinimizeType fMinimizeType;
     Int_t fNCalls;
+    Int_t fFreePars = {0};
     Bool_t fDiscreteFit;
     Bool_t fTrace;
     Double_t fGlobMin;
@@ -82,6 +83,7 @@ namespace Hal {
     void EstimateErrors();
     void MinimizeAnt();
     void MinimizeScan();
+    void MinimizeNelderMead();
     void ChangeStateVector(std::vector<Int_t>& vec);
     void EstimateError(Int_t par, Double_t& min, Double_t& quantumMin, Double_t& error);
     Bool_t LoopOverParameter(Int_t param);

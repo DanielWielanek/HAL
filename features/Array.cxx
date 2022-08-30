@@ -28,6 +28,7 @@ namespace Hal {
     for (int i = 0; i < fSize; i++)
       fArray[i] = 0;
   }
+
   template<>
   void Array_1<TString>::Resize(Int_t new_dim) {
     if (fArray) delete[] fArray;
@@ -68,15 +69,6 @@ namespace Hal {
       } else {
         std::cout << __FILE__ << " " << __LINE__ << "different sizes of arrays!" << std::endl;
       }
-    }
-    return *this;
-  }
-
-  template<typename T>
-  Array_1<T>& Array_1<T>::operator+=(const Array_1<T>& rhs) {
-    if (rhs.GetSize() != this->GetSize()) return *this;
-    for (int i = 0; i < GetSize(); i++) {
-      fArray[i] += rhs.fArray[i];
     }
     return *this;
   }
@@ -124,6 +116,7 @@ namespace Hal {
     return *this;
   }
   template<typename T>
+
   Array_1<T>& Array_1<T>::operator*=(const T& val) {
     for (int i = 0; i < GetSize(); i++) {
       fArray[i] *= val;
@@ -163,6 +156,7 @@ namespace Hal {
     return max;
   }
   template<typename T>
+
   void Array_1<T>::Add(Array_1<T> const& rhs) {
     if (fSize == rhs.fSize) {
       for (int i = 0; i < fSize; i++) {

@@ -27,6 +27,7 @@ namespace Hal {
     fSignedBoth(kTRUE),
     fIdentical(kTRUE),
     fSwapPair(kTRUE),
+    fSkipEmpty(kTRUE),
     fCurrentTrack2CollectionNo(0),
     fCurrentTrack1CollectionNo(0),
     fCurrentTrack1(NULL),
@@ -296,9 +297,11 @@ namespace Hal {
   }
 
   void TwoTrackAna::FinishEventIdentical() {
-    if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) < 1) {
-      if (fBackgroundMode == kMixedPairsID) { fMemoryMap->RejectLastEvent(fCurrentEventCollectionID); }
-      return;
+    if (fSkipEmpty) {
+      if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) < 2) {
+        fMemoryMap->RejectLastEvent(fCurrentEventCollectionID);
+        return;
+      }
     }
     switch (fBackgroundMode) {
       case kPerfectPairsID: {
@@ -347,9 +350,11 @@ namespace Hal {
     fCurrentTrack2CollectionNo = fCurrentTrackCollectionID + 1;
     Int_t tr1                  = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
     Int_t tr2                  = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
-    if (tr1 == 0 || tr2 == 0) {  // TODO should we mix pairless events?
-      if (fBackgroundMode == kMixedPairsNID) { fMemoryMap->RejectLastEvent(fCurrentEventCollectionID); }
-      return;
+    if (fSkipEmpty) {
+      if (tr1 == 0 || tr2 == 0) {
+        fMemoryMap->RejectLastEvent(fCurrentEventCollectionID);
+        return;
+      }
     }
     switch (fBackgroundMode) {
       case kPerfectPairsNID: {
@@ -742,6 +747,7 @@ namespace Hal {
     fSignedBoth(ana.fSignedBoth),
     fIdentical(ana.fIdentical),
     fSwapPair(ana.fSwapPair),
+    fSkipEmpty(ana.fSkipEmpty),
     fCurrentTrack2CollectionNo(0),
     fCurrentTrack1CollectionNo(0),
     fCurrentTrack1(nullptr),
@@ -781,6 +787,7 @@ namespace Hal {
       fSignedBoth                = other.fSignedBoth;
       fIdentical                 = other.fIdentical;
       fSwapPair                  = other.fSwapPair;
+      fSkipEmpty                 = other.fSkipEmpty;
       fCurrentTrack1CollectionNo = other.fCurrentTrack1CollectionNo;
       fCurrentTrack2CollectionNo = other.fCurrentTrack2CollectionNo;
       if (other.fCurrentTrack) { fCurrentTrack1 = other.fCurrentTrack1; }

@@ -59,6 +59,7 @@ namespace Hal {
     Bool_t fSignedBoth;
     Bool_t fIdentical;
     Bool_t fSwapPair;  // variable to swap identical particles
+    Bool_t fSkipEmpty;
     Int_t fCurrentTrack2CollectionNo;
     Int_t fCurrentTrack1CollectionNo;
     Track *fCurrentTrack1, *fCurrentTrack2;
@@ -272,6 +273,11 @@ namespace Hal {
      * @param mixsize size of buffer to mixing
      */
     void SetMixSize(Int_t mixsize);
+    /**
+     * if set to true events without pairs are processed to mixing buffer
+     * @param proceed
+     */
+    void ProceedWithEmtyEvents(Bool_t proceed) { fSkipEmpty = !proceed; }
     virtual void FinishTask();
     /**
      * like for TrackAna +

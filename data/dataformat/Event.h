@@ -227,7 +227,7 @@ namespace Hal {
      * @return true if this format have some hidden settings that doesn't depend
      * on data stored in tree
      */
-    virtual Bool_t HasHiddenSettings() const { return kFALSE; };
+    virtual Bool_t HasHiddenSettings() const { return kTRUE; };
     /**
      *
      * @return event number
@@ -240,7 +240,7 @@ namespace Hal {
     inline Int_t GetTotalTrackNo() const { return fTotalTracksNo; };
     /**
      *
-     * @return total number of registered vo
+     * @return total number of registered V0
      */
     inline Int_t GetTotalV0No() const { return fTotalV0s; };
     /**

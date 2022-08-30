@@ -118,7 +118,9 @@ namespace Hal {
 
   void Event::ShallowCopyTracks(Event* event) {
     fTracks->Clear();
+    fV0sHiddenInfo->Clear();
     fTotalTracksNo = event->fTracks->GetEntriesFast();
+    fTotalV0s      = event->fV0sHiddenInfo->GetEntriesFast();
     fTracks->ExpandCreateFast(fTotalTracksNo);
     fV0sHiddenInfo->ExpandCreateFast(fTotalV0s);
     for (int i = 0; i < fTotalTracksNo; i++) {

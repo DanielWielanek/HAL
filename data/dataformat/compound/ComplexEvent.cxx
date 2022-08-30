@@ -174,11 +174,6 @@ namespace Hal {
     }
   }
 
-  void ComplexEvent::CopyHiddenSettings(const Event* event) {
-    fRealEvent->CopyHiddenSettings(((ComplexEvent*) event)->fRealEvent);
-    fImgEvent->CopyHiddenSettings(((ComplexEvent*) event)->fImgEvent);
-  }
-
   Bool_t ComplexEvent::HasHiddenSettings() const {
     if (fRealEvent->HasHiddenSettings()) return kTRUE;
     if (fImgEvent->HasHiddenSettings()) return kTRUE;

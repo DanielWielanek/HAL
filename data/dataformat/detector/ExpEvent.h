@@ -38,6 +38,11 @@ namespace Hal {
     inline Int_t GetNTofTracks() const { return fNTofTracks; };
     /**
      *
+     * @return run id
+     */
+    inline Int_t GetRunId() const { return fRunInfoId; }
+    /**
+     *
      * @return DetectorEvent
      */
     virtual DetectorEvent* GetDetEvent() const { return NULL; };

@@ -43,7 +43,6 @@ namespace Hal {
     virtual void Clear(Option_t* opt = " ");
     virtual void Update();
     virtual void LinkWithTree();
-    virtual void CopyHiddenSettings(const Event* event);
     virtual Bool_t HasHiddenSettings() const;
     virtual Bool_t ExistInTree() const;
     virtual Bool_t IsCompatible(const Event* non_buffered) const;

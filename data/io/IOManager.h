@@ -152,6 +152,8 @@ namespace Hal {
      * prints basic information about I/0
      */
     void PrintInfo();
+    virtual void FillTree() {};
+    virtual void CloseManager() {};
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

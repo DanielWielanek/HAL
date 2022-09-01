@@ -67,6 +67,7 @@ namespace Hal {
       for (auto task : fActiveTasks) {
         task->Exec("");
       }
+      fManager->FillTree();
     }
     Finish();
   }
@@ -115,6 +116,7 @@ namespace Hal {
       task->FinishTask();
     }
     Cout::PrintInfo("Analysis completed", EInfo::kInfo);
+    fManager->CloseManager();
   }
 
   AnalysisManager::~AnalysisManager() {

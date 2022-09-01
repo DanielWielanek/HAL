@@ -27,6 +27,7 @@ namespace HalOTF {
     fInFile  = new TFile(fInFileName, "recreate");
     fOutFile = new TFile(fOutFileName, "recreate");
     fOutTree = new TTree(fOutTreeName, fOutTreeName);
+    Hal::Cout::PrintInfo(Form("CREATING TREE %s", fOutTreeName.Data()), Hal::EInfo::kError);
     return kTRUE;
   }
 
@@ -53,6 +54,13 @@ namespace HalOTF {
   Int_t IOManager::GetEntry(Int_t i) {
     if (i < fEntries) return 1;
     return -1;
+  }
+
+  void IOManager::FillTree() { fOutTree->Fill(); }
+
+  void IOManager::CloseManager() {
+    fOutTree->Write();
+    fOutFile->Close();
   }
 
 }  // namespace HalOTF

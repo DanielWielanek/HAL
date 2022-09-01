@@ -41,6 +41,8 @@ namespace HalOTF {
     TFile* GetInFile();
     void AddFriend(TString /*name*/) {};
     void SetInChain(TChain* tempChain, Int_t ident = -1);
+    void FillTree();
+    virtual void CloseManager();
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

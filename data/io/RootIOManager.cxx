@@ -133,6 +133,13 @@ namespace Hal {
 
   void RootIOManager::SetInChain(TChain* /*tempChain*/, Int_t /*ident*/) {}
 
+  void RootIOManager::FillTree() { fOutTree->Fill(); }
+
+  void RootIOManager::CloseManager() {
+    fOutTree->Write();
+    fOutFile->Close();
+  }
+
   Int_t Hal::RootIOManager::GetEntry(Int_t i) {
     for (auto chain : fInChain) {
       chain->GetEntry(i);

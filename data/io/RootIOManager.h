@@ -76,6 +76,8 @@ namespace Hal {
     void AddFriend(TString friendName, Int_t level);
     void UpdateBranches();
     void SetInChain(TChain* tempChain, Int_t ident = -1);
+    void FillTree();
+    virtual void CloseManager();
     virtual ~RootIOManager();
     ClassDef(RootIOManager, 1)
   };

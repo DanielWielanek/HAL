@@ -36,7 +36,7 @@ namespace Hal {
    */
 
   class CorrFitDumpedPairAna : public TObject {
-  private:
+  protected:
     TString fPairFile;
     TFile* fFile;
     TTree* fTree;
@@ -64,9 +64,10 @@ namespace Hal {
     void RootExportSH(FemtoSHCF* cf, Int_t step);
     Bool_t ConfigureInput();
     Bool_t ConfigureFromXML();
-    void RunSignalPairs(Int_t nEvents);
-    void RunSignalBackgroundPairs(Int_t nEvents);
-    void RunBackgroundPairs(Int_t nEvents);
+    virtual void RunSignalPairs(Int_t nEvents)           = 0;
+    virtual void RunSignalBackgroundPairs(Int_t nEvents) = 0;
+    virtual void RunBackgroundPairs(Int_t nEvents)       = 0;
+    virtual Bool_t IsVertical() const { return kFALSE; }
 
   protected:
     /**
@@ -99,9 +100,9 @@ namespace Hal {
      * use MC momentum not reconstructed
      */
     void UseImgMomenta() { fImgMom = kTRUE; };
-    Bool_t Init();
-    void Run(Int_t maxEvents = -1);
-    void Finish();
+    virtual Bool_t Init();
+    virtual void Run(Int_t maxEvents = -1);
+    virtual void Finish() = 0;
     /**
      * ignore sign of k* q
      */

@@ -78,12 +78,9 @@ namespace Hal {
     if (ConfigureFromXML() == kFALSE) return kFALSE;
     if (ConfigureInput() == kFALSE) return kFALSE;
     //--- file with pairs loaded
-    if (fWeight == NULL) return kFALSE;
-    if (fTempCF == NULL) return kFALSE;
-    fCF = new FemtoCorrFunc*[fMultiplyJobs];
-    for (int i = 0; i < fMultiplyJobs; i++) {
-      fCF[i] = (FemtoCorrFunc*) fTempCF->Clone();
-    }
+    if (fWeight == nullptr) return kFALSE;
+    if (fTempCF == nullptr) return kFALSE;
+
 
     DividedHisto1D* dummy    = fTempCF->GetCF(0);
     Femto::EKinematics kinem = Femto::EKinematics::kLCMS;
@@ -91,9 +88,7 @@ namespace Hal {
       TString label = dummy->GetLabel(0);
       kinem         = Femto::LabelToKinematics(label);
     }
-    delete fTempCF;
-    fTempCF = nullptr;
-    fPair   = Femto::MakePair(kinem, fImgMom);
+    fPair = Femto::MakePair(kinem, fImgMom);
 
     if (fIgnoreSing) fPair->UseAbs();
     if (fGenerator) {
@@ -124,44 +119,6 @@ namespace Hal {
       case eDumpCalcMode::kBackgroundPairsOnly: {
         RunBackgroundPairs(nEvents);
       } break;
-    }
-  }
-
-  void CorrFitDumpedPairAna::Finish() {
-    TObject* obj = nullptr;
-
-    for (int iJob = 0; iJob < fMultiplyJobs; iJob++) {
-      obj = fCF[iJob]->GetCF(0);
-      if (obj->InheritsFrom("Hal::Femto1DCF")) {
-        RootExport1D(static_cast<Femto1DCF*>(obj), iJob);
-      } else if (obj->InheritsFrom("Hal::Femto3DCF")) {
-        RootExport3D(static_cast<Femto3DCF*>(obj), iJob);
-      } else if (obj->InheritsFrom("Hal::FemtoSHCF")) {
-        RootExportSH(static_cast<FemtoSHCF*>(obj), iJob);
-      } else {
-        Cout::Text("Not supported CF", "L", kRed);
-      }
-    }
-    if (fJobId == 0) {
-      TFile* file       = new TFile("files/config.root", "recreate");
-      CorrFitInfo* info = new CorrFitInfo();
-      std::ifstream macro;
-      macro.open("ana.C");
-      std::string line;
-      TString val = "";
-      while (std::getline(macro, line)) {
-        TString l = line;
-        l         = l + "\n";
-        val       = val + l;
-      }
-      macro.close();
-      info->SetMacroText(val);
-      info->SetPairFile(fPairFile);
-      info->SetCf(obj);
-      CorrFitParamsSetup* setup = new CorrFitParamsSetup("corrfit_conf.xml");
-      info->SetSetup(*setup);
-      info->Write();
-      file->Close();
     }
   }
 
@@ -334,101 +291,6 @@ namespace Hal {
       this->SetCorrFunc(corrFunc);
     }
     return kTRUE;
-  }
-
-  void CorrFitDumpedPairAna::RunSignalPairs(Int_t nEvents) {
-    Int_t step = nEvents / 100;
-    for (int iEvent = 0; iEvent < nEvents; iEvent++) {
-      fTree->GetEntry(iEvent);
-      if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
-      for (int jPair = 0; jPair < fPairsSignal->GetEntriesFast(); jPair++) {
-        fMiniPair = (FemtoMicroPair*) fPairsSignal->UncheckedAt(jPair);
-        *fPair    = *fMiniPair;
-
-        for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
-          PreprocessPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            for (int weightMulti = 0; weightMulti < fMultiplyWeight; weightMulti++) {
-              fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
-              fPair->SetWeight(fWeight->GenerateWeight(fPair));
-              fCF[nJobs]->FillNum(fPair);
-              fPair->SetWeight(1.0);
-              fCF[nJobs]->FillDenMixed(fPair);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  void CorrFitDumpedPairAna::RunSignalBackgroundPairs(Int_t nEvents) {
-    Int_t step = nEvents / 100;
-    for (int iEvent = 0; iEvent < nEvents; iEvent++) {
-      fTree->GetEntry(iEvent);
-      if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
-
-      for (int jSig = 0; jSig < fPairsSignal->GetEntriesFast(); jSig++) {
-        fMiniPair = (FemtoMicroPair*) fPairsSignal->UncheckedAt(jSig);
-        *fPair    = *fMiniPair;
-        for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
-          PreprocessPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
-              fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
-              fPair->SetWeight(fWeight->GenerateWeight(fPair));
-              fCF[nJobs]->FillNum(fPair);
-            }
-          }
-        }
-      }
-
-      for (int jMix = 0; jMix < fPairsBackground->GetEntriesFast(); jMix++) {
-        fMiniPair = (FemtoMicroPair*) fPairsBackground->UncheckedAt(jMix);
-        *fPair    = *fMiniPair;
-        fPair->SetWeight(1.0);
-        for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
-          PreprocessMixedPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            fCF[nJobs]->FillDenMixed(fPair);
-          }
-        }
-      }
-    }
-  }
-
-  void CorrFitDumpedPairAna::RunBackgroundPairs(Int_t nEvents) {
-    Int_t step = nEvents / 100;
-    for (int iEvent = 0; iEvent < nEvents; iEvent++) {
-      fTree->GetEntry(iEvent);
-      if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
-
-      for (int jMix = 0; jMix < fPairsBackground->GetEntriesFast(); jMix++) {
-        fMiniPair = (FemtoMicroPair*) fPairsBackground->UncheckedAt(jMix);
-        *fPair    = *fMiniPair;
-        for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
-          PreprocessPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
-              fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
-              fPair->SetWeight(fWeight->GenerateWeight(fPair));
-              fCF[nJobs]->FillNum(fPair);
-            }
-          }
-          fPair->SetWeight(1.0);
-          PreprocessMixedPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
-              fCF[nJobs]->FillDenMixed(fPair);
-            }
-          }
-        }
-      }
-    }
   }
 
   CorrFitDumpedPairAna::~CorrFitDumpedPairAna() {

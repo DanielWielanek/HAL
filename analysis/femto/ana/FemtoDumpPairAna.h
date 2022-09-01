@@ -20,10 +20,18 @@ namespace Hal {
     Int_t fNBins;
     Array_1<Double_t> fLimitsN;
     Array_1<Double_t> fLimitsD;
+
     Double_t fStep, fMax;
     Bool_t fWriteBackground;
-    TClonesArray* fSignalPairs;
-    TClonesArray* fBackgroundPairs;
+    Bool_t fGroup;
+    Bool_t fGroupKstar;
+    std::vector<TClonesArray*> fSignalPairs;
+    std::vector<TClonesArray*> fBackgroundPairs;
+    std::vector<Double_t> fQinvLimits;
+    Double_t fXmin, fXmax, fXstep;
+    Int_t fXbins;
+    Int_t FindBinZ() const;
+    Int_t FindBinX() const;
 
   protected:
     virtual void ProcessFemtoPair();
@@ -35,6 +43,7 @@ namespace Hal {
 
   public:
     FemtoDumpPairAna();
+    void Group() { fGroup = kTRUE; }
     virtual void Exec(Option_t* opt = "");
     void SetPairLimitPerBin(Int_t limit) { fBinLimit = limit; };
     void WriteBackground() { fWriteBackground = kTRUE; }

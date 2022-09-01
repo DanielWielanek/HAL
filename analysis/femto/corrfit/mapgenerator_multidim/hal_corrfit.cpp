@@ -133,7 +133,6 @@ void printjobs() {
   }
 }
 
-
 void printjobsbad() {
   Hal::CorrFitParamsSetup setup("corrfit_conf.xml");
   Int_t nJobs     = setup.GetNJobs();

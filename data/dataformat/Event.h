@@ -63,6 +63,11 @@ namespace Hal {
     Int_t fTotalTracksNo;
     Int_t fTotalV0s;
     /**
+     * store the position of last buffered v0
+     */
+    Int_t fV0Counter;
+    Int_t fMultiplicity;
+    /**
      *
      * @param pdg
      * @return charge of particle
@@ -235,14 +240,19 @@ namespace Hal {
     inline Int_t GetEventID() const { return fEventId; };
     /**
      *
-     * @return total number of tracks in event
+     * @return total number of tracks STORED in event
      */
     inline Int_t GetTotalTrackNo() const { return fTotalTracksNo; };
     /**
      *
-     * @return total number of registered V0
+     * @return total number of STORED V0
      */
     inline Int_t GetTotalV0No() const { return fTotalV0s; };
+    /**
+     *
+     * @return multiplicity of event
+     */
+    inline Int_t GetMutliplicity() const { return fMultiplicity; }
     /**
      *
      * @return reaction plane angle

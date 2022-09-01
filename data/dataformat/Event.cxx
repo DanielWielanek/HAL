@@ -37,14 +37,16 @@ namespace Hal {
     fPhiError(0),
     fEventId(0),
     fTotalTracksNo(0),
-    fTotalV0s(0) {
+    fTotalV0s(0),
+    fV0Counter(0),
+    fMultiplicity(0) {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
     fV0sHiddenInfo = new TClonesArray("Hal::V0Track");
   }
 
   Event::Event(TString track_class, TString v0_class) :
-    fSource(nullptr), fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fTotalV0s(0) {
+    fSource(nullptr), fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fTotalV0s(0), fV0Counter(0), fMultiplicity(0) {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
     fTracks        = new TClonesArray(track_class);
@@ -60,6 +62,8 @@ namespace Hal {
     fTotalTracksNo = other.fTotalTracksNo;
     fTotalV0s      = other.fTotalV0s;
     fEventId       = other.fEventId;
+    fMultiplicity  = other.fMultiplicity;
+    fV0Counter     = other.fV0Counter;
     fV0sHiddenInfo = new TClonesArray(*other.fV0sHiddenInfo);
     if (other.fSource) { fSource = (EventInterface*) fSource->Clone(); }
   }
@@ -87,6 +91,7 @@ namespace Hal {
   void Event::Clear(Option_t* opt) {
     fTracks->Clear(opt);
     fV0sHiddenInfo->Clear(opt);
+    fV0Counter = 0;
   }
 
   void Event::Print(Option_t* /*opt*/) const {
@@ -108,12 +113,13 @@ namespace Hal {
   }
 
   void Event::ShallowCopyEvent(Event* event) {
-    fTotalTracksNo = event->GetTotalTrackNo();
-    *fVertex       = *event->GetVertex();
-    fPhi           = event->fPhi;
-    fPhiError      = event->fPhiError;
-    fEventId       = event->GetEventID();
-    fTotalV0s      = event->fTotalV0s;
+    fMultiplicity = event->GetMutliplicity();
+    fV0Counter    = 0;  // this need to be set by user!
+    *fVertex      = *event->GetVertex();
+    fPhi          = event->fPhi;
+    fPhiError     = event->fPhiError;
+    fEventId      = event->GetEventID();
+    fTotalV0s     = event->fTotalV0s;
   }
 
   void Event::ShallowCopyTracks(Event* event) {
@@ -234,6 +240,8 @@ namespace Hal {
     fTracks->Clear();
     fV0sHiddenInfo->Clear();
     fTotalTracksNo = map_size;
+    fV0Counter     = 0;
+    fTracks->GetEntriesFast();
     fTracks->ExpandCreateFast(fTotalTracksNo);
     fV0sHiddenInfo->ExpandCreateFast(event->fTotalV0s);
     for (int i = 0; i < map_size; i++) {
@@ -291,6 +299,7 @@ namespace Hal {
       case DataFieldID::EEvent::kVertexZ: return GetVertex()->Z(); break;
       case DataFieldID::EEvent::kVertexT: return GetVertex()->T(); break;
       case DataFieldID::EEvent::kEventId: return GetEventID(); break;
+      case DataFieldID::EEvent::kMultiplicity: return GetMutliplicity(); break;
       case DataFieldID::EEvent::kEventZero: return 0;
     }
     return -FLT_MAX;
@@ -308,6 +317,7 @@ namespace Hal {
       case DataFieldID::EEvent::kVertexZ: return "V_{z} [cm]"; break;
       case DataFieldID::EEvent::kVertexT: return "V_{t} [s]"; break;
       case DataFieldID::EEvent::kEventId: return "EventID [ID]"; break;
+      case DataFieldID::EEvent::kMultiplicity: return "Multiplicity [N_{tracks}]"; break;
     }
     Cout::PrintInfo(Form("Event::GetFieldName cannot find field with fieldID  %i", fieldID), EInfo::kLowWarning);
     return "[]";

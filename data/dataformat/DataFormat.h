@@ -13,30 +13,31 @@
 namespace Hal {
   namespace DataFieldID {
     enum EEvent {
-      kVertexX   = 10000001,
-      kVertexY   = 10000002,
-      kVertexZ   = 10000003,
-      kVertexXY  = 10000004,
-      kVertexT   = 10000005,
-      kEventPhi  = 10000006,
-      kPhiError  = 10000007,
-      kTracksNo  = 10000008,
-      kEventId   = 10000009,
-      kEventZero = 10000010
+      kVertexX      = 10000001,
+      kVertexY      = 10000002,
+      kVertexZ      = 10000003,
+      kVertexXY     = 10000004,
+      kVertexT      = 10000005,
+      kEventPhi     = 10000006,
+      kPhiError     = 10000007,
+      kTracksNo     = 10000008,
+      kEventId      = 10000009,
+      kEventZero    = 10000010,
+      kMultiplicity = 10000011
 
     };
-    enum EMcEvent { kB = 10000011 };
-    enum EExpEvent { kTofTracksNo = 10000012 };
+    enum EMcEvent { kB = 10000101 };
+    enum EExpEvent { kTofTracksNo = 10000203 };
     enum EComplexEvent {
-      kDeltaRPhi     = 10000050,
-      kDeltaVertexXY = 10000051,
-      kDeltaVertexX  = 10000052,
-      kDeltaVertexY  = 10000053,
-      kDeltaVertexZ  = 10000054,
+      kDeltaRPhi     = 10000300,
+      kDeltaVertexXY = 10000301,
+      kDeltaVertexX  = 10000302,
+      kDeltaVertexY  = 10000303,
+      kDeltaVertexZ  = 10000304,
 
-      kDeltaVertexT  = 10000055,
-      kDeltaVertex   = 10000056,
-      kDeltaTracksNo = 10000057
+      kDeltaVertexT  = 10000305,
+      kDeltaVertex   = 10000306,
+      kDeltaTracksNo = 10000307
     };
     const Int_t ReStep = 100000;
     const Int_t ImStep = 200000;

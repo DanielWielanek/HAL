@@ -23,10 +23,12 @@ namespace Hal {
     CorrFitParamsSetup fSetup;
     TString fMacroText;
     TString fPairFile;
+    Bool_t fVertical;
 
   public:
     CorrFitInfo();
     CorrFitInfo(const CorrFitInfo& other);
+    void MarkAsVertical() { fVertical = kTRUE; };
     void SetCf(TObject* cf) { fCF = cf; }
     void SetPairFile(TString pairFile) { fPairFile = pairFile; }
     void SetSetup(const CorrFitParamsSetup& setup) { fSetup = setup; }

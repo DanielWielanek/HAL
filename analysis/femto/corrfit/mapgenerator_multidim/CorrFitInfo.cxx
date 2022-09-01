@@ -13,7 +13,7 @@
 #include <iostream>
 
 namespace Hal {
-  CorrFitInfo::CorrFitInfo() : TNamed(), fCF(nullptr), fMacroText(""), fPairFile("") { SetName("Info"); }
+  CorrFitInfo::CorrFitInfo() : TNamed(), fCF(nullptr), fMacroText(""), fPairFile(""), fVertical(kFALSE) { SetName("Info"); }
 
   CorrFitInfo::~CorrFitInfo() {
     if (fCF) delete fCF;
@@ -34,5 +34,6 @@ namespace Hal {
     fMacroText = other.fMacroText;
     fPairFile  = other.fMacroText;
     fSetup     = other.fSetup;
+    fVertical  = other.fVertical;
   }
 }  // namespace Hal

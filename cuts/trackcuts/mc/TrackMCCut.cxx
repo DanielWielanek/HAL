@@ -6,10 +6,15 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
+
 #include "TrackMCCut.h"
 
+#include "Cut.h"
 #include "DataFormatManager.h"
-#include "McTrack.h"
+#include "McEvent.h"
+#include "Std.h"
+
+#include <RtypesCore.h>
 
 namespace Hal {
 
@@ -17,7 +22,8 @@ namespace Hal {
 
   Bool_t TrackMCCut::Init(Int_t task_id) {
     if (TrackCut::Init() == kFALSE) return kFALSE;
-    if (FormatInhertis("Hal::McEvent", task_id)) { return kTRUE; }
+    const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
+    if (dynamic_cast<Hal::McEvent*>(ev)) return kTRUE;
     return kFALSE;
   }
 

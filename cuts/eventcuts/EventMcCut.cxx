@@ -23,7 +23,7 @@ namespace Hal {
   Bool_t EventMcCut::Init(Int_t format_id) {
     if (EventCut::Init() == kFALSE) return kFALSE;
     const Event* ev = DataFormatManager::Instance()->GetFormat(format_id, EFormatDepth::kNonBuffered);
-    if (dynamic_cast<Hal::McEvent*>(ev)) return kTRUE;
+    if (dynamic_cast<const Hal::McEvent*>(ev)) return kTRUE;
     return kFALSE;
   }
 } /* namespace Hal */

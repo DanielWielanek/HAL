@@ -23,7 +23,7 @@ namespace Hal {
   Bool_t TrackMCCut::Init(Int_t task_id) {
     if (TrackCut::Init() == kFALSE) return kFALSE;
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (dynamic_cast<Hal::McEvent*>(ev)) return kTRUE;
+    if (dynamic_cast<const Hal::McEvent*>(ev)) return kTRUE;
     return kFALSE;
   }
 

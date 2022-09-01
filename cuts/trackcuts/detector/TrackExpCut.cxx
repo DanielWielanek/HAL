@@ -12,12 +12,14 @@
 #include "DataFormatManager.h"
 #include "ExpEvent.h"
 #include "ExpTrack.h"
+
 namespace Hal {
   TrackExpCut::TrackExpCut(Int_t size) : TrackCut(size) {}
 
   Bool_t TrackExpCut::Init(Int_t format_id) {
     if (TrackCut::Init(format_id) == kFALSE) return kFALSE;
-    if (FormatInhertis("Hal::ExpEvent", format_id) == kFALSE) return kFALSE;
+    const Event* ev = DataFormatManager::Instance()->GetFormat(format_id, EFormatDepth::kNonBuffered);
+    if (dynamic_cast<const Hal::ExpEvent*>(ev)) { return kTRUE; }
     return kTRUE;
   }
 

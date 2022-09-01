@@ -8,12 +8,17 @@
  */
 #include "EventExpCut.h"
 
+#include "DataFormatManager.h"
+#include "ExpEvent.h"
+
 namespace Hal {
 
   EventExpCut::EventExpCut(const Int_t size) : EventCut(size) {}
 
   Bool_t EventExpCut::Init(Int_t format_id) {
-    if (FormatInhertis("Hal::ExpEvent", format_id, EFormatDepth::kNonBuffered)) return kTRUE;
+    if (EventCut::Init() == kFALSE) return kFALSE;
+    const Event* ev = DataFormatManager::Instance()->GetFormat(format_id, EFormatDepth::kNonBuffered);
+    if (dynamic_cast<const Hal::ExpEvent*>(ev)) return kTRUE;
     return kFALSE;
   }
 

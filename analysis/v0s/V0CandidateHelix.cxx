@@ -29,8 +29,8 @@ namespace Hal {
     helix1.EvaluateFull(s1, pPos, poz1);
     helix2.EvaluateFull(s2, pNeg, poz2);
 
-    fV0Track.SetPxPyPzMPos(pPos.Px(), pPos.Py(), pPos.Pz(), mPos);
-    fV0Track.SetPxPyPzMNeg(pNeg.Px(), pNeg.Py(), pNeg.Pz(), mNeg);
+    fV0Track.SetMomPos(pPos.Px(), pPos.Py(), pPos.Pz());
+    fV0Track.SetMomNeg(pNeg.Px(), pNeg.Py(), pNeg.Pz());
 
     TVector3 pozV0 = (poz1 + poz2) * 0.5;
     fV0Track.SetDauDist((poz1 - poz2).Mag());

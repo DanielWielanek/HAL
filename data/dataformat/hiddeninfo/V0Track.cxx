@@ -27,37 +27,44 @@ namespace Hal {
 
   V0Track::~V0Track() {}
 
+  Double_t V0Track::GetHypoMass(Double_t m_dau1, Double_t m_dau2) const {
+    Double_t tPx = fMomPos.X() + fMomNeg.X();
+    Double_t tPy = fMomPos.Y() + fMomNeg.Y();
+    Double_t tPz = fMomPos.Z() + fMomNeg.Z();
+    Double_t e1  = TMath::Sqrt(fMomPos.Mag2() + m_dau1 * m_dau1);
+    Double_t e2  = TMath::Sqrt(fMomNeg.Mag2() + m_dau2 * m_dau2);
+    Double_t tE  = e1 + e2;
+    return TMath::Sqrt(tE * tE - tPx * tPx - tPy * tPy - tPz * tPz);
+  }
+
   void V0Track::SetDecayPos(Double_t x, Double_t y, Double_t z) { fDecay.SetXYZ(x, y, z); }
 
-  void V0Track::SetMom(Double_t px, Double_t py, Double_t pz, Double_t m) { fMom.SetXYZM(px, py, pz, m); }
+  void V0Track::SetMom(Double_t px, Double_t py, Double_t pz) { fMom.SetXYZ(px, py, pz); }
 
   void V0Track::SetDCA(Double_t x, Double_t y, Double_t z) { fPos.SetXYZ(x, y, z); }
 
   void V0Track::Recalc(const TVector3& vertex) {
     fMom = fMomPos + fMomNeg;
 
-    Double_t Ptot          = fMom.P();
-    TVector3 momV0         = fMom.Vect();
-    TVector3 momPos        = fMomPos.Vect();
-    TVector3 momNeg        = fMomNeg.Vect();
-    Double_t pPosTot       = fMomPos.P();
-    Double_t MomPosAlongV0 = momPos * momV0 / Ptot;
-    Double_t MomNegALongV0 = momNeg * momV0 / Ptot;
+    Double_t Ptot          = fMom.Mag();
+    Double_t pPosTot       = fMomPos.Mag();
+    Double_t MomPosAlongV0 = fMomPos * fMom / Ptot;
+    Double_t MomNegALongV0 = fMomNeg * fMom / Ptot;
 
     SetAlphaArm((MomPosAlongV0 - MomNegALongV0) / (MomPosAlongV0 + MomNegALongV0));
     SetPtArm(TMath::Sqrt(pPosTot * pPosTot - MomPosAlongV0 * MomPosAlongV0));
     TVector3 pozV0 = fDecay - vertex;
 
-    Double_t t = -(pozV0 * momV0) / (Ptot * Ptot);
-    SetDCA(pozV0.X() + t * momV0.X(), pozV0.Y() + t * momV0.Y(), pozV0.Z() + t * momV0.Z());
+    Double_t t = -(pozV0 * fMom) / (Ptot * Ptot);
+    SetDCA(pozV0.X() + t * fMom.X(), pozV0.Y() + t * fMom.Y(), pozV0.Z() + t * fMom.Z());
     TVector3 dca_rel = fPos - pozV0;
-    fCosAngle        = pozV0 * momV0 / (Ptot * pozV0.Mag());
+    fCosAngle        = pozV0 * fMom / (Ptot * pozV0.Mag());
     SetDecLenght(dca_rel.Mag());
   }
 
-  void V0Track::SetPxPyPzMPos(Double_t px, Double_t py, Double_t pz, Double_t m) { fMomPos.SetXYZM(px, py, pz, m); }
+  void V0Track::SetMomPos(Double_t px, Double_t py, Double_t pz) { fMomPos.SetXYZ(px, py, pz); }
 
-  void V0Track::SetPxPyPzMNeg(Double_t px, Double_t py, Double_t pz, Double_t m) { fMomNeg.SetXYZM(px, py, pz, m); }
+  void V0Track::SetMomNeg(Double_t px, Double_t py, Double_t pz) { fMomNeg.SetXYZ(px, py, pz); }
 
   void V0Track::CopyData(V0Track* v) {
     fTrackId       = v->fTrackId;

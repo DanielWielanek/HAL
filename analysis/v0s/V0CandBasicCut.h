@@ -24,7 +24,6 @@ namespace Hal {
     static Int_t AlphaArm() { return 3; };
     static Int_t CosAngle() { return 4; };
     static Int_t DecLength() { return 5; };
-    static Int_t InvMass() { return 6; };
     virtual ~V0CandBasicCut();
     ClassDef(V0CandBasicCut, 1)
   };

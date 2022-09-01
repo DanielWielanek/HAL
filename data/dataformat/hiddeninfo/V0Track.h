@@ -13,6 +13,8 @@
 #include <TObject.h>
 #include <TVector3.h>
 
+#include "Const.h"
+
 /**
  * representation of V0 track
  */
@@ -30,11 +32,11 @@ namespace Hal {
     Double_t fDauDist;
     Double_t fDecLenght;
     Double_t fCosAngle;
-    TLorentzVector fMom;
+    TVector3 fMom;
     TVector3 fPos;
     TVector3 fDecay;
-    TLorentzVector fMomPos;
-    TLorentzVector fMomNeg;
+    TVector3 fMomPos;
+    TVector3 fMomNeg;
 
   public:
     V0Track();
@@ -144,6 +146,26 @@ namespace Hal {
     void SetDecLenght(Double_t L) { fDecLenght = L; };
     /**
      *
+     * @return mass with assumption that this is lambda particle that decay into proton and pion-
+     */
+    Double_t GetLambdaMass() const { return GetHypoMass(Const::ProtonMass(), Const::PionPlusMass()); }
+    /**
+     *
+     * @return mass with assumption that this is ant-lambda particle that decay into antiproton and pion+
+     */
+    Double_t GetAntiLambdaMass() const { return GetHypoMass(Const::PionPlusMass(), Const::ProtonMass()); }
+    /**
+     *
+     * @return mass with assumption that this is lambda particle that decay into pion+ and pion-
+     */
+    Double_t GetK0Mass() const { return GetHypoMass(Const::PionPlusMass(), Const::PionPlusMass()); }
+    /**
+     *  get mass based on daughter mass hypothesis
+     * @return
+     */
+    Double_t GetHypoMass(Double_t m_dau1, Double_t m_dau2) const;
+    /**
+     *
      * @return DCA to primary vertex
      */
     const TVector3& GetDCA() const { return fPos; };
@@ -151,17 +173,17 @@ namespace Hal {
      *
      * @return momentum of positive daughter
      */
-    const TLorentzVector& GetMomPos() const { return fMomPos; };
+    const TVector3& GetMomPos() const { return fMomPos; };
     /**
      *
      * @return momentum of negative daugher
      */
-    const TLorentzVector& GetMomNeg() const { return fMomNeg; }
+    const TVector3& GetMomNeg() const { return fMomNeg; }
     /**
      *
      * @return momentum of V0
      */
-    const TLorentzVector& GetMom() const { return fMom; }
+    const TVector3& GetMom() const { return fMom; }
     /**
      *
      * @return decay vertex
@@ -171,7 +193,7 @@ namespace Hal {
      * set momentum of positive daugther
      * @param positiveDaughter
      */
-    void SetMomentumPos(const TLorentzVector& positiveDaughter) { fMomPos = positiveDaughter; }
+    void SetMomentumPos(const TVector3& positiveDaughter) { fMomPos = positiveDaughter; }
     /**
      * set momenum of postive daugher
      * @param px
@@ -179,12 +201,12 @@ namespace Hal {
      * @param pz
      * @param m mass of positive daughter
      */
-    void SetPxPyPzMPos(Double_t px, Double_t py, Double_t pz, Double_t m);
+    void SetMomPos(Double_t px, Double_t py, Double_t pz);
     /**
      * set momentum of positive daugther
      * @param positiveDaughter
      */
-    void SetMomentumNeg(const TLorentzVector& negativeDaughter) { fMomNeg = negativeDaughter; }
+    void SetMomentumNeg(const TVector3& negativeDaughter) { fMomNeg = negativeDaughter; }
     /**
      * set momentum of negative daughter
      * @param px
@@ -192,7 +214,7 @@ namespace Hal {
      * @param pz
      * @param m mass of negative daughter
      */
-    void SetPxPyPzMNeg(Double_t px, Double_t py, Double_t pz, Double_t m);
+    void SetMomNeg(Double_t px, Double_t py, Double_t pz);
     /**
      * set decay position
      * @param x
@@ -212,7 +234,7 @@ namespace Hal {
      * @param pz
      * @param m mass of V0
      */
-    void SetMom(Double_t px, Double_t py, Double_t pz, Double_t m);
+    void SetMom(Double_t px, Double_t py, Double_t pz);
     /**
      * set DCA  to primary vertex
      * @param x

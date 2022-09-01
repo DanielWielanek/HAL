@@ -20,6 +20,7 @@ namespace Hal {
     fIsCloned(kFALSE),
     fState(0),
     fCollectionID(0),
+    fLabel(-1),
     fUpdateRatio(update),
     fWeight(1.0),
     fGroupFlag(group_flag) {}
@@ -34,6 +35,7 @@ namespace Hal {
     this->fState        = cut.fState;
     this->fCollectionID = cut.fCollectionID;
     this->fWeight       = cut.fWeight;
+    this->fLabel        = cut.fLabel;
   }
 
   void Cut::Reset() { fPassed = fFailed = fTotal = 0; }
@@ -176,6 +178,7 @@ namespace Hal {
     fState        = other.fState;
     fCollectionID = other.fCollectionID;
     fWeight       = other.fWeight;
+    fLabel        = other.fLabel;
     return *this;
   }
 
@@ -208,24 +211,28 @@ namespace Hal {
 
   TString Cut::CutName(Option_t* opt) const {
     TString option = opt;
+    TString name;
+    TString className = ClassName();
+    if (fLabel >= 0) className = Form("%s_%i", className.Data(), fLabel);
     if (option.EqualTo("re")) {
       if (InheritsFrom("Hal::EventCut")) {
-        return Form("Hal::EventRealCut(%s)", ClassName());
+        name = Form("Hal::EventRealCut(%s)", className.Data());
       } else if (InheritsFrom("Hal::TrackCut")) {
-        return Form("Hal::TrackRealCut(%s)", ClassName());
+        name = Form("Hal::TrackRealCut(%s)", className.Data());
       } else if (InheritsFrom("Hal::TwoTrackCut")) {
-        return Form("Hal::TwoTrackRealCut(%s)", ClassName());
+        name = Form("Hal::TwoTrackRealCut(%s)", className.Data());
       }
     } else if (option.EqualTo("im")) {
       if (InheritsFrom("Hal::EventCut")) {
-        return Form("Hal::EventImaginaryCut(%s)", ClassName());
+        name = Form("Hal::EventImaginaryCut(%s)", className.Data());
       } else if (InheritsFrom("Hal::TrackCut")) {
-        return Form("Hal::TrackImaginaryCut(%s)", ClassName());
+        name = Form("Hal::TrackImaginaryCut(%s)", className.Data());
       } else if (InheritsFrom("Hal::TwoTrackCut")) {
-        return Form("Hal::TwoTrackImaginaryCut(%s)", ClassName());
+        name = Form("Hal::TwoTrackImaginaryCut(%s)", className.Data());
       }
     }
-    return ClassName();
+    if (name.Length() == 0) name = className;
+    return name;
   }
 
   Bool_t Cut::InLimits(Int_t par) const {

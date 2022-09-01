@@ -11,6 +11,9 @@
 
 #include "EventCut.h"
 
+/**
+ * base class for all mc-event based cuts, require to pass mc-event
+ */
 namespace Hal {
 
   class EventMcCut : public EventCut {

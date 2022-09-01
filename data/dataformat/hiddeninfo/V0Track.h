@@ -243,8 +243,8 @@ namespace Hal {
     /**
      * recalculates variables:
      * - momentum of V0
-     * armenteros alpha & pt
-     * DCA and decay lenght
+     * Armenteros alpha & pt
+     * DCA and decay length
      *
      * @param event_vertex event primary vertex
      */

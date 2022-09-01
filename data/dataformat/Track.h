@@ -257,7 +257,7 @@ namespace Hal {
     void TranslateLinksVec(const std::vector<int>& vec);
     /**
      *
-     * @return true if particle has 3 dependendecies (probably V0)
+     * @return true if particle has 3 dependencies (probably V0)
      */
     inline Bool_t IsV0() const { return TESTBIT(fType, kV0); };
     /**

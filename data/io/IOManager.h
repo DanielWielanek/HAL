@@ -27,17 +27,44 @@ namespace Hal {
     TString fInputName;
 
   protected:
+    /**
+     * list of input branches
+     */
     std::vector<std::pair<TString, TObject*>> fInBranches;
+    /**
+     * list of output branches that should be stored in output file
+     */
     std::vector<std::pair<TString, TObject*>> fOutBranches;
+    /**
+     * list of output branches that are only in memory
+     */
     std::vector<std::pair<TString, TObject*>> fOutVirtual;
 
   protected:
+    /**
+     * flag that describe type of branch
+     */
     enum class EBranchFlag { kAny, kIn, kOut, kVirtual };
+    /**
+     * add branch
+     * @param name name of the branch
+     * @param object pointer to object
+     * @param flag
+     */
     void AddBranch(TString name, TObject* object, EBranchFlag flag);
+    /**
+     * look for branch with given name
+     * @param name
+     * @param flag
+     * @return
+     */
     std::pair<TString, TObject*> FindBranch(TString name, EBranchFlag flag) const;
+    /**
+     * update the branch list
+     */
     virtual void RefreshBranchList() {};
     /**
-     * interfal function for data registering
+     * Internal function for data registering
      * @param name
      * @param folderName
      * @param obj
@@ -152,7 +179,13 @@ namespace Hal {
      * prints basic information about I/0
      */
     void PrintInfo();
+    /**
+     * fill tree with data
+     */
     virtual void FillTree() {};
+    /**
+     * close manager (close root file, write the tree with data)
+     */
     virtual void CloseManager() {};
     virtual ~IOManager();
     ClassDef(IOManager, 1)

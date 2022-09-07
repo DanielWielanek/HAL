@@ -47,6 +47,7 @@ namespace Hal {
     virtual ~V0InvMassAntiLambdaCut() {};
     ClassDef(V0InvMassAntiLambdaCut, 1)
   };
+
   class V0InvMassK0Cut : public TrackCut {
   public:
     V0InvMassK0Cut();

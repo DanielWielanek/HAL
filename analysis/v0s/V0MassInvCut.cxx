@@ -17,7 +17,7 @@
 #include <TParticlePDG.h>
 
 namespace Hal {
-  V0MassInvCut::V0MassInvCut() : TrackCut(1) { SetUnitName("M_{inv} [GeV/c^2]"); }
+  V0MassInvCut::V0MassInvCut() : TrackCut(1) { SetUnitName("M_{inv} [GeV/c^{2}]"); }
 
   Bool_t V0MassInvCut::Pass(Track* track) {
     if (track->IsV0() == kFALSE) {
@@ -47,7 +47,7 @@ namespace Hal {
 
   //===========================================================================
 
-  V0InvMassLambdaCut::V0InvMassLambdaCut() : TrackCut(1) { SetUnitName("M_{inv #Lambda#rightarrow p + #pi^{-}} [GeV/c^2]"); }
+  V0InvMassLambdaCut::V0InvMassLambdaCut() : TrackCut(1) { SetUnitName("M_{inv #Lambda#rightarrow p + #pi^{-}} [GeV/c^{2}]"); }
 
   Bool_t V0InvMassLambdaCut::Pass(Track* track) {
     if (track->IsV0() == kFALSE) {
@@ -62,7 +62,7 @@ namespace Hal {
   //===========================================================================
 
   V0InvMassAntiLambdaCut::V0InvMassAntiLambdaCut() : TrackCut(1) {
-    SetUnitName("M_{inv #Lambda#rightarrow #bar{p} + #pi^{+}} [GeV/c^2]");
+    SetUnitName("M_{inv #Lambda#rightarrow #bar{p} + #pi^{+}} [GeV/c^{2}]");
   }
 
   Bool_t V0InvMassAntiLambdaCut::Pass(Track* track) {
@@ -77,7 +77,7 @@ namespace Hal {
 
   //===========================================================================
 
-  V0InvMassK0Cut::V0InvMassK0Cut() : TrackCut(1) { SetUnitName("M_{inv K_{0s}#rightarrow #pi^{+} + #pi^{-}} [GeV/c^2]"); }
+  V0InvMassK0Cut::V0InvMassK0Cut() : TrackCut(1) { SetUnitName("M_{inv K_{0s}#rightarrow #pi^{+} + #pi^{-}} [GeV/c^{2}]"); }
 
   Bool_t V0InvMassK0Cut::Pass(Track* track) {
     if (track->IsV0() == kFALSE) {

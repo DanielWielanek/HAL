@@ -50,7 +50,6 @@ namespace Hal {
         if (xbin > -1 && xbin < fXbins) {
           FemtoMicroPair* mini = (FemtoMicroPair*) fSignalPairs[xbin]->ConstructedAt(fSignalPairs[xbin]->GetEntriesFast());
           *mini                = *fFemtoPair;
-          std::cout << "ADD PAIR " << xbin << std::endl;
         }
       } else {
         Int_t xbin = FindBinZ();
@@ -219,6 +218,16 @@ namespace Hal {
   Int_t FemtoDumpPairAna::FindBinX() const {
     Double_t x = fFemtoPair->GetT();
     return int((x - fXmin) * fStep);
+  }
+  Package* FemtoDumpPairAna::Report() const {
+    Package* report = FemtoBasicAna::Report();
+    TString group   = "q-inv/kstar";
+    if (!fGroupKstar) { group = "q_z/k*_z"; }
+    report->AddObject(new ParameterString("Group", group));
+    report->AddObject(new ParameterDouble("Min", fXmin));
+    report->AddObject(new ParameterDouble("Max", fXmax));
+    report->AddObject(new ParameterInt("Bins", fXbins));
+    return report;
   }
 
 }  // namespace Hal

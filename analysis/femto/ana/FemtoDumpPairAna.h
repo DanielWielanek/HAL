@@ -15,6 +15,7 @@
 
 class TClonesArray;
 namespace Hal {
+  class Package;
   class FemtoDumpPairAna : public FemtoBasicAna {
     Int_t fBinLimit;
     Int_t fNBins;
@@ -47,6 +48,7 @@ namespace Hal {
     virtual void Exec(Option_t* opt = "");
     void SetPairLimitPerBin(Int_t limit) { fBinLimit = limit; };
     void WriteBackground() { fWriteBackground = kTRUE; }
+    virtual Package* Report() const;
     virtual ~FemtoDumpPairAna();
     ClassDef(FemtoDumpPairAna, 1)
   };

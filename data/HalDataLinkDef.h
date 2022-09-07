@@ -9,14 +9,16 @@
  * Data field
  */
 
-#pragma link C++ enum Hal::DataFieldID::ETrack;
-#pragma link C++ enum Hal::DataFieldID::EMcTrack;
-#pragma link C++ enum Hal::DataFieldID::EExpTrack;
-#pragma link C++ enum Hal::DataFieldID::EEvent;
-#pragma link C++ enum Hal::DataFieldID::EExpEvent;
-#pragma link C++ enum Hal::DataFieldID::EMcEvent;
-#pragma link C++ enum Hal::DataFieldID::EComplexEvent;
-#pragma link C++ enum Hal::DataFieldID::EComplexTrack;
+#pragma link C++ enum Hal::DataFieldID::Track::EBasic;
+#pragma link C++ enum Hal::DataFieldID::Track::EMc;
+#pragma link C++ enum Hal::DataFieldID::Track::EExp;
+#pragma link C++ enum Hal::DataFieldID::Track::EComplex;
+#pragma link C++ enum Hal::DataFieldID::Event::EComplex;
+#pragma link C++ enum Hal::DataFieldID::Event::EBasic;
+#pragma link C++ enum Hal::DataFieldID::Event::EExp;
+#pragma link C++ enum Hal::DataFieldID::Event::EMc;
+#pragma link C++ enum Hal::DataFieldID::Event::EV0;
+
 #pragma link C++ class Hal::DataFormatManager + ;
 #pragma link C++ class Hal::Event + ;
 #pragma link C++ class Hal::McEvent + ;

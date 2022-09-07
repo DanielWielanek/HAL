@@ -19,6 +19,7 @@
  * representation of V0 track
  */
 namespace Hal {
+  class Track;
   class V0Track : public TObject {
     Int_t fTrackId;
     Int_t fPosId;
@@ -32,8 +33,6 @@ namespace Hal {
     Double_t fDauDist;
     Double_t fDecLenght;
     Double_t fCosAngle;
-    TVector3 fMom;
-    TVector3 fPos;
     TVector3 fDecay;
     TVector3 fMomPos;
     TVector3 fMomNeg;
@@ -166,9 +165,9 @@ namespace Hal {
     Double_t GetHypoMass(Double_t m_dau1, Double_t m_dau2) const;
     /**
      *
-     * @return DCA to primary vertex
+     * @return daughters path's lengths, first length corresponds to positive daughter
      */
-    const TVector3& GetDCA() const { return fPos; };
+    std::pair<Double_t, Double_t> GetS() const { return std::pair<Double_t, Double_t>(fS1, fS2); }
     /**
      *
      * @return momentum of positive daughter
@@ -179,11 +178,6 @@ namespace Hal {
      * @return momentum of negative daugher
      */
     const TVector3& GetMomNeg() const { return fMomNeg; }
-    /**
-     *
-     * @return momentum of V0
-     */
-    const TVector3& GetMom() const { return fMom; }
     /**
      *
      * @return decay vertex
@@ -228,26 +222,6 @@ namespace Hal {
      */
     void SetDecayPos(const TVector3& pos) { fDecay = pos; }
     /**
-     * set momentum of V0
-     * @param px
-     * @param py
-     * @param pz
-     * @param m mass of V0
-     */
-    void SetMom(Double_t px, Double_t py, Double_t pz);
-    /**
-     * set DCA  to primary vertex
-     * @param x
-     * @param y
-     * @param z
-     */
-    void SetDCA(Double_t x, Double_t y, Double_t z);
-    /**
-     * set dca of v0
-     * @param dca
-     */
-    void SetDCA(const TVector3& dca) { fPos = dca; }
-    /**
      * set armenteros alpha
      * @param alpha
      */
@@ -268,9 +242,10 @@ namespace Hal {
      * Armenteros alpha & pt
      * DCA and decay length
      *
-     * @param event_vertex event primary vertex
+     * @param pointer to track that own this hidden info
+     * @return dca of V0
      */
-    void Recalc(const TVector3& event_vertex);
+    TVector3 Recalc(const Track& track);
     virtual ~V0Track();
     ClassDef(V0Track, 1)
   };

@@ -54,14 +54,14 @@ namespace Hal {
 
   Float_t McEvent::GetFieldVal(Int_t fieldID) const {
     switch (fieldID) {
-      case DataFieldID::EMcEvent::kB: return GetImpactParameter(); break;
+      case DataFieldID::Event::EMc::kB: return GetImpactParameter(); break;
       default: return Event::GetFieldVal(fieldID); break;
     }
   }
 
   TString McEvent::GetFieldName(Int_t fieldID) const {
     switch (fieldID) {
-      case DataFieldID::EMcEvent::kB: return "B [fm]"; break;
+      case DataFieldID::Event::EMc::kB: return "B [fm]"; break;
       default: return Event::GetFieldName(fieldID); break;
     }
   }

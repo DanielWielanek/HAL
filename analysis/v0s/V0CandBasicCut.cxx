@@ -7,6 +7,10 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "V0CandBasicCut.h"
+#include "DataFormatManager.h"
+#include "Event.h"
+#include "ExpEvent.h"
+#include "McEvent.h"
 #include "V0Candidate.h"
 
 namespace Hal {
@@ -20,9 +24,10 @@ namespace Hal {
   }
 
   Bool_t V0CandBasicCut::Pass(TwoTrack* pair) {
-    const V0Track v0 = static_cast<V0Candidate*>(pair)->GetV0Track();
+    V0Candidate* cand = static_cast<V0Candidate*>(pair);
+    const V0Track v0  = cand->GetV0Track();
     SetValue(v0.GetDauDist(), DCA1to2());
-    SetValue(v0.GetDCA().Mag(), DCAToPV());
+    SetValue(cand->GetDCA().Mag(), DCAToPV());
     SetValue(v0.GetDecLength(), DecLength());
     SetValue(v0.GetAlphaArm(), AlphaArm());
     SetValue(v0.GetPtArm(), PtArm());

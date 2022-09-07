@@ -11,6 +11,7 @@
 
 #include "TwoTrack.h"
 #include "V0Track.h"
+#include <TVector3.h>
 /**
  * abstract class for V0 candidate
  */
@@ -19,6 +20,7 @@ namespace Hal {
   class V0Candidate : public TwoTrack {
   protected:
     V0Track fV0Track;
+    TVector3 fDCA;
 
   public:
     V0Candidate();
@@ -33,6 +35,11 @@ namespace Hal {
      * @return reference to V0Track
      */
     const V0Track& GetV0Track() { return fV0Track; };
+    /**
+     * return DCA
+     * @return
+     */
+    const TVector3& GetDCA() const { return fDCA; }
     virtual ~V0Candidate();
     ClassDef(V0Candidate, 1)
   };

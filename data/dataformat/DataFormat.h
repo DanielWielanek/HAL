@@ -12,107 +12,126 @@
 #include <TObject.h>
 namespace Hal {
   namespace DataFieldID {
-    enum EEvent {
-      kVertexX      = 10000001,
-      kVertexY      = 10000002,
-      kVertexZ      = 10000003,
-      kVertexXY     = 10000004,
-      kVertexT      = 10000005,
-      kEventPhi     = 10000006,
-      kPhiError     = 10000007,
-      kTracksNo     = 10000008,
-      kEventId      = 10000009,
-      kEventZero    = 10000010,
-      kMultiplicity = 10000011
-
-    };
-    enum EMcEvent { kB = 10000101 };
-    enum EExpEvent { kTofTracksNo = 10000203 };
-    enum EComplexEvent {
-      kDeltaRPhi     = 10000300,
-      kDeltaVertexXY = 10000301,
-      kDeltaVertexX  = 10000302,
-      kDeltaVertexY  = 10000303,
-      kDeltaVertexZ  = 10000304,
-
-      kDeltaVertexT  = 10000305,
-      kDeltaVertex   = 10000306,
-      kDeltaTracksNo = 10000307
-    };
-    const Int_t ReStep = 100000;
-    const Int_t ImStep = 200000;
-    namespace Internal {  // do not use in macro
-      const Int_t ReStepEvent = 10100000;
-      const Int_t ImStepEvent = 10200000;
-      const Int_t EventStart  = 10000000;
+    const Int_t ReStep = 1000000;          // 1M
+    const Int_t ImStep = 2000000;          // 2M
+    namespace Internal {                   // do not use in macro
+      const Int_t EventStart  = 10000000;  // 10 M
+      const Int_t ReStepEvent = EventStart + ReStep;
+      const Int_t ImStepEvent = EventStart + ImStep;
     }  // namespace Internal
+    namespace Event {
+      enum EBasic {
+        kVertexX      = Hal::DataFieldID::Internal::EventStart + 1,
+        kVertexY      = Hal::DataFieldID::Internal::EventStart + 2,
+        kVertexZ      = Hal::DataFieldID::Internal::EventStart + 3,
+        kVertexXY     = Hal::DataFieldID::Internal::EventStart + 4,
+        kVertexT      = Hal::DataFieldID::Internal::EventStart + 5,
+        kEventPhi     = Hal::DataFieldID::Internal::EventStart + 6,
+        kPhiError     = Hal::DataFieldID::Internal::EventStart + 7,
+        kTracksNo     = Hal::DataFieldID::Internal::EventStart + 8,
+        kEventId      = Hal::DataFieldID::Internal::EventStart + 9,
+        kEventZero    = Hal::DataFieldID::Internal::EventStart + 10,
+        kMultiplicity = Hal::DataFieldID::Internal::EventStart + 11
+      };
+      enum EMc { kB = Hal::DataFieldID::Internal::EventStart + 101 };
+      enum EExp { kTofTracksNo = Hal::DataFieldID::Internal::EventStart + 201 };
+      enum EComplex {
+        kDeltaRPhi     = Hal::DataFieldID::Internal::EventStart + 301,
+        kDeltaVertexXY = Hal::DataFieldID::Internal::EventStart + 302,
+        kDeltaVertexX  = Hal::DataFieldID::Internal::EventStart + 303,
+        kDeltaVertexY  = Hal::DataFieldID::Internal::EventStart + 304,
+        kDeltaVertexZ  = Hal::DataFieldID::Internal::EventStart + 305,
 
-    enum ETrack {
-      kPx        = 1,
-      kPy        = 2,
-      kPz        = 3,
-      kE         = 4,
-      kPhi       = 5,
-      kPt        = 6,
-      kTheta     = 7,
-      kP         = 8,
-      kEta       = 9,
-      kRapidity  = 10,
-      kCharge    = 11,
-      kStatus    = 12,
-      kPq        = 13,
-      kTrackZero = 14
-    };
+        kDeltaVertexT  = Hal::DataFieldID::Internal::EventStart + 306,
+        kDeltaVertex   = Hal::DataFieldID::Internal::EventStart + 307,
+        kDeltaTracksNo = Hal::DataFieldID::Internal::EventStart + 308
+      };
+    }  // namespace Event
 
-    enum EMcTrack {
-      kXfr   = 24,
-      kYfr   = 25,
-      kZfr   = 26,
-      kTfr   = 27,
-      kXstar = 28,
+    namespace Track {
+      enum EBasic {
+        kPx        = 1,
+        kPy        = 2,
+        kPz        = 3,
+        kE         = 4,
+        kPhi       = 5,
+        kPt        = 6,
+        kTheta     = 7,
+        kP         = 8,
+        kEta       = 9,
+        kRapidity  = 10,
+        kCharge    = 11,
+        kStatus    = 12,
+        kPq        = 13,
+        kTrackZero = 14
+      };
 
-      kYstart  = 29,
-      kZstart  = 30,
-      kTstart  = 31,
-      kPdg     = 32,
-      kXYstart = 33,
+      enum EMc {
+        kXfr   = 101,
+        kYfr   = 102,
+        kZfr   = 103,
+        kTfr   = 104,
+        kXstar = 105,
 
-      kXYfr = 41
-    };
-    enum EExpTrack {
-      kChi2        = 51,
-      kNHits       = 52,
-      kTrackLenght = 53,
-      kDcaX        = 54,
-      kDcaY        = 55,
-      kDcaZ        = 56,
-      kDcaXY       = 57,
-      kDca         = 58,
-      // only for detectors
-      kTofM2     = 101,
-      kToFBeta   = 102,
-      kToFFlag   = 103,
-      kToFTime   = 104,
-      kToFEnergy = 105,
+        kYstart  = 106,
+        kZstart  = 107,
+        kTstart  = 108,
+        kPdg     = 109,
+        kXYstart = 110,
 
-      kTpcDedx     = 110,
-      kTpcNHits    = 111,
-      kTpcNsigmaPi = 112,
-      kTpcNsigmaKa = 113,
-      kTpcNsigmaPr = 114,
-      kTpcNsigmaEl = 115
+        kXYfr = 111
+      };
+      enum EExp {
+        kChi2        = 201,
+        kNHits       = 202,
+        kTrackLenght = 203,
+        kDcaX        = 204,
+        kDcaY        = 205,
+        kDcaZ        = 206,
+        kDcaXY       = 207,
+        kDca         = 208,
+        // only for detectors
+        kTofM2     = 301,
+        kToFBeta   = 302,
+        kToFFlag   = 303,
+        kToFTime   = 304,
+        kToFEnergy = 305,
 
-    };
-    enum EComplexTrack {
-      kDeltaPt    = 151,
-      kDeltaPz    = 152,
-      kDeltaP     = 153,
-      kDeltaPx    = 154,
-      kDeltaPy    = 155,
-      kDeltaPhi   = 156,
-      kDeltaTheta = 157,
-      kDeltaEta   = 158
-    };
+        kTpcDedx     = 310,
+        kTpcNHits    = 311,
+        kTpcNsigmaPi = 312,
+        kTpcNsigmaKa = 313,
+        kTpcNsigmaPr = 314,
+        kTpcNsigmaEl = 315
+
+      };
+      enum EComplex {
+        kDeltaPt    = 401,
+        kDeltaPz    = 402,
+        kDeltaP     = 403,
+        kDeltaPx    = 404,
+        kDeltaPy    = 405,
+        kDeltaPhi   = 406,
+        kDeltaTheta = 407,
+        kDeltaEta   = 408
+      };
+
+      enum EV0 {
+        kAssumedPdg     = 501,
+        kAssumedPdgPos  = 502,
+        kAssumedPdgNeg  = 503,
+        kS1             = 504,
+        kS2             = 505,
+        kAlphaArm       = 506,
+        kPtArm          = 507,
+        kDauDist        = 508,
+        kDecLenght      = 509,
+        kCosAngle       = 510,
+        kLambdaMass     = 511,
+        kAntiLambdaMass = 512,
+        kK0Mass         = 516
+      };
+    }  // namespace Track
 
   }  // namespace DataFieldID
 

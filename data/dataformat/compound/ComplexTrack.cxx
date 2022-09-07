@@ -51,18 +51,18 @@ namespace Hal {
       Track* reco = GetRealTrack();
       if (mc == nullptr) return FLT_MIN;
       switch (fieldID) {
-        case DataFieldID::EComplexTrack::kDeltaPt: return mc->GetMomentum().Pt() - reco->GetMomentum().Pt(); break;
-        case DataFieldID::EComplexTrack::kDeltaPz: return mc->GetMomentum().Pz() - reco->GetMomentum().Pz(); break;
-        case DataFieldID::EComplexTrack::kDeltaP: return mc->GetMomentum().P() - reco->GetMomentum().P(); break;
-        case DataFieldID::EComplexTrack::kDeltaPx: return mc->GetMomentum().Px() - reco->GetMomentum().Px(); break;
-        case DataFieldID::EComplexTrack::kDeltaPy: return mc->GetMomentum().Py() - reco->GetMomentum().Py(); break;
-        case DataFieldID::EComplexTrack::kDeltaPhi:
+        case DataFieldID::Track::EComplex::kDeltaPt: return mc->GetMomentum().Pt() - reco->GetMomentum().Pt(); break;
+        case DataFieldID::Track::EComplex::kDeltaPz: return mc->GetMomentum().Pz() - reco->GetMomentum().Pz(); break;
+        case DataFieldID::Track::EComplex::kDeltaP: return mc->GetMomentum().P() - reco->GetMomentum().P(); break;
+        case DataFieldID::Track::EComplex::kDeltaPx: return mc->GetMomentum().Px() - reco->GetMomentum().Px(); break;
+        case DataFieldID::Track::EComplex::kDeltaPy: return mc->GetMomentum().Py() - reco->GetMomentum().Py(); break;
+        case DataFieldID::Track::EComplex::kDeltaPhi:
           return TVector2::Phi_mpi_pi(mc->GetMomentum().Phi() - reco->GetMomentum().Phi());
           break;
-        case DataFieldID::EComplexTrack::kDeltaTheta:
+        case DataFieldID::Track::EComplex::kDeltaTheta:
           return TVector2::Phi_mpi_pi(mc->GetMomentum().Theta() - reco->GetMomentum().Theta());
           break;
-        case DataFieldID::EComplexTrack::kDeltaEta: return mc->GetMomentum().Eta() - reco->GetMomentum().Eta(); break;
+        case DataFieldID::Track::EComplex::kDeltaEta: return mc->GetMomentum().Eta() - reco->GetMomentum().Eta(); break;
         default: return Track::GetFieldVal(fieldID); break;
       }
     }
@@ -92,14 +92,14 @@ namespace Hal {
       return name;
     } else {
       switch (fieldID) {
-        case DataFieldID::EComplexTrack::kDeltaPt: return "#Delta p_{T} [GeV/c]"; break;
-        case DataFieldID::EComplexTrack::kDeltaPz: return "#Delta p_{z} [GeV/c]"; break;
-        case DataFieldID::EComplexTrack::kDeltaP: return "#Delta p [GeV/c]"; break;
-        case DataFieldID::EComplexTrack::kDeltaPx: return "#Delta p_{x} [GeV/c]"; break;
-        case DataFieldID::EComplexTrack::kDeltaPy: return "#Delta p_{y} [GeV/c]"; break;
-        case DataFieldID::EComplexTrack::kDeltaPhi: return "#Delta #phi [rad]"; break;
-        case DataFieldID::EComplexTrack::kDeltaTheta: return "#Delta #theta [rad]"; break;
-        case DataFieldID::EComplexTrack::kDeltaEta: return "#Delta #eta []"; break;
+        case DataFieldID::Track::EComplex::kDeltaPt: return "#Delta p_{T} [GeV/c]"; break;
+        case DataFieldID::Track::EComplex::kDeltaPz: return "#Delta p_{z} [GeV/c]"; break;
+        case DataFieldID::Track::EComplex::kDeltaP: return "#Delta p [GeV/c]"; break;
+        case DataFieldID::Track::EComplex::kDeltaPx: return "#Delta p_{x} [GeV/c]"; break;
+        case DataFieldID::Track::EComplex::kDeltaPy: return "#Delta p_{y} [GeV/c]"; break;
+        case DataFieldID::Track::EComplex::kDeltaPhi: return "#Delta #phi [rad]"; break;
+        case DataFieldID::Track::EComplex::kDeltaTheta: return "#Delta #theta [rad]"; break;
+        case DataFieldID::Track::EComplex::kDeltaEta: return "#Delta #eta []"; break;
         default: return Track::GetFieldName(fieldID); break;
       }
     }

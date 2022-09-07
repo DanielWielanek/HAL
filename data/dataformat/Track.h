@@ -49,6 +49,12 @@ namespace Hal {
       kV0Daughters = 5,  // set if v0 and daughters are known
       kXiDaughters = 6   // set if xi and daughters are known
     };
+    /**
+     * returns v0 value if vo is not null
+     * @param fieldId
+     * @return
+     */
+    Float_t GetV0IfPossible(Int_t fieldId) const;
 
   public:
     Track();

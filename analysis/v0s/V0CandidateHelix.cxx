@@ -36,7 +36,7 @@ namespace Hal {
     fV0Track.SetDauDist((poz1 - poz2).Mag());
     fV0Track.SetDecayPos(pozV0.X(), pozV0.Y(), pozV0.Z());
     TVector3 vertex = static_cast<ExpEvent*>(GetTrack1()->GetEvent())->GetVertex()->Vect();
-    fV0Track.Recalc(vertex);
+    fDCA            = fV0Track.Recalc(*GetTrack1());
   }
 
   V0CandidateHelix::~V0CandidateHelix() {}

@@ -9,6 +9,8 @@
 #include "V0Track.h"
 
 #include "ExpEvent.h"
+#include "Track.h"
+
 namespace Hal {
   V0Track::V0Track() :
     fTrackId(-1),
@@ -39,27 +41,26 @@ namespace Hal {
 
   void V0Track::SetDecayPos(Double_t x, Double_t y, Double_t z) { fDecay.SetXYZ(x, y, z); }
 
-  void V0Track::SetMom(Double_t px, Double_t py, Double_t pz) { fMom.SetXYZ(px, py, pz); }
+  TVector3 V0Track::Recalc(const Track& track) {
+    const TVector3 Mom(track.GetPx(), track.GetPy(), track.GetPz());
 
-  void V0Track::SetDCA(Double_t x, Double_t y, Double_t z) { fPos.SetXYZ(x, y, z); }
-
-  void V0Track::Recalc(const TVector3& vertex) {
-    fMom = fMomPos + fMomNeg;
-
-    Double_t Ptot          = fMom.Mag();
+    Double_t Ptot          = Mom.Mag();
     Double_t pPosTot       = fMomPos.Mag();
-    Double_t MomPosAlongV0 = fMomPos * fMom / Ptot;
-    Double_t MomNegALongV0 = fMomNeg * fMom / Ptot;
+    Double_t MomPosAlongV0 = fMomPos * Mom / Ptot;
+    Double_t MomNegALongV0 = fMomNeg * Mom / Ptot;
 
     SetAlphaArm((MomPosAlongV0 - MomNegALongV0) / (MomPosAlongV0 + MomNegALongV0));
     SetPtArm(TMath::Sqrt(pPosTot * pPosTot - MomPosAlongV0 * MomPosAlongV0));
-    TVector3 pozV0 = fDecay - vertex;
+    TVector3 vertex = track.GetEvent()->GetVertex()->Vect();
+    TVector3 pozV0  = fDecay - vertex;
 
-    Double_t t = -(pozV0 * fMom) / (Ptot * Ptot);
-    SetDCA(pozV0.X() + t * fMom.X(), pozV0.Y() + t * fMom.Y(), pozV0.Z() + t * fMom.Z());
-    TVector3 dca_rel = fPos - pozV0;
-    fCosAngle        = pozV0 * fMom / (Ptot * pozV0.Mag());
+    Double_t t = -(pozV0 * Mom) / (Ptot * Ptot);
+    TVector3 dca;
+    dca.SetXYZ(pozV0.X() + t * Mom.X(), pozV0.Y() + t * Mom.Y(), pozV0.Z() + t * Mom.Z());
+    TVector3 dca_rel = dca - pozV0;
+    fCosAngle        = pozV0 * Mom / (Ptot * pozV0.Mag());
     SetDecLenght(dca_rel.Mag());
+    return dca;
   }
 
   void V0Track::SetMomPos(Double_t px, Double_t py, Double_t pz) { fMomPos.SetXYZ(px, py, pz); }
@@ -80,8 +81,6 @@ namespace Hal {
     fAssumedPdg    = v->fAssumedPdg;
     fAssumedPdgPos = v->fAssumedPdgPos;
     fAssumedPdgNeg = v->fAssumedPdgNeg;
-    fMom           = v->fMom;
-    fPos           = v->fPos;
     fDecay         = v->fDecay;
     fMomPos        = v->fMomPos;
     fMomNeg        = v->fMomNeg;

@@ -289,35 +289,35 @@ namespace Hal {
 
   Float_t Event::GetFieldVal(Int_t fieldID) const {
     switch (fieldID) {
-      case DataFieldID::EEvent::kEventPhi: return GetPhi(); break;
-      case DataFieldID::EEvent::kPhiError: return GetPhiError(); break;
-      case DataFieldID::EEvent::kTracksNo: return GetTotalTrackNo(); break;
-      case DataFieldID::EEvent::kVertexXY: return GetVertex()->Pt(); break;
+      case DataFieldID::Event::EBasic::kEventPhi: return GetPhi(); break;
+      case DataFieldID::Event::EBasic::kPhiError: return GetPhiError(); break;
+      case DataFieldID::Event::EBasic::kTracksNo: return GetTotalTrackNo(); break;
+      case DataFieldID::Event::EBasic::kVertexXY: return GetVertex()->Pt(); break;
 
-      case DataFieldID::EEvent::kVertexX: return GetVertex()->X(); break;
-      case DataFieldID::EEvent::kVertexY: return GetVertex()->Y(); break;
-      case DataFieldID::EEvent::kVertexZ: return GetVertex()->Z(); break;
-      case DataFieldID::EEvent::kVertexT: return GetVertex()->T(); break;
-      case DataFieldID::EEvent::kEventId: return GetEventID(); break;
-      case DataFieldID::EEvent::kMultiplicity: return GetMutliplicity(); break;
-      case DataFieldID::EEvent::kEventZero: return 0;
+      case DataFieldID::Event::EBasic::kVertexX: return GetVertex()->X(); break;
+      case DataFieldID::Event::EBasic::kVertexY: return GetVertex()->Y(); break;
+      case DataFieldID::Event::EBasic::kVertexZ: return GetVertex()->Z(); break;
+      case DataFieldID::Event::EBasic::kVertexT: return GetVertex()->T(); break;
+      case DataFieldID::Event::EBasic::kEventId: return GetEventID(); break;
+      case DataFieldID::Event::EBasic::kMultiplicity: return GetMutliplicity(); break;
+      case DataFieldID::Event::EBasic::kEventZero: return 0;
     }
     return -FLT_MAX;
   }
 
   TString Event::GetFieldName(Int_t fieldID) const {
     switch (fieldID) {
-      case DataFieldID::EEvent::kEventPhi: return "#phi [rad]"; break;
-      case DataFieldID::EEvent::kPhiError: return "#sigma#phi [rad]"; break;
-      case DataFieldID::EEvent::kTracksNo: return "N_{tracks} [AU]"; break;
-      case DataFieldID::EEvent::kVertexXY: return "V_{xy} [cm]"; break;
+      case DataFieldID::Event::EBasic::kEventPhi: return "#phi [rad]"; break;
+      case DataFieldID::Event::EBasic::kPhiError: return "#sigma#phi [rad]"; break;
+      case DataFieldID::Event::EBasic::kTracksNo: return "N_{tracks} [AU]"; break;
+      case DataFieldID::Event::EBasic::kVertexXY: return "V_{xy} [cm]"; break;
 
-      case DataFieldID::EEvent::kVertexX: return "V_{x} [cm]"; break;
-      case DataFieldID::EEvent::kVertexY: return "V_{y} [cm]"; break;
-      case DataFieldID::EEvent::kVertexZ: return "V_{z} [cm]"; break;
-      case DataFieldID::EEvent::kVertexT: return "V_{t} [s]"; break;
-      case DataFieldID::EEvent::kEventId: return "EventID [ID]"; break;
-      case DataFieldID::EEvent::kMultiplicity: return "Multiplicity [N_{tracks}]"; break;
+      case DataFieldID::Event::EBasic::kVertexX: return "V_{x} [cm]"; break;
+      case DataFieldID::Event::EBasic::kVertexY: return "V_{y} [cm]"; break;
+      case DataFieldID::Event::EBasic::kVertexZ: return "V_{z} [cm]"; break;
+      case DataFieldID::Event::EBasic::kVertexT: return "V_{t} [s]"; break;
+      case DataFieldID::Event::EBasic::kEventId: return "EventID [ID]"; break;
+      case DataFieldID::Event::EBasic::kMultiplicity: return "Multiplicity [N_{tracks}]"; break;
     }
     Cout::PrintInfo(Form("Event::GetFieldName cannot find field with fieldID  %i", fieldID), EInfo::kLowWarning);
     return "[]";

@@ -32,7 +32,7 @@ namespace Hal {
     fMin(0),
     fMax(1000),
     fEventBins(1),
-    fEventPar(DataFieldID::EEvent::kEventZero),
+    fEventPar(DataFieldID::Event::EBasic::kEventZero),
     fTrackColsHalf(0),
     fEventMin(-0.5),
     fEventMax(0.5),

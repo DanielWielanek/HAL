@@ -10,12 +10,11 @@
 
 #include "DataFormat.h"
 
-namespace Hal{
+namespace Hal {
 
-TofPropertyMonitor::TofPropertyMonitor(Bool_t complex) :
-  TrackFieldMonitorXY(
-    (complex ? DataFieldID::ReStep + DataFieldID::ETrack::kPq : DataFieldID::ETrack::kPq),
-    (complex ? DataFieldID::ReStep + DataFieldID::EExpTrack::kTofM2 : DataFieldID::EExpTrack::kTofM2)) {}
+  TofPropertyMonitor::TofPropertyMonitor(Bool_t complex) :
+    TrackFieldMonitorXY((complex ? DataFieldID::ReStep + DataFieldID::Track::EBasic::kPq : DataFieldID::Track::EBasic::kPq),
+                        (complex ? DataFieldID::ReStep + DataFieldID::Track::EExp::kTofM2 : DataFieldID::Track::EExp::kTofM2)) {}
 
-TofPropertyMonitor::~TofPropertyMonitor() {}
-}
+  TofPropertyMonitor::~TofPropertyMonitor() {}
+}  // namespace Hal

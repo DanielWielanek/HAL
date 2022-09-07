@@ -46,14 +46,14 @@ namespace Hal {
 
   Float_t ExpEvent::GetFieldVal(Int_t fieldID) const {
     switch (fieldID) {
-      case DataFieldID::EExpEvent::kTofTracksNo: return fNTofTracks; break;
+      case DataFieldID::Event::EExp::kTofTracksNo: return fNTofTracks; break;
       default: return Event::GetFieldVal(fieldID); break;
     }
   }
 
   TString ExpEvent::GetFieldName(Int_t fieldID) const {
     switch (fieldID) {
-      case DataFieldID::EExpEvent::kTofTracksNo: return "N_{TOF tracks} [N]"; break;
+      case DataFieldID::Event::EExp::kTofTracksNo: return "N_{TOF tracks} [N]"; break;
       default: return Event::GetFieldName(fieldID); break;
     }
   }

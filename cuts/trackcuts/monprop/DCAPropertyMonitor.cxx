@@ -10,12 +10,11 @@
 
 #include "DataFormat.h"
 
-namespace Hal{
+namespace Hal {
 
-DCAPropertyMonitor::DCAPropertyMonitor(Bool_t complex) :
-  TrackFieldMonitorXY(
-    (complex ? DataFieldID::ReStep + DataFieldID::EExpTrack::kDcaZ : DataFieldID::EExpTrack::kDcaZ),
-    (complex ? DataFieldID::ReStep + DataFieldID::EExpTrack::kDcaXY : DataFieldID::EExpTrack::kDcaXY)) {}
+  DCAPropertyMonitor::DCAPropertyMonitor(Bool_t complex) :
+    TrackFieldMonitorXY((complex ? DataFieldID::ReStep + DataFieldID::Track::EExp::kDcaZ : DataFieldID::Track::EExp::kDcaZ),
+                        (complex ? DataFieldID::ReStep + DataFieldID::Track::EExp::kDcaXY : DataFieldID::Track::EExp::kDcaXY)) {}
 
-DCAPropertyMonitor::~DCAPropertyMonitor() {}
-}
+  DCAPropertyMonitor::~DCAPropertyMonitor() {}
+}  // namespace Hal

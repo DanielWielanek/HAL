@@ -153,22 +153,36 @@ namespace Hal {
 
   Float_t Track::GetFieldVal(Int_t fieldID) const {
     switch (fieldID) {
-      case DataFieldID::ETrack::kPx: return fP.Px(); break;
-      case DataFieldID::ETrack::kPy: return fP.Py(); break;
-      case DataFieldID::ETrack::kPz: return fP.Pz(); break;
-      case DataFieldID::ETrack::kE: return fP.E(); break;
-      case DataFieldID::ETrack::kPhi: return fP.Phi(); break;
+      case DataFieldID::Track::EBasic::kPx: return fP.Px(); break;
+      case DataFieldID::Track::EBasic::kPy: return fP.Py(); break;
+      case DataFieldID::Track::EBasic::kPz: return fP.Pz(); break;
+      case DataFieldID::Track::EBasic::kE: return fP.E(); break;
+      case DataFieldID::Track::EBasic::kPhi: return fP.Phi(); break;
 
-      case DataFieldID::ETrack::kPt: return fP.Pt(); break;
-      case DataFieldID::ETrack::kTheta: return fP.Theta(); break;
-      case DataFieldID::ETrack::kP: return fP.P(); break;
-      case DataFieldID::ETrack::kEta: return fP.Eta(); break;
-      case DataFieldID::ETrack::kRapidity: return fP.Rapidity(); break;
+      case DataFieldID::Track::EBasic::kPt: return fP.Pt(); break;
+      case DataFieldID::Track::EBasic::kTheta: return fP.Theta(); break;
+      case DataFieldID::Track::EBasic::kP: return fP.P(); break;
+      case DataFieldID::Track::EBasic::kEta: return fP.Eta(); break;
+      case DataFieldID::Track::EBasic::kRapidity: return fP.Rapidity(); break;
 
-      case DataFieldID::ETrack::kCharge: return GetCharge(); break;
-      case DataFieldID::ETrack::kStatus: return GetStatus(); break;
-      case DataFieldID::ETrack::kPq: return GetCharge() * fP.P(); break;
-      case DataFieldID::ETrack::kTrackZero: return 0; break;
+      case DataFieldID::Track::EBasic::kCharge: return GetCharge(); break;
+      case DataFieldID::Track::EBasic::kStatus: return GetStatus(); break;
+      case DataFieldID::Track::EBasic::kPq: return GetCharge() * fP.P(); break;
+      case DataFieldID::Track::EBasic::kTrackZero: return 0; break;
+
+      case DataFieldID::Track::EV0::kAssumedPdg: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kAssumedPdgPos: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kAssumedPdgNeg: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kS1: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kS2: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kAlphaArm: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kPtArm: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kDauDist: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kDecLenght: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kCosAngle: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kLambdaMass: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kAntiLambdaMass: return GetV0IfPossible(fieldID); break;
+      case DataFieldID::Track::EV0::kK0Mass: return GetV0IfPossible(fieldID); break;
     }
     if (fieldID > DataFieldID::Internal::EventStart) { return GetEvent()->GetFieldVal(fieldID); }
 
@@ -177,21 +191,35 @@ namespace Hal {
 
   TString Track::GetFieldName(Int_t fieldID) const {
     switch (fieldID) {
-      case DataFieldID::ETrack::kPx: return "P_{x} [GeV/c]"; break;
-      case DataFieldID::ETrack::kPy: return "P_{y} [GeV/c]"; break;
-      case DataFieldID::ETrack::kPz: return "P_{z} [GeV/c]"; break;
-      case DataFieldID::ETrack::kE: return "E [GeV/c^{2}]"; break;
-      case DataFieldID::ETrack::kPhi: return "#phi [rad]"; break;
+      case DataFieldID::Track::EBasic::kPx: return "P_{x} [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kPy: return "P_{y} [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kPz: return "P_{z} [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kE: return "E [GeV/c^{2}]"; break;
+      case DataFieldID::Track::EBasic::kPhi: return "#phi [rad]"; break;
 
-      case DataFieldID::ETrack::kPt: return "P_{T} [GeV/c]"; break;
-      case DataFieldID::ETrack::kTheta: return "#theta [rad]"; break;
-      case DataFieldID::ETrack::kP: return "P [GeV/c]"; break;
-      case DataFieldID::ETrack::kEta: return "#eta [AU]"; break;
-      case DataFieldID::ETrack::kRapidity: return "y [AU]"; break;
+      case DataFieldID::Track::EBasic::kPt: return "P_{T} [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kTheta: return "#theta [rad]"; break;
+      case DataFieldID::Track::EBasic::kP: return "P [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kEta: return "#eta [AU]"; break;
+      case DataFieldID::Track::EBasic::kRapidity: return "y [AU]"; break;
 
-      case DataFieldID::ETrack::kCharge: return "q [e]"; break;
-      case DataFieldID::ETrack::kStatus: return "stat [AU]"; break;
-      case DataFieldID::ETrack::kPq: return "Pq [GeV/c*e]"; break;
+      case DataFieldID::Track::EBasic::kCharge: return "q [e]"; break;
+      case DataFieldID::Track::EBasic::kStatus: return "stat [AU]"; break;
+      case DataFieldID::Track::EBasic::kPq: return "Pq [GeV/c*e]"; break;
+
+      case DataFieldID::Track::EV0::kAssumedPdg: return "V0_{pidHypo} [PDG]"; break;
+      case DataFieldID::Track::EV0::kAssumedPdgPos: return "V0_{dau pos Hypo} [PDG]"; break;
+      case DataFieldID::Track::EV0::kAssumedPdgNeg: return "V0_{dau neg Hypo} [PDG]"; break;
+      case DataFieldID::Track::EV0::kS1: return "V0_{s1} [cm]"; break;
+      case DataFieldID::Track::EV0::kS2: return "V0_{s2} [cm]"; break;
+      case DataFieldID::Track::EV0::kAlphaArm: return "V0_{#alpha} [AU]"; break;
+      case DataFieldID::Track::EV0::kPtArm: return "V0_{pT} [AU]"; break;
+      case DataFieldID::Track::EV0::kDauDist: return "V0_{dau-dist} [cm]"; break;
+      case DataFieldID::Track::EV0::kDecLenght: return "V0_{L} [cm]"; break;
+      case DataFieldID::Track::EV0::kCosAngle: return "V0_{angle cos} [AU]"; break;
+      case DataFieldID::Track::EV0::kLambdaMass: return "V0_{m#Lambda} [GeV/c^{2}]"; break;
+      case DataFieldID::Track::EV0::kAntiLambdaMass: return "V0_{m#bar{#Lambda}} [GeV/c^{2}]"; break;
+      case DataFieldID::Track::EV0::kK0Mass: return "V0_{K_{0}^{2}} [GeV/c^{2}]"; break;
     }
     if (fieldID > DataFieldID::Internal::EventStart) { return GetEvent()->GetFieldName(fieldID); }
     Cout::PrintInfo(Form("Track::GetFieldName cannot find field with fieldID  %i", fieldID), EInfo::kLowWarning);
@@ -220,4 +248,26 @@ namespace Hal {
     fEvent      = event;
     fID         = -1;
   }
+
+  Float_t Track::GetV0IfPossible(Int_t fieldId) const {
+    Hal::V0Track* tr = GetV0Info();
+    if (tr == nullptr) return Hal::Const::DummyVal();
+    switch (fieldId) {
+      case DataFieldID::Track::EV0::kAssumedPdg: return tr->GetPdg(); break;
+      case DataFieldID::Track::EV0::kAssumedPdgPos: return tr->GetPdgPosDau(); break;
+      case DataFieldID::Track::EV0::kAssumedPdgNeg: return tr->GetPdgNegDau(); break;
+      case DataFieldID::Track::EV0::kS1: return tr->GetS().first; break;
+      case DataFieldID::Track::EV0::kS2: return tr->GetS().second; break;
+      case DataFieldID::Track::EV0::kAlphaArm: return tr->GetAlphaArm(); break;
+      case DataFieldID::Track::EV0::kPtArm: return tr->GetPtArm(); break;
+      case DataFieldID::Track::EV0::kDauDist: return tr->GetDauDist(); break;
+      case DataFieldID::Track::EV0::kDecLenght: return tr->GetDecLength(); break;
+      case DataFieldID::Track::EV0::kCosAngle: return tr->GetCosAngle(); break;
+      case DataFieldID::Track::EV0::kLambdaMass: return tr->GetLambdaMass(); break;
+      case DataFieldID::Track::EV0::kAntiLambdaMass: return tr->GetAntiLambdaMass(); break;
+      case DataFieldID::Track::EV0::kK0Mass: return tr->GetK0Mass(); break;
+    }
+    return -FLT_MIN;
+  }
+
 }  // namespace Hal

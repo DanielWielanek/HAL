@@ -43,6 +43,7 @@ namespace Hal {
     inline Double_t static Sqrt3() { return 1.73205080756887719317660412343685; };
     inline Double_t static Sqrt3Over() { return 0.57735026918962584208117050366127; };
     inline Double_t static SqrtPi() { return 1.77245385090551588191942755656783; };
+    inline Double_t static DummyVal() { return -9999999; }
     virtual ~Const();
     ClassDef(Const, 1)
   };

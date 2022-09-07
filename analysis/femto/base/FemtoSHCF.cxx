@@ -906,7 +906,7 @@ namespace Hal {
     for (int ilm = 0; ilm < GetMaxJM(); ilm++) {
       fNumReal[ilm]->Fill(kv, real(YlmBuffer[ilm]) * pair->GetWeight());
       fNumImag[ilm]->Fill(kv, -imag(YlmBuffer[ilm]) * pair->GetWeight());
-      fNum->Fill(kv, 1.0);
+      fNum->Fill(kv, 1.0);  //?
     }
 
     // Fill in the error matrix

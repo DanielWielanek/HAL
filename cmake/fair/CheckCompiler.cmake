@@ -114,7 +114,7 @@ If(FAIRSOFT_CONFIG)
   String(STRIP ${FAIRSOFT_CXX_FLAGS} FAIRSOFT_CXX_FLAGS)
   Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FAIRSOFT_CXX_FLAGS}")
 Else()
-  Message(STATUS "fairsoft-config not found. Is SIMPATH or FAIRSOFT_ROOT set correctly?")
+  Message(STATUS "fairsoft-config not found.")
 EndIf()
 
 

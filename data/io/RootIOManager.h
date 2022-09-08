@@ -25,8 +25,6 @@ namespace Hal {
 
   class RootIOManager : public IOManager {
     Int_t fEntries;
-    std::vector<TString> fInFileName;
-    std::vector<std::vector<TString>> fFriendName;
     TString fOutFileName;
     TString fOutTreeName;
     TFile* fOutFile;
@@ -34,6 +32,8 @@ namespace Hal {
     std::vector<TFile*> fInFile;
     std::vector<TChain*> fInChain;
     std::vector<TObject**> fObjects;
+    std::vector<TString> fInFileName;
+    std::vector<std::vector<TString>> fFriendName;
 
   protected:
     TString GetChain(TFile* file) const;
@@ -45,7 +45,7 @@ namespace Hal {
      *
      * @param name file with data
      */
-    RootIOManager(TString name);
+    RootIOManager(TString name = "");
     /**
      * set name of the output file
      * @param name

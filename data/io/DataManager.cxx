@@ -25,6 +25,7 @@ namespace Hal {
   }
 
   DataManager::~DataManager() {}
+
   Int_t DataManager::GetEntries() const { return fManager->GetEntries(); }
 
   Int_t DataManager::GetEntry(Int_t i) { return fManager->GetEntry(i); }

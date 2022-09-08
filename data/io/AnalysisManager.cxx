@@ -112,7 +112,7 @@ namespace Hal {
       metadata_new->Write("RunInfo");
     }
     gFile->cd();
-    for (auto task : fTasks) {
+    for (auto task : fActiveTasks) {
       task->FinishTask();
     }
     Cout::PrintInfo("Analysis completed", EInfo::kInfo);

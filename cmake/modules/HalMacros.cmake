@@ -51,4 +51,100 @@ Macro(FindDependencies)
 
 EndMacro(FindDependencies)
 
+ ################################################################################
+ #    Macro for building headers outside of include dir                         #
+ ################################################################################
+Macro(GENERATE_LIBRARY_HAL)
+
+  # TODO: remove this backwards-compatibility check when no longer needed
+  if(DEFINED FAIRROOT_LIBRARY_PROPERTIES AND NOT DEFINED PROJECT_LIBRARY_PROPERTIES)
+    set(PROJECT_LIBRARY_PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES})
+  endif()
+
+  set(Int_LIB ${LIBRARY_NAME})
+
+  Set(HeaderRuleName "${Int_LIB}_HEADER_RULES")
+  Set(DictName "G__${Int_LIB}Dict.cxx")
+
+  If(NOT DICTIONARY)
+    Set(DICTIONARY ${CMAKE_CURRENT_BINARY_DIR}/${DictName})
+  EndIf(NOT DICTIONARY)
+
+  If( IS_ABSOLUTE ${DICTIONARY})
+    Set(DICTIONARY ${DICTIONARY})
+  Else( IS_ABSOLUTE ${DICTIONARY})
+    Set(Int_DICTIONARY ${CMAKE_CURRENT_SOURCE_DIR}/${DICTIONARY})
+  EndIf( IS_ABSOLUTE ${DICTIONARY})
+
+  Set(Int_SRCS ${SRCS})
+
+  If(HEADERS)
+    Set(HDRS ${HEADERS})
+  Else(HEADERS)
+    CHANGE_FILE_EXTENSION(*.cxx *.h HDRS "${SRCS}")
+  EndIf(HEADERS)
+
+  If(IWYU_FOUND)
+    Set(_INCLUDE_DIRS ${INCLUDE_DIRECTORIES} ${SYSTEM_INCLUDE_DIRECTORIES})
+    CHECK_HEADERS("${Int_SRCS}" "${_INCLUDE_DIRS}" ${HeaderRuleName})
+  EndIf(IWYU_FOUND)
+
+  If(INCLUDE_HAL_SUBIDIR)
+    install(FILES ${HDRS} DESTINATION include/Hal)
+  Else()
+    install(FILES ${HDRS} DESTINATION include)
+  Endif()
+  
+  
+  If(LINKDEF)
+    If( IS_ABSOLUTE ${LINKDEF})
+      Set(Int_LINKDEF ${LINKDEF})
+    Else( IS_ABSOLUTE ${LINKDEF})
+      Set(Int_LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LINKDEF})
+    EndIf( IS_ABSOLUTE ${LINKDEF})
+    ROOT_GENERATE_DICTIONARY()
+    SET(Int_SRCS ${Int_SRCS} ${DICTIONARY})
+    SET_SOURCE_FILES_PROPERTIES(${DICTIONARY}
+       PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast"
+    )
+  EndIf(LINKDEF)
+
+
+  If (ROOT_FOUND_VERSION LESS 59999)
+    ROOT_GENERATE_ROOTMAP()
+  EndIf()
+
+  set(Int_DEPENDENCIES)
+  foreach(d ${DEPENDENCIES})
+    get_filename_component(_ext ${d} EXT)
+    If(NOT _ext MATCHES a$)
+      set(Int_DEPENDENCIES ${Int_DEPENDENCIES} ${d})
+    Else()
+      Message("Found Static library with extension ${_ext}")
+      get_filename_component(_lib ${d} NAME_WE)
+      set(Int_DEPENDENCIES ${Int_DEPENDENCIES} ${_lib})
+    EndIf()
+  endforeach()
+
+  ############### build the library #####################
+  If(${CMAKE_GENERATOR} MATCHES Xcode)
+    Add_Library(${Int_LIB} SHARED ${Int_SRCS} ${NO_DICT_SRCS} ${HDRS} ${LINKDEF})
+  Else()
+    Add_Library(${Int_LIB} SHARED ${Int_SRCS} ${NO_DICT_SRCS} ${LINKDEF})
+  EndIf()
+  target_link_libraries(${Int_LIB} ${Int_DEPENDENCIES})
+  set_target_properties(${Int_LIB} PROPERTIES ${PROJECT_LIBRARY_PROPERTIES})
+
+  ############### install the library ###################
+  install(TARGETS ${Int_LIB} DESTINATION lib)
+
+  Set(LIBRARY_NAME)
+  Set(DICTIONARY)
+  Set(LINKDEF)
+  Set(SRCS)
+  Set(HEADERS)
+  Set(NO_DICT_SRCS)
+  Set(DEPENDENCIES)
+
+EndMacro(GENERATE_LIBRARY_HAL)
 

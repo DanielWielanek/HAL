@@ -160,12 +160,18 @@ if (NOT DEFINED DISABLE_SQLITE)
 endif()
 
 
-
+if(INCLUDE_HAL_SUBIDIR)
+install(FILES ${EXT_HEADERS}
+        DESTINATION include/Hal
+       )
+else()
 install(FILES ${EXT_HEADERS}
         DESTINATION include
        )
+endif()
 
-GENERATE_LIBRARY()
+
+GENERATE_LIBRARY_HAL()
 
 
 #making executables

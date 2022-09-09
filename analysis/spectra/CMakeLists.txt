@@ -36,6 +36,6 @@ Set(LINKDEF HalSpectraLinkDef.h)
 Set(LIBRARY_NAME HalSpectra)
 Set(DEPENDENCIES EG MathCore Physics Core HalAna )
 
-GENERATE_LIBRARY()
+GENERATE_LIBRARY_HAL()
 
 

@@ -38,6 +38,6 @@ Set(LINKDEF HalPhysFlowLinkDef.h)
 Set(LIBRARY_NAME HalFlow)
 Set(DEPENDENCIES EG MathCore Physics Core HalAna )
 
-GENERATE_LIBRARY()
+GENERATE_LIBRARY_HAL()
 
 

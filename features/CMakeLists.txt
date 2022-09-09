@@ -75,7 +75,7 @@ Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Mat
 #Set(DEPENDENCIES XMLIO SQLIO FairTools)
 
 
-GENERATE_LIBRARY()
+GENERATE_LIBRARY_HAL()
 
 #copy helpfull files
 Install(DIRECTORY hal_plus 

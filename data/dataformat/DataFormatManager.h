@@ -27,6 +27,7 @@ namespace Hal {
     Int_t fRegisteredFormats;
     Event** fDataFormatBuffered;     //[fRegisteredFormats]
     Event** fDataFormatNonBuffered;  //[fRegisteredFormats]
+    Bool_t* fConnected;              //[fRegisteredFormats]
     static DataFormatManager* fgInstance;
 
   public:

@@ -382,7 +382,10 @@ namespace Hal {
       event        = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent."));
       if (event) {
         Cout::PrintInfo("L1 format from reader has been found", EInfo::kInfo);
-        SetFormat(event);
+        formatManager->SetFormat(event->GetNewEvent(), GetTaskID(), EFormatDepth::kNonBuffered, kTRUE);
+        if (formatManager->GetFormat(GetTaskID(), EFormatDepth::kBuffered) == nullptr) {
+          formatManager->SetFormat(event->GetNewEvent(), GetTaskID(), EFormatDepth::kBuffered, kTRUE);
+        }
         return Task::EInitFlag::kSUCCESS;
       }
     } else {
@@ -396,6 +399,10 @@ namespace Hal {
           Hal::Event* event = dynamic_cast<Hal::Event*>(DataManager::Instance()->GetObject(name));
           if (event) {
             foundFormat = kTRUE;
+            formatManager->SetFormat(event->GetNewEvent(), GetTaskID(), EFormatDepth::kNonBuffered, kTRUE);
+            if (formatManager->GetFormat(GetTaskID(), EFormatDepth::kBuffered) == nullptr) {
+              formatManager->SetFormat(event->GetNewEvent(), GetTaskID(), EFormatDepth::kBuffered, kTRUE);
+            }
             break;
           }
         }

@@ -26,7 +26,7 @@ namespace Hal {
     fArrayObjects->SetName("ArrayObjects");
     fArrayObjects->SetOwner(kTRUE);
     fNo        = 0;
-    fNameClass = ("HalPackage");
+    fNameClass = ("Hal::Package");
     fComment   = " ";
     fMerged    = 1;
   }
@@ -53,7 +53,7 @@ namespace Hal {
     if (i < fNo && i >= 0)
       return fArrayObjects->At(i);
     else {
-      Cout::PrintInfo("No object at such index in HalPackage", Hal::EInfo::kWarning);
+      Cout::PrintInfo("No object at such index in Hal::Package", Hal::EInfo::kWarning);
       return NULL;
     }
   }
@@ -80,7 +80,7 @@ namespace Hal {
 
   void Package::PrintInfo(Int_t counter, Int_t deep) const {
     if (deep == 0) Cout::Stars(kCyan);
-    Cout::ShiftInStars(deep, Form("HalPackage Info"), kCyan);
+    Cout::ShiftInStars(deep, Form("Hal::Package Info"), kCyan);
     Cout::ShiftInStars(deep, Form("ClassName : %s", (fNameClass.GetString()).Data()), kGreen);
     Cout::ShiftText(deep, Form("Comment : %s", fComment.GetString().Data()), "L");
     Cout::ShiftInStars(deep, "Main List", -1);
@@ -104,7 +104,7 @@ namespace Hal {
           Cout::ShiftInStars(deep, Form("TList %s", list->GetName()), kBlue);
           for (int j = 0; j <= list->LastIndex(); j++) {
             if (list->At(j)->ClassName() == this->ClassName()) {
-              Cout::ShiftInStars(deep, "HalPackages in TList!", kCyan);
+              Cout::ShiftInStars(deep, "Hal::Packages in TList!", kCyan);
               ((Package*) list->At(j))->PrintInfo(counter, deep + 1);
             } else {
               // other object
@@ -117,7 +117,7 @@ namespace Hal {
           Cout::ShiftInStars(deep, Form("TList %s End", list->GetName()), kBlue);
           delete list;
         } else if (name == this->ClassName()) {
-          Cout::ShiftInStars(deep, Form("HalPackage in HalPackage! [No : %i]", i), kCyan);
+          Cout::ShiftInStars(deep, Form("Ha::lPackage in Hal::Package! [No : %i]", i), kCyan);
           ((Package*) fArrayObjects->At(i))->PrintInfo(counter, deep + 1);
         }
       }
@@ -127,7 +127,7 @@ namespace Hal {
 
   Package* Package::Report() const {
     Package* pack = new Package(this, kTRUE);
-    pack->AddObject(new ParameterString("ClassName", "HalPackage"));
+    pack->AddObject(new ParameterString("ClassName", "Hal::Package"));
     // pack->AddObject(new
     // HalParameterString("SubClassName",fNameClass.String()));
     for (Int_t i = 0; i < fNo; i++) {
@@ -210,13 +210,13 @@ namespace Hal {
       fArrayObjects->AddLast(object);
       fNo++;
     } else {
-      Cout::PrintInfo("Cannot add NULL object to HalPackage", Hal::EInfo::kError);
+      Cout::PrintInfo("Cannot add NULL object to Hal::Package", Hal::EInfo::kError);
     }
   }
 
   Package& Package::operator+(const Package& rhs) {
     if (this->fNameClass.GetString().EqualTo(rhs.fNameClass.GetString())) {
-      Cout::PrintInfo("Trying to merging incompatibile HalPackages ! This can result in "
+      Cout::PrintInfo("Trying to merging incompatibile Hal::Packages ! This can result in "
                       "crash !",
                       Hal::EInfo::kLowWarning);
     }
@@ -233,7 +233,7 @@ namespace Hal {
     if (name != name2) {
       Cout::PrintInfo(Form("No compatybile classes %s %s", first->ClassName(), second->ClassName()), Hal::EInfo::kCriticalError);
     }
-    if (name == "HalPackage") {
+    if (name == "Hal::Package") {
       SumPackages(first, second);
     } else if (first->InheritsFrom("TH1")) {
       SumHistograms(first, second);
@@ -253,12 +253,12 @@ namespace Hal {
   void Package::Add(const Package* pack) {
     if (this->fNameClass.GetString().EqualTo(pack->fNameClass.GetString())) {
     } else {
-      Cout::PrintInfo("Trying to merging incompatibile HalPackages ! This can result in "
+      Cout::PrintInfo("Trying to merging incompatibile Hal::Packages ! This can result in "
                       "crash !",
                       Hal::EInfo::kLowWarning);
     }
     if (this->fNo != pack->fNo) {
-      Cout::PrintInfo("Different number of object in HalPackageArray this may result in "
+      Cout::PrintInfo("Different number of object in Hal::PackageArray this may result in "
                       "crash!",
                       Hal::EInfo::kLowWarning);
     }

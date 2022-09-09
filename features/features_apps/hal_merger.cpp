@@ -42,7 +42,7 @@
  */
 Bool_t CheckPackagesList(TList* list) {
   for (int i = 0; i < list->GetEntries() / 2; i++) {
-    if (list->At(i * 2)->InheritsFrom("HalPackage") == kFALSE) { return kFALSE; }
+    if (list->At(i * 2)->InheritsFrom("Hal::Package") == kFALSE) { return kFALSE; }
   }
   return kTRUE;
 }
@@ -54,8 +54,8 @@ Bool_t CheckAndMergeList(TList* prim, TList* sec) {
   for (int i = 0; i < prim->GetEntries() / 2; i++) {
     TString name_a              = ((TObjString*) prim->At(i * 2 + 1))->GetString();
     TString name_b              = ((TObjString*) sec->At(i * 2 + 1))->GetString();
-    Bool_t first_can_be_merged  = prim->At(i * 2)->InheritsFrom("HalPackage");
-    Bool_t second_can_be_merged = sec->At(i * 2)->InheritsFrom("HalPackage");
+    Bool_t first_can_be_merged  = prim->At(i * 2)->InheritsFrom("Hal::Package");
+    Bool_t second_can_be_merged = sec->At(i * 2)->InheritsFrom("Hal::Package");
     if (name_a.EqualTo(name_b)) {
     } else {
       Hal::Cout::PrintInfo("Names not equal", Hal::EInfo::kError);

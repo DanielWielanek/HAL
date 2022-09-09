@@ -244,10 +244,10 @@ namespace Hal {
     for (int i = 0; i < mainpack->GetEntries(); i++) {
       TObject* obj      = mainpack->GetObject(i);
       TString classname = obj->ClassName();
-      if (classname == "HalPackage") {  // possible canditate
+      if (classname == "Hal::Package") {  // possible canditate
         Package* pack = (Package*) mainpack->GetObject(i);
         TString pack_class_name(pack->GetName(), strlen(pack->GetName()));
-        if (pack_class_name.EqualTo("HalCutContainer")) {
+        if (pack_class_name.EqualTo("Hal::CutContainer")) {
           fCutContainerArray->AddAtAndExpand(pack, pack_no);
           return kTRUE;
         }

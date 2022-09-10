@@ -42,17 +42,17 @@ namespace Hal {
      * @param index index
      * @return value at given index
      */
-    T& operator[](const int index) { return fArray[index]; };
+    inline T& operator[](const int index) { return fArray[index]; };
     /**
      *
      * @return size of array
      */
-    Int_t GetSize() const { return fSize; }
+    inline Int_t GetSize() const { return fSize; }
     /**
      *
      * @return array stored in this
      */
-    T* GetArray() const { return fArray; };
+    inline T* GetArray() const { return fArray; };
     /**
      * operator =
      * @param rhs to copy
@@ -151,13 +151,13 @@ namespace Hal {
      *
      * @return size of array
      */
-    Int_t GetSize() const { return fSize; }
+    inline Int_t GetSize() const { return fSize; }
     /**
      *
      * @param i index
      * @return sub-array
      */
-    Array_1<T>* At(const Int_t i) { return &fArray[i]; };
+    inline Array_1<T>* At(const Int_t i) { return &fArray[i]; };
     /**
      * operator =
      * @param rhs to copy
@@ -219,14 +219,14 @@ namespace Hal {
      *
      * @return size of this array (last dimension)
      */
-    Int_t GetSize() const { return fSize; }
+    inline Int_t GetSize() const { return fSize; }
     inline Array_2<T>& operator[](const int index) { return fArray[index]; };
     /**
      * return sub-array
      * @param i index
      * @return subarray
      */
-    Array_2<T>* At(Int_t i) const { return &fArray[i]; };
+    inline Array_2<T>* At(Int_t i) const { return &fArray[i]; };
     /**
      * operator =
      * @param rhs to copy
@@ -299,7 +299,7 @@ namespace Hal {
      * @param i index
      * @return sub-array
      */
-    Array_3<T>* At(Int_t i) const { return &fArray[i]; };
+    inline Array_3<T>* At(Int_t i) const { return &fArray[i]; };
     /**
      * operator =
      * @param rhs to copy
@@ -316,7 +316,7 @@ namespace Hal {
      *
      * @return size of this array (last dimension)
      */
-    Int_t GetSize() const { return fSize; }
+    inline Int_t GetSize() const { return fSize; }
     /**
      * get value
      * @param A 1st index

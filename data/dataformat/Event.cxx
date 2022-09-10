@@ -209,7 +209,6 @@ namespace Hal {
   Event* Event::GetNewEvent() const {
     TClass* cl = TClass::GetClass(this->ClassName(), 1, 1);
     Event* ev  = (Event*) cl->New(TClass::kClassNew);
-    ev->CopyHiddenSettings(this);
     return ev;
   }
 

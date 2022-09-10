@@ -13,6 +13,7 @@
 #include "TrackInterface.h"
 #include "V0Track.h"
 
+#include "CompressionMap.h"
 #include "Cout.h"
 #include "DataManager.h"
 #include "IOManager.h"
@@ -85,13 +86,9 @@ namespace Hal {
     Cout::Database(2, Form("%4.2f", GetPhi()), Form("%i", GetTotalTrackNo()));
   }
 
-  void Event::Build(Event* event, Int_t* map, Int_t* mapID, Int_t map_size) {
-    if (map) {  // with compression
-      CopyCompress(event, map, mapID, map_size);
-    } else {  // without compression
-      CopyData(event);
-    }
-  }
+  void Event::Build(Event* event, const CompressionMap& map) { CopyCompress(event, map); }
+
+  void Event::Build(Event* event) { CopyData(event); }
 
   void Event::ShallowCopyEvent(Event* event) {
     fMultiplicity = event->GetMutliplicity();
@@ -130,19 +127,8 @@ namespace Hal {
     }
   }
 
-  void Event::Compress(TClonesArray* array, Int_t* map, Int_t map_size) {
-    Int_t prim_pos = 0;
-    for (int i = 0; i < map_size; i++) {
-      for (int j = prim_pos; j < map[i]; j++) {
-        array->RemoveAt(j);
-      }
-      prim_pos = map[i] + 1;
-    }
-    array->Compress();
-  }
-
-  void Event::Compress(Int_t* map, Int_t map_size) {
-    Compress(fTracks, map, map_size);
+  void Event::Compress(const CompressionMap& map) {
+    Hal::Std::CompressArray(fTracks, map);
     fTotalTracksNo = fTracks->GetEntriesFast();
   }
 
@@ -151,9 +137,9 @@ namespace Hal {
     ShallowCopyTracks(event);
   }
 
-  void Event::CopyCompress(Event* event, Int_t* map, Int_t* mapID, Int_t map_size) {
+  void Event::CopyCompress(Event* event, const CompressionMap& map) {
     ShallowCopyEvent(event);
-    ShallowCopyCompressTracks(event, map, mapID, map_size);
+    ShallowCopyCompressTracks(event, map);
   }
 
   Double_t Event::CalculateCharge(Int_t pdg) const {
@@ -198,20 +184,20 @@ namespace Hal {
     }
   }
 
-  void Event::ShallowCopyCompressTracks(Event* event, Int_t* map, Int_t* mapID, Int_t map_size) {
+  void Event::ShallowCopyCompressTracks(Event* event, const CompressionMap& map) {
     fTracks->Clear();
     fV0sHiddenInfo->Clear();
-    fTotalTracksNo = map_size;
+    fTotalTracksNo = map.GetNewSize();
     fV0Counter     = 0;
     fTracks->GetEntriesFast();
     fTracks->ExpandCreateFast(fTotalTracksNo);
     fV0sHiddenInfo->ExpandCreateFast(event->fTotalV0s);
-    for (int i = 0; i < map_size; i++) {
+    for (int i = 0; i < fTotalTracksNo; i++) {
       Track* to   = (Track*) fTracks->UncheckedAt(i);
-      Track* from = (Track*) event->fTracks->UncheckedAt(map[i]);
+      Track* from = (Track*) event->fTracks->UncheckedAt(map.GetOldIndex(i));
       to->ResetTrack(i, this);
       to->CopyData(from);
-      to->TranslateLinks(mapID);
+      to->TranslateLinks(map);
     }
   }
 

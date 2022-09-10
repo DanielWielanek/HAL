@@ -9,6 +9,7 @@
 
 #include "Track.h"
 
+#include "CompressionMap.h"
 #include "Cout.h"
 #include "DataFormat.h"
 #include "Event.h"
@@ -71,31 +72,38 @@ namespace Hal {
 
   std::vector<int> Track::GetLinks() const {
     std::vector<int> links;
-    links.push_back(GetThisID());
-    if (IsGoodSecondary()) { links.push_back(GetMotherIndex()); }
-    if (IsGoodV0()) {
-      links.push_back(GetV0Info()->GetPosId());
-      links.push_back(GetV0Info()->GetNegId());
-    }
+    GetLinksFast(links, kFALSE);
     return links;
   }
 
-  void Track::TranslateLinks(Int_t* map) {
-    if (IsGoodSecondary()) { SetMotherIndex(map[GetMotherIndex()]); }
-    if (IsGoodV0()) {
-      auto v0Info = GetV0Info();
-      v0Info->SetPosId(map[GetV0Info()->GetPosId()]);
-      v0Info->SetNegId(map[GetV0Info()->GetNegId()]);
-      v0Info->SetTrackId(GetThisID());
+  Int_t Track::GetLinksFast(std::vector<int>& vec, Bool_t fast) const {
+    if (fast) {
+      Int_t size  = -1;
+      vec[++size] = GetThisID();
+      if (IsGoodSecondary()) { vec[++size] = GetMotherIndex(); }
+      if (IsGoodV0()) {
+        V0Track* v0 = GetV0Info();
+        vec[++size] = v0->GetPosId();
+        vec[++size] = v0->GetNegId();
+      }
+      return size;
+    } else {
+      vec.push_back(GetThisID());
+      if (IsGoodSecondary()) vec.push_back(GetMotherIndex());
+      if (IsGoodV0()) {
+        vec.push_back(GetV0Info()->GetPosId());
+        vec.push_back(GetV0Info()->GetNegId());
+      }
+      return (int) vec.size();
     }
   }
 
-  void Track::TranslateLinksVec(const std::vector<int>& vec) {
-    if (IsGoodSecondary()) { SetMotherIndex(vec.at(GetMotherIndex())); }
+  void Track::TranslateLinks(const CompressionMap& map) {
+    if (IsGoodSecondary()) { SetMotherIndex(map.GetNewIndex(GetMotherIndex())); }
     if (IsGoodV0()) {
       auto v0Info = GetV0Info();
-      v0Info->SetPosId(vec.at(GetV0Info()->GetPosId()));
-      v0Info->SetNegId(vec.at(GetV0Info()->GetNegId()));
+      v0Info->SetPosId(map.GetNewIndex(GetV0Info()->GetPosId()));
+      v0Info->SetNegId(map.GetNewIndex(GetV0Info()->GetNegId()));
       v0Info->SetTrackId(GetThisID());
     }
   }

@@ -12,6 +12,7 @@
 
 
 #include "Array.h"
+#include "CompressionMap.h"
 #include "Event.h"
 
 namespace Hal {
@@ -70,9 +71,7 @@ namespace Hal {
     EventArray** fEvents;    //[fEventCollectionsNo]
     EventInterface* fInterface;
     //"true" collections x mix_size
-    Int_t* fSumMap;    //[fTrackMapSize]
-    Int_t* fIndexMap;  //[fTrackMapSize]
-    Int_t fSumMapSize;
+    CompressionMap fCompression;
     Int_t fMaxTrackCollectionNo;
     Event* fCurrentEvent;  // pointer to processed event
     Array_4<Int_t>* fTrackMap;

@@ -38,9 +38,6 @@ namespace Hal {
     fReadyToMix(nullptr),
     fEvents(nullptr),
     fInterface(nullptr),
-    fSumMap(nullptr),
-    fIndexMap(nullptr),
-    fSumMapSize(0),
     fMaxTrackCollectionNo(0),
     fCurrentEvent(nullptr),
     fTrackMap(nullptr),
@@ -66,11 +63,11 @@ namespace Hal {
     if (fUseCompression) {
       CalculateCompressedMap(collection);
       Event* uevent = fEvents[collection]->At(fCounter[collection]);
-      uevent->Build(fCurrentEvent, fSumMap, fIndexMap, fSumMapSize);
+      uevent->Build(fCurrentEvent, fCompression);
       // we need to rebuild links
       for (int iTrack = 0; iTrack < uevent->GetTotalTrackNo(); iTrack++) {
         Track* track = uevent->GetTrack(iTrack);
-        track->TranslateLinks(fIndexMap);
+        track->TranslateLinks(fCompression);
         // track->SetThisID(iTrack);
       }
       fTotalTracks[collection] = uevent->GetTotalTrackNo();
@@ -103,10 +100,6 @@ namespace Hal {
   //-----------------------------
   void MemoryMapManager::ReloadMap(Int_t size) {
     fTrackMap->MakeBigger(-1, -1, -1, size);
-    delete[] fSumMap;
-    delete[] fIndexMap;
-    fSumMap       = new Int_t[size];
-    fIndexMap     = new Int_t[size];
     fTrackMapSize = size;
 #ifdef HAL_DEBUG
     Cout::PrintInfo("Reloading maps", EInfo::kDebugInfo);
@@ -156,9 +149,6 @@ namespace Hal {
       }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];
-    fSumMap       = new Int_t[fTrackMapSize];
-    fIndexMap     = new Int_t[fTrackMapSize];
-    fSumMapSize   = 0;
     fTrackMap     = new Array_4<Int_t>();
     fTrackCounter = new Array_3<Int_t>();
     fTrackCounter->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize);
@@ -214,9 +204,6 @@ namespace Hal {
       }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];
-    fSumMap       = new Int_t[fTrackMapSize];
-    fIndexMap     = new Int_t[fTrackMapSize];
-    fSumMapSize   = 0;
     fTrackMap     = new Array_4<Int_t>();
     fTrackCounter = new Array_3<Int_t>();
     fTrackCounter->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize);
@@ -351,33 +338,27 @@ namespace Hal {
     int collections  = fEventToTrackNo[event_collection];
 
     Int_t counter = fCounter[event_collection];
-    for (int i = 0; i < total_tracks; i++) {
-      fIndexMap[i] = -1;
-    }
+    fCompression.Reset(total_tracks);
+
+    std::vector<int> links;
+    links.resize(fCurrentEvent->GetMaxExpectedLinks());
     // index global map - if fIndexMap[i=>0 need to store particle
     for (int iTrackCollection = 0; iTrackCollection < collections; iTrackCollection++) {
       for (int j = 0; j < GetTracksNo(event_collection, iTrackCollection); j++) {
-        Int_t index            = fTrackMap->Get(event_collection, iTrackCollection, counter, j);
-        Track* track           = fCurrentEvent->GetTrack(index);
-        std::vector<int> links = track->GetLinks();
-        for (int iLink = 0; iLink < (int) links.size(); iLink++) {
-          fIndexMap[links[iLink]] = 0;
+        Int_t index  = fTrackMap->Get(event_collection, iTrackCollection, counter, j);
+        Track* track = fCurrentEvent->GetTrack(index);
+        Int_t size   = track->GetLinksFast(links, kTRUE);
+        for (int iLink = 0; iLink < size; iLink++) {
+          fCompression.MarkAsGood(links[iLink]);
         }
       }
     }
-    Int_t id = -1;
-    for (int iTrack = 0; iTrack < total_tracks; iTrack++) {
-      if (fIndexMap[iTrack] >= 0) {
-        fIndexMap[iTrack] = ++id;  // new index like -1 0 -1 1 -1 -1 2 etc.
-      }
-    }
-    fSumMapSize = id + 1;
+    fCompression.Recalculate();
     for (int iTrackCollection = 0; iTrackCollection < collections; iTrackCollection++) {
+      auto submap = fTrackMap->At(event_collection)->At(iTrackCollection)->At(counter);
       for (int iTrack = 0; iTrack < GetTracksNo(event_collection, iTrackCollection); iTrack++) {
-        Int_t old_index    = fTrackMap->Get(event_collection, iTrackCollection, counter, iTrack);
-        Int_t new_index    = fIndexMap[old_index];
-        fSumMap[new_index] = old_index;
-        fTrackMap->Set(event_collection, iTrackCollection, counter, iTrack, new_index);
+        Int_t old_index = submap->Get(iTrack);
+        submap->Set(iTrack, fCompression.GetNewIndex(old_index));
       }
     }
 
@@ -423,14 +404,12 @@ namespace Hal {
         delete fEvents[i];
       delete[] fEvents;
     }
-    delete[] fSumMap;
     delete fTrackCounter;
     delete fTrackMap;
     delete[] fReadyToMix;
     delete[] fTotalTracks;
     delete[] fEventToTrackNo;
     delete[] fCounter;
-    delete[] fIndexMap;
     if (fInterface) delete fInterface;
   }
 

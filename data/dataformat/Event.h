@@ -22,6 +22,7 @@
 
 class TDatabasePDG;
 namespace Hal {
+  class CompressionMap;
   class Package;
   class McEvent;
   class ComplexEvent;
@@ -84,13 +85,13 @@ namespace Hal {
      * @param map_ids map to convert old ID's into new
      * @param map_size size of map
      */
-    void CopyCompress(Event* event, Int_t* map, Int_t* mapID, Int_t map_size);
+    void CopyCompress(Event* event, const CompressionMap& map);
     /**
      * compress given clones array
      * @param array array of clones to compress
      * @param map_size size of map
      */
-    void Compress(TClonesArray* array, Int_t* map, Int_t map_size);
+    void Compress(TClonesArray* array, const CompressionMap& map);
     /**
      * copy only track data from "event" into this
      * @param event event to copy
@@ -99,12 +100,9 @@ namespace Hal {
     /**
      * copy only track data from "event" into this
      * @param event event to copy
-     * @param index_map map with indexes (used to links with oryginal tracks or
-     * parents
-     * @param mapID - map of track indexes
-     * @param map_size sie of map
+     * @param compression map
      */
-    virtual void ShallowCopyCompressTracks(Event* event, Int_t* map, Int_t* mapID, Int_t map_size);
+    virtual void ShallowCopyCompressTracks(Event* event, const CompressionMap& map);
     /**
      * copy only event data from "event" into this
      * @param event event to copy
@@ -141,7 +139,15 @@ namespace Hal {
      * @param map map of tracks
      * @param map_size - map size
      */
-    void Build(Event* event, Int_t* map = nullptr, Int_t* mapID = nullptr, Int_t map_size = 0);
+    void Build(Event* event, const CompressionMap& map);
+    /**
+     * make copy of event into this object, if map is specifed then build
+     * "minievent"
+     * @param event event to copy (will be the same class)
+     * @param map map of tracks
+     * @param map_size - map size
+     */
+    void Build(Event* event);
     /**
      * register this in output branch
      */
@@ -151,7 +157,7 @@ namespace Hal {
      * @param map map that contains indexes of tracks that should be copied
      * @param map_size size of this map
      */
-    void Compress(Int_t* map, Int_t map_size);
+    void Compress(const CompressionMap& map);
     /**
      *  update fields by using "source event", it's better to implement this
      * method due to improve performance. In such case you can use directly
@@ -184,13 +190,6 @@ namespace Hal {
      **/
     virtual void Print(Option_t* opt = "") const;
     /**
-     * boost this event and all tracks inside
-     * @param vx
-     * @param vy
-     * @param vz
-     */
-    virtual void Boost(Double_t vx, Double_t vy, Double_t vz);
-    /**
      * fill fake track with track data
      * @param i position of track in track array
      */
@@ -213,13 +212,6 @@ namespace Hal {
      * @return
      */
     virtual Bool_t IsCompatible(const Event* non_buffered) const;
-    /**
-     * this function should be reimplemented only if hidden settings are used -
-     * the settings that are used during calculation of event properties
-     * @return true if this format have some hidden settings that doesn't depend
-     * on data stored in tree
-     */
-    virtual Bool_t HasHiddenSettings() const { return kTRUE; };
     /**
      *
      * @return event number
@@ -272,28 +264,10 @@ namespace Hal {
      */
     Track* GetNewTrack() const;
     /**
-     * for allocation event should be reimpleneted only if default constructor +
-     * CopyHiddenVariabels is not enough to create complete empty new event
-     * @return new object of this class
-     * for SetFormat()
-     */
-    virtual Event* GetNewEvent() const;
-    /**
      *  create source - original structure of event,  by allocating memory
      *
      *  **/
     virtual EventInterface* CreateSource() const = 0;
-    /**
-     * creates report about this event, this should be reimplented only if
-     * hidden variables/ additional options are used in event
-     * @return
-     */
-    virtual Package* Report() const;
-    /**
-     * copy settings of this event - but not values stored!
-     * @param event
-     */
-    virtual void CopyHiddenSettings(const Event* /*event*/) {};
     /**
      * return track property by ID, this should be positve number larger than 200 (for ID outside of framework)
      * @param fieldID
@@ -315,6 +289,46 @@ namespace Hal {
      * default destructor
      */
     virtual ~Event();
+    /*******************************************************************************************************************************
+     * functions below that are rarely used and used rather should not overwrite them
+     ******************************************************************************************************************************/
+    /**
+     * copy settings of this event - but not values stored!
+     * @param event
+     */
+    virtual void CopyHiddenSettings(const Event* /*event*/) {};
+    /**
+     * boost this event and all tracks inside
+     * @param vx
+     * @param vy
+     * @param vz
+     */
+    virtual void Boost(Double_t vx, Double_t vy, Double_t vz);
+    /**
+     * for allocation event should be reimpleneted only if default constructor +
+     * CopyHiddenVariabels is not enough to create complete empty new event
+     * @return new object of this class
+     * for SetFormat()
+     */
+    virtual Event* GetNewEvent() const;
+    /**
+     *
+     * @return maximum number of expected links, used by memory map manager to get fast links
+     */
+    virtual Int_t GetMaxExpectedLinks() const { return 10; }
+    /**
+     * this function should be reimplemented only if hidden settings are used -
+     * the settings that are used during calculation of event properties
+     * @return true if this format have some hidden settings that doesn't depend
+     * on data stored in tree
+     */
+    virtual Bool_t HasHiddenSettings() const { return kTRUE; };
+    /**
+     * creates report about this event, this should be reimplented only if
+     * hidden variables/ additional options are used in event
+     * @return
+     */
+    virtual Package* Report() const;
     ClassDef(Event, 1)
   };
 }  // namespace Hal

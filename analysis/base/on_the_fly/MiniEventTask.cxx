@@ -17,33 +17,11 @@
 
 
 namespace Hal {
-  MiniEventTask::MiniEventTask() : fArraySize(1000), fArray(NULL), fMap(NULL) {}
+  MiniEventTask::MiniEventTask() {}
 
   void MiniEventTask::Exec(Option_t* /*opt*/) {
     fCurrentEvent = fMemoryMap->GetTemporaryEvent();
-    if (fCurrentEvent->GetTotalTrackNo() > fArraySize) {
-      delete[] fArray;
-      delete[] fMap;
-      fArraySize = fCurrentEvent->GetTotalTrackNo() * 2;
-      fArray     = new Int_t[fArraySize];
-      fMap       = new Int_t[fArraySize];
-    }
-    for (int i = 0; i < fArraySize; i++) {
-      fArray[i] = 0;
-    }
-    Check();
-    Sum();
-  }
-
-  Task::EInitFlag MiniEventTask::Init() {
-    Task::EInitFlag init = TrackAna::Init();
-    fArray               = new Int_t[fArraySize];
-    fMap                 = new Int_t[fArraySize];
-    fCurrentEvent->Register(kFALSE);
-    return init;
-  }
-
-  void MiniEventTask::Check() {
+    fMap.Reset(fCurrentEvent->GetTotalTrackNo());
     for (fCurrentEventCollectionID = 0; fCurrentEventCollectionID < fEventCollectionsNo; fCurrentEventCollectionID++) {
       if (fCutContainer->PassEvent(fCurrentEvent, fCurrentEventCollectionID)) {
         CutCollection* cont = fCutContainer->GetEventCollection(fCurrentEventCollectionID);
@@ -53,23 +31,20 @@ namespace Hal {
           for (int j = 0; j < cont->GetNextNo(); j++) {
             fCurrentTrackCollectionID = cont->GetNextAddr(j);
             fCurrentTrack             = fCurrentEvent->GetTrack(i);
-            if (fCutContainer->PassTrack(fCurrentTrack, fCurrentTrackCollectionID)) { fArray[i] = 1; }
+            if (fCutContainer->PassTrack(fCurrentTrack, fCurrentTrackCollectionID)) { fMap.MarkAsGood(i); }
           }
         }
       }
     }
+    fMap.Recalculate();
+    fCurrentEvent->Compress(fMap);
   }
 
-  void MiniEventTask::Sum() {
-    Int_t maps_size = 0;
-    for (int i = 0; i < fArraySize; i++) {
-      if (fArray[i] == 1) { fMap[maps_size++] = i; }
-    }
-    fCurrentEvent->Compress(fMap, maps_size);
+  Task::EInitFlag MiniEventTask::Init() {
+    Task::EInitFlag init = TrackAna::Init();
+    fCurrentEvent->Register(kFALSE);
+    return init;
   }
 
-  MiniEventTask::~MiniEventTask() {
-    if (fArray) delete[] fArray;
-    if (fMap) { delete[] fMap; }
-  }
+  MiniEventTask::~MiniEventTask() {}
 }  // namespace Hal

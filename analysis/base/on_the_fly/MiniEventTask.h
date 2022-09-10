@@ -9,6 +9,7 @@
 #ifndef HALMINIEVENTTASK_H_
 #define HALMINIEVENTTASK_H_
 
+#include "CompressionMap.h"
 #include "TrackAna.h"
 
 /**
@@ -19,13 +20,9 @@
 
 namespace Hal {
   class MiniEventTask : public TrackAna {
-    Int_t fArraySize;
-    Int_t* fArray;  //[fArray_Size]
-    Int_t* fMap;    //[fArray_Size]
-    void Sum();
+    CompressionMap fMap;
 
   protected:
-    virtual void Check();
     virtual Task::EInitFlag Init();
 
   public:

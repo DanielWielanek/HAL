@@ -21,17 +21,15 @@
  * correctly so use uncompressed event or only don't use raw tracks
  */
 namespace Hal {
+  class CompressionMap;
   class ComplexEvent : public Event {
   protected:
-    static Int_t* fgIndexMap;       //!
-    static Int_t* fgSumMap;         //!
-    static Int_t fgIndexArraySize;  //!
-    static Int_t fgSumMapSize;      //!
+    static CompressionMap fgCompressionMap;  //!
     Event* fRealEvent;
     Event* fImgEvent;
-    void CalculateCompressionMapImg(Int_t* map, Int_t map_size, ComplexEvent* event);
+    void CalculateCompressionMapImg(const CompressionMap& map, ComplexEvent* event);
     void ShallowCopyTracks(Event* event);
-    void ShallowCopyCompressTracks(Event* event, Int_t* map, Int_t* mapID, Int_t map_size);
+    void ShallowCopyCompressTracks(Event* event, const CompressionMap& map);
     void ShallowCopyEvent(Event* event);
     ComplexEvent(TString track_class, Event* real, Event* img);
 

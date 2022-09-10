@@ -20,6 +20,7 @@
 
 namespace Hal {
   class Event;
+  class CompressionMap;
 
   /**
    * basic abstract class for storing information about tracks
@@ -250,12 +251,7 @@ namespace Hal {
      * translate links of this track into new links
      * @param map
      */
-    void TranslateLinks(Int_t* map);
-    /**
-     * translate links of this track into new links
-     * @param vec
-     */
-    void TranslateLinksVec(const std::vector<int>& vec);
+    void TranslateLinks(const CompressionMap& map);
     /**
      *
      * @return true if particle has 3 dependencies (probably V0)
@@ -292,7 +288,14 @@ namespace Hal {
      *
      * @return indexes of needed other tracks /children, parent
      */
-    virtual std::vector<int> GetLinks() const;
+    std::vector<int> GetLinks() const;
+    /**
+     * faster method for getting links
+     * @param vec vector to fill
+     * @param fast - set vec at places, if fast = false use push_back
+     * @return number of links
+     */
+    virtual Int_t GetLinksFast(std::vector<int>& vec, Bool_t fast = kTRUE) const;
     /**
      *
      * @param vec indexes of needed other tracks

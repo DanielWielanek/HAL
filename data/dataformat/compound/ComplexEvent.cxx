@@ -16,14 +16,13 @@
 
 #include "ComplexEventInterface.h"
 #include "ComplexTrack.h"
+#include "CompressionMap.h"
 #include "DataFormat.h"
 #include "Track.h"
 
 namespace Hal {
-  Int_t* ComplexEvent::fgIndexMap      = nullptr;
-  Int_t* ComplexEvent::fgSumMap        = nullptr;
-  Int_t ComplexEvent::fgIndexArraySize = 0;
-  Int_t ComplexEvent::fgSumMapSize     = 0;
+  CompressionMap ComplexEvent::fgCompressionMap;
+
   ComplexEvent::ComplexEvent(Event* real, Event* img) : ComplexEvent("Hal::ComplexTrack", real, img) {}
 
   ComplexEvent::ComplexEvent(TString track_class, Event* real, Event* img) :
@@ -83,12 +82,6 @@ namespace Hal {
   ComplexEvent::~ComplexEvent() {
     if (fImgEvent) delete fImgEvent;
     if (fRealEvent) delete fRealEvent;
-    if (fgIndexMap) {
-      delete[] fgIndexMap;
-      delete[] fgSumMap;
-      fgIndexMap = fgSumMap = NULL;
-      fgIndexArraySize      = 0;
-    }
   }
 
   void ComplexEvent::ShallowCopyTracks(Event* event) {
@@ -107,56 +100,46 @@ namespace Hal {
     }
   }
 
-  void ComplexEvent::ShallowCopyCompressTracks(Event* event, Int_t* map, Int_t* mapID, Int_t map_size) {
-    fRealEvent->ShallowCopyCompressTracks(((ComplexEvent*) event)->GetRealEvent(), map, mapID, map_size);
-    CalculateCompressionMapImg(map, map_size, (ComplexEvent*) event);
-    fImgEvent->ShallowCopyCompressTracks(((ComplexEvent*) event)->GetImgEvent(), fgSumMap, fgIndexMap, fgSumMapSize);
+  void ComplexEvent::ShallowCopyCompressTracks(Event* event, const CompressionMap& map) {
+    fRealEvent->ShallowCopyCompressTracks(((ComplexEvent*) event)->GetRealEvent(), map);
+    CalculateCompressionMapImg(map, (ComplexEvent*) event);
+    fImgEvent->ShallowCopyCompressTracks(((ComplexEvent*) event)->GetImgEvent(), fgCompressionMap);
     ComplexEvent* mc_event = (ComplexEvent*) event;
-    fTotalTracksNo         = map_size;
+    fTotalTracksNo         = map.GetNewSize();
     for (int i = 0; i < fTotalTracksNo; i++) {
       ComplexTrack* to   = (ComplexTrack*) fTracks->ConstructedAt(i);
-      ComplexTrack* from = (ComplexTrack*) mc_event->fTracks->UncheckedAt(map[i]);
+      ComplexTrack* from = (ComplexTrack*) mc_event->fTracks->UncheckedAt(map.GetOldIndex(i));
       to->ResetTrack(i, this);
       to->CopyData(from);
-      to->TranslateLinks(mapID);
+      to->TranslateLinks(map);
       to->SetRealTrack(fRealEvent->GetTrack(i));
       if (from->GetMatchID() < 0) { continue; }
-      to->SetMatchID(fgIndexMap[from->GetMatchID()]);
+      to->SetMatchID(fgCompressionMap.GetNewIndex(from->GetMatchID()));
       Int_t match_id = to->GetMatchID();
       to->SetImgTrack(fImgEvent->GetTrack(match_id));
     }
   }
 
-  void ComplexEvent::CalculateCompressionMapImg(Int_t* map, Int_t map_size, ComplexEvent* event) {
+  void ComplexEvent::CalculateCompressionMapImg(const CompressionMap& map, ComplexEvent* event) {
     Event* img_event    = event->GetImgEvent();
     const Int_t sizeImg = img_event->GetTotalTrackNo();
-    const Int_t newSize = TMath::Max(sizeImg, map_size);
-    if (fgIndexMap == NULL) {
-      fgIndexMap       = new Int_t[newSize];
-      fgSumMap         = new Int_t[newSize];
-      fgIndexArraySize = newSize;
-    } else if (newSize > fgIndexArraySize) {
-      delete[] fgIndexMap;
-      delete[] fgSumMap;
-      fgIndexArraySize = newSize * 1.2;
-      fgIndexMap       = new Int_t[fgIndexArraySize];
-      fgSumMap         = new Int_t[fgIndexArraySize];
-    }
-    for (int i = 0; i < sizeImg; i++) {
-      fgIndexMap[i] = -1;
-    }
-    for (int i = 0; i < map_size; i++) {
-      ComplexTrack* tr = (ComplexTrack*) event->GetTrack(map[i]);
-      if (tr->GetMatchID() >= 0) { fgIndexMap[tr->GetMatchID()] = 0; }
-    }
-    fgSumMapSize = 0;
-    for (int i = 0; i < sizeImg; i++) {
-      if (fgIndexMap[i] == 0) {
-        fgIndexMap[i]          = fgSumMapSize;
-        fgSumMap[fgSumMapSize] = i;
-        ++fgSumMapSize;
+    const Int_t newSize = TMath::Max(sizeImg, map.GetSize());
+    fgCompressionMap.Reset(newSize);
+    std::vector<int> links;
+    links.resize(GetImgEvent()->GetMaxExpectedLinks());
+    for (int i = 0; i < map.GetNewSize(); i++) {
+      ComplexTrack* tr = (ComplexTrack*) event->GetTrack(map.GetOldIndex(i));
+      Int_t matchId    = tr->GetMatchID();
+      if (matchId >= 0) {
+        // fgCompressionMap.MarkAsGood(matchId);
+        Track* mcTrack = event->GetImgEvent()->GetTrack(matchId);
+        int linksNo    = mcTrack->GetLinksFast(links, kTRUE);
+        for (int iLink = 0; iLink < linksNo; iLink++) {
+          fgCompressionMap.MarkAsGood(links[iLink]);
+        }
       }
     }
+    fgCompressionMap.Recalculate();
   }
 
   Bool_t ComplexEvent::HasHiddenSettings() const {

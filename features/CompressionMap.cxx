@@ -20,7 +20,7 @@ namespace Hal {
       fOldToNewIndex = new Int_t[fAllocatedSize];
       fNewToOldIndex = new Int_t[fAllocatedSize];
     }
-    std::cout << "WARNIG COPY MAP" << std::endl;
+    std::cout << "WARNING COPY MAP" << std::endl;
   }
 
   void CompressionMap::Reset(Int_t size) {

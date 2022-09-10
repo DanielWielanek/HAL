@@ -14,10 +14,10 @@
 namespace HalOTF {
   class McEventInterface : public Hal::EventInterface {
     OTF::McEvent* fEvent;
+    Bool_t fCanDelete;
 
   protected:
-    void ConnectToTree();
-    void Register(Bool_t write);
+    virtual void ConnectToTreeInternal(Hal::EventInterface::eMode mode);
 
   public:
     McEventInterface();

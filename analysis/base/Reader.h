@@ -18,9 +18,11 @@
  */
 namespace Hal {
   class Event;
+  class EventInterface;
   class Reader : public Task {
     UInt_t fProcessedEvents;
     Event* fEvent;
+    EventInterface* fInterface;
 
   public:
     Reader();

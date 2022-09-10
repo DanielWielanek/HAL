@@ -27,7 +27,9 @@
 #include <TString.h>
 
 namespace HalUni {
-  UnigenEventInterface::UnigenEventInterface() : fEvent(nullptr) { fEvent = new UEvent(); }
+  UnigenEventInterface::UnigenEventInterface() : Hal::EventInterfaceAdvanced(new UnigenTrackInterface()), fEvent(nullptr) {
+    fEvent = new UEvent();
+  }
 
   void UnigenEventInterface::Compress(Int_t* map, Int_t map_size) {
     Int_t track_pos = 0;
@@ -68,25 +70,6 @@ namespace HalUni {
     }
   }
 
-  void UnigenEventInterface::ConnectToTree() {
-    Hal::DataManager* manager = Hal::DataManager::Instance();
-    if (CanDeleteEvent()) {
-      if (fEvent) delete fEvent;
-    }
-    std::vector<TString> names;
-    names.push_back("UEvent.");
-    names.push_back("UEvent");
-    names.push_back("event");
-    TList* l = manager->GetBranchNameList();
-    for (int i = 0; i < l->GetEntries(); i++) {
-      TObjString* o = (TObjString*) l->At(i);
-    }
-    for (auto i : names) {
-      fEvent = (UEvent*) manager->GetObject(i);
-      if (fEvent != nullptr) { return; }
-    }
-  }
-
   void UnigenEventInterface::Boost(Double_t vx, Double_t vy, Double_t vz) {
     for (int i = 0; i < fEvent->GetNpa(); i++) {
       UParticle* p       = fEvent->GetParticle(i);
@@ -100,12 +83,10 @@ namespace HalUni {
   }
 
   UnigenEventInterface::~UnigenEventInterface() {
-    if (CanDeleteEvent()) {
+    if (fCanDeleteEvent && fEvent) {
       if (fEvent) delete fEvent;
     }
   }
-
-  Hal::TrackInterface* UnigenEventInterface::GetTrackInterface() const { return new UnigenTrackInterface(); }
 
   void UnigenEventInterface::Register(Bool_t write) {
     if (fEvent == nullptr) fEvent = new UEvent();
@@ -116,4 +97,36 @@ namespace HalUni {
   void UnigenEventInterface::FillTrackInterface(Hal::TrackInterface* track, Int_t index) {
     track->SetRawTrack(fEvent->GetParticle(index));
   }
+
+  void UnigenEventInterface::ConnectToTreeInternal(eMode mode) {
+    Hal::DataManager* manager = Hal::DataManager::Instance();
+
+    switch (mode) {
+      case Hal::EventInterface::eMode::kRead: {
+        std::vector<TString> names;
+        names.push_back("UEvent.");
+        names.push_back("UEvent");
+        names.push_back("event");
+        TList* l = manager->GetBranchNameList();
+        for (int i = 0; i < l->GetEntries(); i++) {
+          TObjString* o = (TObjString*) l->At(i);
+        }
+        for (auto i : names) {
+          fEvent = (UEvent*) manager->GetObject(i);
+          if (fEvent != nullptr) { return; }
+        }
+      } break;
+      case Hal::EventInterface::eMode::kWrite: {
+        fEvent = new UEvent();
+        manager->Register("UEvent.", "unigen", (TNamed*) fEvent, kTRUE);
+      } break;
+      case Hal::EventInterface::eMode::kWriteVirtual: {
+        fEvent = new UEvent();
+        manager->Register("UEvent.", "unigen", (TNamed*) fEvent, kFALSE);
+        fCanDeleteEvent = kTRUE;
+
+      } break;
+    }
+  }
+
 }  // namespace HalUni

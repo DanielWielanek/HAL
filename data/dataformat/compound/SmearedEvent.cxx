@@ -15,6 +15,7 @@
 #include <TObjArray.h>
 #include <TString.h>
 
+#include "ComplexEventInterface.h"
 #include "Event.h"
 #include "McTrack.h"
 #include "VirtualEvent.h"
@@ -38,10 +39,11 @@ namespace Hal {
   SmearedEvent::SmearedEvent(const SmearedEvent& other) :
     ComplexEvent(other), fSmearing(other.fSmearing), fRealMC(other.fRealMC) {}
 
-  void SmearedEvent::Update() {
+  void SmearedEvent::Update(EventInterface* interface) {
     if (fSmearing) {  // we need to update real event and copy data to imaginary
                       // event
-      fRealEvent->Update();
+      ComplexEventInterface* inter = (ComplexEventInterface*) interface;
+      fRealEvent->Update(inter->GetReal());
       CopyData(fRealEvent);
       fImgEvent->Clear();
       fImgEvent->ShallowCopyEvent(fRealEvent);
@@ -61,17 +63,8 @@ namespace Hal {
         }
       }
     } else {  // each event is separately updated
-      ComplexEvent::Update();
+      ComplexEvent::Update(interface);
     }
-  }
-
-  void SmearedEvent::LinkWithTree() {
-    if (fImgEvent->ExistInTree()) {
-      fImgEvent->LinkWithTree();
-    } else {
-      //	fImgEvent->RegisterInTree(kFALSE);
-    }
-    fRealEvent->LinkWithTree();
   }
 
   SmearedEvent::~SmearedEvent() {}

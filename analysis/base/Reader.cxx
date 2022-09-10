@@ -24,21 +24,19 @@
 
 namespace Hal {
 
-  Reader::Reader() : fProcessedEvents(0), fEvent(nullptr) {}
+  Reader::Reader() : fProcessedEvents(0), fEvent(nullptr), fInterface(nullptr) {}
 
-  Reader::~Reader() {}
+  Reader::~Reader() {
+    if (fInterface) delete fInterface;
+  }
 
   Task::EInitFlag Reader::Init() {
     if (fEvent == nullptr) {
       Cout::PrintInfo("Lack format in Reader!", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
-    if (fEvent->GetSource() != nullptr) {
-      Cout::PrintInfo("Source for reader created", EInfo::kError);
-      return Task::EInitFlag::kFATAL;
-    }
-    fEvent->CreateSource();
-    fEvent->LinkWithTree();
+    fInterface = fEvent->CreateSource();
+    fInterface->ConnectToTree(EventInterface::eMode::kRead);
     DataManager* manager = DataManager::Instance();
     manager->Register("HalEvent.", "HalEvents", fEvent, kFALSE);
     Cout::PrintInfo(Form("Register branch from reader called %s", fEvent->ClassName()), EInfo::kInfo);
@@ -47,7 +45,7 @@ namespace Hal {
 
   void Reader::Exec(Option_t* /*opt*/) {
     fProcessedEvents++;
-    fEvent->Update();
+    fEvent->Update(fInterface);
   }
 
   void Reader::SetFormat(Event* format) { fEvent = format; }

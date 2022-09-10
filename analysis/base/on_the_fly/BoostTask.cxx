@@ -24,14 +24,14 @@ namespace Hal {
   BoostTask::BoostTask() : BoostTask(0, 0, 0) {}
 
   BoostTask::BoostTask(Double_t vx, Double_t vy, Double_t vz) :
-    EventAna(), fBoostVx(vx), fBoostVy(vy), fBoostVz(vz), fEventInterface(NULL), fTrackInterface(NULL) {}
+    EventAna(), fBoostVx(vx), fBoostVy(vy), fBoostVz(vz), fEventInterface(nullptr), fTrackInterface(nullptr) {}
 
   BoostTask::BoostTask(Double_t vz) : BoostTask(0, 0, vz) {}
 
   Task::EInitFlag BoostTask::Init() {
     Task::EInitFlag stat = EventAna::Init();
     const Event* event   = DataFormatManager::Instance()->GetFormat(GetTaskID());
-    fEventInterface      = event->GetSource();
+    fEventInterface      = event->CreateSource();
     if (fEventInterface) {
       EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fEventInterface);
       if (source) fTrackInterface = source->GetTrackInterface();
@@ -39,18 +39,10 @@ namespace Hal {
       return Task::EInitFlag::kFATAL;
     }
     fCurrentEvent = fMemoryMap->GetTemporaryEvent();
-    if (!fCurrentEvent->GetSource()) {
-      Cout::PrintInfo("Event don't have source - boost cannot be perfomed on "
-                      " data",
-                      Hal::EInfo::kError);
-      return Task::EInitFlag::kERROR;
-    }
     return stat;
   }
 
   void BoostTask::Exec(Option_t* /*opt*/) {
-    fCurrentEvent->Update();
-    fEventInterface                = fCurrentEvent->GetSource();
     EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fEventInterface);
     if (source) source->Boost(fBoostVx, fBoostVy, fBoostVz);
   }

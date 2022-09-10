@@ -14,17 +14,27 @@
 #include <RtypesCore.h>
 
 namespace HalOTF {
-  RecoEventInterface::RecoEventInterface() : fEvent(nullptr) {}
+  RecoEventInterface::RecoEventInterface() : fEvent(nullptr), fCanDelete(kFALSE) {}
 
-  void RecoEventInterface::ConnectToTree() {
+  void RecoEventInterface::ConnectToTreeInternal(eMode mode) {
     Hal::DataManager* manager = Hal::DataManager::Instance();
-    fEvent                    = (OTF::RecoEvent*) manager->GetObject("OTF::RecoEvent.");
+    switch (mode) {
+      case Hal::EventInterface::eMode::kRead: {
+        fEvent = (OTF::RecoEvent*) manager->GetObject("OTF::RecoEvent.");
+      } break;
+      case Hal::EventInterface::eMode::kWrite: {
+        fEvent = new OTF::RecoEvent();
+        manager->Register("OTF::RecoEvent.", "OTF", fEvent, kTRUE);
+      } break;
+      case Hal::EventInterface::eMode::kWriteVirtual: {
+        fEvent = new OTF::RecoEvent();
+        manager->Register("OTF::RecoEvent.", "OTF", fEvent, kFALSE);
+        fCanDelete = kTRUE;
+      } break;
+    }
   }
 
-  void RecoEventInterface::Register(Bool_t write) {
-    Hal::DataManager* manager = Hal::DataManager::Instance();
-    manager->Register("OTF::RecoEvent.", "RecoEvent", fEvent, write);
+  RecoEventInterface::~RecoEventInterface() {
+    if (fCanDelete && fEvent) delete fEvent;
   }
-
-  RecoEventInterface::~RecoEventInterface() {}
 }  // namespace HalOTF

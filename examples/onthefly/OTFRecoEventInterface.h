@@ -16,10 +16,10 @@ namespace HalOTF {
 
   class RecoEventInterface : public Hal::EventInterface {
     OTF::RecoEvent* fEvent;
+    Bool_t fCanDelete;
 
   protected:
-    void ConnectToTree();
-    void Register(Bool_t write);
+    void ConnectToTreeInternal(eMode mode);
 
   public:
     RecoEventInterface();

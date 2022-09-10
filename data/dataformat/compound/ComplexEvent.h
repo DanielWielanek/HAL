@@ -38,11 +38,9 @@ namespace Hal {
   public:
     ComplexEvent(Event* real = NULL, Event* img = NULL);
     ComplexEvent(const ComplexEvent& other);
-    void CreateSource();
-    virtual void ClearSource(Bool_t del = kTRUE);
+    EventInterface* CreateSource() const;
     virtual void Clear(Option_t* opt = " ");
-    virtual void Update();
-    virtual void LinkWithTree();
+    virtual void Update(EventInterface* interface);
     virtual Bool_t HasHiddenSettings() const;
     virtual Bool_t ExistInTree() const;
     virtual Bool_t IsCompatible(const Event* non_buffered) const;

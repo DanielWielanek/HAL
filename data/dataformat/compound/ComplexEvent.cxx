@@ -14,6 +14,7 @@
 #include <TMathBase.h>
 #include <TObjArray.h>
 
+#include "ComplexEventInterface.h"
 #include "ComplexTrack.h"
 #include "DataFormat.h"
 #include "Track.h"
@@ -23,19 +24,15 @@ namespace Hal {
   Int_t* ComplexEvent::fgSumMap        = nullptr;
   Int_t ComplexEvent::fgIndexArraySize = 0;
   Int_t ComplexEvent::fgSumMapSize     = 0;
-  ComplexEvent::ComplexEvent(Event* real, Event* img) : ComplexEvent("Hal::ComplexTrack", real, img) {
-    fSource = fRealEvent->GetSource();
-  }
+  ComplexEvent::ComplexEvent(Event* real, Event* img) : ComplexEvent("Hal::ComplexTrack", real, img) {}
 
   ComplexEvent::ComplexEvent(TString track_class, Event* real, Event* img) :
-    Event(track_class), fRealEvent(real), fImgEvent(img) {
-    fSource = fRealEvent->GetSource();
-  }
+    Event(track_class), fRealEvent(real), fImgEvent(img) {}
 
-  void ComplexEvent::Update() {
-    fImgEvent->Update();
-    fRealEvent->Update();
-    fSource = fRealEvent->GetSource();
+  void ComplexEvent::Update(EventInterface* interface) {
+    ComplexEventInterface* source = (ComplexEventInterface*) interface;
+    fImgEvent->Update(source->GetReal());
+    fRealEvent->Update(source->GetImag());
     Event::ShallowCopyEvent(fRealEvent);
     fTracks->Clear();
     if (fRealEvent->GetTotalTrackNo()) {
@@ -51,14 +48,6 @@ namespace Hal {
     }
   }
 
-  void ComplexEvent::LinkWithTree() {
-    if (fImgEvent->GetSource() == nullptr) fImgEvent->CreateSource();
-    fImgEvent->LinkWithTree();
-    if (fRealEvent->GetSource() == nullptr) fRealEvent->CreateSource();
-    fRealEvent->LinkWithTree();
-    fSource = fRealEvent->GetSource();
-  }
-
   Bool_t ComplexEvent::ExistInTree() const {
     if (fImgEvent && fRealEvent) {
       if (fImgEvent->ExistInTree() && fRealEvent->ExistInTree()) { return kTRUE; }
@@ -71,7 +60,6 @@ namespace Hal {
     fRealEvent = other.fRealEvent->GetNewEvent();
     fImgEvent->CopyData(other.fImgEvent);
     fRealEvent->CopyData(other.fRealEvent);
-    fSource = fRealEvent->fSource;
   }
 
   void ComplexEvent::Clear(Option_t* /*opt*/) {
@@ -80,23 +68,20 @@ namespace Hal {
     fImgEvent->Clear();
   }
 
-  void ComplexEvent::ClearSource(Bool_t /*del*/) {}
-
   void ComplexEvent::ShallowCopyEvent(Event* event) {
     fRealEvent->ShallowCopyEvent(((ComplexEvent*) event)->GetRealEvent());
     fImgEvent->ShallowCopyEvent(((ComplexEvent*) event)->GetImgEvent());
     Event::ShallowCopyEvent(((ComplexEvent*) event)->GetRealEvent());
   }
 
-  void ComplexEvent::CreateSource() {
-    fRealEvent->CreateSource();
-    fImgEvent->CreateSource();
-    fSource = fRealEvent->GetSource();
+  EventInterface* ComplexEvent::CreateSource() const {
+    EventInterface* re = fRealEvent->CreateSource();
+    EventInterface* im = fImgEvent->CreateSource();
+    return new ComplexEventInterface(re, im);
   }
 
   ComplexEvent::~ComplexEvent() {
     if (fImgEvent) delete fImgEvent;
-    fRealEvent->fSource = NULL;
     if (fRealEvent) delete fRealEvent;
     if (fgIndexMap) {
       delete[] fgIndexMap;

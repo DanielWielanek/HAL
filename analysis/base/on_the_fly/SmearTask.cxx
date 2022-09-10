@@ -68,7 +68,6 @@ namespace Hal {
     Event* event         = fMemoryMap->GetTemporaryEvent();
     fCurrentEventSmeared = new SmearedEvent(event);
     fCurrentEventSmeared->ActivateSmearing();
-    fCurrentEventSmeared->LinkWithTree();
     fCurrentEventSmeared->GetImgEvent()->Register(kFALSE);
     if (fEventAlgorithm == NULL) {
       Cout::PrintInfo("No event smear algorithm, new will be added but do virtual", EInfo::kLowWarning);
@@ -104,10 +103,11 @@ namespace Hal {
       }
     }
   }
+
   void SmearTask::Exec(Option_t* /*opt*/) {
     fProcessedEvents++;
     fCurrentEvent = fMemoryMap->GetTemporaryEvent();
-    fCurrentEventSmeared->Update();
+    fMemoryMap->ManualUpdate(fCurrentEventSmeared);
     for (fCurrentEventCollectionID = 0; fCurrentEventCollectionID < fEventCollectionsNo; fCurrentEventCollectionID++) {
       if (fCutContainer->PassEvent(fCurrentEvent, fCurrentEventCollectionID)) { ProcessEvent(); }
     }

@@ -10,19 +10,13 @@
 
 #include <iostream>
 namespace Hal {
-  EventInterface::EventInterface() {
-    // TODO Auto-generated constructor stub
+  EventInterface::EventInterface() : fConnected(kFALSE) {}
+
+  void EventInterface::ConnectToTree(eMode mode) {
+    if (fConnected) return;
+    ConnectToTreeInternal(mode);
   }
 
-  EventInterface::~EventInterface() {
-    // TODO Auto-generated destructor stub
-  }
+  EventInterface::~EventInterface() {}
 
-  void EventInterface::LinkWithTree(eMode mode) {
-    if (mode == eMode::kRead) {
-      ConnectToTree();
-    } else {
-      std::cout << "Cannot use read/write virtual for pure EventInterface" << std::endl;
-    }
-  }
 }  // namespace Hal

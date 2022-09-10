@@ -30,7 +30,6 @@
 namespace Hal {
   Event::Event() :
     TNamed(),
-    fSource(nullptr),
     fTracks(nullptr),
     fVertex(nullptr),
     fPhi(0),
@@ -46,14 +45,14 @@ namespace Hal {
   }
 
   Event::Event(TString track_class, TString v0_class) :
-    fSource(nullptr), fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fTotalV0s(0), fV0Counter(0), fMultiplicity(0) {
+    fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fTotalV0s(0), fV0Counter(0), fMultiplicity(0) {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
     fTracks        = new TClonesArray(track_class);
     fV0sHiddenInfo = new TClonesArray(v0_class);
   }
 
-  Event::Event(const Event& other) : TNamed(other), fSource(NULL) {
+  Event::Event(const Event& other) : TNamed(other) {
     fPDG           = TDatabasePDG::Instance();
     fTracks        = new TClonesArray(*other.fTracks);
     fVertex        = new TLorentzVector(*other.fVertex);
@@ -65,19 +64,6 @@ namespace Hal {
     fMultiplicity  = other.fMultiplicity;
     fV0Counter     = other.fV0Counter;
     fV0sHiddenInfo = new TClonesArray(*other.fV0sHiddenInfo);
-    if (other.fSource) { fSource = (EventInterface*) fSource->Clone(); }
-  }
-
-  TObject* Event::GetEventPointer() const {
-    EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fSource);
-    if (source) { return source->GetRawEventPointer(); }
-    return nullptr;
-  }
-
-  TObject* Event::GetTrackPointer(Int_t index) const {
-    EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fSource);
-    if (source) { return source->GetRawTrackPointer(index); }
-    return nullptr;
   }
 
   Event::~Event() {
@@ -97,11 +83,6 @@ namespace Hal {
   void Event::Print(Option_t* /*opt*/) const {
     Cout::Database(2, "Event Phi", "Event Multiplicity");
     Cout::Database(2, Form("%4.2f", GetPhi()), Form("%i", GetTotalTrackNo()));
-  }
-
-  void Event::Compress(Int_t* map, Int_t map_size) {
-    Compress(fTracks, map, map_size);
-    fTotalTracksNo = fTracks->GetEntriesFast();
   }
 
   void Event::Build(Event* event, Int_t* map, Int_t* mapID, Int_t map_size) {
@@ -137,13 +118,6 @@ namespace Hal {
     }
   }
 
-  void Event::DeleteSource() {
-    if (fSource) {
-      delete fSource;
-      fSource = NULL;
-    }
-  }
-
   void Event::Register(Bool_t write) {
     DataManager* ioManager = DataManager::Instance();
     ioManager->Register(Form("%s.", this->ClassName()), "HalEvents", this, write);
@@ -167,22 +141,19 @@ namespace Hal {
     array->Compress();
   }
 
+  void Event::Compress(Int_t* map, Int_t map_size) {
+    Compress(fTracks, map, map_size);
+    fTotalTracksNo = fTracks->GetEntriesFast();
+  }
+
   void Event::CopyData(Event* event) {
     ShallowCopyEvent(event);
     ShallowCopyTracks(event);
-    if (fSource) {
-      EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fSource);
-      if (source) { source->CopyData(event->fSource); }
-    }
   }
 
   void Event::CopyCompress(Event* event, Int_t* map, Int_t* mapID, Int_t map_size) {
     ShallowCopyEvent(event);
     ShallowCopyCompressTracks(event, map, mapID, map_size);
-    if (fSource) {
-      EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fSource);
-      if (source) source->CopyAndCompress(event->fSource, map, map_size);
-    }
   }
 
   Double_t Event::CalculateCharge(Int_t pdg) const {
@@ -196,11 +167,11 @@ namespace Hal {
 
   TString Event::GetFormatName() const { return ClassName(); }
 
-  void Event::Update() {
+  void Event::Update(EventInterface* interface) {
     fTracks->Clear();
     fV0sHiddenInfo->Clear();
     fTotalV0s                      = 0;
-    EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fSource);
+    EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(interface);
     if (source) {
       fPhi                = source->GetPhi();
       fPhiError           = source->GetPhiError();
@@ -208,31 +179,22 @@ namespace Hal {
       fVertex->SetXYZT(vert.X(), vert.Y(), vert.Z(), vert.T());
       fTotalTracksNo = source->GetTotalTrackNo();
       fTracks->ExpandCreateFast(fTotalTracksNo);
-      TrackInterface* interface = source->GetTrackInterface();
+      TrackInterface* trInterface = source->GetTrackInterface();
       for (int i = 0; i < fTotalTracksNo; i++) {
         Track* from = GetTrack(i);
         from->ResetTrack(i, this);
-        from->SetID(interface->GetID());
-        source->FillTrackInterface(interface, i);
-        from->SetCharge(interface->GetCharge());
-        from->SetMotherIndex(interface->GetMotherIndex());
-        if (interface->IsPrimary()) {
+        from->SetID(trInterface->GetID());
+        source->FillTrackInterface(trInterface, i);
+        from->SetCharge(trInterface->GetCharge());
+        from->SetMotherIndex(trInterface->GetMotherIndex());
+        if (trInterface->IsPrimary()) {
           from->SetPrimary();
         } else {
           from->SetSecondary(kFALSE);
         }
         from->EnableV0(kFALSE, kFALSE);
-        from->SetMomentum(interface->GetPz(), interface->GetPy(), interface->GetPz(), interface->GetE());
+        from->SetMomentum(trInterface->GetPz(), trInterface->GetPy(), trInterface->GetPz(), trInterface->GetE());
       }
-      delete interface;
-    }
-  }
-
-  void Event::RegisterSource(Bool_t write) {
-    if (write) {
-      fSource->LinkWithTree(EventInterface::eMode::kWrite);
-    } else {
-      fSource->LinkWithTree(EventInterface::eMode::kWriteVirtual);
     }
   }
 
@@ -252,6 +214,7 @@ namespace Hal {
       to->TranslateLinks(mapID);
     }
   }
+
   Track* Event::GetNewTrack() const {
     TClass* cl = fTracks->GetClass();
     return (Track*) cl->New(TClass::kClassNew);

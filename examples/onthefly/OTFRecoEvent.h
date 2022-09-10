@@ -20,9 +20,8 @@ namespace HalOTF {
   class RecoEvent : public Hal::ExpEvent {
   public:
     RecoEvent();
-    void CreateSource();
-    virtual void Update();
-    virtual void Clear(Option_t* opt = " ");
+    Hal::EventInterface* CreateSource() const;
+    virtual void Update(Hal::EventInterface* interface);
     virtual Bool_t ExistInTree() const;
     virtual TString GetFormatName() const { return "OTFRecoEvent"; };
     virtual ~RecoEvent() {};

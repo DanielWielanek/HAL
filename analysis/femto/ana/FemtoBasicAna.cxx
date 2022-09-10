@@ -322,8 +322,7 @@ namespace Hal {
       brName.push_back(Form("%s.", evName.Data()));
       brName.push_back(evName);
     }
-    fMemoryMap->Init(
-      1, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kSource), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
+    fMemoryMap->Init(1, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
   }
 
   void FemtoBasicAna::ProcessEvent() {

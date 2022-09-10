@@ -8,6 +8,7 @@
  */
 
 #include "OTFComplexEvent.h"
+#include "ComplexEventInterface.h"
 #include "ComplexTrack.h"
 #include "OTFMcEvent.h"
 #include "OTFRecoEvent.h"
@@ -16,14 +17,15 @@
 namespace HalOTF {
   ComplexEvent::ComplexEvent() : Hal::ComplexEvent(new HalOTF::RecoEvent(), new HalOTF::McEvent) {}
 
-  void ComplexEvent::Update() {
-    fImgEvent->Update();
-    fRealEvent->Update();
+  void ComplexEvent::Update(Hal::EventInterface* interface) {
+    Hal::ComplexEventInterface* source = (Hal::ComplexEventInterface*) interface;
+    fImgEvent->Update(source->GetImag());
+    fRealEvent->Update(source->GetReal());
     Hal::Event::ShallowCopyEvent(fRealEvent);
     fTracks->Clear();
     fTotalTracksNo = fRealEvent->GetTotalTrackNo();
     fTracks->ExpandCreateFast(fTotalTracksNo);
-    RecoEventInterface* s = (RecoEventInterface*) fSource;
+    RecoEventInterface* s = (RecoEventInterface*) interface;
     for (Int_t i = 0; i < fTotalTracksNo; i++) {
       Hal::ComplexTrack* track = (Hal::ComplexTrack*) fTracks->UncheckedAt(i);
       track->ResetTrack(i, this);

@@ -14,17 +14,18 @@
 
 namespace Hal {
   class EventInterface : public TObject {
-  protected:
-    /**
-     * link source object with tree (was called LinkWithTree) used for reading
-     * events
-     */
-    virtual void ConnectToTree() = 0;
-
   public:
     enum class eMode { kRead, kWrite, kWriteVirtual };
+
+  private:
+    Bool_t fConnected;
+
+  protected:
+    virtual void ConnectToTreeInternal(eMode mode) = 0;
+
+  public:
     EventInterface();
-    virtual void LinkWithTree(eMode mode);
+    virtual void ConnectToTree(eMode mode);
     virtual ~EventInterface();
     ClassDef(EventInterface, 1)
   };

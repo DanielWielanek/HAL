@@ -68,6 +68,7 @@ namespace Hal {
     Int_t* fTotalTracks;     //[fEventCollectionsNo]
     Bool_t* fReadyToMix;     //[fEventCollectionsNo]
     EventArray** fEvents;    //[fEventCollectionsNo]
+    EventInterface* fInterface;
     //"true" collections x mix_size
     Int_t* fSumMap;    //[fTrackMapSize]
     Int_t* fIndexMap;  //[fTrackMapSize]
@@ -110,6 +111,11 @@ namespace Hal {
      */
     Event* GetTemporaryEvent();
     /**
+     *  call update on this event
+     * @param event
+     */
+    void ManualUpdate(Event* event);
+    /**
      * set size of mixing buffer
      * @param mix_size mixing buffer size
      */
@@ -122,22 +128,20 @@ namespace Hal {
     /**
      * initialize this manager
      * @param task_id data format (and  task id)
-     * @param use_source if true then original structure is copied into memory
      * @param compress - if true then evets will be compressed
      * @param direct  - name of branch if direct access is used
      * is performed
      */
-    void Init(Int_t task_id, Bool_t use_source, Bool_t compress, std::vector<TString> direct);
+    void Init(Int_t task_id, Bool_t compress, std::vector<TString> direct);
     /**
      * initialize this manager
      * @param event_factor - numer of artificial multiplication of event triggers
      * @param task_id data format (and  task id)
-     * @param use_source if true then original structure is copied into memory
      * @param compress - if true then evets will be compressed
      * @param direct  -name of branch if direct access is used
      * is performed
      */
-    void Init(Int_t event_factor, Int_t task_id, Bool_t use_source, Bool_t compress, std::vector<TString> direct);
+    void Init(Int_t event_factor, Int_t task_id, Bool_t compress, std::vector<TString> direct);
     /**
      * add track to map
      * @param event_collection even collection number

@@ -30,9 +30,8 @@ namespace Hal {
      * @param event oryginal format
      */
     SmearedEvent(Event* event);
-    void LinkWithTree();
     void ActivateSmearing() { fSmearing = kTRUE; };
-    virtual void Update();
+    virtual void Update(EventInterface* interface);
     void Clear(Option_t* opt = " ");
     TString GetFormatName() const;
     virtual ~SmearedEvent();

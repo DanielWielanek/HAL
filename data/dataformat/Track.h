@@ -247,11 +247,6 @@ namespace Hal {
      */
     void SetSecondary(Bool_t parent);
     /**
-     *
-     * @return pointer to original track
-     */
-    TObject* GetTrackPointer() const;
-    /**
      * translate links of this track into new links
      * @param map
      */

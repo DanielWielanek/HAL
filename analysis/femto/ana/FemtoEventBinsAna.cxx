@@ -102,11 +102,7 @@ namespace Hal {
       brName.push_back(Form("%s.", evName.Data()));
       brName.push_back(evName);
     }
-    fMemoryMap->Init(multi_factor,
-                     GetTaskID(),
-                     TESTBIT(fFormatOption, eBitFormat::kSource),
-                     TESTBIT(fFormatOption, eBitFormat::kCompression),
-                     brName);
+    fMemoryMap->Init(multi_factor, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
   }
 
   Int_t FemtoEventBinsAna::GetEventBin() {

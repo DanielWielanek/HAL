@@ -27,7 +27,7 @@ namespace Hal {
   public:
     McEvent();
     McEvent(const McEvent& other);
-    virtual void Update();
+    virtual void Update(EventInterface* interface);
     inline Double_t GetImpactParameter() const { return fB; };
     virtual EFormatType GetFormatType() const { return EFormatType::kSim; };
     inline McEvent* GetMC() const { return const_cast<McEvent*>(this); };

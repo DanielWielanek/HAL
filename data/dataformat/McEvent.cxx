@@ -37,18 +37,19 @@ namespace Hal {
     }
   }
 
-  void McEvent::Update() {
-    Event::Update();
-    EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fSource);
+  void McEvent::Update(EventInterface* interface) {
+    Event::Update(interface);
+    EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(interface);
     if (source) {
-      McTrackInterface* interface = (McTrackInterface*) source->GetTrackInterface();
+      McTrackInterface* trinterface = (McTrackInterface*) source->GetTrackInterface();
       for (int i = 0; i < fTotalTracksNo; i++) {
         McTrack* tr = (McTrack*) GetTrack(i);
-        tr->SetPdg(interface->GetPdg());
-        tr->SetStartPosition(interface->GetStartX(), interface->GetStartY(), interface->GetStartZ(), interface->GetStartT());
-        tr->SetFreezoutPosition(interface->GetFreezX(), interface->GetFreezY(), interface->GetFreezZ(), interface->GetFreezT());
+        tr->SetPdg(trinterface->GetPdg());
+        tr->SetStartPosition(
+          trinterface->GetStartX(), trinterface->GetStartY(), trinterface->GetStartZ(), trinterface->GetStartT());
+        tr->SetFreezoutPosition(
+          trinterface->GetFreezX(), trinterface->GetFreezY(), trinterface->GetFreezZ(), trinterface->GetFreezT());
       }
-      delete interface;
     }
   }
 

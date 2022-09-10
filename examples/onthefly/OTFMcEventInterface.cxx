@@ -17,20 +17,28 @@
 #include <iostream>
 
 namespace HalOTF {
-  McEventInterface::McEventInterface() : fEvent(nullptr) {}
+  McEventInterface::McEventInterface() : fEvent(nullptr), fCanDelete(kFALSE) {}
 
-  void McEventInterface::ConnectToTree() {
+  void McEventInterface::ConnectToTreeInternal(Hal::EventInterface::eMode mode) {
     Hal::DataManager* manager = Hal::DataManager::Instance();
-    fEvent                    = (OTF::McEvent*) manager->GetObject("OTF::McEvent.");
-    std::cout << "CONNECT " << fEvent << std::endl;
-  }
-
-  void McEventInterface::Register(Bool_t write) {
-    Hal::DataManager* manager = Hal::DataManager::Instance();
-    manager->Register("OTF::McEvent.", "McEvent", fEvent, write);
+    switch (mode) {
+      case Hal::EventInterface::eMode::kRead: {
+        fEvent = (OTF::McEvent*) manager->GetObject("OTF::McEvent.");
+      } break;
+      case Hal::EventInterface::eMode::kWrite: {
+        fEvent = new OTF::McEvent();
+        manager->Register("OTF::McEvent.", "OTF", fEvent, kTRUE);
+      } break;
+      case Hal::EventInterface::eMode::kWriteVirtual: {
+        fEvent = new OTF::McEvent();
+        manager->Register("OTF::McEvent.", "OTF", fEvent, kFALSE);
+        fCanDelete = kTRUE;
+      } break;
+    }
   }
 
   McEventInterface::~McEventInterface() {
-    // TODO Auto-generated destructor stub
+    if (fCanDelete && fEvent) delete fEvent;
   }
+
 }  // namespace HalOTF

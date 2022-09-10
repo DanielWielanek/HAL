@@ -37,6 +37,7 @@ namespace Hal {
     fTotalTracks(nullptr),
     fReadyToMix(nullptr),
     fEvents(nullptr),
+    fInterface(nullptr),
     fSumMap(nullptr),
     fIndexMap(nullptr),
     fSumMapSize(0),
@@ -114,8 +115,10 @@ namespace Hal {
 
   void MemoryMapManager::SetMixSize(Int_t mix_size) { fMixSize = mix_size; }
 
+  void MemoryMapManager::ManualUpdate(Event* event) { event->Update(fInterface); }
+
   Event* MemoryMapManager::GetTemporaryEvent() {
-    if (!fDirectAcces) fCurrentEvent->Update();
+    if (!fDirectAcces) fCurrentEvent->Update(fInterface);
     if (fCurrentEvent->GetTotalTrackNo() > fTrackMapSize) {
       for (int i = 0; i < fEventCollectionsNo; i++) {
         ReloadMap(fCurrentEvent->GetTotalTrackNo() * 1.2);
@@ -124,7 +127,7 @@ namespace Hal {
     return fCurrentEvent;
   }
 
-  void MemoryMapManager::Init(Int_t task_id, Bool_t use_source, Bool_t compress, std::vector<TString> direct) {
+  void MemoryMapManager::Init(Int_t task_id, Bool_t compress, std::vector<TString> direct) {
     if (direct.size() > 0) {
       fDirectAcces = kTRUE;
     } else {
@@ -136,17 +139,13 @@ namespace Hal {
     for (Int_t i = 0; i < fEventCollectionsNo; i++) {
       fEvents[i] = new EventArray(fFormatID, fMixSize);
     }
-    if (use_source) {
-      for (Int_t i = 0; i < fEventCollectionsNo; i++) {
-        for (Int_t j = 0; j < fMixSize; j++) {
-          fEvents[i]->fArray[j]->CreateSource();
-        }
-      }
-    }
+
     DataFormatManager* dataManager = DataFormatManager::Instance();
 
     if (fDirectAcces == kFALSE) {
-      fCurrentEvent = dataManager->GetEventFromTree(fFormatID);
+      fCurrentEvent = dataManager->GetNewEvent(fFormatID, EFormatDepth::kNonBuffered);
+      fInterface    = fCurrentEvent->CreateSource();
+      fInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     } else {
       for (auto brName : direct) {
         Event* ev = dynamic_cast<Event*>(DataManager::Instance()->GetObject(brName));
@@ -174,8 +173,7 @@ namespace Hal {
     }
   }
 
-  void
-  MemoryMapManager::Init(Int_t event_factor, Int_t task_id, Bool_t use_source, Bool_t compress, std::vector<TString> direct) {
+  void MemoryMapManager::Init(Int_t event_factor, Int_t task_id, Bool_t compress, std::vector<TString> direct) {
     if (direct.size() > 0) {
       fDirectAcces = kTRUE;
     } else {
@@ -200,16 +198,12 @@ namespace Hal {
     for (Int_t i = 0; i < fEventCollectionsNo; i++) {
       fEvents[i] = new EventArray(fFormatID, fMixSize);
     }
-    if (use_source) {
-      for (Int_t i = 0; i < fEventCollectionsNo; i++) {
-        for (Int_t j = 0; j < fMixSize; j++) {
-          fEvents[i]->fArray[j]->CreateSource();
-        }
-      }
-    }
+
     DataFormatManager* dataManager = DataFormatManager::Instance();
     if (fDirectAcces == kFALSE) {
-      fCurrentEvent = dataManager->GetEventFromTree(fFormatID);
+      fCurrentEvent = dataManager->GetNewEvent(fFormatID, EFormatDepth::kNonBuffered);
+      fInterface    = fCurrentEvent->CreateSource();
+      fInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     } else {
       for (auto brName : direct) {
         Event* ev = dynamic_cast<Event*>(DataManager::Instance()->GetObject(brName));
@@ -437,6 +431,7 @@ namespace Hal {
     delete[] fEventToTrackNo;
     delete[] fCounter;
     delete[] fIndexMap;
+    if (fInterface) delete fInterface;
   }
 
   EventArray::EventArray(Int_t task_id, Int_t size) : fSize(size) {

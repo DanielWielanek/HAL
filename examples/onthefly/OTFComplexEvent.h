@@ -15,7 +15,7 @@ namespace HalOTF {
   class ComplexEvent : public Hal::ComplexEvent {
   public:
     ComplexEvent();
-    virtual void Update();
+    virtual void Update(Hal::EventInterface* interface);
     virtual TString GetFormatName() const { return "OTFComplexEvent"; };
     virtual ~ComplexEvent() {};
     ClassDef(ComplexEvent, 1);

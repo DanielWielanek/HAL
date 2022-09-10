@@ -26,8 +26,8 @@ namespace HalUni {
      */
     UnigenEvent();
     UnigenEvent(const UnigenEvent& other);
-    void CreateSource();
-    virtual void Update();
+    Hal::EventInterface* CreateSource() const;
+    virtual void Update(Hal::EventInterface* interface);
     virtual void Clear(Option_t* opt = " ");
     virtual Bool_t ExistInTree() const;
     virtual TString GetFormatName() const;

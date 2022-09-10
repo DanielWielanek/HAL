@@ -23,10 +23,10 @@
 namespace HalOTF {
   RecoEvent::RecoEvent() : Hal::ExpEvent("HalOTF::RecoTrack") {}
 
-  void RecoEvent::CreateSource() { fSource = new RecoEventInterface(); }
+  Hal::EventInterface* RecoEvent::CreateSource() const { return new RecoEventInterface(); }
 
-  void RecoEvent::Update() {
-    RecoEventInterface* s = (RecoEventInterface*) fSource;
+  void RecoEvent::Update(Hal::EventInterface* interface) {
+    RecoEventInterface* s = (RecoEventInterface*) interface;
     fTotalTracksNo        = s->GetEvent()->GetNTracks();
     fTracks->Clear();
     fTracks->ExpandCreateFast(fTotalTracksNo);
@@ -42,10 +42,6 @@ namespace HalOTF {
       track->SetMotherIndex(-1);
       track->SetMatch(mc->GetMcIndex());
     }
-  }
-
-  void RecoEvent::Clear(Option_t* opt) {
-    if (fSource) fSource->Clear();
   }
 
   Bool_t RecoEvent::ExistInTree() const {

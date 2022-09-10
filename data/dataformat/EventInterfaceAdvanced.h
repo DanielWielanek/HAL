@@ -14,20 +14,11 @@ namespace Hal {
   class TrackInterface;
 
   class EventInterfaceAdvanced : public EventInterface {
-    Bool_t fCanDeleteEvent;
-
   protected:
-    /**
-     * register source event in tree, uset to write events
-     * @param write true if write to file
-     */
-    virtual void Register(Bool_t write) = 0;
-    /**
-     *
-     * @return true if this event is owned only by this object and can be
-     * deleteted safely
-     */
-    Bool_t CanDeleteEvent() const { return fCanDeleteEvent; };
+    Bool_t fCanDeleteEvent;
+    TrackInterface* fTrInterface;
+    virtual void ConnectToTreeInternal(EventInterface::eMode mode);
+    EventInterfaceAdvanced(TrackInterface* interface);
 
   public:
     EventInterfaceAdvanced();
@@ -54,6 +45,7 @@ namespace Hal {
      * @param s event to copy into this
      */
     virtual void CopyData(EventInterface* s) = 0;
+
     /**
      * make copy and compress event "s" into this object
      * @param s event to copy
@@ -61,11 +53,6 @@ namespace Hal {
      * @param map_size size of map
      */
     virtual void CopyAndCompress(EventInterface* s, Int_t* map, Int_t map_size) = 0;
-    /**
-     * get/set source from tree
-     * @param mode @see ModeWrite, @see ModeRead, @see ModeVirtualWrite
-     */
-    void LinkWithTree(EventInterface::eMode mode);
     /**
      * Fill track interface - set track data in original format into track
      * interface. If information about track is stored in single object this is
@@ -84,7 +71,7 @@ namespace Hal {
      *
      * @return new allocated interface to tracks in this tree
      */
-    virtual TrackInterface* GetTrackInterface() const = 0;
+    TrackInterface* GetTrackInterface() const { return fTrInterface; };
     /**
      * return pointer to track in source
      * @param index

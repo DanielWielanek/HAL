@@ -22,10 +22,10 @@
 namespace HalOTF {
   McEvent::McEvent() : Hal::McEvent("HalOTF::McTrack") {}
 
-  void McEvent::CreateSource() { fSource = new McEventInterface(); }
+  Hal::EventInterface* McEvent::CreateSource() const { return new McEventInterface(); }
 
-  void McEvent::Update() {
-    McEventInterface* s = (McEventInterface*) fSource;
+  void McEvent::Update(Hal::EventInterface* interface) {
+    McEventInterface* s = (McEventInterface*) interface;
     fTotalTracksNo      = s->GetMcEvent()->GetNTracks();
     fTracks->Clear();
     fTracks->ExpandCreateFast(fTotalTracksNo);
@@ -39,10 +39,6 @@ namespace HalOTF {
       track->SetFreezoutPosition(mc->GetFreezout().X(), mc->GetFreezout().Y(), mc->GetFreezout().Z(), mc->GetFreezout().T());
       track->SetMotherIndex(-1);
     }
-  }
-
-  void McEvent::Clear(Option_t* opt) {
-    if (fSource) fSource->Clear(opt);
   }
 
   Bool_t McEvent::ExistInTree() const {

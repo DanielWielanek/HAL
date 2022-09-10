@@ -10,28 +10,33 @@
 #define HALVIRTUALEVENT_H_
 
 #include "Event.h"
+#include "EventInterface.h"
 #include "VirtualTrack.h"
 
 #include <TClonesArray.h>
 #include <TString.h>
 
 namespace Hal {
+
+
+  class VirtualEventInterface : public EventInterface {
+  protected:
+    virtual void ConnectToTreeInternal(eMode mode) {};
+
+  public:
+    VirtualEventInterface() {};
+    virtual ~VirtualEventInterface() {};
+    ClassDef(VirtualEventInterface, 1)
+  };
+
   class VirtualEvent : public Event {
     Event* fVirtualEvent;
-
-  protected:
-    void DeleteSource() {};
-    void LinkTrackPointers() {};
-    void CopySource(Event* /*event*/) {};
-    void CopyAndCompressSource(Event* /*event*/, Int_t* /*map*/, Int_t /*map_size*/) {};
-    void CompressSource(Int_t* /*map*/, Int_t /*map_size*/) {};
 
   public:
     VirtualEvent();
     VirtualEvent(const VirtualEvent& other);
-    void CreateSource() {};
-    void Update();
-    void LinkWithTree();
+    Hal::EventInterface* CreateSource() const { return new VirtualEventInterface(); };
+    void Update(Hal::EventInterface* interface);
     void RegisterInTree(TString prefix, Bool_t save = kTRUE);
     Bool_t ExistInTree() const;
     Track* GetTrackSafely(Int_t i) { return (Track*) fTracks->ConstructedAt(i); };

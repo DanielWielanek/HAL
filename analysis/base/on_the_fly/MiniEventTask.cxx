@@ -11,6 +11,7 @@
 
 #include "CutCollection.h"
 #include "CutContainer.h"
+#include "DataManager.h"
 #include "Event.h"
 #include "MemoryMapManager.h"
 
@@ -38,6 +39,7 @@ namespace Hal {
     Task::EInitFlag init = TrackAna::Init();
     fArray               = new Int_t[fArraySize];
     fMap                 = new Int_t[fArraySize];
+    fCurrentEvent->Register(kFALSE);
     return init;
   }
 

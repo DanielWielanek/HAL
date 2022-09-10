@@ -14,7 +14,7 @@ namespace Hal {
 
   VirtualEvent::VirtualEvent() : Event("VirtualTrack"), fVirtualEvent(NULL) {}
 
-  void VirtualEvent::Update() {
+  void VirtualEvent::Update(Hal::EventInterface* interface) {
     if (fVirtualEvent) {
       ShallowCopyEvent(fVirtualEvent);
       fTotalTracksNo = fVirtualEvent->GetTotalTrackNo();
@@ -25,12 +25,6 @@ namespace Hal {
         to->CopyData(from);
       }
     }
-  }
-
-  void VirtualEvent::LinkWithTree() {
-    fVirtualEvent     = new VirtualEvent();
-    DataManager* mngr = DataManager::Instance();
-    fVirtualEvent     = (VirtualEvent*) mngr->GetObject("VirtualEvent.");
   }
 
   void VirtualEvent::RegisterInTree(TString prefix, Bool_t save) {

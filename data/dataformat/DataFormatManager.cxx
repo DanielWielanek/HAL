@@ -21,8 +21,7 @@
 namespace Hal {
   DataFormatManager* DataFormatManager::fgInstance = NULL;
 
-  DataFormatManager::DataFormatManager() :
-    fRegisteredFormats(0), fDataFormatBuffered(nullptr), fDataFormatNonBuffered(nullptr), fConnected(nullptr) {
+  DataFormatManager::DataFormatManager() : fRegisteredFormats(0), fDataFormatBuffered(nullptr), fDataFormatNonBuffered(nullptr) {
     if (fgInstance) {
       Cout::PrintInfo("Singleton of DataFormatManager already exist, don't use constructor of DataFormatManager",
                       EInfo::kLowWarning);
@@ -30,13 +29,6 @@ namespace Hal {
     } else {
       fgInstance = this;
     }
-  }
-
-  Event* DataFormatManager::GetEventFromTree(Int_t task_id) {
-    if (fDataFormatNonBuffered[task_id]->GetSource() == nullptr) fDataFormatNonBuffered[task_id]->CreateSource();
-    fDataFormatNonBuffered[task_id]->LinkWithTree();
-    fConnected[task_id] = kTRUE;
-    return fDataFormatNonBuffered[task_id];
   }
 
   Event* DataFormatManager::GetNewEvent(Int_t task_id, EFormatDepth format_depth) const {
@@ -109,23 +101,19 @@ namespace Hal {
 
   void DataFormatManager::Reset() {
     for (int i = 0; i < fRegisteredFormats; i++) {
-      if (!fConnected[i]) delete fDataFormatNonBuffered[i];
       if (fDataFormatNonBuffered[i]) delete fDataFormatBuffered[i];
     }
     if (fDataFormatBuffered) delete[] fDataFormatBuffered;
     if (fDataFormatNonBuffered) delete[] fDataFormatNonBuffered;
-    if (fConnected) delete[] fConnected;
     fRegisteredFormats = 0;
   }
 
   DataFormatManager::~DataFormatManager() {
     for (int i = 0; i < fRegisteredFormats; i++) {
-      if (!fConnected[i]) delete fDataFormatNonBuffered[i];
       if (fDataFormatNonBuffered[i]) delete fDataFormatBuffered[i];
     }
     if (fDataFormatBuffered) delete[] fDataFormatBuffered;
     if (fDataFormatNonBuffered) delete[] fDataFormatNonBuffered;
-    if (fConnected) delete[] fConnected;
   }
 
   Bool_t DataFormatManager::FormatExist(Int_t task_id, EFormatDepth format_depth) const {
@@ -144,21 +132,16 @@ namespace Hal {
   Int_t DataFormatManager::RegisterFormat() {
     Event** temp1          = fDataFormatBuffered;
     Event** temp2          = fDataFormatNonBuffered;
-    Bool_t* temp3          = fConnected;
     fDataFormatBuffered    = new Event*[fRegisteredFormats + 1];
     fDataFormatNonBuffered = new Event*[fRegisteredFormats + 1];
-    fConnected             = new Bool_t[fRegisteredFormats + 1];
     for (int i = 0; i < fRegisteredFormats; i++) {
       fDataFormatBuffered[i]    = temp1[i];
       fDataFormatNonBuffered[i] = temp2[i];
-      fConnected[i]             = temp3[i];
     }
     fDataFormatBuffered[fRegisteredFormats]    = NULL;
     fDataFormatNonBuffered[fRegisteredFormats] = NULL;
-    fConnected[fRegisteredFormats]             = kFALSE;
     delete[] temp1;
     delete[] temp2;
-    delete[] temp3;
     return fRegisteredFormats++;
   }
 

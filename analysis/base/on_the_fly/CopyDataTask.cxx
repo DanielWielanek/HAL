@@ -20,9 +20,10 @@ namespace Hal {
   void CopyDataTask::Exec(Option_t* /*opt*/) {}
 
   Task::EInitFlag CopyDataTask::Init() {
-    if (fInputData == NULL) return Task::EInitFlag::kFATAL;
-    fInputData->LinkWithTree();
-    fInputData->RegisterSource(kTRUE);
+    if (fInputData == nullptr) return Task::EInitFlag::kFATAL;
+    Hal::EventInterface* interface = fInputData->CreateSource();
+    interface->ConnectToTree(Hal::EventInterface::eMode::kRead);
+    interface->ConnectToTree(Hal::EventInterface::eMode::kWrite);
     return Task::EInitFlag::kSUCCESS;
   }
 
@@ -32,6 +33,7 @@ namespace Hal {
       fInputData = event;
     }
   }
+
   CopyDataTask::~CopyDataTask() {
     // TODO Auto-generated destructor stub
   }

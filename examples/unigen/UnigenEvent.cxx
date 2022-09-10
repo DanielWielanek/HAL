@@ -24,9 +24,9 @@ namespace HalUni {
 
   UnigenEvent::UnigenEvent() : Hal::McEvent("HalUni::UnigenTrack") {}
 
-  void UnigenEvent::Update() {
+  void UnigenEvent::Update(Hal::EventInterface* interface) {
 
-    UEvent* temp   = ((UnigenEventInterface*) fSource)->fEvent;
+    UEvent* temp   = ((UnigenEventInterface*) interface)->fEvent;
     fB             = temp->GetB();
     fPhi           = temp->GetPhi();
     fTotalTracksNo = temp->GetNpa();
@@ -51,14 +51,11 @@ namespace HalUni {
     }
   }
 
-  void UnigenEvent::Clear(Option_t* opt) {
-    Hal::McEvent::Clear(opt);
-    if (fSource) fSource->Clear(opt);
-  }
+  void UnigenEvent::Clear(Option_t* opt) { Hal::McEvent::Clear(opt); }
 
   UnigenEvent::UnigenEvent(const UnigenEvent& other) : Hal::McEvent(other) {}
 
-  void UnigenEvent::CreateSource() { fSource = new UnigenEventInterface(); }
+  Hal::EventInterface* UnigenEvent::CreateSource() const { return new UnigenEventInterface(); }
 
   UnigenEvent::~UnigenEvent() {}
 

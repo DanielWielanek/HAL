@@ -27,7 +27,6 @@ namespace Hal {
     Int_t fRegisteredFormats;
     Event** fDataFormatBuffered;     //[fRegisteredFormats]
     Event** fDataFormatNonBuffered;  //[fRegisteredFormats]
-    Bool_t* fConnected;              //[fRegisteredFormats]
     static DataFormatManager* fgInstance;
 
   public:
@@ -56,12 +55,6 @@ namespace Hal {
      * @param silent - silent overwriting (don't display warning
      */
     void SetFormat(Event* format, Int_t task_id, EFormatDepth depth = EFormatDepth::kAll, Bool_t silent = kFALSE);
-    /**
-     *
-     * @param task_id id of used format
-     * @return event that point to event at current entry in tree in proper format
-     */
-    Event* GetEventFromTree(Int_t task_id);
     /**
      * return allocated representatnio of Event used with given format
      * @param task_id format/task id

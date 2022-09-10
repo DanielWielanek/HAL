@@ -53,8 +53,7 @@ namespace Hal {
     friend class Track;
 
   protected:
-    EventInterface* fSource;  //!
-    TDatabasePDG* fPDG;       //!
+    TDatabasePDG* fPDG;  //!
     TClonesArray* fTracks;
     TClonesArray* fV0sHiddenInfo;
     TLorentzVector* fVertex;
@@ -92,10 +91,6 @@ namespace Hal {
      * @param map_size size of map
      */
     void Compress(TClonesArray* array, Int_t* map, Int_t map_size);
-    /**
-     * delete source if present
-     */
-    void DeleteSource();
     /**
      * copy only track data from "event" into this
      * @param event event to copy
@@ -152,10 +147,6 @@ namespace Hal {
      */
     void Register(Bool_t write);
     /**
-     * register source in output format
-     */
-    void RegisterSource(Bool_t write);
-    /**
      * creates "compressed event" by removing tracks that are not present in map
      * @param map map that contains indexes of tracks that should be copied
      * @param map_size size of this map
@@ -166,8 +157,9 @@ namespace Hal {
      * method due to improve performance. In such case you can use directly
      * getters/setters from oryginal structure instead of calling virtual methods
      * from EventInterface
+     * @param interface - interface to event stored in tree
      */
-    virtual void Update();
+    virtual void Update(EventInterface* interface);
     /**
      * used for clear (usually track array)
      * @param opt option of Clear
@@ -198,11 +190,6 @@ namespace Hal {
      * @param vz
      */
     virtual void Boost(Double_t vx, Double_t vy, Double_t vz);
-    /**
-     * link event with event in input tree, this event will be point to currently
-     * processed event
-     */
-    virtual void LinkWithTree() { fSource->LinkWithTree(EventInterface::eMode::kRead); };
     /**
      * fill fake track with track data
      * @param i position of track in track array
@@ -275,18 +262,6 @@ namespace Hal {
     virtual EFormatType GetFormatType() const { return EFormatType::kReco; };
     /**
      *
-     * @return pointer to original event
-     */
-    TObject* GetEventPointer() const;
-    /**
-     * return pointer to track with original class
-     * \warning each format should have own unique name
-     * @param index index of track in track array
-     * @return track at given position
-     */
-    TObject* GetTrackPointer(Int_t index) const;
-    /**
-     *
      * @return name of current format, should be reimplemented only if
      * class name doesn't uniquely define format
      */
@@ -307,12 +282,7 @@ namespace Hal {
      *  create source - original structure of event,  by allocating memory
      *
      *  **/
-    virtual void CreateSource() = 0;
-    /**
-     *
-     * @return pointer to used interface
-     */
-    inline EventInterface* GetSource() const { return fSource; };
+    virtual EventInterface* CreateSource() const = 0;
     /**
      * creates report about this event, this should be reimplented only if
      * hidden variables/ additional options are used in event

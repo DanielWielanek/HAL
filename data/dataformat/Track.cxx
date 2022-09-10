@@ -36,8 +36,6 @@ namespace Hal {
     CLRBIT(fType, kMother);
   }
 
-  TObject* Track::GetTrackPointer() const { return fEvent->GetTrackPointer(fThisID); }
-
   void Track::CopyData(Track* other) {
     fP          = other->fP;
     fID         = other->fID;

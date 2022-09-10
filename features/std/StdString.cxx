@@ -12,6 +12,7 @@
 
 #include <TMath.h>
 #include <TRegexp.h>
+#include <fstream>
 #include <iostream>
 
 NamespaceImp(Hal::Std);
@@ -67,6 +68,7 @@ namespace Hal {
       }
       return res;
     }
+
     TString RoundToString(Double_t value, Int_t precission, Option_t* opt) {
       TString option = opt;
       if (option == "prefix") {
@@ -262,6 +264,29 @@ namespace Hal {
       return newword;
     };
 
+    TString RemoveNChars(TString str, Int_t n, Char_t opt ='') {
+      Int_t lenght = str.Length();
+      if (opt == 'b') {
+        return TString(str(n, lenght - n));
+      } else
+        return TString(str(0, lenght - n));
+    }
+
+    void ReplaceInFile(TString path, TString newPath, TString oldPattern, TString newPattern) {
+      if (!FileExists(path)) return;
+      std::ifstream inFile;
+      inFile.open(path);
+      std::ofstream outFile;
+      outFile.open(newPath);
+      for (std::string line; std::getline(inFile, line);) {
+        TString temp = line;
+        temp.ReplaceAll(oldPattern, newPattern);
+        outFile << temp << std::endl;
+      }
+      outFile.close();
+      inFile.close();
+    }
+
     Bool_t FindParam(TString& option, TString pattern, Bool_t remove) {
       if (remove) {
         option.ReplaceAll(" ", "");
@@ -308,6 +333,7 @@ namespace Hal {
       }
       return kFALSE;
     }
+
     Bool_t FindExpressionSingleValue(TString& expression, Int_t& val, Bool_t remove) {
       TString option = expression;
       TRegexp regexp("{[0-9]+}");

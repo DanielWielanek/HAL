@@ -36,6 +36,14 @@ namespace Hal {
      */
     std::vector<std::pair<TString, TString>> ConvertMainArgs(int argc, char* argv[]);
     /**
+     * removes words in file
+     * @param path path to file
+     * @param path to file with replaced world
+     * @param oldPattern old word
+     * @param newPattern new word
+     */
+    void ReplaceInFile(TString path, TString newPath, TString oldPattern, TString newPattern);
+    /**
      * round value to string
      * @param value value to round
      * @param precission precission ,if smaller then zero and "prefix" is used then
@@ -95,6 +103,14 @@ namespace Hal {
      * @return strint without pattern
      */
     TString RemoveString(TString text, TString pattern);
+    /**
+     * return string without n-characters
+     * @param str string to shrit
+     * @param n number of chars to remove
+     * @param opt if b remove at begin of string, at the end otherwise
+     * @return
+     */
+    TString RemoveNChars(TString str, Int_t n, Char_t opt = 'b');
     /**
      * find given pattern and ignore upper/lowercase letter
      * patter must be separate world or word separated by '+' signs

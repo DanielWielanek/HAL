@@ -435,8 +435,7 @@ namespace Hal {
       brName.push_back(Form("%s.", evName.Data()));
       brName.push_back(evName);
     }
-    fMemoryMap->Init(
-      GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kSource), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
+    fMemoryMap->Init(GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
   }
 
   void EventAna::AddCutsAndMonitors(const CutsAndMonitors& monCuts) {

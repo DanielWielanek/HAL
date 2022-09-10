@@ -148,6 +148,7 @@
 #pragma link C++ class Hal::FitParam + ;
 #pragma link C++ class Hal::MinimizerStepConf + ;
 #pragma link C++ class std::vector < Hal::FitParam> + ;
+#pragma link C++ class Hal::CompressionMap + ;
 
 
 //#pragma link C++ class HalParameter+;

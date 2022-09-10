@@ -1,9 +1,11 @@
 #include "Std.h"
+#include "CompressionMap.h"
 #include "Const.h"
 #include "Cout.h"
 #include "XMLNode.h"
 
 #include <TCanvas.h>
+#include <TClonesArray.h>
 #include <TCollection.h>
 #include <TDatime.h>
 #include <TDirectory.h>
@@ -366,6 +368,7 @@ namespace Hal::Std {
     TLorentzVector vec1(0, 0, mom1, energy1), vec2(0, 0, 0, energy2);
     return -(vec1 + vec2).BoostVector();
   }
+
   Bool_t FileExists(TString path) {
     std::ifstream test_file;
     test_file.open(path);
@@ -376,5 +379,12 @@ namespace Hal::Std {
       test_file.close();
       return kFALSE;
     }
+  }
+
+  void CompressArray(TClonesArray* array, const CompressionMap& map) {
+    for (int i = 0; i < map.GetSize(); i++) {
+      if (map.GetNewIndex(i) == -1) { array->RemoveAt(i); }
+    }
+    array->Compress();
   }
 }  // namespace Hal::Std

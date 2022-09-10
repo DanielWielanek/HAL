@@ -26,7 +26,9 @@ namespace Hal {
 
 }  // namespace Hal
 
+class TClonesArray;
 namespace Hal {
+  class CompressionMap;
   namespace Std {
     /**
      * conver enum to "human readable" update ratio description
@@ -119,6 +121,13 @@ namespace Hal {
      * @return
      */
     TVector3 CalcualteBoostVector(Double_t energy_per_nucleon, Int_t n_proj, Int_t p_proj, Int_t n_tar, Int_t p_tar);
+    /**
+     * compres TClonesArray by using map
+     * @param array
+     * @param map
+     * @return
+     */
+    void CompressArray(TClonesArray* array, const CompressionMap& map);
   }  // namespace Std
 }  // namespace Hal
 #endif

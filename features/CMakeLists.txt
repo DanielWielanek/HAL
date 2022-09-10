@@ -34,6 +34,7 @@ Helix.cxx
 HelixBase.cxx
 Const.cxx
 XMLNode.cxx
+CompressionMap.cxx
 
 io/Link.cxx
 io/Jobs.cxx

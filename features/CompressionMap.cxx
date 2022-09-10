@@ -46,6 +46,7 @@ namespace Hal {
     if (fAllocatedSize <= size) {
       Int_t newSize = size * 1.5;
       if (fOldToNewIndex) delete[] fOldToNewIndex;
+      if (fNewToOldIndex) delete[] fNewToOldIndex;
       fOldToNewIndex = new Int_t[newSize];
       fNewToOldIndex = new Int_t[newSize];
       fAllocatedSize = newSize;

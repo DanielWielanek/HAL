@@ -73,9 +73,9 @@ namespace Hal {
     Event::ShallowCopyEvent(((ComplexEvent*) event)->GetRealEvent());
   }
 
-  EventInterface* ComplexEvent::CreateSource() const {
-    EventInterface* re = fRealEvent->CreateSource();
-    EventInterface* im = fImgEvent->CreateSource();
+  EventInterface* ComplexEvent::CreateInterface() const {
+    EventInterface* re = fRealEvent->CreateInterface();
+    EventInterface* im = fImgEvent->CreateInterface();
     return new ComplexEventInterface(re, im);
   }
 

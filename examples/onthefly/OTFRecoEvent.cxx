@@ -23,7 +23,7 @@
 namespace HalOTF {
   RecoEvent::RecoEvent() : Hal::ExpEvent("HalOTF::RecoTrack") {}
 
-  Hal::EventInterface* RecoEvent::CreateSource() const { return new RecoEventInterface(); }
+  Hal::EventInterface* RecoEvent::CreateInterface() const { return new RecoEventInterface(); }
 
   void RecoEvent::Update(Hal::EventInterface* interface) {
     RecoEventInterface* s = (RecoEventInterface*) interface;

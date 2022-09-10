@@ -264,10 +264,10 @@ namespace Hal {
      */
     Track* GetNewTrack() const;
     /**
-     *  create source - original structure of event,  by allocating memory
+     *  create interface - original structure of event,  by allocating memory
      *
      *  **/
-    virtual EventInterface* CreateSource() const = 0;
+    virtual EventInterface* CreateInterface() const = 0;
     /**
      * return track property by ID, this should be positve number larger than 200 (for ID outside of framework)
      * @param fieldID

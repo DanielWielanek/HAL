@@ -22,7 +22,7 @@
 namespace HalOTF {
   McEvent::McEvent() : Hal::McEvent("HalOTF::McTrack") {}
 
-  Hal::EventInterface* McEvent::CreateSource() const { return new McEventInterface(); }
+  Hal::EventInterface* McEvent::CreateInterface() const { return new McEventInterface(); }
 
   void McEvent::Update(Hal::EventInterface* interface) {
     McEventInterface* s = (McEventInterface*) interface;

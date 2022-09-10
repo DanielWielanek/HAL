@@ -137,7 +137,7 @@ namespace Hal {
 
     if (fDirectAcces == kFALSE) {
       fCurrentEvent = dataManager->GetNewEvent(fFormatID, EFormatDepth::kNonBuffered);
-      fInterface    = fCurrentEvent->CreateSource();
+      fInterface    = fCurrentEvent->CreateInterface();
       fInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     } else {
       for (auto brName : direct) {
@@ -192,7 +192,7 @@ namespace Hal {
     DataFormatManager* dataManager = DataFormatManager::Instance();
     if (fDirectAcces == kFALSE) {
       fCurrentEvent = dataManager->GetNewEvent(fFormatID, EFormatDepth::kNonBuffered);
-      fInterface    = fCurrentEvent->CreateSource();
+      fInterface    = fCurrentEvent->CreateInterface();
       fInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     } else {
       for (auto brName : direct) {

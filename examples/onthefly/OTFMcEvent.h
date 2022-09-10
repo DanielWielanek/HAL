@@ -16,7 +16,7 @@ namespace HalOTF {
   class McEvent : public Hal::McEvent {
   public:
     McEvent();
-    Hal::EventInterface* CreateSource() const;
+    Hal::EventInterface* CreateInterface() const;
     virtual void Update(Hal::EventInterface* interface);
     virtual Bool_t ExistInTree() const;
     virtual TString GetFormatName() const { return "OTFMcEvent"; };

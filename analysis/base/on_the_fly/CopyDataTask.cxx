@@ -21,7 +21,7 @@ namespace Hal {
 
   Task::EInitFlag CopyDataTask::Init() {
     if (fInputData == nullptr) return Task::EInitFlag::kFATAL;
-    Hal::EventInterface* interface = fInputData->CreateSource();
+    Hal::EventInterface* interface = fInputData->CreateInterface();
     interface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     interface->ConnectToTree(Hal::EventInterface::eMode::kWrite);
     return Task::EInitFlag::kSUCCESS;

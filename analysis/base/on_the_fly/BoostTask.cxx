@@ -31,7 +31,7 @@ namespace Hal {
   Task::EInitFlag BoostTask::Init() {
     Task::EInitFlag stat = EventAna::Init();
     const Event* event   = DataFormatManager::Instance()->GetFormat(GetTaskID());
-    fEventInterface      = event->CreateSource();
+    fEventInterface      = event->CreateInterface();
     if (fEventInterface) {
       EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fEventInterface);
       if (source) fTrackInterface = source->GetTrackInterface();

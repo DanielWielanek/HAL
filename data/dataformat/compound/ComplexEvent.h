@@ -36,7 +36,7 @@ namespace Hal {
   public:
     ComplexEvent(Event* real = NULL, Event* img = NULL);
     ComplexEvent(const ComplexEvent& other);
-    EventInterface* CreateSource() const;
+    EventInterface* CreateInterface() const;
     virtual void Clear(Option_t* opt = " ");
     virtual void Update(EventInterface* interface);
     virtual Bool_t HasHiddenSettings() const;

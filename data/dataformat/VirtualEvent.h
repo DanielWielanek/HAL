@@ -35,7 +35,7 @@ namespace Hal {
   public:
     VirtualEvent();
     VirtualEvent(const VirtualEvent& other);
-    Hal::EventInterface* CreateSource() const { return new VirtualEventInterface(); };
+    Hal::EventInterface* CreateInterface() const { return new VirtualEventInterface(); };
     void Update(Hal::EventInterface* interface);
     void RegisterInTree(TString prefix, Bool_t save = kTRUE);
     Bool_t ExistInTree() const;

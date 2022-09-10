@@ -35,7 +35,7 @@ namespace Hal {
       Cout::PrintInfo("Lack format in Reader!", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
-    fInterface = fEvent->CreateSource();
+    fInterface = fEvent->CreateInterface();
     fInterface->ConnectToTree(EventInterface::eMode::kRead);
     DataManager* manager = DataManager::Instance();
     manager->Register("HalEvent.", "HalEvents", fEvent, kFALSE);

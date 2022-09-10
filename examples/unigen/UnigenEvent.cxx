@@ -55,7 +55,7 @@ namespace HalUni {
 
   UnigenEvent::UnigenEvent(const UnigenEvent& other) : Hal::McEvent(other) {}
 
-  Hal::EventInterface* UnigenEvent::CreateSource() const { return new UnigenEventInterface(); }
+  Hal::EventInterface* UnigenEvent::CreateInterface() const { return new UnigenEventInterface(); }
 
   UnigenEvent::~UnigenEvent() {}
 

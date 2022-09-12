@@ -250,8 +250,6 @@ namespace Hal {
   }
 
   EventAna::~EventAna() {
-    DataFormatManager* dataManager = DataFormatManager::Instance();
-    dataManager->Reset();
     fCurrentEvent = nullptr;
     if (fCutContainer) delete fCutContainer;
     if (fMemoryMap) delete fMemoryMap;

@@ -12,6 +12,7 @@
 #include "ComplexTrack.h"
 #include "Cout.h"
 #include "DataFormatManager.h"
+#include "DataManager.h"
 #include "Event.h"
 #include "Link.h"
 #include "MemoryMapManager.h"
@@ -32,8 +33,9 @@ namespace Hal {
     if (stat == Task::EInitFlag::kFATAL) return stat;
     const Event* ev = DataFormatManager::Instance()->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered);
     if (ev->InheritsFrom("Hal::ComplexEvent")) {
-      fCurrentEvent = fMemoryMap->GetTemporaryEvent();
-      fCurrentEvent->Register(kFALSE);
+      fCurrentEvent          = fMemoryMap->GetTemporaryEvent();
+      DataManager* ioManager = DataManager::Instance();
+      ioManager->Register(Form("%s.", fCurrentEvent->ClassName()), "HalEvents", fCurrentEvent, kFALSE);
       return Task::EInitFlag::kSUCCESS;
     }
     Cout::PrintInfo(Form("Wrong format in %s", this->ClassName()), EInfo::kError);

@@ -11,6 +11,7 @@
 
 #include "CutCollection.h"
 #include "CutContainer.h"
+#include "DataManager.h"
 #include "Event.h"
 #include "MemoryMapManager.h"
 
@@ -38,8 +39,9 @@ namespace Hal {
     if (event_col != 0) return Task::EInitFlag::kFATAL;
     // fSelectionMap.resize(fCutContainer->GetTrackCollectionsNo());
     // fBufferSize.resize(fCutContainer->GetTrackCollectionsNo());
-    fNewEvent = fCurrentEvent->GetNewEvent();
-    fNewEvent->Register(kTRUE);
+    fNewEvent              = fCurrentEvent->GetNewEvent();
+    DataManager* ioManager = DataManager::Instance();
+    ioManager->Register(Form("%s.", fNewEvent->ClassName()), "HalEvents", fNewEvent, kTRUE);
     return flag;
   }
 

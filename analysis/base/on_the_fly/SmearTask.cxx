@@ -14,6 +14,7 @@
 #include "CutCollection.h"
 #include "CutContainer.h"
 #include "DataFormatManager.h"
+#include "DataManager.h"
 #include "Event.h"
 #include "EventAna.h"
 #include "MemoryMapManager.h"
@@ -68,7 +69,11 @@ namespace Hal {
     Event* event         = fMemoryMap->GetTemporaryEvent();
     fCurrentEventSmeared = new SmearedEvent(event);
     fCurrentEventSmeared->ActivateSmearing();
-    fCurrentEventSmeared->GetImgEvent()->Register(kFALSE);
+
+    DataManager* ioManager = DataManager::Instance();
+    Event* img             = fCurrentEventSmeared->GetImgEvent();
+    ioManager->Register(Form("%s.", img->ClassName()), "HalEvents", img, kFALSE);
+
     if (fEventAlgorithm == NULL) {
       Cout::PrintInfo("No event smear algorithm, new will be added but do virtual", EInfo::kLowWarning);
       fEventAlgorithm = new EventSmearVirtual();

@@ -149,10 +149,6 @@ namespace Hal {
      */
     void Build(Event* event);
     /**
-     * register this in output branch
-     */
-    void Register(Bool_t write);
-    /**
      * creates "compressed event" by removing tracks that are not present in map
      * @param map map that contains indexes of tracks that should be copied
      * @param map_size size of this map

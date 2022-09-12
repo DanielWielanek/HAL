@@ -15,7 +15,6 @@
 #include "Event.h"
 #include "MemoryMapManager.h"
 
-
 namespace Hal {
   MiniEventTask::MiniEventTask() {}
 
@@ -41,8 +40,9 @@ namespace Hal {
   }
 
   Task::EInitFlag MiniEventTask::Init() {
-    Task::EInitFlag init = TrackAna::Init();
-    fCurrentEvent->Register(kFALSE);
+    Task::EInitFlag init   = TrackAna::Init();
+    DataManager* ioManager = DataManager::Instance();
+    ioManager->Register(Form("%s.", fCurrentEvent->ClassName()), "HalEvents", fCurrentEvent, kFALSE);
     return init;
   }
 

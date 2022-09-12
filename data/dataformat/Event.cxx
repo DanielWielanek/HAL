@@ -115,11 +115,6 @@ namespace Hal {
     }
   }
 
-  void Event::Register(Bool_t write) {
-    DataManager* ioManager = DataManager::Instance();
-    ioManager->Register(Form("%s.", this->ClassName()), "HalEvents", this, write);
-  }
-
   void Event::Boost(Double_t vx, Double_t vy, Double_t vz) {
     for (int i = 0; i < fTotalTracksNo; i++) {
       Track* track = (Track*) fTracks->UncheckedAt(i);

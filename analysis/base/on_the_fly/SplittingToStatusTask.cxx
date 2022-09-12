@@ -12,6 +12,7 @@
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "DataFormatManager.h"
+#include "DataManager.h"
 #include "Event.h"
 #include "MemoryMapManager.h"
 #include "Std.h"
@@ -33,8 +34,9 @@ namespace Hal {
   }
 
   Task::EInitFlag SplittingToStatusTask::Init() {
-    Task::EInitFlag init = EventAna::Init();
-    fCurrentEvent->Register(kFALSE);
+    Task::EInitFlag init   = EventAna::Init();
+    DataManager* ioManager = DataManager::Instance();
+    ioManager->Register(Form("%s.", fCurrentEvent->ClassName()), "HalEvents", fCurrentEvent, kFALSE);
     return init;
   }
 

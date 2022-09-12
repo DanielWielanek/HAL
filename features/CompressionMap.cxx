@@ -44,7 +44,7 @@ namespace Hal {
 
   void CompressionMap::CheckSize(Int_t size) {
     if (fAllocatedSize <= size) {
-      Int_t newSize = size * 1.5;
+      Int_t newSize = size * 2;
       if (fOldToNewIndex) delete[] fOldToNewIndex;
       if (fNewToOldIndex) delete[] fNewToOldIndex;
       fOldToNewIndex = new Int_t[newSize];

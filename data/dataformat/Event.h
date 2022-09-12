@@ -194,7 +194,7 @@ namespace Hal {
      *
      * @return newly added track
      */
-    inline Track* AddTrack() { return (Track*) fTracks->ConstructedAt(fTracks->GetEntriesFast()); }
+    inline Track* AddTrack() { return (Track*) fTracks->ConstructedAt(fTotalTracksNo++); }
     /**
      *
      * @return true if needed branches exist in tree

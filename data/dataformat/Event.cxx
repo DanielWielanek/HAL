@@ -78,7 +78,9 @@ namespace Hal {
   void Event::Clear(Option_t* opt) {
     fTracks->Clear(opt);
     fV0sHiddenInfo->Clear(opt);
-    fV0Counter = 0;
+    fV0Counter     = 0;
+    fTotalTracksNo = 0;
+    fTotalV0s      = 0;
   }
 
   void Event::Print(Option_t* /*opt*/) const {

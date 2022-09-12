@@ -107,10 +107,6 @@ namespace HalUni {
         names.push_back("UEvent.");
         names.push_back("UEvent");
         names.push_back("event");
-        TList* l = manager->GetBranchNameList();
-        for (int i = 0; i < l->GetEntries(); i++) {
-          TObjString* o = (TObjString*) l->At(i);
-        }
         for (auto i : names) {
           fEvent = (UEvent*) manager->GetObject(i);
           if (fEvent != nullptr) { return; }

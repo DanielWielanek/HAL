@@ -322,6 +322,7 @@ namespace Hal {
       }
       return nullptr;
     }
+
     TH2* MakeHisto2D(TString name, TString title, TVector3 Xaxis, TVector3 Yaxis, Char_t type) {
       switch (type) {
         case 'D':
@@ -336,6 +337,7 @@ namespace Hal {
       }
       return nullptr;
     };
+
     TH3* MakeHisto3D(TString name, TString title, TVector3 Xaxis, TVector3 Yaxis, TVector3 Zaxis, Char_t type) {
       switch (type) {
         case 'D':
@@ -721,6 +723,7 @@ namespace Hal {
       }
       return kTRUE;
     }
+
     void GetAxisPar(const TH1& obj, Int_t& nbins, Double_t& min, Double_t& max, Option_t* opt) {
       TString option = opt;
       if (option == "x" || option == "X") {
@@ -775,6 +778,7 @@ namespace Hal {
       }
       delete tempCopy;
     }
+
     void Fold2D(Double_t val, TH2& h, TString opt) {
       TH2* tempCopy      = (TH2*) h.Clone();
       const Int_t nBinsX = h.GetXaxis()->GetNbins();
@@ -801,6 +805,7 @@ namespace Hal {
       h.ResetStats();
       delete tempCopy;
     }
+
     void Fold3D(Double_t val, TH2& h, TString opt) {
       TH3* tempCopy      = (TH3*) h.Clone();
       const Int_t nBinsX = h.GetXaxis()->GetNbins();
@@ -843,6 +848,7 @@ namespace Hal {
       h.ResetStats();
       delete tempCopy;
     }
+
     void SetColor(TH1& h, Color_t color) {
       h.SetLineColor(color);
       h.SetMarkerColor(color);
@@ -896,6 +902,7 @@ namespace Hal {
       colors->AddAtAndExpand(colorb, nb);
       return nb;
     }
+
     Int_t GetListOfSubPads(TVirtualPad* pad) {
       TList* l      = pad->GetListOfPrimitives();
       Int_t subpads = 0;

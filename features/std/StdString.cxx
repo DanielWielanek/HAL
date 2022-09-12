@@ -264,7 +264,7 @@ namespace Hal {
       return newword;
     };
 
-    TString RemoveNChars(TString str, Int_t n, Char_t opt ='') {
+    TString RemoveNChars(TString str, Int_t n, Char_t opt) {
       Int_t lenght = str.Length();
       if (opt == 'b') {
         return TString(str(n, lenght - n));

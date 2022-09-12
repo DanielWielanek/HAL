@@ -22,6 +22,7 @@ namespace Hal {
       fFairManager = FairRootManager::Instance();
       if (fFairManager->GetInFile()) { SetInputName(fFairManager->GetInFile()->GetName()); }
     }
+
     TObject* RootManager::GetObject(const char* BrName) { return fFairManager->GetObject(BrName); }
 
     TFile* RootManager::GetInFile() { return fFairManager->GetInFile(); }

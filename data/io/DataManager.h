@@ -10,6 +10,9 @@
 #define HAL_FEATURES_IO_DATAMANAGER_H_
 
 #include <TObject.h>
+#include <TString.h>
+
+#include <vector>
 
 /**
  * wrapper around FairRootManager, represents almost all I/O operations
@@ -63,7 +66,7 @@ namespace Hal {
     TObject* GetObject(const char* BrName);
     TFile* GetInFile();
     TString GetInputFileName() const;
-    TList* GetBranchNameList();
+    const std::vector<TString> GetBranchNameList();
     virtual MagField* GetField() const;
     virtual ~DataManager();
     ClassDef(DataManager, 1)

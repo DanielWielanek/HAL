@@ -37,6 +37,7 @@ namespace Hal {
       TObject* GetObject(const char* BrName);
       TFile* GetInFile();
       void UpdateBranches();
+      void FillTree() {};
       void SetInChain(TChain* tempChain, Int_t ident = -1);
       Int_t CheckBranch(const char* BrName);
       Int_t GetEntries() const { return -1; }

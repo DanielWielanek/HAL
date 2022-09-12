@@ -16,14 +16,14 @@ class TList;
 class TChain;
 class TFile;
 /**
- * abstract class that represents almost all I/O operations (except writing histograms after completiion of analysis
+ * abstract class that represents almost all I/O operations (except writing histograms after completion of analysis
  */
 namespace Hal {
   class MagField;
   class IOManager : public TObject {
   private:
     MagField* fField;
-    TList* fBranchNameList;
+    std::vector<TString> fBranchNameList;
     TString fInputName;
 
   protected:
@@ -82,7 +82,7 @@ namespace Hal {
 
   public:
     enum class EBranchStatus { kInput, kOutput, kVirtual, kNull };
-    IOManager() : fField(nullptr), fBranchNameList(new TList()), fInputName("unknown") {};
+    IOManager() : fField(nullptr), fBranchNameList(), fInputName("unknown") {};
     /**
      *
      * @return number of entries in data
@@ -171,7 +171,7 @@ namespace Hal {
      *
      * @return list to branches with data
      */
-    TList* GetBranchNameList() {
+    std::vector<TString> GetBranchNameList() {
       RefreshBranchList();
       return fBranchNameList;
     };
@@ -182,7 +182,7 @@ namespace Hal {
     /**
      * fill tree with data
      */
-    virtual void FillTree() {};
+    virtual void FillTree() = 0;
     /**
      * close manager (close root file, write the tree with data)
      */

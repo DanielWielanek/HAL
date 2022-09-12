@@ -18,6 +18,8 @@
 #include <TObjString.h>
 #include <TString.h>
 
+#include <vector>
+
 namespace Hal {
   DataFormatManager* DataFormatManager::fgInstance = NULL;
 
@@ -90,10 +92,9 @@ namespace Hal {
     Event* event             = nullptr;
     event                    = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent."));
     if (event != nullptr) return event;
-    TList* branchList = datamanager->GetBranchNameList();
-    for (int i = 0; i < branchList->GetEntries(); i++) {
-      TObjString* name = (TObjString*) branchList->At(i);
-      TObject* temp    = datamanager->GetObject(name->GetString());
+    auto branchList = datamanager->GetBranchNameList();
+    for (auto branch : branchList) {
+      TObject* temp = datamanager->GetObject(branch);
       if (dynamic_cast<Hal::Event*>(temp)) { event = (Hal::Event*) temp; }
     }
     return event;

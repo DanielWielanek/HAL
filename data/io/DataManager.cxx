@@ -53,7 +53,7 @@ namespace Hal {
 
   TFile* DataManager::GetInFile() { return fManager->GetInFile(); }
 
-  TList* DataManager::GetBranchNameList() { return fManager->GetBranchNameList(); }
+  const std::vector<TString> DataManager::GetBranchNameList() { return fManager->GetBranchNameList(); }
 
   MagField* DataManager::GetField() const { return fManager->GetField(); }
 

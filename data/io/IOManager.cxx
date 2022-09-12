@@ -48,7 +48,7 @@ namespace Hal {
         return;
       } break;
     }
-    fBranchNameList->Add(new TObjString(name));
+    fBranchNameList.push_back(name);
   }
 
   std::pair<TString, TObject*> IOManager::FindBranch(TString name, EBranchFlag flag) const {

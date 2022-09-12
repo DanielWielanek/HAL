@@ -203,6 +203,12 @@ namespace Hal {
     return (Track*) cl->New(TClass::kClassNew);
   }
 
+  Track* Event::AddTrack() {
+    Track* tr = (Track*) fTracks->ConstructedAt(fTotalTracksNo);
+    tr->ResetTrack(fTotalTracksNo++, this);
+    return tr;
+  }
+
   Event* Event::GetNewEvent() const {
     TClass* cl = TClass::GetClass(this->ClassName(), 1, 1);
     Event* ev  = (Event*) cl->New(TClass::kClassNew);

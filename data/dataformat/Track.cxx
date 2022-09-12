@@ -78,13 +78,13 @@ namespace Hal {
 
   Int_t Track::GetLinksFast(std::vector<int>& vec, Bool_t fast) const {
     if (fast) {
-      Int_t size  = -1;
-      vec[++size] = GetThisID();
-      if (IsGoodSecondary()) { vec[++size] = GetMotherIndex(); }
+      Int_t size  = 0;
+      vec[size++] = GetThisID();
+      if (IsGoodSecondary()) { vec[size++] = GetMotherIndex(); }
       if (IsGoodV0()) {
         V0Track* v0 = GetV0Info();
-        vec[++size] = v0->GetPosId();
-        vec[++size] = v0->GetNegId();
+        vec[size++] = v0->GetPosId();
+        vec[size++] = v0->GetNegId();
       }
       return size;
     } else {

@@ -114,7 +114,7 @@ namespace Hal::Std {
     TString pathLocal, pathFull;
     TString pathPwd = gSystem->pwd();
     if (path == "") {
-      pathLocal = "";
+      pathLocal = ".";
       pathFull  = Form("%s", pathPwd.Data());
     } else if (path.BeginsWith("/")) {
       pathLocal = path;
@@ -138,7 +138,11 @@ namespace Hal::Std {
         if (fullPath) {
           listOfFiles.push_back(Form("%s/%s", pathFull.Data(), filename.Data()));
         } else {
-          listOfFiles.push_back(Form("%s/%s", path.Data(), filename.Data()));
+          if (path.Length() != 0) {
+            listOfFiles.push_back(Form("%s/%s", path.Data(), filename.Data()));
+          } else {
+            listOfFiles.push_back(filename);
+          }
         }
       }
       if (subfile->IsDirectory() && recursive != 0) {

@@ -90,11 +90,13 @@ Install(DIRECTORY hal_plus
 Set(Exe_Names
     hal-merger
     hal-report
-    hal-jobs)
+    hal-jobs
+    hal-cmake)
 Set(Exe_Source
     features_apps/hal_merger.cpp
     features_apps/hal_report.cpp
     features_apps/hal_jobs.cpp
+    features_apps/hal_cmake.cpp
     )
   List(LENGTH Exe_Names _length)
   Math(EXPR _length ${_length}-1)

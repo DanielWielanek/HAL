@@ -259,7 +259,7 @@ namespace Hal {
      *
      * @return true if last object pass throught this cut, false otherwise
      */
-    inline Bool_t HasPassed() const { return fPassed; };
+    inline Bool_t HasPassed() const { return fState; };
     /**
      *
      * @return true if this cut is cloned (not used)

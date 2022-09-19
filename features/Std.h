@@ -130,4 +130,5 @@ namespace Hal {
     void CompressArray(TClonesArray* array, const CompressionMap& map);
   }  // namespace Std
 }  // namespace Hal
+
 #endif

@@ -18,7 +18,6 @@
 namespace Hal {
   class IOManager;
   class CutContainer;
-
   class MiniEventTask;
   /**
    * class for storing  fake events

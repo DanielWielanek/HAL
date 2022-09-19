@@ -47,7 +47,7 @@ void PrepareLib(TString name) {
   gSystem->CopyFile(toCopy, tempFile[0], kTRUE);
 
   Hal::Std::ReplaceInFile(tempFile[0], tempFile[1], "__HAL_NAME_OF_LINKDEF__", Form("%sLinkDef.h", name.Data()));
-  Hal::Std::ReplaceInFile(tempFile[1], tempFile[0], "__HAL_NAME_OF__LIBRARY__", name);
+  Hal::Std::ReplaceInFile(tempFile[1], tempFile[0], "__HAL_NAME_OF_LIBRARY__", name);
   auto list  = Hal::Std::GetListOfFiles("", "cxx", kFALSE, 3);
   auto list2 = Hal::Std::GetListOfFiles("", "cpp", kFALSE, 3);
 

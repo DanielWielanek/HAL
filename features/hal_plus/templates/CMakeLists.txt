@@ -3,7 +3,7 @@
 # The extension is already found.  Any number of sources could be listed here.
 
 Set(INCLUDE_DIRECTORIES
-    ${Hal_INCLUDE_DIR}
+    ${HAL_INCLUDE_DIR}
     #put here other included libs
 )
 

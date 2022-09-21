@@ -265,7 +265,7 @@ namespace Hal {
      *  **/
     virtual EventInterface* CreateInterface() const = 0;
     /**
-     * return track property by ID, this should be positve number larger than 200 (for ID outside of framework)
+     * return track property by ID, this should be positive number larger than 200 (for ID outside of framework)
      * @param fieldID
      * @return
      */

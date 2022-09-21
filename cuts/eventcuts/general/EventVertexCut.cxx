@@ -10,6 +10,7 @@
 
 #include "DataFormatManager.h"
 #include "ExpEvent.h"
+#include "Package.h"
 #include <TLorentzVector.h>
 
 namespace Hal {
@@ -30,5 +31,40 @@ namespace Hal {
 
   Bool_t EventVertexCut::Init(Int_t /*format_id*/) { return kTRUE; }
 
-  EventVertexCut::~EventVertexCut() {}
+  //========================= Z vertex  cut ===========================================
+
+  EventVertexZCut::EventVertexZCut() : EventCut(1) { SetUnitName("V_{z} [cm]"); }
+
+  Bool_t EventVertexZCut::Pass(Event* event) {
+    SetValue(event->GetVertex()->Z());
+    return Validate();
+  }
+  //=========================XYZ vertex cut========================================
+
+  EventVertexXYZCut::EventVertexXYZCut() : EventCut(4), fShift(TVector3(0, 0, 0)) {
+    SetUnitName("V_{xy} [cm]", Rt());
+    SetUnitName("V_{x} [cm]", X());
+    SetUnitName("V_{y} [cm]", Y());
+    SetUnitName("V_{z} [cm]", Z());
+  }
+
+  void EventVertexXYZCut::SetShift(const TVector3& vec) { fShift = vec; }
+
+  Bool_t EventVertexXYZCut::Pass(Event* event) {
+    Double_t x = event->GetVertex()->X() - fShift.X();
+    Double_t y = event->GetVertex()->Y() - fShift.Y();
+    Double_t z = event->GetVertex()->Z() - fShift.Z();
+    SetValue(TMath::Sqrt(x * x + y * y), Rt());
+    SetValue(x, X());
+    SetValue(y, Y());
+    SetValue(z, Z());
+    return Validate();
+  }
+
+  Package* EventVertexXYZCut::Report() const {
+    Package* report = EventCut::Report();
+    report->AddObject(fShift.Clone());
+    return report;
+  }
+
 }  // namespace Hal

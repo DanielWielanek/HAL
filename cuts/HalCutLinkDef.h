@@ -49,6 +49,8 @@
 #pragma link C++ class Hal::EventRealCut + ;
 #pragma link C++ class Hal::EventImaginaryCut + ;
 #pragma link C++ class Hal::EventVertexCut + ;
+#pragma link C++ class Hal::EventVertexZCut + ;
+#pragma link C++ class Hal::EventVertexXYZCut + ;
 #pragma link C++ class Hal::EventBinningCut + ;
 #pragma link C++ class Hal::EventPrimaryTracksNoCut + ;
 #pragma link C++ class Hal::EventExpCut + ;

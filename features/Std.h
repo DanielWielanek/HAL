@@ -44,6 +44,20 @@ namespace Hal {
      */
     void CopyFiles(TString from, TString to, Bool_t hidden = kFALSE);
     /**
+     * convert initializer list to std::vector
+     * @tparam T
+     * @param
+     * @return
+     */
+    template<typename T>
+    std::vector<T> GetVector(const std::initializer_list<T>& list) {
+      std::vector<T> vec;
+      for (auto i : list) {
+        vec.push_back(i);
+      }
+      return vec;
+    }
+    /**
      * get list of files from given directory
      * @param path directory with files
      * @param extension extension

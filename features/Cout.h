@@ -24,14 +24,23 @@ namespace Hal {
     static Hal::EInfo fVerboseMode;
     static TString GetShift(Int_t i);
     static TString MergeStrings(Int_t no, ...);
-    static TString DisableColor();
-    static TString EnableColor(Color_t Color);
     static void InStars(Int_t shift, TString text, Color_t color);
     static void PrintWarning(TString warning);
     static void PrintError(TString error);
 
   public:
     Cout();
+    /**
+     * return flag for disabling color in linux
+     * @return
+     */
+    static TString GetDisableColor();
+    /**
+     *
+     * @param Color
+     * @return flag to enable given color in linux
+     */
+    static TString GetColor(Color_t Color);
     /**
      *
      * @return instance of this class

@@ -56,7 +56,7 @@ namespace Hal {
     if ((Int_t) color == -1) {
       std::cout << Header << std::endl;
     } else {
-      std::cout << EnableColor(color) << Header << DisableColor() << std::endl;
+      std::cout << GetColor(color) << Header << GetDisableColor() << std::endl;
     }
   }
 
@@ -99,7 +99,7 @@ namespace Hal {
       if ((Int_t) color == -1)
         std::cout << text << std::endl;
       else {
-        std::cout << EnableColor(color) << text << DisableColor() << std::endl;
+        std::cout << GetColor(color) << text << GetDisableColor() << std::endl;
       }
     } else {
       Int_t zz = (Int_t) text.Length() / (fgLineLength - 4);
@@ -126,7 +126,7 @@ namespace Hal {
     if ((Int_t) color == -1) {
       std::cout << starline << std::endl;
     } else {
-      std::cout << EnableColor(color) << starline << DisableColor() << std::endl;
+      std::cout << GetColor(color) << starline << GetDisableColor() << std::endl;
     }
   }
 
@@ -183,7 +183,7 @@ namespace Hal {
     if ((Int_t) color == -1) {
       std::cout << empline << std::endl;
     } else {
-      std::cout << EnableColor(color) << empline << std::endl;
+      std::cout << GetColor(color) << empline << std::endl;
     }
   }
 
@@ -192,7 +192,7 @@ namespace Hal {
     double ratio = actual / total;
     // printf("%4d%% ", (int)(ratio*100) );
     // printf("\n\033[F\033[J");
-    std::cout << EnableColor(kViolet) << Form("%4d%% ", (int) (ratio * 100)) << Form("\n\033[F\033[J") << DisableColor()
+    std::cout << GetColor(kViolet) << Form("%4d%% ", (int) (ratio * 100)) << Form("\n\033[F\033[J") << GetDisableColor()
               << std::endl;
     // DisableColor();
   }
@@ -204,7 +204,7 @@ namespace Hal {
     double ratio = actual / total;
     int c        = ratio * (fgLineLength - 7);
     // Show the percentage complete.
-    EnableColor(kBlue);
+    GetColor(kBlue);
     printf("%3d%% [", (int) (ratio * 100));
     // Show the load bar.
     for (int x = 0; x < c; x++)
@@ -214,7 +214,7 @@ namespace Hal {
     // ANSI Control codes to go back to the
     // previous line and clear it.
     printf("]\n\033[F\033[J");
-    DisableColor();
+    GetDisableColor();
   }
 
   void Cout::DebugInfo(Int_t i) {
@@ -223,14 +223,14 @@ namespace Hal {
     Cout::Stars(kViolet);
   }
 
-  TString Cout::DisableColor() {
+  TString Cout::GetDisableColor() {
 #ifdef __linux__
     return ("\e[0;0m");
 #endif
     return " ";
   }
 
-  TString Cout::EnableColor(Color_t Color) {
+  TString Cout::GetColor(Color_t Color) {
 #ifdef __linux__
     if (Color == kGray) {
       return ("\e[0;30m");
@@ -337,8 +337,8 @@ namespace Hal {
     if (nr_spaces < 0) nr_spaces = 0;
     TString spaces(' ', nr_spaces);
     spaces = value + spaces;
-    std::cout << EnableColor(kWhite) << "* " << spaces << "[" << EnableColor(color) << flag << EnableColor(kWhite) << "] *"
-              << DisableColor() << std::endl;
+    std::cout << GetColor(kWhite) << "* " << spaces << "[" << GetColor(color) << flag << GetColor(kWhite) << "] *"
+              << GetDisableColor() << std::endl;
   }
 
   Cout::Cout() {
@@ -355,4 +355,5 @@ namespace Hal {
   }
 
   Cout::~Cout() {}
+
 }  // namespace Hal

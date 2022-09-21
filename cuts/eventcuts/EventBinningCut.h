@@ -20,18 +20,20 @@ namespace Hal {
   class EventBinningCut : public EventCut {
   protected:
     Int_t fTotalBinsNo;
-    Array_1<Float_t> fMinTotal;
-    Array_1<Float_t> fMaxTotal;
-    Array_1<Float_t> fStep;
-    Array_1<Int_t> fBinConv;
-    Array_1<Int_t> fStepsNo;
+    std::vector<Double_t> fMinTotal;
+    std::vector<Double_t> fMaxTotal;
+    std::vector<Int_t> fBinConv;
+    std::vector<Int_t> fStepsNo;
+
+    std::vector<std::vector<Double_t>> fValuesUp;
     EventCut* fEventCut;
-    EventBinningCut(Int_t nparamNo);
-    EventBinningCut(const EventCut& cut, const std::vector<int> init);
+    EventBinningCut(const EventCut& cut, const std::vector<std::vector<Double_t>>& init);
+    void PreInit(const std::vector<std::vector<Double_t>>& vals);
 
   public:
     EventBinningCut();
-    EventBinningCut(const EventCut& cut, const std::initializer_list<int>& init);
+    EventBinningCut(const EventCut& cut, const std::initializer_list<Int_t>& init);
+    EventBinningCut(const EventCut& cut, const std::initializer_list<std::initializer_list<Double_t>>& init);
     EventBinningCut(const EventBinningCut& other);
     EventBinningCut* MakeCopy() const;
     EventBinningCut* MakeCopyReal() const;
@@ -43,6 +45,7 @@ namespace Hal {
     virtual Bool_t Pass(Event* /*event*/) { return kTRUE; };
     virtual Int_t CheckBin(Event* event);
     virtual Bool_t Init(Int_t task_id);
+    virtual void Print(Option_t* opt = 0) const;
     virtual ~EventBinningCut();
     ClassDef(EventBinningCut, 1)
   };

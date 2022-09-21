@@ -21,8 +21,8 @@
 
 #include "TLorentzVector.h"
 #include "TObject.h"
+#include "TString.h"
 
-class TString;
 class TClonesArray;
 class UParticle;
 

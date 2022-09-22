@@ -31,13 +31,13 @@
 namespace Hal {
   Event::Event() :
     TNamed(),
+    fTotalV0s(0),
     fTracks(nullptr),
     fVertex(nullptr),
     fPhi(0),
     fPhiError(0),
     fEventId(0),
     fTotalTracksNo(0),
-    fTotalV0s(0),
     fMultiplicity(0) {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
@@ -45,7 +45,7 @@ namespace Hal {
   }
 
   Event::Event(TString track_class, TString v0_class) :
-    fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fTotalV0s(0), fMultiplicity(0) {
+    fTotalV0s(0), fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fMultiplicity(0) {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
     fTracks        = new TClonesArray(track_class);

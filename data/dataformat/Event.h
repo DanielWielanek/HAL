@@ -52,6 +52,7 @@ namespace Hal {
     friend class SmearedEvent;
     friend class ComplexEvent;
     friend class Track;
+    Int_t fTotalV0s;
 
   protected:
     TDatabasePDG* fPDG;  //!
@@ -61,7 +62,6 @@ namespace Hal {
     Double_t fPhi, fPhiError;
     Int_t fEventId;
     Int_t fTotalTracksNo;
-    Int_t fTotalV0s;
     Int_t fMultiplicity;
     /**
      *
@@ -69,6 +69,10 @@ namespace Hal {
      * @return charge of particle
      */
     Double_t CalculateCharge(Int_t pdg) const;
+    /**
+     * set total V0s to zero
+     */
+    void ResetHiddenInfoCounter() { fTotalV0s = 0; };
     /**
      * copy into this event and source (if needed)
      * @param event event to copy

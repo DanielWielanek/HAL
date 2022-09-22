@@ -32,6 +32,21 @@ namespace Hal {
     CutMonitorXY(TString cut_A, TString cut_B);
     /**
      *
+     * @param cut_A name of cut on X-axis
+     * @param parameter_A parameter number on X axis
+     * @param xAxis x axis conf {bins,min,max}
+     * @param cut_B name of cut on Y-axis
+     * @param parameter_B parameter number on Y axis
+     * @param yAxis configuration of Y-axis (bins,min,max}
+     */
+    CutMonitorXY(TString cut_A,
+                 Int_t parameter_A,
+                 std::initializer_list<Double_t> xAxis,
+                 TString cut_B,
+                 Int_t parameter_B,
+                 std::initializer_list<Double_t> yAxis);
+    /**
+     *
      * @param cut_A name of cut monitored on X axis
      * @param parameter_A number of parameter monitored on X axis
      * @param cut_B name of cut monitored on Y axis

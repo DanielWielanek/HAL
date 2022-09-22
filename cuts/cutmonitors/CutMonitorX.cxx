@@ -19,6 +19,13 @@
 namespace Hal {
   CutMonitorX::CutMonitorX() : CutMonitor(1) {}
 
+  CutMonitorX::CutMonitorX(TString cut_name, Int_t parameter_no, std::initializer_list<Double_t> list) :
+    CutMonitorX(cut_name, parameter_no) {
+    auto vec = Hal::Std::GetVector(list);
+    if (vec.size() < 3) return;
+    SetXaxis(vec[0], vec[1], vec[2]);
+  }
+
   CutMonitorX::CutMonitorX(TString cut_name, Int_t parameter_no) : CutMonitorX() { AddCut(cut_name, parameter_no); }
 
   void CutMonitorX::TrueUpdate(Bool_t passed) {

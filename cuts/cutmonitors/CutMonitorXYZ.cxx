@@ -29,6 +29,23 @@ namespace Hal {
     AddCut(cut_C);
   }
 
+  CutMonitorXYZ::CutMonitorXYZ(TString cut_A,
+                               Int_t par_A,
+                               std::initializer_list<Double_t> xAxis,
+                               TString cut_B,
+                               Int_t par_B,
+                               std::initializer_list<Double_t> yAxis,
+                               TString cut_C,
+                               Int_t par_C,
+                               std::initializer_list<Double_t> zAxis) :
+    CutMonitorXYZ(cut_A, par_A, cut_B, par_B, cut_C, par_C) {
+    auto vecX = Hal::Std::GetVector(xAxis);
+    auto vecY = Hal::Std::GetVector(yAxis);
+    auto vecZ = Hal::Std::GetVector(zAxis);
+    if (vecX.size() == 3) { SetXaxis(vecX[0], vecX[1], vecX[2]); }
+    if (vecY.size() == 3) { SetYaxis(vecY[0], vecY[1], vecY[2]); }
+    if (vecZ.size() == 3) { SetZaxis(vecZ[0], vecZ[1], vecZ[2]); }
+  }
   CutMonitorXYZ::CutMonitorXYZ(TString cut_A, Int_t par_A, TString cut_B, Int_t par_B, TString cut_C, Int_t par_C) :
     CutMonitorXYZ() {
     AddCut(cut_A, par_A);

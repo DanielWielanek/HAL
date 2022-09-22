@@ -29,6 +29,19 @@ namespace Hal {
     AddCut(cut_B);
   }
 
+  CutMonitorXY::CutMonitorXY(TString cut_A,
+                             Int_t parameter_A,
+                             std::initializer_list<Double_t> xAxis,
+                             TString cut_B,
+                             Int_t parameter_B,
+                             std::initializer_list<Double_t> yAxis) :
+    CutMonitorXY(cut_A, parameter_A, cut_B, parameter_B) {
+    auto vecX = Hal::Std::GetVector(xAxis);
+    auto vecY = Hal::Std::GetVector(yAxis);
+    if (vecX.size() == 3) SetXaxis(vecX[0], vecX[1], vecX[2]);
+    if (vecY.size() == 3) SetYaxis(vecY[0], vecY[1], vecY[2]);
+  }
+
   CutMonitorXY::CutMonitorXY(TString cut_A, Int_t parameter_A, TString cut_B, Int_t parameter_B) : CutMonitorXY() {
     AddCut(cut_A, parameter_A);
     AddCut(cut_B, parameter_B);

@@ -21,7 +21,13 @@ namespace Hal {
 
   public:
     CutMonitorX();
-
+    /**
+     *
+     * @param cut_name name of the cut
+     * @param parameter_no paramter number
+     * @param list axis parameters {bins, min, max}
+     */
+    CutMonitorX(TString cut_name, Int_t parameter_no, std::initializer_list<Double_t> list);
     /**
      *
      * @param cut_name name of monitored cut

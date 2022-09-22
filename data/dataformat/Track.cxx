@@ -46,8 +46,8 @@ namespace Hal {
     fType       = other->fType;
     fHiddenInfo = -1;
     if (IsV0()) {
-      fHiddenInfo = GetEvent()->fV0Counter++;
-      V0Track* v0 = (V0Track*) GetEvent()->fV0sHiddenInfo->UncheckedAt(fHiddenInfo);
+      fHiddenInfo = GetEvent()->fTotalV0s++;
+      V0Track* v0 = (V0Track*) GetEvent()->fV0sHiddenInfo->ConstructedAt(fHiddenInfo);
       v0->CopyData(other->GetV0Info());
     }
   }
@@ -150,8 +150,8 @@ namespace Hal {
         SETBIT(fType, kV0Daughters);
       else
         CLRBIT(fType, kV0Daughters);
-      fHiddenInfo = fEvent->fV0Counter;
-      fEvent->fV0sHiddenInfo->ConstructedAt(fEvent->fV0Counter++);
+      fHiddenInfo = fEvent->fTotalV0s;
+      fEvent->fV0sHiddenInfo->ConstructedAt(fEvent->fTotalV0s++);
     } else {
       CLRBIT(fType, kV0);
     }

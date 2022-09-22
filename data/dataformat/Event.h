@@ -62,10 +62,6 @@ namespace Hal {
     Int_t fEventId;
     Int_t fTotalTracksNo;
     Int_t fTotalV0s;
-    /**
-     * store the position of last buffered v0
-     */
-    Int_t fV0Counter;
     Int_t fMultiplicity;
     /**
      *

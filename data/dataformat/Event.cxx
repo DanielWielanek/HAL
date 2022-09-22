@@ -38,7 +38,6 @@ namespace Hal {
     fEventId(0),
     fTotalTracksNo(0),
     fTotalV0s(0),
-    fV0Counter(0),
     fMultiplicity(0) {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
@@ -46,7 +45,7 @@ namespace Hal {
   }
 
   Event::Event(TString track_class, TString v0_class) :
-    fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fTotalV0s(0), fV0Counter(0), fMultiplicity(0) {
+    fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fTotalV0s(0), fMultiplicity(0) {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
     fTracks        = new TClonesArray(track_class);
@@ -63,7 +62,6 @@ namespace Hal {
     fTotalV0s      = other.fTotalV0s;
     fEventId       = other.fEventId;
     fMultiplicity  = other.fMultiplicity;
-    fV0Counter     = other.fV0Counter;
     fV0sHiddenInfo = new TClonesArray(*other.fV0sHiddenInfo);
   }
 
@@ -78,7 +76,6 @@ namespace Hal {
   void Event::Clear(Option_t* opt) {
     fTracks->Clear(opt);
     fV0sHiddenInfo->Clear(opt);
-    fV0Counter     = 0;
     fTotalTracksNo = 0;
     fTotalV0s      = 0;
   }
@@ -93,22 +90,19 @@ namespace Hal {
   void Event::Build(Event* event) { CopyData(event); }
 
   void Event::ShallowCopyEvent(Event* event) {
-    fMultiplicity = event->GetMutliplicity();
-    fV0Counter    = 0;  // this need to be set by user!
-    *fVertex      = *event->GetVertex();
-    fPhi          = event->fPhi;
-    fPhiError     = event->fPhiError;
-    fEventId      = event->GetEventID();
-    fTotalV0s     = event->fTotalV0s;
+    fMultiplicity  = event->GetMutliplicity();
+    *fVertex       = *event->GetVertex();
+    fPhi           = event->fPhi;
+    fPhiError      = event->fPhiError;
+    fEventId       = event->GetEventID();
+    fTotalV0s      = 0;  // this need to be set by user!
+    fTotalTracksNo = 0;  // this also should be set by the user
   }
 
   void Event::ShallowCopyTracks(Event* event) {
-    fTracks->Clear();
-    fV0sHiddenInfo->Clear();
     fTotalTracksNo = event->fTracks->GetEntriesFast();
-    fTotalV0s      = event->fV0sHiddenInfo->GetEntriesFast();
+    fV0sHiddenInfo->ExpandCreateFast(event->fTotalV0s);
     fTracks->ExpandCreateFast(fTotalTracksNo);
-    fV0sHiddenInfo->ExpandCreateFast(fTotalV0s);
     for (int i = 0; i < fTotalTracksNo; i++) {
       Track* to   = (Track*) fTracks->UncheckedAt(i);
       Track* from = (Track*) event->fTracks->UncheckedAt(i);
@@ -182,13 +176,9 @@ namespace Hal {
   }
 
   void Event::ShallowCopyCompressTracks(Event* event, const CompressionMap& map) {
-    fTracks->Clear();
     fV0sHiddenInfo->Clear();
     fTotalTracksNo = map.GetNewSize();
-    fV0Counter     = 0;
-    fTracks->GetEntriesFast();
     fTracks->ExpandCreateFast(fTotalTracksNo);
-    fV0sHiddenInfo->ExpandCreateFast(event->fTotalV0s);
     for (int i = 0; i < fTotalTracksNo; i++) {
       Track* to   = (Track*) fTracks->UncheckedAt(i);
       Track* from = (Track*) event->fTracks->UncheckedAt(map.GetOldIndex(i));

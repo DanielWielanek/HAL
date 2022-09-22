@@ -23,17 +23,27 @@ namespace OTF {
     Int_t fIndexMc;
     Int_t fNHits;
     Int_t fCharge;
+    Int_t fDaugthers[2] = {-1, -1};
 
   public:
     RecoTrack() : fIndexMc(-1), fNHits(0), fCharge(0) {};
     Int_t GetMcIndex() const { return fIndexMc; }
     Int_t GetNHits() const { return fNHits; }
     Int_t GetCharge() const { return fCharge; }
+    void SetDaughers(Int_t a, Int_t b) {
+      fDaugthers[0] = a;
+      fDaugthers[1] = b;
+    }
+    void GetDaughters(Int_t& a, Int_t& b) {
+      a = fDaugthers[0];
+      b = fDaugthers[1];
+    }
     void SetCharge(Int_t ch) { fCharge = ch; }
     void SetMom(TLorentzVector mom) { fMomentum = mom; }
     void SetNHits(Int_t nHits) { fNHits = nHits; }
     void SetMcIndex(Int_t index) { fIndexMc = index; }
     void SetMom(Double_t px, Double_t py, Double_t pz, Double_t e) { fMomentum.SetXYZT(px, py, pz, e); }
+    void Clear(Option_t* /*opt*/ = "") { fDaugthers[0] = fDaugthers[1] = -1; }
     const TLorentzVector& GetMom() const { return fMomentum; }
     virtual ~RecoTrack() {};
     ClassDef(RecoTrack, 1)

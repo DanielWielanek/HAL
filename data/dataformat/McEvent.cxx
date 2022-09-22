@@ -26,11 +26,12 @@ namespace Hal {
   McEvent::McEvent(const McEvent& other) : Event(other) { fB = other.fB; }
 
   void McEvent::ShallowCopyTracks(Event* event) {
-    fTracks->Clear();
+    fV0sHiddenInfo->Clear();
     McEvent* mc_event = (McEvent*) event;
     fTotalTracksNo    = mc_event->fTracks->GetEntriesFast();
+    fTracks->ExpandCreateFast(fTotalTracksNo);
     for (int i = 0; i < fTotalTracksNo; i++) {
-      McTrack* to   = (McTrack*) fTracks->ConstructedAt(i);
+      McTrack* to   = (McTrack*) fTracks->UncheckedAt(i);
       McTrack* from = (McTrack*) mc_event->fTracks->UncheckedAt(i);
       to->ResetTrack(i, this);
       to->CopyData(from);

@@ -33,17 +33,20 @@ namespace Hal {
     fImgEvent->Update(source->GetReal());
     fRealEvent->Update(source->GetImag());
     Event::ShallowCopyEvent(fRealEvent);
-    fTracks->Clear();
+    fV0sHiddenInfo->Clear();
     if (fRealEvent->GetTotalTrackNo()) {
       fTotalTracksNo = fRealEvent->GetTotalTrackNo();
+      fTracks->ExpandCreateFast(fTotalTracksNo);
       for (int i = 0; i < fTotalTracksNo; i++) {
         Track* tr        = (Track*) fRealEvent->fTracks->UncheckedAt(i);
-        ComplexTrack* to = (ComplexTrack*) fTracks->ConstructedAt(i);
+        ComplexTrack* to = (ComplexTrack*) fTracks->UncheckedAt(i);
         to->ResetTrack(i, this);
         to->Track::CopyData(tr);
         to->SetImgTrack((Track*) fImgEvent->GetTrack(i));
         to->SetRealTrack(tr);
       }
+    } else {
+      fTracks->Clear();
     }
   }
 
@@ -89,8 +92,9 @@ namespace Hal {
     fImgEvent->ShallowCopyTracks(((ComplexEvent*) event)->GetImgEvent());
     ComplexEvent* mc_event = (ComplexEvent*) event;
     fTotalTracksNo         = mc_event->fTracks->GetEntriesFast();
+    fV0sHiddenInfo->ExpandCreateFast(fRealEvent->fV0sHiddenInfo->GetEntriesFast());
     for (int i = 0; i < fTotalTracksNo; i++) {
-      ComplexTrack* to   = (ComplexTrack*) fTracks->ConstructedAt(i);
+      ComplexTrack* to   = (ComplexTrack*) fTracks->UncheckedAt(i);
       ComplexTrack* from = (ComplexTrack*) mc_event->fTracks->UncheckedAt(i);
       to->ResetTrack(i, this);
       to->CopyData(from);
@@ -106,8 +110,9 @@ namespace Hal {
     fImgEvent->ShallowCopyCompressTracks(((ComplexEvent*) event)->GetImgEvent(), fgCompressionMap);
     ComplexEvent* mc_event = (ComplexEvent*) event;
     fTotalTracksNo         = map.GetNewSize();
+    fTracks->ExpandCreateFast(fTotalTracksNo);
     for (int i = 0; i < fTotalTracksNo; i++) {
-      ComplexTrack* to   = (ComplexTrack*) fTracks->ConstructedAt(i);
+      ComplexTrack* to   = (ComplexTrack*) fTracks->UncheckedAt(i);
       ComplexTrack* from = (ComplexTrack*) mc_event->fTracks->UncheckedAt(map.GetOldIndex(i));
       to->ResetTrack(i, this);
       to->CopyData(from);

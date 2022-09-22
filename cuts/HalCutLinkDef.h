@@ -66,6 +66,7 @@
 #pragma link C++ class Hal::TrackToFMass2Cut + ;
 #pragma link C++ class Hal::TrackTofMass2CutNoZeros + ;
 
+#pragma link C++ class Hal::TrackYAssumedCut + ;
 #pragma link C++ class Hal::TrackBetaCut + ;
 #pragma link C++ class Hal::TrackEtaCut + ;
 #pragma link C++ class Hal::TrackEtaAbsCut + ;

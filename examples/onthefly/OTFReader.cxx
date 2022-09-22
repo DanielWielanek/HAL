@@ -92,6 +92,7 @@ namespace HalOTF {
       OTF::McTrack tr;
       TLorentzVector p(px, py, pz, e);
       tr.SetMomentum(p);
+      tr.SetPdgCode(fPids);
       TLorentzVector xr(gRandom->Gaus(0, 1), gRandom->Gaus(0, 1), gRandom->Gaus(0), 0);
       tr.SetFreezout(xr);
       fMcEvent->AddTrack(tr);

@@ -92,6 +92,7 @@ namespace Hal {
     fImgEvent->ShallowCopyTracks(((ComplexEvent*) event)->GetImgEvent());
     ComplexEvent* mc_event = (ComplexEvent*) event;
     fTotalTracksNo         = mc_event->fTracks->GetEntriesFast();
+    fTracks->ExpandCreate(fTotalTracksNo);
     fV0sHiddenInfo->ExpandCreateFast(fRealEvent->fV0sHiddenInfo->GetEntriesFast());
     for (int i = 0; i < fTotalTracksNo; i++) {
       ComplexTrack* to   = (ComplexTrack*) fTracks->UncheckedAt(i);

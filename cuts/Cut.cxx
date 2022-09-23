@@ -79,8 +79,10 @@ namespace Hal {
   Bool_t Cut::ForcedUpdate(Bool_t state) {
     if (state) {
       ++fPassed;
+      fState = 1;
     } else {
       ++fFailed;
+      fState = 0;
     }
     ++fTotal;
     return state;

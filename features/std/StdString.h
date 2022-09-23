@@ -37,12 +37,24 @@ namespace Hal {
     std::vector<std::pair<TString, TString>> ConvertMainArgs(int argc, char* argv[]);
     /**
      * removes words in file
-     * @param path path to file
+     * @param path path to file (.temp.txt is the only name of the file that cannot be passed as path)
      * @param path to file with replaced world
      * @param oldPattern old word
      * @param newPattern new word
      */
     void ReplaceInFile(TString path, TString newPath, TString oldPattern, TString newPattern);
+
+    /**
+     * removes words in file, use temporary files ,uses .temp.txt files
+     * @param path path to file
+     * @param path to file with replaced world
+     * @param oldPattern old word
+     * @param newPattern new word
+     */
+    void ReplaceInFile(TString path,
+                       TString newPath,
+                       std::initializer_list<TString> oldPattern,
+                       std::initializer_list<TString> newPattern);
     /**
      * round value to string
      * @param value value to round

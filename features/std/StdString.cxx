@@ -12,6 +12,7 @@
 
 #include <TMath.h>
 #include <TRegexp.h>
+#include <TSystem.h>
 #include <fstream>
 #include <iostream>
 
@@ -274,17 +275,44 @@ namespace Hal {
 
     void ReplaceInFile(TString path, TString newPath, TString oldPattern, TString newPattern) {
       if (!FileExists(path)) return;
-      std::ifstream inFile;
-      inFile.open(path);
-      std::ofstream outFile;
-      outFile.open(newPath);
-      for (std::string line; std::getline(inFile, line);) {
-        TString temp = line;
-        temp.ReplaceAll(oldPattern, newPattern);
-        outFile << temp << std::endl;
+      if (path.EqualTo(".temp.txt")) {
+        Cout::PrintInfo("File .temp.txt cannot be modified by HAL", EInfo::kLowWarning);
+        return;
       }
-      outFile.close();
-      inFile.close();
+      if (path == newPath) {                                       // replace in file
+        ReplaceInFile(path, ".temp.txt", oldPattern, newPattern);  // replace file -> .temp.txt
+        gSystem->Exec(Form("mv .temp.txt %s", path.Data()));       // overwrite old file
+      } else {
+        std::ifstream inFile;
+        inFile.open(path);
+        std::ofstream outFile;
+        outFile.open(newPath);
+        for (std::string line; std::getline(inFile, line);) {
+          TString temp = line;
+          temp.ReplaceAll(oldPattern, newPattern);
+          outFile << temp << std::endl;
+        }
+        outFile.close();
+        inFile.close();
+      }
+    }
+
+    void ReplaceInFile(TString path,
+                       TString newPath,
+                       std::initializer_list<TString> oldPattern,
+                       std::initializer_list<TString> newPattern) {
+      if (!FileExists(path)) return;
+      std::vector<TString> list1 = Std::GetVector(oldPattern);
+      std::vector<TString> list2 = Std::GetVector(newPattern);
+      if (list1.size() != list2.size()) {
+        Cout::PrintInfo(Form("Not compatible lists %s %i", __FILE__, __LINE__), EInfo::kLowWarning);
+        return;
+      }
+      if (list1.size() == 0) return;
+      ReplaceInFile(path, newPath, list1[0], list2[0]);
+      for (unsigned int i = 1; i < list1.size(); i++) {
+        ReplaceInFile(newPath, newPath, list1[i], list2[i]);
+      }
     }
 
     Bool_t FindParam(TString& option, TString pattern, Bool_t remove) {

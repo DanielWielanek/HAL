@@ -126,6 +126,23 @@ namespace Hal {
     return kTRUE;
   }
 
+  void CutMonitor::SetAxisList(std::initializer_list<Double_t> axis, Char_t opt) {
+    std::vector<Double_t> vec = Hal::Std::GetVector(axis);
+    if (vec.size() != 3) return;
+    switch (opt) {
+      case 'x': {
+        SetXaxis(vec[0], vec[1], vec[2]);
+      } break;
+      case 'y': {
+        SetYaxis(vec[0], vec[1], vec[2]);
+      } break;
+      case 'z': {
+        SetZaxis(vec[0], vec[1], vec[2]);
+      } break;
+      default: break;
+    }
+  }
+
   void CutMonitor::Reset() {
     fHistoPassed->Reset();
     fHistoFailed->Reset();
@@ -318,6 +335,7 @@ namespace Hal {
       pack->AddObject(fHistoFailed->Clone());
     }
     pack->SetComment(this->ClassName());
+
     return pack;
   }
 

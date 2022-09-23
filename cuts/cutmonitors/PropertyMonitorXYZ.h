@@ -35,10 +35,7 @@ namespace Hal {
      * @param zLabel z-axis name
      * @param update update ratio
      */
-    PropertyMonitorXYZ(TString xLabel    = "",
-                       TString yLabel    = "",
-                       TString zLabel    = "",
-                       ECutUpdate update = ECutUpdate::kEvent);
+    PropertyMonitorXYZ(TString xLabel = "", TString yLabel = "", TString zLabel = "", ECutUpdate update = ECutUpdate::kEvent);
     PropertyMonitorXYZ(const PropertyMonitorXYZ& other);
     /**
      * Assignment operator
@@ -71,6 +68,12 @@ namespace Hal {
      * @param upd
      */
     EventFieldMonitorXYZ(Int_t fieldIDX = 0, Int_t fieldDY = 0, Int_t fieldDZ = 0);
+    EventFieldMonitorXYZ(Int_t fieldIDX,
+                         std::initializer_list<Double_t> xAxis,
+                         Int_t fieldDY,
+                         std::initializer_list<Double_t> yAxis,
+                         Int_t fieldDZ,
+                         std::initializer_list<Double_t> zAxis);
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t Init(Int_t task_id);
     virtual CutMonitor* MakeCopy() const { return new EventFieldMonitorXYZ(*this); }
@@ -96,6 +99,12 @@ namespace Hal {
      * @param upd
      */
     TrackFieldMonitorXYZ(Int_t fieldIDX = 0, Int_t fieldDY = 0, Int_t fieldDZ = 0);
+    TrackFieldMonitorXYZ(Int_t fieldIDX,
+                         std::initializer_list<Double_t> xAxis,
+                         Int_t fieldDY,
+                         std::initializer_list<Double_t> yAxis,
+                         Int_t fieldDZ,
+                         std::initializer_list<Double_t> zAxis);
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t Init(Int_t task_id);
     virtual CutMonitor* MakeCopy() const { return new TrackFieldMonitorXYZ(*this); }

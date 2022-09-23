@@ -106,6 +106,15 @@ namespace Hal {
   EventFieldMonitorXY::EventFieldMonitorXY(Int_t fieldIDX, Int_t fiedIDY) :
     PropertyMonitorXY("", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {}
 
+  EventFieldMonitorXY::EventFieldMonitorXY(Int_t fieldIDX,
+                                           std::initializer_list<Double_t> xAxis,
+                                           Int_t fiedIDY,
+                                           std::initializer_list<Double_t> yAxis) :
+    PropertyMonitorXY("", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {
+    SetAxisList(xAxis, 'x');
+    SetAxisList(yAxis, 'y');
+  }
+
   void EventFieldMonitorXY::Update(Bool_t passed, TObject* obj) {
     Event* ev = (Event*) obj;
     if (passed) {
@@ -124,6 +133,15 @@ namespace Hal {
   //========================================================================
   TrackFieldMonitorXY::TrackFieldMonitorXY(Int_t fieldIDX, Int_t fiedIDY) :
     PropertyMonitorXY(",", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {}
+
+  TrackFieldMonitorXY::TrackFieldMonitorXY(Int_t fieldIDX,
+                                           std::initializer_list<Double_t> xAxis,
+                                           Int_t fiedIDY,
+                                           std::initializer_list<Double_t> yAxis) :
+    PropertyMonitorXY("", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {
+    SetAxisList(xAxis, 'x');
+    SetAxisList(yAxis, 'y');
+  }
 
   void TrackFieldMonitorXY::Update(Bool_t passed, TObject* obj) {
     Track* tr = (Track*) obj;

@@ -94,6 +94,10 @@ namespace Hal {
   EventFieldMonitorX::EventFieldMonitorX(Int_t fieldID) :
     PropertyMonitorX("", "N_{events}", ECutUpdate::kEvent), fFieldID(fieldID) {}
 
+  EventFieldMonitorX::EventFieldMonitorX(Int_t fieldID, std::initializer_list<Double_t> xAxis) : EventFieldMonitorX(fieldID) {
+    SetAxisList(xAxis, 'x');
+  }
+
   void EventFieldMonitorX::Update(Bool_t passed, TObject* obj) {
     Event* ev = (Event*) obj;
     if (passed) {
@@ -111,6 +115,10 @@ namespace Hal {
   //========================================================================
   TrackFieldMonitorX::TrackFieldMonitorX(Int_t fieldID) :
     PropertyMonitorX("", "N_{tracks}", ECutUpdate::kTrack), fFieldID(fieldID) {}
+
+  TrackFieldMonitorX::TrackFieldMonitorX(Int_t fieldID, std::initializer_list<Double_t> xAxis) : TrackFieldMonitorX(fieldID) {
+    SetAxisList(xAxis, 'x');
+  }
 
   void TrackFieldMonitorX::Update(Bool_t passed, TObject* obj) {
     Track* tr = (Track*) obj;

@@ -99,6 +99,12 @@ namespace Hal {
      */
     void SetAxis(Int_t bins, Double_t min, Double_t max, Int_t opt);
     /**
+     * set axis from initializer list
+     * @param axis {nbins, min, max}
+     * @param opt
+     */
+    void SetAxisList(std::initializer_list<Double_t> axis, Char_t opt);
+    /**
      *
      * @param i cut number
      * @return cut monitred by this cut monitor

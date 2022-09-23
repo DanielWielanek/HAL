@@ -125,6 +125,18 @@ namespace Hal {
   EventFieldMonitorXYZ::EventFieldMonitorXYZ(Int_t fieldIDX, Int_t fiedIDY, Int_t fiedIDZ) :
     PropertyMonitorXYZ("", "", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {}
 
+  EventFieldMonitorXYZ::EventFieldMonitorXYZ(Int_t fieldIDX,
+                                             std::initializer_list<Double_t> xAxis,
+                                             Int_t fieldDY,
+                                             std::initializer_list<Double_t> yAxis,
+                                             Int_t fieldDZ,
+                                             std::initializer_list<Double_t> zAxis) :
+    PropertyMonitorXYZ("", "", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fieldDY), fFieldIDZ(fieldDZ) {
+    SetAxisList(xAxis, 'x');
+    SetAxisList(yAxis, 'y');
+    SetAxisList(zAxis, 'z');
+  }
+
   void EventFieldMonitorXYZ::Update(Bool_t passed, TObject* obj) {
 
     Event* ev = (Event*) obj;
@@ -146,6 +158,18 @@ namespace Hal {
   //========================================================================
   TrackFieldMonitorXYZ::TrackFieldMonitorXYZ(Int_t fieldIDX, Int_t fiedIDY, Int_t fiedIDZ) :
     PropertyMonitorXYZ("", "", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {}
+
+  TrackFieldMonitorXYZ::TrackFieldMonitorXYZ(Int_t fieldIDX,
+                                             std::initializer_list<Double_t> xAxis,
+                                             Int_t fieldDY,
+                                             std::initializer_list<Double_t> yAxis,
+                                             Int_t fieldDZ,
+                                             std::initializer_list<Double_t> zAxis) :
+    PropertyMonitorXYZ("", "", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fieldDY), fFieldIDZ(fieldDZ) {
+    SetAxisList(xAxis, 'x');
+    SetAxisList(yAxis, 'y');
+    SetAxisList(zAxis, 'z');
+  }
 
   void TrackFieldMonitorXYZ::Update(Bool_t passed, TObject* obj) {
 

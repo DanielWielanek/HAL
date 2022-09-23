@@ -62,6 +62,10 @@ namespace Hal {
      * @param upd update ratio
      */
     EventFieldMonitorXY(Int_t fieldIDX = 0, Int_t fieldIDY = 0);
+    EventFieldMonitorXY(Int_t fieldIDX,
+                        std::initializer_list<Double_t> xAxis,
+                        Int_t fieldIDY,
+                        std::initializer_list<Double_t> yAxis);
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t Init(Int_t task_id);
     virtual CutMonitor* MakeCopy() const { return new EventFieldMonitorXY(*this); }
@@ -85,6 +89,10 @@ namespace Hal {
      * @param upd update ratio
      */
     TrackFieldMonitorXY(Int_t fieldIDX = 0, Int_t fieldIDY = 0);
+    TrackFieldMonitorXY(Int_t fieldIDX,
+                        std::initializer_list<Double_t> xAxis,
+                        Int_t fieldIDY,
+                        std::initializer_list<Double_t> yAxis);
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t Init(Int_t task_id);
     virtual CutMonitor* MakeCopy() const { return new TrackFieldMonitorXY(*this); }

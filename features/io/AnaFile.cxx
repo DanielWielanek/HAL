@@ -140,18 +140,12 @@ namespace Hal {
       no           = Hal::Std::RoundToString(i);
       type         = size;
       unitx = unity = unitz = "-";
-      if (size == "HalCutMonitorX") {
-        unitx = ((ParameterString*) mon->GetObjectByName("AxisX"))->GetValue();
-      } else if (size == "HalCutMonitorXY") {
-        unitx = ((ParameterString*) mon->GetObjectByName("AxisX"))->GetValue();
-        unity = ((ParameterString*) mon->GetObjectByName("AxisY"))->GetValue();
-      } else if (size == "HalCutMonitorXYZ") {
-        unitx = ((ParameterString*) mon->GetObjectByName("AxisX"))->GetValue();
-        unity = ((ParameterString*) mon->GetObjectByName("AxisY"))->GetValue();
-        unitz = ((ParameterString*) mon->GetObjectByName("AxisZ"))->GetValue();
-      } else {
-        Cout::PrintInfo("Oops, unknown Monitor :(", Hal::EInfo::kLowWarning);
-      }
+      ParameterString* xN   = ((ParameterString*) mon->GetObjectByName("AxisX", 0, kTRUE));
+      if (xN) unitx = xN->GetValue();
+      xN = ((ParameterString*) mon->GetObjectByName("AxisY", 0, kTRUE));
+      if (xN) unity = xN->GetValue();
+      xN = ((ParameterString*) mon->GetObjectByName("AxisZ", 0, kTRUE));
+      if (xN) unitz = xN->GetValue();
       Cout::Database(5, no.Data(), type.Data(), unitx.Data(), unity.Data(), unitz.Data());
     }
   }
@@ -160,7 +154,7 @@ namespace Hal {
 
   Package* AnaFile::GetCutCollection(Hal::ECutUpdate update, Int_t no) const {
     TList* list      = NULL;
-    TString listName = Form("Hal%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data());
+    TString listName = Form("%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data());
     list             = ((TList*) GetCutContainer()->GetObjectByName(listName));
     return (Package*) list->At(no);
   }
@@ -336,9 +330,13 @@ namespace Hal {
     if (list == NULL) return 0;
     for (int iCut = 0; iCut < list->GetEntries(); iCut++) {
       Package* mon = (Package*) list->At(iCut);
-      if (((TString) mon->GetName()) == "HalCutMonitorX") d1++;
-      if (((TString) mon->GetName()) == "HalCutMonitorXY") d2++;
-      if (((TString) mon->GetName()) == "HalCutMonitorXYZ") d3++;
+      if (mon->GetObjectByName("AxisZ", 0, kTRUE)) {
+        d3++;
+      } else if (mon->GetObjectByName("AxisY", 0, kTRUE)) {
+        d2++;
+      } else {
+        d1++;
+      }
       d4++;
     }
     if (option == "1d") return d1;
@@ -351,7 +349,7 @@ namespace Hal {
     TList* list   = NULL;
     TString label = "";
     list =
-      ((TList*) GetCutContainer()->GetObjectByName(Form("Hal%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data())));
+      ((TList*) GetCutContainer()->GetObjectByName(Form("%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data())));
     label = Form("%s Cuts", Hal::Std::UpdateEnumToString(update).Data());
     if (list == NULL) return;
     if (col == -1) {
@@ -422,7 +420,7 @@ namespace Hal {
     TList* list   = NULL;
     TString label = "";
     list =
-      ((TList*) GetCutContainer()->GetObjectByName(Form("Hal%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data())));
+      ((TList*) GetCutContainer()->GetObjectByName(Form("%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data())));
     label = Form("%s Cuts", Hal::Std::UpdateEnumToString(update).Data());
     if (list == NULL) return NULL;
     Package* cutCollection = (Package*) list->At(collection);

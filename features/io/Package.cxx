@@ -64,7 +64,7 @@ namespace Hal {
 
   void Package::SetComment(TString name) { fComment.SetString(name); }
 
-  TObject* Package::GetObjectByName(TString name, Int_t index) const {
+  TObject* Package::GetObjectByName(TString name, Int_t index, Bool_t quiet) const {
     Int_t counter = 0;
     for (Int_t i = 0; i < fNo; i++) {
       TString temp_name = ((fArrayObjects->At(i))->GetName());
@@ -73,8 +73,9 @@ namespace Hal {
         if (counter > index) return fArrayObjects->At(i);
       }
     }
-    Cout::PrintInfo(Form("object named %s not found in package %s", name.Data(), (fNameClass.GetString()).Data()),
-                    Hal::EInfo::kLowWarning);
+    if (!quiet)
+      Cout::PrintInfo(Form("object named %s not found in package %s", name.Data(), (fNameClass.GetString()).Data()),
+                      Hal::EInfo::kLowWarning);
     return NULL;
   }
 

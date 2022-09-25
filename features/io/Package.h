@@ -135,9 +135,10 @@ namespace Hal {
      * search for object  by name
      * @param name name of object
      * @param index index of object (if few have the same name)
+     * @param quitet if true supress warnings
      * @return found object
      */
-    TObject* GetObjectByName(TString name, Int_t index = 0) const;
+    TObject* GetObjectByName(TString name, Int_t index = 0, Bool_t quited = kFALSE) const;
     /**
      * search for object
      * @param name class name of object

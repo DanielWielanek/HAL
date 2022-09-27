@@ -16,6 +16,7 @@
 #include <TCollection.h>
 #include <TColor.h>
 #include <TDirectory.h>
+#include <TGaxis.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TH3.h>
@@ -25,8 +26,10 @@
 #include <TMatrixT.h>
 #include <TNamed.h>
 #include <TObjArray.h>
+#include <TPaletteAxis.h>
 #include <TROOT.h>
 #include <TRandom.h>
+#include <TStyle.h>
 #include <TVirtualPad.h>
 #include <iostream>
 
@@ -858,19 +861,24 @@ namespace Hal {
       h.SetLineColor(color);
       h.SetMarkerColor(color);
       h.SetMarkerStyle(m);
+      h.SetMarkerSize(m);
     }
 
-    void SetHistogramAxes(TH1& h, Double_t titleSize, Double_t labelSize, Double_t space, Char_t opt) {
-      TAxis* x = nullptr;
-      switch (opt) {
-        case 'x': x = h.GetXaxis(); break;
-        case 'y': x = h.GetYaxis(); break;
-        case 'z': x = h.GetZaxis(); break;
-      }
-      if (x == nullptr) return;
-      x->SetTitleSize(titleSize);
-      x->SetLabelSize(labelSize);
-      x->SetTitleOffset(space);
+    void MakeBeautiful() {
+      gStyle->SetPalette(kRainBow);
+      TGaxis::SetMaxDigits(3);
+      gStyle->SetCanvasPreferGL(kTRUE);
+    }
+
+    void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2) {
+      gPad->Update();
+      TPaletteAxis* palette = (TPaletteAxis*) h.GetListOfFunctions()->FindObject("palette");
+      palette->SetX1NDC(x1);
+      palette->SetX2NDC(x2);
+      palette->SetY1NDC(y1);
+      palette->SetY2NDC(y2);
+      gPad->Modified();
+      gPad->Update();
     }
 
     Int_t GetAntiColor(Int_t col) {

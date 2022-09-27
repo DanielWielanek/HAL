@@ -101,6 +101,9 @@
 #pragma link C++ class Hal::FastHist1D + ;
 #pragma link C++ class Hal::FastHist2D + ;
 #pragma link C++ class Hal::FastHist3D + ;
+#pragma link C++ class Hal::Style + ;
+#pragma link C++ class Hal::PadStyle + ;
+#pragma link C++ class Hal::HistoStyle + ;
 
 //=============================
 #pragma link C++ class Hal::ObjectMatrix_1 + ;
@@ -142,15 +145,17 @@
 #pragma link C++ class Hal::XMLNode + ;
 #pragma link C++ class Hal::XMLFile + ;
 
-#pragma link C++ class std::vector < TString> + ;
 
 #pragma link C++ class Hal::Minimizer + ;
 #pragma link C++ class Hal::FitParam + ;
 #pragma link C++ class Hal::MinimizerStepConf + ;
-#pragma link C++ class std::vector < Hal::FitParam> + ;
 #pragma link C++ class Hal::CompressionMap + ;
 
-
+// STD STUFF
+#pragma link C++ class std::vector < Hal::FitParam> + ;
+#pragma link C++ class std::vector < TString> + ;
+#pragma link C++ class std::map < TString, Double_t> + ;
+#pragma link C++ class std::map < TString, Int_t> + ;
 //#pragma link C++ class HalParameter+;
 
 #endif

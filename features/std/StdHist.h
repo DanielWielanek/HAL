@@ -169,6 +169,10 @@ namespace Hal {
      */
     TH3* MakeHisto3D(TString name, TString title, TVector3 Xaxis, TVector3 Yaxis, TVector3 Zaxis, Char_t type = 'D');
     /**
+     * set some global settings of painters
+     */
+    void MakeBeautiful();
+    /**
      * makes folding of histogram around given point, point must be in the middle
      * of bin or in the edge of bin, if point is in the middle of bin then content
      * of such bin is multiplied by 2 and error by sqrt(2) in case of 2 and 3D
@@ -203,17 +207,18 @@ namespace Hal {
      * @param color color to set
      * @param m marker style to set
      * @param h histogram
+     * @param s size
      */
-    void SetColorAndMarker(TH1& h, Color_t color, Marker_t m);
+    void SetColorAndMarker(TH1& h, Color_t color, Marker_t m, Size_t s = 1);
     /**
-     * set axis in histogram
-     * @param histogram to set
-     * @param titleSize title size
-     * @param labelSize label size
-     * @param space the space between title and axis
-     * @param opt - axis, can be 'x', 'y' or 'z'
+     * set Z-axis for two dim histogram
+     * @param h
+     * @param x1
+     * @param y1
+     * @param x2
+     * @param y2
      */
-    void SetHistogramAxes(TH1& h, Double_t titleSize = 0.05, Double_t labelSize = 0.05, Double_t space = 1.0, Char_t opt = 'x');
+    void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2);
     /**
      * get index of oposite color
      * @param col

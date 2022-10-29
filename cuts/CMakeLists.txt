@@ -40,6 +40,7 @@ eventcuts/general/EventPrimaryTracksNoCut.cxx
 eventcuts/general/EventPhiCut.cxx
 eventcuts/general/EventPtMaxCut.cxx
 eventcuts/general/EventVertexCut.cxx
+eventcuts/general/EventMultiplicityZVertexCut.cxx
 eventcuts/detector/EventRunCut.cxx
 eventcuts/EventVirtualCut.cxx
 eventcuts/EventComplexCut.cxx

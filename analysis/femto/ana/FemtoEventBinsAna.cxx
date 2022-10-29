@@ -18,77 +18,58 @@
 
 
 namespace Hal {
-  FemtoEventBinsAna::FemtoEventBinsAna() :
-    FemtoBasicAna(), fEventBinningCuts(nullptr), fEventBinnngsBinsNo(nullptr), fTotalEventBins(0) {}
+  FemtoEventBinsAna::FemtoEventBinsAna() : FemtoBasicAna(), fEventBinningCut(nullptr), fTotalEventBins(0) {}
 
   FemtoEventBinsAna::~FemtoEventBinsAna() {
-    if (fEventBinningCuts) delete fEventBinningCuts;
-    if (fEventBinnngsBinsNo) delete fEventBinnngsBinsNo;
+    if (fEventBinningCut) delete fEventBinningCut;
   }
 
   FemtoEventBinsAna::FemtoEventBinsAna(const FemtoEventBinsAna& other) :
-    FemtoBasicAna(other), fEventBinningCuts(nullptr), fEventBinnngsBinsNo(nullptr), fTotalEventBins(other.fTotalEventBins) {
-    if (other.fEventBinningCuts) { fEventBinningCuts = (TObjArray*) other.fEventBinningCuts->Clone(); }
-    if (other.fEventBinnngsBinsNo) fEventBinnngsBinsNo = new Array_1<Int_t>(*other.fEventBinnngsBinsNo);
+    FemtoBasicAna(other), fEventBinningCut(nullptr), fTotalEventBins(other.fTotalEventBins) {
+    if (other.fEventBinningCut) { fEventBinningCut = (EventBinningCut*) other.fEventBinningCut->MakeCopy(); }
   }
 
   Task::EInitFlag FemtoEventBinsAna::Init() {
-    if (fEventBinningCuts == nullptr) {
+    if (fEventBinningCut == nullptr) {
       EventVirtualCut vcut;
       EventBinningCut bin(vcut, {1});
-      AddEventBinCut(bin, "");
+      SetEventBinCut(bin, "");
     }
-    fEventBinnngsBinsNo = new Array_1<Int_t>(fEventBinningCuts->GetEntriesFast());
-    Int_t mult          = 1;
-    fEventBinnngsBinsNo->Set(0, 1);
-
-    for (int i = 1; i <= fEventBinningCuts->GetEntriesFast(); i++) {
-      EventBinningCut* evcut = (EventBinningCut*) fEventBinningCuts->UncheckedAt(i - 1);
-      mult                   = mult * evcut->GetBinsNo();
-      fEventBinnngsBinsNo->Set(i, mult);
-      Bool_t ready = evcut->Init(GetTaskID());
-      if (ready == kFALSE) {
-        Cout::PrintInfo(Form("Problem with initialization of  %s", evcut->ClassName()), EInfo::kError);
-        return Task::EInitFlag::kFATAL;
-      }
+    fTotalEventBins     = fEventBinningCut->GetBinsNo();
+    Bool_t ready        = fEventBinningCut->Init(GetTaskID());
+    const EventCut* cut = fEventBinningCut->GetCut();
+    AddCut(*cut);
+    delete cut;
+    if (ready == kFALSE) {
+      Cout::PrintInfo(Form("Problem with initialization of  %s", fEventBinningCut->ClassName()), EInfo::kError);
+      return Task::EInitFlag::kFATAL;
     }
     return FemtoBasicAna::Init();
   }
 
-  void FemtoEventBinsAna::AddEventBinCut(const EventBinningCut& bin, Option_t* opt) {
-    if (fEventBinningCuts == nullptr) fEventBinningCuts = new TObjArray();
+  void FemtoEventBinsAna::SetEventBinCut(const EventBinningCut& bin, Option_t* opt) {
+    if (fEventBinningCut) {
+      delete fEventBinningCut;
+      fEventBinningCut = nullptr;
+    }
     TString option = opt;
-    Int_t col      = bin.GetCollectionID();
-    Int_t start, end;
-    Bool_t loop = kFALSE;
-    if (Hal::Std::FindExpressionTwoValues(option, end, start, kTRUE)) { loop = kTRUE; }
-    EventBinningCut* cut = nullptr;
+    Int_t start = -1, end = -1;
+    Hal::Std::FindExpressionTwoValues(option, end, start, kTRUE);
+    if (start != -1 || end != -1) {
+      Cout::PrintInfo("You are trying to set eventbinning collections,  this is not allowed", EInfo::kWarning);
+      Cout::PrintInfo("Cut collections will be ignored", EInfo::kWarning);
+    }
     if (Hal::Std::FindParam(option, "re")) {
-      cut = bin.MakeCopyReal();
+      fEventBinningCut = bin.MakeCopyReal();
     } else if (Hal::Std::FindParam(option, "im")) {
-      cut = bin.MakeCopyImg();
+      fEventBinningCut = bin.MakeCopyImg();
     } else {
-      cut = bin.MakeCopy();
+      fEventBinningCut = bin.MakeCopy();
     }
-    if (loop) {
-      for (int i = 0; i < end; i++) {
-        fEventBinningCuts->AddAt(cut->MakeCopy(), col + i * start);
-        AddCut(*bin.GetCut(), Form("{%i}", col + i * start));
-      }
-    } else {
-      fEventBinningCuts->AddAt(cut->MakeCopy(), col);
-      AddCut(*bin.GetCut());
-    }
-    delete cut;
   }
 
   void FemtoEventBinsAna::InitMemoryMap() {
-    Int_t multi_factor = 1;
-    for (int i = 0; i < fEventBinningCuts->GetEntriesFast(); i++) {
-      EventBinningCut* bin = (EventBinningCut*) fEventBinningCuts->UncheckedAt(i);
-      multi_factor         = multi_factor * bin->GetBinsNo();
-    }
-    fTotalEventBins = multi_factor;
+    fTotalEventBins = fEventBinningCut->GetBinsNo();
     fMemoryMap      = new MemoryMapManager(fCutContainer);
     fMemoryMap->SetMixSize(fMixSize);
 #ifdef HAL_DEBUG
@@ -102,44 +83,32 @@ namespace Hal {
       brName.push_back(Form("%s.", evName.Data()));
       brName.push_back(evName);
     }
-    fMemoryMap->Init(multi_factor, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
+    fMemoryMap->Init(fTotalEventBins, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
   }
 
-  Int_t FemtoEventBinsAna::GetEventBin() {
-    Int_t bin = 0;
-    for (int i = 0; i < fEventBinningCuts->GetEntriesFast(); i++) {
-      EventBinningCut* event = (EventBinningCut*) fEventBinningCuts->UncheckedAt(i);
-      Int_t cutBin           = event->CheckBin(fCurrentEvent);
-      if (cutBin == -1) return -1;
-      bin = bin + cutBin * fEventBinnngsBinsNo->Get(i);
-    }
-    return bin;
-  }
+  Int_t FemtoEventBinsAna::GetEventBin() { return fEventBinningCut->CheckBin(fCurrentEvent); }
 
   Package* FemtoEventBinsAna::Report() const {
-    Package* pack   = FemtoBasicAna::Report();
-    Package* packEB = new Package();
-    for (int i = 0; i < fEventBinningCuts->GetEntries(); i++) {
-      packEB->AddObject(((EventBinningCut*) fEventBinningCuts->At(i))->Report());
-    }
-    AddToAnaMetadata(pack, packEB);
+    Package* pack = FemtoBasicAna::Report();
+    AddToAnaMetadata(pack, fEventBinningCut->Report());
     return pack;
   }
 
   void FemtoEventBinsAna::ProcessEvent() {
-    Int_t eventBin = GetEventBin();
+    const Int_t eventBin = GetEventBin();
     if (eventBin < 0) return;
-    Int_t DummyEventCol = eventBin + fCurrentEventCollectionID * fTotalEventBins;
+    const Int_t evCol         = fCurrentEventCollectionID;
+    fCurrentEventCollectionID = eventBin;
     // we are using DummyEventCol to point event collection but still use
     // fCurrentEvent to numbering cuts
-    fMemoryMap->PrepareMaps(DummyEventCol);
-    CutCollection* cont = fCutContainer->GetEventCollection(fCurrentEventCollectionID);
+    fMemoryMap->PrepareMaps(fCurrentEventCollectionID);
+    CutCollection* cont = fCutContainer->GetEventCollection(0);
     for (fTrackIndex = 0; fTrackIndex < fMemoryMap->GetTemporaryTotalTracksNo(); fTrackIndex++) {
       fCurrentTrack = fCurrentEvent->GetTrack(fTrackIndex);
       for (int j = 0; j < cont->GetNextNo(); j++) {
         fCurrentTrackCollectionID = cont->GetNextAddr(j);
         if (fCutContainer->PassTrack(fCurrentTrack, fCurrentTrackCollectionID)) {
-          fMemoryMap->AddTrackToMapTrack(DummyEventCol,
+          fMemoryMap->AddTrackToMapTrack(fCurrentEventCollectionID,
                                          fCurrentTrackCollectionID,
                                          fTrackIndex);  // load track into memory map - may be usefull at
                                                         // finish event
@@ -147,14 +116,8 @@ namespace Hal {
         }
       }
     }
-    fMemoryMap->BufferEvent(DummyEventCol);
+    fMemoryMap->BufferEvent(fCurrentEventCollectionID);
     fCurrentTrackCollectionID = 0;
-    /*fCurrentEventCollectionID is not used by two track ana to get pair cuts,
-     because we have fixed one or two two-track collections, therefore we can
-     temporary replace fCurrentEventCollection by DummyEvent
-     */
-    fEventCollectionCF        = fCurrentEventCollectionID;
-    fCurrentEventCollectionID = DummyEventCol;
     if (IdenticalParticles()) {
 #ifdef HAL_DEBUG
       Cout::PrintInfo(Form("Finish identical event with %i tracks",
@@ -171,24 +134,62 @@ namespace Hal {
 #endif
       FinishEventNonIdentical();
     }
-    fCurrentEventCollectionID = fEventCollectionCF;
+    fCurrentEventCollectionID = evCol;
   }
 
   FemtoEventBinsAna& FemtoEventBinsAna::operator=(const FemtoEventBinsAna& other) {
     if (this != &other) {
       FemtoBasicAna::operator=(other);
-      if (fEventBinningCuts) {
-        delete fEventBinningCuts;
-        fEventBinningCuts = nullptr;
+      if (fEventBinningCut) {
+        delete fEventBinningCut;
+        fEventBinningCut = nullptr;
       }
-      if (fEventBinnngsBinsNo) {
-        delete fEventBinnngsBinsNo;
-        fEventBinnngsBinsNo = nullptr;
-      }
-      if (other.fEventBinningCuts) fEventBinningCuts = (TObjArray*) other.fEventBinningCuts->Clone();
-      if (other.fEventBinnngsBinsNo) { fEventBinnngsBinsNo = (Array_1<Int_t>*) other.fEventBinnngsBinsNo->Clone(); }
+      if (other.fEventBinningCut) fEventBinningCut = other.fEventBinningCut->MakeCopy();
       fTotalEventBins = other.fTotalEventBins;
     }
     return *this;
   }
+
+  Bool_t FemtoEventBinsAna::InitArray() {
+    fCFs              = new ObjectMatrix_2();
+    DividedHisto1D* h = ((FemtoCorrFunc*) fCFTemp)->GetCF(0);
+    TString name      = h->GetName();
+    name.ReplaceAll("[0]", "");
+    h->SetName(name);
+    Int_t eventBins = fEventBinningCut->GetBinsNo();
+    fCFs->Init(eventBins, fTwoTrackCollectionsNo, fCFTemp);
+    for (int i = 0; i < eventBins; i++) {
+      for (int j = 0; j < fTwoTrackCollectionsNo; j++) {
+        FemtoCorrFunc* corrfunc = (FemtoCorrFunc*) fCFs->At(i, j);
+        corrfunc->SetEventCollID(0);
+        corrfunc->SetPairCollID(j);
+        corrfunc->Check();
+        TString comment = Form("<pre>PairBin[%i]\n", j);
+        std::vector<Double_t> mini, maxi;
+        std::vector<TString> names;
+        fEventBinningCut->GetBinParam(i, mini, maxi, names);
+        for (int k = 0; k < (int) names.size(); k++) {
+          comment = comment + " " + names[k] + Form("[%4.2f %4.2f]\n", mini[k], maxi[k]);
+        }
+        corrfunc->SetComment(comment + "</pre>");
+      }
+    }
+    return kTRUE;
+  }
+
+  void FemtoEventBinsAna::AddCut(const Hal::Cut& cut, Option_t* opt) {
+    if (cut.GetUpdateRatio() == ECutUpdate::kEvent) {
+      TString option = opt;
+      if (option.Contains("im")) { /*imaginary cut */
+        FemtoBasicAna::AddCut(cut, "im");
+      } else if (option.Contains("re")) { /*real cut*/
+        FemtoBasicAna::AddCut(cut, "re");
+      } else { /* normal cut */
+        FemtoBasicAna::AddCut(cut);
+      }
+    } else {
+      FemtoBasicAna::AddCut(cut, opt);
+    }
+  }
+
 }  // namespace Hal

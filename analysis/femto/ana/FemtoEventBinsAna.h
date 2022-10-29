@@ -25,26 +25,25 @@ namespace Hal {
     /**
      * holds array of event cuts used for binning mixing
      */
-    TObjArray* fEventBinningCuts;
-    /**
-     * Contains number of bins in event cuts used for binning
-     */
-    Array_1<Int_t>* fEventBinnngsBinsNo;
+    EventBinningCut* fEventBinningCut;
     Int_t fTotalEventBins;
 
     virtual void ProcessEvent();
     virtual Package* Report() const;
     virtual Int_t GetEventBin();
+    virtual Bool_t InitArray();
     virtual Task::EInitFlag Init();
     virtual void InitMemoryMap();
 
   public:
     FemtoEventBinsAna();
     virtual ~FemtoEventBinsAna();
-    virtual void AddEventBinCut(const EventBinningCut& bin, Option_t* opt);
+    virtual void SetEventBinCut(const EventBinningCut& bin, Option_t* opt = "");
     FemtoEventBinsAna(const FemtoEventBinsAna& other);
     FemtoEventBinsAna& operator=(const FemtoEventBinsAna& other);
     ClassDef(FemtoEventBinsAna, 1)
+
+      virtual void AddCut(const Hal::Cut& cut, Option_t* opt = "");
   };
 }  // namespace Hal
 

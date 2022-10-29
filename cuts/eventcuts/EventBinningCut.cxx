@@ -16,6 +16,7 @@
 #include "Parameter.h"
 #include "Std.h"
 
+#include <TList.h>
 #include <iostream>
 
 
@@ -23,9 +24,23 @@ namespace Hal {
   EventBinningCut::EventBinningCut() : EventCut(1), fEventCut(nullptr), fTotalBinsNo(1) {}
 
   Package* EventBinningCut::Report() const {
-    Package* report = EventCut::Report();
+    Package* report = new Package(this);
+    report->SetName("EventBinningCut");
+
     for (int i = 0; i < GetCutSize(); i++) {
-      // report->AddObject(new ParameterInt(Form("Bins[%i]", i), fStepsNo.Get(i)));
+      auto* name    = new ParameterString(Form("CutUnit[%i]", i), fEventCut->GetUnit(i));
+      auto* minimum = new ParameterDouble(Form("CutMin[%i]", i), fEventCut->GetMin(i));
+      auto* maximum = new ParameterDouble(Form("CutMax[%i]", i), fEventCut->GetMax(i));
+      TList* list   = new TList();
+      int j         = 0;
+      for (auto val : fValuesUp[i]) {
+        auto* range = new ParameterDouble(Form("Par[%i][%i]", i, j++), val);
+        list->AddLast(range);
+      }
+      report->AddObject(name);
+      report->AddObject(minimum);
+      report->AddObject(maximum);
+      report->AddObject(list);
     }
     report->AddObject(fEventCut->Report());
     return report;
@@ -187,6 +202,21 @@ namespace Hal {
     for (auto i : fValuesUp) {
       printF(Form("vals_%i ", c++), i);
     };
+  }
+
+  void EventBinningCut::GetBinParam(Int_t bin,
+                                    std::vector<Double_t>& mini,
+                                    std::vector<Double_t>& maxi,
+                                    std::vector<TString>& strings) const {
+    mini.clear();
+    maxi.clear();
+    strings.clear();
+    for (int i = 0; i < GetCutSize(); i++) {
+      strings.push_back(fEventCut->GetUnit(i));
+      mini.push_back(0);
+      maxi.push_back(1);
+    }
+    // TODO Fix this
   }
 
 }  // namespace Hal

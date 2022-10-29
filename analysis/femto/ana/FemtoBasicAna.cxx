@@ -305,7 +305,6 @@ namespace Hal {
     if (fCFs) delete fCFs;
     if (fFreezoutGenerator) delete fFreezoutGenerator;
     delete fFemtoPair;
-
     if (fCFTemp) delete fCFTemp;
   }
 

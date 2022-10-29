@@ -28,6 +28,7 @@ namespace HalOTF {
   void RecoEvent::Update(Hal::EventInterface* interface) {
     RecoEventInterface* s = (RecoEventInterface*) interface;
     fTotalTracksNo        = s->GetEvent()->GetNTracks();
+    fMultiplicity         = fTotalTracksNo;
     fTracks->Clear();
     fTracks->ExpandCreateFast(fTotalTracksNo);
     OTF::RecoEvent* ev = s->GetEvent();

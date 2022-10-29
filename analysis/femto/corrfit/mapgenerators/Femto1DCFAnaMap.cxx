@@ -23,8 +23,8 @@
 #include "FemtoPair.h"
 #include "FemtoSourceModel.h"
 #include "FemtoWeightGenerator.h"
-#include "Std.h"
 #include "ObjectMatrix.h"
+#include "Std.h"
 
 
 namespace Hal {
@@ -125,7 +125,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair() {
     fFemtoPair->Compute();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID));
+    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
@@ -139,7 +139,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Perfect() {
     fFemtoPair->Compute();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID));
+    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     fFemtoPair->SetWeight(1.0);
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
@@ -150,7 +150,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Rotated() {
     fFemtoPair->Compute_Rotated();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID));
+    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
@@ -164,7 +164,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Hemisphere() {
     fFemtoPair->Compute_Hemisphere();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID));
+    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
@@ -178,7 +178,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Mixed() {
     fFemtoPair->Compute_Mixed();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID));
+    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     fFemtoPair->SetWeight(1.0);
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
@@ -189,7 +189,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Charged() {
     fFemtoPair->Compute_Charged();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID));
+    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);

@@ -40,7 +40,6 @@ namespace Hal {
     fUseImgMomenta(kFALSE),
     fIgnoreSign(kFALSE),
     fFsiWeight(0.0),
-    fEventCollectionCF(0),
     fFemtoPair(nullptr),
     fCalc(nullptr),
     fFreezoutGenerator(nullptr),
@@ -58,7 +57,6 @@ namespace Hal {
     fUseImgMomenta(ana.fUseImgMomenta),
     fIgnoreSign(ana.fIgnoreSign),
     fFsiWeight(ana.fFsiWeight),
-    fEventCollectionCF(ana.fEventCollectionCF),
     fFemtoPair(nullptr),
     fCalc(ana.fCalc),
     fFreezoutGenerator(nullptr) {
@@ -232,40 +230,40 @@ namespace Hal {
     fFemtoPair->Compute();
     Double_t weight = fCalc->GenerateWeight(fFemtoPair);
     fFemtoPair->SetWeight(weight);
-    ((FemtoCorrFunc*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID))->FillNum(fFemtoPair);
+    ((FemtoCorrFunc*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID))->FillNum(fFemtoPair);
   }
 
   void FemtoBasicAna::ProcessFemtoPair_Perfect() {
     fFemtoPair->Compute();
     fFemtoPair->SetWeight(1.0);
-    ((FemtoCorrFunc*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID))->FillDenPerfect(fFemtoPair);
+    ((FemtoCorrFunc*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID))->FillDenPerfect(fFemtoPair);
   }
 
   void FemtoBasicAna::ProcessFemtoPair_Rotated() {
     fFemtoPair->Compute_Rotated();
     Double_t weight = fCalc->GenerateWeight(fFemtoPair);
     fFemtoPair->SetWeight(weight);
-    ((FemtoCorrFunc*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID))->FillDenRotated(fFemtoPair);
+    ((FemtoCorrFunc*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID))->FillDenRotated(fFemtoPair);
   }
 
   void FemtoBasicAna::ProcessFemtoPair_Hemisphere() {
     fFemtoPair->Compute_Hemisphere();
     Double_t weight = fCalc->GenerateWeight(fFemtoPair);
     fFemtoPair->SetWeight(weight);
-    ((FemtoCorrFunc*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID))->FillDenHemisphere(fFemtoPair);
+    ((FemtoCorrFunc*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID))->FillDenHemisphere(fFemtoPair);
   }
 
   void FemtoBasicAna::ProcessFemtoPair_Mixed() {
     fFemtoPair->Compute_Mixed();
     fFemtoPair->SetWeight(1.0);
-    ((FemtoCorrFunc*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID))->FillDenMixed(fFemtoPair);
+    ((FemtoCorrFunc*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID))->FillDenMixed(fFemtoPair);
   }
 
   void FemtoBasicAna::ProcessFemtoPair_Charged() {
     fFemtoPair->Compute_Charged();
     Double_t weight = fCalc->GenerateWeight(fFemtoPair);
     fFemtoPair->SetWeight(weight);
-    ((FemtoCorrFunc*) fCFs->At(fEventCollectionCF, fCurrentPairCollectionID))->FillDenCharged(fFemtoPair);
+    ((FemtoCorrFunc*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID))->FillDenCharged(fFemtoPair);
   }
 
   void FemtoBasicAna::CheckCutContainerCollections() {
@@ -341,7 +339,6 @@ namespace Hal {
         }
       }
     }
-    fEventCollectionCF = fCurrentEventCollectionID;
     fMemoryMap->BufferEvent(fCurrentEventCollectionID);
     fCurrentTrackCollectionID = 0;
     if (IdenticalParticles()) {
@@ -403,7 +400,6 @@ namespace Hal {
         delete fCFTemp;
         fCFTemp = nullptr;
       }
-      fEventCollectionCF = other.fEventCollectionCF;
       if (other.fFemtoPair) fFemtoPair = (FemtoPair*) other.fFemtoPair->Clone();
       if (other.fCalc) fCalc = (FemtoWeightGenerator*) other.fCalc->Clone();
       if (other.fFreezoutGenerator) fFreezoutGenerator = (FemtoFreezoutGenerator*) other.fFreezoutGenerator->Clone();

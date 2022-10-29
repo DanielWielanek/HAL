@@ -45,10 +45,6 @@ namespace Hal {
      */
     Double_t fFsiWeight;
     /**
-     * collection of CF assigned to given pair
-     */
-    Int_t fEventCollectionCF;
-    /**
      * pointer to processed femtoscopic pair
      */
     FemtoPair* fFemtoPair;

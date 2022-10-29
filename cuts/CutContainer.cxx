@@ -143,7 +143,7 @@ namespace Hal {
       return;
     }
     // add to cut containers
-    if (GetCutContainer(place)->At(collection) == NULL) {
+    if (GetCutContainer(place)->At(collection) == nullptr) {
       CutCollection* subcont = new CutCollection(fCutContainers, fSize, place, collection);
       subcont->AddCut(cut.MakeCopy(), opt);
       GetCutContainer(place)->AddAtAndExpand(subcont, collection);

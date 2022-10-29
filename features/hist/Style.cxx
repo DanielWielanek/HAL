@@ -73,6 +73,8 @@ namespace Hal {
     SetLogz(z);
   }
 
+  //===========================================================================
+
   HistoStyle::HistoStyle() {}
 
   void HistoStyle::SetMarkerStyle(Color_t c, Int_t marker, Size_t size) {
@@ -89,7 +91,6 @@ namespace Hal {
   }
 
   void HistoStyle::SetColor(Color_t c) { Register({"mCol", "lCol"}, {Int_t(c), Int_t(c)}); }
-
 
   void HistoStyle::SetAxis(Double_t titleSize, Double_t titleOffset, Double_t labelSize, Double_t labelOffset, Char_t x) {
     TString labels[4] = {"TitSiz", "TitOff", "LabSiz", "LabOff"};

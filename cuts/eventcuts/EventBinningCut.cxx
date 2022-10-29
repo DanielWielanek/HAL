@@ -22,7 +22,6 @@
 namespace Hal {
   EventBinningCut::EventBinningCut() : EventCut(1), fEventCut(nullptr), fTotalBinsNo(1) {}
 
-
   Package* EventBinningCut::Report() const {
     Package* report = EventCut::Report();
     for (int i = 0; i < GetCutSize(); i++) {
@@ -71,7 +70,6 @@ namespace Hal {
     }
     PreInit(xvals);
   }
-
 
   EventBinningCut::EventBinningCut(const EventCut& cut, const std::initializer_list<std::initializer_list<Double_t>>& init) :
     EventCut(cut.GetCutSize()) {

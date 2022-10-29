@@ -857,11 +857,11 @@ namespace Hal {
       h.SetMarkerColor(color);
     }
 
-    void SetColorAndMarker(TH1& h, Color_t color, Marker_t m) {
+    void SetColorAndMarker(TH1& h, Color_t color, Marker_t m, Size_t s) {
       h.SetLineColor(color);
       h.SetMarkerColor(color);
       h.SetMarkerStyle(m);
-      h.SetMarkerSize(m);
+      h.SetMarkerSize(s);
     }
 
     void MakeBeautiful() {

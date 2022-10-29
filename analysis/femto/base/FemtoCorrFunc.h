@@ -31,6 +31,7 @@ namespace Hal {
   class FemtoCorrFunc : public Object {
     ParameterInt fEventCol;
     ParameterInt fPairCol;
+    TString fComment;
 
   protected:
     ObjectMatrix_1* fArray;
@@ -68,6 +69,11 @@ namespace Hal {
     virtual void FillDenHemisphere(FemtoPair* pair) { FillDenMixed(pair); };
     virtual void FillDenCharged(FemtoPair* pair) { FillDenMixed(pair); };
     /**
+     * set comment for this object
+     * @param comment
+     */
+    void SetComment(TString comment) { fComment = comment; };
+    /**
      * set event collection ID
      * @param no
      */
@@ -92,6 +98,11 @@ namespace Hal {
      * @return total number of subfunction
      */
     Int_t GetEntries() const { return fArray->GetSize(); };
+    /**
+     *
+     * @return comment
+     */
+    TString GetComment() const { return fComment; }
     /**
      * return correlation function at given position
      * @param i

@@ -103,6 +103,10 @@ namespace Hal {
       row1.AddContent(HtmlCell(h->HTMLExtract(i, path)));
       table.AddContent(row1);
     }
+    HtmlRow row2("", "light_blue", "");
+    row2.AddContent(HtmlCellCol("Comment:", 2));
+    row2.AddContent(HtmlCell(GetComment()));
+    table.AddContent(row2);
     file.AddContent(table);
     AddHTMLCode(file);
     file.Save();
@@ -170,6 +174,10 @@ namespace Hal {
       }
       table.AddContent(row2);
     }
+    HtmlRow row2("", "light_blue", "");
+    row2.AddContent(HtmlCellCol("Comment:", 2));
+    row2.AddContent(HtmlCell(GetComment()));
+    table.AddContent(row2);
     file.AddContent(table);
     file.Save();
     return HtmlCore::GetUrl(Form("corrfunc_%i/corrfunc.html", counter), this->ClassName());

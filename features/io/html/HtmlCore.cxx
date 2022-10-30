@@ -199,6 +199,15 @@ namespace Hal {
     return relative_path;
   }
 
+  TString HtmlCore::CheckBr(TString text) {
+    if (text.Contains("\n")) {
+      // text = text.ReplaceAll()
+      return Form("<pre>%s</pre>", text.Data());
+    }
+    std::cout << "NOT FOUND " << text << "**" << std::endl;
+    return text;
+  }
+
   TString HtmlCore::GetLastDir(TString name, Int_t i) {
     if (name.EndsWith("/")) name = name(0, name.Length() - 1);
     Int_t cut_pos = -1;

@@ -106,6 +106,12 @@ namespace Hal {
      * @return true if online mode is present
      */
     static Bool_t IsOnline() { return fgOnline; }
+    /**
+     * check if text contains new line character if yes then add <pre> tags
+     * @param text
+     * @return
+     */
+    static TString CheckBr(TString text);
     static TString GetLastDir(TString name, Int_t cut = 1);
     /**
      *

@@ -204,7 +204,6 @@ namespace Hal {
       // text = text.ReplaceAll()
       return Form("<pre>%s</pre>", text.Data());
     }
-    std::cout << "NOT FOUND " << text << "**" << std::endl;
     return text;
   }
 

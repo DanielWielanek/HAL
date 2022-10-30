@@ -105,7 +105,7 @@ namespace Hal {
     }
     HtmlRow row2("", "light_blue", "");
     row2.AddContent(HtmlCellCol("Comment:", 2));
-    row2.AddContent(HtmlCell(GetComment()));
+    row2.AddContent(HtmlCell(HtmlCore::CheckBr(GetComment())));
     table.AddContent(row2);
     file.AddContent(table);
     AddHTMLCode(file);
@@ -176,7 +176,7 @@ namespace Hal {
     }
     HtmlRow row2("", "light_blue", "");
     row2.AddContent(HtmlCellCol("Comment:", 2));
-    row2.AddContent(HtmlCell(GetComment()));
+    row2.AddContent(HtmlCell(HtmlCore::CheckBr(GetComment())));
     table.AddContent(row2);
     file.AddContent(table);
     file.Save();

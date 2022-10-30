@@ -164,14 +164,14 @@ namespace Hal {
         corrfunc->SetEventCollID(0);
         corrfunc->SetPairCollID(j);
         corrfunc->Check();
-        TString comment = Form("<pre>PairBin[%i]\n", j);
+        TString comment = Form("PairBin[%i]\n", j);
         std::vector<Double_t> mini, maxi;
         std::vector<TString> names;
         fEventBinningCut->GetBinParam(i, mini, maxi, names);
         for (int k = 0; k < (int) names.size(); k++) {
           comment = comment + " " + names[k] + Form("[%4.2f %4.2f]\n", mini[k], maxi[k]);
         }
-        corrfunc->SetComment(comment + "</pre>");
+        corrfunc->SetComment(comment);
       }
     }
     return kTRUE;

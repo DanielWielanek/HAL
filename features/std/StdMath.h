@@ -103,7 +103,13 @@ namespace Hal {
      * @return position in multidimensional space
      */
     std::vector<int> OneToMultiDimIndex(const std::vector<int>& size, Int_t n);
-
+    /**
+     *
+     * @param num numerator (dividend)
+     * @param den denominator (divisor)
+     * @return pair - quotient + reminder
+     */
+    std::pair<Int_t, Int_t> Division(Int_t num, Int_t div);
   }  // namespace Std
 }  // namespace Hal
 #endif /* HAL_FEATURES_STD_HALSTDMATH_H_ */

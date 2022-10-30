@@ -151,5 +151,14 @@ namespace Hal {
       }
       return res;
     }
+
+    std::pair<Int_t, Int_t> Division(Int_t num, Int_t div) {
+      std::pair<Int_t, Int_t> res;
+      Int_t reminder = num % div;
+      res.second     = reminder;
+      Int_t afdiv    = (num - reminder) / div;
+      res.first      = afdiv;
+      return res;
+    }
   }  // namespace Std
 }  // namespace Hal

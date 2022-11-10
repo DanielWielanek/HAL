@@ -74,8 +74,9 @@ namespace Hal {
     if (!Hal::Std::FindParam(option, "fast")) {  // add normal cut
       for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
         if (cut->CutName() == ((Cut*) fCuts->UncheckedAt(i))->CutName()) {
-          Cout::PrintInfo(Form("Cut used %s in collection no %i, cut will be removed", cut->ClassName(), cut->GetCollectionID()),
-                          EInfo::kLowWarning);
+          Cout::PrintInfo(
+            Form("Cut used %s in collection no %i, cut will be removed", cut->CutName().Data(), cut->GetCollectionID()),
+            EInfo::kLowWarning);
           return;
         }
       }
@@ -98,7 +99,7 @@ namespace Hal {
         if (cut->CutName() == ((Cut*) fFastCuts->UncheckedAt(i))->CutName()) {
           Cout::PrintInfo(Form("Cut used %s in collection no %i in as fast, cut will be "
                                "removed",
-                               cut->ClassName(),
+                               cut->CutName().Data(),
                                cut->GetCollectionID()),
                           EInfo::kLowWarning);
           return;
@@ -108,7 +109,7 @@ namespace Hal {
         for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
           if (cut->CutName() == ((Cut*) fCuts->UncheckedAt(i))->CutName()) {
             Cout::PrintInfo(
-              Form("Cut used %s in collection no %i but cut will be removed", cut->ClassName(), cut->GetCollectionID()),
+              Form("Cut used %s in collection no %i but cut will be removed", cut->CutName().Data(), cut->GetCollectionID()),
               EInfo::kLowWarning);
             return;
           }

@@ -247,7 +247,13 @@ namespace Hal {
     chi->Draw(opt);
     c->Modified();
     c->Update();
+
     if (fChiLogz->IsOn()) { gPad->SetLogz(); }
+#ifdef __APPLE__
+    for (int ispe = 0; ispe < 2; ispe++) {
+      if (gSystem->ProcessEvents()) break;
+    }
+#endif
     gPad = pad;
   }
 

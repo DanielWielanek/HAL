@@ -21,6 +21,7 @@
 #include <TMath.h>
 #include <TNamed.h>
 #include <TString.h>
+#include <TSystem.h>
 
 #include "Array.h"
 #include "CorrFit1DCF.h"
@@ -99,6 +100,11 @@ namespace Hal {
     if (refresh) {
       fTempPad->Modified(kTRUE);
       fTempPad->Update();
+#ifdef __APPLE__
+      for (int ispe = 0; ispe < 2; ispe++) {
+        if (gSystem->ProcessEvents()) break;
+      }
+#endif
     }
   }
 

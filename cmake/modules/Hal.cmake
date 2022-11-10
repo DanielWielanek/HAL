@@ -56,6 +56,7 @@ set(HAL_HBT
 	${HAL_CORE}/analysis/femto/ana
 	${HAL_CORE}/analysis/femto/base
 	${HAL_CORE}/analysis/femto/weights
+	${HAL_CORE}/analysis/femto/weights/scottpratt
 	${HAL_CORE}/analysis/femto/corrfit
 	${HAL_CORE}/analysis/femto/corrfit/mapgenerators
 	${HAL_CORE}/analysis/femto/corrfit/mapgenerator_multidim

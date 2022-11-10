@@ -20,6 +20,8 @@ include(Hal)
 include(CheckCompiler)
 include(WriteConfig)
 
+find_package(Eigen3 REQUIRED)
+
 
 PathInfo()
    

@@ -18,10 +18,20 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
  ${BASE_INCLUDE_DIRECTORIES}
 )
 
-Include_Directories(
- ${INCLUDE_DIRECTORIES}
- ${GSL_INCLUDE_DIRS}
-)
+
+if(Eigen3_FOUND)
+    Include_Directories(
+     ${INCLUDE_DIRECTORIES}
+     ${GSL_INCLUDE_DIRS}
+     ${EIGEN3_INCLUDE_DIR}
+    )
+else()
+    Include_Directories(
+     ${INCLUDE_DIRECTORIES}
+     ${GSL_INCLUDE_DIRS}
+    )
+endif()
+
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 Include_Directories(${GSL_DIR}/include)
 
@@ -105,6 +115,7 @@ weights/FemtoWeightGeneratorResidual.cxx
 weights/FemtoWeightGeneratorSupressed.cxx
 weights/FemtoWeightGeneratorKisiel.cxx
 
+
 base/FemtoCorrFunc.cxx
 base/corrfunc/FemtoCorrFuncPt.cxx
 base/corrfunc/FemtoCorrFuncKt.cxx
@@ -117,6 +128,14 @@ imaging/FemtoImaging3D.cxx
 base/FemtoSHCF.cxx
 corrfit/CorrFitSHCF.cxx
 )
+if(Eigen3_FOUND)
+MESSAGE("COMPILING SCOTT ${Eigen3_FOUND}")
+    set(SRCS
+        ${SRCS}
+        weights/FemtoWeightGeneratorScottPratt.cxx
+    )
+endif()
+
 
 if(NOT DEFINED DISABLE_SQLITE)
 	set(SRCS
@@ -131,14 +150,60 @@ if(NOT DEFINED DISABLE_SQLITE)
     )
 endif()
 
-
 set(NO_DICT_SRCS
-weights/FemtoFsiTools.F
-weights/FemtoFsiWeightLednicky.F
+    weights/FemtoFsiTools.F
+    weights/FemtoFsiWeightLednicky.F
 )
-
+if(Eigen3_FOUND)
+    set(NO_DICT_SRCS
+    ${NO_DICT_SRCS}
+    weights/scottpratt/kpi_phaseshifts.cc
+    weights/scottpratt/partwave.cc
+    weights/scottpratt/pipi_phaseshifts.cc
+    weights/scottpratt/planewave.cc
+    weights/scottpratt/reid93.cc
+    weights/scottpratt/wf_classical.cc
+    weights/scottpratt/wfcommon.cc
+    weights/scottpratt/wf_generic.cc
+    weights/scottpratt/wf_kpluspiminus_phaseshift.cc
+    weights/scottpratt/wf_kpluspiminus_sqwell.cc
+    weights/scottpratt/wf_kpluspiplus_sqwell.cc
+    weights/scottpratt/wf_lambdalambdaantiparspin_phaseshift.cc
+    weights/scottpratt/wf_lambdalambdaparspin_phaseshift.cc
+    weights/scottpratt/wf_lambdalambda_phaseshift.cc
+    weights/scottpratt/wf_nn_phaseshift.cc
+    weights/scottpratt/wf_optical.cc
+    weights/scottpratt/wf_pipluspiminus_nostrong.cc
+    weights/scottpratt/wf_pipluspiminus_phaseshift.cc
+    weights/scottpratt/wf_pipluspiminus_sqwell.cc
+    weights/scottpratt/wf_pipluspiplus_nostrong.cc
+    weights/scottpratt/wf_pipluspiplus_phaseshift.cc
+    weights/scottpratt/wf_pipluspiplus_sqwell.cc
+    weights/scottpratt/wf_pkplus_phaseshift.cc
+    weights/scottpratt/wf_pkplus_sqwell.cc
+    weights/scottpratt/wf_plambda_phaseshift.cc
+    weights/scottpratt/wf_pn_phaseshift.cc
+    weights/scottpratt/wf_ppbar_nocoulomb.cc
+    weights/scottpratt/wf_ppiminus_sqwell.cc
+    weights/scottpratt/wf_ppiplus_phaseshift.cc
+    weights/scottpratt/wf_ppiplus_sqwell.cc
+    weights/scottpratt/wf_pp_phaseshift.cc
+    weights/scottpratt/wf_pp_schrod.cc
+    weights/scottpratt/wfsquarewell.cc
+    weights/scottpratt/wf_Xipi_phaseshift.cc
+    weights/scottpratt/coulwave.cc
+    weights/scottpratt/bess.cc
+    weights/scottpratt/chcalc.cc
+    weights/scottpratt/parametermap.cc
+    weights/scottpratt/misc.cc
+    weights/scottpratt/log.cc
+    weights/scottpratt/gslmatrix.cc
+    weights/scottpratt/ylm.cc
+    )
+endif()
 set(EXT_HEADERS
 base/FemtoConst.h
+weights/scottpratt/commondefs.h
 )
 
 Set(HEADERS)

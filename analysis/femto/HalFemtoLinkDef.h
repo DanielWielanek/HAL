@@ -124,6 +124,7 @@
 #pragma link C++ class Hal::FemtoWeightGeneratorResidual + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorSupressed + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorKisiel + ;
+#pragma link C++ class Hal::FemtoWeightGeneratorScottPratt + ;
 
 #ifndef GSL_DISABLE
 #pragma link C++ class Hal::FemtoImaging + ;

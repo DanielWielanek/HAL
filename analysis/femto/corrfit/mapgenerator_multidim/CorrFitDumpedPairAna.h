@@ -48,8 +48,6 @@ namespace Hal {
     Bool_t fImgMom;
     FemtoCorrFunc* fTempCF;
     FemtoCorrFunc** fCF;
-    TClonesArray* fPairsSignal;
-    TClonesArray* fPairsBackground;
     FemtoPair* fPair;
     FemtoMicroPair* fMiniPair;
     FemtoFreezoutGenerator* fTempGenerator;
@@ -68,6 +66,7 @@ namespace Hal {
     virtual void RunSignalBackgroundPairs(Int_t nEvents) = 0;
     virtual void RunBackgroundPairs(Int_t nEvents)       = 0;
     virtual Bool_t IsVertical() const { return kFALSE; }
+    virtual Bool_t Connect() = 0;
 
   protected:
     /**

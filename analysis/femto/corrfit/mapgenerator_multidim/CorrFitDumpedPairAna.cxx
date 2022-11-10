@@ -58,8 +58,6 @@ namespace Hal {
     fImgMom(kFALSE),
     fTempCF(nullptr),
     fCF(nullptr),
-    fPairsSignal(nullptr),
-    fPairsBackground(nullptr),
     fPair(nullptr),
     fMiniPair(nullptr),
     fTempGenerator(nullptr),
@@ -80,14 +78,14 @@ namespace Hal {
     //--- file with pairs loaded
     if (fWeight == nullptr) return kFALSE;
     if (fTempCF == nullptr) return kFALSE;
-
-
+    if (fTempCF->GetEntries() > 1) return kFALSE;
     DividedHisto1D* dummy    = fTempCF->GetCF(0);
     Femto::EKinematics kinem = Femto::EKinematics::kLCMS;
     if (dummy->GetLabelsNo() > 0) {
       TString label = dummy->GetLabel(0);
       kinem         = Femto::LabelToKinematics(label);
     }
+    if (Connect() == kFALSE) return kFALSE;
     fPair = Femto::MakePair(kinem, fImgMom);
 
     if (fIgnoreSing) fPair->UseAbs();
@@ -158,27 +156,7 @@ namespace Hal {
       }
     }
     if (fTree == nullptr) return kFALSE;
-    TBranch* branchSignal      = fTree->GetBranch("FemtoSignal.");
-    TBranch* branchBackkground = fTree->GetBranch("FemtoBackground.");
-    switch (fMode) {
-      case eDumpCalcMode::kSignalPairs: {
-        fPairsSignal = new TClonesArray("Hal::FemtoMicroPair");
-        if (branchSignal == nullptr) return kFALSE;
-        branchSignal->SetAddress(&fPairsSignal);
-      } break;
-      case eDumpCalcMode::kBackgroundPairsOnly: {
-        fPairsBackground = new TClonesArray("Hal::FemtoMicroPair");
-        if (branchBackkground == nullptr) return kFALSE;
-        branchBackkground->SetAddress(&fPairsBackground);
-      } break;
-      case eDumpCalcMode::kSignalBackgroundPairs: {
-        fPairsSignal     = new TClonesArray("Hal::FemtoMicroPair");
-        fPairsBackground = new TClonesArray("Hal::FemtoMicroPair");
-        if (branchSignal == nullptr || branchBackkground == nullptr) return kFALSE;
-        branchSignal->SetAddress(&fPairsSignal);
-        branchBackkground->SetAddress(&fPairsBackground);
-      } break;
-    }
+
     return kTRUE;
   }
 

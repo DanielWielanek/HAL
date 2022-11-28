@@ -83,14 +83,15 @@ namespace HalOTF {
     for (int i = 0; i < fMultiplicity; i++) {
       Double_t pt, y;
       fSpectras->GetRandom2(y, pt);
-      Double_t e   = TMath::Sqrt(pt * pt + fMass * fMass);
+      Double_t mt  = TMath::Sqrt(pt * pt + fMass * fMass);
       Double_t phi = gRandom->Uniform(-TMath::Pi(), TMath::Pi());
-      Double_t pz  = TMath::Sign(e * 0.5, y) * TMath::Exp(-y) * (TMath::Exp(2.0 * y) - 1.0);
       Double_t px  = pt * TMath::Cos(phi);
       Double_t py  = pt * TMath::Sin(phi);
+      Double_t pz  = mt * TMath::SinH(y);
 
       OTF::McTrack tr;
-      TLorentzVector p(px, py, pz, e);
+      TLorentzVector p;
+      p.SetXYZM(px, py, pz, fMass);
       tr.SetMomentum(p);
       tr.SetPdgCode(fPids);
       TLorentzVector xr(gRandom->Gaus(0, 1), gRandom->Gaus(0, 1), gRandom->Gaus(0), 0);
@@ -98,10 +99,10 @@ namespace HalOTF {
       fMcEvent->AddTrack(tr);
 
       OTF::RecoTrack rtr;
-      px = px + gRandom->Gaus(0, fSmear) * px;
-      py = py + gRandom->Gaus(0, fSmear) * py;
-      pz = pz + gRandom->Gaus(0, fSmear) * pz;
-      e  = TMath::Sqrt(px * px + py * py + pz * pz + fMass * fMass);
+      px         = px + gRandom->Gaus(0, fSmear) * px;
+      py         = py + gRandom->Gaus(0, fSmear) * py;
+      pz         = pz + gRandom->Gaus(0, fSmear) * pz;
+      Double_t e = TMath::Sqrt(px * px + py * py + pz * pz + fMass * fMass);
       rtr.SetMom(px, py, pz, e);
       rtr.SetNHits(5);
       rtr.SetCharge(fCharge);

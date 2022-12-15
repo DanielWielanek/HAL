@@ -21,6 +21,7 @@ namespace Hal {
 
     CWaveFunction::CWaveFunction() {
       generic  = false;
+      nqmax    = 0;
       ci       = complex<double>(0.0, 1.0);
       randy    = new TRandom();
       MPI      = 139.58;

@@ -17,13 +17,32 @@ namespace Hal {
     class CWaveFunction;
   }  // namespace ScottPratt
   class FemtoWeightGeneratorScottPratt : public FemtoWeightGenerator {
-    Hal::ScottPratt::CWaveFunction* fWave;  //!
+    Hal::ScottPratt::CWaveFunction** fWaveSquares;  //!
+    Hal::ScottPratt::CWaveFunction** fWavePhases;   //!
+    Hal::ScottPratt::CWaveFunction** fWave;         //!
+    Hal::ScottPratt::CWaveFunction* fCurWeight;     //!
     double fPa[4], fPb[4];
     double fXa[4], fXb[4];
+    TString fParFile;
+    void InitWeights();
+    enum class EWeightApprox { kSquare, kPhase, kOther };
+    EWeightApprox fPref = {EWeightApprox::kSquare};
 
   public:
-    FemtoWeightGeneratorScottPratt(TString pairFile, Bool_t phase);
+    FemtoWeightGeneratorScottPratt(TString pairFile = "");
     FemtoWeightGeneratorScottPratt(const FemtoWeightGeneratorScottPratt& other);
+    /**
+     * prefer approximation with square well potential
+     */
+    void PrefferSquareApprox() { fPref = EWeightApprox::kSquare; }
+    /**
+     * prefer pure partial-wave based algorithm
+     */
+    void PrefferPhaseAprrox() { fPref = EWeightApprox::kPhase; }
+    /**
+     * prefer other algorithm
+     */
+    void PrefferOtherApprox() { fPref = EWeightApprox::kOther; }
     virtual void SetPairType(Femto::EPairType aPairType);
     virtual FemtoWeightGenerator* MakeCopy() const { return new FemtoWeightGeneratorScottPratt(*this); };
     virtual Double_t GenerateWeight(FemtoPair* pair);

@@ -154,6 +154,11 @@ namespace Hal {
      * @param opt draw option
      */
     void Draw(Option_t* opt = "");
+    /**
+     *
+     * @return number of histograms
+     */
+    Int_t GetNGraphs() const { return fN; }
     virtual ~MultiGraph();
     ClassDef(MultiGraph, 1)
   };

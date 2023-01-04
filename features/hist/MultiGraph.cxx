@@ -62,7 +62,10 @@ namespace Hal {
     fMultiGraph->Draw(option);
     if (fXaxis) CopyAxis(fXaxis, fMultiGraph->GetXaxis());
     if (fYaxis) CopyAxis(fYaxis, fMultiGraph->GetYaxis());
-    if (fMin[0] != fMax[0]) fMultiGraph->GetXaxis()->SetRangeUser(fMin[0], fMax[0]);
+    if (fMin[0] != fMax[0]) {
+      fMultiGraph->GetXaxis()->SetRangeUser(fMin[0], fMax[0]);
+      fMultiGraph->GetXaxis()->SetLimits(fMin[0], fMax[0]);  // why?
+    }
     if (fMin[1] != fMax[1]) fMultiGraph->GetYaxis()->SetRangeUser(fMin[1], fMax[1]);
     gPad->Update();
     gPad->RedrawAxis();

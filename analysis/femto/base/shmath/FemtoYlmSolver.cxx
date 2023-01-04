@@ -170,7 +170,7 @@ namespace Hal {
     int em, el;
     for (int ilm = 0; ilm < GetMaxJM(); ilm++) {
       GetElEmForIndex(ilm, el, em);
-      if (em < 0) continue;
+      if (em < 0) continue;  // KURWA
       outvec[ioutcount++] = invec[ilm * 2];
       if (em == 0) continue;
       outvec[ioutcount++] = invec[ilm * 2 + 1];
@@ -260,11 +260,19 @@ namespace Hal {
       for (int j = 0; j < fMaxJM * 2; j++)
         fSlice.fCovCF[i][j] = 0;
 
+    if (fDebug) {
+      std::cout << "NORM " << fNormFactor << std::endl;
+      std::cout << "RECALC " << recalc << std::endl;
+
+      std::cout << "Nu ent " << fCF->fNumReal[0]->GetEntries() << " " << fCF->fNumReal[0]->GetBinContent(1) << std::endl;
+    }
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
       //      cout << fNumImag[ilm]->GetBinContent(ibin) << std::endl;
       if (recalc) {
         tMq0[ilm] =
           std::complex<double>(fSlice.fDenReal[ilm] / (fDenEnt / fNormFactor), fSlice.fDenImag[ilm] / (fDenEnt / fNormFactor));
+        std::cout << "tMQ" << ilm << "\t" << fSlice.fDenReal[ilm] << " " << fDenEnt << " " << fSlice.fDenImag[ilm] << " "
+                  << fDenEnt << std::endl;
         tTq0[ilm] = std::complex<double>(fSlice.fNumReal[ilm] / fNumEnt, fSlice.fNumImag[ilm] / fNumEnt);
       } else {
         tMq0[ilm] = std::complex<double>(fSlice.fDenReal[ilm] / fNormFactor, fSlice.fDenImag[ilm] / fNormFactor);
@@ -272,6 +280,7 @@ namespace Hal {
       }
       //      cout << imag(tTq0[ilm]) << std::endl;
     }
+
 
     // Calculate the proper error matrix for T
     // from the temporary covariance matrices
@@ -317,39 +326,54 @@ namespace Hal {
     //       cout << real(tMq0[ilm]) << " " << imag(tMq0[ilm]) << "   ";
     //     cout << std::endl;
 
-    if (fSlice.fNumReal[0] <= 0) return;
+    if (fSlice.fNumReal[0] <= 0) {
+      for (int ilm = 0; ilm < GetMaxJM(); ilm++) {
+        fSlice.fCFReal[ilm]  = 0;
+        fSlice.fCFRealE[ilm] = 0;
+        fSlice.fCFImag[ilm]  = 0;
+        fSlice.fCFImagE[ilm] = 0;
+      }
+
+      for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
+        for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
+          fSlice.fCovNum[2 * ilmz][2 * ilmp]     = 0;
+          fSlice.fCovNum[2 * ilmz][2 * ilmp + 1] = 0;
+        }
+      }
+      return;
+    }
     // Rewrite the new way to use the solving wherever there is inversion
     double mDeltaT[fMaxJM * fMaxJM * 4];
     for (int ilmzero = 0; ilmzero < GetMaxJM() * 2; ilmzero++)
       for (int ilmprim = 0; ilmprim < GetMaxJM() * 2; ilmprim++)
         mDeltaT[(ilmzero * fMaxJM * 2) + ilmprim] = fSlice.fCovNum[ilmzero][ilmprim];
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "Delta T matrix " << std::endl;
-    for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
-      for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mDeltaT[ilmz * GetMaxJM() * 2 + ilmp];
+    if (fDebug) {
+      std::cout << "Delta T matrix " << std::endl;
+      for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
+        for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mDeltaT[ilmz * GetMaxJM() * 2 + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     double mDeltaTPacked[fMaxJM * fMaxJM * 4];
     int msize = PackYlmMatrixIndependentOnly(mDeltaT, mDeltaTPacked);
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "Delta T matrix packed " << std::endl;
-    for (int ilmz = 0; ilmz < msize; ilmz++) {
-      for (int ilmp = 0; ilmp < msize; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mDeltaTPacked[ilmz * msize + ilmp];
+    if (fDebug) {
+      std::cout << "Delta T matrix packed " << std::endl;
+      for (int ilmz = 0; ilmz < msize; ilmz++) {
+        for (int ilmp = 0; ilmp < msize; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mDeltaTPacked[ilmz * msize + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     // (1) Solve (DeltaT)^1 Mtilde = Q
 
@@ -362,27 +386,27 @@ namespace Hal {
     PackYlmMatrixIndependentOnly(mM, mMPacked);
 
     gsl_matrix_view matM = gsl_matrix_view_array(mMPacked, msize, msize);
-#ifdef _FINISH_DEBUG_
-    std::cout << "Mtilde matrix " << std::endl;
-    for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
-      for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mM[ilmz * GetMaxJM() * 2 + ilmp];
+    if (fDebug) {
+      std::cout << "Mtilde matrix " << std::endl;
+      for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
+        for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mM[ilmz * GetMaxJM() * 2 + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
-    }
 
-    std::cout << "Mtilde matrix packed " << std::endl;
-    for (int ilmz = 0; ilmz < msize; ilmz++) {
-      for (int ilmp = 0; ilmp < msize; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mMPacked[ilmz * msize + ilmp];
+      std::cout << "Mtilde matrix packed " << std::endl;
+      for (int ilmz = 0; ilmz < msize; ilmz++) {
+        for (int ilmp = 0; ilmp < msize; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mMPacked[ilmz * msize + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     // Inverting matrix DeltaT.
 
@@ -394,17 +418,17 @@ namespace Hal {
 
     gsl_matrix_view matDTI = gsl_matrix_view_array(mDTInvertedPacked, msize, msize);
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "Delta T matrix inverted packed " << std::endl;
-    for (int ilmz = 0; ilmz < msize; ilmz++) {
-      for (int ilmp = 0; ilmp < msize; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mDTInvertedPacked[ilmz * msize + ilmp];
+    if (fDebug) {
+      std::cout << "Delta T matrix inverted packed " << std::endl;
+      for (int ilmz = 0; ilmz < msize; ilmz++) {
+        for (int ilmp = 0; ilmp < msize; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mDTInvertedPacked[ilmz * msize + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     // (2) Multiply DeltaT^1 M = Q
     double mQ[fMaxJM * fMaxJM * 4];
@@ -424,17 +448,17 @@ namespace Hal {
 
     gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &matF.matrix, &matQ.matrix, 0.0, &matTest.matrix);
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "Test matrix packed - compare to Mtilde" << std::endl;
-    for (int ilmz = 0; ilmz < msize; ilmz++) {
-      for (int ilmp = 0; ilmp < msize; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mTest[ilmz * msize + ilmp];
+    if (fDebug) {
+      std::cout << "Test matrix packed - compare to Mtilde" << std::endl;
+      for (int ilmz = 0; ilmz < msize; ilmz++) {
+        for (int ilmp = 0; ilmp < msize; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mTest[ilmz * msize + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     // (2) Multiply Mtilde^T Q = P
 
@@ -446,33 +470,33 @@ namespace Hal {
 
     gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &matM.matrix, &matQ.matrix, 0.0, &matP.matrix);
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "P matrix packed " << std::endl;
-    for (int ilmz = 0; ilmz < msize; ilmz++) {
-      for (int ilmp = 0; ilmp < msize; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mP[ilmz * msize + ilmp];
+    if (fDebug) {
+      std::cout << "P matrix packed " << std::endl;
+      for (int ilmz = 0; ilmz < msize; ilmz++) {
+        for (int ilmp = 0; ilmp < msize; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mP[ilmz * msize + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     // (3) Solve P^-1 Mtilde^T = R
     double mPUnpacked[fMaxJM * fMaxJM * 4];
     UnPackYlmMatrixIndependentOnly(mP, mPUnpacked, msize);
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "P matrix unpacked " << std::endl;
-    for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
-      for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mPUnpacked[ilmz * GetMaxJM() * 2 + ilmp];
+    if (fDebug) {
+      std::cout << "P matrix unpacked " << std::endl;
+      for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
+        for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mPUnpacked[ilmz * GetMaxJM() * 2 + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     // Invert the P matrix
 
@@ -484,17 +508,17 @@ namespace Hal {
 
     gsl_matrix_view matPI = gsl_matrix_view_array(mPInvertedPacked, msize, msize);
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "P matrix inverted packed " << std::endl;
-    for (int ilmz = 0; ilmz < msize; ilmz++) {
-      for (int ilmp = 0; ilmp < msize; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mPInvertedPacked[ilmz * msize + ilmp];
+    if (fDebug) {
+      std::cout << "P matrix inverted packed " << std::endl;
+      for (int ilmz = 0; ilmz < msize; ilmz++) {
+        for (int ilmp = 0; ilmp < msize; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mPInvertedPacked[ilmz * msize + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     //       //      gsl_matrix_view matR = gsl_matrix_view_array(mR, msize,
     //       msize);
@@ -528,36 +552,36 @@ namespace Hal {
 
     // (2) Multiply P^-1 M (Trans) = R
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "Matrix M Packed " << std::endl;
-    for (int ilmz = 0; ilmz < msize; ilmz++) {
-      for (int ilmp = 0; ilmp < msize; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mMPacked[ilmz * msize + ilmp];
+    if (fDebug) {
+      std::cout << "Matrix M Packed " << std::endl;
+      for (int ilmz = 0; ilmz < msize; ilmz++) {
+        for (int ilmp = 0; ilmp < msize; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mMPacked[ilmz * msize + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &matPI.matrix, &matM.matrix, 1.0, &matR.matrix);
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "R matrix packed " << std::endl;
+    if (fDebug) {
+      std::cout << "R matrix packed " << std::endl;
 
-    for (int ilmz = 0; ilmz < msize; ilmz++) {
-      for (int ilmp = 0; ilmp < msize; ilmp++) {
-        std::cout.precision(3);
-        std::cout.width(10);
-        std::cout << mR[ilmz * msize + ilmp];
+      for (int ilmz = 0; ilmz < msize; ilmz++) {
+        for (int ilmp = 0; ilmp < msize; ilmp++) {
+          std::cout.precision(3);
+          std::cout.width(10);
+          std::cout << mR[ilmz * msize + ilmp];
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
-#endif
 
     // (4) Solve DeltaT^-1 T = L
-    double vL[fMaxJM * 2];
-    gsl_vector_view vecL = gsl_vector_view_array(vL, msize);
+    double vL[fMaxJM * 2] = {0};
+    gsl_vector_view vecL  = gsl_vector_view_array(vL, msize);
 
     //       // Decomposing the M matrix
     //       gsl_linalg_SV_decomp(&matF.matrix, &matS.matrix, &vecST.vector,
@@ -578,15 +602,15 @@ namespace Hal {
     //       gsl_linalg_SV_solve(&matF.matrix, &matS.matrix, &vecST.vector,
     //       &vecB.vector, &vecL.vector);
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "L vector packed " << std::endl;
-    for (int ilmp = 0; ilmp < msize; ilmp++) {
-      std::cout.precision(3);
-      std::cout.width(10);
-      std::cout << vL[ilmp];
+    if (fDebug) {
+      std::cout << "L vector packed " << std::endl;
+      for (int ilmp = 0; ilmp < msize; ilmp++) {
+        std::cout.precision(3);
+        std::cout.width(10);
+        std::cout << vL[ilmp];
+      }
+      std::cout << std::endl;
     }
-    std::cout << std::endl;
-#endif
 
     // Multiply DeltaT^-1 T = L
 
@@ -604,23 +628,23 @@ namespace Hal {
 
     gsl_blas_dgemv(CblasNoTrans, 1.0, &matR.matrix, &vecL.vector, 0.0, &vecY.vector);
 
-#ifdef _FINISH_DEBUG_
-    std::cout << "C vector packed " << std::endl;
-    for (int ilmp = 0; ilmp < msize; ilmp++) {
-      std::cout.precision(3);
-      std::cout.width(10);
-      std::cout << vY[ilmp];
+    if (fDebug) {
+      std::cout << "C vector packed " << std::endl;
+      for (int ilmp = 0; ilmp < msize; ilmp++) {
+        std::cout.precision(3);
+        std::cout.width(10);
+        std::cout << vY[ilmp];
+      }
+      std::cout << std::endl;
     }
-    std::cout << std::endl;
-#endif
     int mpack = 0;
     int el, em;
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
       //    fCFReal[ilm]->SetBinContent(ibin, vC[mpack++]);
       GetElEmForIndex(ilm, el, em);
       if ((el % 2) == 1) {
-        // fSlice.fCFReal[ilm] = 0.0;
-        // fSlice.fCFImag[ilm] = 0.0;
+        fSlice.fCFReal[ilm] = 0.0;
+        fSlice.fCFImag[ilm] = 0.0;
       }
 
 #ifdef FULL_CALC
@@ -629,14 +653,14 @@ namespace Hal {
 
 #else
       if (em < 0) {
-        // fSlice.fCFReal[ilm] = 0.0;
-        // fSlice.fCFImag[ilm] = 0.0;
+        fSlice.fCFReal[ilm] = 0.0;
+        fSlice.fCFImag[ilm] = 0.0;
       } else {
         fSlice.fCFReal[ilm] = vY[mpack++];
         if (em == 0) {
-          // fSlice.fCFImag[ilm] = 0;
+          fSlice.fCFImag[ilm] = 0;
         } else {
-          //      fCFImag[ilm]->SetBinContent(ibin, vC[mpack++]);
+          //   fSlice.fCFImag[ilm] = vC[mpack++];
           fSlice.fCFImag[ilm] = vY[mpack++];
         }
       }
@@ -693,6 +717,11 @@ namespace Hal {
     int nbins = fCF->GetNum()->GetNbinsX();
     for (int i = 1; i <= nbins; i++) {
       fSlice.BuildSlice(*fCF, i);
+      if (fDebugBin == i) {
+        fDebug = kTRUE;
+      } else {
+        fDebug = kFALSE;
+      }
       DoMath(recalc);
       FixCF();
       UpdateCF(i);
@@ -753,7 +782,7 @@ namespace Hal {
       fNormFactor /= num0->GetEntries() / den0->GetEntries();
     }
     fNumEnt = num0->GetEntries();
-    fDenEnt = num0->GetEntries();
+    fDenEnt = den0->GetEntries();
   }
 
 } /* namespace Hal */

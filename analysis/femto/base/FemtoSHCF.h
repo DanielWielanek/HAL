@@ -145,8 +145,9 @@ namespace Hal {
     /**
      * recalculate correlation function, should be used if numerator/denominator
      * was changed
+     * @param number of bin to debu i negative do not debug
      */
-    void RecalculateCF();
+    void RecalculateCF(Int_t debugBin = -1);
     /**
      * add real numerators
      * @param histograms array of numerators

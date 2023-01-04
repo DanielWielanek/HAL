@@ -50,6 +50,7 @@ namespace Hal {
     }
     return bin;
   }
+
   void FastHist1D::Fill(Double_t x, Double_t w) {
     Int_t bin = (x - fMinX) * fStepX + 1;
     if (bin < 0) {

@@ -17,7 +17,10 @@
 #include <TH1.h>
 #include <TString.h>
 
+class TGraph;
+
 namespace Hal {
+  class MultiGraph;
   /**
    * abstract class for holding styles, useful for plot many histograms
    */
@@ -69,7 +72,7 @@ namespace Hal {
     Style() {};
     Style& operator=(const Style& style) = default;
     virtual ~Style() {};
-    ClassDef(Style, 0);
+    ClassDef(Style, 1);
   };
 
   class PadStyle : public Style {
@@ -96,12 +99,15 @@ namespace Hal {
      */
     void Apply();
     virtual ~PadStyle() {}
-    ClassDef(PadStyle, 0);
+    ClassDef(PadStyle, 1);
   };
 
   class HistoStyle : public Style {
     TString fTitle;
     TString fAxTitle[3];
+    void ApplyTH(TH1& h);
+    void ApplyTGraph(TGraph& gr);
+    void ApplyMGraph(MultiGraph& gr, Int_t no);
 
   public:
     HistoStyle();
@@ -127,19 +133,49 @@ namespace Hal {
      */
     void SetMinMax(Double_t minVal, Double_t maxVal);
     /**
+     * set marker color
+     * @param col
+     */
+    void SetMarkerColor(Color_t col);
+    /**
+     * set marker style
+     * @param marker
+     */
+    void SetMarkerStyle(Int_t marker);
+    /**
+     * set marker size
+     * @param size
+     */
+    void SetMarkerSize(Size_t size);
+    /**
      * set marker properties
      * @param c
      * @param marker
      * @param size
      */
-    void SetMarkerStyle(Color_t c, Int_t marker, Size_t size);
+    void SetMarkerProperties(Color_t c, Int_t marker, Size_t size);
     /**
-     * set tile properites
+     * set line width
+     * @param width
+     */
+    void SetLineWidth(Double_t width);
+    /**
+     * sets line color
+     * @param c
+     */
+    void SetLineColor(Color_t c);
+    /**
+     * sets line style
+     * @param s
+     */
+    void SetLineStyle(Style_t s);
+    /**
+     * set tile properties, negative values are ignored
      * @param c
      * @param style
      * @param widgth
      */
-    void SetLineStyle(Color_t c, Style_t style, Double_t widgth);
+    void SetLineProperties(Color_t c, Style_t style, Double_t widgth);
     /**
      * set marker and line color
      * @param c
@@ -161,7 +197,7 @@ namespace Hal {
      */
     void SetTitles(TString histo, TString xAxis = "", TString yAxis = "", TString zAxis = "");
     /**
-     * set axis labels and title attributes
+     * set axis labels and title attributes, negative values are ignored
      * @param titleSize
      * @param titleOffset
      * @param labelSize
@@ -172,10 +208,11 @@ namespace Hal {
     /**
      * apply setting to histogram
      * @param h
+     * @param no - for multigraph of hall
      */
-    void Apply(TH1& h);
+    void Apply(TObject& h, Int_t no = 0);
     virtual ~HistoStyle() {};
-    ClassDef(HistoStyle, 0);
+    ClassDef(HistoStyle, 1);
   };
 
 

@@ -10,6 +10,7 @@
 #include "FemtoSourceModel.h"
 
 #include "Cout.h"
+#include "FemtoSourceDensity.h"
 #include "Package.h"
 #include "Parameter.h"
 
@@ -33,6 +34,7 @@ namespace Hal {
     fParams(nullptr),
     fParameterNames(nullptr),
     fRandom(new TRandom2()),
+    fDensity(nullptr),
     fRout(0),
     fRside(0),
     fRlong(0),
@@ -55,6 +57,8 @@ namespace Hal {
       fParameterNames[i] = model.fParameterNames[i];
       fParams[i]         = model.fParams[i];
     }
+    fDensity = nullptr;
+    if (model.fDensity) { fDensity = (FemtoSourceDensity*) model.fDensity->Clone(); }
   }
 
   Package* FemtoSourceModel::Report() const {
@@ -83,8 +87,17 @@ namespace Hal {
     if (n >= 0) SetParameter(par, n);
   }
 
+  FemtoSourceModel::ENumProperty FemtoSourceModel::GetModelNumProp() const {
+    if (!fDensity) return ENumProperty::kNonAnalytical;
+    if (fDensity->IsAna1d() && fDensity->IsAna3d()) return ENumProperty::kFullyAnalytical;
+    if (fDensity->IsAna1d()) return ENumProperty::kAnalytical1d;
+    if (fDensity->IsAna3d()) return ENumProperty::kAnalytical3d;
+    return ENumProperty::kNonAnalytical;
+  }
+
   FemtoSourceModel::~FemtoSourceModel() {
     delete fRandom;
+    if (fDensity) delete fDensity;
     if (fParameterNames) delete[] fParameterNames;
     if (fParams) delete[] fParams;
   }

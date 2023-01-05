@@ -56,6 +56,7 @@ base/source_models/FemtoSourceModelExp.cxx
 base/source_models/FemtoSourceModelGauss.cxx
 base/source_models/FemtoSourceModelGausMt.cxx
 base/source_models/FemtoSourceModelNumerical1D.cxx
+base/source_models/FemtoSourceDensity.cxx
 base/shmath/FemtoSHSlice.cxx
 base/shmath/FemtoYlmIndexes.cxx
 base/shmath/FemtoYlmMath.cxx

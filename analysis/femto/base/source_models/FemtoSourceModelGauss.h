@@ -10,6 +10,7 @@
 #define HALFEMTOSOURCEMODELGAUSS_H_
 
 #include "FemtoPair.h"
+#include "FemtoSourceDensity.h"
 #include "FemtoSourceModel.h"
 
 /**
@@ -26,9 +27,6 @@ namespace Hal {
     FemtoSourceModelGauss1D(const FemtoSourceModelGauss1D& model);
     FemtoSourceModel* MakeCopy() const;
     void GenerateCoordinates(FemtoPair* Pair);
-    virtual ENumProperty GetModelNumProp() const { return FemtoSourceModel::ENumProperty::kFullyAnalytical; };
-    virtual Double_t GetProbDensity1d(const Double_t r, const Double_t* params) const;
-    virtual Double_t GetProbDensity3d(const TVector3& vec, const Double_t* params) const;
     virtual ~FemtoSourceModelGauss1D();
     ClassDef(FemtoSourceModelGauss1D, 1)
   };
@@ -48,12 +46,28 @@ namespace Hal {
      */
     FemtoSourceModelGauss3D(const FemtoSourceModelGauss3D& model);
     FemtoSourceModel* MakeCopy() const;
-    virtual ENumProperty GetModelNumProp() const { return FemtoSourceModel::ENumProperty::kFullyAnalytical; };
-    virtual Double_t GetProbDensity1d(const Double_t r, const Double_t* params) const;
-    virtual Double_t GetProbDensity3d(const TVector3& vec, const Double_t* params) const;
     void GenerateCoordinates(FemtoPair* Pair);
     virtual ~FemtoSourceModelGauss3D();
     ClassDef(FemtoSourceModelGauss3D, 1)
+  };
+
+
+  class FemtoSourceDensityGaus1d : public FemtoSourceDensity {
+  public:
+    FemtoSourceDensityGaus1d();
+    Double_t GetProbDensity1d(const Double_t r, const Double_t* params) const;
+    Double_t GetProbDensity3d(const TVector3& vec, const Double_t* params) const;
+    virtual ~FemtoSourceDensityGaus1d() {};
+    ClassDef(FemtoSourceDensityGaus1d, 1)
+  };
+
+  class FemtoSourceDensityGaus3d : public FemtoSourceDensity {
+  public:
+    FemtoSourceDensityGaus3d();
+    Double_t GetProbDensity1d(const Double_t r, const Double_t* params) const;
+    Double_t GetProbDensity3d(const TVector3& vec, const Double_t* params) const;
+    virtual ~FemtoSourceDensityGaus3d() {};
+    ClassDef(FemtoSourceDensityGaus3d, 1)
   };
 }  // namespace Hal
 #endif /* HALFEMTOSOURCEMODELGAUSS_H_ */

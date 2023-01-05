@@ -42,6 +42,11 @@
 #pragma link C++ class Hal::FemtoEventBinsAna + ;
 #pragma link C++ class Hal::FemtoFastCutEta + ;
 #pragma link C++ class Hal::FemtoDumpPairAna + ;
+#pragma link C++ class Hal::FemtoSourceDensity + ;
+#pragma link C++ class Hal::FemtoSourceDensityGaus1d + ;
+#pragma link C++ class Hal::FemtoSourceDensityGaus3d + ;
+#pragma link C++ class Hal::FemtoSourceDensityNumerical1D + ;
+
 
 #pragma link C++ class Hal::Femto1DCF + ;
 #pragma link C++ class Hal::Femto3DCF + ;

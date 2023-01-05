@@ -16,6 +16,7 @@
 #include "FastHist.h"
 #include "Femto1DCF.h"
 #include "FemtoPair.h"
+#include "FemtoSourceDensity.h"
 #include "FemtoSourceModel.h"
 #include "FemtoSourceModelNumerical1D.h"
 #include "StdHist.h"
@@ -53,13 +54,15 @@ namespace Hal {
 
   void Femto1DCFAnaMapMCRoco::Exec(Int_t pairs_per_bin, Bool_t autoscale) {
     if (autoscale) pairs_per_bin = (Double_t) pairs_per_bin * fIntegralScale;
-    const Int_t pointsQ                    = fMap->GetNum()->GetNbinsX() + 1;
-    Double_t* kstar                        = new Double_t[pointsQ];
-    Double_t* kfill                        = new Double_t[pointsQ];
-    Double_t** parametrizations            = new Double_t*[fRBins];
-    FemtoSourceModel* sourceModel          = fGenerator->GetSourceModel();
-    FemtoSourceModel* sourceModelntegrated = fGeneratorIntegrated->GetSourceModel();
-    Int_t sourceParamsNo                   = sourceModel->GetNpar();
+    const Int_t pointsQ                        = fMap->GetNum()->GetNbinsX() + 1;
+    Double_t* kstar                            = new Double_t[pointsQ];
+    Double_t* kfill                            = new Double_t[pointsQ];
+    Double_t** parametrizations                = new Double_t*[fRBins];
+    FemtoSourceModel* sourceModel              = fGenerator->GetSourceModel();
+    FemtoSourceModel* sourceModelntegrated     = fGeneratorIntegrated->GetSourceModel();
+    FemtoSourceDensity* densityModel           = sourceModel->GetDensityProb();
+    FemtoSourceDensity* densityIntegratedModel = sourceModelntegrated->GetDensityProb();
+    Int_t sourceParamsNo                       = sourceModel->GetNpar();
     for (int i = 0; i < fRBins; i++) {
       parametrizations[i] = new Double_t[sourceParamsNo];
     }
@@ -119,7 +122,6 @@ namespace Hal {
     Hal::Std::GetAxisPar(*fMap->GetNum(), nbinsX, minX, maxX, "x");
     Hal::Std::GetAxisPar(*fMap->GetNum(), nbinsY, minY, maxY, "y");
 
-
     FastHist2D* num1 = new FastHist2D("2dnum", "2dnum", nbinsX, minX, maxX, nbinsY, minY, maxY);
     FastHist2D* num2 = new FastHist2D("2dden", "2dden", nbinsX, minX, maxX, nbinsY, minY, maxY);
     for (int ikst = 1; ikst <= fMap->GetNum()->GetNbinsX(); ikst++) {
@@ -142,12 +144,12 @@ namespace Hal {
         Double_t Rinv = Radius.Mag();
         // RadiusFor1D[0]          = Rinv * TMath::Sqrt(3);
         Double_t refWeight = 1;  // 1.0 / sourceModelntegrated->GetProbDensity3d(Radius, nullptr);
-        refWeight          = 1.0 / sourceModelntegrated->GetProbDensity1d(Rinv, nullptr);
+        refWeight          = 1.0 / densityIntegratedModel->GetProbDensity1d(Rinv, nullptr);
         // std::cout << "\t" << std::endl;
         for (int r_bin = 0; r_bin < fRBins; r_bin++) {
           Double_t R         = fRadiiBins[r_bin];
           Double_t newWeight = 1;  // sourceModel->GetProbDensity3d(Radius, parametrizations[r_bin]);  // why?
-          newWeight          = sourceModel->GetProbDensity1d(Rinv, parametrizations[r_bin]);  // why?
+          newWeight          = densityModel->GetProbDensity1d(Rinv, parametrizations[r_bin]);  // why?
           Double_t effWeight = newWeight * refWeight;
           if (fDebugDistribution) {
             if (r_bin == 1) {
@@ -330,15 +332,16 @@ namespace Hal {
       delete fSampleRandom;
       fSampleRandom = nullptr;
     }
-    fSampleRandom        = new TH1D("samram", "samram", 50, rmin, rmax);
-    Double_t params[1]   = {0};
-    Double_t minIntegral = 1E+9;
+    fSampleRandom                  = new TH1D("samram", "samram", 50, rmin, rmax);
+    Double_t params[1]             = {0};
+    Double_t minIntegral           = 1E+9;
+    FemtoSourceDensity* sourceBase = fGenerator->GetSourceModel()->GetDensityProb();
     for (int r_bin = 0; r_bin < fRBins; r_bin++) {
       params[0]              = fRadiiBins[r_bin];
       Double_t localIntegral = 0;
       for (int i = 1; i <= fSampleRandom->GetNbinsX(); i++) {
         Double_t r   = fSampleRandom->GetXaxis()->GetBinCenter(i);
-        Double_t val = fGenerator->GetSourceModel()->GetProbDensity1d(r, params);
+        Double_t val = sourceBase->GetProbDensity1d(r, params);
         localIntegral += val;
         if (val > fSampleRandom->GetBinContent(i)) { fSampleRandom->SetBinContent(i, val); }
       }
@@ -354,7 +357,6 @@ namespace Hal {
     FemtoSourceModelNumerical1D model;
     model.SetRadiusDistribution(*fSampleRandom);
     fGeneratorIntegrated->SetSourceModel(model);
-
     delete fSampleRandom;
     fSampleRandom = nullptr;
     return kTRUE;

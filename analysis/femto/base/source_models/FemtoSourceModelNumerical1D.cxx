@@ -13,7 +13,9 @@
 #include <TH1D.h>
 #include <iostream>
 namespace Hal {
-  FemtoSourceModelNumerical1D::FemtoSourceModelNumerical1D() : fRawDistribution(nullptr), ff(0) {}
+  FemtoSourceModelNumerical1D::FemtoSourceModelNumerical1D() : fRawDistribution(nullptr), ff(0) {
+    fDensity = new FemtoSourceDensityNumerical1D();
+  }
 
   FemtoSourceModelNumerical1D::FemtoSourceModelNumerical1D(const FemtoSourceModelNumerical1D& other) :
     FemtoSourceModel1D(other), ff(other.ff), fRawDistribution(nullptr) {
@@ -22,7 +24,7 @@ namespace Hal {
     fRandomDistributionY = other.fRandomDistributionY;
   }
 
-  void FemtoSourceModelNumerical1D::SetRadiusDistribution(TH1D& distribution) {
+  void FemtoSourceModelNumerical1D::SetRadiusDistribution(const TH1D& distribution) {
     fRawDistribution = (TH1D*) distribution.Clone();
     fRawDistribution->SetDirectory(nullptr);
     Double_t scale = 0;
@@ -38,6 +40,7 @@ namespace Hal {
       if (i > 1) val += fRandomDistributionY[fRandomDistributionY.size() - 1];
       fRandomDistributionY.push_back(val);
     }
+    ((FemtoSourceDensityNumerical1D*) fDensity)->SetRadiusDistribution(distribution);
   }
 
   FemtoSourceModel* FemtoSourceModelNumerical1D::MakeCopy() const { return new FemtoSourceModelNumerical1D(*this); }
@@ -57,16 +60,23 @@ namespace Hal {
     return pack;
   }
 
-  Double_t FemtoSourceModelNumerical1D::GetProbDensity3d(const TVector3& r, const Double_t* params) const {
-    return GetProbDensity1d(r.Mag(), params);
-  }
-
   FemtoSourceModelNumerical1D::~FemtoSourceModelNumerical1D() {
     if (fRawDistribution) delete fRawDistribution;
   }
 
-  Double_t FemtoSourceModelNumerical1D::GetProbDensity1d(const Double_t r, const Double_t* /*params*/) const {
+  void FemtoSourceDensityNumerical1D::SetRadiusDistribution(const TH1D& distribution) {
+    if (fRawDistribution) delete fRawDistribution;
+    fRawDistribution = (TH1D*) distribution.Clone();
+    fRawDistribution->SetDirectory(nullptr);
+  }
+
+  Double_t FemtoSourceDensityNumerical1D::GetProbDensity1d(const Double_t r, const Double_t* params) const {
     Int_t bin = fRawDistribution->GetXaxis()->FindBin(r);
     return fRawDistribution->GetBinContent(bin);
   }
+
+  Double_t FemtoSourceDensityNumerical1D::GetProbDensity3d(const TVector3& r, const Double_t* params) const {
+    return GetProbDensity1d(r.Mag(), params);
+  }
+
 }  // namespace Hal

@@ -17,6 +17,7 @@
 namespace Hal {
   class FemtoPair;
   class Package;
+  class FemtoSourceDensity;
 
   /**
    * basic class for all source models
@@ -37,6 +38,10 @@ namespace Hal {
      * used for generating random coordinates
      */
     TRandom* fRandom;
+    /**
+     * stores information about source model density
+     */
+    FemtoSourceDensity* fDensity;
     /**
      * current out-radius
      */
@@ -133,24 +138,14 @@ namespace Hal {
     virtual FemtoSourceModel* MakeCopy() const = 0;
     /**
      *
+     * @return class that calculates the source emission function density
+     */
+    FemtoSourceDensity* GetDensityProb() const { return fDensity; }
+    /**
+     *
      * @return type of model, this define if probability density might be calculated fast
      */
-    virtual ENumProperty GetModelNumProp() const { return ENumProperty::kNonAnalytical; }
-    /**
-     *
-     * @param vec radii  (rout, rside, rlong in 3D)
-     * @param params parameters of source mission function
-     * @return normalized probability of source emission function at given r for given params
-     */
-    virtual Double_t GetProbDensity3d(const TVector3& /*vec*/, const Double_t* /*params*/) const { return 0; };
-    /**
-     *
-     * @param r one dim radius
-     * @param params
-     * @return normalized probability
-     */
-
-    virtual Double_t GetProbDensity1d(const Double_t /*r*/, const Double_t* /*params*/) const { return 0; };
+    ENumProperty GetModelNumProp() const;
     /**
      * create package with report
      * @return package with report

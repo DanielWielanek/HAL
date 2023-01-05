@@ -11,7 +11,10 @@
 #include "Const.h"
 
 namespace Hal {
-  FemtoSourceModelGauss1D::FemtoSourceModelGauss1D() : FemtoSourceModel1D() { fModelName = "gaus1d"; }
+  FemtoSourceModelGauss1D::FemtoSourceModelGauss1D() : FemtoSourceModel1D() {
+    fModelName = "gaus1d";
+    fDensity   = new FemtoSourceDensityGaus1d();
+  }
 
   FemtoSourceModelGauss1D::FemtoSourceModelGauss1D(const FemtoSourceModelGauss1D& model) : FemtoSourceModel1D(model) {}
 
@@ -23,26 +26,14 @@ namespace Hal {
     fRlong = fRandom->Gaus(0, GetParameter(0) * TMath::Sqrt2());
   }
 
-  Double_t FemtoSourceModelGauss1D::GetProbDensity1d(const Double_t r, const Double_t* params) const {
-    if (r < 0) return 0;
-    Double_t u          = params[0];
-    const Double_t Norm = 2. * Const::SqrtPi() * u * u * u;  // TMath::Power(u * u, 1.5);
-    return TMath::Exp(-r * r / (4.0 * u * u)) / Norm * r * r;
-  }
-
-  Double_t FemtoSourceModelGauss1D::GetProbDensity3d(const TVector3& vec, const Double_t* params) const {
-    const Double_t sxsysz = params[0] * params[0] * params[0];
-    const Double_t Gx     = TMath::Gaus(vec.X(), 0, params[0] * TMath::Sqrt2());
-    const Double_t Gy     = TMath::Gaus(vec.Y(), 0, params[0] * TMath::Sqrt2());
-    const Double_t Gz     = TMath::Gaus(vec.Z(), 0, params[0] * TMath::Sqrt2());
-    return 0.02244839026564582 / sxsysz * Gx * Gy * Gz;
-  }
-
-  FemtoSourceModelGauss1D::~FemtoSourceModelGauss1D() { fModelName = "exp1d"; }
+  FemtoSourceModelGauss1D::~FemtoSourceModelGauss1D() {}
 
   //=========================== 3D ====================
 
-  FemtoSourceModelGauss3D::FemtoSourceModelGauss3D() : FemtoSourceModel3D() { fModelName = "gaus3d"; }
+  FemtoSourceModelGauss3D::FemtoSourceModelGauss3D() : FemtoSourceModel3D() {
+    fModelName = "gaus3d";
+    fDensity   = new FemtoSourceDensityGaus3d();
+  }
 
   void FemtoSourceModelGauss3D::GenerateCoordinates(FemtoPair* /*Pair*/) {
     fRout  = fRandom->Gaus(0, GetParameter(0) * TMath::Sqrt2());
@@ -59,19 +50,42 @@ namespace Hal {
 
   FemtoSourceModelGauss3D::~FemtoSourceModelGauss3D() {}
 
-  Double_t FemtoSourceModelGauss3D::GetProbDensity1d(const Double_t r, const Double_t* params) const {
-    // TODO check formula
+  //=================================================
+
+  FemtoSourceDensityGaus1d::FemtoSourceDensityGaus1d() : FemtoSourceDensity(1, kTRUE, kTRUE) {}
+
+  Double_t FemtoSourceDensityGaus1d::GetProbDensity1d(const Double_t r, const Double_t* params) const {
+    if (r < 0) return 0;
+    Double_t u          = params[0];
+    const Double_t Norm = 2. * Const::SqrtPi() * u * u * u;  // TMath::Power(u * u, 1.5);
+    return TMath::Exp(-r * r / (4.0 * u * u)) / Norm * r * r;
+  }
+
+  Double_t FemtoSourceDensityGaus1d::GetProbDensity3d(const TVector3& vec, const Double_t* params) const {
+    const Double_t sxsysz = params[0] * params[0] * params[0];
+    const Double_t Gx     = TMath::Gaus(vec.X(), 0, params[0] * TMath::Sqrt2());
+    const Double_t Gy     = TMath::Gaus(vec.Y(), 0, params[0] * TMath::Sqrt2());
+    const Double_t Gz     = TMath::Gaus(vec.Z(), 0, params[0] * TMath::Sqrt2());
+    return 0.02244839026564582 / sxsysz * Gx * Gy * Gz;
+  }
+
+  //=================================================
+  FemtoSourceDensityGaus3d::FemtoSourceDensityGaus3d() : FemtoSourceDensity(3, kTRUE, kTRUE) {}
+
+  Double_t FemtoSourceDensityGaus3d::GetProbDensity1d(const Double_t r, const Double_t* params) const {
     if (r < 0) return 0;
     Double_t u          = TMath::Power(params[0] * params[1] * params[2], 1.0 / 3.0);
     const Double_t Norm = 2. * Const::SqrtPi() * u * u * u;  // TMath::Power(u * u, 1.5);
     return TMath::Exp(-r * r / (4.0 * u * u)) / Norm * r * r;
   }
 
-  Double_t FemtoSourceModelGauss3D::GetProbDensity3d(const TVector3& vec, const Double_t* params) const {
+  Double_t FemtoSourceDensityGaus3d::GetProbDensity3d(const TVector3& vec, const Double_t* params) const {
     const Double_t sxsysz = params[0] * params[1] * params[2];  // sqt?
     const Double_t Gx     = TMath::Gaus(vec.X(), 0, params[0] * TMath::Sqrt2());
     const Double_t Gy     = TMath::Gaus(vec.Y(), 0, params[1] * TMath::Sqrt2());
     const Double_t Gz     = TMath::Gaus(vec.Z(), 0, params[2] * TMath::Sqrt2());
     return 0.02244839026564582 / sxsysz * Gx * Gy * Gz;
   }
+
+
 }  // namespace Hal

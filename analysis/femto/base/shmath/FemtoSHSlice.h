@@ -20,7 +20,7 @@ namespace Hal {
   class FemtoYlmSolver;
   class FemtoSHSlice : public TObject {
     friend class FemtoYlmSolver;
-    const Int_t fMaxJM;
+    Int_t fMaxJM;
     std::vector<double> fCFImag;
     std::vector<double> fCFReal;
     std::vector<double> fCFImagE;

@@ -142,6 +142,10 @@ namespace Hal {
      * @return
      */
     void CompressArray(TClonesArray* array, const CompressionMap& map);
+    /**
+     * get JSroot version
+     */
+    Int_t GetJsRootVer();
   }  // namespace Std
 }  // namespace Hal
 

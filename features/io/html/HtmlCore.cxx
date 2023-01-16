@@ -225,14 +225,24 @@ namespace Hal {
 
   TString HtmlCore::GetJsDiv(TString root_file, TString object_name, TString draw_opt, TString draw_div_name) {
     TString res;
-    res = "<script type='text/javascript'>\n";
-    res = res + Form("var filename = \"%s\";\n", root_file.Data());
-    res = res + " JSROOT.OpenFile(filename, function(file) {\n";
-    res = res + " JSROOT.gStyle.Palette= 50;\n";
-    res = res + Form("file.ReadObject(\"%s\", function(obj) {\n", object_name.Data());
-    res = res + Form("JSROOT.draw(\"%s\", obj, \"%s\");\n;", draw_div_name.Data(), draw_opt.Data());
-    res = res + "});\n;});\n";
-    res = res + "</script>\n<div id=\"" + draw_div_name + "\" style=\"width:90%;height:900px\"></div>\n";
+    if (Hal::Std::GetJsRootVer() == 5) {
+      res = "<script type='text/javascript'>\n";
+      res = res + Form("var filename = \"%s\";\n", root_file.Data());
+      res = res + " JSROOT.OpenFile(filename, function(file) {\n";
+      res = res + " JSROOT.gStyle.Palette= 50;\n";
+      res = res + Form("file.ReadObject(\"%s\", function(obj) {\n", object_name.Data());
+      res = res + Form("JSROOT.draw(\"%s\", obj, \"%s\");\n;", draw_div_name.Data(), draw_opt.Data());
+      res = res + "});\n;});\n";
+      res = res + "</script>\n<div id=\"" + draw_div_name + "\" style=\"width:90%;height:900px\"></div>\n";
+    } else {  // JSROOT ver 6
+      res = "<script type='module'>\n";
+      res = res + Form("var filename = \"%s\";\n", root_file.Data());
+      res = res + "JSROOT.settings.Palette= 50;\n";
+      res = res + "JSROOT.openFile(filename)\n";
+      res = res + "\t.then(file=> file.readObject(\"" + object_name + "\"))\n";
+      res = res + "\t.then(obj=> JSROOT.draw(\"" + draw_div_name.Data() + "\",obj,\"" + draw_opt.Data() + "\"));\n";
+      res = res + "</script>\n<div id=\"" + draw_div_name + "\" style=\"width:90%;height:900px\"></div>\n";
+    }
     return res;
   }
 

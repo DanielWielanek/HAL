@@ -15,6 +15,7 @@
 #include <TMathBase.h>
 #include <TNamed.h>
 #include <TPad.h>
+#include <TROOT.h>
 #include <TSeqCollection.h>
 #include <TString.h>
 #include <TSystem.h>
@@ -93,6 +94,7 @@ namespace Hal::Std {
       default: return ""; break;
     }
   }
+
   TString GetConfigParameter(TString par_name) {
     TString home = gSystem->Getenv("HOME");
     Hal::XMLFile parser(Form("%s/.hal_config.xml", home.Data()));
@@ -327,10 +329,15 @@ namespace Hal::Std {
   }
 
   TString GetJsRoot() {
-    TString jsrootdir   = gSystem->Getenv("JSROOT");
-    TString rootdir     = gSystem->Getenv("ROOTSYS");
-    TString rootdirFair = rootdir + "/share/root/js/scripts/JSRootCore.js";
-    rootdir             = rootdir + "js/scripts/JSRootCore.js";
+    TString jsrootdir = gSystem->Getenv("JSROOT");
+    TString rootdir   = gSystem->Getenv("ROOTSYS");
+    TString coreName  = "JSRootCore.js";
+    if (GetJsRootVer() >= 6) { coreName = "JSRoot.core.js"; }
+
+    TString rootdirFair = rootdir + "/share/root/js/scripts/" + coreName;
+    rootdir             = rootdir + "/js/scripts/" + coreName;
+    rootdir.ReplaceAll("//", "/");
+    std::cout << "PATH " << rootdir << std::endl;
     std::vector<TString> location;
     location.push_back(rootdirFair);
     location.push_back(rootdir);
@@ -339,7 +346,7 @@ namespace Hal::Std {
 
     for (auto place : location) {
       if (FileExists(place)) {
-        place.ReplaceAll("scripts/JSRootCore.js", "");
+        place.ReplaceAll("scripts/" + coreName, "");
         return place;
       }
     }
@@ -391,4 +398,11 @@ namespace Hal::Std {
     }
     array->Compress();
   }
+
+  Int_t GetJsRootVer() {
+    Int_t ver = gROOT->GetVersionInt();
+    if (ver < 62400) return 5;
+    return 6;
+  }
+
 }  // namespace Hal::Std

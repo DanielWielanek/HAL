@@ -47,12 +47,18 @@ namespace Hal {
     file << "<head>\n";
     file << "<link rel=\"stylesheet\" href=\"" << fRelativePath << "table.css\" type=\"text/css\"/>\n";
     if (HtmlCore::IsOnline()) {
-      file << "<script src=\"http://jsroot.gsi.de/latest/scripts/JSRootCore.js\" "
+      file << "<script src=\"http://jsroot.gsi.de/latest/scripts/JSRoot.core.js\" "
               "type=\"text/javascript\"></script>\n";
     } else {
-      file << "<script src=\"" << fRelativePath
-           << "hal_js/scripts/JSRootCore.js\" "
-              "type=\"text/javascript\"></script>\n";
+      if (Hal::Std::GetJsRootVer() == 5) {
+        file << "<script src=\"" << fRelativePath
+             << "hal_js/scripts/JSRootCore.js\" "
+                "type=\"text/javascript\"></script>\n";
+      } else {
+        file << "<script src=\"" << fRelativePath
+             << "hal_js/scripts/JSRoot.core.js\" "
+                "type=\"text/javascript\"></script>\n";
+      }
     }
     file << "<script src=\"" << fRelativePath << "hal_js.js\" type=\"text/javascript\"></script>\n";
     file << "</head>\n";

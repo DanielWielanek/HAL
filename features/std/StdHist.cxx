@@ -41,7 +41,7 @@ NamespaceImp(Hal::Std);
 namespace Hal {
   namespace Std {
     void RemoveNan(TH1* h, Double_t fill, Double_t fill_e) {
-      std::function<void(HistoBin, TH1&)> fix = [=](const HistoBin b, TH1& hist) {
+      std::function<void(HistoBin, TH1&)> fix = [=](HistoBin b, TH1& hist) {
         if (std::isnan(b.content)) { hist.SetBinContent(b.i, b.j, b.k, fill); }
         if (std::isnan(b.error)) { hist.SetBinError(b.i, b.j, b.k, fill_e); }
       };
@@ -673,33 +673,24 @@ namespace Hal {
         TString classname2 = y->ClassName();
         if (!classname1.EqualTo(classname2)) return kFALSE;
       }
+      std::vector<const TAxis*> axes1;
+      std::vector<const TAxis*> axes2;
       if (x->InheritsFrom("TH3") && y->InheritsFrom("TH3")) {
-        const TH3* h1 = static_cast<const TH3*>(x);
-        const TH3* h2 = static_cast<const TH3*>(y);
-        if (h1->GetNbinsX() != h2->GetNbinsX()) return kFALSE;
-        if (h1->GetNbinsY() != h2->GetNbinsY()) return kFALSE;
-        if (h1->GetNbinsZ() != h2->GetNbinsZ()) return kFALSE;
-        if (h1->GetXaxis()->GetXmin() != h2->GetXaxis()->GetXmin()) return kFALSE;
-        if (h1->GetXaxis()->GetXmax() != h2->GetXaxis()->GetXmax()) return kFALSE;
-        if (h1->GetYaxis()->GetXmin() != h2->GetYaxis()->GetXmin()) return kFALSE;
-        if (h1->GetYaxis()->GetXmax() != h2->GetYaxis()->GetXmax()) return kFALSE;
-        if (h1->GetZaxis()->GetXmin() != h2->GetZaxis()->GetXmin()) return kFALSE;
-        if (h1->GetZaxis()->GetXmax() != h2->GetZaxis()->GetXmax()) return kFALSE;
+        axes1.push_back(x->GetYaxis());
+        axes2.push_back(y->GetYaxis());
+        axes1.push_back(x->GetZaxis());
+        axes2.push_back(y->GetZaxis());
       } else if (x->InheritsFrom("TH2") && y->InheritsFrom("TH2")) {
-        const TH2* h1 = static_cast<const TH2*>(x);
-        const TH2* h2 = static_cast<const TH2*>(y);
-        if (h1->GetNbinsX() != h2->GetNbinsX()) return kFALSE;
-        if (h1->GetNbinsY() != h2->GetNbinsY()) return kFALSE;
-        if (h1->GetXaxis()->GetXmin() != h2->GetXaxis()->GetXmin()) return kFALSE;
-        if (h1->GetXaxis()->GetXmax() != h2->GetXaxis()->GetXmax()) return kFALSE;
-        if (h1->GetYaxis()->GetXmin() != h2->GetYaxis()->GetXmin()) return kFALSE;
-        if (h1->GetYaxis()->GetXmax() != h2->GetYaxis()->GetXmax()) return kFALSE;
-      } else {
-        const TH1* h1 = static_cast<const TH1*>(x);
-        const TH1* h2 = static_cast<const TH1*>(y);
-        if (h1->GetNbinsX() != h2->GetNbinsX()) return kFALSE;
-        if (h1->GetXaxis()->GetXmin() != h2->GetXaxis()->GetXmin()) return kFALSE;
-        if (h1->GetXaxis()->GetXmax() != h2->GetXaxis()->GetXmax()) return kFALSE;
+        axes1.push_back(x->GetYaxis());
+        axes2.push_back(y->GetYaxis());
+      }
+      axes1.push_back(x->GetXaxis());
+      axes2.push_back(y->GetXaxis());
+      if (axes1.size() == 0) return kFALSE;
+      for (unsigned int a = 0; a < axes1.size(); a++) {
+        if (axes1[a]->GetNbins() != axes2[a]->GetNbins()) return kFALSE;
+        if (axes1[a]->GetXmin() != axes2[a]->GetXmin()) return kFALSE;
+        if (axes1[a]->GetXmax() != axes2[a]->GetXmax()) return kFALSE;
       }
       return kTRUE;
     }
@@ -791,40 +782,35 @@ namespace Hal {
       const Int_t nBinsX = h.GetXaxis()->GetNbins();
       const Int_t nBinsY = h.GetYaxis()->GetNbins();
       const Int_t nBinsZ = h.GetZaxis()->GetNbins();
-      if (Hal::Std::FindParam(opt, "x", kTRUE)) {
-        std::vector<int> foldBinMap = FoldAxis(*h.GetXaxis(), val);
-        for (int i = 1; i <= nBinsX; i++) {
-          for (int j = 1; j <= nBinsY; j++) {
-            for (int k = 1; k <= nBinsZ; k++) {
-              Double_t old = h.GetBinContent(i, j, k);
-              Double_t add = tempCopy->GetBinContent(foldBinMap[i], j, k);
-              h.SetBinContent(i, j, k, old + add);
-            }
-          }
-        }
-      } else if (Hal::Std::FindParam(opt, "y", kTRUE)) {
-        std::vector<int> foldBinMap = FoldAxis(*h.GetYaxis(), val);
-        for (int i = 1; i <= nBinsX; i++) {
-          for (int j = 1; j <= nBinsY; j++) {
-            for (int k = 1; k <= nBinsZ; k++) {
-              Double_t old = h.GetBinContent(i, j, k);
-              Double_t add = tempCopy->GetBinContent(i, foldBinMap[j], k);
-              h.SetBinContent(i, j, k, old + add);
-            }
-          }
-        }
+      Char_t optint      = 'x';
+      std::vector<int> foldBinMap;
+      if (Hal::Std::FindParam(opt, "y", kTRUE)) {
+        foldBinMap = FoldAxis(*h.GetYaxis(), val);
+        optint     = 'y';
       } else if (Hal::Std::FindParam(opt, "z", kTRUE)) {
-        std::vector<int> foldBinMap = FoldAxis(*h.GetZaxis(), val);
-        for (int i = 1; i <= nBinsX; i++) {
-          for (int j = 1; j <= nBinsY; j++) {
-            for (int k = 1; k <= nBinsZ; k++) {
-              Double_t old = h.GetBinContent(i, j, k);
-              Double_t add = tempCopy->GetBinContent(i, j, foldBinMap[k]);
-              h.SetBinContent(i, j, k, old + add);
-            }
-          }
-        }
+        foldBinMap = FoldAxis(*h.GetZaxis(), val);
+        optint     = 'z';
+      } else {
+        foldBinMap = FoldAxis(*h.GetXaxis(), val);
       }
+      std::function<void(HistoBin, TH1&)> flap = [&](HistoBin bin, TH1& hh) {
+        double old = bin.content;
+        double add = 0;
+        switch (optint) {
+          case 'x': {
+            add = tempCopy->GetBinContent(foldBinMap[bin.i], bin.j, bin.k);
+          } break;
+          case 'y': {
+            add = tempCopy->GetBinContent(bin.i, foldBinMap[bin.j], bin.k);
+          } break;
+          case 'z': {
+            add = tempCopy->GetBinContent(bin.i, bin.j, foldBinMap[bin.k]);
+          } break;
+          default: break;
+        }
+        hh.SetBinContent(bin.i, bin.j, bin.k, add + old);
+      };
+      Loop(h, flap);
       h.ResetStats();
       delete tempCopy;
     }
@@ -941,7 +927,7 @@ namespace Hal {
     }
 
     void LoopSync(TH1& h1, TH1& h2, std::function<void(HistoBin2, TH1&, TH1&)>& func, Bool_t under, Bool_t over) {
-      if (AreSimilar(&h1, &h1, kTRUE)) {
+      if (!AreSimilar(&h1, &h1, kTRUE)) {
         Cout::PrintInfo("Histograms are not similiar in Hal::Std::LoopSync", EInfo::kLowWarning);
         return;
       }

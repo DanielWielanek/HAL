@@ -53,8 +53,9 @@ namespace Hal {
      * process events from start to end -1
      * @param start
      * @param end
+     * if both parameters equal -1 then process entire file
      */
-    void Run(Int_t start, Int_t end);
+    void Run(Int_t start = -1, Int_t end = -1);
     /**
      * set source with data
      * @param source

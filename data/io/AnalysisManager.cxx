@@ -57,6 +57,10 @@ namespace Hal {
   }
 
   void AnalysisManager::Run(Int_t start, Int_t end) {
+    if (start == -1 && end == -1) {
+      start = 0;
+      end   = fManager->GetEntries();
+    }
     if (start < 0) start = 0;
     if (start > fManager->GetEntries()) { start = fManager->GetEntries(); }
     if (end > fManager->GetEntries()) { end = fManager->GetEntries(); }

@@ -219,9 +219,9 @@ namespace Hal {
     bins.resize(GetCutSize());
     for (int i = GetCutSize() - 1; i >= 0; i--) {
       Int_t newBin = tmpBin % fBinConv[i];
-      Int_t tbin   = (tmpBin - newBin) / fBinConv[i];
-      tmpBin       = tmpBin - tbin * fBinConv[i];
-      bins[i]      = tbin;
+      Int_t bin    = (tmpBin - newBin) / fBinConv[i];
+      tmpBin       = tmpBin - bin * fBinConv[i];
+      bins[i]      = bin;
     }
     for (int i = 0; i < GetCutSize(); i++) {
       mini.push_back(fValuesUp[i][bins[i]]);

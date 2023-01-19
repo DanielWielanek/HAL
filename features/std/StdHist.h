@@ -21,16 +21,6 @@ class TVirtualPad;
 
 namespace Hal {
   namespace Std {
-    struct HistoBin {
-      double content = {0};
-      double error   = {0};
-      int i = {0}, j = {0}, k = {0};
-      double x = {0}, y = {0}, z = {0};
-    };
-    struct HistoBin2 : public HistoBin {
-      double content2 = {0};
-      double error2   = {0};
-    };
     /**
      * remove nans from histogram
      * @param h histogram to check
@@ -229,24 +219,6 @@ namespace Hal {
      * @param y2
      */
     void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2);
-    /**
-     * make loop over h bins and errors
-     * @param h
-     * @param func func - arguments - std::vector<bin content , bin error, centers [3], indexes [3]> + pointer to histo
-     * @param under use underflow bins
-     * @param over use overflow bins
-     */
-    void Loop(TH1& h, std::function<void(HistoBin, TH1&)>& func, Bool_t under = kFALSE, Bool_t over = kFALSE);
-    /**
-     * make paralell loop over h bins and errors
-     * @param h
-     * @param func func - arguments - std::vector<bin content , bin error, bin content2, binerror2 centers [3], indexes [3]> +
-     * pointer to histo
-     *      * @param under use underflow bins
-     * @param over use overflow bins
-     */
-    void
-    LoopSync(TH1& h1, TH1& h2, std::function<void(HistoBin2, TH1&, TH1&)>& func, Bool_t under = kFALSE, Bool_t over = kFALSE);
     /**
      * get index of oposite color
      * @param col

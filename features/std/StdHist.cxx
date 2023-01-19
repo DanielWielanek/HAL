@@ -41,11 +41,34 @@ NamespaceImp(Hal::Std);
 namespace Hal {
   namespace Std {
     void RemoveNan(TH1* h, Double_t fill, Double_t fill_e) {
-      std::function<void(HistoBin, TH1&)> fix = [=](const HistoBin b, TH1& hist) {
-        if (std::isnan(b.content)) { hist.SetBinContent(b.i, b.j, b.k, fill); }
-        if (std::isnan(b.error)) { hist.SetBinError(b.i, b.j, b.k, fill_e); }
-      };
-      Loop(*h, fix, kTRUE, kTRUE);
+      if (h->InheritsFrom("TH3")) {
+        for (int i = 0; i <= h->GetNbinsX() + 1; i++) {
+          for (int j = 0; j <= h->GetNbinsY() + 1; j++) {
+            for (int k = 0; k <= h->GetNbinsZ() + 1; k++) {
+              if (TMath::IsNaN(h->GetBinContent(i, j, k))) {
+                h->SetBinContent(i, j, k, fill);
+                h->SetBinError(i, j, k, fill_e);
+              }
+            }
+          }
+        }
+      } else if (h->InheritsFrom("TH2")) {
+        for (int i = 0; i <= h->GetNbinsX() + 1; i++) {
+          for (int j = 0; j <= h->GetNbinsY() + 1; j++) {
+            if (TMath::IsNaN(h->GetBinContent(i, j))) {
+              h->SetBinContent(i, j, fill);
+              h->SetBinError(i, j, fill_e);
+            }
+          }
+        }
+      } else {
+        for (int i = 0; i <= h->GetNbinsX() + 1; i++) {
+          if (TMath::IsNaN(h->GetBinContent(i))) {
+            h->SetBinContent(i, fill);
+            h->SetBinError(i, fill_e);
+          }
+        }
+      }
     }
 
     TH1D* GetProjection1D(const TH3* histo, Double_t min1, Double_t max1, Double_t min2, Double_t max2, Option_t* opt) {
@@ -886,119 +909,6 @@ namespace Hal {
       colorb->SetName(Form("%s_bright", color->GetName()));
       colors->AddAtAndExpand(colorb, nb);
       return nb;
-    }
-
-
-    void Loop(TH1& h, std::function<void(HistoBin, TH1&)>& func, Bool_t under, Bool_t over) {
-      int binsX  = h.GetNbinsX();
-      int binsY  = h.GetNbinsY();
-      int binsZ  = h.GetNbinsZ();
-      int startX = under ? 0 : 1;
-      int startY = under ? 0 : 1;
-      int startZ = under ? 0 : 1;
-      int endX   = over ? binsX + 1 : binsX;
-      int endY   = over ? binsY + 1 : binsY;
-      int endZ   = over ? binsZ + 1 : binsZ;
-      HistoBin binInfo;
-      if (h.InheritsFrom("TH3")) {
-        for (int i = startX; i <= endX; i++) {
-          binInfo.x = h.GetXaxis()->GetBinCenter(i);
-          binInfo.i = i;
-          for (int j = startY; j <= endY; j++) {
-            binInfo.y = h.GetYaxis()->GetBinCenter(j);
-            binInfo.j = j;
-            for (int k = startZ; j <= endZ; j++) {
-              binInfo.z       = h.GetZaxis()->GetBinCenter(k);
-              binInfo.k       = k;
-              binInfo.content = h.GetBinContent(i, j, k);
-              binInfo.error   = h.GetBinError(i, j, k);
-              func(binInfo, h);
-            }
-          }
-        }
-
-      } else if (h.InheritsFrom("TH2")) {
-        for (int i = startX; i <= endX; i++) {
-          binInfo.x = h.GetXaxis()->GetBinCenter(i);
-          binInfo.i = i;
-          for (int j = startY; j <= endY; j++) {
-            binInfo.y       = h.GetYaxis()->GetBinCenter(j);
-            binInfo.j       = j;
-            binInfo.content = h.GetBinContent(i, j);
-            binInfo.error   = h.GetBinError(i, j);
-            func(binInfo, h);
-          }
-        }
-      } else {
-        for (int i = startX; i <= endX; i++) {
-          binInfo.x       = h.GetXaxis()->GetBinCenter(i);
-          binInfo.i       = i;
-          binInfo.content = h.GetBinContent(i);
-          binInfo.error   = h.GetBinError(i);
-          func(binInfo, h);
-        }
-      }
-    }
-
-    void LoopSync(TH1& h1, TH1& h2, std::function<void(HistoBin2, TH1&, TH1&)>& func, Bool_t under, Bool_t over) {
-      if (AreSimilar(&h1, &h1, kTRUE)) {
-        Cout::PrintInfo("Histograms are not similiar in Hal::Std::LoopSync", EInfo::kLowWarning);
-        return;
-      }
-      int binsX  = h1.GetNbinsX();
-      int binsY  = h1.GetNbinsY();
-      int binsZ  = h1.GetNbinsZ();
-      int startX = under ? 0 : 1;
-      int startY = under ? 0 : 1;
-      int startZ = under ? 0 : 1;
-      int endX   = over ? binsX + 1 : binsX;
-      int endY   = over ? binsY + 1 : binsY;
-      int endZ   = over ? binsZ + 1 : binsZ;
-      HistoBin2 binInfo;
-      if (h1.InheritsFrom("TH3")) {
-        for (int i = startX; i <= endX; i++) {
-          binInfo.x = h1.GetXaxis()->GetBinCenter(i);
-          binInfo.i = i;
-          for (int j = startY; j <= endY; j++) {
-            binInfo.y = h1.GetYaxis()->GetBinCenter(j);
-            binInfo.j = j;
-            for (int k = startZ; j <= endZ; j++) {
-              binInfo.z        = h1.GetZaxis()->GetBinCenter(k);
-              binInfo.k        = k;
-              binInfo.content  = h1.GetBinContent(i, j, k);
-              binInfo.error    = h1.GetBinError(i, j, k);
-              binInfo.content2 = h2.GetBinContent(i, j, k);
-              binInfo.error2   = h2.GetBinError(i, j, k);
-              func(binInfo, h1, h2);
-            }
-          }
-        }
-
-      } else if (h1.InheritsFrom("TH2")) {
-        for (int i = startX; i <= endX; i++) {
-          binInfo.x = h1.GetXaxis()->GetBinCenter(i);
-          binInfo.i = i;
-          for (int j = startY; j <= endY; j++) {
-            binInfo.y        = h1.GetYaxis()->GetBinCenter(j);
-            binInfo.j        = j;
-            binInfo.content  = h1.GetBinContent(i, j);
-            binInfo.error    = h1.GetBinError(i, j);
-            binInfo.content2 = h2.GetBinContent(i, j);
-            binInfo.error2   = h2.GetBinError(i, j);
-            func(binInfo, h1, h2);
-          }
-        }
-      } else {
-        for (int i = startX; i <= endX; i++) {
-          binInfo.x        = h1.GetXaxis()->GetBinCenter(i);
-          binInfo.i        = i;
-          binInfo.content  = h1.GetBinContent(i);
-          binInfo.error    = h1.GetBinError(i);
-          binInfo.content2 = h2.GetBinContent(i);
-          binInfo.error2   = h2.GetBinError(i);
-          func(binInfo, h1, h2);
-        }
-      }
     }
 
     Int_t GetListOfSubPads(TVirtualPad* pad) {

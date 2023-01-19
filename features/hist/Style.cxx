@@ -42,9 +42,21 @@ namespace Hal {
     }
   }
 
-  void Style::Register(TString key, Int_t val) { fInts.insert({key, val}); }
+  void Style::Register(TString key, Int_t val) {
+    if (fInts.find(key) != fInts.end()) {
+      fInts[key] = val;
+    } else {
+      fInts.insert({key, val});
+    }
+  }
 
-  void Style::Register(TString key, Double_t val) { fDoubles.insert({key, val}); }
+  void Style::Register(TString key, Double_t val) {
+    if (fDoubles.find(key) != fDoubles.end()) {
+      fDoubles[key] = val;
+    } else {
+      fDoubles.insert({key, val});
+    }
+  }
 
 
   // ===================== pad style ===============================================

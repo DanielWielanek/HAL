@@ -28,26 +28,26 @@ namespace Hal {
       case Femto::EPairType::kPionPlusPionPlus: {
         switch (fPref) {
           case EWeightApprox::kOther: {
-            fCurWeight = fWave[1];
+            fCurWeight = GetWave(1, EWeightApprox::kOther);
           } break;
           case EWeightApprox::kPhase: {
-            fCurWeight = fWavePhases[9];
+            fCurWeight = GetWave(9, EWeightApprox::kPhase);
           } break;
           default: {
-            fCurWeight = fWaveSquares[2];
+            fCurWeight = GetWave(2, EWeightApprox::kSquare);
           } break;
         }
       } break;
       case Femto::EPairType::kPionPlusPionMinus: {
         switch (fPref) {
           case EWeightApprox::kOther: {
-            fCurWeight = fWave[2];
+            fCurWeight = GetWave(2, EWeightApprox::kOther);
           } break;
           case EWeightApprox::kPhase: {
-            fCurWeight = fWavePhases[8];
+            fCurWeight = GetWave(8, EWeightApprox::kPhase);
           } break;
           default: {
-            fCurWeight = fWaveSquares[0];
+            fCurWeight = GetWave(0, EWeightApprox::kSquare);
           } break;
         };
       } break;
@@ -60,50 +60,50 @@ namespace Hal {
       case Femto::EPairType::kProtonProton: {
         switch (fPref) {
           case EWeightApprox::kPhase: {
-            fCurWeight = fWavePhases[6];
+            fCurWeight = GetWave(6, EWeightApprox::kPhase);
           } break;
           default: {
-            fCurWeight = fWaveSquares[7];
+            fCurWeight = GetWave(7, EWeightApprox::kSquare);
           } break;
         }
       }; break;
       case Femto::EPairType::kProtonAntiproton: {
-        fCurWeight = fWave[0];
+        fCurWeight = GetWave(0, EWeightApprox::kOther);
       }; break;
       case Femto::EPairType::kPionPlusKaonPlus: {
-        fCurWeight = fWaveSquares[3];
+        fCurWeight = GetWave(3, EWeightApprox::kSquare);
       }; break;
       case Femto::EPairType::kPionPlusKaonMinus: {
         switch (fPref) {
           case EWeightApprox::kPhase: {
-            fCurWeight = fWavePhases[5];
+            fCurWeight = GetWave(5, EWeightApprox::kPhase);
           } break;
           default: {
-            fCurWeight = fWaveSquares[1];
+            fCurWeight = GetWave(1, EWeightApprox::kSquare);
           } break;
         }
       }; break;
       case Femto::EPairType::kPionPlusProton: {
         switch (fPref) {
           case EWeightApprox::kPhase: {
-            fCurWeight = fWavePhases[1];
+            fCurWeight = GetWave(1, EWeightApprox::kPhase);
           } break;
           default: {
-            fCurWeight = fWaveSquares[5];
+            fCurWeight = GetWave(5, EWeightApprox::kSquare);
           } break;
         }
       }; break;
       case Femto::EPairType::kPionPlusAntiproton: {
-        fCurWeight = fWaveSquares[6];
+        fCurWeight = GetWave(6, EWeightApprox::kSquare);
       } break;
 
       case Femto::EPairType::kKaonPlusProton: {
         switch (fPref) {
           case EWeightApprox::kPhase: {
-            fCurWeight = fWavePhases[0];
+            fCurWeight = GetWave(0, EWeightApprox::kPhase);
           } break;
           default: {
-            fCurWeight = fWaveSquares[4];
+            fCurWeight = GetWave(4, EWeightApprox::kSquare);
           } break;
         };
       } break;
@@ -111,10 +111,10 @@ namespace Hal {
         fCurWeight = nullptr;
       }; break;
       case Femto::EPairType::kProtonLambda: {
-        fCurWeight = fWavePhases[4];
+        fCurWeight = GetWave(4, EWeightApprox::kPhase);
       }; break;
       case Femto::EPairType::kLambdaLambda: {
-        fCurWeight = fWavePhases[10];
+        fCurWeight = GetWave(10, EWeightApprox::kPhase);
       }; break;
       case Femto::EPairType::kKaonZeroKaonZero: {
         fCurWeight = nullptr;
@@ -123,10 +123,10 @@ namespace Hal {
         fCurWeight = nullptr;
       }; break;
       case Femto::EPairType::kNeutronNeutron: {
-        fCurWeight = fWavePhases[7];
+        fCurWeight = GetWave(7, EWeightApprox::kPhase);
       }; break;
       case Femto::EPairType::kNeutronProton: {
-        fCurWeight = fWavePhases[3];
+        fCurWeight = GetWave(3, EWeightApprox::kPhase);
       }; break;
       case Femto::EPairType::kPionZeroPionZero: {
         fCurWeight = nullptr;
@@ -150,7 +150,7 @@ namespace Hal {
         fCurWeight = nullptr;
       }; break;
       case Femto::EPairType::kProtonXiZero: {
-        fCurWeight = fWavePhases[2];
+        fCurWeight = GetWave(2, EWeightApprox::kPhase);
       }; break;
       case Femto::EPairType::kNeutronXiMinus: {
         fCurWeight = nullptr;
@@ -174,6 +174,55 @@ namespace Hal {
         fCurWeight = nullptr;
       }; break;
     };
+  }
+
+  Hal::ScottPratt::CWaveFunction* FemtoWeightGeneratorScottPratt::InitSquareWave(Int_t n) {
+    std::string str(fParFile);
+    switch (n) {
+      case 0: fWaveSquares[0] = new ScottPratt::CWaveFunction_pipluspiminus_sqwell(str); break;
+      case 1: fWaveSquares[1] = new ScottPratt::CWaveFunction_kpluspiminus_sqwell(str); break;
+      case 2: fWaveSquares[2] = new ScottPratt::CWaveFunction_pipluspiplus_sqwell(str); break;
+      case 3: fWaveSquares[3] = new ScottPratt::CWaveFunction_kpluspiplus_sqwell(str); break;
+      case 4: fWaveSquares[4] = new ScottPratt::CWaveFunction_pkplus_sqwell(str); break;
+      case 5: fWaveSquares[5] = new ScottPratt::CWaveFunction_ppiplus_sqwell(str); break;
+      case 6: fWaveSquares[6] = new ScottPratt::CWaveFunction_ppiminus_sqwell(str); break;
+      case 7: fWaveSquares[7] = new ScottPratt::CWaveFunction_pp_schrod(str); break;
+      default: return nullptr; break;
+    }
+    return fWaveSquares[n];
+  }
+
+  Hal::ScottPratt::CWaveFunction* FemtoWeightGeneratorScottPratt::InitPhaseWave(Int_t n) {
+    std::string str(fParFile);
+    switch (n) {
+      case 0: fWavePhases[0] = new ScottPratt::CWaveFunction_pkplus_phaseshift(str); break;
+      case 1: fWavePhases[1] = new ScottPratt::CWaveFunction_ppiplus_phaseshift(str); break;
+      case 2: fWavePhases[2] = new ScottPratt::CWaveFunction_Xipi_phaseshift(str); break;
+      case 3: fWavePhases[3] = new ScottPratt::CWaveFunction_pn_phaseshift(str); break;
+      case 4: fWavePhases[4] = new ScottPratt::CWaveFunction_plambda_phaseshift(str); break;
+      case 5: fWavePhases[5] = new ScottPratt::CWaveFunction_kpluspiminus_phaseshift(str); break;
+      case 6: fWavePhases[6] = new ScottPratt::CWaveFunction_pp_phaseshift(str); break;
+      case 7: fWavePhases[7] = new ScottPratt::CWaveFunction_nn_phaseshift(str); break;
+      case 8: fWavePhases[8] = new ScottPratt::CWaveFunction_pipluspiminus_phaseshift(str); break;
+      case 9: fWavePhases[9] = new ScottPratt::CWaveFunction_pipluspiplus_phaseshift(str); break;
+      case 10: fWavePhases[10] = new ScottPratt::CWaveFunction_lambdalambda_phaseshift(str); break;
+      case 11: fWavePhases[11] = new ScottPratt::CWaveFunction_lambdalambdaantiparspin_phaseshift(str); break;
+      case 12: fWavePhases[12] = new ScottPratt::CWaveFunction_lambdalambdaparspin_phaseshift(str); break;
+      default: break;
+    }
+    return fWavePhases[n];
+  }
+
+  Hal::ScottPratt::CWaveFunction* FemtoWeightGeneratorScottPratt::InitOtherWave(Int_t n) {
+    std::string str(fParFile);
+    switch (n) {
+      case 0: fWave[0] = new ScottPratt::CWaveFunction_ppbar_nocoulomb(str); break;
+      case 1: fWave[1] = new ScottPratt::CWaveFunction_pipluspiplus_nostrong(str); break;
+      case 2: fWave[2] = new ScottPratt::CWaveFunction_pipluspiminus_nostrong(str); break;
+      case 3: fWave[3] = new ScottPratt::CWaveFunction_ppbar_nocoulomb(str); break;
+      default: break;
+    }
+    return fWave[n];
   }
 
   Double_t FemtoWeightGeneratorScottPratt::GenerateWeight(FemtoPair* pair) {
@@ -213,54 +262,55 @@ namespace Hal {
 
   void FemtoWeightGeneratorScottPratt::InitWeights() {
     std::string str(fParFile);
-    fWavePhases     = new ScottPratt::CWaveFunction*[13];
-    fWavePhases[0]  = new ScottPratt::CWaveFunction_pkplus_phaseshift(str);
-    fWavePhases[1]  = new ScottPratt::CWaveFunction_ppiplus_phaseshift(str);
-    fWavePhases[2]  = new ScottPratt::CWaveFunction_Xipi_phaseshift(str);
-    fWavePhases[3]  = new ScottPratt::CWaveFunction_pn_phaseshift(str);
-    fWavePhases[4]  = new ScottPratt::CWaveFunction_plambda_phaseshift(str);
-    fWavePhases[5]  = new ScottPratt::CWaveFunction_kpluspiminus_phaseshift(str);
-    fWavePhases[6]  = new ScottPratt::CWaveFunction_pp_phaseshift(str);
-    fWavePhases[7]  = new ScottPratt::CWaveFunction_nn_phaseshift(str);
-    fWavePhases[8]  = new ScottPratt::CWaveFunction_pipluspiminus_phaseshift(str);
-    fWavePhases[9]  = new ScottPratt::CWaveFunction_pipluspiplus_phaseshift(str);
-    fWavePhases[10] = new ScottPratt::CWaveFunction_lambdalambda_phaseshift(str);
-    fWavePhases[11] = new ScottPratt::CWaveFunction_lambdalambdaantiparspin_phaseshift(str);
-    fWavePhases[12] = new ScottPratt::CWaveFunction_lambdalambdaparspin_phaseshift(str);
+    fWavePhases = new ScottPratt::CWaveFunction*[13];
+    for (int i = 0; i < 13; i++) {
+      fWavePhases[i] = nullptr;
+    }
 
-    fWaveSquares    = new ScottPratt::CWaveFunction*[8];
-    fWaveSquares[0] = new ScottPratt::CWaveFunction_pipluspiminus_sqwell(str);
-    fWaveSquares[1] = new ScottPratt::CWaveFunction_kpluspiminus_sqwell(str);
-    fWaveSquares[2] = new ScottPratt::CWaveFunction_pipluspiplus_sqwell(str);
-    fWaveSquares[3] = new ScottPratt::CWaveFunction_kpluspiplus_sqwell(str);
-    fWaveSquares[4] = new ScottPratt::CWaveFunction_pkplus_sqwell(str);
-    fWaveSquares[5] = new ScottPratt::CWaveFunction_ppiplus_sqwell(str);
-    fWaveSquares[6] = new ScottPratt::CWaveFunction_ppiminus_sqwell(str);
-    fWaveSquares[7] = new ScottPratt::CWaveFunction_pp_schrod(str);
+    fWaveSquares = new ScottPratt::CWaveFunction*[8];
+    for (int i = 0; i < 8; i++) {
+      fWaveSquares[i] = nullptr;
+    }
+    fWave = new ScottPratt::CWaveFunction*[4];
+    for (int i = 0; i < 4; i++) {
+      fWave[i] = nullptr;
+    }
+  }
 
-    fWave    = new ScottPratt::CWaveFunction*[4];
-    fWave[0] = new ScottPratt::CWaveFunction_ppbar_nocoulomb(str);
-    fWave[1] = new ScottPratt::CWaveFunction_pipluspiplus_nostrong(str);
-    fWave[2] = new ScottPratt::CWaveFunction_pipluspiminus_nostrong(str);
-    fWave[3] = new ScottPratt::CWaveFunction_ppbar_nocoulomb(str);
+  Hal::ScottPratt::CWaveFunction* FemtoWeightGeneratorScottPratt::GetWave(Int_t n, EWeightApprox eWeightApprox) {
+    switch (eWeightApprox) {
+      case EWeightApprox::kSquare: {
+        if (fWaveSquares[n]) return fWaveSquares[n];
+        return InitSquareWave(n);
+      } break;
+      case EWeightApprox::kPhase: {
+        if (fWavePhases[n]) return fWavePhases[n];
+        return InitPhaseWave(n);
+      } break;
+      case EWeightApprox::kOther: {
+        if (fWave[n]) return fWave[n];
+        return InitOtherWave(n);
+      } break;
+    }
+    return nullptr;
   }
 
   FemtoWeightGeneratorScottPratt::~FemtoWeightGeneratorScottPratt() {
     if (fWave) {
       for (int i = 0; i < 4; i++) {
-        delete fWave[i];
+        if (fWave[i]) delete fWave[i];
       }
       delete[] fWave;
     }
     if (fWaveSquares) {
       for (int i = 0; i < 8; i++) {
-        delete fWaveSquares[i];
+        if (fWaveSquares[i]) delete fWaveSquares[i];
       }
       delete[] fWaveSquares;
     }
     if (fWavePhases) {
       for (int i = 0; i < 13; i++) {
-        delete fWavePhases[i];
+        if (fWavePhases[i]) delete fWavePhases[i];
       }
       delete[] fWavePhases;
     }

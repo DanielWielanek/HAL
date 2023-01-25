@@ -27,6 +27,10 @@ namespace Hal {
     void InitWeights();
     enum class EWeightApprox { kSquare, kPhase, kOther };
     EWeightApprox fPref = {EWeightApprox::kSquare};
+    Hal::ScottPratt::CWaveFunction* GetWave(Int_t n, EWeightApprox w);
+    Hal::ScottPratt::CWaveFunction* InitSquareWave(Int_t n);
+    Hal::ScottPratt::CWaveFunction* InitPhaseWave(Int_t n);
+    Hal::ScottPratt::CWaveFunction* InitOtherWave(Int_t n);
 
   public:
     FemtoWeightGeneratorScottPratt(TString pairFile = "");

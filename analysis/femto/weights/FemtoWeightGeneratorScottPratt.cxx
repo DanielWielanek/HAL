@@ -35,25 +35,22 @@ namespace Hal {
           } break;
           default: {
             fCurWeight = fWaveSquares[2];
-          }
+          } break;
         }
-        break;
-      }
-    };
-    break;
-    case Femto::EPairType::kPionPlusPionMinus: {
-      switch (fPref) {
-        case EWeightApprox::kOther: {
-          fCurWeight = fWave[2];
-        } break;
-        case EWeightApprox::kPhase: {
-          fCurWeight = fWavePhases[8];
-        } break;
-        default: {
-          fCurWeight = fWaveSquares[0];
-        } break;
-      };
-      break;
+      } break;
+      case Femto::EPairType::kPionPlusPionMinus: {
+        switch (fPref) {
+          case EWeightApprox::kOther: {
+            fCurWeight = fWave[2];
+          } break;
+          case EWeightApprox::kPhase: {
+            fCurWeight = fWavePhases[8];
+          } break;
+          default: {
+            fCurWeight = fWaveSquares[0];
+          } break;
+        };
+      } break;
       case Femto::EPairType::kKaonPlusKaonPlus: {
         fCurWeight = nullptr;
       }; break;
@@ -98,18 +95,18 @@ namespace Hal {
       }; break;
       case Femto::EPairType::kPionPlusAntiproton: {
         fCurWeight = fWaveSquares[6];
-      }
-    }; break;
-    case Femto::EPairType::kKaonPlusProton: {
-      switch (fPref) {
-        case EWeightApprox::kPhase: {
-          fCurWeight = fWavePhases[0];
-        } break;
-        default: {
-          fCurWeight = fWaveSquares[4];
-        } break;
-      };
-      break;
+      } break;
+
+      case Femto::EPairType::kKaonPlusProton: {
+        switch (fPref) {
+          case EWeightApprox::kPhase: {
+            fCurWeight = fWavePhases[0];
+          } break;
+          default: {
+            fCurWeight = fWaveSquares[4];
+          } break;
+        };
+      } break;
       case Femto::EPairType::kKaonPlusAntiproton: {
         fCurWeight = nullptr;
       }; break;

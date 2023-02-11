@@ -34,6 +34,7 @@
 #pragma link C++ class Hal::FemtoSourceModelGauss3D + ;
 #pragma link C++ class Hal::FemtoSourceModelGausMt + ;
 #pragma link C++ class Hal::FemtoSourceModelNumerical1D + ;
+#pragma link C++ class Hal::FemtoSourceModelGauss3DCross + ;
 #pragma link C++ class Hal::FemtoFreezoutGenerator + ;
 #pragma link C++ class Hal::FemtoFreezoutGeneratorLCMS + ;
 #pragma link C++ class Hal::FemtoFreezoutGeneratorPRF + ;

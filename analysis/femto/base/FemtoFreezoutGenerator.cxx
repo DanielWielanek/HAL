@@ -35,11 +35,14 @@ namespace Hal {
     Boost(Pair);
   }
 
-  void FemtoFreezoutGenerator::Init() {
+  Bool_t FemtoFreezoutGenerator::Init() {
     if (fModel == NULL) {
       Cout::PrintInfo("No freezout model !", EInfo::kLowWarning);
       fModel = new FemtoSourceModelGauss1D();
     }
+    Bool_t init = fModel->Init();
+    if (!init) { Cout::PrintInfo("Problem with initialization of source model", EInfo::kError); }
+    return init;
   }
 
   Package* FemtoFreezoutGenerator::Report() const {

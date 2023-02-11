@@ -6,9 +6,15 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
+
 #include "FemtoSourceModelGauss.h"
 
 #include "Const.h"
+
+#include <TDecompChol.h>
+#include <TMath.h>
+#include <TMatrix.h>
+#include <TRandom.h>
 
 namespace Hal {
   FemtoSourceModelGauss1D::FemtoSourceModelGauss1D() : FemtoSourceModel1D() {
@@ -87,5 +93,69 @@ namespace Hal {
     return 0.02244839026564582 / sxsysz * Gx * Gy * Gz;
   }
 
+  //=================================================
+  FemtoSourceModelGauss3DCross::FemtoSourceModelGauss3DCross() : FemtoSourceModel3D(6), fAMatrix(3, 3), fCovMatrix(3, 3) {
+    SetParameter(1, 3);
+    SetParameter(1, 4);
+    SetParameter(1, 5);
+    SetParName("R_{out-side}", 3);
+    SetParName("R_{out-long}", 4);
+    SetParName("R_{side-long}", 5);
+  }
+
+  FemtoSourceModelGauss3DCross::FemtoSourceModelGauss3DCross(const FemtoSourceModelGauss3DCross& model) :
+    FemtoSourceModel3D(model), fAMatrix(3, 3), fCovMatrix(3, 3) {
+    fAMatrix   = model.fAMatrix;
+    fCovMatrix = model.fCovMatrix;
+    for (int i = 0; i < 3; i++) {
+      fRowA[i] = model.fRowA[i];
+      fRowB[i] = model.fRowB[i];
+      fRowC[i] = model.fRowC[i];
+    }
+  }
+
+  FemtoSourceModel* FemtoSourceModelGauss3DCross::MakeCopy() const { return new FemtoSourceModelGauss3DCross(*this); }
+
+  void FemtoSourceModelGauss3DCross::GenerateCoordinates(FemtoPair* Pair) {
+    // fRout       = fRandom->Gaus(0, GetParameter(0) * TMath::Sqrt2());
+    // fRside      = fRandom->Gaus(0, GetParameter(1) * TMath::Sqrt2());
+    // fRlong      = fRandom->Gaus(0, GetParameter(2) * TMath::Sqrt2());
+    Double_t Z1 = fRandom->Gaus(0, TMath::Sqrt2());
+    Double_t Z2 = fRandom->Gaus(0, TMath::Sqrt2());
+    Double_t Z3 = fRandom->Gaus(0, TMath::Sqrt2());
+    fRout       = Z1 * fRowA[0] + Z2 * fRowA[1] + Z3 * fRowA[2];
+    fRside      = Z1 * fRowB[0] + Z2 * fRowB[1] + Z3 * fRowB[2];
+    fRlong      = Z1 * fRowC[0] + Z2 * fRowC[1] + Z3 * fRowC[2];
+  }
+
+  Bool_t FemtoSourceModelGauss3DCross::Init() {
+    TMatrixD sigma(3, 3);
+    sigma[0][0] = GetParameter(0);  // out out
+    sigma[0][1] = GetOutSide();     // out side
+    sigma[0][2] = GetOutLong();
+    sigma[1][0] = GetOutSide();
+    sigma[1][1] = GetParameter(1);
+    sigma[1][2] = GetSideLong();
+    sigma[2][0] = GetOutLong();
+    sigma[2][1] = GetSideLong();
+    sigma[2][2] = GetParameter(2);
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        sigma[i][j] = sigma[i][j] * sigma[i][j];
+      }
+    }
+    sigma = sigma.Invert();
+
+
+    TDecompChol chol(sigma);
+    if (!chol.Decompose()) return kFALSE;
+    fAMatrix = chol.GetU();
+    for (int i = 0; i < 3; i++) {
+      fRowA[i] = fAMatrix[i][0];
+      fRowB[i] = fAMatrix[i][1];
+      fRowC[i] = fAMatrix[i][2];
+    }
+    return kFALSE;
+  }
 
 }  // namespace Hal

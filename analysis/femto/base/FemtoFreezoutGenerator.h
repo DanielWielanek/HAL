@@ -44,7 +44,7 @@ namespace Hal {
     /**
      * defalut initializer
      */
-    void Init();
+    Bool_t Init();
     /**
      *
      * @param model used source model

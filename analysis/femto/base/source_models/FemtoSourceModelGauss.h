@@ -9,9 +9,14 @@
 #ifndef HALFEMTOSOURCEMODELGAUSS_H_
 #define HALFEMTOSOURCEMODELGAUSS_H_
 
-#include "FemtoPair.h"
 #include "FemtoSourceDensity.h"
+
 #include "FemtoSourceModel.h"
+
+#include <Rtypes.h>
+#include <RtypesCore.h>
+#include <TMatrixDfwd.h>
+#include <TVector3.h>
 
 /**
  * class that generate 1-dim gaussian source
@@ -49,6 +54,49 @@ namespace Hal {
     void GenerateCoordinates(FemtoPair* Pair);
     virtual ~FemtoSourceModelGauss3D();
     ClassDef(FemtoSourceModelGauss3D, 1)
+  };
+
+  class FemtoSourceModelGauss3DCross : public FemtoSourceModel3D {
+    TMatrixD fAMatrix;
+    TMatrixD fCovMatrix;
+    Double_t fRowA[3];
+    Double_t fRowB[3];
+    Double_t fRowC[3];
+
+  public:
+    /**
+     * default ctor
+     */
+    FemtoSourceModelGauss3DCross();
+    /**
+     * copy ctor
+     * @param model
+     */
+    FemtoSourceModelGauss3DCross(const FemtoSourceModelGauss3DCross& model);
+    FemtoSourceModel* MakeCopy() const;
+    /**
+     * set out radius
+     * @param out radius
+     */
+    void SetOutSideRadius(Double_t os) { SetParameter(os, 3); };
+    /**
+     * set side radius
+     * @param side radius
+     */
+    void SetOutLongRadius(Double_t sl) { SetParameter(sl, 4); };
+    /**
+     * set long radius
+     * @param longr radius
+     */
+    void SetSideLongRadius(Double_t ol) { SetParameter(ol, 5); };
+
+    Double_t GetOutSide() const { return GetParameter(3); };
+    Double_t GetOutLong() const { return GetParameter(4); };
+    Double_t GetSideLong() const { return GetParameter(5); };
+    void GenerateCoordinates(FemtoPair* Pair);
+    Bool_t Init();
+    virtual ~FemtoSourceModelGauss3DCross() {};
+    ClassDef(FemtoSourceModelGauss3DCross, 1)
   };
 
 

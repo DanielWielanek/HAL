@@ -130,6 +130,7 @@ namespace Hal {
      * @return
      */
     Double_t GetParameter(Int_t n) const { return fParams[n]; };
+    virtual Bool_t Init() { return kTRUE; }
     virtual void Print(Option_t* option = "") const;
     /**
      *

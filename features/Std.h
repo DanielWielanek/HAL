@@ -30,6 +30,9 @@ class TClonesArray;
 namespace Hal {
   class CompressionMap;
   namespace Std {
+    struct ITriplet {
+      int x, y, z;
+    };
     /**
      * conver enum to "human readable" update ratio description
      * @param upd

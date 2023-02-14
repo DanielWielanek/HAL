@@ -15,24 +15,35 @@
 
 class TClonesArray;
 namespace Hal {
+  class CorrFitMapGroupConfig : public Object {
+    Int_t fMode = {0};
+    Int_t fBins;
+    Double_t fMin, fMax, fStep;
+
+  public:
+    CorrFitMapGroupConfig();
+    void SetGroupByKLong() { fMode = 1; };
+    void SetGroupByKStar() { fMode = 0; };
+    void SetAxis(Int_t bins, Double_t min, Double_t max);
+    Int_t GetBin(const FemtoPair* pair) const;
+    Int_t GetNbins() const { return fBins; }
+    Bool_t GroupByLong() const;
+    Bool_t GroupByKStar() const;
+    virtual void Add(const Object* pack);
+    std::vector<TString> GetBranches(Double_t min, Double_t max, Bool_t signal = kTRUE) const;
+    virtual ~CorrFitMapGroupConfig() {};
+    ClassDef(CorrFitMapGroupConfig, 1)
+  };
+
   class Package;
   class FemtoDumpPairAna : public FemtoBasicAna {
     Int_t fBinLimit;
-    Int_t fNBins;
     Array_1<Double_t> fLimitsN;
     Array_1<Double_t> fLimitsD;
-
-    Double_t fStep, fMax;
+    CorrFitMapGroupConfig fGrouping;
     Bool_t fWriteBackground;
-    Bool_t fGroup;
-    Bool_t fGroupKstar;
     std::vector<TClonesArray*> fSignalPairs;
     std::vector<TClonesArray*> fBackgroundPairs;
-    std::vector<Double_t> fQinvLimits;
-    Double_t fXmin, fXmax, fXstep;
-    Int_t fXbins;
-    Int_t FindBinZ() const;
-    Int_t FindBinX() const;
 
   protected:
     virtual void ProcessFemtoPair();
@@ -44,11 +55,10 @@ namespace Hal {
 
   public:
     FemtoDumpPairAna();
-    void Group() { fGroup = kTRUE; }
     virtual void Exec(Option_t* opt = "");
     void SetPairLimitPerBin(Int_t limit) { fBinLimit = limit; };
-    void WriteBackground() { fWriteBackground = kTRUE; }
-    virtual Package* Report() const;
+    void WriteBackground() { fWriteBackground = kTRUE; };
+    virtual void FinishTask();
     virtual ~FemtoDumpPairAna();
     ClassDef(FemtoDumpPairAna, 1)
   };

@@ -26,7 +26,9 @@
 #include "Array.h"
 #include "CorrFit1DCF.h"
 #include "CorrFitDrawOptions.h"
-#include "CorrFitHDFunc.h"
+#include "CorrFitHDFunc1D.h"
+#include "CorrFitMask.h"
+#include "CorrFitMask1D.h"
 #include "Cout.h"
 #include "Femto1DCF.h"
 #include "Splines.h"
@@ -220,48 +222,21 @@ namespace Hal {
 
   void CorrFit1DCF::EstimateActiveBins() {
     fActiveBins = 0;
-    if (fOwnRangeMap) {
-      if (!Hal::Std::AreSimilar(fDenominatorHistogram, fMask, kFALSE)) {
-        delete fMask;
-        fMask = NULL;
-        Cout::Text("Non compatible mask in corrfit", "L", kOrange);
-        fOwnRangeMap = kFALSE;
-      }
-    }
-    if (fMask == NULL) {
-      fMask = new TH1I("mask",
-                       "mask",
-                       fDenominatorHistogram->GetNbinsX(),
-                       fDenominatorHistogram->GetXaxis()->GetXmin(),
-                       fDenominatorHistogram->GetXaxis()->GetXmax());
+    if (fMask == nullptr) {
+      fMask = new CorrFitMask1D(fDenominatorHistogram->GetNbinsX(),
+                                fDenominatorHistogram->GetXaxis()->GetXmin(),
+                                fDenominatorHistogram->GetXaxis()->GetXmax());
     }
     if (fOwnRangeMap == kTRUE) {
-      Bool_t warn = kTRUE;
-      for (int i = 1; i <= fDenominatorHistogram->GetNbinsX(); i++) {
-        Int_t mask = fMask->GetBinContent(i);
-        if (fDenominatorHistogram->GetBinContent(i) == 0 || fNumeratorHistogram->GetBinContent(i) == 0) {
-          mask = 0;
-          fMask->SetBinContent(i, 0);
-          if (warn) {
-            Cout::PrintInfo("empty bin,  mask must be changed", EInfo::kWarning);
-            warn = kFALSE;
-          }
-        }
-
-        if (mask > 0) fActiveBins++;
-      }
+      fMask->ApplyThreshold(*fDenominatorHistogram, 0);
     } else {
-      Int_t bin_min = fDenominatorHistogram->FindBin(fRange[0]);
-      Int_t bin_max = fDenominatorHistogram->FindBin(fRange[1]);
-      fMask->Reset();
-      for (int i = bin_min; i <= bin_max; i++) {
-        Double_t A = fNumeratorHistogram->GetBinContent(i);
-        Double_t B = fDenominatorHistogram->GetBinContent(i);
-        if (A <= fThreshold || B < fThreshold) continue;
-        fActiveBins++;
-        fMask->SetBinContent(i, 1);
-      }
+      GetMask()->Reset(false);
+      GetMask()->ApplyRange(fRange[0], fRange[1], true);
+      GetMask()->ApplyThreshold(*fNumeratorHistogram, fThreshold);
+      GetMask()->ApplyThreshold(*fDenominatorHistogram, fThreshold);
     }
+    fMask->Init();
+    fActiveBins              = GetMask()->GetActiveBins();
     Double_t free_parameters = 0;
     for (int i = 0; i < GetParametersNo(); i++) {
       if (!fParameters[i].IsFixed()) free_parameters++;
@@ -270,7 +245,7 @@ namespace Hal {
     Bool_t useHD = kFALSE;
     if (fBinCalc == kExtrapolated) useHD = kTRUE;
 
-    fHDMaps->SetMask(fMask, fDenominatorHistogram, useHD);
+    fHDMaps->SetMask(*fMask, fDenominatorHistogram, useHD);
 
     fNDF = fActiveBins - free_parameters;
   }
@@ -343,4 +318,14 @@ namespace Hal {
       cf->GetCFMapHD()[hdBin] = p;
     }
   }
+
+  void CorrFit1DCF::SetFittingMask(const CorrFitMask& map) {
+    const CorrFitMask1D* mask = dynamic_cast<const CorrFitMask1D*>(&map);
+    if (mask == nullptr) return;
+    if (!mask->AreCompatible(fCF)) return;
+    if (fMask) delete fMask;
+    fMask        = (CorrFitMask*) mask->Clone();
+    fOwnRangeMap = kTRUE;
+  }
+
 }  // namespace Hal

@@ -25,7 +25,9 @@
 
 #include "Array.h"
 #include "CorrFit3DCF.h"
-#include "CorrFitHDFunc.h"
+#include "CorrFitHDFunc3D.h"
+#include "CorrFitMask.h"
+#include "CorrFitMask3D.h"
 #include "Cout.h"
 #include "DividedHisto.h"
 #include "Femto3DCF.h"
@@ -43,7 +45,6 @@ namespace Hal {
 
   CorrFit3DCF::CorrFit3DCF(Int_t parameters) :
     CorrFitFunc(parameters, 3),
-    fFitMaskFlag(EFitExtraMask::kStandard),
     fXbins(NULL),
     fYbins(NULL),
     fZbins(NULL),
@@ -378,58 +379,33 @@ namespace Hal {
   void CorrFit3DCF::EstimateActiveBins() {
     fActiveBins     = 0;
     Bool_t allocate = kFALSE;
-    if (fMask == NULL) {
-      allocate     = kTRUE;
+    if (fMask == nullptr) {
+      fMask        = new CorrFitMask3D(fDenominatorHistogram->GetNbinsX(),
+                                fDenominatorHistogram->GetXaxis()->GetXmin(),
+                                fDenominatorHistogram->GetXaxis()->GetXmax(),
+                                fDenominatorHistogram->GetNbinsY(),
+                                fDenominatorHistogram->GetYaxis()->GetXmin(),
+                                fDenominatorHistogram->GetYaxis()->GetXmax(),
+                                fDenominatorHistogram->GetNbinsZ(),
+                                fDenominatorHistogram->GetZaxis()->GetXmin(),
+                                fDenominatorHistogram->GetZaxis()->GetXmax());
       fOwnRangeMap = kFALSE;
     }
     if (fOwnRangeMap) {  // use own map
-      if (!Hal::Std::AreSimilar(fMask, fDenominatorHistogram, kFALSE)) {
-        delete fMask;
-        fMask        = NULL;
-        fOwnRangeMap = kFALSE;
-        Cout::Text("Non compatible mask in corrfit ", "L", kOrange);
-        EstimateActiveBins();
-        return;
-      }
-    } else {  // get own mask
-      if (allocate == kFALSE)
-        if (!Hal::Std::AreSimilar(fMask, fDenominatorHistogram, kFALSE)) allocate = kTRUE;
-      if (allocate) {
-        fMask = new TH3I("mask",
-                         "mask",
-                         fDenominatorHistogram->GetNbinsX(),
-                         fDenominatorHistogram->GetXaxis()->GetXmin(),
-                         fDenominatorHistogram->GetXaxis()->GetXmax(),
-                         fDenominatorHistogram->GetNbinsY(),
-                         fDenominatorHistogram->GetYaxis()->GetXmin(),
-                         fDenominatorHistogram->GetYaxis()->GetXmax(),
-                         fDenominatorHistogram->GetNbinsZ(),
-                         fDenominatorHistogram->GetZaxis()->GetXmin(),
-                         fDenominatorHistogram->GetZaxis()->GetXmax());
-        fMask->Reset();
-        // fill mask
-        for (int i = 1; i <= fNumeratorHistogram->GetNbinsX(); i++) {
-          for (int j = 1; j <= fNumeratorHistogram->GetNbinsY(); j++) {
-            for (int k = 1; k <= fNumeratorHistogram->GetNbinsZ(); k++) {
-              fMask->SetBinContent(i, j, k, 1);
-            }
-          }
-        }
-      }
+    } else {             // get own mask
+      GetMask()->Reset(true);
+      GetMask()->ApplyThreshold(*fNumeratorHistogram, fThreshold);
+      GetMask()->ApplyThreshold(*fDenominatorHistogram, fThreshold);
+      GetMask()->ApplyRange(fRange[0], fRange[1], fRange[2], fRange[3], fRange[4], fRange[5], kFALSE);
     }
-    if (fFitMaskFlag == EFitExtraMask::kSlice) {
-      CalculateSliceBins((TH3*) fMask);
-    } else if (fFitMaskFlag == EFitExtraMask::kDiagonalSlice || fFitMaskFlag == EFitExtraMask::kDiagonalSliceIgnored) {
-      CalculateDiagonalBins((TH3*) fMask);
-    } else if (fFitMaskFlag == EFitExtraMask::kUltraDiagonalSlice || fFitMaskFlag == EFitExtraMask::kUltraDiagonalSliceIgnored) {
-      CalculateUltradiagonalBins((TH3*) fMask);
-    }
-    CalculateRangeBins((TH3*) fMask);
-    CalculateThresholdBins();
+    GetMask()->ApplyThreshold(*fNumeratorHistogram, 0);
+    GetMask()->ApplyThreshold(*fDenominatorHistogram, 0);
+    fMask->Init();
+    fActiveBins  = fMask->GetActiveBins();
     Bool_t useHD = kFALSE;
     if (fBinCalc == kExtrapolated) useHD = kTRUE;
 
-    fHDMaps->SetMask(fMask, fDenominatorHistogram, useHD);
+    fHDMaps->SetMask(*fMask, fDenominatorHistogram, useHD);
     Double_t free_parameters = 0;
     for (int i = 0; i < GetParametersNo(); i++) {
       if (!fParameters[i].IsFixed()) free_parameters++;
@@ -493,214 +469,6 @@ namespace Hal {
       return val * cf->GetDenominatorSum()[fBinX][fBinY][fBinZ];
     }
     return CalculateCF(xx, params);
-  }
-
-  void CorrFit3DCF::CalculateRangeBins(TH3* h) {
-    Int_t bin_minX = h->GetXaxis()->FindBin(fRange[0]);
-    Int_t bin_maxX = h->GetXaxis()->FindBin(fRange[1]);
-    Int_t bin_minY = h->GetYaxis()->FindBin(fRange[2]);
-    Int_t bin_maxY = h->GetYaxis()->FindBin(fRange[3]);
-    Int_t bin_minZ = h->GetZaxis()->FindBin(fRange[4]);
-    Int_t bin_maxZ = h->GetXaxis()->FindBin(fRange[5]);
-
-    Int_t xok, yok, zok;
-
-    for (int i = 1; i <= h->GetNbinsX(); i++) {
-      if (i >= bin_minX && i <= bin_maxX)
-        xok = 1;
-      else
-        xok = 0;
-      for (int j = 1; j <= h->GetNbinsY(); j++) {
-        if (j >= bin_minY && j <= bin_maxY)
-          yok = 1;
-        else
-          yok = 0;
-        for (int k = 1; k <= h->GetNbinsZ(); k++) {
-          if (k >= bin_minZ && k <= bin_maxZ)
-            zok = 1;
-          else
-            zok = 0;
-          if (zok + xok + yok != 3) { h->SetBinContent(i, j, k, 0); }
-        }
-      }
-    }
-  }
-
-  void CorrFit3DCF::CalculateDiagonalBins(TH3* h) {
-    Int_t nBinX    = h->GetNbinsX();
-    Int_t nBinY    = h->GetNbinsY();
-    Int_t nBinZ    = h->GetNbinsZ();
-    Int_t middle_x = h->GetXaxis()->FindBin(0.0);
-    Int_t middle_y = h->GetYaxis()->FindBin(0.0);
-    Int_t middle_z = h->GetZaxis()->FindBin(0.0);
-    for (int i = 1; i <= nBinX; i++) {
-      if (h->GetBinContent(i, middle_y, middle_z) == 1) h->SetBinContent(i, middle_y, middle_z, -1);
-    }
-    for (int j = 1; j <= nBinY; j++) {
-      if (h->GetBinContent(middle_x, j, middle_z) == 1) h->SetBinContent(middle_x, j, middle_z, -1);
-    }
-    for (int k = 1; k <= nBinZ; k++) {
-      if (h->GetBinContent(middle_x, middle_y, k) == 1) h->SetBinContent(middle_x, middle_y, k, -1);
-    }
-
-    if (nBinX != nBinY || nBinY != nBinZ) {
-      Cout::Text(
-        "CorrFit3DCF::CalculateDiagonalBins cannot use cross bins, different number of bins in 3D, switch  to slice", "M", kRed);
-      SwapMap(h);
-      return;
-    }
-
-    // first diagonal with non-egde histo
-    if (middle_x != 1 || fFitMaskFlag == EFitExtraMask::kDiagonalSliceIgnored) {
-      for (int i = 1; i <= nBinX; i++) {
-        Int_t a = i;
-        Int_t b = nBinX - i + 1;
-        // first diagonal
-        if (h->GetBinContent(a, a, a) == 1) h->SetBinContent(a, a, a, -1);
-        if (h->GetBinContent(a, a, b) == 1) h->SetBinContent(a, a, b, -1);
-        if (h->GetBinContent(a, b, a) == 1) h->SetBinContent(a, b, a, -1);
-        if (h->GetBinContent(a, b, b) == 1) h->SetBinContent(a, b, b, -1);
-      }
-    } else {
-      // diagonal with edges
-      for (int i = 1; i <= nBinX; i++) {
-        Int_t a = i;
-        // first diagonal
-        if (h->GetBinContent(a, a, a) == 1) h->SetBinContent(a, a, a, -1);
-      }
-    }
-
-    SwapMap(h);
-  }
-
-  void CorrFit3DCF::CalculateSliceBins(TH3* h) {
-    Int_t nBinX    = h->GetNbinsX();
-    Int_t nBinY    = h->GetNbinsY();
-    Int_t nBinZ    = h->GetNbinsZ();
-    Int_t middle_x = h->GetXaxis()->FindBin(0.0);
-    Int_t middle_y = h->GetYaxis()->FindBin(0.0);
-    Int_t middle_z = h->GetZaxis()->FindBin(0.0);
-    for (int i = 1; i <= nBinX; i++) {
-      if (h->GetBinContent(i, middle_y, middle_z) == 1) h->SetBinContent(i, middle_y, middle_z, -1);
-    }
-    for (int j = 1; j <= nBinY; j++) {
-      if (h->GetBinContent(middle_x, j, middle_z) == 1) h->SetBinContent(middle_x, j, middle_z, -1);
-    }
-    for (int k = 1; k <= nBinZ; k++) {
-      if (h->GetBinContent(middle_x, middle_y, k) == 1) h->SetBinContent(middle_x, middle_y, k, -1);
-    }
-    SwapMap(h);
-  }
-
-  void CorrFit3DCF::CalculateThresholdBins() {
-
-    for (int i = 1; i <= fNumeratorHistogram->GetNbinsX(); i++) {
-      for (int j = 1; j <= fNumeratorHistogram->GetNbinsY(); j++) {
-        for (int k = 1; k <= fNumeratorHistogram->GetNbinsZ(); k++) {
-          Double_t A = fNumeratorHistogram->GetBinContent(i, j, k);
-          Double_t B = fDenominatorHistogram->GetBinContent(i, j, k);
-          if (A <= fThreshold || B < fThreshold) { fMask->SetBinContent(i, j, k, 0); }
-          if (fMask->GetBinContent(i, j, k) == 1) fActiveBins++;
-        }
-      }
-    }
-    fXBinf = fNumeratorHistogram->GetXaxis()->GetBinWidth(1) * 0.5;
-    fYBinf = fNumeratorHistogram->GetYaxis()->GetBinWidth(1) * 0.5;
-    fZBinf = fNumeratorHistogram->GetZaxis()->GetBinWidth(1) * 0.5;
-  }
-
-  void CorrFit3DCF::SwapMap(TH3* h) {
-    for (int i = 1; i <= h->GetNbinsX(); i++) {
-      for (int j = 1; j <= h->GetNbinsY(); j++) {
-        for (int k = 1; k <= h->GetNbinsZ(); k++) {
-          Int_t content = h->GetBinContent(i, j, k);
-          if (content == -1) {
-            h->SetBinContent(i, j, k, 1);
-          } else {
-            h->SetBinContent(i, j, k, 0);
-          }
-        }
-      }
-    }
-  }
-
-  void CorrFit3DCF::CalculateUltradiagonalBins(TH3* h) {
-
-    Int_t nBinX    = h->GetNbinsX();
-    Int_t nBinY    = h->GetNbinsY();
-    Int_t nBinZ    = h->GetNbinsZ();
-    Int_t middle_x = h->GetXaxis()->FindBin(0.0);
-    Int_t middle_y = h->GetYaxis()->FindBin(0.0);
-    Int_t middle_z = h->GetZaxis()->FindBin(0.0);
-    for (int i = 1; i <= nBinX; i++) {
-      if (h->GetBinContent(i, middle_y, middle_z) == 1) h->SetBinContent(i, middle_y, middle_z, -1);
-    }
-    for (int j = 1; j <= nBinY; j++) {
-      if (h->GetBinContent(middle_x, j, middle_z) == 1) h->SetBinContent(middle_x, j, middle_z, -1);
-    }
-    for (int k = 1; k <= nBinZ; k++) {
-      if (h->GetBinContent(middle_x, middle_y, k) == 1) h->SetBinContent(middle_x, middle_y, k, -1);
-    }
-
-    if (nBinX != nBinY || nBinY != nBinZ) {
-      Cout::Text(
-        "CorrFit3DCF::CalculateUltradiagonalBins cannot use cross bins, different number of bins in 3D, switch  to slice",
-        "M",
-        kRed);
-      SwapMap(h);
-      return;
-    }
-
-    if (middle_x != 1 || fFitMaskFlag == EFitExtraMask::kUltraDiagonalSliceIgnored) {
-      for (int i = 1; i <= nBinX; i++) {
-        Int_t a = i;
-        Int_t b = nBinX - i + 1;
-        // diagonals
-        if (h->GetBinContent(a, a, a) == 1) h->SetBinContent(a, a, a, -1);
-        if (h->GetBinContent(a, a, b) == 1) h->SetBinContent(a, a, b, -1);
-        if (h->GetBinContent(a, b, a) == 1) h->SetBinContent(a, b, a, -1);
-        if (h->GetBinContent(a, b, b) == 1) h->SetBinContent(a, b, b, -1);
-
-        // pseudodiagonals
-
-        if (h->GetBinContent(middle_x, a, a) == 1) h->SetBinContent(middle_x, a, a, -1);
-        if (h->GetBinContent(middle_x, a, b) == 1) h->SetBinContent(middle_x, a, b, -1);
-
-        if (h->GetBinContent(a, middle_y, a) == 1) h->SetBinContent(a, middle_y, a, -1);
-        if (h->GetBinContent(a, middle_y, b) == 1) h->SetBinContent(a, middle_y, b, -1);
-
-        if (h->GetBinContent(a, a, middle_z) == 1) h->SetBinContent(a, a, middle_z, -1);
-        if (h->GetBinContent(a, b, middle_z) == 1) h->SetBinContent(a, b, middle_z, -1);
-      }
-    } else {
-      for (int i = 1; i <= nBinX; i++) {
-
-        Int_t a = i;
-        // Int_t b = nBinX - i + 1;
-        // diagonals
-        if (h->GetBinContent(a, a, a) == 1) h->SetBinContent(a, a, a, -1);
-
-        // pseudodiagonals
-
-        if (h->GetBinContent(middle_x, a, a) == 1) h->SetBinContent(middle_x, a, a, -1);
-
-        if (h->GetBinContent(a, middle_y, a) == 1) h->SetBinContent(a, middle_y, a, -1);
-
-        if (h->GetBinContent(a, a, middle_z) == 1) h->SetBinContent(a, a, middle_z, -1);
-      }
-    }
-    SwapMap(h);
-  }
-
-  void CorrFit3DCF::MakeDiagonal(EFitExtraMask flag, TH3* h) {
-    fFitMaskFlag = flag;
-    if (fFitMaskFlag == EFitExtraMask::kSlice) {
-      CalculateSliceBins(h);
-    } else if (fFitMaskFlag == EFitExtraMask::kDiagonalSlice || fFitMaskFlag == EFitExtraMask::kDiagonalSliceIgnored) {
-      CalculateDiagonalBins(h);
-    } else if (fFitMaskFlag == EFitExtraMask::kUltraDiagonalSlice || fFitMaskFlag == EFitExtraMask::kUltraDiagonalSliceIgnored) {
-      CalculateUltradiagonalBins(h);
-    }
   }
 
   void CorrFit3DCF::GetTF1s(Bool_t makeNew, EDrawMode drawMode) {
@@ -1061,6 +829,15 @@ namespace Hal {
       Double_t CF            = CalculateCF(X, fTempParamsEval);
       cf->CFMapHD()[i][j][k] = CF;
     }
+  }
+
+  void CorrFit3DCF::SetFittingMask(const CorrFitMask& map) {
+    const CorrFitMask3D* mask = dynamic_cast<const CorrFitMask3D*>(&map);
+    if (mask == nullptr) return;
+    if (!mask->AreCompatible(fCF)) return;
+    if (fMask) delete fMask;
+    fMask        = (CorrFitMask*) mask->Clone();
+    fOwnRangeMap = kTRUE;
   }
 
 }  // namespace Hal

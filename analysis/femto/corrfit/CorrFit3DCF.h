@@ -12,27 +12,19 @@
 
 #include "CorrFitFunc.h"
 
-
+#include "CorrFitMask.h"
 class TH3;
 class TH1D;
 /**
  * abstract class for fitting 3-dim correlation function
  */
 namespace Hal {
+  class CorrFitMask3D;
   class CorrFitMath3DCF;
   class CorrFitSHCF;
   class CorrFit3DCF : public CorrFitFunc {
 
   public:
-    enum class EFitExtraMask {
-      kStandard,
-      kSlice,
-      kDiagonalSlice,
-      kUltraDiagonalSlice,
-      kDiagonalSliceIgnored,
-      kUltraDiagonalSliceIgnored
-    };
-
   private:
     enum class EDrawMode { kNormal, kDiagonal1, kDiagonal2 };
     friend class CorrFitMath3DCF;
@@ -42,7 +34,6 @@ namespace Hal {
     static const Int_t fgRlong;
     static const Int_t fgLambda;
     static const Int_t fgNorm;
-    EFitExtraMask fFitMaskFlag;
     Array_1<Double_t>* fXbins;
     Array_1<Double_t>* fYbins;
     Array_1<Double_t>* fZbins;
@@ -66,7 +57,6 @@ namespace Hal {
     Double_t GetFunXYZppm(Double_t* x, Double_t* params) const;
     Double_t GetFunXYZpmm(Double_t* x, Double_t* params) const;
     void SetParametersToTF1(TF1* f) const;
-    void SwapMap(TH3* h);
     void Calculatef(Double_t width);
 
   protected:
@@ -75,6 +65,7 @@ namespace Hal {
      * processed currednly binX, binY and binZ;
      */
     mutable Int_t fBinX, fBinY, fBinZ;
+    CorrFitMask3D* GetMask() const { return (CorrFitMask3D*) fMask; };
     virtual void GetTF1s(Bool_t makeNew, EDrawMode drawMode);
     virtual void GetTH1s(EDrawMode drawMode);
     /**
@@ -95,11 +86,6 @@ namespace Hal {
     void DrawOther(TString option);
     void DrawDiagonalOther(TString option);
     void DrawDiagonalWithCF(TString option);
-    void CalculateRangeBins(TH3* h);
-    void CalculateDiagonalBins(TH3* h);
-    void CalculateUltradiagonalBins(TH3* h);
-    void CalculateSliceBins(TH3* h);
-    void CalculateThresholdBins();
     void PrepareRaw();
     double GetChiTFD(const double* par) const;
     double GetChiTF(const double* par) const;
@@ -190,6 +176,7 @@ namespace Hal {
      * @param max
      */
     void SetRlongLimits(Double_t min, Double_t max) { SetParLimits(Rlong(), min, max); }
+    void SetFittingMask(const CorrFitMask& map);
     /**
      *
      * @return Rout
@@ -273,17 +260,6 @@ namespace Hal {
      * @return param number that correspond to norm
      */
     inline static Int_t Norm() { return fgNorm; };
-    /**
-     * make diagonal map
-     * @param r
-     */
-    void MakeDiagonal(EFitExtraMask flag, TH3* mask);
-    /**
-     * used to apply additional fit mas
-     * @param r fit mask  - kStandard - nothing to chage, kSlice - use only "slice bins" , kCrossSlice - use only diagonals +
-     * slice
-     */
-    void SetFitExtraMask(EFitExtraMask r) { fFitMaskFlag = r; };
     virtual ~CorrFit3DCF();
     ClassDef(CorrFit3DCF, 1)
   };

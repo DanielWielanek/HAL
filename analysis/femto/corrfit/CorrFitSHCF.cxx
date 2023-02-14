@@ -9,6 +9,7 @@
 
 #include "CorrFitSHCF.h"
 #include "CorrFit.h"
+#include "CorrFitMask.h"
 #include "Cout.h"
 
 #include <TAttLine.h>
@@ -25,6 +26,7 @@
 #include <TString.h>
 #include <iostream>
 
+#include "CorrFitMaskSH.h"
 #include "FemtoSHCF.h"
 #include "StdString.h"
 namespace Hal {
@@ -69,18 +71,18 @@ namespace Hal {
 
   void CorrFitSHCF::EstimateActiveBins() {
     fActiveBins = 0;
-    if (fMask) delete fMask;
-    fMask      = new TH1D("mask", "mask", fMaxJM * fNumeratorHistogram->GetNbinsX(), 0, 1);
+    Int_t bins;
+    Double_t min, max;
+    Hal::Std::GetAxisPar(*fNumeratorHistogram, bins, min, max);
+    if (!fMask) { fMask = new CorrFitMaskSH(bins, min, max, fLmVals.GetMaxL()); }
     Int_t jump = fNumeratorHistogram->GetNbinsX();
-
-    for (int i = fBinRange[0]; i < fBinRange[1]; i++) {
-      TH1* num = fNumeratorHistogram;
-      if (num->GetBinContent(i) < fThreshold) continue;
-      for (int j = 0; j < fMaxJM; j++) {
-        fMask->SetBinContent(jump * j + i, 1);
-      }
-      fActiveBins += fMaxJM * 2;  // x2 bo im + re
+    if (!fOwnRangeMap) {
+      GetMask()->Reset(false);
+      GetMask()->ApplyRange(fRange[0], fRange[1], kTRUE);
+      GetMask()->ApplyThreshold(*fNumeratorHistogram, fThreshold);
     }
+    GetMask()->Init();
+    fMaxJM                   = fMask->GetActiveBins();
     Double_t free_parameters = 0;
     for (int i = 0; i < GetParametersNo(); i++) {
       if (!fParameters[i].IsFixed()) free_parameters++;
@@ -91,94 +93,165 @@ namespace Hal {
   double CorrFitSHCF::GetChiTF(const double* par) const {
     Double_t f = 0.0;
     Double_t A, C;
-    Double_t e, chi; /* FIXME */
+    Double_t chi; /* FIXME */
     ParametersChanged();
     Int_t bins = fNumeratorHistogram->GetNbinsX();
     Double_t Q[1];
-    chi = -1;
-    switch (fCalcMode) {
-      case eCalcMode::kFullCalc: {
-        /* TODO implemenet full calc */
-      } break;
-      case eCalcMode::kPhysical1dId: {
-        /*  take into account only 00*/
-        chi = 0;
-        for (int i = 1; i <= bins; i++) {
-          if (fMask->GetBinContent(i) == 0) continue;
-          Q[0]          = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
-          Double_t cf00 = fCFHistogramsRe[0]->GetBinContent(i);
-          Double_t er00 = fCFHistogramsRe[0]->GetBinError(i);
-          Double_t th00 = GetCFValRe(Q[0], 0);
-          chi += (cf00 - th00) * (cf00 - th00) / (er00 * er00);
-        }
-      } break;
-      case eCalcMode::kPhysical1dNonId: {
-        /* take into account only 00 and 11  */
-        chi = 0;
-        Int_t indexes[2];
-        Double_t c_meas[2];
-        Double_t c_theo[2];
-        Double_t c_error[2];
-        Double_t delta[2];
-        indexes[0]       = fLmVals.GetIndex(0, 0);
-        indexes[1]       = fLmVals.GetIndex(1, 1);
-        Int_t covIndex00 = fLmVals.GetIndex(0, 0);
-        Int_t covIndex11 = fLmVals.GetIndex(1, 1);
-        for (int i = 1; i <= bins; i++) {
-          if (fMask->GetBinContent(i) == 0) continue;
-          Q[0] = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
-          for (int j = 0; j < 2; j++) {
-            c_meas[j]  = fCFHistogramsRe[indexes[j]]->GetBinContent(i);
-            c_theo[j]  = GetCFValRe(Q[0], indexes[j]);
-            c_error[j] = fCFHistogramsRe[indexes[j]]->GetBinError(i);
-            delta[j]   = c_meas[j] - c_theo[j];
+    chi             = 0;
+    auto calcTermIm = [&](Int_t l, Int_t bin) {
+
+    };
+    auto calcTermRe = [&](Int_t m, Int_t l, Int_t bin) {
+      switch (l) {
+        case 0: {
+          Int_t index   = fLmVals.GetIndex(l, m);
+          Double_t cf00 = fCFHistogramsRe[index]->GetBinContent(bin);
+          Double_t er00 = fCfErrorsRe[index][bin];
+          Double_t th00 = fCalculatedFastRe[index][bin];
+          Double_t e    = (cf00 - th00) * er00;
+          chi += e * e;
+        } break;
+        case 1: {
+          Int_t index01  = fLmVals.GetIndex(l, 0);
+          Int_t index11  = fLmVals.GetIndex(l, 1);
+          Double_t cf01  = fCFHistogramsRe[index01]->GetBinContent(bin);
+          Double_t cf11  = fCFHistogramsRe[index11]->GetBinContent(bin);
+          Double_t th01  = fCalculatedFastRe[index01][bin];
+          Double_t th11  = fCalculatedFastRe[index11][bin];
+          Double_t er01  = fCfErrorsRe[index01][bin];
+          Double_t er11  = fCfErrorsIm[index11][bin];
+          Double_t cov01 = fCovCF->GetBinContent(bin, index01 + 1, index11 + 1);
+          Double_t s01   = (cf01 - th01) * er01;
+          Double_t s11   = (cf11 - th11) * er11;
+          Double_t cov   = cov01 * s01 * s11;
+          chi += (s01 * s01 + s11 * s11 - 2.0 * cov) / (1 - cov01 * cov01);
+        } break;
+        case 2: {
+          Int_t index01  = fLmVals.GetIndex(l, 0);
+          Int_t index11  = fLmVals.GetIndex(l, 1);
+          Int_t index21  = fLmVals.GetIndex(l, 2);
+          Double_t cf01  = fCFHistogramsRe[index01]->GetBinContent(bin);
+          Double_t cf11  = fCFHistogramsRe[index11]->GetBinContent(bin);
+          Double_t th01  = fCalculatedFastRe[index01][bin];
+          Double_t th11  = fCalculatedFastRe[index11][bin];
+          Double_t er01  = fCfErrorsRe[index01][bin];
+          Double_t er11  = fCfErrorsIm[index11][bin];
+          Double_t cov01 = fCovCF->GetBinContent(bin, index01 + 1, index11 + 1);
+          Double_t s01   = (cf01 - th01) * er01;
+          Double_t s11   = (cf11 - th11) * er11;
+          Double_t cov   = cov01 * s01 * s11;
+          chi += (s01 * s01 + s11 * s11 - 2.0 * cov) / (1 - cov01 * cov01);
+        } break;
+      }
+    };
+
+    for (int l = 0; l <= fLmVals.GetMaxL(); l++) {
+      for (int m = 0; m <= l; m++) {
+        Int_t index = fLmVals.GetIndex(l, m);
+        Int_t real  = GetMask()->GetActiveBins(l, m, true);
+        Int_t imag  = GetMask()->GetActiveBins(l, m, false);
+        if (real) {
+          auto array = GetMask()->GetMaskArray(l, m, true);
+          for (int i = 1; i <= bins; i++) {
+            if (array[i]) {}
           }
-          Double_t cov11 = fCovCF->GetBinContent(i, covIndex00 + 1, covIndex11 + 1);  //+1 because this is a histogram
-          chi += delta[0] * delta[0] / (c_error[0] * c_error[0]);                     // c00 therm
-          chi += delta[1] * delta[1] / (c_error[1] * c_error[1]);                     // c11 therm
-          chi += -2. * cov11 * delta[0] * delta[1] / (c_error[0] * c_error[1] * (1 - cov11 * cov11));
         }
-      } break;
-      case eCalcMode::kPhysical3d: {
-        chi = 0;
-        /* take into account only 00, 20 and 22 */
-        Int_t indexes[3];
-        Double_t c_meas[3];
-        Double_t c_theo[3];
-        Double_t c_error[3];
-        Double_t delta[3];
-
-        indexes[0] = fLmVals.GetIndex(0, 0);
-        indexes[1] = fLmVals.GetIndex(2, 0);
-        indexes[2] = fLmVals.GetIndex(2, 2);
-
-        Int_t covIndex00 = fLmVals.GetIndex(0, 0);
-        Int_t covIndex20 = fLmVals.GetIndex(2, 0);
-        Int_t covIndex22 = fLmVals.GetIndex(2, 2);
-
-        for (int i = 1; i <= bins; i++) {
-          if (fMask->GetBinContent(i) == 0) continue;
-          Q[0] = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
-          for (int j = 0; j < 3; j++) {
-            c_meas[j]  = fCFHistogramsRe[indexes[j]]->GetBinContent(i);
-            c_theo[j]  = GetCFValRe(Q[0], indexes[j]);
-            c_error[j] = fCFHistogramsRe[indexes[j]]->GetBinError(i);
-            delta[j]   = c_meas[j] - c_theo[j];
+        if (imag) {
+          auto array = GetMask()->GetMaskArray(l, m, false);
+          for (int i = 1; i <= bins; i++) {
+            if (array[i]) {}
           }
-          Double_t cov2000 = fCovCF->GetBinContent(i, 1 + covIndex00, 1 + covIndex20);
-          Double_t cov2200 = fCovCF->GetBinContent(i, 1 + covIndex00, 1 + covIndex20);
-          Double_t cov2220 = fCovCF->GetBinContent(i, 1 + covIndex20, 1 + covIndex22);
-
-          chi += (delta[0] * delta[0]) / (c_error[0] * c_error[0]);  // c00 therm
-          chi += (delta[1] * delta[1]) / (c_error[1] * c_error[1]);  // c20 therm
-          chi += (delta[2] * delta[2]) / (c_error[2] * c_error[2]);  // c22 therm
-          chi += -2. * cov2000 * (delta[0] * delta[1]) / (c_error[0] * c_error[1] * (1 - cov2000 * cov2000));
-          chi += -2. * cov2200 * (delta[0] * delta[2]) / (c_error[0] * c_error[2] * (1 - cov2200 * cov2200));
-          chi += -2. * cov2220 * (delta[2] * delta[1]) / (c_error[2] * c_error[1] * (1 - cov2220 * cov2220));
-          // Double_t cov22 = fCovCF->GetBinContent(i, 1, 1);
         }
-      } break;
+      }
     }
+
+    /*
+        switch (fCalcMode) {
+          case eCalcMode::kFullCalc: {
+            // TODO implemenet full calc //
+  }
+  break;
+  case eCalcMode::kPhysical1dId: {
+    /  take into account only 00/
+    chi = 0;
+    for (int i = 1; i <= bins; i++) {
+      if (fMask->GetBinContent(i) == 0) continue;
+      Q[0]          = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
+      Double_t cf00 = fCFHistogramsRe[0]->GetBinContent(i);
+      Double_t er00 = fCFHistogramsRe[0]->GetBinError(i);
+      Double_t th00 = GetCFValRe(Q[0], 0);
+      chi += (cf00 - th00) * (cf00 - th00) / (er00 * er00);
+    }
+  } break;
+  case eCalcMode::kPhysical1dNonId: {
+    // take into account only 00 and 11  //
+    chi = 0;
+    Int_t indexes[2];
+    Double_t c_meas[2];
+    Double_t c_theo[2];
+    Double_t c_error[2];
+    Double_t delta[2];
+    indexes[0]       = fLmVals.GetIndex(0, 0);
+    indexes[1]       = fLmVals.GetIndex(1, 1);
+    Int_t covIndex00 = fLmVals.GetIndex(0, 0);
+    Int_t covIndex11 = fLmVals.GetIndex(1, 1);
+    for (int i = 1; i <= bins; i++) {
+      if (fMask->GetBinContent(i) == 0) continue;
+      Q[0] = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
+      for (int j = 0; j < 2; j++) {
+        c_meas[j]  = fCFHistogramsRe[indexes[j]]->GetBinContent(i);
+        c_theo[j]  = GetCFValRe(Q[0], indexes[j]);
+        c_error[j] = fCFHistogramsRe[indexes[j]]->GetBinError(i);
+        delta[j]   = c_meas[j] - c_theo[j];
+      }
+      Double_t cov11 = fCovCF->GetBinContent(i, covIndex00 + 1, covIndex11 + 1);  //+1 because this is a histogram
+      chi += delta[0] * delta[0] / (c_error[0] * c_error[0]);                     // c00 therm
+      chi += delta[1] * delta[1] / (c_error[1] * c_error[1]);                     // c11 therm
+      chi += -2. * cov11 * delta[0] * delta[1] / (c_error[0] * c_error[1] * (1 - cov11 * cov11));
+    }
+  } break;
+  case eCalcMode::kPhysical3d: {
+    chi = 0;
+    // take into account only 00, 20 and 22 //
+    Int_t indexes[3];
+    Double_t c_meas[3];
+    Double_t c_theo[3];
+    Double_t c_error[3];
+    Double_t delta[3];
+
+    indexes[0] = fLmVals.GetIndex(0, 0);
+    indexes[1] = fLmVals.GetIndex(2, 0);
+    indexes[2] = fLmVals.GetIndex(2, 2);
+
+    Int_t covIndex00 = fLmVals.GetIndex(0, 0);
+    Int_t covIndex20 = fLmVals.GetIndex(2, 0);
+    Int_t covIndex22 = fLmVals.GetIndex(2, 2);
+
+    for (int i = 1; i <= bins; i++) {
+      if (fMask->GetBinContent(i) == 0) continue;
+      Q[0] = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
+      for (int j = 0; j < 3; j++) {
+        c_meas[j]  = fCFHistogramsRe[indexes[j]]->GetBinContent(i);
+        c_theo[j]  = GetCFValRe(Q[0], indexes[j]);
+        c_error[j] = fCFHistogramsRe[indexes[j]]->GetBinError(i);
+        delta[j]   = c_meas[j] - c_theo[j];
+      }
+      Double_t cov2000 = fCovCF->GetBinContent(i, 1 + covIndex00, 1 + covIndex20);
+      Double_t cov2200 = fCovCF->GetBinContent(i, 1 + covIndex00, 1 + covIndex20);
+      Double_t cov2220 = fCovCF->GetBinContent(i, 1 + covIndex20, 1 + covIndex22);
+
+      chi += (delta[0] * delta[0]) / (c_error[0] * c_error[0]);  // c00 therm
+      chi += (delta[1] * delta[1]) / (c_error[1] * c_error[1]);  // c20 therm
+      chi += (delta[2] * delta[2]) / (c_error[2] * c_error[2]);  // c22 therm
+      chi += -2. * cov2000 * (delta[0] * delta[1]) / (c_error[0] * c_error[1] * (1 - cov2000 * cov2000));
+      chi += -2. * cov2200 * (delta[0] * delta[2]) / (c_error[0] * c_error[2] * (1 - cov2200 * cov2200));
+      chi += -2. * cov2220 * (delta[2] * delta[1]) / (c_error[2] * c_error[1] * (1 - cov2220 * cov2220));
+      // Double_t cov22 = fCovCF->GetBinContent(i, 1, 1);
+    }
+  } break;
+}
+*/
+
     return chi;
   }
 
@@ -294,6 +367,10 @@ namespace Hal {
     fCFHistogramsIm.resize(fMaxJM);
     fCalculatedRe.MakeBigger(fMaxJM, fBins, 3);
     fCalculatedIm.MakeBigger(fMaxJM, fBins, 3);
+    fCalculatedFastRe.MakeBigger(fMaxJM, fBins);
+    fCalculatedFastIm.MakeBigger(fMaxJM, fBins);
+    fCfErrorsIm.MakeBigger(fMaxJM, fBins);
+    fCfErrorsRe.MakeBigger(fMaxJM, fBins);
     if (fCorrelationFunctionHistogram) delete fCorrelationFunctionHistogram;
     fDenominatorHistogram         = GetSH()->GetDen();
     fNumeratorHistogram           = GetSH()->GetNum();
@@ -305,6 +382,10 @@ namespace Hal {
     for (int i = 0; i < fMaxJM; i++) {
       fCFHistogramsRe[i] = (GetSH()->GetCFRe(fLmVals.GetEls(i), fLmVals.GetEms(i)));
       fCFHistogramsIm[i] = (GetSH()->GetCFIm(fLmVals.GetEls(i), fLmVals.GetEms(i)));
+      for (int bin = 1; bin <= fCFHistogramsRe[0]->GetNbinsX(); bin++) {
+        fCfErrorsRe[i][bin] = 1.0 / fCFHistogramsRe[i]->GetBinError(bin);
+        fCfErrorsIm[i][bin] = 1.0 / fCFHistogramsIm[i]->GetBinError(bin);
+      }
     }
 
     /**
@@ -359,7 +440,10 @@ namespace Hal {
       fCurrent = fYlmValBuffer;
       CalculateCF(&q_high, fTempParamsEval);
       fNext = fYlmValBuffer;
+
       for (auto j : indexes) {
+        fCalculatedFastRe[j][i] = fCurrent[j].real();
+        fCalculatedFastIm[j][i] = fCurrent[j].imag();
         Hal::Std::FitParabola(q_low, q_mid, q_high, fPrev[j].real(), fCurrent[j].real(), fNext[j].real(), a, b, c);
         fCalculatedRe[j][i][0] = a;
         fCalculatedRe[j][i][1] = b;
@@ -423,4 +507,14 @@ namespace Hal {
     }
     return vals;
   }
+
+  void CorrFitSHCF::SetFittingMask(const Hal::CorrFitMask& map) {
+    auto mp = dynamic_cast<const CorrFitMaskSH*>(&map);
+    if (!mp) return;
+    if (mp->AreCompatible(fCF)) {
+      fMask        = (CorrFitMask*) mp->Clone();
+      fOwnRangeMap = kTRUE;
+    }
+  }
+
 }  // namespace Hal

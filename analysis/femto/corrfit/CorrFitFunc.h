@@ -31,6 +31,7 @@ class TH1;
  */
 //#define CF_FIT_TRACKING
 namespace Hal {
+  class CorrFitMask;
   class ChiSqMap2D;
   class CorrFitHDFunc;
   class CorrFitFunc : public CorrFit {
@@ -124,7 +125,7 @@ namespace Hal {
     /**
      * fitting mask
      */
-    TH1* fMask;
+    CorrFitMask* fMask;
 
     MinimizerStepConf fDiscretteMinimzerConf;
     /**
@@ -289,7 +290,7 @@ namespace Hal {
      * provide user fitting mask, such mask overwrite SetRange method
      * @param
      */
-    void SetFittingMask(TH1* map);
+    virtual void SetFittingMask(const CorrFitMask& map) = 0;
     /**
      * set minimizer configuration (used only for fit with discrette parametrization and Hal::Minimizer
      * @param conf
@@ -363,7 +364,6 @@ namespace Hal {
                                 Bool_t scale = kTRUE,
                                 EMinFunc     = kChi2) const;
     TF1* GetFittedFunction() const;
-    TH1* GetFitMask() const { return fMask; }
     CorrFitHDFunc* GetHD() const { return fHDMaps; };
     virtual void Repaint() { Paint(kTRUE, kTRUE); };
     void UpdateLegend();

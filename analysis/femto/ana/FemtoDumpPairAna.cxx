@@ -9,6 +9,7 @@
 
 #include "FemtoDumpPairAna.h"
 
+#include "Cout.h"
 #include "DataManager.h"
 #include "DividedHisto.h"
 #include "FemtoCorrFunc.h"
@@ -19,126 +20,54 @@
 
 #include <TAxis.h>
 #include <TClonesArray.h>
+#include <TFile.h>
 #include <TH1.h>
 #include <TObjArray.h>
 
 
 namespace Hal {
-  FemtoDumpPairAna::FemtoDumpPairAna() :
-    fBinLimit(10000),
-    fNBins(0),
-    fLimitsN(),
-    fLimitsD(),
-    fStep(0),
-    fMax(0),
-    fWriteBackground(kFALSE),
-    fGroup(kFALSE),
-    fXmin(0),
-    fXmax(0),
-    fXstep(0),
-    fXbins(0),
-    fGroupKstar(kFALSE) {}
+  FemtoDumpPairAna::FemtoDumpPairAna() : fBinLimit(10000), fLimitsN(), fLimitsD(), fWriteBackground(kFALSE) {}
 
   void FemtoDumpPairAna::ProcessFemtoPair() {
     fFemtoPair->Compute();
-    Double_t diff = TMath::Abs(fFemtoPair->GetT());
-    Int_t bin     = (Int_t)(diff * fStep);
-    if (bin >= fNBins) return;
+    Int_t bin = fGrouping.GetBin(fFemtoPair);
+    if (bin < 0) return;
     if (fLimitsN[bin] < fBinLimit) {
-      if (fGroupKstar) {  // group by kstar
-        Int_t xbin = FindBinX();
-        if (xbin > -1 && xbin < fXbins) {
-          FemtoMicroPair* mini = (FemtoMicroPair*) fSignalPairs[xbin]->ConstructedAt(fSignalPairs[xbin]->GetEntriesFast());
-          *mini                = *fFemtoPair;
-        }
-      } else {
-        Int_t xbin = FindBinZ();
-        if (xbin > -1 && xbin < fXbins) {
-          FemtoMicroPair* mini = (FemtoMicroPair*) fSignalPairs[xbin]->ConstructedAt(fSignalPairs[xbin]->GetEntriesFast());
-          *mini                = *fFemtoPair;
-        }
-      }
+      FemtoMicroPair* mini = (FemtoMicroPair*) fSignalPairs[bin]->ConstructedAt(fSignalPairs[bin]->GetEntriesFast());
+      *mini                = *fFemtoPair;
       fLimitsN[bin]++;
     }
   }
 
   void FemtoDumpPairAna::ProcessFemtoPair_Rotated() {
     fFemtoPair->Compute_Rotated();
-    Double_t diff = TMath::Abs(fFemtoPair->GetT());
-    Int_t bin     = diff * fStep;
-    if (bin >= fNBins) return;
-    if (fLimitsD[bin] < fBinLimit) {
-
-      if (fGroupKstar) {  // group by kstar
-        Int_t xbin = FindBinX();
-        if (xbin > -1 && xbin < fXbins) {
-          FemtoMicroPair* mini =
-            (FemtoMicroPair*) fBackgroundPairs[xbin]->ConstructedAt(fBackgroundPairs[xbin]->GetEntriesFast());
-          *mini = *fFemtoPair;
-          mini->SetMomenta2(-mini->GetPx2(), -mini->GetPy2(), mini->GetPz2(), mini->GetE2());
-        }
-      } else {
-        Int_t xbin = FindBinZ();
-        if (xbin > -1 && xbin < fXbins) {
-          FemtoMicroPair* mini =
-            (FemtoMicroPair*) fBackgroundPairs[xbin]->ConstructedAt(fBackgroundPairs[xbin]->GetEntriesFast());
-          *mini = *fFemtoPair;
-          mini->SetMomenta2(-mini->GetPx2(), -mini->GetPy2(), mini->GetPz2(), mini->GetE2());
-        }
-      }
-
+    Int_t bin = fGrouping.GetBin(fFemtoPair);
+    if (bin < 0) return;
+    if (fLimitsN[bin] < fBinLimit) {
+      FemtoMicroPair* mini = (FemtoMicroPair*) fBackgroundPairs[bin]->ConstructedAt(fBackgroundPairs[bin]->GetEntriesFast());
+      *mini                = *fFemtoPair;
       fLimitsD[bin]++;
     }
   }
 
   void FemtoDumpPairAna::ProcessFemtoPair_Hemisphere() {
     fFemtoPair->Compute_Hemisphere();
-    Double_t diff = TMath::Abs(fFemtoPair->GetT());
-    Int_t bin     = diff * fStep;
-    if (bin >= fNBins) return;
-    if (fLimitsD[bin] < fBinLimit) {
-      if (fGroupKstar) {  // group by kstar
-        Int_t xbin = FindBinX();
-        if (xbin > -1 && xbin < fXbins) {
-          FemtoMicroPair* mini =
-            (FemtoMicroPair*) fBackgroundPairs[xbin]->ConstructedAt(fBackgroundPairs[xbin]->GetEntriesFast());
-          *mini = *fFemtoPair;
-          mini->SetMomenta2(-mini->GetPx2(), -mini->GetPy2(), -mini->GetPz2(), mini->GetE2());
-        }
-      } else {
-        Int_t xbin = FindBinZ();
-        if (xbin > -1 && xbin < fXbins) {
-          FemtoMicroPair* mini =
-            (FemtoMicroPair*) fBackgroundPairs[xbin]->ConstructedAt(fBackgroundPairs[xbin]->GetEntriesFast());
-          *mini = *fFemtoPair;
-          mini->SetMomenta2(-mini->GetPx2(), -mini->GetPy2(), -mini->GetPz2(), mini->GetE2());
-        }
-      }
+    Int_t bin = fGrouping.GetBin(fFemtoPair);
+    if (bin < 0) return;
+    if (fLimitsN[bin] < fBinLimit) {
+      FemtoMicroPair* mini = (FemtoMicroPair*) fBackgroundPairs[bin]->ConstructedAt(fBackgroundPairs[bin]->GetEntriesFast());
+      *mini                = *fFemtoPair;
       fLimitsD[bin]++;
     }
   }
 
   void FemtoDumpPairAna::ProcessFemtoPair_Mixed() {
     fFemtoPair->Compute();
-    Double_t diff = TMath::Abs(fFemtoPair->GetT());
-    Int_t bin     = diff * fStep;
-    if (bin >= fNBins) return;
-    if (fLimitsD[bin] < fBinLimit) {
-      if (fGroupKstar) {  // group by kstar
-        Int_t xbin = FindBinX();
-        if (xbin > -1 && xbin < fXbins) {
-          FemtoMicroPair* mini =
-            (FemtoMicroPair*) fBackgroundPairs[xbin]->ConstructedAt(fBackgroundPairs[xbin]->GetEntriesFast());
-          *mini = *fFemtoPair;
-        }
-      } else {
-        Int_t xbin = FindBinZ();
-        if (xbin > -1 && xbin < fXbins) {
-          FemtoMicroPair* mini =
-            (FemtoMicroPair*) fBackgroundPairs[xbin]->ConstructedAt(fBackgroundPairs[xbin]->GetEntriesFast());
-          *mini = *fFemtoPair;
-        }
-      }
+    Int_t bin = fGrouping.GetBin(fFemtoPair);
+    if (bin < 0) return;
+    if (fLimitsN[bin] < fBinLimit) {
+      FemtoMicroPair* mini = (FemtoMicroPair*) fBackgroundPairs[bin]->ConstructedAt(fBackgroundPairs[bin]->GetEntriesFast());
+      *mini                = *fFemtoPair;
       fLimitsD[bin]++;
     }
   }
@@ -149,38 +78,32 @@ namespace Hal {
     DataManager* mngr     = DataManager::Instance();
     FemtoCorrFunc* f      = (FemtoCorrFunc*) fCFs->At(0, 0);
     DividedHisto1D* dummy = f->GetCF(0);
-    fNBins                = dummy->GetNum()->GetNbinsX();
-    fLimitsN.MakeBigger(fNBins);
-    fLimitsD.MakeBigger(fNBins);
-    if (!fGroup) {
-      fSignalPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 1000));
-      mngr->Register("FemtoSignal.", "FemtoPairs", fSignalPairs[0], kTRUE);
-      if (fWriteBackground) {
-        fBackgroundPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 1000));
-        mngr->Register("FemtoBackground.", "FemtoPairs", fBackgroundPairs[0], kTRUE);
-      }
-    } else {  // grouping enabled
-      fXbins = 0;
-      if (dummy->GetNum()->InheritsFrom("TH3")) {  // 3d histo group by q-long/ k-long
-        fGroupKstar = kFALSE;
-        Std::GetAxisPar(*dummy->GetNum(), fXbins, fXmin, fXmax, "z");
-        fXstep = (fXmax - fXmin) / double(fXbins);
-      } else {  // 1d histo group by k* qinv
-        fGroupKstar = kTRUE;
-        fXbins      = dummy->GetNum()->GetNbinsX();
-        Std::GetAxisPar(*dummy->GetNum(), fXbins, fXmin, fXmax, "x");
-        fXstep = (fXmax - fXmin) / double(fXbins);
-      }
-      fXstep = 1.0 / fXstep;
-      for (int i = 0; i < fXbins; i++) {
-        TString brName = Form("FemtoSignal_%i.", i);
-        fSignalPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
-        mngr->Register(brName, "FemtoPairs", fSignalPairs[i], kTRUE);
-        if (fWriteBackground) {
-          brName = Form("FemtoBackground_%i.", i);
-          fBackgroundPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
-          mngr->Register(brName, "FemtoPairs", fBackgroundPairs[i], kTRUE);
-        }
+    Int_t bins;
+    Double_t min, max;
+
+    // grouping enabled
+    if (dummy->GetNum()->InheritsFrom("TH3")) {  // 3d histo group by q-long/ k-long
+      fGrouping.SetGroupByKLong();
+      Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "z");
+    } else {  // 1d histo group by k* qinv
+      fGrouping.GroupByKStar();
+      Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "x");
+    }
+    fGrouping.SetAxis(bins, min, max);
+    fLimitsN.MakeBigger(bins);
+    fLimitsD.MakeBigger(bins);
+    auto vec = fGrouping.GetBranches(min, max, kTRUE);
+    int idx  = 0;
+    for (auto branchName : vec) {
+      fSignalPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
+      mngr->Register(branchName, "FemtoPairs", fSignalPairs[idx++], kTRUE);
+    }
+    if (fWriteBackground) {
+      idx = 0;
+      vec = fGrouping.GetBranches(min, max, kFALSE);
+      for (auto branchName : vec) {
+        fBackgroundPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
+        mngr->Register(branchName, "FemtoPairs", fSignalPairs[idx++], kTRUE);
       }
     }
 
@@ -188,13 +111,6 @@ namespace Hal {
       fBackgroundMode = kNoBackgroundID;
     else
       fBackgroundMode = kNoBackgroundNID;
-
-
-    Double_t min = dummy->GetNum()->GetXaxis()->GetBinLowEdge(1);
-    fMax         = dummy->GetNum()->GetXaxis()->GetBinUpEdge(dummy->GetNum()->GetNbinsX());
-    if (min != 0) fNBins = fNBins * 0.5;
-    fStep = fMax / ((Double_t) fNBins);
-    fStep = 1. / fStep;
     return Task::EInitFlag::kSUCCESS;
   }
 
@@ -209,25 +125,70 @@ namespace Hal {
 
     FemtoBasicAna::Exec(opt);
   }
+  // group clas
 
-  Int_t FemtoDumpPairAna::FindBinZ() const {
-    Double_t z = fFemtoPair->GetZ();
-    return int((z - fXmin) * fStep);
+  CorrFitMapGroupConfig::CorrFitMapGroupConfig() : fBins(100), fMin(0), fMax(100) {
+    fStep = (fMax - fMin) / Double_t(fBins);
+    fStep = 1.0 / fStep;
+    SetName("CorrFitMapGroup");
   }
 
-  Int_t FemtoDumpPairAna::FindBinX() const {
-    Double_t x = fFemtoPair->GetT();
-    return int((x - fXmin) * fStep);
+  void CorrFitMapGroupConfig::SetAxis(Int_t bins, Double_t min, Double_t max) {
+    fBins = bins;
+    fMin  = min;
+    fMax  = max;
+    fStep = (fMax - fMin) / Double_t(fBins);
+    fStep = 1.0 / fStep;
   }
-  Package* FemtoDumpPairAna::Report() const {
-    Package* report = FemtoBasicAna::Report();
-    TString group   = "q-inv/kstar";
-    if (!fGroupKstar) { group = "q_z/k*_z"; }
-    report->AddObject(new ParameterString("Group", group));
-    report->AddObject(new ParameterDouble("Min", fXmin));
-    report->AddObject(new ParameterDouble("Max", fXmax));
-    report->AddObject(new ParameterInt("Bins", fXbins));
-    return report;
+  Bool_t CorrFitMapGroupConfig::GroupByLong() const {
+    if (fMode == 1) return kTRUE;
+    return kFALSE;
+  }
+
+  Bool_t CorrFitMapGroupConfig::GroupByKStar() const { return !GroupByLong(); }
+
+  Int_t CorrFitMapGroupConfig::GetBin(const FemtoPair* pair) const {
+    Double_t val = TMath::Abs(pair->GetT());
+    if (fMode == 1) {  // long
+      val = TMath::Abs(pair->GetZ());
+    }
+    Int_t bin = (val - fMin) * fStep;
+    if (bin >= fBins) return -1;
+    return bin;
+  }
+
+  void CorrFitMapGroupConfig::Add(const Object* pack) {
+    auto* data = dynamic_cast<const CorrFitMapGroupConfig*>(pack);
+    if (!data) {
+      Hal::Cout::PrintInfo("Cannot add CorrFitMapGroupConfig", EInfo::kError);
+      return;
+    }
+    auto printError = []() { Hal::Cout::PrintInfo("Cannot add CorrFitMapGroupConfig", EInfo::kError); };
+
+    if (fMode != data->fMode) { printError(); }
+    if (fBins != data->fBins) { printError(); };
+    if (fMin != data->fMin) { printError(); }
+  }
+
+  std::vector<TString> CorrFitMapGroupConfig::GetBranches(Double_t min, Double_t max, Bool_t signal) const {
+    Int_t lowBin  = (fMin - min) * fStep;
+    Int_t highBin = (fMax - min) * fStep;
+    std::vector<TString> result;
+    TString pattern = "FemtoBackground_%i.";
+    if (signal) { pattern = "FemtoSignal_%i."; }
+    for (int i = lowBin; i < highBin; i++) {
+      TString name = Form(pattern, i);
+      result.push_back(name);
+    }
+    return result;
+  }
+
+  void FemtoDumpPairAna::FinishTask() {
+    Hal::FemtoBasicAna::FinishTask();
+    Package* pack = Report();
+    GoToDir("HalInfo");
+    fGrouping.Clone()->Write();
+    gFile->cd();
   }
 
 }  // namespace Hal

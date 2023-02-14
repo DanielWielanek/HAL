@@ -64,6 +64,8 @@ base/shmath/FemtoYlmSolver.cxx
 
 corrfit/CorrFitDrawOptions.cxx
 corrfit/CorrFit.cxx
+corrfit/CorrFitMask.cxx
+
 corrfit/CorrFitFunc.cxx
 corrfit/CorrFitMath1DCF.cxx
 corrfit/CorrFitMath3DCF.cxx
@@ -95,6 +97,12 @@ corrfit/fittingfunctions/CorrFit1DCFCumac.cxx
 corrfit/fittingfunctions/CorrFit3DCFBowlerSinyukov.cxx
 corrfit/fittingfunctions/CorrFit3DCFBowlerSinyukovExtra.cxx
 corrfit/sh/CorrFitSHFrom3D.cxx
+corrfit/corrfitopt/CorrFitHDFunc1D.cxx
+corrfit/corrfitopt/CorrFitHDFunc3D.cxx
+corrfit/corrfitopt/CorrFitHDFuncSH.cxx
+corrfit/corrfitopt/CorrFitMask1D.cxx
+corrfit/corrfitopt/CorrFitMask3D.cxx
+corrfit/corrfitopt/CorrFitMaskSH.cxx
 
 
 weights/FemtoFsiParsed.cxx

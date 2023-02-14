@@ -22,6 +22,7 @@ class TH3D;
 
 class TClonesArray;
 namespace Hal {
+  class CorrFitMaskSH;
   class FemtoSHCF;
   class CorrFitSHCF : public CorrFitFunc {
   public:
@@ -55,11 +56,23 @@ namespace Hal {
      */
     mutable Array_3<Double_t> fCalculatedRe;
     mutable Array_3<Double_t> fCalculatedIm;
+    /**
+     * arrays with cf-s calculated for bin centers
+     */
+    mutable Array_2<Double_t> fCalculatedFastRe;
+    mutable Array_2<Double_t> fCalculatedFastIm;
+    /**
+     * arrays with inversend errors
+     */
+    mutable Array_2<Double_t> fCfErrorsRe;
+    mutable Array_2<Double_t> fCfErrorsIm;
+
     std::vector<std::complex<double>> fYlmValBuffer;
 
   protected:
     Int_t fMaxJM;
 
+    CorrFitMaskSH* GetMask() const { return (CorrFitMaskSH*) fMask; }
     mutable std::complex<double>* fYlmBuffer;  //[fMaxJM]
     FemtoYlmIndexes fLmVals;
     inline FemtoSHCF* GetSH() const { return (FemtoSHCF*) (fCF); }
@@ -220,6 +233,8 @@ namespace Hal {
     inline static Int_t Norm() { return fgNorm; };
     virtual ~CorrFitSHCF();
     ClassDef(CorrFitSHCF, 1)
+
+      virtual void SetFittingMask(const Hal::CorrFitMask& map);
   };
 }  // namespace Hal
 #endif /* HALCORRFITSHCF_H_ */

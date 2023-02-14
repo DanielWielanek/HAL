@@ -18,6 +18,7 @@
 class TLegend;
 namespace Hal {
   class CorrFitMath1DCF;
+  class CorrFitMask1D;
   /**
    * abstract class for fitting 1-dim correlation functions
    */
@@ -36,6 +37,7 @@ namespace Hal {
      * pointer of acutally calculated bin during chi-square computation
      */
     mutable Int_t fBinX;
+    CorrFitMask1D* GetMask() const { return (CorrFitMask1D*) fMask; };
     /**
      * calculate numerical errors
      * @param h numerator/denominator of CF - used to get bin center
@@ -99,6 +101,7 @@ namespace Hal {
      * @return vallue of CF
      */
     virtual Double_t Eval(Double_t q) const;
+    void SetFittingMask(const CorrFitMask& map);
     /**
      * set limits of fitted radii
      * @param min minimal value

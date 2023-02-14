@@ -431,19 +431,6 @@ namespace Hal {
     }
   }
 
-  void CorrFitFunc::SetFittingMask(TH1* map) {
-    if (fMask) {
-      delete fMask;
-      fMask = NULL;
-    }
-    if (fMask) {
-      fMask        = static_cast<TH1*>(map->Clone());
-      fOwnRangeMap = kTRUE;
-    } else {
-      fOwnRangeMap = kFALSE;
-    }
-  }
-
   Double_t CorrFitFunc::GetRangeMin(Int_t flag) const {
     if (flag < fDim) return fRange.Get(flag * 2);
     return 0;

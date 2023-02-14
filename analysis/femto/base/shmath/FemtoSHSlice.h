@@ -29,8 +29,13 @@ namespace Hal {
     std::vector<double> fNumImag;
     std::vector<double> fDenReal;
     std::vector<double> fDenImag;
+    std::vector<double> fNumRealE;
+    std::vector<double> fNumImagE;
+    std::vector<double> fDenRealE;
+    std::vector<double> fDenImagE;
     Array_2<Double_t> fCovCF;
     Array_2<Double_t> fCovNum;
+    Array_2<Double_t> fCovDen;
 
   protected:
     FemtoSHSlice() : fMaxJM(0) {};

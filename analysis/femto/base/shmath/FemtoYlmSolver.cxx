@@ -236,6 +236,8 @@ namespace Hal {
     fLmVals.Resize(maxL);
     fFactorials.resize(fFactorialsSize);
     fMaxJM2_4      = 4.0 * fMaxJM * fMaxJM;
+    fNumEnt        = cf->GetNumRe(0, 0)->GetEntries();
+    fDenEnt        = cf->GetDenRe(0, 0)->GetEntries();
     Double_t fac   = 1;
     fFactorials[0] = 1;
     for (int iter = 1; iter < fFactorialsSize; iter++) {
@@ -259,7 +261,7 @@ namespace Hal {
     for (int i = 0; i < fMaxJM * 2; i++)
       for (int j = 0; j < fMaxJM * 2; j++)
         fSlice.fCovCF[i][j] = 0;
-
+    if (fSlice.fCovNum[0][0] == 0) MakeFakeCovMatrix();
     if (fDebug) {
       std::cout << "NORM " << fNormFactor << std::endl;
       std::cout << "RECALC " << recalc << std::endl;
@@ -269,10 +271,11 @@ namespace Hal {
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
       //      cout << fNumImag[ilm]->GetBinContent(ibin) << std::endl;
       if (recalc) {
+        // fNumEnt = 5.76589e+08;  // KURWA
         tMq0[ilm] =
           std::complex<double>(fSlice.fDenReal[ilm] / (fDenEnt / fNormFactor), fSlice.fDenImag[ilm] / (fDenEnt / fNormFactor));
-        std::cout << "tMQ" << ilm << "\t" << fSlice.fDenReal[ilm] << " " << fDenEnt << " " << fSlice.fDenImag[ilm] << " "
-                  << fDenEnt << std::endl;
+        // std::cout << "tMQ" << ilm << "\t" << fSlice.fDenReal[ilm] << " " << fDenEnt << " " << fSlice.fDenImag[ilm] << " "
+        //          << fDenEnt << std::endl;
         tTq0[ilm] = std::complex<double>(fSlice.fNumReal[ilm] / fNumEnt, fSlice.fNumImag[ilm] / fNumEnt);
       } else {
         tMq0[ilm] = std::complex<double>(fSlice.fDenReal[ilm] / fNormFactor, fSlice.fDenImag[ilm] / fNormFactor);
@@ -281,33 +284,92 @@ namespace Hal {
       //      cout << imag(tTq0[ilm]) << std::endl;
     }
 
-
+    if (fDebug) {
+      std::cout << "TT ";
+      for (int ilm = 0; ilm < fMaxJM; ilm++) {
+        std::cout << tTq0[ilm] << " " << std::endl;
+      }
+      std::cout << std::endl;
+      std::cout << "NN ";
+      for (int ilm = 0; ilm < fMaxJM; ilm++) {
+        std::cout << tMq0[ilm] << " " << std::endl;
+      }
+      std::cout << std::endl;
+    }
     // Calculate the proper error matrix for T
     // from the temporary covariance matrices
     //    int tabshift = (ibin-1)*GetMaxJM()*GetMaxJM()*4;
     if (recalc) {
-      for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++)
-        for (int ilmprim = 0; ilmprim < GetMaxJM(); ilmprim++) {
-          if (std::isnan(fSlice.fCovNum[ilmzero * 2][ilmprim * 2])) {}
-          if (std::isnan(fSlice.fCovNum[ilmzero * 2][ilmprim * 2 + 1])) {}
-          if (std::isnan(fSlice.fCovNum[ilmzero * 2 + 1][ilmprim * 2])) {}
-          if (std::isnan(fSlice.fCovNum[ilmzero * 2 + 1][ilmprim * 2 + 1])) {}
-          fSlice.fCovNum[2 * ilmzero][2 * ilmprim] /= fNumEnt;
-          fSlice.fCovNum[2 * ilmzero][2 * ilmprim + 1] /= fNumEnt;
-          fSlice.fCovNum[2 * ilmzero + 1][2 * ilmprim] /= fNumEnt;
-          fSlice.fCovNum[2 * ilmzero + 1][2 * ilmprim + 1] /= fNumEnt;
-
-
-          fSlice.fCovNum[2 * ilmzero][2 * ilmprim] -= real(tTq0[ilmzero]) * real(tTq0[ilmprim]);
-          fSlice.fCovNum[2 * ilmzero][2 * ilmprim + 1] -= real(tTq0[ilmzero]) * imag(tTq0[ilmprim]);
-          fSlice.fCovNum[2 * ilmzero + 1][2 * ilmprim] -= imag(tTq0[ilmzero]) * real(tTq0[ilmprim]);
-          fSlice.fCovNum[2 * ilmzero + 1][2 * ilmprim + 1] -= imag(tTq0[ilmzero]) * imag(tTq0[ilmprim]);
-
-          fSlice.fCovNum[2 * ilmzero][2 * ilmprim] /= ((fNumEnt) -1);
-          fSlice.fCovNum[2 * ilmzero][2 * ilmprim + 1] /= ((fNumEnt) -1);
-          fSlice.fCovNum[2 * ilmzero + 1][2 * ilmprim] /= ((fNumEnt) -1);
-          fSlice.fCovNum[2 * ilmzero + 1][2 * ilmprim + 1] /= ((fNumEnt) -1);
+      if (fDebug) {
+        std::cout << "COVNUM" << std::endl;
+        for (int ilmzero = 0; ilmzero < GetMaxJM() * 2; ilmzero++) {
+          for (int ilmprim = 0; ilmprim < GetMaxJM() * 2; ilmprim++) {
+            std::cout << "* " << fSlice.fCovNum[ilmzero][ilmprim] << std::endl;
+          }
         }
+      }
+
+      for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++) {
+        const int ilmzero2 = ilmzero * 2;
+        for (int ilmprim = 0; ilmprim < GetMaxJM(); ilmprim++) {
+          const int ilmprim2 = ilmprim * 2;
+          if (std::isnan(fSlice.fCovNum[ilmzero2][ilmprim2])) {}
+          if (std::isnan(fSlice.fCovNum[ilmzero2][ilmprim2 + 1])) {}
+          if (std::isnan(fSlice.fCovNum[ilmzero2 + 1][ilmprim2])) {}
+          if (std::isnan(fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1])) {}
+          double a, b, c, d;
+          a = fSlice.fCovNum[ilmzero2][ilmprim2];
+          b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
+          c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
+          d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
+          std::cout << ">" << a << " " << b << " " << c << " " << d << " " << fNumEnt << std::endl;
+
+          fSlice.fCovNum[ilmzero2][ilmprim2] /= fNumEnt;
+          fSlice.fCovNum[ilmzero2][ilmprim2 + 1] /= fNumEnt;
+          fSlice.fCovNum[ilmzero2 + 1][ilmprim2] /= fNumEnt;
+          fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1] /= fNumEnt;
+
+          a = fSlice.fCovNum[ilmzero2][ilmprim2];
+          b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
+          c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
+          d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
+          std::cout << "->" << a << " " << b << " " << c << " " << d << std::endl;
+
+
+          fSlice.fCovNum[ilmzero2][ilmprim2] -= real(tTq0[ilmzero]) * real(tTq0[ilmprim]);
+          fSlice.fCovNum[ilmzero2][ilmprim2 + 1] -= real(tTq0[ilmzero]) * imag(tTq0[ilmprim]);
+          fSlice.fCovNum[ilmzero2 + 1][ilmprim2] -= imag(tTq0[ilmzero]) * real(tTq0[ilmprim]);
+          fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1] -= imag(tTq0[ilmzero]) * imag(tTq0[ilmprim]);
+          a = fSlice.fCovNum[ilmzero2][ilmprim2];
+          b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
+          c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
+          d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
+          std::cout << "-->" << a << " " << b << " " << c << " " << d << std::endl;
+          fSlice.fCovNum[ilmzero2][ilmprim2] /= ((fNumEnt) -1);
+          fSlice.fCovNum[ilmzero2][ilmprim2 + 1] /= ((fNumEnt) -1);
+          fSlice.fCovNum[ilmzero2 + 1][ilmprim2] /= ((fNumEnt) -1);
+          fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1] /= ((fNumEnt) -1);
+          a = fSlice.fCovNum[ilmzero2][ilmprim2];
+          b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
+          c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
+          d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
+          std::cout << "--->" << a << " " << b << " " << c << " " << d << std::endl;
+        }
+      }
+    }
+
+    if (fDebug) {
+      std::cout << "COVNUM" << std::endl;
+      for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++) {
+        const int ilmzero2 = ilmzero * 2;
+        for (int ilmprim = 0; ilmprim < GetMaxJM(); ilmprim++) {
+          const int ilmprim2 = ilmprim * 2;
+          std::cout << ilmzero << " " << ilmprim << "\t" << fSlice.fCovNum[ilmzero2 + 0][ilmprim2 + 0] << std::endl;
+          std::cout << ilmzero << " " << ilmprim << "\t" << fSlice.fCovNum[ilmzero2 + 0][ilmprim2 + 1] << std::endl;
+          std::cout << ilmzero << " " << ilmprim << "\t" << fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 0] << std::endl;
+          std::cout << ilmzero << " " << ilmprim << "\t" << fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1] << std::endl;
+        }
+      }
     }
 
 
@@ -334,14 +396,15 @@ namespace Hal {
         fSlice.fCFImagE[ilm] = 0;
       }
 
-      for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
-        for (int ilmp = 0; ilmp < GetMaxJM() * 2; ilmp++) {
+      for (int ilmz = 0; ilmz < GetMaxJM(); ilmz++) {    // bylo *2
+        for (int ilmp = 0; ilmp < GetMaxJM(); ilmp++) {  // bylo *2
           fSlice.fCovNum[2 * ilmz][2 * ilmp]     = 0;
           fSlice.fCovNum[2 * ilmz][2 * ilmp + 1] = 0;
         }
       }
       return;
     }
+
     // Rewrite the new way to use the solving wherever there is inversion
     double mDeltaT[fMaxJM * fMaxJM * 4];
     for (int ilmzero = 0; ilmzero < GetMaxJM() * 2; ilmzero++)
@@ -771,6 +834,8 @@ namespace Hal {
       double sk, wk, ks;
       if (normbinmin < 1) normbinmin = 1;
       if (normbinmax > den0->GetNbinsX()) normbinmax = den0->GetNbinsX();
+      normbinmin = 1;                  // KURWA
+      normbinmax = den0->GetNbinsX();  // KURWA
       for (int ib = normbinmin; ib <= normbinmax; ib++) {
         ks = den0->GetXaxis()->GetBinCenter(ib);
         sk = num0->GetBinContent(ib) / (den0->GetBinContent(ib) * (1.0 - fNormPurity / (fNormRadius * fNormBohr * ks * ks)));
@@ -781,8 +846,45 @@ namespace Hal {
       fNormFactor *= sksum / wksum;
       fNormFactor /= num0->GetEntries() / den0->GetEntries();
     }
-    fNumEnt = num0->GetEntries();
-    fDenEnt = den0->GetEntries();
+    //    fNumEnt = num0->GetEntries();
+    //    fDenEnt = den0->GetEntries();
+  }
+
+  void FemtoYlmSolver::MakeFakeCovMatrix() {
+    Hal::Cout::DebugInfo(10);
+    double nent  = fNumEnt;
+    double nentd = fDenEnt;
+    for (int ilmx = 0; ilmx < GetMaxJM(); ilmx++) {
+      const int ilmx2 = ilmx * 2;
+      for (int ilmy = 0; ilmy < GetMaxJM(); ilmy++) {
+        const int ilmy2 = ilmy * 2;
+        double t1t2rr   = fSlice.fNumReal[ilmx] * fSlice.fNumReal[ilmy] / nent / nent;
+        double t1t2ri   = fSlice.fNumReal[ilmx] * fSlice.fNumImag[ilmy] / nent / nent;
+        double t1t2ir   = fSlice.fNumImag[ilmx] * fSlice.fNumReal[ilmy] / nent / nent;
+        double t1t2ii   = fSlice.fNumImag[ilmx] * fSlice.fNumImag[ilmy] / nent / nent;
+        if (ilmx == ilmy) {
+          fSlice.fCovNum[ilmx2][ilmy2]         = nent * (TMath::Power(fSlice.fNumRealE[ilmx] / nent, 2) * (nent - 1) + t1t2rr);
+          fSlice.fCovNum[ilmx2][ilmy2 + 1]     = nent * t1t2ri;
+          fSlice.fCovNum[ilmx2 + 1][ilmy2]     = nent * t1t2ir;
+          fSlice.fCovNum[ilmx2 + 1][ilmy2 + 1] = nent * (TMath::Power(fSlice.fNumImagE[ilmx] / nent, 2) * (nent - 1) + t1t2rr);
+        } else {
+          fSlice.fCovNum[ilmx2][ilmy2]         = nent * t1t2rr;
+          fSlice.fCovNum[ilmx2][ilmy2 + 1]     = nent * t1t2ri;
+          fSlice.fCovNum[ilmx2 + 1][ilmy2]     = nent * t1t2ir;
+          fSlice.fCovNum[ilmx2 + 1][ilmy2 + 1] = nent * t1t2ii;
+        }
+        t1t2rr = fSlice.fDenReal[ilmx] * fSlice.fDenReal[ilmy] / nentd / nentd;
+        t1t2ri = fSlice.fDenReal[ilmx] * fSlice.fDenImag[ilmy] / nentd / nentd;
+        t1t2ir = fSlice.fDenImag[ilmx] * fSlice.fDenReal[ilmy] / nentd / nentd;
+        t1t2ii = fSlice.fDenImag[ilmx] * fSlice.fDenImag[ilmy] / nentd / nentd;
+
+
+        fSlice.fCovDen[ilmx2 + 0][ilmy2 + 0] = nentd * t1t2rr;
+        fSlice.fCovDen[ilmx2 + 0][ilmy2 + 1] = nentd * t1t2ri;
+        fSlice.fCovDen[ilmx2 + 1][ilmy2 + 0] = nentd * t1t2ir;
+        fSlice.fCovDen[ilmx2 + 1][ilmy2 + 1] = nentd * t1t2ii;
+      }
+    }
   }
 
 } /* namespace Hal */

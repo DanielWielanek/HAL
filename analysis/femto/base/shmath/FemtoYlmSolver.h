@@ -44,6 +44,7 @@ namespace Hal {
     void UnPackYlmMatrixIndependentOnly(double* inmat, double* outmat, int insize) const;
     void GetIndependentLM(int ibin, int& el, int& em, int& im) const;
     void DoMath(Bool_t recalc);
+    void MakeFakeCovMatrix();
     /**
      * fix CF by uing T(l,m) = T(l,-m)*
      */

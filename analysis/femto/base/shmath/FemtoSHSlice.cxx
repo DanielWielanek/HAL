@@ -9,7 +9,9 @@
 #include "FemtoSHSlice.h"
 
 #include "FemtoSHCF.h"
+
 #include <TH1D.h>
+#include <iostream>
 
 namespace Hal {
 
@@ -22,16 +24,25 @@ namespace Hal {
     fNumImag.resize(fMaxJM);
     fDenReal.resize(fMaxJM);
     fDenImag.resize(fMaxJM);
+    fNumRealE.resize(fMaxJM);
+    fNumImagE.resize(fMaxJM);
+    fDenRealE.resize(fMaxJM);
+    fDenImagE.resize(fMaxJM);
     fCovCF.MakeBigger(fMaxJM * 2, fMaxJM * 2);
     fCovNum.MakeBigger(fMaxJM * 2, fMaxJM * 2);
+    fCovDen.MakeBigger(fMaxJM * 2, fMaxJM * 2);
   }
 
   void FemtoSHSlice::BuildSlice(FemtoSHCF& cf, Int_t bin) {
     for (int i = 0; i < fMaxJM; i++) {
-      fNumReal[i] = cf.fNumReal[i]->GetBinContent(bin);
-      fDenReal[i] = cf.fDenReal[i]->GetBinContent(bin);
-      fNumImag[i] = cf.fNumImag[i]->GetBinContent(bin);
-      fDenImag[i] = cf.fDenImag[i]->GetBinContent(bin);
+      fNumReal[i]  = cf.fNumReal[i]->GetBinContent(bin);
+      fDenReal[i]  = cf.fDenReal[i]->GetBinContent(bin);
+      fNumImag[i]  = cf.fNumImag[i]->GetBinContent(bin);
+      fDenImag[i]  = cf.fDenImag[i]->GetBinContent(bin);
+      fNumRealE[i] = cf.fNumReal[i]->GetBinError(bin);
+      fDenRealE[i] = cf.fDenReal[i]->GetBinError(bin);
+      fNumImagE[i] = cf.fNumImag[i]->GetBinError(bin);
+      fDenImagE[i] = cf.fDenImag[i]->GetBinError(bin);
     }
 
     for (int ilmzero = 0; ilmzero < 2 * fMaxJM; ilmzero++)

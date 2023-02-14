@@ -42,6 +42,12 @@ namespace HalOTF {
 
   public:
     Reader();
+    /**
+     *
+     * @param h histogram x-axis eta, y-axis pt
+     * @param pid pid of particle
+     * @param w multiplicity
+     */
     void SetSpiecies(const TH2D& h, Int_t pid, Double_t w);
     void Register(Bool_t reg) { fRegister = reg; }
     void Exec(Option_t* opt);

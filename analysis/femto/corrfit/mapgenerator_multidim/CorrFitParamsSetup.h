@@ -16,8 +16,6 @@
 #include <TString.h>
 
 namespace Hal {
-  class CorrFitDumpedPairAna;
-
   /**
    * store information about number of parameters combination stored in
    * XML.

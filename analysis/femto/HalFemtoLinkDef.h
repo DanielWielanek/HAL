@@ -78,7 +78,6 @@
 #pragma link C++ class Hal::CorrFitParamsSetup + ;
 #pragma link C++ class Hal::CorrFit3DCFMultiDim + ;
 #pragma link C++ class Hal::CorrFitFunctor + ;
-#pragma link C++ class Hal::CorrFitDumpedPairAna + ;
 #pragma link C++ class Hal::CorrFitInfo + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorYPt + ;
 #pragma link C++ class Hal::CorrFitMapRebin + ;
@@ -131,6 +130,17 @@
 #pragma link C++ class Hal::FemtoWeightGeneratorResidual + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorSupressed + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorKisiel + ;
+
+#pragma link C++ class Hal::CorrFitVerticalSlices + ;
+#pragma link C++ class Hal::CorrFitVerticalSlices1D + ;
+#pragma link C++ class Hal::CorrFitVerticalSlices3D + ;
+#pragma link C++ class Hal::CorrFitVerticalSlicesSH + ;
+#pragma link C++ class Hal::CorrFitInfo + ;
+#pragma link C++ class Hal::CorrFitDumpedPairAnaVertical + ;
+#pragma link C++ class Hal::CorrFitDumpedPairAnaHorizontal + ;
+#pragma link C++ class Hal::CorrFitDumpedPairAna + ;
+#pragma link C++ class Hal::FemtoDumpPairAnaMC + ;
+
 
 #ifndef GSL_DISABLE
 #pragma link C++ class Hal::FemtoImaging + ;

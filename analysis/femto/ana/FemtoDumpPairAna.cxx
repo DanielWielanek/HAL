@@ -89,10 +89,11 @@ namespace Hal {
       fGrouping.GroupByKStar();
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "x");
     }
+    fGrouping.SetFrame(fFemtoPair->GetFrame());
     fGrouping.SetAxis(bins, min, max);
     fLimitsN.MakeBigger(bins);
     fLimitsD.MakeBigger(bins);
-    auto vec = fGrouping.GetBranches(min, max, kTRUE);
+    auto vec = fGrouping.GetBranches(0, 0, kTRUE);  // 0,0 -> get all branches
     int idx  = 0;
     for (auto branchName : vec) {
       fSignalPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
@@ -100,10 +101,10 @@ namespace Hal {
     }
     if (fWriteBackground) {
       idx = 0;
-      vec = fGrouping.GetBranches(min, max, kFALSE);
+      vec = fGrouping.GetBranches(0, 0, kFALSE);
       for (auto branchName : vec) {
         fBackgroundPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
-        mngr->Register(branchName, "FemtoPairs", fSignalPairs[idx++], kTRUE);
+        mngr->Register(branchName, "FemtoPairs", fBackgroundPairs[idx++], kTRUE);
       }
     }
 
@@ -125,7 +126,16 @@ namespace Hal {
 
     FemtoBasicAna::Exec(opt);
   }
-  // group clas
+
+  void FemtoDumpPairAna::FinishTask() {
+    Hal::FemtoBasicAna::FinishTask();
+    Package* pack = Report();
+    GoToDir("HalInfo");
+    fGrouping.Clone()->Write();
+    gFile->cd();
+  }
+
+  //==================================================================== group class
 
   CorrFitMapGroupConfig::CorrFitMapGroupConfig() : fBins(100), fMin(0), fMax(100) {
     fStep = (fMax - fMin) / Double_t(fBins);
@@ -135,11 +145,17 @@ namespace Hal {
 
   void CorrFitMapGroupConfig::SetAxis(Int_t bins, Double_t min, Double_t max) {
     fBins = bins;
+    if (fMin < 0) {
+      fMin = 0;
+      if (fBins % 2 == 1) { Cout::PrintInfo("CorrFitMapGroupConfig::SetAxis odd number of CF bins detected!", EInfo::kError); }
+      fBins = fBins / 2;
+    }
     fMin  = min;
     fMax  = max;
     fStep = (fMax - fMin) / Double_t(fBins);
     fStep = 1.0 / fStep;
   }
+
   Bool_t CorrFitMapGroupConfig::GroupByLong() const {
     if (fMode == 1) return kTRUE;
     return kFALSE;
@@ -171,6 +187,7 @@ namespace Hal {
   }
 
   std::vector<TString> CorrFitMapGroupConfig::GetBranches(Double_t min, Double_t max, Bool_t signal) const {
+    if (min == max && fMin != fMax) { return GetBranches(fMin, fMax, signal); }
     Int_t lowBin  = (fMin - min) * fStep;
     Int_t highBin = (fMax - min) * fStep;
     std::vector<TString> result;
@@ -181,14 +198,6 @@ namespace Hal {
       result.push_back(name);
     }
     return result;
-  }
-
-  void FemtoDumpPairAna::FinishTask() {
-    Hal::FemtoBasicAna::FinishTask();
-    Package* pack = Report();
-    GoToDir("HalInfo");
-    fGrouping.Clone()->Write();
-    gFile->cd();
   }
 
 }  // namespace Hal

@@ -18,6 +18,7 @@
 namespace Hal {
   class FemtoPair;
   class CorrFitVerticalSlices : public TObject {
+  protected:
     std::vector<Double_t> fNum;
     std::vector<Double_t> fDen;
     Int_t fBinNo;
@@ -28,7 +29,7 @@ namespace Hal {
     virtual void FillDen(Int_t bin, FemtoPair* pair) = 0;
     Double_t GetValNum(Int_t bin) const { return fNum[bin]; };
     Double_t GetValDen(Int_t bin) const { return fDen[bin]; };
-    virtual ~CorrFitVerticalSlices();
+    virtual ~CorrFitVerticalSlices() {};
     ClassDef(CorrFitVerticalSlices, 1)
   };
 
@@ -60,7 +61,7 @@ namespace Hal {
     std::vector<std::vector<Double_t>> fShDenImag;
 
   public:
-    CorrFitVerticalSlicesSH(Int_t paramSpace = 0, Int_t binNo = 0, Int_t lmax);
+    CorrFitVerticalSlicesSH(Int_t paramSpace = 0, Int_t binNo = 0, Int_t lmax = 5);
     void FillNum(Int_t bin, FemtoPair* pair);
     void FillDen(Int_t bin, FemtoPair* pair);
     const std::vector<Double_t>& GetNumReal(Int_t bin) const { return fShNumReal[bin]; };

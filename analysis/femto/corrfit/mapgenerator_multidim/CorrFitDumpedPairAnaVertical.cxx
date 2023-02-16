@@ -67,9 +67,9 @@ namespace Hal {
               fPair->SetWeight(fWeight->GenerateWeight(fPair));
 
 
-              fCF[nJobs]->FillNum(fPair);
-              fPair->SetWeight(1.0);
-              fCF[nJobs]->FillDenMixed(fPair);
+              //     fCF[nJobs]->FillNum(fPair);
+              //   fPair->SetWeight(1.0);
+              //    fCF[nJobs]->FillDenMixed(fPair);
             }
           }
         }
@@ -89,39 +89,13 @@ namespace Hal {
     }
     switch (fMode) {
       case eDumpCalcMode::kSignalPairs: {
-        fPairsSignal = new TClonesArray*[fMultiplyJobs];
-        fPairsSignal = new TClonesArray("Hal::FemtoMicroPair");
-        for (int i = 0; i < fMultiplyJobs; i++) {
-          TBranch* branchSignal = fTree->GetBranch(Form("FemtoSignal_%i.", fMultiplyJobs * fJobId + i));
-          if (branchSignal == nullptr) return kFALSE;
-          branchSignal->SetStatus(1);
-          branchSignal->SetAddress(&fPairsSignal[i]);
-        }
+
       } break;
       case eDumpCalcMode::kBackgroundPairsOnly: {
-        fPairsSignal = new TClonesArray*[fMultiplyJobs];
-        fPairsSignal = new TClonesArray("Hal::FemtoMicroPair");
-        for (int i = 0; i < fMultiplyJobs; i++) {
-          TBranch* branchBackkground = fTree->GetBranch(Form("FemtoBackground_%i.", fMultiplyJobs * fJobId + i));
-          if (branchBackkground == nullptr) return kFALSE;
-          branchBackkground->SetStatus(1);
-          branchBackkground->SetAddress(&fPairsSignal[i]);
-        }
+
       } break;
       case eDumpCalcMode::kSignalBackgroundPairs: {
-        fPairsSignal     = new TClonesArray*[fMultiplyJobs];
-        fPairsBackground = new TClonesArray*[fMultiplyJobs];
-        fPairsSignal     = new TClonesArray("Hal::FemtoMicroPair");
-        fPairsBackground = new TClonesArray("Hal::FemtoMicroPair");
-        for (int i = 0; i < fMultiplyJobs; i++) {
-          TBranch* branchSignal      = fTree->GetBranch(Form("FemtoSignal_%i.", fMultiplyJobs * fJobId + i));
-          TBranch* branchBackkground = fTree->GetBranch(Form("FemtoBackground_%i.", fMultiplyJobs * fJobId + i));
-          if (branchSignal == nullptr || branchBackkground == nullptr) return kFALSE;
-          branchSignal->SetStatus(1);
-          branchBackkground->SetStatus(1);
-          branchSignal->SetAddress(&fPairsSignal[i]);
-          branchBackkground->SetAddress(&fPairsBackground[i]);
-        }
+
       } break;
     }
     return kTRUE;
@@ -167,7 +141,7 @@ namespace Hal {
       }
     }
     fTempCF = nullptr;
-    if (fGenerator) { fGenerator[0]->Init(); }
+    //   if (fGenerator) { fGenerator[0]->Init(); }
     return kTRUE;
   }
 

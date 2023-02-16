@@ -19,8 +19,6 @@ namespace Hal {
     }
   }
 
-  CorrFitVerticalSlices::~CorrFitVerticalSlices() {}
-
   void CorrFitVerticalSlices1D::FillNum(Int_t bin, FemtoPair* pair) { fNum[bin] += pair->GetWeight(); }
 
   void CorrFitVerticalSlices1D::FillDen(Int_t bin, FemtoPair* pair) { fDen[bin] += pair->GetWeight(); }

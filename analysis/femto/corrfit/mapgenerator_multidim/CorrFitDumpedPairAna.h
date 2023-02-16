@@ -23,6 +23,8 @@ class TFile;
 class TTree;
 class TClonesArray;
 namespace Hal {
+  class CorrFitParamsSetup;
+  class CorrFitMapGroupConfig;
   class Femto1DCF;
   class Femto3DCF;
   class FemtoCorrFunc;
@@ -47,12 +49,14 @@ namespace Hal {
     Bool_t fIgnoreSing;
     Bool_t fImgMom;
     FemtoCorrFunc* fTempCF;
-    FemtoCorrFunc** fCF;
     FemtoPair* fPair;
     FemtoMicroPair* fMiniPair;
     FemtoFreezoutGenerator* fTempGenerator;
-    FemtoFreezoutGenerator** fGenerator;
+    std::vector<FemtoFreezoutGenerator*> fGenerator;
     FemtoWeightGenerator* fWeight;
+    CorrFitMapGroupConfig* fGrouping;
+    std::vector<TClonesArray*> fSignalClones;      //!
+    std::vector<TClonesArray*> fBackgroundClones;  //!
     enum class eDumpCalcMode { kSignalPairs = 0, kSignalBackgroundPairs = 1, kBackgroundPairsOnly = 2 };
     eDumpCalcMode fMode;
     /** export CF to root tree, this is used for compression of data, you can set
@@ -61,12 +65,30 @@ namespace Hal {
     void RootExport3D(Femto3DCF* cf, Int_t step);
     void RootExportSH(FemtoSHCF* cf, Int_t step);
     Bool_t ConfigureInput();
+    Bool_t FindTree(TDirectory* dir, TList* list);
     Bool_t ConfigureFromXML();
     virtual void RunSignalPairs(Int_t nEvents)           = 0;
     virtual void RunSignalBackgroundPairs(Int_t nEvents) = 0;
     virtual void RunBackgroundPairs(Int_t nEvents)       = 0;
     virtual Bool_t IsVertical() const { return kFALSE; }
-    virtual Bool_t Connect() = 0;
+    /**
+     * connects to needed branches
+     * @return
+     */
+    virtual Bool_t ConnectToData() = 0;
+
+    void ConnectToSignal(const std::vector<TString>& branches);
+    void ConnectToBackground(const std::vector<TString>& branches);
+    /**
+     * init place for data
+     * @return
+     */
+    virtual Bool_t InitCFs() = 0;
+    /**
+     * init  generators - for vertical init all generators for horizontal init generators x multiplicity
+     */
+    virtual Bool_t InitGenerators(const std::vector<int>& dims, XMLNode* parameters, const CorrFitParamsSetup& setup) = 0;
+
 
   protected:
     /**

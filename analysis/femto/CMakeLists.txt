@@ -83,6 +83,18 @@ corrfit/mapgenerators/Femto1DMapGenerator.cxx
 corrfit/mapgenerators/Femto1DCFAnaMapMC.cxx
 corrfit/mapgenerators/FemtoWielanekMapGenerator.cxx
 corrfit/mapgenerators/Femto1DCFAnaMapPairsDumped.cxx
+corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
+corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
+corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaVertical.cxx
+corrfit/mapgenerator_multidim/CorrFitFunctor.cxx
+corrfit/mapgenerator_multidim/CorrFitInfo.cxx
+corrfit/mapgenerator_multidim/CorrFitMapRebin.cxx
+corrfit/mapgenerator_multidim/CorrFitPairGeneratorYPt.cxx
+corrfit/mapgenerator_multidim/CorrFitParamsSetup.cxx
+corrfit/mapgenerator_multidim/CorrFitVerticalSlices.cxx
+corrfit/mapgenerator_multidim/CorrFit3DCFMultiDim.cxx
+corrfit/mapgenerator_multidim/FemtoDumpPairAnaMC.cxx
+
 corrfit/fittingfunctions/CorrFit1DCFSquare.cxx
 corrfit/fittingfunctions/CorrFit1DCFLorentz.cxx
 corrfit/fittingfunctions/CorrFit3DCFSquare.cxx
@@ -126,19 +138,6 @@ imaging/FemtoImaging3D.cxx
 base/FemtoSHCF.cxx
 corrfit/CorrFitSHCF.cxx
 )
-
-if(NOT DEFINED DISABLE_SQLITE)
-	set(SRCS
-		${SRCS}
-		corrfit/mapgenerator_multidim/CorrFitParamsSetup.cxx
-		corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
-		corrfit/mapgenerator_multidim/CorrFitInfo.cxx
-		corrfit/mapgenerator_multidim/CorrFit3DCFMultiDim.cxx
-		corrfit/mapgenerator_multidim/CorrFitFunctor.cxx
-		corrfit/mapgenerator_multidim/CorrFitPairGeneratorYPt.cxx
-		corrfit/mapgenerator_multidim/CorrFitMapRebin.cxx
-    )
-endif()
 
 
 set(NO_DICT_SRCS
@@ -198,11 +197,7 @@ Set(Exe_Source
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    if(NOT DEFINED DISABLE_GSL)
-    	Set(DEPENDENCIES gsl gslcblas HalFeatures Tree HalAna HalFemto )
-    else()
-    	Set(DEPENDENCIES HalFeatures Tree HalAna HalFemto)
-    endif()
+    Set(DEPENDENCIES gsl gslcblas HalFeatures Tree HalAna HalFemto )
     if(NOT DEFINED DISABLE_SQLITE)
       #  Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
     endif()

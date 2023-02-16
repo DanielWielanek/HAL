@@ -14,6 +14,7 @@
 #include <TBranch.h>
 #include <TClonesArray.h>
 #include <TCollection.h>
+#include <TDirectory.h>
 #include <TDirectoryFile.h>
 #include <TFile.h>
 #include <TKey.h>
@@ -35,6 +36,7 @@
 #include "FemtoConst.h"
 #include "FemtoCorrFunc.h"
 #include "FemtoCorrFuncSimple.h"
+#include "FemtoDumpPairAna.h"
 #include "FemtoFreezoutGenerator.h"
 #include "FemtoMiniPair.h"
 #include "FemtoPair.h"
@@ -57,12 +59,11 @@ namespace Hal {
     fIgnoreSing(kFALSE),
     fImgMom(kFALSE),
     fTempCF(nullptr),
-    fCF(nullptr),
     fPair(nullptr),
     fMiniPair(nullptr),
     fTempGenerator(nullptr),
-    fGenerator(nullptr),
     fWeight(nullptr),
+    fGrouping(nullptr),
     fMode(eDumpCalcMode::kSignalPairs) {}
 
   void CorrFitDumpedPairAna::SetCorrFunc(const FemtoCorrFunc& func) { fTempCF = (FemtoCorrFunc*) func.Clone(); }
@@ -71,30 +72,36 @@ namespace Hal {
 
   Bool_t CorrFitDumpedPairAna::Init() {
     Bool_t fileOk = CorrFitParamsSetup::TestMapFile(fJobId);
-    if (fileOk) { return kFALSE; }
-    if (fJobId == -1) return kFALSE;
-    if (ConfigureFromXML() == kFALSE) return kFALSE;
-    if (ConfigureInput() == kFALSE) return kFALSE;
+    if (fileOk) {
+      Hal::Cout::PrintInfo("Test file found no need to calculate map", EInfo::kError);
+      return kFALSE;
+    }
+
+    if (!ConfigureFromXML()) return kFALSE;
+    if (!ConfigureInput()) return kFALSE;
     //--- file with pairs loaded
     if (fWeight == nullptr) return kFALSE;
     if (fTempCF == nullptr) return kFALSE;
     if (fTempCF->GetEntries() > 1) return kFALSE;
+    if (!fTree) return kFALSE;
+    if (fJobId == -1) return kFALSE;
+
     DividedHisto1D* dummy    = fTempCF->GetCF(0);
     Femto::EKinematics kinem = Femto::EKinematics::kLCMS;
     if (dummy->GetLabelsNo() > 0) {
       TString label = dummy->GetLabel(0);
       kinem         = Femto::LabelToKinematics(label);
     }
-    if (Connect() == kFALSE) return kFALSE;
     fPair = Femto::MakePair(kinem, fImgMom);
 
-    if (fIgnoreSing) fPair->UseAbs();
-    if (fGenerator) {
-      for (int i = 0; i < fMultiplyJobs; i++) {
-        fGenerator[i]->Init();
+    if (!ConnectToData()) return kFALSE;
+
+    if (fIgnoreSing) {
+      if (dummy->InheritsFrom("Hal::FemtoSHCF")) {
+        Cout::PrintInfo("Cannot ignore sign with SH correlation function!", EInfo::kError);
+      } else {
+        fPair->UseAbs();
       }
-    } else {
-      return kFALSE;
     }
     return kTRUE;
   }
@@ -145,19 +152,18 @@ namespace Hal {
   }
 
   Bool_t CorrFitDumpedPairAna::ConfigureInput() {
-    fFile       = new TFile(fPairFile);
-    TList* list = fFile->GetListOfKeys();
-    for (int i = 0; i < list->GetEntries(); i++) {
-      TKey* key    = (TKey*) list->At(i);
-      TObject* obj = fFile->Get(key->GetName());
-      if (obj->InheritsFrom("TTree")) {
-        fTree = (TTree*) obj;
-        break;
-      }
+    fFile     = new TFile(fPairFile);
+    fGrouping = dynamic_cast<CorrFitMapGroupConfig*>(fFile->Get("HalInfo/CorrFitMapGroup"));
+    if (!fGrouping) {
+      Hal::Cout::PrintInfo("Cannot find grouping config", EInfo::kError);
+      return kFALSE;
     }
-    if (fTree == nullptr) return kFALSE;
+    TList* list = fFile->GetListOfKeys();
+    std::cout << "CONFIGURE INPUT " << std::endl;
+    FindTree(fFile, list);
 
-    return kTRUE;
+    if (fTree == nullptr) return kFALSE;
+    return ConnectToData();
   }
 
   Bool_t CorrFitDumpedPairAna::ConfigureFromXML() {
@@ -189,20 +195,13 @@ namespace Hal {
     if (fMultiplyJobs <= 0) fMultiplyJobs = 1;
 
     std::vector<int> dims = setup.GetDimensions();
-    fGenerator            = new FemtoFreezoutGenerator*[fMultiplyJobs];
-    for (int j = 0; j < fMultiplyJobs; j++) {
-      fGenerator[j]           = fTempGenerator->MakeCopy();
-      FemtoSourceModel* freez = fGenerator[j]->GetSourceModel();
-      std::vector<int> arPos  = Hal::Std::OneToMultiDimIndex(dims, fJobId * fMultiplyJobs + j);
-      for (int i = 0; i < parameters->GetNChildren(); i++) {
-        XMLNode* parameter = parameters->GetChild(i);
-        Double_t val       = setup.GetMin(i) + setup.GetStepSize(i) * ((Double_t) arPos[i]);
-        freez->SetParameterByName(val, setup.GetParName(i));
-      }
+    if (!InitGenerators(dims, parameters, setup)) {
+      Cout::PrintInfo("Cannot init generators !", EInfo::kError);
+      return kFALSE;
     }
+
     delete fTempGenerator;
     fTempGenerator = nullptr;
-
 
     if (calcOpts) {
       XMLNode* multiplyXmlWeight = calcOpts->GetChild("WeightMultiplyFactor");
@@ -267,6 +266,10 @@ namespace Hal {
       FemtoCorrFuncSimple corrFunc(*cf);
       delete cf;
       this->SetCorrFunc(corrFunc);
+      if (!InitCFs()) { Cout::PrintInfo("Cannot init CF !", EInfo::kError); }
+    } else {
+      Cout::PrintInfo("Cannot find CF in XML !", EInfo::kError);
+      return kFALSE;
     }
     return kTRUE;
   }
@@ -274,16 +277,8 @@ namespace Hal {
   CorrFitDumpedPairAna::~CorrFitDumpedPairAna() {
     if (fTempCF) delete fTempCF;
     if (fTempGenerator) delete fTempGenerator;
-    if (fCF) {
-      for (int i = 0; i < fMultiplyJobs; i++)
-        delete fCF[i];
-      delete[] fCF;
-    }
-    if (fGenerator) {
-      for (int i = 0; i < fMultiplyJobs; i++) {
-        delete fGenerator[i];
-      }
-      delete[] fGenerator;
+    for (auto i : fGenerator) {
+      delete i;
     }
   }
 
@@ -307,14 +302,62 @@ namespace Hal {
       } break;
     }
     Cout::Text("CF Info", "M");
-    if (fCF)
-      for (int i = 0; i < fMultiplyJobs; i++)
-        fCF[i]->Print();
+    if (fTempCF) fTempCF->Print();
     Cout::Text("Generator Info", "M");
-    if (fGenerator)
-      for (int i = 0; i < fMultiplyJobs; i++)
-        fGenerator[i]->Print();
+
+    for (auto& gen : fGenerator) {
+      gen->Print();
+    }
     Cout::Text("Weight Info", "M");
     if (fWeight) fWeight->Print();
   }
+  /*
+    Bool_t CorrFitDumpedPairAna::ConnectToData() {
+      TObjArray* list = fTree->GetListOfBranches();
+      // lock not used branches
+      for (int i = 0; i < list->GetEntries(); i++) {
+        TObjString* str = (TObjString*) list->At(i);
+        fTree->SetBranchStatus(str->String(), 0);
+      }
+      InitBranches();
+      return kTRUE;
+    }
+  */
+
+  void CorrFitDumpedPairAna::ConnectToSignal(const std::vector<TString>& branches) {
+    for (auto name : branches) {
+      TClonesArray* array = new TClonesArray("Hal::FemtoMicroPair");
+      fTree->SetBranchAddress(name, &array);
+      fSignalClones.push_back(array);
+    }
+  }
+
+  void CorrFitDumpedPairAna::ConnectToBackground(const std::vector<TString>& branches) {
+    for (auto name : branches) {
+      TClonesArray* array = new TClonesArray("Hal::FemtoMicroPair");
+      fTree->SetBranchAddress(name, &array);
+      fBackgroundClones.push_back(array);
+    }
+  }
+
+  Bool_t CorrFitDumpedPairAna::FindTree(TDirectory* dir, TList* list) {
+    if (fTree) return kTRUE;
+    for (int i = 0; i < list->GetEntries(); i++) {
+      TKey* key = (TKey*) list->At(i);
+      std::cout << "CHECK " << key->GetName() << std::endl;
+      TObject* obj = dir->Get(key->GetName());
+      if (obj->InheritsFrom("TDirectory")) {
+        TDirectory* dir = (TDirectory*) obj;
+        FindTree(dir, dir->GetListOfKeys());
+      }
+      std::cout << "CHECK " << key->GetName() << " " << obj->ClassName() << " " << fTree << std::endl;
+
+      if (obj->InheritsFrom("TTree")) {
+        fTree = (TTree*) obj;
+        break;
+      }
+    }
+    return kFALSE;
+  }
+
 }  // namespace Hal

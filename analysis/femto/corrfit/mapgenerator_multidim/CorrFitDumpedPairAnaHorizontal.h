@@ -13,14 +13,18 @@
 
 namespace Hal {
   class CorrFitDumpedPairAnaHorizontal : public CorrFitDumpedPairAna {
-  protected:
-    TClonesArray* fPairsSignal     = {nullptr};
-    TClonesArray* fPairsBackground = {nullptr};
+    std::vector<FemtoCorrFunc*> fCF;
 
+  protected:
     void RunSignalPairs(Int_t nEvents);
     void RunSignalBackgroundPairs(Int_t nEvents);
     void RunBackgroundPairs(Int_t nEvents);
-    Bool_t Connect();
+    Bool_t ConnectToData();
+    /**
+     * init  generators - for vertical init all generators for horizontal init generators x multiplicity
+     */
+    Bool_t InitGenerators(const std::vector<int>& dims, XMLNode* parameters, const CorrFitParamsSetup& setup);
+    Bool_t InitCFs();
 
   public:
     CorrFitDumpedPairAnaHorizontal(Int_t jobid = -1, Int_t mapsPerAna = -1);

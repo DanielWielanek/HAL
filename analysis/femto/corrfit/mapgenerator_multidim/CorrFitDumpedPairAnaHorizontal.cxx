@@ -25,6 +25,7 @@
 #include <string>
 
 #include "Array.h"
+#include "CorrFitDumpedPairAna.h"
 #include "CorrFitInfo.h"
 #include "CorrFitParamsSetup.h"
 #include "Cout.h"
@@ -33,6 +34,7 @@
 #include "FemtoConst.h"
 #include "FemtoCorrFunc.h"
 #include "FemtoCorrFuncSimple.h"
+#include "FemtoDumpPairAna.h"
 #include "FemtoFreezoutGenerator.h"
 #include "FemtoMiniPair.h"
 #include "FemtoPair.h"
@@ -45,48 +47,11 @@
 namespace Hal {
 
   CorrFitDumpedPairAnaHorizontal::CorrFitDumpedPairAnaHorizontal(Int_t jobid, Int_t maps_perAna) :
-    CorrFitDumpedPairAna(jobid, maps_perAna), fSlices(nullptr) {}
-
-  Bool_t CorrFitDumpedPairAnaHorizontal::Connect() {
-    TBranch* branchSignal      = fTree->GetBranch("FemtoSignal.");
-    TBranch* branchBackkground = fTree->GetBranch("FemtoBackground.");
-    switch (fMode) {
-      case eDumpCalcMode::kSignalPairs: {
-        fPairsSignal = new TClonesArray("Hal::FemtoMicroPair");
-        if (branchSignal == nullptr) return kFALSE;
-        branchSignal->SetAddress(&fPairsSignal);
-      } break;
-      case eDumpCalcMode::kBackgroundPairsOnly: {
-        fPairsBackground = new TClonesArray("Hal::FemtoMicroPair");
-        if (branchBackkground == nullptr) return kFALSE;
-        branchBackkground->SetAddress(&fPairsBackground);
-      } break;
-      case eDumpCalcMode::kSignalBackgroundPairs: {
-        fPairsSignal     = new TClonesArray("Hal::FemtoMicroPair");
-        fPairsBackground = new TClonesArray("Hal::FemtoMicroPair");
-        if (branchSignal == nullptr || branchBackkground == nullptr) return kFALSE;
-        branchSignal->SetAddress(&fPairsSignal);
-        branchBackkground->SetAddress(&fPairsBackground);
-      } break;
-    }
-    return kTRUE;
-  }
+    CorrFitDumpedPairAna(jobid, maps_perAna) {}
 
   Bool_t CorrFitDumpedPairAnaHorizontal::Init() {
     Bool_t preinit = CorrFitDumpedPairAna::Init();
-    fCF            = new FemtoCorrFunc*[fMultiplyJobs];
-    for (int i = 0; i < fMultiplyJobs; i++) {
-      fCF[i] = fTempCF->Clone();
-    }
-    delete fTempCF;
-    fTempCF = nullptr;
-
-    if (fGenerator) {
-      for (int i = 0; i < fMultiplyJobs; i++) {
-        fGenerator[i]->Init();
-      }
-    }
-    return kTRUE;
+    return preinit;
   }
 
   void CorrFitDumpedPairAnaHorizontal::Finish() {
@@ -133,19 +98,21 @@ namespace Hal {
     for (int iEvent = 0; iEvent < nEvents; iEvent++) {
       fTree->GetEntry(iEvent);
       if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
-      for (int jPair = 0; jPair < fPairsSignal->GetEntriesFast(); jPair++) {
-        fMiniPair = (FemtoMicroPair*) fPairsSignal->UncheckedAt(jPair);
-        *fPair    = *fMiniPair;
-        for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
-          PreprocessPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            for (int weightMulti = 0; weightMulti < fMultiplyWeight; weightMulti++) {
-              fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
-              fPair->SetWeight(fWeight->GenerateWeight(fPair));
-              fCF[nJobs]->FillNum(fPair);
-              fPair->SetWeight(1.0);
-              fCF[nJobs]->FillDenMixed(fPair);
+      for (auto clones : fSignalClones) {
+        for (int jPair = 0; jPair < clones->GetEntriesFast(); jPair++) {
+          fMiniPair = (FemtoMicroPair*) clones->UncheckedAt(jPair);
+          *fPair    = *fMiniPair;
+          for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
+            PreprocessPair();
+            fPair->Compute();
+            for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
+              for (int weightMulti = 0; weightMulti < fMultiplyWeight; weightMulti++) {
+                fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
+                fPair->SetWeight(fWeight->GenerateWeight(fPair));
+                fCF[nJobs]->FillNum(fPair);
+                fPair->SetWeight(1.0);
+                fCF[nJobs]->FillDenMixed(fPair);
+              }
             }
           }
         }
@@ -159,31 +126,34 @@ namespace Hal {
       fTree->GetEntry(iEvent);
       if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
 
-      for (int jSig = 0; jSig < fPairsSignal->GetEntriesFast(); jSig++) {
-        fMiniPair = (FemtoMicroPair*) fPairsSignal->UncheckedAt(jSig);
-        *fPair    = *fMiniPair;
-        for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
-          PreprocessPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
-              fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
-              fPair->SetWeight(fWeight->GenerateWeight(fPair));
-              fCF[nJobs]->FillNum(fPair);
+      for (auto clones : fSignalClones) {
+        for (int jSig = 0; jSig < clones->GetEntriesFast(); jSig++) {
+          fMiniPair = (FemtoMicroPair*) clones->UncheckedAt(jSig);
+          *fPair    = *fMiniPair;
+          for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
+            PreprocessPair();
+            fPair->Compute();
+            for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
+              for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
+                fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
+                fPair->SetWeight(fWeight->GenerateWeight(fPair));
+                fCF[nJobs]->FillNum(fPair);
+              }
             }
           }
         }
       }
-
-      for (int jMix = 0; jMix < fPairsBackground->GetEntriesFast(); jMix++) {
-        fMiniPair = (FemtoMicroPair*) fPairsBackground->UncheckedAt(jMix);
-        *fPair    = *fMiniPair;
-        fPair->SetWeight(1.0);
-        for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
-          PreprocessMixedPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            fCF[nJobs]->FillDenMixed(fPair);
+      for (auto clones : fBackgroundClones) {
+        for (int jSig = 0; jSig < clones->GetEntriesFast(); jSig++) {
+          fMiniPair = (FemtoMicroPair*) clones->UncheckedAt(jSig);
+          *fPair    = *fMiniPair;
+          for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
+            PreprocessPair();
+            fPair->Compute();
+            for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
+              fPair->SetWeight(1 * fMultiplyWeight);
+              fCF[nJobs]->FillNum(fPair);
+            }
           }
         }
       }
@@ -195,25 +165,24 @@ namespace Hal {
     for (int iEvent = 0; iEvent < nEvents; iEvent++) {
       fTree->GetEntry(iEvent);
       if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
-
-      for (int jMix = 0; jMix < fPairsBackground->GetEntriesFast(); jMix++) {
-        fMiniPair = (FemtoMicroPair*) fPairsBackground->UncheckedAt(jMix);
-        *fPair    = *fMiniPair;
-        for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
-          PreprocessPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
-              fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
-              fPair->SetWeight(fWeight->GenerateWeight(fPair));
-              fCF[nJobs]->FillNum(fPair);
+      for (auto clones : fSignalClones) {
+        for (int jMix = 0; jMix < clones->GetEntriesFast(); jMix++) {
+          fMiniPair = (FemtoMicroPair*) clones->UncheckedAt(jMix);
+          *fPair    = *fMiniPair;
+          for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
+            PreprocessPair();
+            fPair->Compute();
+            for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
+              for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
+                fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
+                fPair->SetWeight(fWeight->GenerateWeight(fPair));
+                fCF[nJobs]->FillNum(fPair);
+              }
             }
-          }
-          fPair->SetWeight(1.0);
-          PreprocessMixedPair();
-          fPair->Compute();
-          for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
-            for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
+            fPair->SetWeight(1.0 * fMultiplyJobs);
+            PreprocessMixedPair();
+            fPair->Compute();
+            for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
               fCF[nJobs]->FillDenMixed(fPair);
             }
           }
@@ -222,6 +191,57 @@ namespace Hal {
     }
   }
 
-  CorrFitDumpedPairAnaHorizontal::~CorrFitDumpedPairAnaHorizontal() {}
+  Bool_t CorrFitDumpedPairAnaHorizontal::InitGenerators(const std::vector<int>& dims,
+                                                        XMLNode* parameters,
+                                                        const CorrFitParamsSetup& setup) {
+    for (int j = 0; j < fMultiplyJobs; j++) {
+      fGenerator.push_back(fTempGenerator->MakeCopy());
+      FemtoSourceModel* freez = fGenerator[j]->GetSourceModel();
+      std::vector<int> arPos  = Hal::Std::OneToMultiDimIndex(dims, fJobId * fMultiplyJobs + j);
+      for (int i = 0; i < parameters->GetNChildren(); i++) {
+        XMLNode* parameter = parameters->GetChild(i);
+        Double_t val       = setup.GetMin(i) + setup.GetStepSize(i) * ((Double_t) arPos[i]);
+        freez->SetParameterByName(val, setup.GetParName(i));
+        freez->Init();
+      }
+    }
+    return kTRUE;
+  }
+
+  Bool_t CorrFitDumpedPairAnaHorizontal::ConnectToData() {
+    Int_t bins;
+    Double_t min, max;
+    Hal::Std::GetAxisPar(*fCF[0]->GetCF(0)->GetNum(), bins, min, max, "x");
+    switch (fMode) {
+      case eDumpCalcMode::kSignalPairs: {
+        auto vec = fGrouping->GetBranches(min, max, true);
+        ConnectToSignal(vec);
+      } break;
+      case eDumpCalcMode::kBackgroundPairsOnly: {
+        auto vec = fGrouping->GetBranches(min, max, false);
+        ConnectToBackground(vec);
+      } break;
+      case eDumpCalcMode::kSignalBackgroundPairs: {
+        auto vec = fGrouping->GetBranches(min, max, false);
+        ConnectToBackground(vec);
+        vec = fGrouping->GetBranches(min, max, true);
+        ConnectToSignal(vec);
+      } break;
+    }
+    return kTRUE;
+  }
+
+  Bool_t CorrFitDumpedPairAnaHorizontal::InitCFs() {
+    for (int i = 0; i < fMultiplyJobs; i++) {
+      fCF.push_back((FemtoCorrFunc*) fTempCF->Clone());
+    }
+    if (fCF.size() != 0) return kTRUE;
+    return kFALSE;
+  }
+
+  CorrFitDumpedPairAnaHorizontal::~CorrFitDumpedPairAnaHorizontal() {
+    for (auto cf : fCF)
+      delete cf;
+  }
 
 } /* namespace Hal */

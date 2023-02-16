@@ -477,16 +477,20 @@ namespace Hal {
       std::cout << "Cannot create correlation fuction from this node" << std::endl;
       return nullptr;
     }
+
     EKinematics CodeLabelToKinematics(TString label) {
-      if (label.EqualTo("Femto::EKinematics::kPRF")) {
+      if (label.Contains("Hal::")) { label.ReplaceAll("Hal::", ""); }
+      if (label.Contains("Femto::")) { label.ReplaceAll("Femto::", ""); }
+      if (label.Contains("EKinematics::")) { label.ReplaceAll("EKinematics::", ""); }
+      if (label.EqualTo("kPRF")) {
         return EKinematics::kPRF;
-      } else if (label.EqualTo("Femto::EKinematics::kLCMS")) {
+      } else if (label.EqualTo("kLCMS")) {
         return EKinematics::kLCMS;
-      } else if (label.EqualTo("Femto::EKinematics::kSH_PRF")) {
+      } else if (label.EqualTo("kSH_PRF")) {
         return EKinematics::kSH_PRF;
-      } else if (label.EqualTo("Femto::EKinematics::kSH_LCMS")) {
+      } else if (label.EqualTo("kSH_LCMS")) {
         return EKinematics::kSH_LCMS;
-      } else if (label.EqualTo("Femto::EKinematics::kPHIETA")) {
+      } else if (label.EqualTo("kPHIETA")) {
         return EKinematics::kPHIETA;
       }
       return EKinematics::kLCMS;

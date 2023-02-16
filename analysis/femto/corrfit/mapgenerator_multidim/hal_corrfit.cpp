@@ -174,7 +174,7 @@ void preparetemplate() {
   xml_file << "<DumpAnalysisConf>" << std::endl;
   xml_file << "\t<CorrelationFunction>" << std::endl;
   xml_file << "\t\t<Name>CF</Name>" << std::endl;
-  xml_file << "\t\t<Frame>EFemtoKinematics::kLCMS</Frame>" << std::endl;
+  xml_file << "\t\t<Frame>EKinematics::kLCMS</Frame>" << std::endl;
   xml_file << "\t\t<Type>Femto3DCF</Type>" << std::endl;
   xml_file << "<!-- optional part, used only for spherical harmonics-->" << std::endl;
   xml_file << "\t\t<L>3</L>" << std::endl;
@@ -182,8 +182,8 @@ void preparetemplate() {
   xml_file << "\t\t<Yaxis bins=\"100\" min=\"0.0\" max=\"1.0\"></Yaxis>" << std::endl;
   xml_file << "\t\t<Zaxis bins=\"100\" min=\"0.0\" max=\"1.0\"></Zaxis>" << std::endl;
   xml_file << "\t</CorrelationFunction>" << std::endl;
-  xml_file << "\t<FreezoutGenerator>FemtoFreezoutGeneratorLCMS</FreezoutGenerator>" << std::endl;
-  xml_file << "\t<SourceModel>FemtoSourceModelGauss3D</SourceModel>" << std::endl;
+  xml_file << "\t<FreezoutGenerator>Hal::FemtoFreezoutGeneratorLCMS</FreezoutGenerator>" << std::endl;
+  xml_file << "\t<SourceModel>Hal::FemtoSourceModelGauss3D</SourceModel>" << std::endl;
   xml_file << "\t<CalcOptions>" << std::endl;
   xml_file << "\t\t<JobMultiplyFactor>1</JobMultiplyFactor>" << std::endl;
   xml_file << "\t\t<WeightMultiplyFactor>1</WeightMultiplyFactor>" << std::endl;
@@ -193,7 +193,7 @@ void preparetemplate() {
   xml_file << "\t\t<IgnoreSign>kTRUE</IgnoreSign>" << std::endl;
   xml_file << "\t</CalcOptions>" << std::endl;
   xml_file << "\t<WeightConf>" << std::endl;
-  xml_file << "\t\t<Type>FemtoWeightGeneratorLednicky</Type>" << std::endl;
+  xml_file << "\t\t<Type>Hal::FemtoWeightGeneratorLednicky</Type>" << std::endl;
   xml_file << "\t\t<QuantumOn>kTRUE</QuantumOn>" << std::endl;
   xml_file << "\t\t<StronOn>kFALSE</StronOn>" << std::endl;
   xml_file << "\t\t<CoulombOn>kFALSE</CoulombOn>" << std::endl;
@@ -208,7 +208,7 @@ void preparetemplate() {
   macro << "void ana(){" << std::endl;
   macro << "\tTString jobEnv = gSystem->Getenv(\"JOB_ID_HAL\");" << std::endl;
   macro << "\tInt_t job_index = jobEnv.Atoi();" << std::endl;
-  macro << "\tCorrFitDumpedPairAna *task = new CorrFitDumpedPairAna(job_index);" << std::endl;
+  macro << "\tHal::CorrFitDumpedPairAna *task = new Hal::CorrFitDumpedPairAna(job_index);" << std::endl;
   macro << "\tif(task->Init()==kFALSE) return;" << std::endl;
   macro << "\ttask->Run();" << std::endl;
   macro << "\ttask->Finish();" << std::endl;

@@ -139,7 +139,12 @@ namespace Hal {
     fFemtoPair->SetPdg1(fPdg1);
     fFemtoPair->SetPdg2(fPdg2);
     fFemtoPair->Init(GetTaskID());
-    if (fIgnoreSign) fFemtoPair->UseAbs();
+    if (fIgnoreSign) {
+      if (dummy->InheritsFrom("Hal::FemtoSHCF")) {
+        Cout::PrintInfo("Cannot ignore sign with SH correlation function!", EInfo::kError);
+      } else
+        fFemtoPair->UseAbs();  // if spherical harmonics do not use abs
+    }
     AddTags(fFemtoPair->GetTags());
     if (fUseImgMomenta == kFALSE) { Cout::PrintInfo("Only true momenta will be used", EInfo::kDebugInfo); }
     if (prev != Task::EInitFlag::kSUCCESS) {

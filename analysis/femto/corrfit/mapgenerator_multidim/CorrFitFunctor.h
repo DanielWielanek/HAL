@@ -39,8 +39,17 @@ namespace Hal {
     CorrFitFunctor(TString map_file = "");
     CorrFitInfo* GetInfo() const { return fInfo; };
     void PrintInfo();
-    void GetParameterConfig(Int_t no, TString& name, Double_t& min, Double_t& max, Int_t& npoints);
+    /**
+     * get parameter config
+     * @param name
+     * @param min
+     * @param max
+     * @param npoints
+     * @return false if parameter not found
+     */
+    Bool_t GetParameterConfig(TString name, Double_t& min, Double_t& max, Int_t& npoints);
     Int_t GetNParams() const;
+    TString GetParameterName(Int_t id) const { return fSetup.GetParName(id); };
     Array_1<Float_t>* GetData(Double_t* params);
     virtual ~CorrFitFunctor();
     ClassDef(CorrFitFunctor, 1)

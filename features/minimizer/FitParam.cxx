@@ -29,21 +29,27 @@ namespace Hal {
   void FitParam::Init() {
     if (IsDiscrete()) {
       fValues.clear();
-      if (fNPoint == 0) {
-        std::cout << " cannot have npoint = 0" << std::endl;
-        exit(0);
+      if (IsFixed()) {
+        fNPoint = 1;
+        fMin    = fMax;
+        fDParam = 0;
+      } else {
+        if (fNPoint == 0) {
+          std::cout << " cannot have npoint = 0" << std::endl;
+          exit(0);
+        }
+        fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
       }
-      if (IsFixed()) { fMin = fMax; }
-      fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
       fMin   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMin, '-');  // npoint -1 because we have n-1 areas than points
       fMax   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMax, '+');
       fStart = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fStart, '=');
-      for (double i = fMin; i <= fMax; i += fDParam) {
-        fValues.push_back(i);
+      if (fDParam == 0) {
+        fValues.push_back(fMin);
+      } else {
+        for (double i = fMin; i <= fMax; i += fDParam) {
+          fValues.push_back(i);
+        }
       }
-    } else {
-      fDParam = 0.01;
-      fValues.clear();
     }
   }
 

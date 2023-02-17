@@ -23,6 +23,8 @@
 #include <iostream>
 #include <string>
 
+//#define _MULTIDIM_DEBUG_
+
 
 namespace Hal {
   void CorrFit3DCFMultiDim::RecalculateFunction() const {
@@ -62,13 +64,19 @@ namespace Hal {
     Double_t min, max;
     Int_t points;
     // get out
-    Int_t pars[3] = {Rout(), Rside(), Rlong()};
-    for (int i = 0; i < 3; i++) {
-      fFunctor->GetParameterConfig(i, name, min, max, points);
-      fParameters[pars[i]].SetIsDiscrete(kTRUE);
-      fParameters[pars[i]].SetMapRange(min, max, points);
-      SetParLimits(pars[i], min, max);
+#ifdef _MULTIDIM_DEBUG_
+    std::cout << "SET AUTO LIMITS" << std::endl;
+#endif
+    for (int i = 0; i < fFunctor->GetNParams(); i++) {
+      name = fFunctor->GetParameterName(i);
+      fFunctor->GetParameterConfig(name, min, max, points);
+      fParameters[i].SetIsDiscrete(kTRUE);
+      fParameters[i].SetMapRange(min, max, points);
+      SetParLimits(i, min, max);
     }
+#ifdef _MULTIDIM_DEBUG_
+    std::cout << "AUTO DONE" << std::endl;
+#endif
   }
 
   CorrFit3DCFMultiDim::~CorrFit3DCFMultiDim() {
@@ -92,23 +100,32 @@ namespace Hal {
       if (!IsParFixed(i)) {  // fixed parameters will be configured later
         Double_t lower = GetParMin(i);
         Double_t upper = GetParMax(i);
-        if (i <= Rlong()) {
-          TString name;
-          Double_t Min, Max;
-          Int_t steps;
-          fFunctor->GetParameterConfig(i, name, Min, Max, steps);
-          Double_t step_size = (Max - Min) / (Double_t(steps));
-          if (steps == 0) step_size = 0;
-          std::cout << "SET MAP STEPS " << par_name << "\t" << Min << " " << Max << " " << steps << " "
+
+        TString name = par_name;
+        Double_t Min, Max;
+        Int_t points;
+        if (fFunctor->GetParameterConfig(name, Min, Max, points)) {
+          Double_t step_size = (Max - Min) / (Double_t(points - 1));
+          if (points == 0) step_size = 0;
+#ifdef _MULTIDIM_DEBUG_
+          std::cout << "SET MAP STEPS " << par_name << "\t" << Min << " " << Max << " " << points << " "
                     << " " << step_size << std::endl;
+#endif
           std::string Name = name.Data();
           min->SetLimitedVariable(i, Name, 0.5 * (Min + Max), step_size, Min, Max);
         } else {
-          min->SetLimitedVariable(
-            i, GetParameterName(i).Data(), 0.5 * (GetParMin(i), GetParMax(i)), 0.01, GetParMin(i), GetParMax(i));
+#ifdef _MULTIDIM_DEBUG_
+          std::cout << "SET FREE STEPS " << par_name << "\t" << GetParMin(i) << " " << GetParMax(i) << " " << points << " "
+                    << " " << 0.01 << std::endl;
+#endif
+          min->SetLimitedVariable(i, par_name, 0.5 * (GetParMin(i) + GetParMax(i)), 0.01, GetParMin(i), GetParMax(i));
         }
+        min->SetVariableLimits(i, GetParMin(i), GetParMax(i));
       } else {
+#ifdef _MULTIDIM_DEBUG_
         std::cout << "SET FIXED " << par_name << "\t" << GetParMin(i) << " " << GetParMax(i) << std::endl;
+#endif
+        min->SetLimitedVariable(i, par_name, GetParMin(i), 1, GetParMin(i), GetParMin(i));
         min->SetFixedVariable(i, par_name, GetParMin(i));
       }
     }

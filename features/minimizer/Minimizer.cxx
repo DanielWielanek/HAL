@@ -64,7 +64,7 @@ namespace Hal {
     fParameters[ivar].SetParName(name);
     fParameters[ivar].SetRange(lower, upper);
     fParameters[ivar].SetStartVal(val);
-    fParameters[ivar].SetMapRange(lower, upper, (upper - lower) / step + 1);
+    fParameters[ivar].SetMapRange(lower, upper, TMath::Nint((upper - lower) / step + 1));
     fParameters[ivar].SetIsFixed(kFALSE);
     return false;
   }
@@ -110,17 +110,16 @@ namespace Hal {
     Cout::PrintInfo("AFTER INIT ", EInfo::kLowWarning);
     Cout::Database(6, "ParName", "MinMap", "MaxMap", "Points", "Min", "Max");
     for (unsigned int i = 0; i < fParameters.size(); i++) {
-      if (fParameters[i].IsFixed()) {
-        Cout::Database(2, fParameters[i].GetParName().Data(), Form("%4.4f", fParameters[i].GetStartVal()));
-      } else {
-        Cout::Database(6,
-                       fParameters[i].GetParName().Data(),
-                       Form("%4.4f", fParameters[i].GetMapMin()),
-                       Form("%4.4f", fParameters[i].GetMapMax()),
-                       Form("%d", fParameters[i].GetNPoints()),
-                       Form("%4.4f", fParameters[i].GetMin()),
-                       Form("%4.4f", fParameters[i].GetMax()));
-      }
+
+      if (fParameters[i].IsFixed()) { std::cout << Cout::GetColor(kOrange); }
+      Cout::Database(6,
+                     fParameters[i].GetParName().Data(),
+                     Form("%4.4f", fParameters[i].GetMapMin()),
+                     Form("%4.4f", fParameters[i].GetMapMax()),
+                     Form("%d", fParameters[i].GetNPoints()),
+                     Form("%4.4f", fParameters[i].GetMin()),
+                     Form("%4.4f", fParameters[i].GetMax()));
+      if (fParameters[i].IsFixed()) std::cout << Cout::GetDisableColor();
     }
     if (fQuantumFits) {
       delete[] fQuantumFits;
@@ -262,7 +261,7 @@ namespace Hal {
     Double_t min_Fit = -b / (2.0 * a);
 
 
-    //   std::cout << " pAR " << x1 << " " << x2 << " " << x3 << " " << y1 << " " << y2 << " " << y3 << " " << a << std::endl;
+    //    std::cout << " pAR " << x1 << " " << x2 << " " << x3 << " " << y1 << " " << y2 << " " << y3 << " " << a << std::endl;
 
     quantumMin = fParamsMin[par];
     min        = min_Fit;

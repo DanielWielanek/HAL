@@ -32,13 +32,20 @@ namespace Hal {
     fPosArray.resize(fSetup.GetNParams());
   }
 
-  void CorrFitFunctor::GetParameterConfig(Int_t no, TString& name, Double_t& min, Double_t& max, Int_t& point) {
-    Int_t n_params = fInfo->GetSetup().GetNParams();
-    if (no < 0 || no > n_params) return;
-    min   = fSetup.GetMin(no);
-    max   = fSetup.GetMax(no);
-    name  = fSetup.GetParName(no);
-    point = fSetup.GetNPoints(no);
+  Bool_t CorrFitFunctor::GetParameterConfig(TString name, Double_t& min, Double_t& max, Int_t& point) {
+    int paramId = -1;
+    for (unsigned int i = 0; i < fSetup.GetNParams(); i++) {
+      if (fSetup.GetParName(i) == name) {
+        paramId = i;
+        break;
+      }
+    }
+    if (paramId == -1) return kFALSE;
+    min   = fSetup.GetMin(paramId);
+    max   = fSetup.GetMax(paramId);
+    name  = fSetup.GetParName(paramId);
+    point = fSetup.GetNPoints(paramId);
+    return kTRUE;
   }
 
   Int_t CorrFitFunctor::GetNParams() const { return fInfo->GetSetup().GetNParams(); }

@@ -106,14 +106,12 @@ namespace Hal {
 
   void CorrFitHDFunc3D::CalculateBinsArrays(const CorrFitMask3D& mask, Bool_t hd) {
     // calculate standard bins----------------------------------------------------
-
     Int_t nonZeroBins = mask.GetActiveBins();
     if (nonZeroBins != fBinsX.GetSize()) {
       fBinsX.Resize(nonZeroBins);
       fBinsY.Resize(nonZeroBins);
       fBinsZ.Resize(nonZeroBins);
     }
-
     Array_3<Short_t> tempFlags(mask.GetNbinsX() * 2 + 1, mask.GetNbinsY() * 2 + 1, mask.GetNbinsZ() * 2 + 1);
     Int_t hdBinsNo = 0;
     Int_t binId    = 0;

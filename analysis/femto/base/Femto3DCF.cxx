@@ -26,6 +26,7 @@
 #include <TROOT.h>
 #include <TRegexp.h>
 #include <TSystem.h>
+#include <iostream>
 
 #include "CorrFit3DCF.h"
 #include "StdString.h"

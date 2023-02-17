@@ -45,6 +45,7 @@ namespace Hal {
       fParams.push_back(param);
     }
   }
+
   void MinimizerStepConf::SetParameters(std::vector<FitParam>& input) const {
     for (auto iPar : fParams) {
       for (auto& oPar : input) {

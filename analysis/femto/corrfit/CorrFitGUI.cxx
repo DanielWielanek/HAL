@@ -76,7 +76,7 @@ namespace Hal {
     TGHorizontalFrame* applyFrame = new TGHorizontalFrame(this, width, 40);
     TGTextButton* draw            = new TGTextButton(applyFrame, "&Draw chi");
     applyFrame->AddFrame(draw, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
-    draw->Connect("Clicked()", "CorrFitGUI", this, "DrawChi2()");
+    draw->Connect("Clicked()", this->ClassName(), this, "DrawChi2()");
     TGTextButton* exit = new TGTextButton(applyFrame, "&Exit", "gApplication->Terminate(0)");
     applyFrame->AddFrame(exit, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
     AddFrame(applyFrame, new TGLayoutHints(kLHintsBottom | kLHintsLeft, 5, 5, 5, 5));
@@ -139,7 +139,7 @@ namespace Hal {
       fComboBox->Resize(70, 20);
       fComboBox->Select(par_sec);
 
-      fComboBox->Connect("Selected(Int_t)", "CorrFitGUI", gui, "ApplyParams()");
+      fComboBox->Connect("Selected(Int_t)", gui->ClassName(), gui, "ApplyParams()");
       rightLabel->AddFrame(fComboBox, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
       this->AddFrame(leftLabel, new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsExpandY, 5, 5, 5, 5));
       this->AddFrame(rightLabel, new TGLayoutHints(kLHintsRight | kLHintsExpandX | kLHintsExpandY, 5, 5, 5, 5));
@@ -154,7 +154,7 @@ namespace Hal {
                                        TGNumberFormat::kNELLimitMinMax,
                                        parConf.GetMapMin(),
                                        parConf.GetMapMax());
-      fNumberEntry->Connect("ValueSet(Long_t)", "CorrFitGUI", gui, "ApplyParams()");
+      fNumberEntry->Connect("ValueSet(Long_t)", gui->ClassName(), gui, "ApplyParams()");
       rightLabel->AddFrame(fNumberEntry, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
       this->AddFrame(leftLabel, new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsExpandY, 5, 5, 5, 5));
       this->AddFrame(rightLabel, new TGLayoutHints(kLHintsRight | kLHintsExpandX | kLHintsExpandY, 5, 5, 5, 5));

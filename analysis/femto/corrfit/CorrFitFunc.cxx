@@ -87,6 +87,7 @@ namespace Hal {
       fRange[1] = fRange[3] = fRange[5] = max;
     }
   }
+
   void CorrFitFunc::Draw(Option_t* draw_option) {
     if (fDrawOptionSet || fDrawFunc.size() > 0) {
       std::cout << "CorrFitFunc::Draw Canot set CorrFitDrawOptions when function was set or draw options were set" << std::endl;
@@ -104,6 +105,7 @@ namespace Hal {
     fDrawOptions   = options;
     fDrawOptionSet = kTRUE;
   }
+
   void CorrFitFunc::SetupFunction(TF1* f) const {
     for (int i = 0; i < GetParametersNo(); i++) {
       f->SetParName(i, fParameters[i].GetName());

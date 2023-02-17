@@ -62,9 +62,10 @@ namespace Hal {
 
   Bool_t CorrFitMask1D::Init() {
     fActiveBins = 0;
-    for (auto i : fRawMask) {
-      if (i) fActiveBins++;
+    for (unsigned int i = 1; i < fRawMask.size() - 1; i++) {
+      if (fRawMask[i]) fActiveBins++;
     }
+
     return kTRUE;
   }
 

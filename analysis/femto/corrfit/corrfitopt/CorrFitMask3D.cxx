@@ -20,9 +20,9 @@
 namespace Hal {
   Bool_t CorrFitMask3D::Init() {
     fActiveBins = 0;
-    for (int i = 0; i < fRawMask.size(); i++) {
-      for (int j = 0; j < fRawMask[0].size(); j++) {
-        for (int k = 0; k < fRawMask[0][0].size(); k++) {
+    for (int i = 1; i < fRawMask.size() - 1; i++) {  // dont take into account overflow/underflow bins
+      for (int j = 1; j < fRawMask[0].size() - 1; j++) {
+        for (int k = 1; k < fRawMask[0][0].size() - 1; k++) {
           if (fRawMask[i][j][k]) fActiveBins++;
         }
       }

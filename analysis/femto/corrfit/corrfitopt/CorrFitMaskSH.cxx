@@ -95,17 +95,17 @@ namespace Hal {
       fActiveImag[i] = 0;
       fActiveReal[i] = 0;
       int count      = -1;
-      for (auto& bin : fRawMaskRe[i]) {
+      for (unsigned int j = 1; i < fRawMaskRe[i].size() - 1; j++) {
         ++count;
-        if (bin) {
+        if (fRawMaskRe[i][j]) {
           fActiveBins++;
           fActiveReal[i]++;
         }
       }
       count = -1;
-      for (auto& bin : fRawMaskIm[i]) {
+      for (unsigned int j = 1; i < fRawMaskIm[i].size() - 1; j++) {
         ++count;
-        if (bin) {
+        if (fRawMaskIm[i][j]) {
           fActiveBins++;
           fActiveImag[i]++;
         }

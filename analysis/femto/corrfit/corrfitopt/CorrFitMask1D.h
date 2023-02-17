@@ -30,7 +30,7 @@ namespace Hal {
     Bool_t GetBinFlag(Int_t no) const { return fRawMask[no]; };
     Bool_t AreCompatible(TObject* cf) const;
     void ApplyThreshold(const TH1& h, Double_t threshold = 0);
-    Int_t GetNBins() const { return fRawMask.size(); };
+    Int_t GetNBins() const { return fRawMask.size() - 2; };
     Double_t GetMin() const { return fMin; };
     Double_t GetMax() const { return fMax; }
     virtual ~CorrFitMask1D() {};

@@ -56,10 +56,10 @@ namespace Hal {
     Bool_t Init();
     inline Bool_t GetBinFlag(Int_t x, Int_t y, Int_t z) const { return fRawMask[x][y][z]; };
     Bool_t AreCompatible(TObject* cf) const;
-    Int_t GetNBins() const { return fRawMask.size(); };
-    Int_t GetNbinsX() const { return fRawMask.size(); };
-    Int_t GetNbinsY() const { return fRawMask[0].size(); };
-    Int_t GetNbinsZ() const { return fRawMask[0][0].size(); };
+    Int_t GetNBins() const { return fRawMask.size() - 2; };
+    Int_t GetNbinsX() const { return fRawMask.size() - 2; };
+    Int_t GetNbinsY() const { return fRawMask[0].size() - 2; };
+    Int_t GetNbinsZ() const { return fRawMask[0][0].size() - 2; };
     virtual ~CorrFitMask3D() {};
     ClassDef(CorrFitMask3D, 1)
   };

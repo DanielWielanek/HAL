@@ -152,6 +152,9 @@ namespace Hal {
      */
     void CopyParamsToTF1(TF1* f, Bool_t copyNumPar = kTRUE, Bool_t copyGrapPar = kTRUE) const;
 
+    /**set all uncertainties negative (uses for gui when user change params */
+    void SetErrorsNegative();
+
   public:
     CorrFit(Int_t parameters_no = 2);
     /**

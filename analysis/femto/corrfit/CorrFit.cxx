@@ -193,4 +193,10 @@ namespace Hal {
     }
     /*delete[] fTempParamsEval;*/
   }
+
+  void CorrFit::SetErrorsNegative() {
+    for (auto& i : fParameters)
+      i.SetError(-1);
+  }
+
 }  // namespace Hal

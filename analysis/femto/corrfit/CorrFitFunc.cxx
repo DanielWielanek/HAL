@@ -533,8 +533,20 @@ namespace Hal {
       if (IsParFixed(i)) {
         label.push_back(Form("%s %4.3f (fixed)", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue()));
       } else {
-        label.push_back(Form(
-          "%s %4.3f#pm%4.3f", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue(), fParameters[i].GetError()));
+        if (TMath::IsNaN(fParameters[i].GetError())) {
+          label.push_back(Form("%s %4.3f#color[2]{#pm%4.3f}",
+                               fParameters[i].GetParName().Data(),
+                               fParameters[i].GetFittedValue(),
+                               fParameters[i].GetError()));
+        } else if (fParameters[i].GetError() < 0) {
+          label.push_back(Form("%s %4.3f#color[16]{#pm%4.3f}",
+                               fParameters[i].GetParName().Data(),
+                               fParameters[i].GetFittedValue(),
+                               fParameters[i].GetError()));
+        } else {
+          label.push_back(Form(
+            "%s %4.3f#pm%4.3f", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue(), fParameters[i].GetError()));
+        }
       }
     }
     if (chi_label.Length() > 0) label.push_back(chi_label);

@@ -94,6 +94,7 @@ namespace Hal {
     }
 
     fFunc->ParametersChanged();
+    fFunc->SetErrorsNegative();
     auto func = dynamic_cast<CorrFitFunc*>(fFunc);
     if (func) { func->Repaint(); }
   }

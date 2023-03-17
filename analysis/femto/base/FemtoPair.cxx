@@ -394,4 +394,20 @@ namespace Hal {
     fPdg2 = other.GetPdg2();
     return *this;
   }
+
+  void FemtoPair::SetMomenta(const TLorentzVector& p1, const TLorentzVector& p2) {
+    SetMomenta1(p1.X(), p1.Y(), p1.Z(), p1.E());
+    SetMomenta2(p2.X(), p2.Y(), p2.Z(), p2.E());
+  }
+
+  void FemtoPair::SetTrueMomenta(const TLorentzVector& p1, const TLorentzVector& p2) {
+    SetTrueMomenta1(p1.X(), p1.Y(), p1.Z(), p1.E());
+    SetTrueMomenta2(p2.X(), p2.Y(), p2.Z(), p2.E());
+  }
+
+  void FemtoPair::SetFreezouts(const TLorentzVector& x1, const TLorentzVector& x2) {
+    SetFreezoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
+    SetFreezoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
+  }
+
 }  // namespace Hal

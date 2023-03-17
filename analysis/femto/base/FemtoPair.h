@@ -13,6 +13,7 @@
 #include <TMath.h>
 #include <TObject.h>
 
+class TLorentzVector;
 namespace Hal {
   class Track;
   class TwoTrack;
@@ -125,7 +126,7 @@ namespace Hal {
      * @param m2
      */
     void SetMass(Double_t m1, Double_t m2);
-    virtual FemtoPair* MakeCopy() const       = 0;
+    virtual FemtoPair* MakeCopy() const         = 0;
     virtual Femto::EKinematics GetFrame() const = 0;
     Bool_t Init(Int_t task_id);
     /**
@@ -446,6 +447,24 @@ namespace Hal {
      * @param t
      */
     void SetFreezoutCoord2(Double_t x, Double_t y, Double_t z, Double_t t);
+    /**
+     * set momenta
+     * @param p1
+     * @param p2
+     */
+    void SetMomenta(const TLorentzVector& p1, const TLorentzVector& p2);
+    /**
+     * set true momenta
+     * @param p1
+     * @param p2
+     */
+    void SetTrueMomenta(const TLorentzVector& p1, const TLorentzVector& p2);
+    /**
+     * set four momentum
+     * @param x1
+     * @param x2
+     */
+    void SetFreezouts(const TLorentzVector& x1, const TLorentzVector& x2);
     /**
      *
      * @return true pair phi

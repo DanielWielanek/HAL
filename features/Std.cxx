@@ -399,10 +399,10 @@ namespace Hal::Std {
     array->Compress();
   }
 
-  Int_t GetJsRootVer() {
-    Int_t ver = gROOT->GetVersionInt();
-    if (ver < 62400) return 5;
-    return 6;
-  }
 
 }  // namespace Hal::Std
+Int_t Hal::Std::GetJsRootVer() {
+  Int_t ver = gROOT->GetVersionInt();
+  if (ver < 62400) return 5;
+  return 6;
+}

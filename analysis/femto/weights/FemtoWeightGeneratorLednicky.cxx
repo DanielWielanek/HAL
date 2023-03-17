@@ -846,4 +846,36 @@ ClassImp(FemtoWeightGeneratorLednicky)
     if (static_cast<int>(type) <= 200) return kTRUE;
     return kFALSE;
   }
+
+  void FemtoWeightGeneratorLednicky::RawCalc(FemtoPair * pair) {
+    double p1[] = {pair->TruePx1(), pair->TruePy1(), pair->TruePz1()};
+    // p=(track2->GetTrueMomentum());
+    double p2[] = {pair->TruePx2(), pair->TruePy2(), pair->TruePz2()};
+    if ((p1[0] == p2[0]) && (p1[1] == p2[1]) && (p1[2] == p2[2])) {
+      fWeightDen = 0.;
+      return;
+    }
+
+    double x1[] = {pair->GetX1(), pair->GetY1(), pair->GetZ1(), pair->GetT1()};
+    // tPoint=(track2->GetEmissionPoint());
+    double x2[] = {pair->GetX2(), pair->GetY2(), pair->GetZ2(), pair->GetT2()};
+    if ((x1[0] == x2[0]) && (x1[1] == x2[1]) && (x1[2] == x2[2]) && (x1[3] == x2[3])) {
+      fWeightDen = 0.;
+      return;
+    }
+    if (fSwap) {
+      fsimomentum(*p2, *p1);
+      fsiposition(*x2, *x1);
+    } else {
+      fsiposition(*x1, *x2);
+      fsimomentum(*p1, *p2);
+    }
+    FsiSetLL();
+#ifndef OLD_LEDNICKY
+    FsiInit();
+#endif
+    ltran12();
+    fsiw(1, fWeif, fWei, fWein);
+  }
+
 }  // namespace Hal

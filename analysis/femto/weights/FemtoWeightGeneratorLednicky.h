@@ -160,6 +160,11 @@ namespace Hal {
       fIch = c;
       fIsi = s;
     };
+    /**
+     * only for debugging
+     * @param pair
+     */
+    void RawCalc(FemtoPair* pair);
 
   public:
     /**

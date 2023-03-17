@@ -22,3 +22,8 @@ CMAKE_CXX_STANDARD - set cmake standard  by hand (default is 17) - note: this st
 
 ROOT that you have on compuer
 JSROOT_DIR - path to custom JavaScript Root
+
+
+* Page @subpage femto_analysis
+* Page @subpage subpage_2
+* Page @subpage subpage_3

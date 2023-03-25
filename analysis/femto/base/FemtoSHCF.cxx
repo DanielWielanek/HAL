@@ -445,7 +445,15 @@ namespace Hal {
     }
     fNum->Add(cf->fNum);
     fDen->Add(cf->fDen);
-    RecalculateCF();
+    for (int i = 0; i < fCovNum.GetSize(); i++) {
+      for (int j = 0; j < fCovNum[0].GetSize(); j++) {
+        for (int k = 0; k < fCovNum[0][0].GetSize(); k++) {
+          fCovNum[i][j][k] = fCovNum[i][j][k] + cf->fCovNum[i][j][k];
+          fCovDen[i][j][k] = fCovDen[i][j][k] + cf->fCovDen[i][j][k];
+        }
+      }
+    }
+    // RecalculateCF(); // DO NOT MERGE !!!
   }
 
   TH1D* FemtoSHCF::GetHisto(int el, int em, Bool_t norm, Option_t* opt) const {
@@ -957,19 +965,14 @@ namespace Hal {
   Array_1<Float_t>* FemtoSHCF::ExportToFlatNum() const {
     Array_1<Float_t>* data = new Array_1<Float_t>(fNum->GetNbinsX() * fMaxJM * 2);
     Int_t bin              = 0;
-    for (int l = 0; l < GetL(); l++) {
-      for (int m = -l; l <= m; m++) {
-        TH1D* h = GetCFRe(l, m);
-        for (int i = 1; i <= h->GetNbinsX(); i++) {
-          (*data)[bin++] = h->GetBinContent(i);
-        }
-      }
-    }
-    for (int l = 0; l < GetL(); l++) {
-      for (int m = -l; l <= m; m++) {
-        TH1D* h = GetCFIm(l, m);
-        for (int i = 1; i <= h->GetNbinsX(); i++) {
-          (*data)[bin++] = h->GetBinContent(i);
+    Int_t nbins            = GetNum()->GetNbinsX();
+    for (int ibin = 1; ibin <= nbins; ibin++) {
+      for (int l = 0; l <= GetL(); l++) {
+        for (int m = -l; m <= l; m++) {
+          TH1D* h        = GetCFRe(l, m);
+          (*data)[bin++] = h->GetBinContent(ibin);
+          h              = GetCFIm(l, m);
+          (*data)[bin++] = h->GetBinContent(ibin);
         }
       }
     }

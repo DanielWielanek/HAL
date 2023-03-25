@@ -147,8 +147,15 @@ namespace Hal {
     file->Close();
   }
 
-  void CorrFitDumpedPairAna::RootExportSH(FemtoSHCF* /*cf*/, Int_t /*step*/) {
-    // TODO
+  void CorrFitDumpedPairAna::RootExportSH(FemtoSHCF* cf, Int_t step) {
+    cf->RecalculateCF();
+    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", fJobId * fMultiplyJobs + step), "recreate");
+    Array_1<Float_t>* Data = cf->ExportToFlatNum();
+    TTree* tree            = new TTree("map", "map");
+    tree->Branch("data", &Data);
+    tree->Fill();
+    tree->Write();
+    file->Close();
   }
 
   Bool_t CorrFitDumpedPairAna::ConfigureInput() {

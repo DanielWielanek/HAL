@@ -290,12 +290,17 @@ namespace Hal {
     for (int i = 0; i < GetParametersNo(); i++)
       fTempParamsEval[i] = GetParameter(i);
     RecalculateFunction();
+
     TVirtualPad* pad = gPad;
-    if (fDrawOptions.DrawCf()) ((FemtoSHCF*) fCF)->Draw("short");
+    if (fDrawOptions.DrawCf()){
+        Hal::Cout::DebugInfo(__LINE__);
+        ((FemtoSHCF*) fCF)->Draw("short");
+    }
 
     TVirtualPad* temp_pad = gPad;
     // gPad->Divide(fL* 2 - 1, fL);
     if (!repaint) {
+        std::cout<<"PAINT LOOP "<<L<<" "<<refresh<<std::endl;
       for (int l = 0; l < L; l++) {
         for (int m = -l; m <= l; m++) {
           if (m < 0) continue;

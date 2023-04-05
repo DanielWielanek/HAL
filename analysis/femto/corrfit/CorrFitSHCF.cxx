@@ -82,7 +82,7 @@ namespace Hal {
       GetMask()->ApplyThreshold(*fNumeratorHistogram, fThreshold);
     }
     GetMask()->Init();
-    fMaxJM                   = fMask->GetActiveBins();
+    fActiveBins                   = fMask->GetActiveBins();
     Double_t free_parameters = 0;
     for (int i = 0; i < GetParametersNo(); i++) {
       if (!fParameters[i].IsFixed()) free_parameters++;
@@ -321,7 +321,7 @@ namespace Hal {
       }
     }
     UpdateLegend();
-    if (fTempPad == nullptr) {
+    if (fTempPad == nullptr&&fDrawOptions.DrawLegend()) {
       TCanvas* c = new TCanvas();
       c->cd();
       fTempPad = gPad;
@@ -335,7 +335,6 @@ namespace Hal {
       fLegend->Draw();
       temp_pad->cd();
     }
-
     if (refresh) {
       for (auto i : fDrawFunc) {
         i.second->Modified(kTRUE);
@@ -360,6 +359,7 @@ namespace Hal {
      * prepare some basic variables
      */
     fLmVals.Resize(L);
+    fBins = GetSH()->GetNum()->GetNbinsX();
     fMaxJM = (GetSH()->GetL() + 1) * (GetSH()->GetL() + 1);
     if (fYlmBuffer) delete[] fYlmBuffer;
     fYlmBuffer = new std::complex<double>[fMaxJM];
@@ -370,12 +370,12 @@ namespace Hal {
     fCFHistogramsRe.clear();
     fCFHistogramsRe.resize(fMaxJM);
     fCFHistogramsIm.resize(fMaxJM);
-    fCalculatedRe.MakeBigger(fMaxJM, fBins, 3);
-    fCalculatedIm.MakeBigger(fMaxJM, fBins, 3);
+    fCalculatedRe.MakeBigger(fMaxJM, fBins+2, 3);
+    fCalculatedIm.MakeBigger(fMaxJM, fBins+2, 3);
     fCalculatedFastRe.MakeBigger(fMaxJM, fBins);
     fCalculatedFastIm.MakeBigger(fMaxJM, fBins);
-    fCfErrorsIm.MakeBigger(fMaxJM, fBins);
-    fCfErrorsRe.MakeBigger(fMaxJM, fBins);
+    fCfErrorsIm.MakeBigger(fMaxJM, fBins+2);
+    fCfErrorsRe.MakeBigger(fMaxJM, fBins+2);
     if (fCorrelationFunctionHistogram) delete fCorrelationFunctionHistogram;
     fDenominatorHistogram         = GetSH()->GetDen();
     fNumeratorHistogram           = GetSH()->GetNum();
@@ -383,7 +383,6 @@ namespace Hal {
     fCorrelationFunctionHistogram->SetDirectory(0);
     fKinematics = GetSH()->GetFrame();
     fCovCF      = GetSH()->GetCovCF();
-
     for (int i = 0; i < fMaxJM; i++) {
       fCFHistogramsRe[i] = (GetSH()->GetCFRe(fLmVals.GetEls(i), fLmVals.GetEms(i)));
       fCFHistogramsIm[i] = (GetSH()->GetCFIm(fLmVals.GetEls(i), fLmVals.GetEms(i)));

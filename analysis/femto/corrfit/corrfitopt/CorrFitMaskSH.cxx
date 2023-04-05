@@ -12,6 +12,7 @@
 #include "FemtoSHCF.h"
 #include "StdHist.h"
 
+#include <iostream>
 #include <TH1.h>
 
 namespace Hal {
@@ -21,11 +22,11 @@ namespace Hal {
     fMax     = max;
     int size = (maxL + 1) * (maxL + 1);
     fRawMaskRe.resize(size);
+    fRawMaskIm.resize(size);
     fActiveReal.resize(size);
     fActiveImag.resize(size);
     for (auto& i : fRawMaskRe)
       i.resize(bins + 2);
-    fRawMaskIm.resize(size * 2);
     for (auto& i : fRawMaskIm)
       i.resize(bins + 2);
   }
@@ -90,12 +91,11 @@ namespace Hal {
     for (auto& bin : fActiveReal) {
       bin = 0;  // reset for l=0 and imag
     }
-
     for (unsigned int i = 0; i < fRawMaskRe.size(); i++) {
       fActiveImag[i] = 0;
       fActiveReal[i] = 0;
       int count      = -1;
-      for (unsigned int j = 1; i < fRawMaskRe[i].size() - 1; j++) {
+      for (unsigned int j = 1; j < fRawMaskRe[i].size() - 1; j++) {
         ++count;
         if (fRawMaskRe[i][j]) {
           fActiveBins++;
@@ -103,7 +103,7 @@ namespace Hal {
         }
       }
       count = -1;
-      for (unsigned int j = 1; i < fRawMaskIm[i].size() - 1; j++) {
+      for (unsigned int j = 1; j < fRawMaskIm[i].size() - 1; j++) {
         ++count;
         if (fRawMaskIm[i][j]) {
           fActiveBins++;

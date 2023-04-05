@@ -39,7 +39,7 @@ namespace Hal {
     std::vector<Double_t> fFactorials;
     FemtoYlmIndexes fLmVals;
     FemtoYlmMath fLmMath;
-    void GetMtilde(std::complex<double>* aMat, double* aMTilde);
+    void GetMtilde(std::complex<double>* aMat, double* aMTilde)const;
     void InvertYlmIndependentMatrix(double* inmat, double* outmat) const;
     void UnPackYlmMatrixIndependentOnly(double* inmat, double* outmat, int insize) const;
     void GetIndependentLM(int ibin, int& el, int& em, int& im) const;

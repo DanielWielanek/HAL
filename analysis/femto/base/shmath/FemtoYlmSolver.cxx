@@ -26,7 +26,7 @@ namespace Hal {
 
   FemtoYlmSolver::~FemtoYlmSolver() {}
 
-  void FemtoYlmSolver::GetMtilde(std::complex<double>* aMat, double* aMTilde) {
+  void FemtoYlmSolver::GetMtilde(std::complex<double>* aMat, double* aMTilde) const{
     // Create the Mtilde for a given q bin
     double lzero, mzero;
     double lprim, mprim;
@@ -322,7 +322,8 @@ namespace Hal {
           b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
           c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
           d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
-          std::cout << ">" << a << " " << b << " " << c << " " << d << " " << fNumEnt << std::endl;
+          if(fDebug)
+          std::cout << "COV>" << a << " " << b << " " << c << " " << d << " " << fNumEnt << std::endl;
 
           fSlice.fCovNum[ilmzero2][ilmprim2] /= fNumEnt;
           fSlice.fCovNum[ilmzero2][ilmprim2 + 1] /= fNumEnt;
@@ -333,7 +334,8 @@ namespace Hal {
           b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
           c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
           d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
-          std::cout << "->" << a << " " << b << " " << c << " " << d << std::endl;
+          if(fDebug)
+          std::cout << "COV/NumEnt->" << a << " " << b << " " << c << " " << d << std::endl;
 
 
           fSlice.fCovNum[ilmzero2][ilmprim2] -= real(tTq0[ilmzero]) * real(tTq0[ilmprim]);
@@ -344,7 +346,8 @@ namespace Hal {
           b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
           c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
           d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
-          std::cout << "-->" << a << " " << b << " " << c << " " << d << std::endl;
+          if(fDebug)
+          std::cout << "CoV = CoV-Tq-->" << a << " " << b << " " << c << " " << d << std::endl;
           fSlice.fCovNum[ilmzero2][ilmprim2] /= ((fNumEnt) -1);
           fSlice.fCovNum[ilmzero2][ilmprim2 + 1] /= ((fNumEnt) -1);
           fSlice.fCovNum[ilmzero2 + 1][ilmprim2] /= ((fNumEnt) -1);
@@ -353,7 +356,8 @@ namespace Hal {
           b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
           c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
           d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
-          std::cout << "--->" << a << " " << b << " " << c << " " << d << std::endl;
+          if(fDebug)
+          std::cout << "CoV= CoV/(NumEnt-1)--->" << a << " " << b << " " << c << " " << d << std::endl;
         }
       }
     }
@@ -801,7 +805,7 @@ namespace Hal {
     for (int a = 0; a < 2 * fMaxJM; a++) {
       for (int b = 0; b < 2 * fMaxJM; b++) {
         fCF->fCovCf[bin - 1][a][b]  = fSlice.fCovCF[a][b];
-        fCF->fCovNum[bin - 1][a][b] = fSlice.fCovNum[a][b];
+        //fCF->fCovNum[bin - 1][a][b] = fSlice.fCovNum[a][b]; do not store new cov num, recalculate will get them again
       }
     }
   }

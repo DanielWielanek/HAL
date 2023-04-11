@@ -104,6 +104,7 @@
 #pragma link C++ class Hal::CorrFit3DCFBowlerSinyukov + ;
 #pragma link C++ class Hal::CorrFit3DCFBowlerSinyukovEllipse + ;
 #pragma link C++ class Hal::CorrFit3DCFBowlerSinyukovClassic + ;
+#pragma link C++ class Hal::CorrFitSHCFMultiDim+;
 
 #pragma link C++ class Hal::Femto1DCFAnaMap + ;
 

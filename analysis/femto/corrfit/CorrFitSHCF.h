@@ -38,7 +38,6 @@ namespace Hal {
     static const Int_t fgLambda;
     static const Int_t fgNorm;
     eCalcMode fCalcMode;
-
     Int_t fBins;
     Int_t fBinRange[2];
 
@@ -67,13 +66,18 @@ namespace Hal {
     mutable Array_2<Double_t> fCfErrorsRe;
     mutable Array_2<Double_t> fCfErrorsIm;
 
-    std::vector<std::complex<double>> fYlmValBuffer;
+
 
   protected:
     Int_t fMaxJM;
 
     CorrFitMaskSH* GetMask() const { return (CorrFitMaskSH*) fMask; }
-    mutable std::complex<double>* fYlmBuffer;  //[fMaxJM]
+    inline Int_t GetBin(Double_t q)const{
+        Int_t bin  = (q - fAxisMin) * fAxisStepOver;
+        if(bin>fBins) return fBins;
+        return bin;
+    }
+    mutable std::vector<std::complex<double>> fYlmBuffer;
     FemtoYlmIndexes fLmVals;
     inline FemtoSHCF* GetSH() const { return (FemtoSHCF*) (fCF); }
     std::vector<Int_t> GetIndexesForCalc(eCalcMode c) const;

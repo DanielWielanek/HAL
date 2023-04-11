@@ -37,9 +37,15 @@ namespace Hal {
   const Int_t CorrFitSHCF::fgNorm   = 4;
 
   Double_t CorrFitSHCF::GetCFValRe(Double_t q, Int_t elm) const {
-    Int_t bin = (q - fAxisMin) * fAxisStepOver;
-    if (bin >= fBins) return 1;
-    return fCalculatedRe[elm][bin][0] + fCalculatedRe[elm][bin][1] * q + fCalculatedRe[elm][bin][2] * q * q;
+    Int_t bin = (q - fAxisMin) * fAxisStepOver+1;//bin w notacji zerowej ->1
+    if (bin >= fBins){
+        if(elm==0)
+        return 1;
+        else
+            return 0;
+    }
+    Double_t res=  fCalculatedRe[elm][bin][0] + fCalculatedRe[elm][bin][1] * q + fCalculatedRe[elm][bin][2] * q * q;
+    return res;
   }
 
   Double_t CorrFitSHCF::GetCFValIm(Double_t q, Int_t elm) const {
@@ -56,8 +62,7 @@ namespace Hal {
     fLmVals(FemtoYlmIndexes(0)),
     fAxisMin(0),
     fAxisStepOver(0),
-    fCovCF(nullptr),
-    fYlmBuffer(nullptr) {
+    fCovCF(nullptr){
     SetParameterName(0, "R_{out}");
     SetParameterName(1, "R_{side}");
     SetParameterName(2, "R_{long}");
@@ -293,23 +298,22 @@ namespace Hal {
 
     TVirtualPad* pad = gPad;
     if (fDrawOptions.DrawCf()){
-        Hal::Cout::DebugInfo(__LINE__);
         ((FemtoSHCF*) fCF)->Draw("short");
     }
 
     TVirtualPad* temp_pad = gPad;
     // gPad->Divide(fL* 2 - 1, fL);
     if (!repaint) {
-        std::cout<<"PAINT LOOP "<<L<<" "<<refresh<<std::endl;
       for (int l = 0; l < L; l++) {
         for (int m = -l; m <= l; m++) {
           if (m < 0) continue;
           temp_pad->cd(fLmVals.GetPadId(l, m));
           TF1* f_re = GetFittingFunction(l, m, kTRUE);
-          f_re->SetLineColor(kBlue);
-          TF1* f_im = GetFittingFunction(l, m, kTRUE);
-          f_im->SetLineColor(kRed);
+          f_re->SetLineColor(GetLineColor());
+          TF1* f_im = GetFittingFunction(l, m, kFALSE);
+          f_im->SetLineColor(Hal::Std::GetAntiColor(GetLineColor()));
           f_re->Draw("SAME");
+          f_im->Draw("SAME");
           std::pair<TF1*, TVirtualPad*> pair_re, pair_im;
           pair_re.first  = f_re;
           pair_re.second = gPad;
@@ -336,7 +340,7 @@ namespace Hal {
       temp_pad->cd();
     }
     if (refresh) {
-      for (auto i : fDrawFunc) {
+        for (auto i : fDrawFunc) {
         i.second->Modified(kTRUE);
         i.second->Update();
       }
@@ -361,8 +365,9 @@ namespace Hal {
     fLmVals.Resize(L);
     fBins = GetSH()->GetNum()->GetNbinsX();
     fMaxJM = (GetSH()->GetL() + 1) * (GetSH()->GetL() + 1);
-    if (fYlmBuffer) delete[] fYlmBuffer;
-    fYlmBuffer = new std::complex<double>[fMaxJM];
+ //   if (fYlmBuffer) delete[] fYlmBuffer;
+ //   fYlmBuffer = new std::complex<double>[fMaxJM];
+    fYlmBuffer.resize(fMaxJM);
     /**
      * prepare data
      */
@@ -401,7 +406,7 @@ namespace Hal {
     fBins         = nbins;
     fAxisMin      = min;
     fAxisStepOver = (max - min) / fBins;
-    fDrawFunc.resize(fMaxJM);
+    fAxisStepOver = 1.0/fAxisStepOver;
   }
 
   Double_t CorrFitSHCF::CalculateCF(const Double_t* x, const Double_t* params) const { return 0; }
@@ -429,33 +434,38 @@ namespace Hal {
     fCurrent.resize(fMaxJM);
     Double_t a, b, c;
     std::vector<Int_t> indexes = GetIndexesForCalc(fCalcMode);
-    for (int i = 1; i <= fNumeratorHistogram->GetNbinsX(); i++) {
-      Double_t q      = fNumeratorHistogram->GetXaxis()->GetBinCenter(i);
+    for (int iBin = 1; iBin <= fNumeratorHistogram->GetNbinsX(); iBin++) {
+      Double_t q      = fNumeratorHistogram->GetXaxis()->GetBinCenter(iBin);
       Double_t q_low  = q - half;
       Double_t q_mid  = q;
       Double_t q_high = q + half;
-      if (i != 1) {  // use prev bin
+      if (iBin != 1) {  // use prev bin
         fPrev = fNext;
       } else {
         CalculateCF(&q_low, fTempParamsEval);
-        fPrev = fYlmValBuffer;
+        fPrev = fYlmBuffer;
       }
       CalculateCF(&q_mid, fTempParamsEval);
-      fCurrent = fYlmValBuffer;
+      fCurrent = fYlmBuffer;
       CalculateCF(&q_high, fTempParamsEval);
-      fNext = fYlmValBuffer;
+      fNext = fYlmBuffer;
+
 
       for (auto j : indexes) {
-        fCalculatedFastRe[j][i] = fCurrent[j].real();
-        fCalculatedFastIm[j][i] = fCurrent[j].imag();
+        fCalculatedFastRe[j][iBin] = fCurrent[j].real();
+        fCalculatedFastIm[j][iBin] = fCurrent[j].imag();
+        fCalculatedRe[j][iBin][0]=fCurrent[j].real();
+        fCalculatedRe[j][iBin][1]=0;
+        fCalculatedRe[j][iBin][2]=0;
+
         Hal::Std::FitParabola(q_low, q_mid, q_high, fPrev[j].real(), fCurrent[j].real(), fNext[j].real(), a, b, c);
-        fCalculatedRe[j][i][0] = a;
-        fCalculatedRe[j][i][1] = b;
-        fCalculatedRe[j][i][2] = c;
+        fCalculatedRe[j][iBin][2] = a;
+        fCalculatedRe[j][iBin][1] = b;
+        fCalculatedRe[j][iBin][0] = c;
         Hal::Std::FitParabola(q_low, q_mid, q_high, fPrev[j].imag(), fCurrent[j].imag(), fNext[j].imag(), a, b, c);
-        fCalculatedIm[j][i][0] = a;
-        fCalculatedIm[j][i][1] = b;
-        fCalculatedIm[j][i][2] = c;
+        fCalculatedIm[j][iBin][2] = a;
+        fCalculatedIm[j][iBin][1] = b;
+        fCalculatedIm[j][iBin][0] = c;
       }
     }
   }
@@ -467,22 +477,20 @@ namespace Hal {
       for (auto i : fCFHistogramsRe)
         delete i;
     }
-    if (fYlmBuffer) delete[] fYlmBuffer;
+ //   if (fYlmBuffer) delete[] fYlmBuffer;
     fCovCF = nullptr;
   }
 
   Double_t CorrFitSHCF::GetDrawableIm(Double_t* x, Double_t* params) const {
-    Int_t bin  = (x[0] - fAxisMin) * fAxisStepOver;
+    Int_t bin  = GetBin(x[0]);
     Double_t q = x[0];
     Int_t elm  = params[GetParametersNo()];
-    if (bin >= fBins) return 1;
     return fCalculatedIm[elm][bin][0] + fCalculatedIm[elm][bin][1] * q + fCalculatedIm[elm][bin][2] * q * q;
   }
 
   Double_t CorrFitSHCF::GetDrawableRe(Double_t* x, Double_t* params) const {
-    Int_t bin  = (x[0] - fAxisMin) * fAxisStepOver;
+    Int_t bin  =GetBin(x[0]);
     Double_t q = x[0];
-    if (bin >= fBins) return 1;
     Int_t elm = params[GetParametersNo()];
     return fCalculatedRe[elm][bin][0] + fCalculatedRe[elm][bin][1] * q + fCalculatedRe[elm][bin][2] * q * q;
   }

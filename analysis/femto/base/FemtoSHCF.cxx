@@ -1001,6 +1001,6 @@ namespace Hal {
   }
 
   void FemtoSHCF::FitDummy(CorrFitSHCF* fit) {
-    // fit->FitDummy(this);
+     fit->FitDummy(this);
   }
 }  // namespace Hal

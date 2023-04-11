@@ -94,6 +94,7 @@ corrfit/mapgenerator_multidim/CorrFitParamsSetup.cxx
 corrfit/mapgenerator_multidim/CorrFitVerticalSlices.cxx
 corrfit/mapgenerator_multidim/CorrFit3DCFMultiDim.cxx
 corrfit/mapgenerator_multidim/FemtoDumpPairAnaMC.cxx
+corrfit/mapgenerator_multidim/CorrFitSHCFMultiDim.cxx
 
 corrfit/fittingfunctions/CorrFit1DCFSquare.cxx
 corrfit/fittingfunctions/CorrFit1DCFLorentz.cxx
@@ -204,3 +205,22 @@ Set(Exe_Source
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
 
+
+Set(Exe_Names
+    hal-test)
+Set(Exe_Source
+    corrfit/mapgenerator_multidim/test.cpp
+    )
+  List(LENGTH Exe_Names _length)
+  Math(EXPR _length ${_length}-1)
+  ForEach(_file RANGE 0 ${_length})
+    List(GET Exe_Names ${_file} _name)
+    List(GET Exe_Source ${_file} _src)
+    Set(EXE_NAME ${_name})
+    Set(SRCS ${_src})
+    Set(DEPENDENCIES gsl gslcblas HalFeatures Tree HalAna HalFemto )
+    if(NOT DEFINED DISABLE_SQLITE)
+      #  Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
+    endif()
+    GENERATE_EXECUTABLE()
+  EndForEach(_file RANGE 0 ${_length})

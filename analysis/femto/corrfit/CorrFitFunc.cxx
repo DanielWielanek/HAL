@@ -97,6 +97,7 @@ namespace Hal {
     }
     Paint(kFALSE, kTRUE);
   };
+
   void CorrFitFunc::SetDrawOption(const CorrFitDrawOptions& options) {
     if (fDrawOptionSet || fDrawFunc.size() > 0) {
       std::cout << "Canot set CorrFitDrawOptions when function was set or draw options were set" << std::endl;

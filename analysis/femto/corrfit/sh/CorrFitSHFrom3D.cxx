@@ -81,7 +81,7 @@ namespace Hal {
     }
     // x[0] - q inv , params - parameters
     for (int i = 0; i < fMaxJM; i++) {
-      fYlmBuffer[i].real(Integral(x[0], i));
+        fYlmBuffer[i].real(Integral(x[0], i));
     }
     return 0;
   }

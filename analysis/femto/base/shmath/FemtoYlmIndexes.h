@@ -31,9 +31,9 @@ namespace Hal {
   public:
     /**
      * default construtor
-     * @param L max L
+     * @param L maxL
      */
-    FemtoYlmIndexes(Int_t L = 5);
+    FemtoYlmIndexes(Int_t maxL = 5);
     FemtoYlmIndexes(const FemtoYlmIndexes& other);
     /**
      * assignement operator
@@ -42,10 +42,10 @@ namespace Hal {
      */
     FemtoYlmIndexes& operator=(const FemtoYlmIndexes& other);
     /**
-     * changes L to newL
-     * @param newL
+     * changes L-max to new lmax
+     * @param newMaxL
      */
-    void Resize(Int_t newL);
+    void Resize(Int_t newMaxL);
     /**
      *
      * @param i
@@ -75,6 +75,11 @@ namespace Hal {
      * @return maxL
      */
     inline Int_t GetMaxL() const { return fL; }
+    /**
+     *
+     * @return L
+     */
+    inline Int_t GetL()const{return GetMaxL()+1;}
     /**
      *
      * @return (L+1)^2

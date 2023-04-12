@@ -29,9 +29,9 @@ namespace Hal {
     //fBins;  // liczba binow
     int BinX = fNumeratorHistogram->GetXaxis()->FindBin(x[0]);
     // int bins = fNumeratorHistogram->GetNbinsX();
-    const Int_t L = fLmVals.GetMaxL();
+    const Int_t maxL = fLmVals.GetMaxL();
     if(BinX>fNumeratorHistogram->GetNbinsX()){
-        for (int l = 0; l <= L; l++) {
+        for (int l = 0; l <= maxL; l++) {
           for (int m = -l; m <= l; m++) {
             int index = fLmVals.GetIndex(l, m);
             fYlmBuffer[index].real(0);
@@ -42,7 +42,7 @@ namespace Hal {
     }
 
     int step = fLmVals.GetMaxJM() * 2 * (BinX - 1);
-    for (int l = 0; l <= L; l++) {
+    for (int l = 0; l <= maxL; l++) {
       for (int m = -l; m <= l; m++) {
         int index = fLmVals.GetIndex(l, m);
         fYlmBuffer[index].real(fData->Get(step++));
@@ -161,7 +161,7 @@ namespace Hal {
     if (!Hal::Std::AreSimilar(testThis, testMap, kFALSE)) {
       Cout::PrintInfo("CorrFitInfo incompatible histograms in CorrFitInfo and FemtoSHCF !", EInfo::kError);
     }
-    if (cf->GetL() != thisCf->GetL()) {
+    if (cf->GetMaxL() != thisCf->GetMaxL()) {
       Cout::PrintInfo("CorrFitInfo incompatible histograms in CorrFitInfo and FemtoSHCF !", EInfo::kError);
     }
     fFunctorXbins = testThis->GetXaxis()->GetNbins();

@@ -265,9 +265,14 @@ namespace Hal {
     Femto::EKinematics GetFrame() const { return fFrame; }
     /**
      *
-     * @return L
+     * @return maximal value of L
      */
-    Int_t GetL() const { return TMath::Sqrt(fMaxJM - 1); };
+    Int_t GetMaxL() const { return TMath::Sqrt(fMaxJM - 1); };
+    /**
+     * return L
+     * @return
+     */
+    Int_t GetL()const{return GetMaxL()+1;};
     void Rebin(Int_t ngroup, Option_t* opt = "");
     Array_1<Float_t>* ExportToFlatNum() const;
     virtual void Add(const Object* pack);

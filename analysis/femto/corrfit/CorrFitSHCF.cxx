@@ -285,12 +285,12 @@ namespace Hal {
   }
 
   void CorrFitSHCF::Paint(Bool_t repaint, Bool_t refresh) {
-    Int_t L = fLmVals.GetMaxL();
+    Int_t maxL = fLmVals.GetMaxL();
     if (repaint)
       if (gPad == nullptr) {
         new TCanvas();
         gPad->Clear();
-        gPad->Divide(L + 1, L + 1);
+        gPad->Divide(maxL + 1, maxL + 1);
       }
     for (int i = 0; i < GetParametersNo(); i++)
       fTempParamsEval[i] = GetParameter(i);
@@ -304,7 +304,7 @@ namespace Hal {
     TVirtualPad* temp_pad = gPad;
     // gPad->Divide(fL* 2 - 1, fL);
     if (!repaint) {
-      for (int l = 0; l < L; l++) {
+      for (int l = 0; l <= maxL; l++) {
         for (int m = -l; m <= l; m++) {
           if (m < 0) continue;
           temp_pad->cd(fLmVals.GetPadId(l, m));
@@ -351,8 +351,8 @@ namespace Hal {
   Double_t CorrFitSHCF::Eval(Double_t /*x*/, Double_t /*y*/, Double_t /*z*/) { return 0; }
 
   void CorrFitSHCF::PrepareRaw() {
-    const Int_t L = GetSH()->GetL();
-    fMaxJM        = (L + 1) * (L + 1);
+    const Int_t maxL = GetSH()->GetMaxL();
+    fMaxJM        = (maxL + 1) * (maxL + 1);
     if (fCFHistogramsIm.size() > 0) {
       for (auto i : fCFHistogramsIm)
         delete i;
@@ -362,9 +362,9 @@ namespace Hal {
     /**
      * prepare some basic variables
      */
-    fLmVals.Resize(L);
+    fLmVals.Resize(maxL);
     fBins = GetSH()->GetNum()->GetNbinsX();
-    fMaxJM = (GetSH()->GetL() + 1) * (GetSH()->GetL() + 1);
+    fMaxJM = (GetSH()->GetMaxL() + 1) * (GetSH()->GetMaxL() + 1);
  //   if (fYlmBuffer) delete[] fYlmBuffer;
  //   fYlmBuffer = new std::complex<double>[fMaxJM];
     fYlmBuffer.resize(fMaxJM);

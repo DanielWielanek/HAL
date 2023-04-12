@@ -32,7 +32,7 @@ namespace Hal {
     Resize(L);
   }
 
-  void FemtoYlmIndexes::Resize(Int_t newL) {
+  void FemtoYlmIndexes::Resize(Int_t newMaxL) {
     if (fEls) {
       delete[] fEls;
       delete[] fEms;
@@ -43,7 +43,7 @@ namespace Hal {
       fElsi = nullptr;
       fEmsi = nullptr;
     }
-    fL = newL;
+    fL = newMaxL;
     if (fL == 0) return;
     if (fL > 6) { Cout::PrintInfo("Creating YLM for L>6!", EInfo::kError); }
     fMaxJM = (fL + 1) * (fL + 1);

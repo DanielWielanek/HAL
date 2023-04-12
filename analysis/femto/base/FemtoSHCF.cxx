@@ -326,15 +326,15 @@ namespace Hal {
 
     TVirtualPad* temp_pad = gPad;
     Int_t padsNo          = Hal::Std::GetListOfSubPads(temp_pad);
-    Int_t req             = (GetL() + 1) * (GetL() + 1);
+    Int_t req             = (GetMaxL() + 1) * (GetMaxL() + 1);
     if (padsNo == req) {
       // do nothing we have enough pads
     } else {
       gPad->Clear();
-      gPad->Divide(GetL() + 1, GetL() + 1);
+      gPad->Divide(GetMaxL() + 1, GetMaxL() + 1);
     }
 
-    for (int l = 0; l <= GetL(); l++) {
+    for (int l = 0; l <= GetMaxL(); l++) {
       for (int m = -l; m <= l; m++) {
         temp_pad->cd(fLmVals.GetPadId(l, m));
         if ((m < 0 && drawNeg) || m >= 0) drawSub(l, m, this, drawImg, drawReal, option);
@@ -479,7 +479,7 @@ namespace Hal {
       return nullptr;
     }
     TString option = opt;
-    if (option.Length() > GetL()) return nullptr;
+    if (option.Length() > GetMaxL()) return nullptr;
     TH1D* cf  = nullptr;
     TH1D* cf2 = nullptr;
     TH1D* cf3 = nullptr;
@@ -760,7 +760,7 @@ namespace Hal {
     }
 
     //=====================================================
-    FemtoYlmSolver solver(GetL(), this);
+    FemtoYlmSolver solver(GetMaxL(), this);
     solver.SetDebugBin(debug);
     solver.SetNormalizationArea(GetNormMin(0), GetNormMax(0));
     solver.Solve(kTRUE);
@@ -865,15 +865,15 @@ namespace Hal {
     HtmlTable table3;
     Bool_t batch = gROOT->IsBatch();
     gROOT->SetBatch(kTRUE);
-    Int_t jmax   = GetL() * 2 + 1;
+    Int_t jmax   = GetMaxL() * 2 + 1;
     Int_t width  = 966 / jmax;
-    Int_t height = 966 / GetL();
+    Int_t height = 966 / GetMaxL();
     if (height > width) height = width;
-    for (int i = 0; i <= GetL(); i++) {
+    for (int i = 0; i <= GetMaxL(); i++) {
       HtmlRow row7("", "dark_blue", "");
 
       int I = i;
-      for (int j = 0; j <= GetL(); j++) {
+      for (int j = 0; j <= GetMaxL(); j++) {
         int J = j - i;
         if (j <= i) I = i;
         TH1D* cfr = GetHisto(I, J, kFALSE, "re");
@@ -967,7 +967,7 @@ namespace Hal {
     Int_t bin              = 0;
     Int_t nbins            = GetNum()->GetNbinsX();
     for (int ibin = 1; ibin <= nbins; ibin++) {
-      for (int l = 0; l <= GetL(); l++) {
+      for (int l = 0; l <= GetMaxL(); l++) {
         for (int m = -l; m <= l; m++) {
           TH1D* h        = GetCFRe(l, m);
           (*data)[bin++] = h->GetBinContent(ibin);

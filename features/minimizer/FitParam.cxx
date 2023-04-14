@@ -28,7 +28,6 @@ namespace Hal {
 
   void FitParam::Init() {
     if (IsDiscrete()) {
-      fValues.clear();
       if (IsFixed()) {
         fNPoint = 1;
         fMin    = fMax;
@@ -39,17 +38,14 @@ namespace Hal {
           exit(0);
         }
         fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
+        if (fDParam == 0) {
+          std::cout << " cannot have dstep = 0" << __FILE__ << " " << __LINE__ << std::endl;
+          exit(0);
+        }
       }
       fMin   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMin, '-');  // npoint -1 because we have n-1 areas than points
       fMax   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMax, '+');
       fStart = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fStart, '=');
-      if (fDParam == 0) {
-        fValues.push_back(fMin);
-      } else {
-        for (double i = fMin; i <= fMax; i += fDParam) {
-          fValues.push_back(i);
-        }
-      }
     }
   }
 
@@ -95,9 +91,27 @@ namespace Hal {
     std::cout << Form("\tNPoints %i  NDx %4.4f", GetNPoints(), GetDParam()) << std::endl;
     std::cout << Form("\tMap Min: %4.4f   Map Max: %4.4f", GetMapMin(), GetMapMax()) << std::endl;
     std::cout << "\tValues ";
-    for (unsigned int i = 0; i < GetValues().size(); i++) {
-      std::cout << GetValue(i) << " ";
+    auto array = GetValuesArray();
+    for (unsigned int i = 0; i < array.size(); i++) {
+      std::cout << array[i] << " ";
     }
     std::cout << std::endl;
   }
+
+  const std::vector<Double_t> FitParam::GetValuesArray() const {
+    std::vector<Double_t> values;
+    if (!IsDiscrete()) {
+      values.push_back(fMin);
+      return values;
+    }
+    if (IsFixed()) {
+      values.push_back(fMin);
+    } else {
+      for (double x = fMin; x <= fMax; x += fDParam) {
+        values.push_back(x);
+      }
+    }
+    return values;
+  }
+
 }  // namespace Hal

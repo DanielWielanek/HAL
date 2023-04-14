@@ -86,7 +86,7 @@ namespace Hal {
     void MinimizeNelderMead();
     void ChangeStateVector(std::vector<Int_t>& vec);
     void EstimateError(Int_t par, Double_t& min, Double_t& quantumMin, Double_t& error);
-    Bool_t LoopOverParameter(Int_t param);
+    Bool_t LoopOverParameter(Int_t param, const std::vector<std::vector<Double_t>>& array);
     Bool_t IsFixed(Int_t i) const;
     Int_t GetNParams() const { return fParameters.size(); };
     Int_t GetNFree() const { return fNonConstMap.size(); };

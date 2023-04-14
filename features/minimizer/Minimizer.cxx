@@ -188,7 +188,7 @@ namespace Hal {
     }
   }
 
-  Bool_t Minimizer::LoopOverParameter(Int_t param) {
+  Bool_t Minimizer::LoopOverParameter(Int_t param, const std::vector<std::vector<Double_t>>& array) {
     /** all parameters set **/
     if ((UInt_t) param == fNonConstMap.size()) {
       Double_t chi = (*fFunc)(fTempParams);
@@ -201,9 +201,9 @@ namespace Hal {
     }
     /** make loop over other parameters **/
     Int_t pairID = fNonConstMap[param];
-    for (unsigned int i = 0; i < fParameters[pairID].GetValues().size(); i++) {
-      fTempParams[pairID] = fParameters[pairID].GetValues()[i];
-      Bool_t val          = LoopOverParameter(param + 1);
+    for (unsigned int i = 0; i < array[pairID].size(); i++) {
+      fTempParams[pairID] = array[pairID][i];
+      Bool_t val          = LoopOverParameter(param + 1, array);
       if (val == kFALSE) return kFALSE;
     }
     return kTRUE;
@@ -542,7 +542,11 @@ namespace Hal {
     // calculate parameters array
     fGlobMin = DBL_MAX;
 
-    LoopOverParameter(0);
+    std::vector<std::vector<Double_t>> array;
+    for (int i = 0; i < GetNParams(); i++) {
+      array.push_back(fParameters[i].GetValuesArray());
+    }
+    LoopOverParameter(0, array);
     for (int i = 0; i < GetNParams(); i++) {
       fTempParams[i] = fParamsMin[i];
       fSmoothFits[i] = fParamsMin[i];
@@ -551,7 +555,6 @@ namespace Hal {
     EstimateErrors();
     FinishFit();
   }
-
 
   void Minimizer::MinimizeNelderMead() {
     InitFit();
@@ -641,6 +644,7 @@ namespace Hal {
     EstimateErrors();
     FinishFit();
   }
+
   void Minimizer::ChangeStateVector(std::vector<Int_t>& vec) {
     std::vector<Int_t> temp = vec;
     for (unsigned int i = 0; i < vec.size(); i++) {

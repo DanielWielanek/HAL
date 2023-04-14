@@ -26,7 +26,6 @@ namespace Hal {
     Double_t fStart;
     Double_t fFitted;
     Double_t fError;
-    std::vector<Double_t> fValues;
     TString fName;
 
   public:
@@ -56,16 +55,14 @@ namespace Hal {
     Double_t GetMapMin() const { return fMapMin; }
     Double_t GetMax() const { return fMax; }
     Double_t GetMin() const { return fMin; }
-    Double_t GetValue(Int_t i) const { return fValues[i]; };
     Double_t GetStartVal() const { return fStart; };
     Double_t GetFittedValue() const { return fFitted; };
     Double_t GetError() const { return fError; };
 
     TString GetParName() const { return fName; }
 
-    const std::vector<Double_t>& GetValues() const { return fValues; }
+    const std::vector<Double_t> GetValuesArray() const;
     virtual void Print(Option_t* option = "") const;
-    void SetValues(const std::vector<Double_t>& values) { fValues = values; }
     ClassDef(FitParam, 1)
   };
 }  // namespace Hal

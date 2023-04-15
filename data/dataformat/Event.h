@@ -325,7 +325,7 @@ namespace Hal {
      * @return
      */
     virtual Package* Report() const;
-    ClassDef(Event, 1)
+    ClassDef(Event, 2)
   };
 }  // namespace Hal
 #endif /* HALEVENT_H_ */

@@ -65,6 +65,9 @@ namespace Hal {
     std::vector<FitParam> fParameters;  //!
     std::vector<Double_t> fParamsMin;   // found minimum
     std::vector<Int_t> fNonConstMap;
+    std::vector<std::vector<Double_t>> fAllowedValues;
+    std::vector<Int_t> fStateVector;
+    std::vector<Int_t> fStateVectorMin;
 
     ROOT::Math::IMultiGenFunction* fFunc;
     eMinimizeType fMinimizeType;
@@ -85,9 +88,11 @@ namespace Hal {
     void MinimizeScan();
     void MinimizeNelderMead();
     void ChangeStateVector(std::vector<Int_t>& vec);
+    void SetTempParams();
     void EstimateError(Int_t par, Double_t& min, Double_t& quantumMin, Double_t& error);
-    Bool_t LoopOverParameter(Int_t param, const std::vector<std::vector<Double_t>>& array);
+    Bool_t LoopOverParameter(Int_t param);
     Bool_t IsFixed(Int_t i) const;
+    Double_t GetChi2();
     Int_t GetNParams() const { return fParameters.size(); };
     Int_t GetNFree() const { return fNonConstMap.size(); };
     Int_t GetNFixed() const { return fParameters.size() - fNonConstMap.size(); };

@@ -72,6 +72,13 @@ namespace Hal {
 
   void Minimizer::InitFit() {
     fNonConstMap.clear();
+    fAllowedValues.clear();
+    fStateVector.resize(GetNParams());
+    fStateVectorMin.resize(GetNParams());
+    for (auto& x : fStateVector)
+      x = 0;
+    for (auto& x : fStateVectorMin)
+      x = 0;
     fNCalls   = 0;
     fFreePars = 0;
     for (unsigned int i = 0; i < fParameters.size(); i++) {
@@ -133,6 +140,9 @@ namespace Hal {
       if (fParameters[i].IsFixed()) { fTempParams[i] = fParameters[i].GetStartVal(); }
     }
     fGlobMin = DBL_MAX;
+    for (int i = 0; i < GetNParams(); i++) {
+      fAllowedValues.push_back(fParameters[i].GetValuesArray());
+    }
   }
 
   void Minimizer::Reset() { fParameters.clear(); }
@@ -143,7 +153,7 @@ namespace Hal {
 
   bool Minimizer::Minimize() {
     if (GetNParams() == 0) return false;
-    fGlobMin = DBL_MAX;
+    InitFit();
     switch (fMinimizeType) {
       case eMinimizeType::kAnt: {
         /*    LoopOverParameter(0);
@@ -154,14 +164,14 @@ namespace Hal {
             std::cout << "*************************" << std::endl;
             EstimateErrors();
             FinishFit();*/
+        MinimizeAnt();
       } break;
       case eMinimizeType::kScan: {
-        Cout::DebugInfo(0);
-        MinimizeScan();
+        MinimizeAnt();
+        // MinimizeScan();
       } break;
     }
-
-
+    FinishFit();
     return true;
   }
 
@@ -185,22 +195,21 @@ namespace Hal {
     }
   }
 
-  Bool_t Minimizer::LoopOverParameter(Int_t param, const std::vector<std::vector<Double_t>>& array) {
+  Bool_t Minimizer::LoopOverParameter(Int_t param) {
     /** all parameters set **/
     if ((UInt_t) param == fNonConstMap.size()) {
-      Double_t chi = (*fFunc)(fTempParams);
+      Double_t chi = GetChi2();
       if (chi < fGlobMin) {
-        fGlobMin = chi;
-        for (unsigned int i = 0; i < fParameters.size(); i++)
-          fParamsMin[i] = fTempParams[i];
+        fGlobMin        = chi;
+        fStateVectorMin = fStateVector;
       }
       return kTRUE;
     }
     /** make loop over other parameters **/
     Int_t pairID = fNonConstMap[param];
-    for (unsigned int i = 0; i < array[pairID].size(); i++) {
-      fTempParams[pairID] = array[pairID][i];
-      Bool_t val          = LoopOverParameter(param + 1, array);
+    for (unsigned int i = 0; i < fAllowedValues[pairID].size(); i++) {
+      fStateVector[pairID] = i;
+      Bool_t val           = LoopOverParameter(param + 1);
       if (val == kFALSE) return kFALSE;
     }
     return kTRUE;
@@ -298,6 +307,10 @@ namespace Hal {
   }
 
   void Minimizer::FinishFit() {
+    for (unsigned int i = 0; i < GetNParams(); i++) {
+      fParamsMin[i] = fAllowedValues[i][fStateVectorMin[i]];
+    }
+    EstimateErrors();
     delete[] fTempParams;
     fTempParams = nullptr;
   }
@@ -312,245 +325,95 @@ namespace Hal {
   }
 
   void Minimizer::MinimizeAnt() {
-    InitFit();
-    std::vector<Int_t> MinimizingVector;
-    MinimizingVector.resize(GetNFree() * 2);
-    Int_t half_vector = MinimizingVector.size() / 2;
-    for (int i = 0; i < half_vector; i++) {
-      MinimizingVector[i] = -fNonConstMap[i] - 1;
+    std::vector<std::vector<int>> directionIndex;
+    for (int i = 0; i < GetNFree(); i++) {
+      std::vector<int> poz;
+      for (int j = 0; j < GetNFree(); j++) {
+        poz.push_back(0);
+      }
+      poz[i] = 1;
+      directionIndex.push_back(poz);
     }
-    for (int i = 0; i < half_vector; i++) {
-      MinimizingVector[i + half_vector] = fNonConstMap[i] + 1;
+    for (int i = 0; i < GetNFree(); i++) {
+      std::vector<int> poz;
+      for (int j = 0; j < GetNFree(); j++) {
+        poz.push_back(0);
+      }
+      poz[i] = -1;
+      directionIndex.push_back(poz);
     }
+    int direction = 0;
+    int freePars  = GetNFree();
+    std::vector<int> tmpVec(freePars, 0);
+    Bool_t cont = kTRUE;
 
+    auto applyVector = [&]() {
+      for (unsigned int p = 0; p < freePars; p++) {
+        int constToPar = fNonConstMap[p];
+        tmpVec[constToPar] += directionIndex[direction][p];
+        if (tmpVec[constToPar] < 0 || tmpVec[constToPar] > fParameters[constToPar].GetNPoints()) { return kFALSE; }
+      }
+      /*
+      std::cout << "VEC ";
+      for (auto i : directionIndex[direction]) {
+        std::cout << i << " ";
+      }
+      std::cout << std::endl;
+      std::cout << "STATE ";
+      for (auto i : fStateVector) {
+        std::cout << i << " ";
+      }
+      std::cout << std::endl;*/
+      for (unsigned int p = 0; p < freePars; p++) {
+        fStateVector[fNonConstMap[p]] = tmpVec[p];
+      }
 
-    Bool_t not_found = kTRUE;
-
-
-    Int_t bad_direction = 0;
-    std::ofstream debug;
-    debug.open("debug.txt");
-    Int_t stepNo = 0;
-
-    // init first param
-    Int_t vectorF        = MinimizingVector[MinimizingVector.size() - 1];
-    Int_t par_to_changeF = TMath::Abs(vectorF);
-    Int_t par_noF        = par_to_changeF - 1;
-    fTempParams[par_noF] = fTempParams[par_noF] - TMath::Sign(1, vectorF) * fParameters[par_noF].GetDParam();
-
-    std::vector<Double_t> paramsMin;
-    Int_t similarMin = 0;
-    fGlobMin         = DBL_MAX;
-    do {
+      return kTRUE;
+    };
+    double old_chi = 1E+9;
+    int bad        = 0;
+    while (cont) {
+      cont = applyVector();
+      if (cont) {
+        double chi = GetChi2();
+        if (chi > old_chi) {  // larger chi, change direction
+          direction = (direction + 1) % freePars;
+          bad++;
+        }
+        if (chi < fGlobMin) {  // smaller chi
+          fGlobMin        = chi;
+          fStateVectorMin = fStateVector;
+          bad             = 0;
+          old_chi         = chi;
+        }
+      } else {  // out of bounds, whatever increase bad attemps counter
+        direction = (direction + 1) % freePars;
+        bad++;
+      }
       fNCalls++;
-
-      if (similarMin == GetNFree() + 1) {
-        if (fTrace) std::cout << "FOUND SIMILAR minima" << std::endl;
+      if (bad == freePars) {  // to many bad attempts
+        // std::cout << "Cannot find better minimum" << std::endl;
         break;
       }
-      if (stepNo > 1000) break;
-      // we tried all direction time to give up
-      if (bad_direction == GetNFree() * 2) break;
-      // find new direction
-      Int_t vector        = MinimizingVector[MinimizingVector.size() - 1];
-      Int_t par_to_change = TMath::Abs(vector);
-      Int_t par_no        = fNonConstMap[par_to_change - 1];
-      std::cout << "\tstate vec " << vector << " " << par_no << " " << fParameters[par_no].GetDParam() << std::endl;
-      fTempParams[par_no] = fTempParams[par_no] + TMath::Sign(1, vector) * fParameters[par_no].GetDParam();
-
-
-      std::cout << "par\t";
-      for (unsigned int i = 0; i < fParameters.size(); i++) {
-        std::cout << fTempParams[i] << " ";
-        debug << fTempParams[i] << " ";
-      }
-      std::cout << std::endl;
-      debug << std::endl;
-
-      // check if we are on the egde
-      if (fTempParams[par_no] > fParameters[par_no].GetMax()) {
-        std::cout << "GO Backward" << std::endl;
-        fTempParams[par_no] = fTempParams[par_no] - TMath::Sign(1, vector) * fParameters[par_no].GetDParam();
-        bad_direction++;
-        ChangeStateVector(MinimizingVector);
-        continue;
-      }
-      if (fTempParams[par_no] < fParameters[par_no].GetMin()) {
-        std::cout << "GO Forward" << std::endl;
-        fTempParams[par_no] = fTempParams[par_no] + TMath::Sign(1, vector) * fParameters[par_no].GetDParam();
-        bad_direction++;
-        ChangeStateVector(MinimizingVector);
-        continue;
-      }
-
-
-      Double_t chi = (*fFunc)(fTempParams);
-      if (fTrace) {
-        std::cout << "par\t";
-        for (unsigned int i = 0; i < fParameters.size(); i++) {
-          std::cout << fTempParams[i] << " ";
-          debug << fTempParams[i] << " ";
-        }
-        std::cout << "\n chi2 = " << chi << std::endl;
-      }
-      // larger chi - change direction !
-      if (chi > fGlobMin) {  // larger chi than in prev iteration
-        bad_direction++;
-        std::cout << "Chi larger" << std::endl;
-        ChangeStateVector(MinimizingVector);
-        fTempParams[par_no] = fTempParams[par_no] - TMath::Sign(1, vector) * fParameters[par_no].GetDParam();
-        continue;
-      } else {  // smaller chi continue looking for min
-        if (chi == fGlobMin) {
-          similarMin++;
-          std::cout << "similiar" << std::endl;
-        } else {
-          std::cout << "smaller" << std::endl;
-          for (unsigned int i = 0; i < paramsMin.size(); i++)
-            paramsMin[i] = fTempParams[i];
-          similarMin    = 0;
-          bad_direction = 0;
-          fGlobMin      = chi;
-        }
-      }
-    } while (not_found);
-
-    for (int i = 0; i < GetNParams(); i++)
-      fTempParams[i] = paramsMin[i];
-    // fParams[last_par_no] = fParams[last_par_no] + TMath::Sign(1, -last_vector) * fStep[last_par_no];
-    for (int i = 0; i < GetNParams(); i++) {
-      std::cout << fTempParams[i] << " ";
-      debug << fTempParams[i] << " ";
+      if (fNCalls > 1E+6) break;  // to many call
     }
-    std::vector<Double_t> chiParamsLow;
-    std::vector<Double_t> chiParamsHigh;
-    chiParamsLow.resize(GetNFree());
-    chiParamsHigh.resize(GetNFree());
-    // no calculate hessian
-
-    Int_t nElem = 2 * TMath::Power(GetNFree(), 2) + 1;
-    std::vector<std::vector<Double_t>> state_vector;
-    std::vector<Double_t> chi_vector;
-    std::vector<Double_t> parchi_vector;
-    chi_vector.resize(nElem);
-    parchi_vector.resize(nElem);
-    state_vector.resize(nElem);
-    for (int i = 0; i < nElem; i++) {
-      state_vector[i].resize(GetNFree());
-      Int_t base = i;
-      for (int j = 0; j < GetNFree(); j++) {
-        Int_t o = base % 3;
-        base    = base / 3;
-        switch (o) {
-          case 0: state_vector[i][j] = 0; break;
-          case 1: state_vector[i][j] = 1; break;
-          case 2: state_vector[i][j] = -1; break;
-        }
-        if (base <= 0) break;
-      }
-    }
-    std::cout << "TEST VEC" << std::endl;
-    for (int i = 0; i < nElem; i++) {
-      for (int j = 0; j < GetNFree(); j++) {
-        std::cout << state_vector[i][j] << " ";
-      }
-      std::cout << std::endl;
-    }
-
-    Double_t lMin = DBL_MAX;
-    for (int i = 0; i < nElem; i++) {
-      for (int j = 0; j < GetNFree(); j++) {
-        Int_t poz        = fNonConstMap[j];
-        fTempParams[poz] = fTempParams[poz] + state_vector[i][j] * fParameters[poz].GetDParam();
-        if (i != 0) {
-          Double_t chi  = (*fFunc)(fTempParams);
-          chi_vector[i] = chi / fNDF;
-          if (lMin > chi) lMin = chi;
-        } else {
-          chi_vector[i] = fGlobMin / fNDF;
-        }
-      }
-      for (unsigned int k = 0; k < paramsMin.size(); k++) {
-        fTempParams[k] = paramsMin[k];
-      }
-    }
-    if (lMin <= fGlobMin) { std::cout << "FOUND BAD MIN" << std::endl; }
-    /*
-      std::cout << "****** chi vecs " << std::endl;
-      for (int i = 0; i < nElem; i++) {
-        std::cout << "chi " << chi_vector[i] << "\t vec \t";
-        for (int j = 0; j < state_vector[i].size(); j++) {
-          std::cout << state_vector[i][j] << " ";
-        }
-        std::cout << std::endl;
-      }
-    */
-
-    // estimate approx stat. error
-    auto lenght = [](const std::vector<Double_t>& v) -> Double_t {
-      Double_t L = 0;
-      for (unsigned int i = 0; i < v.size(); i++) {
-        L += v[i] * v[i];
-      }
-      return TMath::Abs(L);
-    };
-    for (int i = 0; i < GetNParams(); i++) {
-      fQuantumFits[i] = fSmoothFits[i] = fTempParams[i];
-      fErrors[i]                       = 0;
-    }
-
-    const Double_t scalled_chi2 = fGlobMin / fNDF;
-    for (int i = 0; i < GetNFree(); i++) {
-      Double_t chi_low = 0, chi_high = 0;
-      Int_t poz = fNonConstMap[i];
-      Double_t x1, x2, x3, y1, y2, y3, a, b, c;
-      x1 = fTempParams[poz] - fParameters[poz].GetDParam();
-      x2 = fTempParams[poz];
-      x3 = fTempParams[poz] + fParameters[poz].GetDParam();
-      for (unsigned int j = 0; j < state_vector.size(); j++) {
-        Double_t L = lenght(state_vector[j]);
-        if (L != 1) continue;
-        if (state_vector[j][i] == 1) { chi_high = chi_vector[j]; }
-        if (state_vector[j][i] == -1) { chi_low = chi_vector[j]; }
-      }
-      y1 = chi_low;
-      y2 = scalled_chi2;
-      y3 = chi_high;
-      Hal::Std::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
-      fSmoothFits[poz]  = -b / (2.0 * a);
-      fQuantumFits[poz] = fTempParams[poz];
-      fErrors[poz]      = TMath::Sqrt(1.0 / a) * scalled_chi2;
-      std::cout << " pAR " << x1 << " " << x2 << " " << x3 << " " << y1 << " " << y2 << " " << y3 << " " << a << std::endl;
-
-
-      std::cout << "Par " << i << "\t" << fTempParams[poz] << " +\\- " << TMath::Sqrt(1. / a) * scalled_chi2 << " " << a
-                << std::endl;
-    }
-
-    FinishFit();
   }
 
   void Minimizer::MinimizeScan() {
     // set start parameters
-    InitFit();
+    for (auto& x : fStateVector) {
+      x = 0;
+    }
+    SetTempParams();
     for (unsigned int i = 0; i < fParameters.size(); i++) {
       fTempParams[i] = fParameters[i].GetMin();
     }
-    // calculate parameters array
-    fGlobMin = DBL_MAX;
-
-    std::vector<std::vector<Double_t>> array;
-    for (int i = 0; i < GetNParams(); i++) {
-      array.push_back(fParameters[i].GetValuesArray());
-    }
-    LoopOverParameter(0, array);
+    LoopOverParameter(0);
     for (int i = 0; i < GetNParams(); i++) {
       fTempParams[i] = fParamsMin[i];
       fSmoothFits[i] = fParamsMin[i];
     }
     std::cout << "*************************" << std::endl;
-    EstimateErrors();
-    FinishFit();
   }
 
   void Minimizer::MinimizeNelderMead() {
@@ -661,5 +524,15 @@ namespace Hal {
     return true;
   }
 
+  void Minimizer::SetTempParams() {
+    for (unsigned int i = 0; i < GetNParams(); i++) {
+      fTempParams[i] = fAllowedValues[i][fStateVector[i]];
+    }
+  }
+
+  Double_t Minimizer::GetChi2() {
+    SetTempParams();
+    return (*fFunc)(fTempParams);
+  }
 
 }  // namespace Hal

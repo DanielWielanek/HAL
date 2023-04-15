@@ -167,8 +167,8 @@ namespace Hal {
         MinimizeAnt();
       } break;
       case eMinimizeType::kScan: {
-        MinimizeAnt();
-        // MinimizeScan();
+        // MinimizeAnt();
+        MinimizeScan();
       } break;
     }
     FinishFit();

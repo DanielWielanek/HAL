@@ -15,17 +15,18 @@
 
 namespace Hal {
   class FitParam : public TObject {
-    Bool_t fIsFixed;
-    Bool_t fIsDiscrete;
-    Double_t fMin;
-    Double_t fMax;
-    Double_t fMapMin;
-    Double_t fMapMax;
-    Double_t fNPoint;
-    Double_t fDParam;
-    Double_t fStart;
-    Double_t fFitted;
-    Double_t fError;
+    Bool_t fIsFixed {kFALSE};
+    Bool_t fIsDiscrete {kFALSE};
+    Bool_t fIsMapSet {kFALSE};
+    Double_t fMin {0};
+    Double_t fMax {0};
+    Double_t fMapMin {0};
+    Double_t fMapMax {0};
+    Double_t fNPoint {0};
+    Double_t fDParam {0};
+    Double_t fStart {0};
+    Double_t fFitted {0};
+    Double_t fError {0};
     TString fName;
 
   public:
@@ -33,6 +34,7 @@ namespace Hal {
     FitParam(const FitParam& other) = default;
     Bool_t IsDiscrete() const { return fIsDiscrete; };
     Bool_t IsFixed() const { return fIsFixed; };
+    Bool_t IsMapSet() const { return fIsMapSet; }
     void Init();
     virtual ~FitParam();
     FitParam& operator=(const FitParam& other) = default;

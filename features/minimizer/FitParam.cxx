@@ -12,41 +12,26 @@
 
 #include <iostream>
 namespace Hal {
-  FitParam::FitParam() :
-    fIsFixed(kFALSE),
-    fIsDiscrete(kFALSE),
-    fMin(0),
-    fMax(0),
-    fMapMin(0),
-    fMapMax(0),
-    fNPoint(0),
-    fDParam(0),
-    fStart(0),
-    fFitted(0),
-    fError(0),
-    fName("") {}
+  FitParam::FitParam() {}
 
   void FitParam::Init() {
-    if (IsDiscrete()) {
-      if (IsFixed()) {
-        fNPoint = 1;
-        fMin    = fMax;
-        fDParam = 0;
-      } else {
-        if (fNPoint == 0) {
-          std::cout << " cannot have npoint = 0" << std::endl;
-          exit(0);
-        }
-        fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
-        if (fDParam == 0) {
-          std::cout << " cannot have dstep = 0" << __FILE__ << " " << __LINE__ << std::endl;
-          exit(0);
-        }
-      }
-      fMin   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMin, '-');  // npoint -1 because we have n-1 areas than points
-      fMax   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMax, '+');
-      fStart = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fStart, '=');
+    if (!IsDiscrete()) return;
+    if (fNPoint == 0) {
+      std::cout << " cannot have npoint = 0" << std::endl;
+      exit(0);
     }
+    fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
+    if (fNPoint == 1) fDParam = 0;
+    if (!IsMapSet()) {
+      if (fMin == fMax) {
+        SetMapRange(fMin, fMax, 1);
+      } else {
+        SetMapRange(fMin, fMax, 100);
+      }
+    }
+    fMin   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMin, '-');  // npoint -1 because we have n-1 areas than points
+    fMax   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMax, '+');
+    fStart = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fStart, '=');
   }
 
   FitParam::~FitParam() {}
@@ -74,9 +59,10 @@ namespace Hal {
       max           = min;
       min           = temp;
     }
-    fMapMin = min;
-    fMapMax = max;
-    fNPoint = points;
+    fMapMin   = min;
+    fMapMax   = max;
+    fNPoint   = points;
+    fIsMapSet = kTRUE;
   }
 
   void FitParam::Print(Option_t* /*option*/) const {
@@ -104,7 +90,7 @@ namespace Hal {
       values.push_back(fMin);
       return values;
     }
-    if (IsFixed()) {
+    if (IsFixed() || fDParam == 0) {
       values.push_back(fMin);
     } else {
       for (double x = fMin; x <= fMax; x += fDParam) {

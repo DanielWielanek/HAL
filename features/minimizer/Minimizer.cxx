@@ -45,7 +45,6 @@ namespace Hal {
     return true;
   }
 
-
   bool Minimizer::SetVariableLimits(unsigned int ivar, double lower, double upper) {
     if (lower > upper) {
       double temp = upper;
@@ -71,7 +70,6 @@ namespace Hal {
 
   // recalc methods
 
-
   void Minimizer::InitFit() {
     fNonConstMap.clear();
     fNCalls   = 0;
@@ -86,19 +84,18 @@ namespace Hal {
     auto lambda = [](Int_t a, Int_t b) -> bool { return a < b; };
     std::sort(fNonConstMap.begin(), fNonConstMap.end(), lambda);
     Cout::PrintInfo("BEFORE INIT ", EInfo::kLowWarning);
-    Cout::Database(6, "ParName", "MinMap", "MaxMap", "Points", "Min", "Max");
+    std::cout << Cout::GetColor(kBlue);
+    Cout::Database({"ParName", "MinMap", "MaxMap", "Points", "Min", "Max"});
+    std::cout << Cout::GetDisableColor();
     for (unsigned int i = 0; i < fParameters.size(); i++) {
-      if (fParameters[i].IsFixed()) {
-        Cout::Database(2, fParameters[i].GetParName().Data(), Form("%4.4f", fParameters[i].GetStartVal()));
-      } else {
-        Cout::Database(6,
-                       fParameters[i].GetParName().Data(),
-                       Form("%4.4f", fParameters[i].GetMapMin()),
-                       Form("%4.4f", fParameters[i].GetMapMax()),
-                       Form("%i", fParameters[i].GetNPoints()),
-                       Form("%4.4f", fParameters[i].GetMin()),
-                       Form("%4.4f", fParameters[i].GetMax()));
-      }
+      if (fParameters[i].IsFixed()) { std::cout << Cout::GetColor(kOrange); }
+      Cout::Database({fParameters[i].GetParName().Data(),
+                      Form("%4.4f", fParameters[i].GetMapMin()),
+                      Form("%4.4f", fParameters[i].GetMapMax()),
+                      Form("%d", fParameters[i].GetNPoints()),
+                      Form("%4.4f", fParameters[i].GetMin()),
+                      Form("%4.4f", fParameters[i].GetMax())});
+      if (fParameters[i].IsFixed()) std::cout << Cout::GetDisableColor();
     }
 
     // round minimum
@@ -108,17 +105,17 @@ namespace Hal {
       // fParameters[i].Print();
     }
     Cout::PrintInfo("AFTER INIT ", EInfo::kLowWarning);
-    Cout::Database(6, "ParName", "MinMap", "MaxMap", "Points", "Min", "Max");
+    std::cout << Cout::GetColor(kBlue);
+    Cout::Database({"ParName", "MinMap", "MaxMap", "Points", "Min", "Max"});
+    std::cout << Cout::GetDisableColor();
     for (unsigned int i = 0; i < fParameters.size(); i++) {
-
       if (fParameters[i].IsFixed()) { std::cout << Cout::GetColor(kOrange); }
-      Cout::Database(6,
-                     fParameters[i].GetParName().Data(),
-                     Form("%4.4f", fParameters[i].GetMapMin()),
-                     Form("%4.4f", fParameters[i].GetMapMax()),
-                     Form("%d", fParameters[i].GetNPoints()),
-                     Form("%4.4f", fParameters[i].GetMin()),
-                     Form("%4.4f", fParameters[i].GetMax()));
+      Cout::Database({fParameters[i].GetParName().Data(),
+                      Form("%4.4f", fParameters[i].GetMapMin()),
+                      Form("%4.4f", fParameters[i].GetMapMax()),
+                      Form("%d", fParameters[i].GetNPoints()),
+                      Form("%4.4f", fParameters[i].GetMin()),
+                      Form("%4.4f", fParameters[i].GetMax())});
       if (fParameters[i].IsFixed()) std::cout << Cout::GetDisableColor();
     }
     if (fQuantumFits) {

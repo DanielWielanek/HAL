@@ -54,12 +54,12 @@ namespace Hal {
     Cout::Text("CorrFitFunctor", "M", kWhite);
     fInfo->GetCf()->Print();
     Cout::Text("Params conf", "L", kWhite);
-    Cout::Database(4, "Name", "Steps", "Nmin", "Nmax");
+    Cout::Database({"Name", "Steps", "Nmin", "Nmax"});
     for (int i = 0; i < fSetup.GetNParams(); i++) {
       TString steps = Form("%i", fSetup.GetNSteps(i));
       TString min   = Form("%4.3f", fSetup.GetMin(i));
       TString max   = Form("%4.3f", fSetup.GetMax(i));
-      Cout::Database(4, fSetup.GetParName(i).Data(), steps.Data(), min.Data(), max.Data());
+      Cout::Database({fSetup.GetParName(i), steps, min, max});
     }
   }
 

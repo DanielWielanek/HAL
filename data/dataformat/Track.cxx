@@ -24,8 +24,8 @@ namespace Hal {
     TObject(), fEvent(nullptr), fID(0), fStatus(0), fHiddenInfo(0), fMotherID(-1), fThisID(-1), fType(0), fCharge(0) {}
 
   void Track::Print(Option_t* /*option*/) const {
-    Cout::Database(3, "Px", "Py", "Pz");
-    Cout::Database(3, Form("%4.5f", GetPx()), Form("%4.5f", GetPy()), Form("%4.5f", GetPz()));
+    Cout::Database({"Px", "Py", "Pz"});
+    Cout::Database({Form("%4.5f", GetPx()), Form("%4.5f", GetPy()), Form("%4.5f", GetPz())});
   }
 
   Track::~Track() {}

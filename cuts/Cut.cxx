@@ -159,9 +159,9 @@ namespace Hal {
   void Cut::Print(Option_t* /*option*/) const {
     Cout::InStars(Form("Report %s", this->ClassName()));
     Cout::Text("Cut ranges", "M");
-    Cout::Database(3, "Parameter name", "Min", "Max");
+    Cout::Database({"Parameter name", "Min", "Max"});
     for (int i = 0; i < GetCutSize(); i++) {
-      Cout::Database(3, GetUnit(i).Data(), Form("%4.2f", GetMin(i)), Form("%4.2f", GetMax(i)));
+      Cout::Database({GetUnit(i), Form("%4.2f", GetMin(i)), Form("%4.2f", GetMax(i))});
     }
     Cout::Text(Form("Passed %llu", GetPassed()), "M");
     Cout::Text(Form("Failed %llu", GetFailed()), "M");

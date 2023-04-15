@@ -61,15 +61,14 @@ namespace Hal {
 
     Cout::SetLineLenght(150);
     Cout::Text("CorrFitKisiel::Check test", "M", kWhite);
-    Cout::Database(7, "ID", "Rmin", "Rmax", "Rstep", "KStarMin", "KstarMax", "KstarStep");
-    Cout::Database(7,
-                   "Req.",
-                   Form("%4.3f", rMin),
-                   Form("%4.3f", rMax),
-                   "-",
-                   Form("%4.3f", kstarMin),
-                   Form("%4.3f", kstarMax),
-                   Form("%4.3f", kstarDx));
+    Cout::Database({"ID", "Rmin", "Rmax", "Rstep", "KStarMin", "KstarMax", "KstarStep"});
+    Cout::Database({"Req.",
+                    Form("%4.3f", rMin),
+                    Form("%4.3f", rMax),
+                    "-",
+                    Form("%4.3f", kstarMin),
+                    Form("%4.3f", kstarMax),
+                    Form("%4.3f", kstarDx)});
 
     auto colEn = [](Color_t Color) {
 #ifdef __linux__
@@ -111,14 +110,7 @@ namespace Hal {
       TString txtKstarmin   = Form("%4.3f", Kmin);
       TString txtKstarmax   = Form("%4.3f", Kmax);
       TString txtKstardelta = Form("%4.3f", (Kmax - Kmin) / Kbins);
-      Cout::Database(7,
-                     id.Data(),
-                     txtRmin.Data(),
-                     txtRmax.Data(),
-                     txtRstep.Data(),
-                     txtKstarmin.Data(),
-                     txtKstarmax.Data(),
-                     txtKstardelta.Data());
+      Cout::Database({id, txtRmin, txtRmax, txtRstep, txtKstarmin, txtKstarmax, txtKstardelta});
     }
 #ifdef __linux__
     std::cout << "\e[0;0m" << std::endl;

@@ -142,15 +142,15 @@ namespace Hal {
 
     UpdateBranches();
     RefreshBranchList();
-    Cout::Database(2, "Branch Name", "Type");
+    Cout::Database({"Branch Name", "Type"});
     for (auto branch : fInBranches) {
-      Cout::Database(2, branch.first.Data(), "INPUT");
+      Cout::Database({branch.first, "INPUT"});
     }
     for (auto branch : fOutBranches) {
-      Cout::Database(2, branch.first.Data(), "OUTPUT");
+      Cout::Database({branch.first, "OUTPUT"});
     }
     for (auto branch : fOutVirtual) {
-      Cout::Database(2, branch.first.Data(), "VIRTUAL");
+      Cout::Database({branch.first, "VIRTUAL"});
     }
   }
 

@@ -81,8 +81,8 @@ namespace Hal {
   }
 
   void Event::Print(Option_t* /*opt*/) const {
-    Cout::Database(2, "Event Phi", "Event Multiplicity");
-    Cout::Database(2, Form("%4.2f", GetPhi()), Form("%i", GetTotalTrackNo()));
+    Cout::Database({"Event Phi", "Event Multiplicity"});
+    Cout::Database({Form("%4.2f", GetPhi()), Form("%i", GetTotalTrackNo())});
   }
 
   void Event::Build(Event* event, const CompressionMap& map) { CopyCompress(event, map); }

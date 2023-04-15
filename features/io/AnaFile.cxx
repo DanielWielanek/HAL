@@ -132,7 +132,7 @@ namespace Hal {
   TObject* AnaFile::GetMainObject(TString name, Int_t index) const { return GetMainPackage()->GetObjectByName(name, index); }
 
   void AnaFile::PrintMonitorCutList(TList* list) const {
-    Cout::Database(5, "No", "Type", "UnitX", "UnitY", "UnitZ");
+    Cout::Database({"No", "Type", "UnitX", "UnitY", "UnitZ"});
     TString no, type, unitx, unity, unitz;
     for (int i = 0; i < list->GetEntries(); i++) {
       Package* mon = (Package*) list->At(i);
@@ -146,7 +146,7 @@ namespace Hal {
       if (xN) unity = xN->GetValue();
       xN = ((ParameterString*) mon->GetObjectByName("AxisZ", 0, kTRUE));
       if (xN) unitz = xN->GetValue();
-      Cout::Database(5, no.Data(), type.Data(), unitx.Data(), unity.Data(), unitz.Data());
+      Cout::Database({no, type, unitx, unity, unitz});
     }
   }
 
@@ -374,11 +374,11 @@ namespace Hal {
     TString PassedSlow           = Hal::Std::RoundToString(passedSlow->GetValue());
     TString FailedFast           = Hal::Std::RoundToString(failedFast->GetValue());
     TString FailedSlow           = Hal::Std::RoundToString(failedSlow->GetValue());
-    Cout::Database(3, "Type", "Failed", "Passed");
-    Cout::Database(3, "Fast", PassedFast.Data(), FailedFast.Data());
-    Cout::Database(3, "Slow", PassedFast.Data(), FailedSlow.Data());
+    Cout::Database({"Type", "Failed", "Passed"});
+    Cout::Database({"Fast", PassedFast, FailedFast});
+    Cout::Database({"Slow", PassedFast, FailedSlow});
     Cout::Text("Fast Cuts", "M", kCyan);
-    Cout::Database(5, "Name", "Passed %", "Param", "Min", "Max");
+    Cout::Database({"Name", "Passed %", "Param", "Min", "Max"});
     for (int i = 0; i < fast_cuts->GetEntries(); i++)
       PrintCut((Package*) fast_cuts->At(i));
     Cout::Text("Slow Cuts", "M", kCyan);
@@ -396,7 +396,7 @@ namespace Hal {
       TString unit_name = ((ParameterString*) cut->GetObjectByName("UnitName_0i"))->GetValue();
       TString min       = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName("MinCut_0"))->GetValue(), 3);
       TString max       = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName("MaxCut_0"))->GetValue(), 3);
-      Cout::Database(5, name.Data(), Form("%4.2f", passed), unit_name.Data(), min.Data(), max.Data());
+      Cout::Database({name, Form("%4.2f", passed), unit_name, min, max});
       return;
     }
     TString min, max, unit;
@@ -409,9 +409,9 @@ namespace Hal {
       min  = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName(min))->GetValue(), 3);
       max  = Hal::Std::RoundToString(((ParameterDouble*) cut->GetObjectByName(max))->GetValue(), 3);
       if (i == 0) {
-        Cout::Database(5, name.Data(), Form("%4.2f", passed), unit.Data(), min.Data(), max.Data());
+        Cout::Database({name, Form("%4.2f", passed), unit, min, max});
       } else {
-        Cout::Database(5, "", "", unit.Data(), min.Data(), max.Data());
+        Cout::Database({"", "", unit, min, max});
       }
     }
   }

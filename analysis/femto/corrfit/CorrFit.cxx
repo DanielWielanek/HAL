@@ -158,18 +158,17 @@ namespace Hal {
 
   void CorrFit::PrintFitResults() const {
     Cout::Text(Form("%s fit results", ClassName()), "M", kWhite);
-    Cout::Database(5, "ParName", "Val", "Err", "Min", "Max");
+    Cout::Database({"ParName", "Val", "Err", "Min", "Max"});
     for (int i = 0; i < GetParametersNo(); i++) {
       if (fParameters[i].IsFixed()) {
-        Cout::Database(5, GetParameterName(i).Data(), Form("%4.2f", GetParameter(i)), "fixed", "-", "-");
+        Cout::Database({GetParameterName(i), Form("%4.2f", GetParameter(i)), "fixed", "-", "-"});
         break;
       } else {
-        Cout::Database(5,
-                       GetParameterName(i).Data(),
-                       Form("%4.2f", GetParameter(i)),
-                       Form("%4.2f", GetParError(i)),
-                       Form("%4.2f", GetParMin(i)),
-                       Form("%4.2f", GetParMax(i)));
+        Cout::Database({GetParameterName(i),
+                        Form("%4.2f", GetParameter(i)),
+                        Form("%4.2f", GetParError(i)),
+                        Form("%4.2f", GetParMin(i)),
+                        Form("%4.2f", GetParMax(i))});
       }
     }
     Cout::Stars(kWhite);

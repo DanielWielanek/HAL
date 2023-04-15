@@ -649,7 +649,7 @@ namespace Hal {
     for (int i = 0; i < fCutMonitors->GetEntriesFast(); i++) {
       Cout::Text(fCutMonitors->UncheckedAt(i)->ClassName(), "L");
       CutMonitor* cutmon = (CutMonitor*) fCutMonitors->UncheckedAt(i);
-      Cout::Database(1, cutmon->GetCutName(0).Data());
+      Cout::Database({cutmon->GetCutName(0)});
     }
   }
 

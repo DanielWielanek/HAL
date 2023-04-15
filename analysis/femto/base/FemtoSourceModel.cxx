@@ -141,10 +141,10 @@ namespace Hal {
 
   void FemtoSourceModel::Print(Option_t* /*option*/) const {
     Cout::Text(ClassName(), "L");
-    Cout::Database(2, "ParName", "Value");
+    Cout::Database({"ParName", "Value"});
     for (int i = 0; i < GetNpar(); i++) {
       TString val = Form("%4.4f", GetParameter(i));
-      Cout::Database(2, GetParamName(i).Data(), val.Data());
+      Cout::Database({GetParamName(i), val});
     }
   }
 }  // namespace Hal

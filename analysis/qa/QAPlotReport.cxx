@@ -433,24 +433,24 @@ namespace Hal {
   }
 
   void QAPlotReport::Print(Option_t* /*option*/) const {
-    Cout::Database(3, "ID", "Name", "Flags");
+    Cout::Database({"ID", "Name", "Flags"});
     Cout::InStars("1D", kWhite);
     for (int i = 0; i < GetSize1D(); i++) {
       TString name = f1dHistos->At(i)->GetName();
       TString flag = f1dFlags[i];
-      Cout::Database(3, Form("%i", i), name.Data(), flag.Data());
+      Cout::Database({Form("%i", i), name, flag});
     }
     Cout::InStars("2D", kWhite);
     for (int i = 0; i < GetSize2D(); i++) {
       TString name = f2dHistos->At(i)->GetName();
       TString flag = f2dFlags[i];
-      Cout::Database(3, Form("%i", i), name.Data(), flag.Data());
+      Cout::Database({Form("%i", i), name, flag});
     }
     Cout::InStars("3D", kWhite);
     for (int i = 0; i < GetSize3D(); i++) {
       TString name = f3dHistos->At(i)->GetName();
       TString flag = f3dFlags[i];
-      Cout::Database(3, Form("%i", i), name.Data(), flag.Data());
+      Cout::Database({Form("%i", i), name, flag});
     }
   }
 

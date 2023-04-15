@@ -45,6 +45,30 @@ namespace Hal {
     Text(begin, "R");
   }
 
+  void Cout::Database(std::initializer_list<TString> list) {
+    auto strings = Hal::Std::GetVector(list);
+    TString begin;
+    TString capt;
+    TString line;
+    Int_t no   = strings.size();
+    Int_t wide = (fgLineLength - 2 - no) / no;
+    Int_t act_wide;
+    Int_t total = 0;
+    for (unsigned int i = 0; i < strings.size(); i++) {
+      capt     = strings[i];
+      line     = " ";
+      line     = line + capt;
+      act_wide = wide - line.Length();
+      for (Int_t j = 0; j < act_wide - 1; j++) {
+        line = " " + line;
+      }
+      total += act_wide;
+      if (i < no - 1) line = line + "|";
+      begin = begin + line;
+    }
+    Text(begin, "R");
+  }
+
   void Cout::InStars(TString text, Color_t color) {
     TString Header = "******";
     Header         = Header + text;

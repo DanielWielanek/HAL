@@ -20,15 +20,16 @@ namespace Hal {
       std::cout << " cannot have npoint = 0" << std::endl;
       exit(0);
     }
-    fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
-    if (fNPoint == 1) fDParam = 0;
     if (!IsMapSet()) {
       if (fMin == fMax) {
         SetMapRange(fMin, fMax, 1);
+        fDParam = 0;
       } else {
         SetMapRange(fMin, fMax, 100);
       }
     }
+    fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
+    if (fNPoint == 1) fDParam = 0;
     fMin   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMin, '-');  // npoint -1 because we have n-1 areas than points
     fMax   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMax, '+');
     fStart = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fStart, '=');

@@ -36,9 +36,6 @@ namespace Hal {
     Bool_t IsFixed() const { return fIsFixed; };
     Bool_t IsMapSet() const { return fIsMapSet; }
     void Init();
-    virtual ~FitParam();
-    FitParam& operator=(const FitParam& other) = default;
-
     void SetMapRange(Double_t min, Double_t max, Int_t points);
     void SetRange(Double_t min, Double_t max);
     void SetStartVal(Double_t val) { fStart = val; };
@@ -60,11 +57,11 @@ namespace Hal {
     Double_t GetStartVal() const { return fStart; };
     Double_t GetFittedValue() const { return fFitted; };
     Double_t GetError() const { return fError; };
-
+    FitParam& operator=(const FitParam& other) = default;
     TString GetParName() const { return fName; }
-
     const std::vector<Double_t> GetValuesArray() const;
     virtual void Print(Option_t* option = "") const;
+    virtual ~FitParam();
     ClassDef(FitParam, 1)
   };
 }  // namespace Hal

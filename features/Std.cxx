@@ -402,7 +402,7 @@ namespace Hal::Std {
 
 }  // namespace Hal::Std
 Int_t Hal::Std::GetJsRootVer() {
-  Int_t ver = gROOT->GetVersionInt();
+  Int_t ver = ::ROOT::GetROOT()->GetVersionInt();
   if (ver < 62400) return 5;
   return 6;
 }

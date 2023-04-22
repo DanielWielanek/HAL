@@ -106,6 +106,11 @@ namespace Hal {
   }
 
   Task::EInitFlag FemtoBasicAna::Init() {
+    if (fPdg1 == 0 || fPdg2 == 0) {
+      Cout::PrintInfo("Assumed wrong PID = 0, pion PID will be assumed", EInfo::kLowWarning);
+      fPdg1 = fPdg2 = 211;
+    }
+    if (fPdg1 != fPdg2) { EnableNonIdentical(); }
     Task::EInitFlag prev = TwoTrackAna::Init();
     if (fCutContainer->GetTwoTrackCollectionsNo() != fCutContainer->GetTwoTrackCollectionsBackgroundNo()) {
       Cout::PrintInfo("Two track collectionsNo in signal and background are different - this might result in crash",
@@ -131,11 +136,7 @@ namespace Hal {
       Cout::PrintInfo("Something wrong is with FemtoPair it cannot be created", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
-    if (fPdg1 == 0 || fPdg2 == 0) {
-      Cout::PrintInfo("Assumed wrong PID = 0, pion PID will be assumed", EInfo::kLowWarning);
-      fPdg1 = fPdg2 = 211;
-    }
-    if (fPdg1 != fPdg2) { EnableNonIdentical(); }
+
     fFemtoPair->SetPdg1(fPdg1);
     fFemtoPair->SetPdg2(fPdg2);
     fFemtoPair->Init(GetTaskID());

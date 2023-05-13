@@ -49,7 +49,7 @@ namespace HalOTF {
      * @param w multiplicity
      */
     void SetSpiecies(const TH2D& h, Int_t pid, Double_t w);
-    void SetSmear(Double_t smear) { fSmear = smear; };
+    void SetSmear(Double_t smear) { fSmear = smear; }
     void Register(Bool_t reg) { fRegister = reg; }
     void Exec(Option_t* opt);
     virtual Hal::Task::EInitFlag Init();

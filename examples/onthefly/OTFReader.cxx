@@ -48,7 +48,7 @@ namespace HalOTF {
     fMcEvent              = new OTF::McEvent();
     fRecoEvent            = new OTF::RecoEvent();
     Hal::DataManager* mng = Hal::DataManager::Instance();
-    if (mng->GetObject("HalOTF::McEvent.")) {  // branch exists
+    if (mng->GetObject("OTF::McEvent.")) {  // branch exists
       fMcEvent   = (OTF::McEvent*) mng->GetObject("OTF::McEvent.");
       fRecoEvent = (OTF::RecoEvent*) mng->GetObject("OTF::RecoEvent.");
     } else {
@@ -80,6 +80,7 @@ namespace HalOTF {
       fRecoEvent->Clear();
       fMcEvent->Clear();
     }
+    Int_t shift = fMcEvent->GetNTracks();
     for (int i = 0; i < fMultiplicity; i++) {
       Double_t pt, y;
       fSpectras->GetRandom2(y, pt);
@@ -106,7 +107,7 @@ namespace HalOTF {
       rtr.SetMom(px, py, pz, e);
       rtr.SetNHits(5);
       rtr.SetCharge(fCharge);
-      rtr.SetMcIndex(i);
+      rtr.SetMcIndex(i + shift);
       fRecoEvent->AddTrack(rtr);
     }
   }

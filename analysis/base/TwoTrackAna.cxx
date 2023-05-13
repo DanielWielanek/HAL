@@ -14,6 +14,7 @@
 #include "CutContainer.h"
 #include "MemoryMapManager.h"
 #include "Parameter.h"
+#include "TrackVirtualCut.h"
 #include "TwoTrack.h"
 #include "TwoTrackVirtualCut.h"
 
@@ -174,6 +175,9 @@ namespace Hal {
     fTwoTrackCollectionsNo           = fCutContainer->GetTwoTrackCollectionsNo();
     fTwoTrackCollectionsNoBackground = fCutContainer->GetTwoTrackCollectionsBackgroundNo();
     Int_t trackTrig                  = fCutContainer->GetTrackCollectionsNo();
+    if (!IdenticalParticles() && fTrackCollectionsNo == 1) {
+      Cout::PrintInfo("Not enough track collections i nonid analysis", EInfo::kCriticalError);
+    }
     switch (fBackgroundMode) {
       case kCharged: {
         if (trackTrig < 2) {

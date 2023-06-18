@@ -43,7 +43,7 @@ namespace Hal {
     /**
      * initalize run
      */
-    Bool_t Init();
+    virtual Bool_t Init();
     /**
      * set name of the tree in output file
      * @param name

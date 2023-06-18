@@ -17,6 +17,7 @@ class TH1D;
 class TH2;
 class TH2D;
 class TH3;
+class TH3D;
 class TVirtualPad;
 
 namespace Hal {
@@ -231,6 +232,46 @@ namespace Hal {
      * @return
      */
     Int_t GetListOfSubPads(TVirtualPad* pad);
+    /**
+     * make new histogram only with copy of the original histogram
+     * @param h
+     * @param min
+     * @param max
+     * @param opt - vals - crop by value, bin - crop by bin
+     * @return
+     */
+    TH1D* Crop1D(const TH1& h, Double_t min, Double_t max, TString opt = "vals");
+    /**
+     * make new histogram only with copy of the original histogram
+     * @param h
+     * @param minX
+     * @param maxX
+     * @param minY
+     * @param maxY
+     * @param opt - vals - crop by value, bin - crop by bin
+     * @return
+     */
+    TH2D* Crop2D(const TH2& h, Double_t minX, Double_t maxX, Double_t minY, Double_t maxY, TString opt = "vals");
+    /**
+     * make new histogram only with copy of the original histogram
+     * @param h
+     * @param minX
+     * @param maxX
+     * @param minY
+     * @param maxY
+     * @param minZ
+     * @param maxZ
+     * @param opt - vals - crop by value, bin - crop by bin
+     * @return
+     */
+    TH3D* Crop3D(const TH3& h,
+                 Double_t minX,
+                 Double_t maxX,
+                 Double_t minY,
+                 Double_t maxY,
+                 Double_t minZ,
+                 Double_t maxZ,
+                 TString opt = "vals");
   }  // namespace Std
 }  // namespace Hal
 #endif /* HALSTDHIST_H_ */

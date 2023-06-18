@@ -32,6 +32,7 @@
 #include <TStyle.h>
 #include <TVirtualPad.h>
 #include <iostream>
+#include <utility>
 
 #include "Cout.h"
 #include "Splines.h"
@@ -766,6 +767,28 @@ namespace Hal {
         }
         return foldBinMap;
       }
+
+      void CropAxis(const TAxis* x,
+                    Int_t& nbins,
+                    std::pair<int, int>& binId,
+                    std::pair<double, double>& val,
+                    Double_t lmin,
+                    Double_t lmax,
+                    TString opt) {
+        if (opt == "vals") {
+          binId.first  = x->FindBin(lmin);
+          binId.second = x->FindBin(lmax);
+        } else {
+          binId.first  = lmin;
+          binId.second = lmax;
+        }
+        binId.first  = TMath::Max(1, binId.first);
+        binId.second = TMath::Min(binId.second, x->GetNbins());
+        val.first    = x->GetBinLowEdge(binId.first);
+        val.second   = x->GetBinUpEdge(binId.second);
+        nbins        = binId.second - binId.first + 1;
+      };
+
     }  // namespace
 
     void Fold1D(Double_t val, TH1& h) {
@@ -918,6 +941,86 @@ namespace Hal {
         if (dynamic_cast<TVirtualPad*>(l->At(i))) subpads++;
       }
       return subpads;
+    }
+
+    TH1D* Crop1D(const TH1& h, Double_t min, Double_t max, TString option) {
+      std::pair<int, int> binsX;
+      std::pair<double, double> valsX;
+      Int_t nBins = 0;
+      CropAxis(h.GetXaxis(), nBins, binsX, valsX, min, max, option);
+
+      TH1D* nh  = new TH1D(h.GetName(), h.GetTitle(), nBins, valsX.first, valsX.second);
+      int count = 0;
+      for (int i = binsX.first; i <= binsX.second; i++) {
+        nh->SetBinContent(++count, h.GetBinContent(i));
+        nh->SetBinError(count, h.GetBinError(i));
+      }
+      return nh;
+    }
+
+    TH2D* Crop2D(const TH2& h, Double_t minX, Double_t maxX, Double_t minY, Double_t maxY, TString option) {
+      Int_t nBinsX, nBinsY;
+      std::pair<int, int> binsX, binsY;
+      std::pair<double, double> valsX, valsY;
+      CropAxis(h.GetXaxis(), nBinsX, binsX, valsX, minX, maxX, option);
+      CropAxis(h.GetYaxis(), nBinsY, binsY, valsY, minY, maxY, option);
+      TH2D* nh   = new TH2D(h.GetName(), h.GetTitle(), nBinsX, valsX.first, valsX.second, nBinsY, valsY.first, valsY.second);
+      int countX = 0;
+      int countY = 0;
+      for (int i = binsX.first; i <= binsX.second; i++) {
+        ++countX;
+        for (int j = binsY.first; j <= binsY.second; j++) {
+          ++countY;
+          nh->SetBinContent(countX, countY, h.GetBinContent(i, j));
+          nh->SetBinError(countX, countY, h.GetBinError(i, j));
+        }
+      }
+      return nh;
+    }
+
+    TH3D* Crop3D(const TH3& h,
+                 Double_t minX,
+                 Double_t maxX,
+                 Double_t minY,
+                 Double_t maxY,
+                 Double_t minZ,
+                 Double_t maxZ,
+                 TString option) {
+      std::pair<int, int> X, Y, Z;
+      std::pair<double, double> valsX, valsY, valsZ;
+
+      Int_t nBinsX, nBinsY, nBinsZ;
+      CropAxis(h.GetXaxis(), nBinsX, X, valsX, minX, maxX, option);
+      CropAxis(h.GetYaxis(), nBinsY, Y, valsY, minY, maxY, option);
+      CropAxis(h.GetZaxis(), nBinsZ, Z, valsZ, minZ, maxZ, option);
+      TH3D* nh   = new TH3D(h.GetName(),
+                          h.GetTitle(),
+                          nBinsX,
+                          valsX.first,
+                          valsX.second,
+                          nBinsY,
+                          valsY.first,
+                          valsY.second,
+                          nBinsZ,
+                          valsZ.first,
+                          valsZ.second);
+      int countX = 0;
+      int countY = 0;
+      int countZ = 0;
+      for (int i = X.first; i <= X.second; i++) {
+        ++countX;
+        countY = 0;
+        for (int j = Y.first; j <= Y.second; j++) {
+          ++countY;
+          countZ = 0;
+          for (int k = Z.first; k <= Z.second; k++) {
+            ++countZ;
+            nh->SetBinContent(countX, countY, countZ, h.GetBinContent(i, j, k));
+            nh->SetBinError(countX, countY, countZ, h.GetBinError(i, j, k));
+          }
+        }
+      }
+      return nh;
     }
   }  // namespace Std
 }  // namespace Hal

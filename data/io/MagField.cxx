@@ -16,4 +16,11 @@ namespace Hal {
     // TODO Auto-generated destructor stub
   }
 
+  void MagField::GetFieldValue(const Double_t point[3], Double_t* bField) const {
+    auto field = GetField(point[0], point[1], point[2]);
+    bField[0]  = field.X();
+    bField[1]  = field.Y();
+    bField[2]  = field.Z();
+  }
+
 }  // namespace Hal

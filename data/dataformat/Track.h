@@ -280,6 +280,11 @@ namespace Hal {
      */
     virtual void ResetTrack(Int_t thisID = -1, Event* event = nullptr);
     /**
+     * rotate particle in Z-axis
+     * @param angle
+     */
+    virtual void RotateZ(Double_t angle);
+    /**
      *
      * @return pointer to event that own this track
      */

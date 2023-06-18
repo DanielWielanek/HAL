@@ -34,6 +34,7 @@ chains/TrackAnaChain.cxx
 chains/TwoTrackAnaChain.cxx
 on_the_fly/SplitedTrackToStatusTask.cxx
 on_the_fly/BoostTask.cxx
+on_the_fly/EventRotateTask.cxx
 on_the_fly/MiniEventTask.cxx
 on_the_fly/CopyDataTask.cxx
 on_the_fly/SmearTask.cxx

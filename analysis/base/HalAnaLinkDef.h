@@ -32,5 +32,6 @@
 #pragma link C++ class Hal::TwoTrackAnaChain + ;
 #pragma link C++ class Hal::Reader + ;
 #pragma link C++ class Hal::TrackColDumAna + ;
+#pragma link C++ class Hal::EventRotateTask + ;
 
 #endif

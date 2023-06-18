@@ -237,6 +237,11 @@ namespace Hal {
      */
     void SetDauDist(Double_t dauDist) { fDauDist = dauDist; }
     /**
+     * rotates particle around z-axis
+     * @param angle
+     */
+    virtual void RotateZ(Double_t angle);
+    /**
      * recalculates variables:
      * - momentum of V0
      * Armenteros alpha & pt

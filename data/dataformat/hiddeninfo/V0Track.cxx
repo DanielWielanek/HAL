@@ -85,4 +85,11 @@ namespace Hal {
     fMomPos        = v->fMomPos;
     fMomNeg        = v->fMomNeg;
   }
+
+  void V0Track::RotateZ(Double_t angle) {
+    fDecay.RotateZ(angle);
+    fMomNeg.RotateZ(angle);
+    fMomPos.RotateZ(angle);
+  }
+
 }  // namespace Hal

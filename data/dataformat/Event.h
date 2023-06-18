@@ -182,6 +182,11 @@ namespace Hal {
       fPhiError = phi_error;
     };
     /**
+     * rotate this event
+     * @param phi rotation angle
+     */
+    virtual void RotateZ(Double_t phi);
+    /**
      * print basic info about event
      **/
     virtual void Print(Option_t* opt = "") const;

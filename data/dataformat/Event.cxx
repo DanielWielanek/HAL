@@ -264,4 +264,17 @@ namespace Hal {
     return "[]";
   }
 
+  void Event::RotateZ(Double_t phi) {
+    fPhi = TVector2::Phi_mpi_pi(fPhi + phi);
+    for (int i = 0; i < fTotalTracksNo; i++) {
+      auto track = (Track*) fTracks->UncheckedAt(i);
+      track->RotateZ(phi);
+    }
+    const Int_t nVos = fV0sHiddenInfo->GetEntriesFast();
+    for (int i = 0; i < nVos; i++) {
+      auto vo = (V0Track*) fV0sHiddenInfo->UncheckedAt(i);
+      vo->RotateZ(phi);
+    }
+  }
+
 }  // namespace Hal

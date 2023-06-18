@@ -62,4 +62,11 @@ namespace Hal {
     }
     return Track::GetFieldName(fieldID);
   }
+
+  void McTrack::RotateZ(Double_t phi) {
+    Track::RotateZ(phi);
+    fFreez.RotateZ(phi);
+    fStart.RotateZ(phi);
+  }
+
 }  // namespace Hal

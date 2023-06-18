@@ -39,6 +39,7 @@ namespace Hal {
      */
     inline const TLorentzVector& GetStartPosition() const { return fStart; };
     virtual void CopyData(Track* other);
+    virtual void RotateZ(Double_t phi);
     void Boost(Double_t x, Double_t y, Double_t z);
     void SetPdg(Int_t pdg) { fPDG = pdg; };
     /**

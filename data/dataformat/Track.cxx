@@ -276,4 +276,6 @@ namespace Hal {
     return -FLT_MIN;
   }
 
+  void Track::RotateZ(Double_t angle) { fP.RotateZ(angle); }
+
 }  // namespace Hal

@@ -24,6 +24,7 @@ class TBranch;
 namespace Hal {
 
   class RootIOManager : public IOManager {
+  protected:
     Int_t fEntries;
     TString fOutFileName;
     TString fOutTreeName;
@@ -34,8 +35,6 @@ namespace Hal {
     std::vector<TObject**> fObjects;
     std::vector<TString> fInFileName;
     std::vector<std::vector<TString>> fFriendName;
-
-  protected:
     TString GetChain(TFile* file) const;
     virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
     virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
@@ -66,7 +65,7 @@ namespace Hal {
      * @return
      */
     virtual Int_t GetEntry(Int_t i);
-    Bool_t Init();
+    virtual Bool_t Init();
     /**
      * return pointer to the inputfile
      * @return
@@ -74,7 +73,7 @@ namespace Hal {
     TFile* GetInFile();
     void AddFile(TString name) { fInFileName.push_back(name); };
     void AddFriend(TString friendName, Int_t level);
-    void UpdateBranches();
+    virtual void UpdateBranches();
     void SetInChain(TChain* tempChain, Int_t ident = -1);
     void FillTree();
     virtual void CloseManager();

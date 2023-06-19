@@ -77,17 +77,8 @@ namespace Hal {
       if (ent1 != friendChain->GetEntries()) { Cout::PrintInfo("Different number of entries in chains", EInfo::kWarning); }
     }
 
-    for (auto chain : fInChain) {
-      TObjArray* list_branch = chain->GetListOfBranches();
-      for (int i = 0; i < list_branch->GetEntries(); i++) {
-        TBranch* branch = (TBranch*) list_branch->At(i);
-        TString name    = branch->GetName();
-        TObject** obj   = new TObject*();
-        fObjects.push_back(obj);
-        chain->SetBranchAddress(name, obj);
-        AddBranch(branch->GetName(), obj[0], IOManager::EBranchFlag::kIn);
-      }
-    }
+    FillBranches();
+
     fEntries = fInChain[0]->GetEntries();
 
     fOutFile = new TFile(fOutFileName, "recreate");
@@ -146,4 +137,22 @@ namespace Hal {
     }
     return 1;
   }
+
+  void RootIOManager::PushTObject(TObject** obj) { fObjects.push_back(obj); }
+
+  void RootIOManager::FillBranches() {
+    auto inchain = GetInChain();
+    for (auto chain : inchain) {
+      TObjArray* list_branch = chain->GetListOfBranches();
+      for (int i = 0; i < list_branch->GetEntries(); i++) {
+        TBranch* branch = (TBranch*) list_branch->At(i);
+        TString name    = branch->GetName();
+        TObject** obj   = new TObject*();
+        PushTObject(obj);
+        chain->SetBranchAddress(name, obj);
+        AddBranch(branch->GetName(), obj[0], IOManager::EBranchFlag::kIn);
+      }
+    }
+  }
+
 } /* namespace Hal */

@@ -33,7 +33,9 @@ namespace Hal {
     Object();
     /**
      * not used
-     * @return extraction type
+     * @return extraction type options:
+     * "String" - extract to string
+     * "Page" - extract to separate HTML page
      */
     virtual TString GetExtractType() const;
     /**

@@ -65,18 +65,13 @@ namespace Hal {
 
     void TaskManager::Exec(Option_t* option) {
       ++fProcessedEvents;
-      Bool_t goodEvent = kTRUE;
       for (auto trigger : fActiveTriggers) {
         trigger->Exec(option);
-        if (!trigger->IsEventGood()) {
-          goodEvent = kFALSE;
-          break;
-        }
+        if (!trigger->IsEventGood()) { return; }
       }
-      if (goodEvent)
-        for (auto task : fActiveTasks) {
-          task->Exec(option);
-        }
+      for (auto task : fActiveTasks) {
+        task->Exec(option);
+      }
     }
 
     void TaskManager::Finish() {

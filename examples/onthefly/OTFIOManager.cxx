@@ -51,7 +51,7 @@ namespace HalOTF {
 
   void IOManager::SetInChain(TChain* tempChain, Int_t ident) {}
 
-  Int_t IOManager::GetEntry(Int_t i) {
+  Int_t IOManager::GetEntry(Int_t i, Int_t flag) {
     if (i < fEntries) return 1;
     return -1;
   }

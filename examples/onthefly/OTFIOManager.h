@@ -36,7 +36,7 @@ namespace HalOTF {
     void SetOutput(TString name) { fOutFileName = name; }
     void SetOutTreeName(TString name) { fOutTreeName = name; }
     Int_t GetEntries() const;
-    Int_t GetEntry(Int_t i);
+    Int_t GetEntry(Int_t i, Int_t flag);
     Bool_t Init();
     TFile* GetInFile();
     void AddFriend(TString /*name*/) {};

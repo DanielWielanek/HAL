@@ -154,6 +154,7 @@
 // STD STUFF
 #pragma link C++ class std::vector < Hal::FitParam> + ;
 #pragma link C++ class std::vector < TString> + ;
+#pragma link C++ class std::vector < std::vector < TString>> + ;
 #pragma link C++ class std::map < TString, Double_t> + ;
 #pragma link C++ class std::map < TString, Int_t> + ;
 //#pragma link C++ class HalParameter+;

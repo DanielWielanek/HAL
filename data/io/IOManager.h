@@ -11,6 +11,7 @@
 
 #include <TList.h>
 #include <TObject.h>
+#include <TString.h>
 
 class TList;
 class TChain;
@@ -20,28 +21,30 @@ class TFile;
  */
 
 namespace Hal {
+  class Package;
   class MagField;
   class BranchInfo : public TObject {
   public:
     enum class EFlag { kInActive, kInPassive, kOut, kVirtual, kNull };
 
   private:
-    TString fName     = {""};
-    TObject* fPointer = {nullptr};
+    TString fBrName   = {""};
+    TObject* fPointer = {nullptr};  //!
     EFlag fFlag       = {EFlag::kNull};
 
   public:
     BranchInfo(TString name = "", TObject* pointer = nullptr, EFlag used = EFlag::kNull) :
-      fName(name), fPointer(pointer), fFlag(used) {}
+      fBrName(name), fPointer(pointer), fFlag(used) {}
     EFlag GetFlag() const { return fFlag; }
-    TString GetBranchName() const { return fName; }
+    TString GetBranchName() const { return fBrName; }
     void SetFlag(EFlag Flag = EFlag::kNull) { fFlag = Flag; }
-    void SetBranchName(const TString name) { fName = name; }
+    void SetBranchName(const TString name) { fBrName = name; }
     TObject* GetPointer() const { return fPointer; }
     void SetPointer(TObject* pointer = nullptr) { pointer = fPointer; }
     virtual ~BranchInfo() {};
     ClassDef(BranchInfo, 1)
   };
+
   class IOManager : public TObject {
   public:
   private:
@@ -53,9 +56,7 @@ namespace Hal {
     /**
      * list of branches
      */
-    std::vector<BranchInfo> fBranches;
-
-  protected:
+    std::vector<Hal::BranchInfo> fBranches;
     /**
      * add branch
      * @param name name of the branch

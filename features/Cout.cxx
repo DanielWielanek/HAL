@@ -6,6 +6,7 @@
  */
 
 #include "Cout.h"
+#include <TRegexp.h>
 #include <iostream>
 //#ifndef fgLineLength
 //#define fgLineLength			100
@@ -256,22 +257,35 @@ namespace Hal {
 
   TString Cout::GetColor(Color_t Color) {
 #ifdef __linux__
-    if (Color == kGray) {
-      return ("\e[0;30m");
-    } else if (Color == kRed) {
-      return ("\e[0;31m");
-    } else if (Color == kOrange || Color == kYellow) {
-      return ("\e[0;33m");
-    } else if (Color == kBlue) {
-      return ("\e[0;34m");
-    } else if (Color == kCyan) {
-      return ("\e[0;36m");
-    } else if (Color == kWhite) {
-      return ("\e[0;37m");
-    } else if (Color == kGreen) {
-      return ("\e[0;32m");
-    } else if (Color == kViolet) {
-      return ("\e[0;35m");
+    switch (Color) {
+      case kGray: {
+        return ("\e[0;30m");
+      } break;
+      case kRed: {
+        return ("\e[0;31m");
+      } break;
+      case kOrange: {
+        return ("\e[0;33m");
+      } break;
+      case kYellow: {
+        return ("\e[0;33m");
+      } break;
+      case kBlue: {
+        return ("\e[0;34m");
+      } break;
+      case kCyan: {
+        return ("\e[0;36m");
+      } break;
+      case kWhite: {
+        return ("\e[0;37m");
+      } break;
+      case kGreen: {
+        return ("\e[0;32m");
+      } break;
+      case kViolet: {
+        return ("\e[0;35m");
+      } break;
+      default: break;
     }
 #endif
     return " ";

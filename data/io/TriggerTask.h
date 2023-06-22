@@ -15,8 +15,10 @@
  * special class for fast data selection - works only with AnalysisManager
  */
 namespace Hal {
+  class Package;
   class TriggerTask : public Task {
-    Bool_t fGood = {kFALSE};
+    Bool_t fGood   = {kFALSE};
+    Bool_t fActive = {kFALSE};
 
   protected:
     void MarkAsGood() { fGood = kTRUE; };
@@ -24,9 +26,11 @@ namespace Hal {
 
   public:
     TriggerTask();
+    void MarkAsActive(Bool_t active = kTRUE) { fActive = active; };
     Bool_t IsEventGood() const { return fGood; }
     virtual ~TriggerTask();
     TriggerTask(const TriggerTask& other) = default;
+    Package* Report() const;
     ClassDef(TriggerTask, 1)
   };
 }  // namespace Hal

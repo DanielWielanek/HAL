@@ -23,12 +23,13 @@ namespace Hal {
   class Reader;
   class TriggerTask;
   class AnalysisManager : public TObject {
-    UInt_t fProcessedEvents;
-    MagField* fField;
-    Source* fSource;
+    UInt_t fProcessedEvents = {0};
+    Bool_t fTriggersEnabled = {kFALSE};
+    MagField* fField        = {nullptr};
+    Source* fSource         = {nullptr};
     TString fOutputFile;
-    TString fOutTreeName;
-    IOManager* fManager;
+    TString fOutTreeName = {"HalTree"};
+    IOManager* fManager  = {nullptr};
     std::vector<TriggerTask*> fTriggers;
     std::vector<TriggerTask*> fActiveTriggers;
     std::vector<TriggerTask*> fPassiveTriggers;
@@ -36,6 +37,7 @@ namespace Hal {
     std::vector<Task*> fActiveTasks;
     std::vector<Task*> fPassiveTasks;
     void Finish();
+    void DoStep(Int_t entry);
 
   public:
     AnalysisManager();

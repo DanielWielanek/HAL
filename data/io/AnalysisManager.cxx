@@ -27,8 +27,7 @@
 #include <TFile.h>
 
 namespace Hal {
-  AnalysisManager::AnalysisManager() :
-    fProcessedEvents(0), fField(nullptr), fSource(nullptr), fOutTreeName("HalTree"), fManager(nullptr) {}
+  AnalysisManager::AnalysisManager() {}
 
   Bool_t AnalysisManager::Init() {
     if (fSource == nullptr) exit(0);
@@ -46,6 +45,7 @@ namespace Hal {
           fPassiveTriggers.push_back(task);
         } break;
         case Task::EInitFlag::kSUCCESS: {
+          task->MarkAsActive();
           fActiveTriggers.push_back(task);
         } break;
         case Task::EInitFlag::kFATAL: {
@@ -69,6 +69,7 @@ namespace Hal {
         } break;
       }
     }
+    if (fActiveTriggers.size() > 0) { fTriggersEnabled = kTRUE; }
     return kTRUE;
   }
 
@@ -81,25 +82,9 @@ namespace Hal {
     if (start > fManager->GetEntries()) { start = fManager->GetEntries(); }
     if (end > fManager->GetEntries()) { end = fManager->GetEntries(); }
     Cout::PrintInfo(Form("Run from %i to %i events", start, end), EInfo::kInfo);
-    Bool_t triggers = kFALSE;
-    if (fActiveTriggers.size() > 0) triggers = kTRUE;
-
     for (int i = start; i < end; i++) {
       ++fProcessedEvents;
-      fManager->GetEntry(i, 0);
-      Bool_t badEvent = kFALSE;
-      if (triggers) {
-        for (auto task : fActiveTriggers) {
-          task->Exec("");
-          badEvent != task->IsEventGood();
-          if (badEvent) break;
-        }
-      }
-      if (badEvent) break;
-      fManager->GetEntry(i, 1);
-      for (auto task : fActiveTasks) {
-        task->Exec("");
-      }
+      DoStep(i);
       fManager->FillTree();
     }
     Finish();
@@ -124,6 +109,19 @@ namespace Hal {
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetInputFileName(), 'f'));
 
+    TList* trigList = new TList();
+    trigList->SetName("EventTriggers");
+    for (auto task : fTriggers) {
+      TString name  = task->ClassName();
+      TString label = "Active";
+      for (auto probeTask : fPassiveTasks) {
+        trigList->AddObject(probeTask->Report());
+      }
+      trigList->AddLast(new ParameterString(name, label));
+    }
+
+    metadata_new->AddObject(trigList);
+
     TList* list = new TList();
     list->SetName("Tasks");
     for (auto task : fTasks) {
@@ -136,8 +134,10 @@ namespace Hal {
     }
     metadata_new->AddObject(list);
 
+
+    TDirectory* dir = (TDirectory*) gFile;
+
     GoToDir("HalInfo");
-    TDirectory* dir        = (TDirectory*) gFile;
     TDirectory* metadatata = (TDirectory*) dir->Get("HalInfo");
     if (metadatata->Get("RunInfo")) {
       delete metadata_new;
@@ -167,5 +167,19 @@ namespace Hal {
   void AnalysisManager::AddReader(Reader* reader) {}
 
   void AnalysisManager::AddTrigger(TriggerTask* trigger) {}
+
+  void AnalysisManager::DoStep(Int_t entry) {
+    fManager->GetEntry(entry, 0);
+    if (fTriggersEnabled) {
+      for (auto task : fActiveTriggers) {
+        task->Exec("");
+        if (!task->IsEventGood()) return;
+      }
+    }
+    fManager->GetEntry(entry, 1);
+    for (auto task : fActiveTasks) {
+      task->Exec("");
+    }
+  }
 
 }  // namespace Hal

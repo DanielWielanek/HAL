@@ -18,6 +18,7 @@
 #pragma link C++ enum Hal::DataFieldID::Event::EExp;
 #pragma link C++ enum Hal::DataFieldID::Event::EMc;
 #pragma link C++ enum Hal::DataFieldID::Event::EV0;
+#pragma link C++ enum Hal::BranchInfo::EFlag;
 
 #pragma link C++ class Hal::DataFormatManager + ;
 #pragma link C++ class Hal::Event + ;
@@ -63,4 +64,6 @@
 #pragma link C++ class Hal::RootSource + ;
 #pragma link C++ class Hal::Reader + ;
 #pragma link C++ class Hal::BranchInfo + ;
+#pragma link C++ class std::vector < Hal::BranchInfo> + ;
+#pragma link C++ class std::vector < Hal::TriggerTask> + ;
 #endif

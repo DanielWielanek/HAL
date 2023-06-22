@@ -21,6 +21,19 @@ class TFile;
 namespace Hal {
   class MagField;
   class IOManager : public TObject {
+  public:
+    /**
+     * flag that describe type of branch
+     */
+    enum class EBranchFlag { kInActive, kInPassive, kOut, kVirtual, kNull };
+    struct BranchInfo {
+      BranchInfo(TString name, TObject* pointer, EBranchFlag used = EBranchFlag::kNull) :
+        fName(name), fPointer(pointer), fFlag(used) {}
+      TString fName     = {""};
+      TObject* fPointer = {nullptr};
+      EBranchFlag fFlag = {EBranchFlag::kNull};
+    };
+
   private:
     MagField* fField;
     std::vector<TString> fBranchNameList;
@@ -28,23 +41,11 @@ namespace Hal {
 
   protected:
     /**
-     * list of input branches
+     * list of branches
      */
-    std::vector<std::pair<TString, TObject*>> fInBranches;
-    /**
-     * list of output branches that should be stored in output file
-     */
-    std::vector<std::pair<TString, TObject*>> fOutBranches;
-    /**
-     * list of output branches that are only in memory
-     */
-    std::vector<std::pair<TString, TObject*>> fOutVirtual;
+    std::vector<BranchInfo> fBranches;
 
   protected:
-    /**
-     * flag that describe type of branch
-     */
-    enum class EBranchFlag { kAny, kIn, kOut, kVirtual };
     /**
      * add branch
      * @param name name of the branch
@@ -55,10 +56,9 @@ namespace Hal {
     /**
      * look for branch with given name
      * @param name
-     * @param flag
      * @return
      */
-    std::pair<TString, TObject*> FindBranch(TString name, EBranchFlag flag) const;
+    BranchInfo FindBranch(TString name) const;
     /**
      * update the branch list
      */
@@ -81,7 +81,6 @@ namespace Hal {
     virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) = 0;
 
   public:
-    enum class EBranchStatus { kInput, kOutput, kVirtual, kNull };
     IOManager() : fField(nullptr), fBranchNameList(), fInputName("unknown") {};
     /**
      *
@@ -90,10 +89,11 @@ namespace Hal {
     virtual Int_t GetEntries() const = 0;
     /**
      * get entry from data
-     * @param i
+     * @param i entry number
+     * @param flag entry flag if 1 get all branches
      * @return
      */
-    virtual Int_t GetEntry(Int_t i) = 0;
+    virtual Int_t GetEntry(Int_t i, Int_t flag) = 0;
     /**
      * initialize this task
      * @return
@@ -155,7 +155,7 @@ namespace Hal {
      * @param BrName
      * @return
      */
-    EBranchStatus GetBranchStatus(const char* BrName);
+    EBranchFlag GetBranchStatus(const char* BrName);
     /**
      * return object from branch, return nullptr if object /branch does not exist
      * @param BrName

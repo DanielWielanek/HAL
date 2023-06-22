@@ -24,63 +24,20 @@
 namespace Hal {
 
   void IOManager::AddBranch(TString name, TObject* object, EBranchFlag flag) {
-    for (auto str : fInBranches) {
-      if (str.first.EqualTo(name)) return;
+    for (auto str : fBranches) {
+      if (str.fName.EqualTo(name)) return;
     }
-    for (auto str : fOutBranches) {
-      if (str.first.EqualTo(name)) return;
-    }
-    for (auto str : fOutVirtual) {
-      if (str.first.EqualTo(name)) return;
-    }
-    switch (flag) {
-      case EBranchFlag::kIn: {
-        fInBranches.push_back(std::pair<TString, TObject*>(name, object));
-      } break;
-      case EBranchFlag::kOut: {
-        fOutBranches.push_back(std::pair<TString, TObject*>(name, object));
-      } break;
-      case EBranchFlag::kVirtual: {
-        fOutVirtual.push_back(std::pair<TString, TObject*>(name, object));
-      } break;
-      default: {
-        Cout::PrintInfo(Form("Bad flag in %s-> AddBranch(%s)", ClassName(), name.Data()), EInfo::kWarning);
-        return;
-      } break;
-    }
+    fBranches.push_back(BranchInfo(name, object, flag));
     fBranchNameList.push_back(name);
   }
 
-  std::pair<TString, TObject*> IOManager::FindBranch(TString name, EBranchFlag flag) const {
-    switch (flag) {
-      case EBranchFlag::kIn: {
-        for (auto branch : fInBranches) {
-          if (branch.first.EqualTo(name)) return branch;
-        }
-      } break;
-      case EBranchFlag::kOut: {
-        for (auto branch : fOutBranches) {
-          if (branch.first.EqualTo(name)) return branch;
-        }
-      } break;
-      case EBranchFlag::kVirtual: {
-        for (auto branch : fOutVirtual) {
-          if (branch.first.EqualTo(name)) return branch;
-        }
-      } break;
-      default: {
-        for (auto branch : fInBranches) {
-          if (branch.first.EqualTo(name)) return branch;
-        }
-        for (auto branch : fOutBranches) {
-          if (branch.first.EqualTo(name)) return branch;
-        }
-        for (auto branch : fOutVirtual) {
-          if (branch.first.EqualTo(name)) return branch;
-        }
-      } break;
+  Hal::IOManager::BranchInfo IOManager::FindBranch(TString name) const {
+    for (auto branch : fBranches) {
+      if (branch.fName.EqualTo(name)) return branch;
     }
-    return std::pair<TString, TObject*>(name, nullptr);
+    BranchInfo br(name, nullptr, EBranchFlag::kNull);
+    br.fName = name;
+    return br;
   }
 
   void IOManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
@@ -101,29 +58,32 @@ namespace Hal {
     RegisterInternal(name, Foldername, obj, toFile);
   }
 
-  IOManager::EBranchStatus IOManager::GetBranchStatus(const char* BrName) {
+  IOManager::EBranchFlag IOManager::GetBranchStatus(const char* BrName) {
     RefreshBranchList();
     TString name = BrName;
-    for (auto branch : fInBranches) {
-      if (branch.first.EqualTo(name)) return EBranchStatus::kInput;
+    for (auto branch : fBranches) {
+      if (branch.fName.EqualTo(name)) return branch.fFlag;
     }
-    for (auto branch : fOutVirtual) {
-      if (branch.first.EqualTo(name)) return EBranchStatus::kVirtual;
-    }
-    for (auto branch : fOutBranches) {
-      if (branch.first.EqualTo(name)) return EBranchStatus::kOutput;
-    }
-    return IOManager::EBranchStatus::kNull;
+    return IOManager::EBranchFlag::kNull;
   }
 
   TObject* Hal::IOManager::GetObject(const char* BrName) {
-    std::pair<TString, TObject*> branch = FindBranch(BrName, EBranchFlag::kAny);
-    if (branch.second == nullptr) {
-      RefreshBranchList();
-      // try again if branch not found
-      branch = FindBranch(BrName, EBranchFlag::kAny);
+    TString name = BrName;
+    for (auto& branch : fBranches) {
+      if (branch.fName.EqualTo(name)) {
+        if (branch.fFlag == EBranchFlag::kInPassive) { branch.fFlag = EBranchFlag::kInActive; }
+        return branch;
+      }
     }
-    return branch.second;
+    // refresh and try again
+    RefreshBranchList();
+    for (auto& branch : fBranches) {
+      if (branch.fName.EqualTo(name)) {
+        if (branch.fFlag == EBranchFlag::kInPassive) { branch.fFlag = EBranchFlag::kInActive; }
+        return branch;
+      }
+    }
+    return nullptr;
   }
 
   void IOManager::PrintInfo() {
@@ -143,14 +103,12 @@ namespace Hal {
     UpdateBranches();
     RefreshBranchList();
     Cout::Database({"Branch Name", "Type"});
-    for (auto branch : fInBranches) {
-      Cout::Database({branch.first, "INPUT"});
-    }
-    for (auto branch : fOutBranches) {
-      Cout::Database({branch.first, "OUTPUT"});
-    }
-    for (auto branch : fOutVirtual) {
-      Cout::Database({branch.first, "VIRTUAL"});
+    TString types[]     = {"Input (Active)", "Input (Passive)", "Output", "Virtual"};
+    EBranchFlag flags[] = {EBranchFlag::kInActive, EBranchFlag::kInPassive, EBranchFlag::kOut, EBranchFlag::kVirtual};
+    for (int i = 0; i < 4; i++) {
+      for (auto branch : fBranches) {
+        if (branch.fFlag == flags[i]) Cout::Database({branch.fName, types[i]});
+      }
     }
   }
 

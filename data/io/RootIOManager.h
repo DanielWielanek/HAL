@@ -69,9 +69,10 @@ namespace Hal {
     /**
      * get entry from input root file
      * @param i
+     * @param flag - flag
      * @return
      */
-    Int_t GetEntry(Int_t i);
+    Int_t GetEntry(Int_t i, Int_t flag = 1);
     Bool_t Init();
     /**
      * return pointer to the inputfile

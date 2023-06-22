@@ -50,7 +50,7 @@ namespace Hal {
           case 0:  // not exist
             break;
           case 1:  // in file
-            AddBranch(name, obj, EBranchFlag::kIn);
+            AddBranch(name, obj, EBranchFlag::kInActive);
             break;
           case 2:  // memory
             AddBranch(name, obj, EBranchFlag::kVirtual);

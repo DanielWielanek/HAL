@@ -131,9 +131,9 @@ namespace Hal {
     fOutFile->Close();
   }
 
-  Int_t Hal::RootIOManager::GetEntry(Int_t i) {
+  Int_t Hal::RootIOManager::GetEntry(Int_t i, Int_t flag) {
     for (auto chain : fInChain) {
-      chain->GetEntry(i);
+      chain->GetEntry(i, flag);
     }
     return 1;
   }
@@ -150,7 +150,7 @@ namespace Hal {
         TObject** obj   = new TObject*();
         PushTObject(obj);
         chain->SetBranchAddress(name, obj);
-        AddBranch(branch->GetName(), obj[0], IOManager::EBranchFlag::kIn);
+        AddBranch(branch->GetName(), obj[0], IOManager::EBranchFlag::kInPassive);
       }
     }
   }

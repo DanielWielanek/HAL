@@ -93,7 +93,8 @@ namespace Hal {
     TFile* file            = new TFile(filename);
     TDirectory* global_dir = (TDirectory*) file->Get("HalInfo");
     if (global_dir) {
-      TString temp_dir         = Form("%s/global_data", fDir.Data());
+      TString temp_dir = Form("%s/global_data", fDir.Data());
+      gSystem->MakeDirectory(temp_dir);
       Package* pack            = (Package*) file->Get("HalInfo/RunInfo");
       ParameterString* version = (ParameterString*) pack->GetObjectByName("Software ver");
       fSoftVer                 = Hal::Std::VersionId(version->GetValue());
@@ -169,7 +170,8 @@ namespace Hal {
     TDirectory* global_dir = (TDirectory*) file->Get("HalInfo");
     if (global_dir) {
       HtmlCell dummyCell;
-      TString temp_dir         = Form("%s/global_data", fDir.Data());
+      TString temp_dir = Form("%s/global_data", fDir.Data());
+      gSystem->MakeDirectory(temp_dir);
       Package* pack            = (Package*) file->Get("HalInfo/RunInfo");
       ParameterString* version = (ParameterString*) pack->GetObjectByName("Software ver");
       fSoftVer                 = Hal::Std::VersionId(version->GetValue());
@@ -228,6 +230,7 @@ namespace Hal {
     if (pack_meta) {
       HtmlCell dummyCell;
       TString temp_dir = Form("%s/global_data/", fDir.Data());
+      gSystem->MakeDirectory(temp_dir);
       CreatePackageList(dummyCell, pack_meta, eTableStyle::kMetaData, temp_dir, 2, "drawmerged");
       fHTML->AddStringContent(dummyCell.GetContent());
     }
@@ -431,6 +434,7 @@ namespace Hal {
     TString inject           = "";
     if (depth == 2) { inject = out[out.size() - 1]; }
     if (depth == 3) { inject = Form("%s/%s", out[out.size() - 2].Data(), out[out.size() - 1].Data()); }
+
     if (inject.Length() > 0) { inject = inject + "/"; }
     for (int i = 0; i < pack->GetEntries(); i++) {
       TObject* object        = pack->GetObject(i);
@@ -448,7 +452,6 @@ namespace Hal {
         row.AddContent(first_cell);
         row.AddContent(HtmlCell(object->ClassName()));
         row.AddContent(HtmlCell(oryginal_class));
-
         row.AddContent(HtmlCell(AddToUrl(inject, HtmlCore::HTMLExtract(object, i, path))));
         halTable.AddContent(row);
 
@@ -463,7 +466,7 @@ namespace Hal {
         row.AddContent(first_cell);
         row.AddContent(HtmlCell(object->ClassName()));
         row.AddContent(HtmlCell(oryginal_class));
-        row.AddContent(HtmlCell(AddToUrl(inject, HtmlCore::HTMLExtract(object, fTObjectCounter["TList"]++, path))));
+        row.AddContent(HtmlCell(AddToUrl(inject, HtmlCore::HTMLExtract(object, fTObjectCounter["PList"]++, path))));
         halTable.AddContent(row);
       } else {
         CreateListTable(halTable, (TList*) object, fTObjectCounter["TList"]++, path, inject, styleCell);

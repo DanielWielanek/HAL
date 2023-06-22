@@ -28,7 +28,7 @@ namespace Hal {
 
   Int_t DataManager::GetEntries() const { return fManager->GetEntries(); }
 
-  Int_t DataManager::GetEntry(Int_t i) { return fManager->GetEntry(i); }
+  Int_t DataManager::GetEntry(Int_t i, Int_t flag) { return fManager->GetEntry(i, flag); }
 
   Bool_t DataManager::Init() { return fManager->Init(); }
 
@@ -45,7 +45,7 @@ namespace Hal {
   void DataManager::UpdateBranches() { fManager->UpdateBranches(); }
 
   Bool_t DataManager::CheckBranch(const char* BrName) {
-    if (fManager->GetBranchStatus(BrName) != IOManager::EBranchStatus::kNull) return kTRUE;
+    if (fManager->GetBranchStatus(BrName) != BranchInfo::EFlag::kNull) return kTRUE;
     return kFALSE;
   }
 

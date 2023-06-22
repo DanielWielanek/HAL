@@ -18,22 +18,32 @@ class TFile;
 /**
  * abstract class that represents almost all I/O operations (except writing histograms after completion of analysis
  */
+
 namespace Hal {
   class MagField;
+  class BranchInfo : public TObject {
+  public:
+    enum class EFlag { kInActive, kInPassive, kOut, kVirtual, kNull };
+
+  private:
+    TString fName     = {""};
+    TObject* fPointer = {nullptr};
+    EFlag fFlag       = {EFlag::kNull};
+
+  public:
+    BranchInfo(TString name = "", TObject* pointer = nullptr, EFlag used = EFlag::kNull) :
+      fName(name), fPointer(pointer), fFlag(used) {}
+    EFlag GetFlag() const { return fFlag; }
+    TString GetBranchName() const { return fName; }
+    void SetFlag(EFlag Flag = EFlag::kNull) { fFlag = Flag; }
+    void SetBranchName(const TString name) { fName = name; }
+    TObject* GetPointer() const { return fPointer; }
+    void SetPointer(TObject* pointer = nullptr) { pointer = fPointer; }
+    virtual ~BranchInfo() {};
+    ClassDef(BranchInfo, 1)
+  };
   class IOManager : public TObject {
   public:
-    /**
-     * flag that describe type of branch
-     */
-    enum class EBranchFlag { kInActive, kInPassive, kOut, kVirtual, kNull };
-    struct BranchInfo {
-      BranchInfo(TString name, TObject* pointer, EBranchFlag used = EBranchFlag::kNull) :
-        fName(name), fPointer(pointer), fFlag(used) {}
-      TString fName     = {""};
-      TObject* fPointer = {nullptr};
-      EBranchFlag fFlag = {EBranchFlag::kNull};
-    };
-
   private:
     MagField* fField;
     std::vector<TString> fBranchNameList;
@@ -52,7 +62,7 @@ namespace Hal {
      * @param object pointer to object
      * @param flag
      */
-    void AddBranch(TString name, TObject* object, EBranchFlag flag);
+    void AddBranch(TString name, TObject* object, BranchInfo::EFlag flag);
     /**
      * look for branch with given name
      * @param name
@@ -155,7 +165,7 @@ namespace Hal {
      * @param BrName
      * @return
      */
-    EBranchFlag GetBranchStatus(const char* BrName);
+    BranchInfo::EFlag GetBranchStatus(const char* BrName);
     /**
      * return object from branch, return nullptr if object /branch does not exist
      * @param BrName

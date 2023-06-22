@@ -150,7 +150,7 @@ namespace Hal {
         TObject** obj   = new TObject*();
         PushTObject(obj);
         chain->SetBranchAddress(name, obj);
-        AddBranch(branch->GetName(), obj[0], IOManager::EBranchFlag::kInPassive);
+        AddBranch(branch->GetName(), obj[0], BranchInfo::EFlag::kInPassive);
       }
     }
   }

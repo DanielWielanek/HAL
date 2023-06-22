@@ -36,7 +36,7 @@ namespace Hal {
      * @return true if BrName exists
      */
     Bool_t CheckBranch(const char* BrName);
-    Int_t GetEntry(Int_t i);
+    Int_t GetEntry(Int_t i, Int_t flag);
     Int_t GetEntries() const;
     Bool_t Init();
     /**

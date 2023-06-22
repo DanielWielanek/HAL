@@ -23,64 +23,64 @@
 
 namespace Hal {
 
-  void IOManager::AddBranch(TString name, TObject* object, EBranchFlag flag) {
+  void IOManager::AddBranch(TString name, TObject* object, BranchInfo::EFlag flag) {
     for (auto str : fBranches) {
-      if (str.fName.EqualTo(name)) return;
+      if (str.GetBranchName().EqualTo(name)) return;
     }
     fBranches.push_back(BranchInfo(name, object, flag));
     fBranchNameList.push_back(name);
   }
 
-  Hal::IOManager::BranchInfo IOManager::FindBranch(TString name) const {
+  Hal::BranchInfo IOManager::FindBranch(TString name) const {
     for (auto branch : fBranches) {
-      if (branch.fName.EqualTo(name)) return branch;
+      if (branch.GetBranchName().EqualTo(name)) return branch;
     }
-    BranchInfo br(name, nullptr, EBranchFlag::kNull);
-    br.fName = name;
+    BranchInfo br(name, nullptr, BranchInfo::EFlag::kNull);
+    br.GetBranchName() = name;
     return br;
   }
 
   void IOManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
     if (toFile) {
-      AddBranch(name, obj, EBranchFlag::kOut);
+      AddBranch(name, obj, BranchInfo::EFlag::kOut);
     } else {
-      AddBranch(name, obj, EBranchFlag::kVirtual);
+      AddBranch(name, obj, BranchInfo::EFlag::kVirtual);
     }
     RegisterInternal(name, folderName, obj, toFile);
   }
 
   void IOManager::Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
     if (toFile) {
-      AddBranch(name, obj, EBranchFlag::kOut);
+      AddBranch(name, obj, BranchInfo::EFlag::kOut);
     } else {
-      AddBranch(name, obj, EBranchFlag::kVirtual);
+      AddBranch(name, obj, BranchInfo::EFlag::kVirtual);
     }
     RegisterInternal(name, Foldername, obj, toFile);
   }
 
-  IOManager::EBranchFlag IOManager::GetBranchStatus(const char* BrName) {
+  BranchInfo::EFlag IOManager::GetBranchStatus(const char* BrName) {
     RefreshBranchList();
     TString name = BrName;
     for (auto branch : fBranches) {
-      if (branch.fName.EqualTo(name)) return branch.fFlag;
+      if (branch.GetBranchName().EqualTo(name)) return branch.GetFlag();
     }
-    return IOManager::EBranchFlag::kNull;
+    return BranchInfo::EFlag::kNull;
   }
 
   TObject* Hal::IOManager::GetObject(const char* BrName) {
     TString name = BrName;
     for (auto& branch : fBranches) {
-      if (branch.fName.EqualTo(name)) {
-        if (branch.fFlag == EBranchFlag::kInPassive) { branch.fFlag = EBranchFlag::kInActive; }
-        return branch;
+      if (branch.GetBranchName().EqualTo(name)) {
+        if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) { branch.SetFlag(BranchInfo::EFlag::kInActive); }
+        return branch.GetPointer();
       }
     }
     // refresh and try again
     RefreshBranchList();
     for (auto& branch : fBranches) {
-      if (branch.fName.EqualTo(name)) {
-        if (branch.fFlag == EBranchFlag::kInPassive) { branch.fFlag = EBranchFlag::kInActive; }
-        return branch;
+      if (branch.GetBranchName().EqualTo(name)) {
+        if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) { branch.SetFlag(BranchInfo::EFlag::kInActive); }
+        return branch.GetPointer();
       }
     }
     return nullptr;
@@ -103,11 +103,12 @@ namespace Hal {
     UpdateBranches();
     RefreshBranchList();
     Cout::Database({"Branch Name", "Type"});
-    TString types[]     = {"Input (Active)", "Input (Passive)", "Output", "Virtual"};
-    EBranchFlag flags[] = {EBranchFlag::kInActive, EBranchFlag::kInPassive, EBranchFlag::kOut, EBranchFlag::kVirtual};
+    TString types[]           = {"Input (Active)", "Input (Passive)", "Output", "Virtual"};
+    BranchInfo::EFlag flags[] = {
+      BranchInfo::EFlag::kInActive, BranchInfo::EFlag::kInPassive, BranchInfo::EFlag::kOut, BranchInfo::EFlag::kVirtual};
     for (int i = 0; i < 4; i++) {
       for (auto branch : fBranches) {
-        if (branch.fFlag == flags[i]) Cout::Database({branch.fName, types[i]});
+        if (branch.GetFlag() == flags[i]) Cout::Database({branch.GetBranchName(), types[i]});
       }
     }
   }

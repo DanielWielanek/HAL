@@ -62,4 +62,5 @@
 #pragma link C++ class Hal::IOManager + ;
 #pragma link C++ class Hal::RootSource + ;
 #pragma link C++ class Hal::Reader + ;
+#pragma link C++ class Hal::BranchInfo + ;
 #endif

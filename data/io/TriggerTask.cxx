@@ -11,7 +11,5 @@ namespace Hal {
 
   TriggerTask::TriggerTask() {}
 
-  Bool_t TriggerTask::EventGood() { return kTRUE; }
-
   TriggerTask::~TriggerTask() {}
 }  // namespace Hal

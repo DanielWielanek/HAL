@@ -198,6 +198,11 @@ namespace Hal {
      * close manager (close root file, write the tree with data)
      */
     virtual void CloseManager() {};
+    /**
+     *
+     * @return report
+     */
+    virtual Package* Report() const;
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

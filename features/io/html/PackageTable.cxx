@@ -12,7 +12,9 @@
 #include "HtmlFile.h"
 #include "HtmlObject.h"
 #include "HtmlTable.h"
+#include "Parameter.h"
 
+#include "Cout.h"
 #include "Std.h"
 
 #include <initializer_list>
@@ -67,6 +69,32 @@ namespace Hal {
     F.AddContent(table);
     F.Save();
     return HtmlCore::GetUrl(Form("ptable_%i/ptable.html", no), ClassName());
+  }
+
+  Long64_t PackageTable::Merge(TCollection* collection) {
+    if (collection) {
+      PackageTable* pack = NULL;
+      TIter iterator(collection);
+      while ((pack = (PackageTable*) iterator())) {
+        if (pack->fArray.size() != this->fArray.size()) {
+          Cout::PrintInfo("Different Y-size of PackageTable!", EInfo::kError);
+          return 1;
+        }
+        for (unsigned int i = 0; i < fArray.size(); i++) {
+          if (fArray[i].size() != pack->fArray[i].size()) {
+            Cout::PrintInfo("Different X-size of PackageTable!", EInfo::kError);
+            return 1;
+          }
+          for (unsigned int j = 0; j < fArray[i].size(); j++) {
+            auto str  = fArray[i][j];
+            auto str2 = pack->fArray[i][j];
+            if (!str.EqualTo(str2)) { Cout::PrintInfo(Form("Different content of PackageTable [%i,%i]!", i, j), EInfo::kError); }
+          }
+        }
+      }
+    }
+
+    return 1;
   }
 
 }  // namespace Hal

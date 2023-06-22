@@ -108,18 +108,17 @@ namespace Hal {
     metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetInputFileName(), 'f'));
+    metadata_new->AddObject(fManager->Report());
 
     TList* trigList = new TList();
     trigList->SetName("EventTriggers");
-    for (auto task : fTriggers) {
-      TString name  = task->ClassName();
-      TString label = "Active";
-      for (auto probeTask : fPassiveTasks) {
-        trigList->AddObject(probeTask->Report());
-      }
-      trigList->AddLast(new ParameterString(name, label));
-    }
 
+    for (auto probeTask : fActiveTriggers) {
+      trigList->AddLast(probeTask->Report());
+    }
+    for (auto probeTask : fPassiveTriggers) {
+      trigList->AddLast(probeTask->Report());
+    }
     metadata_new->AddObject(trigList);
 
     TList* list = new TList();
@@ -169,8 +168,8 @@ namespace Hal {
   void AnalysisManager::AddTrigger(TriggerTask* trigger) {}
 
   void AnalysisManager::DoStep(Int_t entry) {
-    fManager->GetEntry(entry, 0);
     if (fTriggersEnabled) {
+      fManager->GetEntry(entry, 0);
       for (auto task : fActiveTriggers) {
         task->Exec("");
         if (!task->IsEventGood()) return;

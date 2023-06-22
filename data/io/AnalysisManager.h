@@ -22,6 +22,7 @@ namespace Hal {
   class MagField;
   class Reader;
   class TriggerTask;
+  class Package;
   class AnalysisManager : public TObject {
     UInt_t fProcessedEvents = {0};
     Bool_t fTriggersEnabled = {kFALSE};

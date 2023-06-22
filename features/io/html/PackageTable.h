@@ -21,6 +21,11 @@ namespace Hal {
     PackageTable() {};
     PackageTable(std::initializer_list<TString> list);
     void AddRow(std::initializer_list<TString> list);
+    /**
+     * used to merge similar objects
+     * @param collection
+     */
+    Long64_t Merge(TCollection* collection);
     virtual TString GetExtractType() const;
     virtual TString HTMLExtract(Int_t no, TString path) const;
     virtual ~PackageTable() {};

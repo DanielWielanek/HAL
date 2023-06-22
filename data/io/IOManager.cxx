@@ -15,6 +15,8 @@
 #include <utility>
 #include <vector>
 
+#include "Package.h"
+#include "PackageTable.h"
 #include <RtypesCore.h>
 #include <TFile.h>
 #include <TList.h>
@@ -114,6 +116,44 @@ namespace Hal {
   }
 
   IOManager::~IOManager() {}
+
+  Package* IOManager::Report() const {
+    Package* report     = new Package(this);
+    PackageTable* table = new PackageTable({"Branch name", "Object class", "Status"});
+    auto getStr         = [](BranchInfo::EFlag flag) {
+      TString flagStr = "unknown";
+      switch (flag) {
+        case BranchInfo::EFlag::kInActive: {
+          flagStr = "INPUT (ACTIVE)";
+        } break;
+        case BranchInfo::EFlag::kInPassive: {
+          flagStr = "INPUT (PASSIVE)";
+        } break;
+        case BranchInfo::EFlag::kOut: {
+          flagStr = "OUTPUT";
+        } break;
+        case BranchInfo::EFlag::kVirtual: {
+          flagStr = "VIRTUAL";
+        } break;
+        case BranchInfo::EFlag::kNull: {
+          flagStr = "NULL";
+        } break;
+        default: break;
+      };
+      return flagStr;
+    };
+    for (auto branch : fBranches) {
+      TString flagStr   = getStr(branch.GetFlag());
+      TString name      = branch.GetBranchName();
+      TObject* obj      = branch.GetPointer();
+      TString className = "unknown";
+      if (obj) { className = obj->ClassName(); }
+      table->AddRow({name, className, flagStr});
+      Cout::DebugInfo(2222);
+    }
+    report->AddObject(table);
+    return report;
+  }
 
 }  // namespace Hal
 

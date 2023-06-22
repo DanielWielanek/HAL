@@ -19,6 +19,7 @@
 #include "Source.h"
 #include "Std.h"
 #include "Task.h"
+#include "TriggerTask.h"
 
 #include <cstdlib>
 
@@ -38,6 +39,21 @@ namespace Hal {
     fManager->Init();
     DataManager* mng = DataManager::Instance();
     mng->SetManager(fManager);
+    for (auto task : fTriggers) {
+      Task::EInitFlag stat = task->Init();
+      switch (stat) {
+        case Task::EInitFlag::kERROR: {
+          fPassiveTriggers.push_back(task);
+        } break;
+        case Task::EInitFlag::kSUCCESS: {
+          fActiveTriggers.push_back(task);
+        } break;
+        case Task::EInitFlag::kFATAL: {
+          Cout::PrintInfo(Form("Failed to init %s", task->ClassName()), EInfo::kError);
+          exit(0);
+        } break;
+      }
+    }
     for (auto task : fTasks) {
       Task::EInitFlag stat = task->Init();
       switch (stat) {
@@ -65,9 +81,22 @@ namespace Hal {
     if (start > fManager->GetEntries()) { start = fManager->GetEntries(); }
     if (end > fManager->GetEntries()) { end = fManager->GetEntries(); }
     Cout::PrintInfo(Form("Run from %i to %i events", start, end), EInfo::kInfo);
+    Bool_t triggers = kFALSE;
+    if (fActiveTriggers.size() > 0) triggers = kTRUE;
+
     for (int i = start; i < end; i++) {
       ++fProcessedEvents;
-      fManager->GetEntry(i);
+      fManager->GetEntry(i, 0);
+      Bool_t badEvent = kFALSE;
+      if (triggers) {
+        for (auto task : fActiveTriggers) {
+          task->Exec("");
+          badEvent != task->IsEventGood();
+          if (badEvent) break;
+        }
+      }
+      if (badEvent) break;
+      fManager->GetEntry(i, 1);
       for (auto task : fActiveTasks) {
         task->Exec("");
       }
@@ -129,7 +158,14 @@ namespace Hal {
     for (auto task : fTasks) {
       delete task;
     }
+    for (auto task : fTriggers) {
+      delete task;
+    }
     if (fField) delete fField;
   }
+
+  void AnalysisManager::AddReader(Reader* reader) {}
+
+  void AnalysisManager::AddTrigger(TriggerTask* trigger) {}
 
 }  // namespace Hal

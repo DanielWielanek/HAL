@@ -16,6 +16,7 @@
 #include "Source.h"
 #include "Std.h"
 #include "Task.h"
+#include "TriggerTask.h"
 
 #include <cstdlib>
 
@@ -29,6 +30,21 @@ namespace Hal {
       fManager->Init();
       DataManager* mng = DataManager::Instance();
       mng->SetManager(fManager);
+      for (auto task : fTriggers) {
+        Task::EInitFlag stat = task->Init();
+        switch (stat) {
+          case Task::EInitFlag::kERROR: {
+            fPassiveTriggers.push_back(task);
+          } break;
+          case Task::EInitFlag::kSUCCESS: {
+            fActiveTriggers.push_back(task);
+          } break;
+          case Task::EInitFlag::kFATAL: {
+            exit(0);
+            return kFATAL;
+          } break;
+        }
+      }
       for (auto task : fTasks) {
         Task::EInitFlag stat = task->Init();
         switch (stat) {
@@ -49,9 +65,18 @@ namespace Hal {
 
     void TaskManager::Exec(Option_t* option) {
       ++fProcessedEvents;
-      for (auto task : fActiveTasks) {
-        task->Exec(option);
+      Bool_t goodEvent = kTRUE;
+      for (auto trigger : fActiveTriggers) {
+        trigger->Exec(option);
+        if (!trigger->IsEventGood()) {
+          goodEvent = kFALSE;
+          break;
+        }
       }
+      if (goodEvent)
+        for (auto task : fActiveTasks) {
+          task->Exec(option);
+        }
     }
 
     void TaskManager::Finish() {

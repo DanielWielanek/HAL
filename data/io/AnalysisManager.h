@@ -20,7 +20,8 @@ namespace Hal {
   class Source;
   class Task;
   class MagField;
-
+  class Reader;
+  class TriggerTask;
   class AnalysisManager : public TObject {
     UInt_t fProcessedEvents;
     MagField* fField;
@@ -28,6 +29,9 @@ namespace Hal {
     TString fOutputFile;
     TString fOutTreeName;
     IOManager* fManager;
+    std::vector<TriggerTask*> fTriggers;
+    std::vector<TriggerTask*> fActiveTriggers;
+    std::vector<TriggerTask*> fPassiveTriggers;
     std::vector<Task*> fTasks;
     std::vector<Task*> fActiveTasks;
     std::vector<Task*> fPassiveTasks;
@@ -35,6 +39,16 @@ namespace Hal {
 
   public:
     AnalysisManager();
+    /**
+     * add reader task - it's guaranteed that reader will be set as a first task after the triggers
+     * @param reader
+     */
+    void AddReader(Reader* reader);
+    /**
+     * add trigger task, it's guaranteed that will be set before other tasks
+     * @param trigger
+     */
+    void AddTrigger(TriggerTask* trigger);
     /**
      * add task to analysis
      * @param ana

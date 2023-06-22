@@ -53,6 +53,7 @@
 #pragma link C++ namespace Hal::DataFieldID;
 
 #pragma link C++ class Hal::Task + ;
+#pragma link C++ class Hal::TriggerTask + ;
 #pragma link C++ class Hal::Source + ;
 #pragma link C++ class Hal::RootIOManager + ;
 #pragma link C++ class Hal::MagField + ;
@@ -60,4 +61,5 @@
 #pragma link C++ class Hal::AnalysisManager + ;
 #pragma link C++ class Hal::IOManager + ;
 #pragma link C++ class Hal::RootSource + ;
+#pragma link C++ class Hal::Reader + ;
 #endif

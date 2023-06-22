@@ -59,7 +59,8 @@ io/RootIOManager.cxx
 io/Source.cxx
 io/Task.cxx
 io/IOManager.cxx
-
+io/Reader.cxx
+io/TriggerTask.cxx
 
 )
 

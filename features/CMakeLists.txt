@@ -49,6 +49,7 @@ io/html/HtmlDiv.cxx
 io/html/HtmlFile.cxx
 io/html/HtmlObject.cxx
 io/html/HtmlTable.cxx
+io/html/PackageTable.cxx
 
 hist/DividedHisto.cxx
 hist/HistogramManager.cxx

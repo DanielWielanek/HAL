@@ -38,6 +38,9 @@ namespace Hal {
 
   protected:
     enum class eTableStyle { kStandard, kMetaData };
+    Double_t GetDouble(const Package* pack, TString name) const;
+    TString GetString(const Package* pack, TString name) const;
+    ULong64_t GetULong(const Package* pack, TString name) const;
 
   private:
     TString AddToUrl(TString add_dir, TString url) const;

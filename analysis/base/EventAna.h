@@ -183,8 +183,20 @@ namespace Hal {
     void ClearMemory();
 #endif
     /**
-     * initialize task,  should aslo call parent Init (or at least
-     * EventAna::Init)
+     * initialize task,  in principle all derived classes should usually call this method, this method do following steps:
+     * - CheckFormat() - check if format is set/good
+     * -# SetInputFile() - set name of the input file
+     * -# SetFormatOption(EFormatOption::kReaderAccess) - set reader format if no format is set
+     * - InitCutContainer() - initialize/check cut container
+     * -# InitNewCutContainer() - init new container if no container is set
+     * -# CheckCutContainerCollections()
+     * -# LinkCollections()
+     * -# fCutContainer->Init(GetTaskID())
+     * - InitMemoryMap() - initialize map to store events
+     * -#SetMixSize() - sets default mix size
+     * -#fMemoryMap->Init(GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
+     * - AddTags() add tags
+     *
      * @return status of initialization
      */
     virtual Task::EInitFlag Init();

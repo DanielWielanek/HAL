@@ -53,6 +53,7 @@
 namespace Hal {
   Package2HTML::Package2HTML() :
     fHTML(nullptr),
+    fFile(nullptr),
     fDir(""),
     fDynamicTableCounter(0),
     fTaskTableCounter(0),
@@ -80,28 +81,17 @@ namespace Hal {
     fHTML = nullptr;
   }
 
-  Package2HTML::Package2HTML(TString filename, const TString dir) : Package2HTML() {
+  Package2HTML::Package2HTML(TString filename, const TString dir) : Package2HTML() {  // uzywany
     fDir = dir;
-    for (int i = 0; i < 4; i++)
-      fCollectionsNo[i] = 0;
     for (int i = 0; i < 4; i++)
       fCollectionsNo[i] = 0;
     gSystem->MakeDirectory(fDir);
     fHTML = new HtmlFile(fDir + "/index.html", kTRUE);
-    HtmlCell dummyCell;
 
-    TFile* file            = new TFile(filename);
-    TDirectory* global_dir = (TDirectory*) file->Get("HalInfo");
-    if (global_dir) {
-      TString temp_dir = Form("%s/global_data", fDir.Data());
-      // gSystem->MakeDirectory(temp_dir);
-      Package* pack            = (Package*) file->Get("HalInfo/RunInfo");
-      ParameterString* version = (ParameterString*) pack->GetObjectByName("Software ver");
-      fSoftVer                 = Hal::Std::VersionId(version->GetValue());
-      CreatePackageList(dummyCell, pack, eTableStyle::kMetaData, temp_dir, 2, "drawmerged");
-      fHTML->AddStringContent(dummyCell.GetContent());
-    }
-    TDirectory* tdir = (TDirectory*) file->Get("HalPhysics");
+    fFile = new TFile(filename);
+    ExtractRunInfo();
+
+    TDirectory* tdir = (TDirectory*) fFile->Get("HalPhysics");
     //---------------------
 
     TList* list = tdir->GetListOfKeys();
@@ -112,7 +102,7 @@ namespace Hal {
       TString table_name = Form("task_table_%i", fTaskTableCounter++);
       if (object->InheritsFrom("Hal::Package")) {
         Package* package      = (Package*) object;
-        Package* meta_data    = (Package*) (((Package*) object)->GetObjectByName("Metadata"));
+        Package* meta_data    = (Package*) (package->GetObjectByName("Metadata"));
         TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
         // object inherits form HalPackage - probably result of physical analysis
         HtmlDiv div;
@@ -121,13 +111,11 @@ namespace Hal {
         table.SetDefaultClass();
         HtmlRow firstRow;
         firstRow.SetClass(Hal::HtmlTableRowClass::TaskStyle());
-
-        TString button = Form("<button "
-                              "onclick=\"setTable('%s')\">Hide/Show Pack %s [Package No. "
-                              "%i ]</button>",
-                              table_name.Data(),
-                              analysis_name.Data(),
-                              fPackageID);
+        TString button = HtmlCore::GetHideButtonTable(table_name,
+                                                      Form("Hide/Show Pack %s [Package No. "
+                                                           "%i ]",
+                                                           analysis_name.Data(),
+                                                           fPackageID));
         firstRow.AddContent(HtmlCell(button));
         table.AddContent(firstRow);
         div.AddContent(table);
@@ -146,7 +134,6 @@ namespace Hal {
       }
     }
     // delete list;
-    file->Close();
     fHTML->AddStringContent("<script>window.onload=checkTask();</script>\n");
     //----------------------
     fHTML->Save();
@@ -154,73 +141,62 @@ namespace Hal {
     fHTML = nullptr;
     HtmlCore::ResetMainDir();
   }
-
-  Package2HTML::Package2HTML(TString filename, const TString dir, TString packname) : Package2HTML() {
-    fDir = dir;
-    for (int i = 0; i < 4; i++)
-      fCollectionsNo[i] = 0;
-    for (int i = 0; i < 4; i++)
-      fCollectionsNo[i] = 0;
-    fDynamicTableCounter = 0;
-    gSystem->MakeDirectory(fDir);
-    fHTML            = new HtmlFile(fDir + "/index.html", kFALSE);
-    TFile* file      = new TFile(filename);
-    TDirectory* tdir = (TDirectory*) file->Get("HalPhysics");
-    //---------------------
-    TDirectory* global_dir = (TDirectory*) file->Get("HalInfo");
-    if (global_dir) {
-      HtmlCell dummyCell;
-      TString temp_dir = Form("%s/global_data", fDir.Data());
-      // gSystem->MakeDirectory(temp_dir);
-      Package* pack            = (Package*) file->Get("HalInfo/RunInfo");
-      ParameterString* version = (ParameterString*) pack->GetObjectByName("Software ver");
-      fSoftVer                 = Hal::Std::VersionId(version->GetValue());
-      CreatePackageList(dummyCell, pack, eTableStyle::kMetaData, temp_dir, 2, "drawmerged");
-      fHTML->AddStringContent(dummyCell.GetContent());
+  /*
+    Package2HTML::Package2HTML(TString filename, const TString dir, TString packname) : Package2HTML() {
+      fDir = dir;
+      for (int i = 0; i < 4; i++)
+        fCollectionsNo[i] = 0;
+      fDynamicTableCounter = 0;
+      gSystem->MakeDirectory(fDir);
+      fHTML            = new HtmlFile(fDir + "/index.html", kFALSE);
+      TFile* file      = new TFile(filename);
+      TDirectory* tdir = (TDirectory*) file->Get("HalPhysics");
+      //---------------------
+      ExtractRunInfo();
+      if (fSoftVer <= 201612) {
+        Cout::PrintInfo("This file version might be not compatible wtih current version, use "
+                        "macro/path/fix_files.C to fix it",
+                        Hal::EInfo::kWarning);
+      }
+      TObject* object    = tdir->Get(packname);
+      TString table_name = Form("task_table_%i", fTaskTableCounter++);
+      TString path       = Form("%s/superpack_0/", fDir.Data());
+      if (object->InheritsFrom("Hal::Package")) {
+        Package* package      = (Package*) object;
+        Package* meta_data    = (Package*) (((Package*) object)->GetObjectByName("Metadata"));
+        TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
+        HtmlDiv div;
+        div.SetId("buttontableM_0");
+        HtmlTable table;
+        table.SetDefaultClass();
+        HtmlRow firstRow;
+        firstRow.SetClass(Hal::HtmlTableRowClass::TaskStyle());
+        firstRow.AddStringContent(Form("<td><button> %s[%s]</button></td>", packname.Data(), analysis_name.Data()));
+        div.AddContent(table);
+        fHTML->AddContent(div);
+        HtmlDiv div2;
+        HtmlTable table2(table_name, "maintable", "display:table");
+        HtmlRow row;
+        row.SetClass(Hal::HtmlTableRowClass::ExpandableStyle());
+        HtmlCell cell;
+        TryExtractAnaResult(cell, package, path);
+        row.AddContent(cell);
+        table2.AddContent(row);
+        div2.AddContent(table2);
+        fHTML->AddContent(div2);
+      } else {
+        Cout::PrintInfo(Form("%s found in HalPhysics but don't inherit from HalPackage", packname.Data()),
+    Hal::EInfo::kLowWarning);
+      }
+      // delete list;
+      file->Close();
+      fHTML->AddStringContent("<script>window.onload=checkTask();</script>\n");
+      //----------------------
+      fHTML->Save();
+      delete fHTML;
+      fHTML = nullptr;
     }
-    if (fSoftVer <= 201612) {
-      Cout::PrintInfo("This file version might be not compatible wtih current version, use "
-                      "macro/path/fix_files.C to fix it",
-                      Hal::EInfo::kWarning);
-    }
-    TObject* object    = tdir->Get(packname);
-    TString table_name = Form("task_table_%i", fTaskTableCounter++);
-    TString path       = Form("%s/superpack_0/", fDir.Data());
-    if (object->InheritsFrom("Hal::Package")) {
-      Package* package      = (Package*) object;
-      Package* meta_data    = (Package*) (((Package*) object)->GetObjectByName("Metadata"));
-      TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
-      HtmlDiv div;
-      div.SetId("buttontableM_0");
-      HtmlTable table;
-      table.SetDefaultClass();
-      HtmlRow firstRow;
-      firstRow.SetClass(Hal::HtmlTableRowClass::TaskStyle());
-      firstRow.AddStringContent(Form("<td><button> %s[%s]</button></td>", packname.Data(), analysis_name.Data()));
-      div.AddContent(table);
-      fHTML->AddContent(div);
-      HtmlDiv div2;
-      HtmlTable table2(table_name, "maintable", "display:table");
-      HtmlRow row;
-      row.SetClass(Hal::HtmlTableRowClass::ExpandableStyle());
-      HtmlCell cell;
-      TryExtractAnaResult(cell, package, path);
-      row.AddContent(cell);
-      table2.AddContent(row);
-      div2.AddContent(table2);
-      fHTML->AddContent(div2);
-    } else {
-      Cout::PrintInfo(Form("%s found in HalPhysics but don't inherit from HalPackage", packname.Data()), Hal::EInfo::kLowWarning);
-    }
-    // delete list;
-    file->Close();
-    fHTML->AddStringContent("<script>window.onload=checkTask();</script>\n");
-    //----------------------
-    fHTML->Save();
-    delete fHTML;
-    fHTML = nullptr;
-  }
-
+  */
   Package2HTML::Package2HTML(Package* pack_ana, Package* pack_meta, const TString dir, Int_t task_id) : Package2HTML() {
     fDir = dir;
     for (int i = 0; i < 4; i++)
@@ -634,8 +610,8 @@ namespace Hal {
     for (int i = 0; i < list->GetEntries(); i++) {
       CreateCutLink(table, cut_update, (Package*) list->At(i), i, kFALSE);
     }
-    passed = (ULong64_t)((ParameterULong64*) subcontainer->GetObjectByName("PassedSlow"))->GetValue();
-    failed = (ULong64_t)((ParameterULong64*) subcontainer->GetObjectByName("FailedSlow"))->GetValue();
+    passed = GetULong(subcontainer, "PassedSlow");
+    failed = GetULong(subcontainer, "FailedSlow");
     HtmlRow rowSlow;
     rowSlow.SetClass(Hal::HtmlTableRowClass::SummaryStyle());
     rowSlow.AddContent(HtmlCell("-"));
@@ -659,9 +635,9 @@ namespace Hal {
           || class_temp->InheritsFrom("Hal::TwoTrackComplexCut")) {
         complex = kTRUE;
         if (cut->GetObjectByName("CutName_{re}")) {  // FIXME new version
-          TString name_real = ((ParameterString*) cut->GetObjectByName("CutName_{re}"))->GetValue();
+          TString name_real = GetString(cut, "CutName_{re}");
           if (cut->GetObjectByName("CutName_{im}")) {
-            TString name_img = ((ParameterString*) cut->GetObjectByName("CutName_{im}"))->GetValue();
+            TString name_img = GetString(cut, "CutName_{im}");
             dummy_name       = Form("<br/>(%s %s)", name_real.Data(), name_img.Data());
           }
         }
@@ -669,7 +645,7 @@ namespace Hal {
       if (class_temp->InheritsFrom("Hal::TrackRealCut") || class_temp->InheritsFrom("Hal::EventRealCut")
           || class_temp->InheritsFrom("Hal::TwoTrackRealCut")) {
         if (cut->GetObjectByName("CutName_{re}")) {
-          TString name_real = ((ParameterString*) cut->GetObjectByName("CutName_{re}"))->GetValue();
+          TString name_real = GetString(cut, "CutName_{re}");
           dummy_name        = Form("<br/>(%s)", name_real.Data());
         }
       }
@@ -677,7 +653,7 @@ namespace Hal {
       if (class_temp->InheritsFrom("Hal::TrackImaginaryCut") || class_temp->InheritsFrom("Hal::EventImaginaryCut")
           || class_temp->InheritsFrom("Hal::TwoTrackImaginaryCut")) {
         if (cut->GetObjectByName("CutName_{im}")) {
-          TString name_real = ((ParameterString*) cut->GetObjectByName("CutName_{im}"))->GetValue();
+          TString name_real = GetString(cut, "CutName_{im}");
           dummy_name        = Form("<br/>(%s)", name_real.Data());
         }
       }
@@ -1276,6 +1252,10 @@ namespace Hal {
 
   Package2HTML::~Package2HTML() {
     if (fHTML) delete fHTML;
+    if (fFile) {
+      fFile->Close();
+      delete fFile;
+    }
   }
 
   void Package2HTML::DrawCircle(Double_t tiers_no,
@@ -1373,12 +1353,27 @@ namespace Hal {
   Double_t Package2HTML::GetDouble(const Package* pack, TString name) const {
     return ((ParameterDouble*) pack->GetObjectByName(name))->GetValue();
   }
+
   TString Package2HTML::GetString(const Package* pack, TString name) const {
     return ((ParameterString*) pack->GetObjectByName(name))->GetValue();
   }
 
   ULong64_t Package2HTML::GetULong(const Package* pack, TString name) const {
     return (ULong64_t)((ParameterULong64*) pack->GetObjectByName(name))->GetValue();
+  }
+
+  Bool_t Package2HTML::ExtractRunInfo() {
+    HtmlCell runCell;
+    TDirectory* global_dir = (TDirectory*) fFile->Get("HalInfo");
+    if (!global_dir) return kFALSE;
+    TString temp_dir = Form("%s/global_data", fDir.Data());
+    gSystem->MakeDirectory(temp_dir);
+    Package* pack            = (Package*) fFile->Get("HalInfo/RunInfo");
+    ParameterString* version = (ParameterString*) pack->GetObjectByName("Software ver");
+    fSoftVer                 = Hal::Std::VersionId(version->GetValue());
+    CreatePackageList(runCell, pack, eTableStyle::kMetaData, temp_dir, 2, "drawmerged");
+    fHTML->AddStringContent(runCell.GetContent());
+    return kTRUE;
   }
 
 }  // namespace Hal

@@ -22,6 +22,7 @@
 class TH1;
 class TH2;
 class TH3;
+class TFile;
 class TGraph;
 class TObjString;
 /**
@@ -32,6 +33,7 @@ namespace Hal {
   class HtmlFile;
   class HtmlObject;
   class Package;
+  class HtmlCell;
 
   class Package2HTML : public TObject {
     friend class AnaFile;
@@ -94,6 +96,7 @@ namespace Hal {
                   Color_t color) const;
     TString GetGroupListName(Hal::ECutUpdate update) const;
     HtmlFile* fHTML;
+    TFile* fFile;
     TString fDir;
     std::map<TString, Int_t> fTObjectCounter;
     Int_t fDynamicTableCounter, fTaskTableCounter;
@@ -107,6 +110,11 @@ namespace Hal {
     void TryExtractAnaResult(HtmlObject& table, Package* pack, TString path);
 
   protected:
+    /**
+     * extract run info
+     * @return true if run info found
+     */
+    Bool_t ExtractRunInfo();
     /**
      * default empty ctor
      */
@@ -133,7 +141,7 @@ namespace Hal {
      * @param dir place where report will be extracted
      * @param packname name of package to extraction
      */
-    Package2HTML(TString filename, const TString dir, TString packname);
+    // Package2HTML(TString filename, const TString dir, TString packname);
     /**
      * export single package (even if it is not package with analysis
      * @param pack package for extraction

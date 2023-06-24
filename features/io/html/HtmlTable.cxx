@@ -89,5 +89,12 @@ namespace Hal {
     TString TaskStyle() { return Red(); };
     TString ExpandableStyle() { return Yellow(); };
     TString SummaryStyle() { return Violet(); };
-  }  // namespace HtmlTableRowStyles
+  }  // namespace HtmlTableRowClass
+
+  void HtmlRow::AddSimpleCells(std::initializer_list<TString> cels) {
+    for (auto str : cels) {
+      this->AddContent(HtmlCell(str));
+    }
+  }
+
 }  // namespace Hal

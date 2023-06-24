@@ -9,6 +9,8 @@
 #ifndef HAL_FEATURES_IO_HTML_TABLE_H_
 #define HAL_FEATURES_IO_HTML_TABLE_H_
 #include "HtmlObject.h"
+
+#include <initializer_list>
 namespace Hal {
   namespace HtmlTableRowClass {
     TString LightBlue();
@@ -29,7 +31,7 @@ namespace Hal {
     TString TaskStyle();
     TString ExpandableStyle();
     TString SummaryStyle();
-  };  // namespace HtmlTableRowStyles
+  };  // namespace HtmlTableRowClass
 
   class HtmlTable : public HtmlObject {
   public:
@@ -47,6 +49,7 @@ namespace Hal {
     HtmlRow();
     HtmlRow(TString id, TString className, TString style);
     virtual void AddContent(const HtmlObject& obj);
+    void AddSimpleCells(std::initializer_list<TString> cels);
     TString ToString() const;
     virtual ~HtmlRow();
     ClassDef(HtmlRow, 1)

@@ -103,14 +103,13 @@ namespace Hal {
       if (IsHalPackage(object)) {
         Package* package      = (Package*) object;
         Package* meta_data    = (Package*) (package->GetObjectByName("Metadata"));
-        TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
+        TString analysis_name = GetString(meta_data, "Analysis Name");
         // object inherits form HalPackage - probably result of physical analysis
         HtmlDiv div;
         div.SetId(Form("buttontableM_%i", fPackageID));
         HtmlTable table;
         table.SetDefaultClass();
-        HtmlRow firstRow;
-        firstRow.SetClass(Hal::HtmlTableRowClass::TaskStyle());
+        HtmlRow firstRow("", Hal::HtmlTableRowClass::TaskStyle(), "");
         TString button = HtmlCore::GetHideButtonTable(table_name,
                                                       Form("Hide/Show Pack %s [Package No. "
                                                            "%i ]",
@@ -216,7 +215,7 @@ namespace Hal {
     if (IsHalPackage(pack_ana)) {
       Package* package      = (Package*) pack_ana;
       Package* meta_data    = (Package*) (((Package*) pack_ana)->GetObjectByName("Metadata"));
-      TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
+      TString analysis_name = GetString(meta_data, "Analysis Name");
       HtmlDiv div1("buttontableM_0", "", "");
       HtmlTable table1("", "haltable", "");
       HtmlRow row1;
@@ -423,9 +422,7 @@ namespace Hal {
         HtmlCell first_cell(Hal::Std::RoundToString(i));
         first_cell.SetColSpan(2);
         row.AddContent(first_cell);
-        row.AddContent(HtmlCell(object->ClassName()));
-        row.AddContent(HtmlCell(oryginal_class));
-        row.AddContent(HtmlCell(AddToUrl(inject, HtmlCore::HTMLExtract(object, i, path))));
+        row.AddSimpleCells({nameClass, oryginal_class, AddToUrl(inject, HtmlCore::HTMLExtract(object, i, path))});
         halTable.AddContent(row);
 
       } else if (nameClass == "Hal::QAPlotReport") {
@@ -437,9 +434,8 @@ namespace Hal {
         HtmlCell first_cell(Hal::Std::RoundToString(i));
         first_cell.SetColSpan(2);
         row.AddContent(first_cell);
-        row.AddContent(HtmlCell(object->ClassName()));
-        row.AddContent(HtmlCell(oryginal_class));
-        row.AddContent(HtmlCell(AddToUrl(inject, HtmlCore::HTMLExtract(object, fTObjectCounter["TList"]++, path))));
+        row.AddSimpleCells(
+          {nameClass, oryginal_class, AddToUrl(inject, HtmlCore::HTMLExtract(object, fTObjectCounter["TList"]++, path))});
         halTable.AddContent(row);
       } else {
         CreateListTable(halTable, (TList*) object, fTObjectCounter["TList"]++, path, inject, styleCell);
@@ -585,8 +581,8 @@ namespace Hal {
       for (int i = 0; i < listfast->GetEntries(); i++) {
         CreateCutLink(table, cut_update, (Package*) listfast->At(i), i, kTRUE);
       }
-    ULong64_t passed = (ULong64_t)((ParameterULong64*) subcontainer->GetObjectByName("PassedFast"))->GetValue();
-    ULong64_t failed = (ULong64_t)((ParameterULong64*) subcontainer->GetObjectByName("FailedFast"))->GetValue();
+    ULong64_t passed = GetULong(subcontainer, "PassedFast");
+    ULong64_t failed = GetULong(subcontainer, "FailedFast");
     HtmlRow rowFast;
     rowFast.SetClass(Hal::HtmlTableRowClass::SummaryStyle());
     rowFast.AddContent(HtmlCell("-"));
@@ -620,9 +616,9 @@ namespace Hal {
     TClass* class_temp = TClass::GetClass(name);
     Bool_t complex     = kFALSE;
     TString dummy_name = "";
-    auto IsInhert      = [](TObject* class_temp, std::initializer_list<TString> list) {
+    auto IsInhert      = [](TObject* classTemp, std::initializer_list<TString> list) {
       for (auto a : list)
-        if (class_temp->InheritsFrom(a)) return kTRUE;
+        if (classTemp->InheritsFrom(a)) return kTRUE;
       return kFALSE;
     };
     if (class_temp) {
@@ -652,12 +648,12 @@ namespace Hal {
     }
 
     if (fSoftVer < 201705) { complex = kFALSE; }
-    Int_t collection_no = ((ParameterInt*) cut->GetObjectByName("CollectionID"))->GetValue();
-    TString passed      = Hal::Std::RoundToString((Float_t)(GetULong(cut, "Passed")), -3, "prefix");
-    TString failed      = Hal::Std::RoundToString((Float_t)(GetULong(cut, "Failed")), -3, "prefix");
-    Int_t cut_size      = (((ParameterInt*) cut->GetObjectByName("CutSize")))->GetValue();
-    TString type        = "Slow";
-    TString address     = HtmlCore::GetUrl(GetLinkToCut(cut_update, collection_no, no, fast), name);
+    Int_t collection_no  = ((ParameterInt*) cut->GetObjectByName("CollectionID"))->GetValue();
+    TString passed       = Hal::Std::RoundToString((Float_t)(GetULong(cut, "Passed")), -3, "prefix");
+    TString failed       = Hal::Std::RoundToString((Float_t)(GetULong(cut, "Failed")), -3, "prefix");
+    const Int_t cut_size = (((ParameterInt*) cut->GetObjectByName("CutSize")))->GetValue();
+    TString type         = "Slow";
+    TString address      = HtmlCore::GetUrl(GetLinkToCut(cut_update, collection_no, no, fast), name);
     if (dummy_name.Length() > 0) address = address + dummy_name;
     if (fast) type = "Fast";
     if (cut_size == 0) {
@@ -680,13 +676,10 @@ namespace Hal {
     }
     HtmlRow row;
     row.SetClass(Hal::HtmlTableRowClass::LightBlue());
-    HtmlCell cell1(numer);
+    HtmlCell cell1(numer), cell2(address), cell3(passed), cell4(failed);
     cell1.SetRowSpan(cut_size);
-    HtmlCell cell2(address);
     cell2.SetRowSpan(cut_size);
-    HtmlCell cell3(passed);
     cell3.SetRowSpan(cut_size);
-    HtmlCell cell4(failed);
     cell4.SetRowSpan(cut_size);
     row.AddContent(cell1);
     row.AddContent(cell2);
@@ -705,15 +698,16 @@ namespace Hal {
     TString min, max, unit;
 
     for (int i = 1; i < cut_size; i++) {
+      std::cout << "SIZED" << address << std::endl;
       min    = Form("MinCut_%i", i);
       max    = Form("MaxCut_%i", i);
       unit   = Form("UnitName_%i", i);
       minima = Hal::Std::RoundToString(GetDouble(cut, min), 3);
       maxima = Hal::Std::RoundToString(GetDouble(cut, max), 3);
-      units  = ((ParameterString*) cut->GetObjectByName(unit))->GetValue();
+      units  = GetString(cut, unit);
       HtmlRow singleCut;
       singleCut.SetClass(Hal::HtmlTableRowClass::DefStyle());
-      row.AddSimpleCells({minima, maxima, units});
+      singleCut.AddSimpleCells({minima, maxima, units});
       table.AddContent(singleCut);
     }
   }
@@ -757,12 +751,10 @@ namespace Hal {
 
 
     Int_t ndim = 0;
-    if (monitor->GetObjectByName("CutXAxis") != nullptr) { ndim = 1; }
-    if (monitor->GetObjectByName("CutYAxis") != nullptr) { ndim = 2; }
-    if (monitor->GetObjectByName("CutZAxis") != nullptr) { ndim = 3; }
-    HtmlRow rowMonitor;
-    rowMonitor.SetClass(Hal::HtmlTableRowClass::DefStyle());
-
+    if (monitor->GetObjectByName("CutXAxis", 0, kTRUE) != nullptr) { ndim = 1; }
+    if (monitor->GetObjectByName("CutYAxis", 0, kTRUE) != nullptr) { ndim = 2; }
+    if (monitor->GetObjectByName("CutZAxis", 0, kTRUE) != nullptr) { ndim = 3; }
+    HtmlRow rowMonitor("", Hal::HtmlTableRowClass::DefStyle(), "");
 
     cutInfo[8].SetStringContent(exupdate);
     fillTable("X");
@@ -782,11 +774,10 @@ namespace Hal {
           rowMonitor.AddContent(cutInfo[i]);
         }
         table.AddContent(rowMonitor);
-        HtmlRow rowMonitor2;
-        rowMonitor2.SetClass(Hal::HtmlTableRowClass::DefStyle());
+        HtmlRow rowMonitor2("", Hal::HtmlTableRowClass::DefStyle(), "");
         fillTable("Y");
         for (int i = 2; i < 7; i++) {
-          rowMonitor.AddContent(cutInfo[i]);
+          rowMonitor2.AddContent(cutInfo[i]);
         }
         table.AddContent(rowMonitor2);
 
@@ -800,15 +791,13 @@ namespace Hal {
           rowMonitor.AddContent(cutInfo[i]);
         }
         table.AddContent(rowMonitor);
-        HtmlRow rowMonitor2;
-        rowMonitor2.SetClass(Hal::HtmlTableRowClass::DefStyle());
+        HtmlRow rowMonitor2("", Hal::HtmlTableRowClass::DefStyle(), "");
         fillTable("Y");
         for (int i = 2; i < 7; i++) {
           rowMonitor2.AddContent(cutInfo[i]);
         }
         table.AddContent(rowMonitor2);
-        HtmlRow rowMonitor3;
-        rowMonitor3.SetClass(Hal::HtmlTableRowClass::DefStyle());
+        HtmlRow rowMonitor3("", Hal::HtmlTableRowClass::DefStyle(), "");
         fillTable("Z");
         for (int i = 2; i < 7; i++) {
           rowMonitor3.AddContent(cutInfo[i]);
@@ -1311,10 +1300,9 @@ namespace Hal {
     TDirectory* global_dir = (TDirectory*) fFile->Get("HalInfo");
     if (!global_dir) return kFALSE;
     TString temp_dir = Form("%s/global_data", fDir.Data());
-    gSystem->MakeDirectory(temp_dir);
-    Package* pack            = (Package*) fFile->Get("HalInfo/RunInfo");
-    ParameterString* version = GetString(pack, "Software ver");
-    fSoftVer                 = Hal::Std::VersionId(version->GetValue());
+    // gSystem->MakeDirectory(temp_dir);
+    Package* pack = (Package*) fFile->Get("HalInfo/RunInfo");
+    fSoftVer      = Hal::Std::VersionId(GetString(pack, "Software ver"));
     CreatePackageList(runCell, pack, eTableStyle::kMetaData, temp_dir, 2, "drawmerged");
     fHTML->AddStringContent(runCell.GetContent());
     return kTRUE;

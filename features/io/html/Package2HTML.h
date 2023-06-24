@@ -127,6 +127,21 @@ namespace Hal {
      * @param task_id id of task
      */
     Package2HTML(Package* ana_pack, Package* global_metadata, const TString dir, Int_t task_id);
+    /**
+     * return true if obj inherits from HalPackage
+     * @param obj
+     * @return
+     */
+    Bool_t IsHalPackage(const TObject* obj) const { return obj->InheritsFrom("Hal::Package"); };
+    /**
+     * return true if obj is exactly Hal::Package
+     * @param obj
+     * @return
+     */
+    Bool_t IsExacltyHalPackage(const TObject* obj) const {
+      TString className = obj->ClassName();
+      return className.EqualTo("Hal::Package");
+    }
 
   public:
     /**

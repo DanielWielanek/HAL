@@ -100,7 +100,7 @@ namespace Hal {
       TString key_name   = ((TKey*) (list->At(fPackageID)))->GetName();
       TObject* object    = tdir->Get(key_name);
       TString table_name = Form("task_table_%i", fTaskTableCounter++);
-      if (object->InheritsFrom("Hal::Package")) {
+      if (IsHalPackage(object)) {
         Package* package      = (Package*) object;
         Package* meta_data    = (Package*) (package->GetObjectByName("Metadata"));
         TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
@@ -213,7 +213,7 @@ namespace Hal {
     Int_t pack_counter = 0;
     TString table_name = Form("task_table_%i", fTaskTableCounter++);
     TString path       = fDir + "/superpack_0";
-    if (pack_ana->InheritsFrom("Hal::Package")) {
+    if (IsHalPackage(pack_ana)) {
       Package* package      = (Package*) pack_ana;
       Package* meta_data    = (Package*) (((Package*) pack_ana)->GetObjectByName("Metadata"));
       TString analysis_name = ((ParameterString*) meta_data->GetObjectByName("Analysis Name"))->GetValue();
@@ -253,9 +253,8 @@ namespace Hal {
     gSystem->mkdir(path);
     fCurrentCutContainer = NULL;
     for (int i = 0; i < pack->GetEntries(); i++) {
-      Package* cutpack  = (Package*) pack->GetObject(i);
-      TString classname = cutpack->ClassName();
-      if (classname == "Hal::Package") {  // possible canditate
+      Package* cutpack = (Package*) pack->GetObject(i);
+      if (IsExacltyHalPackage(cutpack)) {  // possible canditate
         TString pack_class_name(cutpack->GetName(), strlen(cutpack->GetName()));
         if (pack_class_name.EqualTo("Hal::CutContainer")) {
           fCurrentCutContainer  = cutpack;  // found break
@@ -400,9 +399,7 @@ namespace Hal {
     legend1.SetClass(styleLegend);
     HtmlCellCol cell3("No", 2);
     legend1.AddContent(cell3);
-    legend1.AddContent(HtmlCell("ClassName"));
-    legend1.AddContent(HtmlCell("Name"));
-    legend1.AddContent(HtmlCell("Value"));
+    legend1.AddSimpleCells({"ClassName", "Name", "Value"});
     halTable.AddContent(legend1);
 
     // path = fDir;
@@ -416,7 +413,7 @@ namespace Hal {
       TObject* object        = pack->GetObject(i);
       TString nameClass      = object->ClassName();
       TString oryginal_class = object->GetName();
-      if (nameClass == "Hal::Package") {
+      if (IsExacltyHalPackage(object)) {
         Package* subpack = (Package*) object;
         oryginal_class   = subpack->GetName();
         HtmlRow row;
@@ -579,14 +576,7 @@ namespace Hal {
     rowGreen.AddContent(cellGreen);
     table.AddContent(rowGreen);
     HtmlRow rowGreen2;
-    rowGreen2.AddContent(HtmlCell("No"));
-    rowGreen2.AddContent(HtmlCell("Cut name"));
-    rowGreen2.AddContent(HtmlCell("Passed"));
-    rowGreen2.AddContent(HtmlCell("Failed"));
-    rowGreen2.AddContent(HtmlCell("Min"));
-    rowGreen2.AddContent(HtmlCell("Max"));
-    rowGreen2.AddContent(HtmlCell("Units"));
-    rowGreen2.AddContent(HtmlCell("Type"));
+    rowGreen2.AddSimpleCells({"No", "Cut name", "Passed", "Failed", "Min", "Max", "Units", "Type"});
     rowGreen2.SetClass(Hal::HtmlTableRowClass::LegendStyle());
     table.AddContent(rowGreen2);
 
@@ -630,9 +620,13 @@ namespace Hal {
     TClass* class_temp = TClass::GetClass(name);
     Bool_t complex     = kFALSE;
     TString dummy_name = "";
+    auto IsInhert      = [](TObject* class_temp, std::initializer_list<TString> list) {
+      for (auto a : list)
+        if (class_temp->InheritsFrom(a)) return kTRUE;
+      return kFALSE;
+    };
     if (class_temp) {
-      if (class_temp->InheritsFrom("Hal::TrackComplexCut") || class_temp->InheritsFrom("Hal::EventComplexCut")
-          || class_temp->InheritsFrom("Hal::TwoTrackComplexCut")) {
+      if (IsInhert(class_temp, {"Hal::TrackComplexCut", "Hal::EventComplexCut", "Hal::TwoTrackComplexCut"})) {
         complex = kTRUE;
         if (cut->GetObjectByName("CutName_{re}")) {  // FIXME new version
           TString name_real = GetString(cut, "CutName_{re}");
@@ -642,16 +636,14 @@ namespace Hal {
           }
         }
       }
-      if (class_temp->InheritsFrom("Hal::TrackRealCut") || class_temp->InheritsFrom("Hal::EventRealCut")
-          || class_temp->InheritsFrom("Hal::TwoTrackRealCut")) {
+      if (IsInhert(class_temp, {"Hal::TrackRealCut", "Hal::EventRealCut", "Hal::TwoTrackRealCut"})) {
         if (cut->GetObjectByName("CutName_{re}")) {
           TString name_real = GetString(cut, "CutName_{re}");
           dummy_name        = Form("<br/>(%s)", name_real.Data());
         }
       }
 
-      if (class_temp->InheritsFrom("Hal::TrackImaginaryCut") || class_temp->InheritsFrom("Hal::EventImaginaryCut")
-          || class_temp->InheritsFrom("Hal::TwoTrackImaginaryCut")) {
+      if (IsInhert(class_temp, {"Hal::TrackImaginaryCut", "Hal::EventImaginaryCut", "Hal::TwoTrackImaginaryCut"})) {
         if (cut->GetObjectByName("CutName_{im}")) {
           TString name_real = GetString(cut, "CutName_{im}");
           dummy_name        = Form("<br/>(%s)", name_real.Data());
@@ -671,10 +663,7 @@ namespace Hal {
     if (cut_size == 0) {
       HtmlRow row;
       row.SetClass(Hal::HtmlTableRowClass::DefStyle());
-      row.AddContent(HtmlCell(numer));
-      row.AddContent(HtmlCell(address));
-      row.AddContent(HtmlCell(passed));
-      row.AddContent(HtmlCell(failed));
+      row.AddSimpleCells({numer, address, passed, failed});
       for (int i = 0; i < 3; i++)
         row.AddContent(HtmlCell("-"));
       row.AddContent(HtmlCell(type));
@@ -708,9 +697,7 @@ namespace Hal {
     TString minima = Hal::Std::RoundToString(GetDouble(cut, Form("MinCut_%i", 0)), 3);
     TString maxima = Hal::Std::RoundToString(GetDouble(cut, Form("MaxCut_%i", 0)), 3);
     TString units  = ((ParameterString*) cut->GetObjectByName(Form("UnitName_%i", 0)))->GetValue();
-    row.AddContent(HtmlCell(minima));
-    row.AddContent(HtmlCell(maxima));
-    row.AddContent(HtmlCell(units));
+    row.AddSimpleCells({minima, maxima, units});
     HtmlCell type_cell(type);
     type_cell.SetRowSpan(cut_size);
     row.AddContent(type_cell);
@@ -726,9 +713,7 @@ namespace Hal {
       units  = ((ParameterString*) cut->GetObjectByName(unit))->GetValue();
       HtmlRow singleCut;
       singleCut.SetClass(Hal::HtmlTableRowClass::DefStyle());
-      singleCut.AddContent(HtmlCell(minima));
-      singleCut.AddContent(HtmlCell(maxima));
-      singleCut.AddContent(HtmlCell(units));
+      row.AddSimpleCells({minima, maxima, units});
       table.AddContent(singleCut);
     }
   }
@@ -862,7 +847,7 @@ namespace Hal {
     TString list_path = Form("%s/list_%i", path_data.Data(), no);
     gSystem->mkdir(list_path);
     TString list_dir  = Form("list_%i/", no);
-    TString list_dir2 = Form("list_%i/", no);
+    TString list_dir2 = list_dir;
     if (path_url != path_data) list_dir2 = Form("%s/list_%i/", path_url.Data(), no);
     for (int i = 0; i < list->GetEntries(); i++) {
       TObject* obj         = list->At(i);
@@ -870,10 +855,8 @@ namespace Hal {
       TString classname    = obj->ClassName();
       TString temp_classes = Form("%s list_%i", drawClass.Data(), no);
       HtmlRow rowElement("", temp_classes, "display:none");
-      rowElement.AddContent(HtmlCell());
-      rowElement.AddContent(HtmlCell(Form("%i", i)));
-      rowElement.AddContent(HtmlCell(obj->ClassName()));
-      if (classname == "Hal::Package") {
+      rowElement.AddSimpleCells({"", Form("%i", i), classname});
+      if (IsExacltyHalPackage(obj)) {
         classname = Form("Hal::Package  [%s] ",
                          ((Package*) obj)->GetName());  //</br>
         rowElement.AddContent(HtmlCell(classname));
@@ -928,15 +911,8 @@ namespace Hal {
     if (list->GetEntries() > 0) {
       HtmlRow rowE;
       rowE.SetClass(Hal::HtmlTableRowClass::LegendStyle());
-      rowE.AddContent(HtmlCell("No"));
-      rowE.AddContent(HtmlCell("ClassName"));
-      rowE.AddContent(HtmlCell("CutName"));
-      rowE.AddContent(HtmlCell("Unit"));
-      rowE.AddContent(HtmlCell("AxisOption"));
-      rowE.AddContent(HtmlCell("CutMin"));
-      rowE.AddContent(HtmlCell("CutMax"));
-      rowE.AddContent(HtmlCell("Stacked</br>Img"));
-      rowE.AddContent(HtmlCell("Ex</br>Update"));
+      rowE.AddSimpleCells(
+        {"No", "ClassName", "CutName", "Unit", "AxisOption", "CutMin", "CutMax", "Stacked</br>Img", "Ex</br>Update"});
       table.AddContent(rowE);
       for (int i = 0; i < list->GetEntries(); i++) {
         CreateCutMonitorLink(table, cut_upd, (Package*) list->At(i), i, ++counter, path);
@@ -1176,7 +1152,6 @@ namespace Hal {
     if (fast) { pattern = "FastCutList"; }
     for (list_pos = 0; list_pos < cut_sub_container->GetEntries(); list_pos++) {
       TString name = cut_sub_container->GetObject(list_pos)->GetName();
-      std::cout << name << " " << pattern << std::endl;
       if (name.EqualTo(pattern)) break;
     }
     Int_t int_update = static_cast<Int_t>(update);
@@ -1338,7 +1313,7 @@ namespace Hal {
     TString temp_dir = Form("%s/global_data", fDir.Data());
     gSystem->MakeDirectory(temp_dir);
     Package* pack            = (Package*) fFile->Get("HalInfo/RunInfo");
-    ParameterString* version = (ParameterString*) pack->GetObjectByName("Software ver");
+    ParameterString* version = GetString(pack, "Software ver");
     fSoftVer                 = Hal::Std::VersionId(version->GetValue());
     CreatePackageList(runCell, pack, eTableStyle::kMetaData, temp_dir, 2, "drawmerged");
     fHTML->AddStringContent(runCell.GetContent());

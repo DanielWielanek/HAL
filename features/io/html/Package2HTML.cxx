@@ -1020,88 +1020,57 @@ namespace Hal {
     gROOT->SetBatch(kTRUE);
     TCanvas* c1 = new TCanvas("canv", "canv", fWindowWidth, fWIndowHeight);
     c1->Range(0, 0, fWindowWidth, fWIndowHeight);
-    TList* listE   = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kEvent));
-    TList* listT   = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTrack));
-    TList* listT2  = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrack));
-    TList* listT2B = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrackBackground));
-    Int_t event_collections             = 0;
-    Int_t track_collections             = 0;
-    Int_t ttrack_collections            = 0;
-    Int_t ttrack_collections_background = 0;
-    Int_t levels_no                     = 0;
+    TList* listE        = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kEvent));
+    TList* listT        = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTrack));
+    TList* listT2       = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrack));
+    TList* listT2B      = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrackBackground));
+    Int_t eventCol      = 0;
+    Int_t trackCol      = 0;
+    Int_t ttrackCol     = 0;
+    Int_t ttrackColBckg = 0;
+    Int_t levelsNo      = 0;
     if (listE) {
-      event_collections = listE->GetEntries();
-      levels_no++;
+      eventCol = listE->GetEntries();
+      levelsNo++;
     }
     if (listT) {
-      track_collections = listT->GetEntries();
-      levels_no++;
+      trackCol = listT->GetEntries();
+      levelsNo++;
     }
     if (listT2) {
-      ttrack_collections = listT2->GetEntries();
-      levels_no++;
+      ttrackCol = listT2->GetEntries();
+      levelsNo++;
     }
-    if (listT2B) { ttrack_collections_background = listT2B->GetEntries(); }
-    for (int i = 0; i < event_collections; i++) {
-      if (listT) {
-        DrawContainer((Package*) listE->At(i),
-                      levels_no,
-                      0,
-                      event_collections,
-                      track_collections,
-                      0,
-                      0,
-                      1);  // normal drawing with lines
-      } else {
-        DrawContainer((Package*) listE->At(i),
-                      levels_no,
-                      0,
-                      event_collections,
-                      track_collections,
-                      0,
-                      0,
-                      0);  // normal drawing without lines
-      }
+    if (listT2B) { ttrackColBckg = listT2B->GetEntries(); }
+    for (int i = 0; i < eventCol; i++) {
+      auto pack    = (Package*) listE->At(i);
+      int tierJump = 0;
+      if (listT) tierJump = 1;
+      DrawContainer(pack, levelsNo, 0, eventCol, trackCol, 0, 0,
+                    tierJump);  // normal drawing without lines
     }
-    for (int i = 0; i < track_collections; i++) {
+    for (int i = 0; i < trackCol; i++) {
+      auto pack = (Package*) listT->At(i);
       if (listT2B) {
-        DrawContainer((Package*) listT->At(i),
-                      levels_no,
-                      1,
-                      track_collections,
-                      ttrack_collections_background,
-                      1,
-                      1,
+        DrawContainer(pack, levelsNo, 1, trackCol, ttrackColBckg, 1, 1,
                       1);  // draw lines to backround collections
       }
       if (listT2) {
-        DrawContainer((Package*) listT->At(i),
-                      levels_no,
-                      1,
-                      track_collections,
-                      ttrack_collections,
-                      0,
-                      0,
+        DrawContainer(pack, levelsNo, 1, trackCol, ttrackCol, 0, 0,
                       1);  // normal drawing with lines
       } else {
-        DrawContainer((Package*) listT->At(i),
-                      levels_no,
-                      1,
-                      track_collections,
-                      ttrack_collections,
-                      0,
-                      0,
+        DrawContainer(pack, levelsNo, 1, trackCol, ttrackCol, 0, 0,
                       0);  // normal drawing without lines
       }
     }
-    for (int i = 0; i < ttrack_collections_background; i++) {
+    for (int i = 0; i < ttrackColBckg; i++) {
       fBasicRadius += 10;
-      DrawContainer((Package*) listT2B->At(i), levels_no, 2, ttrack_collections_background, 0, 0, 1,
+      DrawContainer((Package*) listT2B->At(i), levelsNo, 2, ttrackColBckg, 0, 0, 1,
                     0);  // draw without lines
       fBasicRadius -= 10;
     }
-    for (int i = 0; i < ttrack_collections; i++) {
-      DrawContainer((Package*) listT2->At(i), levels_no, 2, ttrack_collections, 0, 0, 0, 0);  // draw only circles
+    for (int i = 0; i < ttrackCol; i++) {
+      DrawContainer((Package*) listT2->At(i), levelsNo, 2, ttrackCol, 0, 0, 0, 0);  // draw only circles
     }
     TString short_path = path(fDir.Length() + 1, path.Length());
     TString text       = Form("<img class=\"pic\" src=\"%s/main_pict.png\"  width=\"%i \" height=\"%i "

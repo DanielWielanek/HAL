@@ -70,7 +70,7 @@ namespace Hal {
 
   HtmlCellRow::~HtmlCellRow() {}
 
-  namespace HtmlTableRowStyles {
+  namespace HtmlTableRowClass {
     TString LightBlue() { return "light_blue"; };
     TString MedBlue() { return "med_blue"; };
     TString DarkBlue() { return "dark_blue"; };

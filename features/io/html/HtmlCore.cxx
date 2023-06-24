@@ -361,7 +361,7 @@ namespace Hal {
     file.AddStringContent(Form("<h1>Name %s </h1>", list->GetName()));
     file.AddStringContent("<div  id=\"main_table\">");
     HtmlTable table("", "haltable", "");
-    HtmlRow row("", Hal::HtmlTableRowStyles::TitleStyle(), "");
+    HtmlRow row("", Hal::HtmlTableRowClass::TitleStyle(), "");
     row.AddContent(HtmlCell("No"));
     row.AddContent(HtmlCell("ClassName"));
     row.AddContent(HtmlCell("Value"));
@@ -382,7 +382,7 @@ namespace Hal {
       TObject* object        = list->At(i);
       TString name           = object->ClassName();
       TString oryginal_class = object->GetName();
-      HtmlRow row2("", Hal::HtmlTableRowStyles::DefStyle(), "");
+      HtmlRow row2("", Hal::HtmlTableRowClass::DefStyle(), "");
       table.AddContent(HtmlCell(Hal::Std::RoundToString(i)));
       table.AddContent(HtmlCell(object->ClassName()));
 

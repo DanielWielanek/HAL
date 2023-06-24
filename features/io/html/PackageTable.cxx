@@ -55,8 +55,8 @@ namespace Hal {
     for (unsigned int i = 0; i < fArray.size(); i++) {
       auto vec = fArray[i];
       HtmlRow row;
-      TString style = HtmlTableRowStyles::LightBlue();
-      if (i == 0) { style = HtmlTableRowStyles::DarkBlue(); }
+      TString style = HtmlTableRowClass::LightBlue();
+      if (i == 0) { style = HtmlTableRowClass::DarkBlue(); }
       for (unsigned int j = 0; j < vec.size(); j++) {
         auto rec = vec[j];
         HtmlCell cell;

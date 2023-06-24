@@ -27,7 +27,7 @@
 #pragma link C++ enum Hal::ECutUpdate;
 #pragma link C++ enum Hal::EFormatDepth;
 #pragma link C++ enum Hal::EFormatType;
-#pragma link C++ enum Hal::HtmlTableRowStyles;
+#pragma link C++ enum Hal::HtmlTableRowClass;
 #pragma link C++ class Hal::OptionArray + ;
 #pragma link C++ class Hal::OptionConverter + ;
 #pragma link C++ class Hal::PackageSql + ;

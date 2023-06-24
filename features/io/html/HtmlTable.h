@@ -10,7 +10,7 @@
 #define HAL_FEATURES_IO_HTML_TABLE_H_
 #include "HtmlObject.h"
 namespace Hal {
-  namespace HtmlTableRowStyles {
+  namespace HtmlTableRowClass {
     TString LightBlue();
     TString MedBlue();
     TString DarkBlue();

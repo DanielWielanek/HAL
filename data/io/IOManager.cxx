@@ -17,6 +17,7 @@
 
 #include "Package.h"
 #include "PackageTable.h"
+#include "Parameter.h"
 #include <RtypesCore.h>
 #include <TFile.h>
 #include <TList.h>
@@ -117,10 +118,11 @@ namespace Hal {
 
   IOManager::~IOManager() {}
 
-  Package* IOManager::Report() const {
-    Package* report     = new Package(this);
-    PackageTable* table = new PackageTable({"Branch name", "Object class", "Status"});
-    auto getStr         = [](BranchInfo::EFlag flag) {
+  TList* IOManager::GetBranchesList() const {
+    TList* list = new TList();
+    list->SetName(Form("Branch List"));
+
+    auto getStr = [](BranchInfo::EFlag flag) {
       TString flagStr = "unknown";
       switch (flag) {
         case BranchInfo::EFlag::kInActive: {
@@ -148,11 +150,10 @@ namespace Hal {
       TObject* obj      = branch.GetPointer();
       TString className = "unknown";
       if (obj) { className = obj->ClassName(); }
-      table->AddRow({name, className, flagStr});
-      Cout::DebugInfo(2222);
+      list->Add(new ParameterString(Form("Branch: %s", name.Data()), Form("%s [%s]", className.Data(), flagStr.Data())));
     }
-    report->AddObject(table);
-    return report;
+    list->Add(new Hal::ParameterString("IOManager", this->ClassName()));
+    return list;
   }
 
 }  // namespace Hal

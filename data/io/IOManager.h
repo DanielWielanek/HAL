@@ -202,7 +202,7 @@ namespace Hal {
      *
      * @return report
      */
-    virtual Package* Report() const;
+    virtual TList* GetBranchesList() const;
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

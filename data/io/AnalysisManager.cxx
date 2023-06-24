@@ -108,7 +108,7 @@ namespace Hal {
     metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetInputFileName(), 'f'));
-    metadata_new->AddObject(fManager->Report());
+    metadata_new->AddObject(fManager->GetBranchesList());
 
     TList* trigList = new TList();
     trigList->SetName("EventTriggers");

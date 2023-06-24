@@ -278,6 +278,7 @@ namespace Hal {
       ana_metadata->AddObject(event_bufferend->Report());
     }
     TList* tagList = new TList();
+    tagList->SetName("Tags");
     for (auto str : fTagList) {
       tagList->AddLast(new TObjString(str));
     }

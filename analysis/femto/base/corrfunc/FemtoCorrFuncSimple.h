@@ -9,20 +9,22 @@
 #ifndef HALFEMTO_ANALYSIS_FEMTO_BASE_CORRFUNC_HALFEMTOCORRFUNCSIMPLE_H_
 #define HALFEMTO_ANALYSIS_FEMTO_BASE_CORRFUNC_HALFEMTOCORRFUNCSIMPLE_H_
 
-#include "FemtoCorrFunc.h"
+#include "FemtoCorrFunc0D.h"
 
 namespace Hal {
-  class FemtoCorrFuncSimple : public FemtoCorrFunc1D {
+  class FemtoCorrFuncSimple : public FemtoCorrFunc0D {
+    virtual void FillDenMixed(Hal::FemtoPair* pair);
+    virtual void FillDenCharged(Hal::FemtoPair* pair);
+    virtual void FillNum(Hal::FemtoPair* pair);
+    virtual void FillDenHemisphere(Hal::FemtoPair* pair);
+    virtual void FillDenPerfect(Hal::FemtoPair* pair);
+    virtual void FillDenRotated(Hal::FemtoPair* pair);
+
   public:
     FemtoCorrFuncSimple();
+    virtual Bool_t Check() { return kTRUE; }
     FemtoCorrFuncSimple(const DividedHisto1D& h);
     FemtoCorrFuncSimple(const FemtoCorrFuncSimple& other);
-    virtual void FillNum(FemtoPair* pair);
-    virtual void FillDenPerfect(FemtoPair* pair) { FillDenMixed(pair); };
-    virtual void FillDenRotated(FemtoPair* pair);
-    virtual void FillDenMixed(FemtoPair* pair);
-    virtual void FillDenHemisphere(FemtoPair* pair) { FillDenRotated(pair); };
-    virtual void FillDenCharged(FemtoPair* pair) { FillDenMixed(pair); };
     virtual ~FemtoCorrFuncSimple() {};
     ClassDef(FemtoCorrFuncSimple, 1)
   };

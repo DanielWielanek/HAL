@@ -131,6 +131,9 @@ base/corrfunc/FemtoCorrFuncPt.cxx
 base/corrfunc/FemtoCorrFuncKt.cxx
 base/corrfunc/FemtoCorrFuncAzimuthalKt.cxx
 base/corrfunc/FemtoCorrFuncSimple.cxx
+base/corrfunc/FemtoCorrFunc0D.cxx
+base/corrfunc/FemtoCorrFunc1D.cxx
+base/corrfunc/FemtoCorrFunc2D.cxx
 
 imaging/FemtoImaging.cxx
 imaging/FemtoImaging1D.cxx

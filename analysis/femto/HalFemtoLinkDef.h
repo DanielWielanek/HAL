@@ -99,7 +99,7 @@
 #pragma link C++ class Hal::Femto1DCFAnaMapMC + ;
 #pragma link C++ class Hal::Femto1DCFAnaMapMCRoco + ;
 #pragma link C++ class Hal::Femto1DCFAnaMapPairsDumped + ;
-#pragma link C++ class Hal::FemtoCorrFuncKtMap1D + ;
+#pragma link C++ class Hal::FemtoCorrFuncMap + ;
 #pragma link C++ class Hal::CorrFitWielanek + ;
 #pragma link C++ class Hal::CorrFit3DCFBowlerSinyukov + ;
 #pragma link C++ class Hal::CorrFit3DCFBowlerSinyukovEllipse + ;
@@ -108,6 +108,7 @@
 #pragma link C++ class Hal::Femto1DCFAnaMap + ;
 
 #pragma link C++ class Hal::FemtoCorrFunc + ;
+#pragma link C++ class Hal::FemtoCorrFunc0D + ;
 #pragma link C++ class Hal::FemtoCorrFunc1D + ;
 #pragma link C++ class Hal::FemtoCorrFunc2D + ;
 #pragma link C++ class Hal::FemtoCorrFuncPt + ;

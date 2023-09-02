@@ -27,7 +27,7 @@
  * track-cut, twotrack-cut for given type of cut template e.g. hal-cmake --template=event-cut MyVertex create template for event
  * cut class called MyVertex
  * hal-cmake --dir=[LIBRARY_NAME] - create a template CMakeLists.txt file and LinkDef file for given directory, NOTE: the parser
- * trying to find class names but its's at early stage, so pleas check LinkDef file
+ * trying to find class names but its's at early stage, so please check LinkDef file
 
  */
 

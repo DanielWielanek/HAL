@@ -89,9 +89,11 @@ namespace Hal {
   }
 
   void CorrFitFunc::Draw(Option_t* draw_option) {
-    if (fDrawOptionSet || fDrawFunc.size() > 0) {
-      std::cout << "CorrFitFunc::Draw Canot set CorrFitDrawOptions when function was set or draw options were set" << std::endl;
-    } else {
+    TString drawOpts = draw_option;
+    if (fDrawFunc.size() > 0) {
+      std::cout << "CorrFitFunc::Draw Canot set CorrFitDrawOptions when function was drawn options were set" << std::endl;
+    }
+    if (!fDrawOptionSet && drawOpts.Length() > 0) {
       fDrawOptions   = CorrFitDrawOptions(draw_option);
       fDrawOptionSet = kTRUE;
     }

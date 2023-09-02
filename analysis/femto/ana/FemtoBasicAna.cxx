@@ -376,7 +376,10 @@ namespace Hal {
         FemtoCorrFunc* corrfunc = (FemtoCorrFunc*) fCFs->At(i, j);
         corrfunc->SetEventCollID(i);
         corrfunc->SetPairCollID(j);
-        corrfunc->Check();
+        if (!corrfunc->Check()) {
+          Cout::PrintInfo(Form("Problem with %s::Check", corrfunc->ClassName()), EInfo::kError);
+          return kFALSE;
+        }
       }
     }
     return kTRUE;

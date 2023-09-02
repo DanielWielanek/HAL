@@ -11,15 +11,22 @@
 #include "FemtoPair.h"
 
 namespace Hal {
-  FemtoCorrFuncSimple::FemtoCorrFuncSimple() : FemtoCorrFunc1D() {}
+  FemtoCorrFuncSimple::FemtoCorrFuncSimple() : FemtoCorrFunc0D() {}
 
-  FemtoCorrFuncSimple::FemtoCorrFuncSimple(const DividedHisto1D& h) : FemtoCorrFunc1D(h, "", 1) { SetBins({0, 1}); }
+  FemtoCorrFuncSimple::FemtoCorrFuncSimple(const DividedHisto1D& h) : FemtoCorrFunc0D(h) {};
 
-  FemtoCorrFuncSimple::FemtoCorrFuncSimple(const FemtoCorrFuncSimple& other) : FemtoCorrFunc1D(other) {}
+  FemtoCorrFuncSimple::FemtoCorrFuncSimple(const FemtoCorrFuncSimple& other) : FemtoCorrFunc0D(other) {}
 
-  void FemtoCorrFuncSimple::FillNum(FemtoPair* pair) { ((DividedHisto1D*) fArray->At(0))->FillNumObj(pair); }
+  void FemtoCorrFuncSimple::FillDenMixed(Hal::FemtoPair* pair) { ((DividedHisto1D*) fArray->At(0))->FillDenObj(pair); }
 
-  void FemtoCorrFuncSimple::FillDenRotated(FemtoPair* pair) { ((DividedHisto1D*) fArray->At(0))->FillDenObj(pair); }
+  void FemtoCorrFuncSimple::FillDenCharged(Hal::FemtoPair* pair) { ((DividedHisto1D*) fArray->At(0))->FillDenObj(pair); }
 
-  void FemtoCorrFuncSimple::FillDenMixed(FemtoPair* pair) { ((DividedHisto1D*) fArray->At(0))->FillDenObj(pair); }
+  void FemtoCorrFuncSimple::FillNum(Hal::FemtoPair* pair) { ((DividedHisto1D*) fArray->At(0))->FillNumObj(pair); }
+
+  void FemtoCorrFuncSimple::FillDenHemisphere(Hal::FemtoPair* pair) { ((DividedHisto1D*) fArray->At(0))->FillDenObj(pair); }
+
+  void FemtoCorrFuncSimple::FillDenPerfect(Hal::FemtoPair* pair) { ((DividedHisto1D*) fArray->At(0))->FillDenObj(pair); }
+
+  void FemtoCorrFuncSimple::FillDenRotated(Hal::FemtoPair* pair) { ((DividedHisto1D*) fArray->At(0))->FillDenObj(pair); }
+
 }  // namespace Hal

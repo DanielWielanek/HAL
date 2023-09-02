@@ -37,7 +37,7 @@ namespace Hal {
     ObjectMatrix_1* fArray;
     /**
      * deafult c-tor
-     * @param h correlaction function to duplication
+     * @param h correlation function to duplication
      * @param size number of correlation function bins (total)
      */
     FemtoCorrFunc(const DividedHisto1D* h, Int_t size = 0);
@@ -113,53 +113,5 @@ namespace Hal {
     ClassDef(FemtoCorrFunc, 1)
   };
 
-  class FemtoCorrFunc1D : public FemtoCorrFunc {
-  protected:
-    const TString fLabel;
-    Array_1<Float_t> fRange;
-    void SetBins(const std::initializer_list<double>& array);
-    virtual void AddHTMLCode(HtmlFile& /*file*/) const {};
-    /**
-     *
-     * @param h cf histogram to clone
-     * @param label binning labes (e.g. kT)
-     * @param size numer of CF's
-     */
-    FemtoCorrFunc1D(const DividedHisto1D* h, TString label = "", Int_t size = 0);
-
-  public:
-    FemtoCorrFunc1D() : FemtoCorrFunc() {};
-    FemtoCorrFunc1D(const DividedHisto1D& h, TString label = "", Int_t size = 0);
-    virtual Bool_t Check();
-    virtual TString HTMLExtract(Int_t no, TString dir = "") const;
-    TString GetLabel() const { return fLabel; };
-    const Array_1<Float_t> GetRange() const { return fRange; };
-    virtual ~FemtoCorrFunc1D();
-    ClassDef(FemtoCorrFunc1D, 1)
-  };
-
-  class FemtoCorrFunc2D : public FemtoCorrFunc {
-  protected:
-    const TString fLabelX, fLabelY;
-    Array_1<Float_t> fRangeX;
-    Array_1<Float_t> fRangeY;
-    virtual void AddHTMLCode(std::ofstream& /*file*/) const {};
-    FemtoCorrFunc2D(const DividedHisto1D* h, TString labelX = "", TString labelY = "", Int_t sizeX = 0, Int_t sizeY = 0);
-
-  public:
-    FemtoCorrFunc2D() : FemtoCorrFunc() {};
-    FemtoCorrFunc2D(const DividedHisto1D& h, TString labelX = "", TString labelY = "", Int_t sizeX = 0, Int_t sizeY = 0);
-    virtual Bool_t Check();
-    virtual TString HTMLExtract(Int_t no, TString dir = "") const;
-    TString GetXlabel() const { return fLabelX; };
-    TString GetYlabel() const { return fLabelY; };
-    Int_t GetXsize() const { return fRangeX.GetSize() - 1; };
-    Int_t GetYsize() const { return fRangeY.GetSize() - 1; };
-    const Array_1<Float_t> GetRangeX() const { return fRangeX; };
-    const Array_1<Float_t> GetRangeY() const { return fRangeY; };
-    DividedHisto1D* GetCF(Int_t i, Int_t j) const;
-    virtual ~FemtoCorrFunc2D();
-    ClassDef(FemtoCorrFunc2D, 1)
-  };
 }  // namespace Hal
 #endif /* HALFEMTO_ANALYSIS_FEMTO_BASE_HALCORRFUNCCOLLECTION_H_ */

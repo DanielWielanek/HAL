@@ -18,6 +18,8 @@
 #include "CorrFitMapKstarRstar.h"
 #include "Cout.h"
 #include "DividedHisto.h"
+#include "Femto1DCF.h"
+#include "FemtoCorrFunc.h"
 #include "FemtoCorrFuncKt.h"
 #include "FemtoFreezoutGenerator.h"
 #include "FemtoPair.h"
@@ -28,18 +30,12 @@
 
 
 namespace Hal {
-  FemtoCorrFuncKtMap1D::FemtoCorrFuncKtMap1D(FemtoCorrFuncKt* cfkt,
-                                             Int_t Rbins,
-                                             Double_t Rmin,
-                                             Double_t Rmax,
-                                             Femto::EKinematics kin) :
-    FemtoCorrFunc1D(NULL, cfkt->GetLabel(), cfkt->GetEntries()), fR(0) {
-    fArray             = new ObjectMatrix_1();
-    fRange             = cfkt->GetRange();
-    DividedHisto1D* cf = (DividedHisto1D*) cfkt->GetCF(0);
-    Int_t bins         = cf->GetNum()->GetNbinsX();
-    Double_t min       = cf->GetNum()->GetXaxis()->GetBinLowEdge(1);
-    Double_t max       = cf->GetNum()->GetXaxis()->GetBinUpEdge(bins);
+  FemtoCorrFuncMap::FemtoCorrFuncMap(const Femto1DCF& h, Int_t Rbins, Double_t Rmin, Double_t Rmax) : FemtoCorrFunc0D(), fR(0) {
+    fArray       = new ObjectMatrix_1();
+    auto kin     = h.GetFrame();
+    Int_t bins   = h.GetNum()->GetNbinsX();
+    Double_t min = h.GetNum()->GetXaxis()->GetBinLowEdge(1);
+    Double_t max = h.GetNum()->GetXaxis()->GetBinUpEdge(bins);
     TString XTitle, YTitle, ZTitle;
     if (kin == Femto::EKinematics::kPRF) {
       XTitle = "K* [GeV/c]";
@@ -57,53 +53,18 @@ namespace Hal {
     map->GetDen()->GetYaxis()->SetTitle(YTitle);
     map->GetNum()->GetZaxis()->SetTitle(ZTitle);
     map->GetDen()->GetZaxis()->SetTitle(ZTitle);
-    fArray->Init(fRange.GetSize() - 1, map);
+    fArray->Init(1, map);
   }
 
-  void FemtoCorrFuncKtMap1D::FillNum(FemtoPair* pair) {
-    Double_t px      = pair->GetPx1() + pair->GetPx2();
-    Double_t py      = pair->GetPy1() + pair->GetPy2();
-    Double_t kt      = TMath::Sqrt(px * px + py * py) * 0.5;
-    const Int_t size = fRange.GetSize();
-
-    if (kt < fRange.Get(0)) return;
-    for (int i = 1; i < size; i++) {
-      if (kt < fRange.Get(i)) {
-        ((DividedHisto2D*) fArray->At(i - 1))->FillNum(pair->GetT(), fR, pair->GetWeight());
-        return;
-      }
-    }
+  void FemtoCorrFuncMap::FillNum(FemtoPair* pair) {
+    ((DividedHisto2D*) fArray->At(0))->FillNum(pair->GetT(), fR, pair->GetWeight());
   }
 
-  void FemtoCorrFuncKtMap1D::FillDenRotated(FemtoPair* pair) {
-    Double_t px      = pair->GetPx1() - pair->GetPx2();
-    Double_t py      = pair->GetPy1() - pair->GetPy2();
-    Double_t kt      = TMath::Sqrt(px * px + py * py) * 0.5;
-    const Int_t size = fRange.GetSize();
-    if (kt < fRange.Get(0)) return;
-    for (int i = 1; i < size; i++) {
-      if (kt < fRange.Get(i)) {
-        ((DividedHisto2D*) fArray->At(i - 1))->FillDen(pair->GetT(), fR, pair->GetWeight());
-        return;
-      }
-    }
+  void FemtoCorrFuncMap::FillDenMixed(FemtoPair* pair) {
+    ((DividedHisto2D*) fArray->At(0))->FillDen(pair->GetT(), fR, pair->GetWeight());
   }
 
-  void FemtoCorrFuncKtMap1D::FillDenMixed(FemtoPair* pair) {
-    Double_t px      = pair->GetPx1() + pair->GetPx2();
-    Double_t py      = pair->GetPy1() + pair->GetPy2();
-    Double_t kt      = TMath::Sqrt(px * px + py * py) * 0.5;
-    const Int_t size = fRange.GetSize();
-    if (kt < fRange.Get(0)) return;
-    for (int i = 1; i < size; i++) {
-      if (kt < fRange.Get(i)) {
-        ((DividedHisto2D*) fArray->At(i - 1))->FillDen(pair->GetT(), fR, pair->GetWeight());
-        return;
-      }
-    }
-  }
-
-  CorrFitMapKstarRstar* FemtoCorrFuncKtMap1D::GetKstarMap(Int_t kt_bin) {
+  CorrFitMapKstarRstar* FemtoCorrFuncMap::GetKstarMap(Int_t kt_bin) {
     DividedHisto2D* hist   = (DividedHisto2D*) fArray->At(kt_bin);
     TH2D* h                = (TH2D*) hist->GetHist(kFALSE);
     Femto::EKinematics kin = Femto::EKinematics::kPRF;
@@ -115,7 +76,7 @@ namespace Hal {
     return map;
   }
 
-  FemtoCorrFuncKtMap1D::~FemtoCorrFuncKtMap1D() {
+  FemtoCorrFuncMap::~FemtoCorrFuncMap() {
     // TODO Auto-generated destructor stub
   }
 
@@ -125,7 +86,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair() {
     fFemtoPair->Compute();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
+    FemtoCorrFuncMap* map = ((FemtoCorrFuncMap*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
@@ -139,7 +100,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Perfect() {
     fFemtoPair->Compute();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
+    FemtoCorrFuncMap* map = ((FemtoCorrFuncMap*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     fFemtoPair->SetWeight(1.0);
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
@@ -150,7 +111,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Rotated() {
     fFemtoPair->Compute_Rotated();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
+    FemtoCorrFuncMap* map = ((FemtoCorrFuncMap*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
@@ -164,7 +125,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Hemisphere() {
     fFemtoPair->Compute_Hemisphere();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
+    FemtoCorrFuncMap* map = ((FemtoCorrFuncMap*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
@@ -178,7 +139,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Mixed() {
     fFemtoPair->Compute_Mixed();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
+    FemtoCorrFuncMap* map = ((FemtoCorrFuncMap*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     fFemtoPair->SetWeight(1.0);
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
@@ -189,7 +150,7 @@ namespace Hal {
 
   void Femto1DCFAnaMap::ProcessFemtoPair_Charged() {
     fFemtoPair->Compute_Charged();
-    FemtoCorrFuncKtMap1D* map = ((FemtoCorrFuncKtMap1D*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
+    FemtoCorrFuncMap* map = ((FemtoCorrFuncMap*) fCFs->At(fCurrentEventCollectionID, fCurrentPairCollectionID));
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
@@ -237,14 +198,15 @@ namespace Hal {
   }
 
   Bool_t Femto1DCFAnaMap::InitArray() {
-    fCFs = new ObjectMatrix_2();
-    FemtoCorrFuncKtMap1D* map_cf =
-      new FemtoCorrFuncKtMap1D(dynamic_cast<FemtoCorrFuncKt*>(fCFTemp), fRbins, fRmin, fRmax, fFemtoPair->GetFrame());
+    fCFs    = new ObjectMatrix_2();
+    auto cf = dynamic_cast<Femto1DCF*>(fCFTemp->GetCF(0));
+    if (!cf) return kFALSE;
+    FemtoCorrFuncMap* map_cf = new FemtoCorrFuncMap(*cf, fRbins, fRmin, fRmax);
     fCFs->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, map_cf);
     delete map_cf;
     for (int i = 0; i < fEventCollectionsNo; i++) {
       for (int j = 0; j < fTwoTrackCollectionsNo; j++) {
-        FemtoCorrFuncKtMap1D* corrfunc = (FemtoCorrFuncKtMap1D*) fCFs->At(i, j);
+        FemtoCorrFuncMap* corrfunc = (FemtoCorrFuncMap*) fCFs->At(i, j);
         corrfunc->SetEventCollID(i);
         corrfunc->SetPairCollID(j);
         corrfunc->Check();

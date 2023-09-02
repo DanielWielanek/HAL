@@ -11,34 +11,33 @@
 
 #include "FemtoBasicAna.h"
 #include "FemtoConst.h"
-#include "FemtoCorrFunc.h"
-
+#include "FemtoCorrFunc0D.h"
 
 
 namespace Hal {
-  class FemtoCorrFuncKt;
+  class Femto1DCF;
   class CorrFitMapKstarRstar;
   /**
    * class for generating maps of CF's based on 1Dim CF's
    */
 
-  class FemtoCorrFuncKtMap1D : public FemtoCorrFunc1D {
+  class FemtoCorrFuncMap : public FemtoCorrFunc0D {
     Double_t fR;
 
   public:
-    FemtoCorrFuncKtMap1D() : fR() {};
-    FemtoCorrFuncKtMap1D(FemtoCorrFuncKt* cf, Int_t Rbins, Double_t Rmin, Double_t Rmax, Femto::EKinematics kin);
-    virtual Bool_t Check() { return FemtoCorrFunc1D::Check(); };
+    FemtoCorrFuncMap() : fR(0) {};
+    FemtoCorrFuncMap(const Femto1DCF& h, Int_t Rbins, Double_t Rmin, Double_t Rmax);
+    virtual Bool_t Check() { return FemtoCorrFunc0D::Check(); };
     inline void SetR(Double_t R) { fR = R; };
     virtual void FillNum(FemtoPair* pair);
     virtual void FillDenPerfect(FemtoPair* pair) { FillDenMixed(pair); };
-    virtual void FillDenRotated(FemtoPair* pair);
+    virtual void FillDenRotated(FemtoPair* pair) { FillDenMixed(pair); };
     virtual void FillDenMixed(FemtoPair* pair);
-    virtual void FillDenHemisphere(FemtoPair* pair) { FillDenRotated(pair); };
+    virtual void FillDenHemisphere(FemtoPair* pair) { FillDenMixed(pair); };
     virtual void FillDenCharged(FemtoPair* pair) { FillDenMixed(pair); };
     CorrFitMapKstarRstar* GetKstarMap(Int_t kt_bin);
-    virtual ~FemtoCorrFuncKtMap1D();
-    ClassDef(FemtoCorrFuncKtMap1D, 1)
+    virtual ~FemtoCorrFuncMap();
+    ClassDef(FemtoCorrFuncMap, 1)
   };
 
   class Femto1DCFAnaMap : public FemtoBasicAna {

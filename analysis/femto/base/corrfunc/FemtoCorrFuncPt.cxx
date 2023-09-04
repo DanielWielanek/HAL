@@ -31,7 +31,7 @@ namespace Hal {
   }
 
   FemtoCorrFuncPt::FemtoCorrFuncPt(const DividedHisto1D& h, const std::initializer_list<double>& init, Int_t bins) :
-    FemtoCorrFunc1D(h, init, bins, "pT", "p_{Tsum} [GeV/c]", "dN/dp+{T}") {}
+    FemtoCorrFunc1D(h, init, bins, "pT", "p_{Tsum} [GeV/c]", "dN/dp_{T}") {}
 
 
 }  // namespace Hal

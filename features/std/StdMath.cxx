@@ -7,10 +7,15 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "StdMath.h"
+#include "Cout.h"
 
+#include <TH1.h>
+#include <TH2.h>
 #include <TMatrixD.h>
 
-NamespaceImp(Hal::Std);
+NamespaceImp(Hal::Std)
+
+  ;
 namespace Hal {
   namespace Std {
 
@@ -48,6 +53,7 @@ namespace Hal {
       b = SOL[1][0];
       a = SOL[2][0];
     }
+
     Int_t SolveParabola(Double_t a, Double_t b, Double_t c, Double_t& x1, Double_t& x2) {
       Double_t Delta = b * b - 4.0 * a * c;
       if (Delta < 0) return 0;
@@ -60,6 +66,7 @@ namespace Hal {
       x2    = (-b + Delta) / (2.0 * a);
       return 2;
     }
+
     Int_t Bin3dToBin1d(Int_t nbinsX, Int_t nBinsY, Int_t binX, Int_t binY, Int_t binZ, Bool_t root) {
       if (root) {
         return (binX - 1) * nbinsX * nBinsY + (binY - 1) * nBinsY + binZ - 1;
@@ -78,6 +85,47 @@ namespace Hal {
       } else {
         return TVector3(alpha, beta, gamma);
       }
+    }
+
+    TMatrixD GetVec(const TH1& h, Bool_t horizontal) {
+      if (horizontal) {
+        TMatrixD vect(1, h.GetNbinsX());
+        for (int i = 1; i <= h.GetNbinsX(); i++) {
+          vect[0][i - 1] = h.GetBinContent(i);
+        }
+        return vect;
+      } else {
+        TMatrixD vect(h.GetNbinsX(), 1);
+        for (int i = 1; i <= h.GetNbinsX(); i++) {
+          vect[i - 1][0] = h.GetBinContent(i);
+        }
+        return vect;
+      }
+    }
+
+    TMatrixD GetMatrix(const TH2& h, Bool_t swap) {
+      int binX, binY;
+      double minX, minY, maxX, maxY;
+      Hal::Std::GetAxisPar(h, binX, minX, maxX, "x");
+      Hal::Std::GetAxisPar(h, binY, minY, maxY, "y");
+      if (binX != binY) {
+        Hal::Cout::PrintInfo("Cannot call Hal::Std::GetMatrix on non-square histogram", EInfo::kError);
+        return TMatrixD(1, 1);
+      }
+      if (minY != minX || maxX != maxY) {
+        Hal::Cout::PrintInfo("Wrong histogram Hal::Std::GetMatrix min/max are not equal", EInfo::kWarning);
+      }
+      TMatrixD vect(binX, binX);
+      for (int i = 1; i <= binX; i++) {
+        for (int j = 1; j <= binX; j++) {
+          if (swap) {
+            vect[binX - j][i - 1] = h.GetBinContent(i, j);
+          } else {
+            vect[j - 1][i - 1] = h.GetBinContent(i, j);
+          }
+        }
+      }
+      return vect;
     }
 
     Double_t Discretize(Int_t areas, Double_t min, Double_t max, Double_t val, Char_t type) {

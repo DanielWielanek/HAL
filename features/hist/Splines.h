@@ -53,7 +53,7 @@ namespace Hal {
   public:
     Spline1D(TH1* h = NULL, Double_t begval = 0, Double_t endval = 0);
     /**
-     * uset to overwrite this class without time-consuming redelcaration of
+     * use to overwrite this class without time-consuming redelcaration of
      * object, IMPORATH NOTE: h - will be modified!
      * @param h
      * @param begval

@@ -8,9 +8,14 @@
  */
 #ifndef HALSTDMATH_H_
 #define HALSTDMATH_H_
+
 #include <TMath.h>
+#include <TMatrixD.h>
 #include <TVector3.h>
 #include <vector>
+
+class TH1;
+class TH2;
 namespace Hal {
   namespace Std {
     /**
@@ -57,6 +62,20 @@ namespace Hal {
      * @return
      */
     Int_t Bin3dToBin1d(Int_t nbinsX, Int_t nBinsY, Int_t binX, Int_t binY, Int_t binZ, Bool_t root_number = kTRUE);
+    /**
+     * convert histogram into math vector
+     * @param h
+     * @param horizontal - return horizontal vector if true
+     * @return
+     */
+    TMatrixD GetVec(const TH1& h, Bool_t horizontal = kFALSE);
+    /**
+     * convert histogram into matrix
+     * @param h
+     * @param swaprow swap vertical positions if true
+     * @return
+     */
+    TMatrixD GetMatrix(const TH2& h, Bool_t swaprow = kFALSE);
     /**
      * calculate the position of bin in 3D histogram when convert from 1D array
      * @param nbinsX

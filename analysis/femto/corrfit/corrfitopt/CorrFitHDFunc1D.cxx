@@ -97,6 +97,5 @@ namespace Hal {
     }
   }
 
-
   CorrFitHDFunc1D::~CorrFitHDFunc1D() {}
 }  // namespace Hal

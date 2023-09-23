@@ -120,49 +120,6 @@ namespace Hal {
     return fCurrentEvent;
   }
 
-  void MemoryMapManager::Init(Int_t task_id, Bool_t compress, std::vector<TString> direct) {
-    if (direct.size() > 0) {
-      fDirectAcces = kTRUE;
-    } else {
-      fDirectAcces = kFALSE;
-    }
-    fFormatID       = task_id;
-    fUseCompression = compress;
-    fEvents         = new EventArray*[fEventCollectionsNo];
-    for (Int_t i = 0; i < fEventCollectionsNo; i++) {
-      fEvents[i] = new EventArray(fFormatID, fMixSize);
-    }
-
-    DataFormatManager* dataManager = DataFormatManager::Instance();
-
-    if (fDirectAcces == kFALSE) {
-      fCurrentEvent = dataManager->GetNewEvent(fFormatID, EFormatDepth::kNonBuffered);
-      fInterface    = fCurrentEvent->CreateInterface();
-      fInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
-    } else {
-      for (auto brName : direct) {
-        Event* ev = dynamic_cast<Event*>(DataManager::Instance()->GetObject(brName));
-        if (ev) {
-          fCurrentEvent = ev;
-          break;
-        }
-      }
-    }
-    fTotalTracks  = new Int_t[fEventCollectionsNo];
-    fTrackMap     = new Array_4<Int_t>();
-    fTrackCounter = new Array_3<Int_t>();
-    fTrackCounter->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize);
-    fTrackMap->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize, fTrackMapSize);
-    fReadyToMix = new Bool_t[fEventCollectionsNo];
-    for (int i = 0; i < fEventCollectionsNo; i++) {
-      fReadyToMix[i] = kFALSE;
-    }
-    fCounter = new Int_t[fEventCollectionsNo];
-    for (int i = 0; i < fEventCollectionsNo; i++) {
-      fCounter[i] = -1;
-    }
-  }
-
   void MemoryMapManager::Init(Int_t event_factor, Int_t task_id, Bool_t compress, std::vector<TString> direct) {
     if (direct.size() > 0) {
       fDirectAcces = kTRUE;
@@ -171,18 +128,19 @@ namespace Hal {
     }
     fFormatID       = task_id;
     fUseCompression = compress;
-
-    Int_t* old_map      = fEventToTrackNo;
-    Int_t realEventCol  = fEventCollectionsNo;
-    fEventCollectionsNo = fEventCollectionsNo * event_factor;
-    fEventToTrackNo     = new Int_t[fEventCollectionsNo];
-    for (int i = 0; i < realEventCol; i++) {
-      for (int j = 0; j < event_factor; j++) {
-        fEventToTrackNo[j + i * event_factor] = old_map[i];
+    if (event_factor > 1) {
+      Int_t* old_map      = fEventToTrackNo;
+      Int_t realEventCol  = fEventCollectionsNo;
+      fEventCollectionsNo = fEventCollectionsNo * event_factor;
+      fEventToTrackNo     = new Int_t[fEventCollectionsNo];
+      for (int i = 0; i < realEventCol; i++) {
+        for (int j = 0; j < event_factor; j++) {
+          fEventToTrackNo[j + i * event_factor] = old_map[i];
+        }
+        fMaxTrackCollectionNo = TMath::Max(fEventToTrackNo[i], fMaxTrackCollectionNo);
       }
-      fMaxTrackCollectionNo = TMath::Max(fEventToTrackNo[i], fMaxTrackCollectionNo);
+      delete[] old_map;
     }
-    delete[] old_map;
 
     fEvents = new EventArray*[fEventCollectionsNo];
     for (Int_t i = 0; i < fEventCollectionsNo; i++) {

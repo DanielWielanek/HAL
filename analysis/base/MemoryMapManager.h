@@ -125,14 +125,6 @@ namespace Hal {
     Int_t GetTemporaryTotalTracksNo() const;
     /**
      * initialize this manager
-     * @param task_id data format (and  task id)
-     * @param compress - if true then evets will be compressed
-     * @param direct  - name of branch if direct access is used
-     * is performed
-     */
-    void Init(Int_t task_id, Bool_t compress, std::vector<TString> direct);
-    /**
-     * initialize this manager
      * @param event_factor - numer of artificial multiplication of event triggers
      * @param task_id data format (and  task id)
      * @param compress - if true then evets will be compressed

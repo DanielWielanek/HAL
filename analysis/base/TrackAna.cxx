@@ -84,6 +84,7 @@ namespace Hal {
 #endif
       fCutContainer->AddCut(TrackVirtualCut(), "fast");
     }
+    fTrackCollectionsNo = fCutContainer->GetTrackCollectionsNo();
   }
 
   void TrackAna::Exec(Option_t* opt) { EventAna::Exec(opt); }

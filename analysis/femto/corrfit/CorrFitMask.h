@@ -32,6 +32,7 @@ namespace Hal {
     virtual Bool_t Init() = 0;
     Int_t GetActiveBins() const { return fActiveBins; };
     virtual ~CorrFitMask() {};
+    ClassDef(CorrFitMask, 1)
   };
 
 }  // namespace Hal

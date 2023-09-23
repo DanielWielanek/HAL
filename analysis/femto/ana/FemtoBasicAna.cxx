@@ -314,20 +314,6 @@ namespace Hal {
     if (fCFTemp) delete fCFTemp;
   }
 
-  void FemtoBasicAna::InitMemoryMap() {
-    fMemoryMap = new MemoryMapManager(fCutContainer);
-    fMemoryMap->SetMixSize(fMixSize);
-    std::vector<TString> brName;
-    if (TESTBIT(fFormatOption, eBitFormat::kReader)) {
-      brName.push_back("HalEvent.");
-    } else if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {
-      TString evName = DataFormatManager::Instance()->GetFormat(GetTaskID())->ClassName();
-      brName.push_back(Form("%s.", evName.Data()));
-      brName.push_back(evName);
-    }
-    fMemoryMap->Init(1, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
-  }
-
   void FemtoBasicAna::ProcessEvent() {
     fMemoryMap->PrepareMaps(fCurrentEventCollectionID);
     CutCollection* cont = fCutContainer->GetEventCollection(fCurrentEventCollectionID);

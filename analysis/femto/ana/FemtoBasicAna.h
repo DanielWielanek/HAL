@@ -128,7 +128,6 @@ namespace Hal {
     virtual void ProcessPair_ChargedId();
     virtual void ProcessPair_ChargedNId() { ProcessPair_ChargedId(); };
     virtual Package* Report() const;
-    virtual void InitMemoryMap();
     virtual void ProcessEvent();
     /**
      * init map with CF-s

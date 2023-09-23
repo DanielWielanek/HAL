@@ -7,6 +7,7 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "MinimizerStepConf.h"
+#include <TMath.h>
 #include <iostream>
 
 namespace Hal {
@@ -27,8 +28,7 @@ namespace Hal {
       max           = temp;
     }
 
-    Int_t points = (max - min) / step + 1;  //+1 to take max
-
+    Int_t points   = 1 + (int) TMath::Ceil((max - min) / step);  //+1 to take max
     Bool_t created = kFALSE;
     for (auto& iPar : fParams) {
       if (iPar.GetParName().EqualTo(name)) {

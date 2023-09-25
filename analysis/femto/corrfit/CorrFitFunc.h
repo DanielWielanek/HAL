@@ -19,6 +19,7 @@
 
 #include <Rtypes.h>
 #include <RtypesCore.h>
+#include <TMath.h>
 #include <TString.h>
 
 
@@ -30,6 +31,11 @@ class TH1;
  * abstract class for fitting correlation function
  */
 //#define CF_FIT_TRACKING
+namespace ROOT {
+  namespace Math {
+    class Minimizer;
+  }
+}  // namespace ROOT
 namespace Hal {
   class CorrFitMask;
   class ChiSqMap2D;
@@ -133,12 +139,16 @@ namespace Hal {
      */
     mutable CorrFitHDFunc* fHDMaps;
     /**
-     * prepares nica minimizer (numer of steps etc. should be ovewriten if fit
+     * prepares hal minimizer (numer of steps etc. should be ovewriten if fit
      * base on discreate map, for other functions the configuration of minimizer
      * should be done manualy before each fit, by default the calculation matrix
      * check 10 points for each non-fixed parameter from min to max
      */
     virtual void PrepareMinimizer();
+    /**
+     * prepares root minimizer
+     */
+    virtual void PrepareRootMinimizer(ROOT::Math::Minimizer* minizer);
     /**
      * estimate number of active bins, NDF, also calculate mask in needed
      */

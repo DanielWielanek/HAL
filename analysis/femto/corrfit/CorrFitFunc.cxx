@@ -181,7 +181,10 @@ namespace Hal {
       if (!fParameters[i].IsFixed()) free_parameters++;
     }
     fNDF = fActiveBins - free_parameters;
-    if (custom_minimizer) { static_cast<Minimizer*>(min)->SetNDF(fNDF); }
+    if (custom_minimizer) {
+      static_cast<Minimizer*>(min)->SetNDF(fNDF);
+    } else
+      PrepareRootMinimizer(min);
     ROOT::Math::Functor f;
     switch (fMinFunc) {
       case kChi: f = ROOT::Math::Functor(this, &CorrFitFunc::FunctorChiTFD, GetParametersNo()); break;
@@ -190,26 +193,6 @@ namespace Hal {
       default: f = ROOT::Math::Functor(this, &CorrFitFunc::FunctorChiTFD, GetParametersNo()); break;
     }
     min->SetFunction(f);
-
-    // set parameters
-    if (!custom_minimizer) {
-      for (int i = 0; i < GetParametersNo(); i++) {
-        if (fParameters[i].IsFixed()) {
-          if (TMath::IsNaN(fParameters[i].GetStartVal())) {
-            Cout::Text(Form(" Par No. %i Is Nan fixed parameter", i), "M", kRed);
-          }
-          min->SetFixedVariable(i, GetParameterName(i).Data(), fParameters[i].GetStartVal());
-        } else {
-          if (TMath::IsNaN(fParameters[i].GetStartVal())) { Cout::Text(Form(" Par No. %i Is Nan parameter", i), "M", kRed); }
-          min->SetLimitedVariable(i,
-                                  GetParameterName(i).Data(),
-                                  fParameters[i].GetStartVal(),
-                                  fParameters[i].GetDParam(),
-                                  fParameters[i].GetMin(),
-                                  fParameters[i].GetMax());
-        }
-      }
-    }
 
     min->Minimize();
     if (fMinAlgo == kDefaultAlgo) {  // now call midgrad
@@ -244,7 +227,6 @@ namespace Hal {
 
     const double* parameters = min2->X();
     const double* errors     = min2->Errors();
-
     /* MINOS ERROR ESTIMATION
      if(true){
      for(int ivar=0;ivar<GetParametersNo();ivar++){
@@ -571,4 +553,19 @@ namespace Hal {
       }
     }
   }
+
+  void CorrFitFunc::PrepareRootMinimizer(ROOT::Math::Minimizer* min) {
+    for (int i = 0; i < GetParametersNo(); i++) {
+      if (fParameters[i].IsFixed()) {
+        if (TMath::IsNaN(fParameters[i].GetStartVal())) { Cout::Text(Form(" Par No. %i Is Nan fixed parameter", i), "M", kRed); }
+        min->SetFixedVariable(i, GetParameterName(i).Data(), fParameters[i].GetStartVal());
+      } else {
+        if (TMath::IsNaN(fParameters[i].GetStartVal())) { Cout::Text(Form(" Par No. %i Is Nan parameter", i), "M", kRed); }
+        Double_t step = TMath::Max(fParameters[i].GetDParam(), (fParameters[i].GetMax() - fParameters[i].GetMin()) / 100.0);
+        min->SetLimitedVariable(
+          i, GetParameterName(i).Data(), fParameters[i].GetStartVal(), step, fParameters[i].GetMin(), fParameters[i].GetMax());
+      }
+    }
+  }
+
 }  // namespace Hal

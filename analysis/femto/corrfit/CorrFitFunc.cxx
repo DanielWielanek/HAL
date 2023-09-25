@@ -214,7 +214,7 @@ namespace Hal {
           min2->SetLimitedVariable(i, GetParameterName(i).Data(), parameters_guess[i], step, minpar, maxpar);
           if (fTrace)
             std::cout << "Set limits " << GetParameterName(i) << "\t"
-                      << Form("%4.4f+/-%4.4f", parameters_guess[i], 3.0 * errors_guess[i]) << std::endl;
+                      << Form(" %4.4f+/-%4.4f", parameters_guess[i], 3.0 * errors_guess[i]) << std::endl;
         }
       }
       min2->SetMaxFunctionCalls(fMaxIterations);
@@ -563,7 +563,7 @@ namespace Hal {
         if (TMath::IsNaN(fParameters[i].GetStartVal())) { Cout::Text(Form(" Par No. %i Is Nan parameter", i), "M", kRed); }
         Double_t step = TMath::Max(fParameters[i].GetDParam(), (fParameters[i].GetMax() - fParameters[i].GetMin()) / 100.0);
         min->SetLimitedVariable(
-          i, GetParameterName(i).Data(), fParameters[i].GetStartVal(), step, fParameters[i].GetMin(), fParameters[i].GetMax());
+          i, GetParameterName(i).Data(), fParameters[i].GetMin(), step, fParameters[i].GetMin(), fParameters[i].GetMax());
       }
     }
   }

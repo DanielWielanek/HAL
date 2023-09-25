@@ -122,7 +122,7 @@ namespace Hal {
     void CalcParams(Double_t x[3], Double_t y[3], Double_t z[3][3], Double_t params[9]);
     void Extrapolate(TH2* h, Option_t* extraopolation_opt) const;
     Double_t Extrapolate(TH2* h, Int_t ix1, Int_t ix2, Int_t x, Int_t iy1, Int_t iy2, Int_t y, Int_t opt) const;
-
+    // TODO default constructor & copy constructor
   public:
     /**
      *

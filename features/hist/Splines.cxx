@@ -211,6 +211,10 @@ namespace Hal {
   }
 
   Spline2D::Spline2D(TH2* h, Option_t* opt_int) : fXaxis(NULL), fYaxis(NULL), fNbinsX(0), fNbinsY(0), fA(), fAe(NULL) {
+    if (h == nullptr) {
+      Hal::Cout::Text("making copy Spline with null histogram");
+      return;
+    }
     fXaxis  = (TAxis*) h->GetXaxis()->Clone("Xspline");
     fYaxis  = (TAxis*) h->GetYaxis()->Clone("Yspline");
     fNbinsX = fXaxis->GetNbins();

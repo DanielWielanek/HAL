@@ -131,7 +131,7 @@ namespace Hal {
 
   double CorrFit1DCF::GetChiTFD(const double* /*par*/) const {
     Double_t f = 0.0;
-    Double_t A, B, C;
+    Double_t A, B;
     Double_t e3, x, chi;
     CorrFitHDFunc1D* cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
     Bool_t useHD        = kFALSE;
@@ -141,11 +141,16 @@ namespace Hal {
       A     = fNumeratorHistogram->GetBinContent(fBinX);
       B     = fDenominatorHistogram->GetBinContent(fBinX);
       //  x     = fDenominatorHistogram->GetBinCenter(fBinX);
+
       Double_t Cf, ecf;
-      CalcError(A, fNumeratorHistogram->GetBinError(fBinX), B, fDenominatorHistogram->GetBinError(fBinX), Cf, ecf);
-      C   = cf->GetBinCFVal(fBinX, useHD);
-      e3  = GetNumericalError(fBinX) * C;
-      chi = C - Cf;
+      Double_t Cf_theo;
+      //  CalcError(A, fNumeratorHistogram->GetBinError(fBinX), B, fDenominatorHistogram->GetBinError(fBinX), Cf, ecf);
+      Cf_theo = cf->GetBinCFVal(fBinX, useHD);
+      e3      = GetNumericalError(fBinX) * Cf_theo;
+      Cf_theo = Cf_theo * B;                              // cf_theo * denominator
+      Cf      = A;                                        // just numerator
+      ecf     = fNumeratorHistogram->GetBinError(fBinX);  // just sqrt of numerator
+      chi     = Cf_theo - Cf;
       chi *= chi;
       f += chi / (ecf * ecf + e3 * e3);
     }

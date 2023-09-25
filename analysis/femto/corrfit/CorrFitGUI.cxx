@@ -15,6 +15,7 @@
 #include <TColor.h>
 #include <TF1.h>
 
+#include <TROOT.h>
 #include <TSystem.h>
 #include <TVirtualPad.h>
 
@@ -23,11 +24,20 @@
 namespace Hal {
   CorrFitGUI::CorrFitGUI(CorrFit* f) :
     TGMainFrame(gClient->GetRoot(), 350, 300 + 140), fFunc(f), fNormIndex(fFunc->GetParameterIndex("N")) {
-    const Int_t width = 350;
-    Int_t nparams     = fFunc->GetParametersNo();
-    fInitalNorm       = fFunc->GetParameter(fNormIndex);
-    fSliders          = new CorrFitParButton*[nparams];
-    Int_t maxL        = 0;
+    const Int_t width            = 350;
+    Int_t nparams                = fFunc->GetParametersNo();
+    fInitalNorm                  = fFunc->GetParameter(fNormIndex);
+    fSliders                     = new CorrFitParButton*[nparams];
+    Int_t maxL                   = 0;
+    Color_t col                  = f->GetLineColor();
+    TGHorizontalFrame* descFrame = new TGHorizontalFrame(this, width, 40);
+    TGLabel* lab11               = new TGLabel(descFrame, f->ClassName());
+    TColor* color                = gROOT->GetColor(col);
+    lab11->SetTextColor(color);
+    TGLabel* lab12 = new TGLabel(descFrame, f->GetName());
+    descFrame->AddFrame(lab11, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 3, 4));
+    descFrame->AddFrame(lab12, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 3, 4));
+    AddFrame(descFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
     for (int i = 0; i < nparams; i++) {
       maxL = fFunc->GetParameterName(i).Length();
     }

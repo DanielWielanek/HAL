@@ -69,7 +69,7 @@ namespace Hal {
 
   FemtoSHCF::FemtoSHCF(TString name, Int_t maxL, Int_t bins, Double_t min, Double_t max, Femto::EKinematics kinematics) :
     DividedHisto1D(name, bins, min, max),
-    fMaxJM((maxL + 1) * (maxL + 1)),
+    fMaxJM((TMath::Min(maxL, 5) + 1) * (TMath::Min(maxL, 5) + 1)),
     fNumReal(nullptr),
     fNumImag(nullptr),
     fDenReal(nullptr),
@@ -80,11 +80,11 @@ namespace Hal {
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
-    fLmVals(FemtoYlmIndexes(maxL)),
+    fLmVals(FemtoYlmIndexes(TMath::Min(maxL, 5))),
     fLmMath(),
     fCfcov(nullptr) {
     SetNorm(0, 0.5, 0);
-
+    if (maxL > 5) { Hal::Cout::PrintInfo("MaxL > 5 not supported", EInfo::kError); }
     fNumReal = new TH1D*[fMaxJM];
     fNumImag = new TH1D*[fMaxJM];
     fDenReal = new TH1D*[fMaxJM];
@@ -995,6 +995,7 @@ namespace Hal {
       }
     }
   }
+
   void FemtoSHCF::Rebin(Int_t ngroup, Option_t* opt) { std::cout << "REBIN of SHCF not implented !" << std::endl; }
 
   void FemtoSHCF::Fit(CorrFitSHCF* fit) {  // fit->Fit(this); //

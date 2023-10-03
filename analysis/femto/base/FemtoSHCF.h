@@ -210,6 +210,18 @@ namespace Hal {
      */
     void FitDummy(CorrFitSHCF* fit);
     /**
+     * fast direct acess to real CF
+     * @param pos
+     * @return
+     */
+    TH1D* GetRawCFRe(int pos) const { return fCFReal[pos]; };
+    /**
+     * fast direct acess to real CF
+     * @param pos
+     * @return
+     */
+    TH1D* GetRawCFIm(int pos) const { return fCFImag[pos]; };
+    /**
      * return computed correlation function
      * @param el
      * @param em

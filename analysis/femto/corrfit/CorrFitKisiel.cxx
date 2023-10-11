@@ -85,6 +85,8 @@ namespace Hal {
       fMaps[i]->SetFrameScale(fKinematics);
       Double_t R_min = fMaps[i]->GetRmin();
       Double_t R_max = fMaps[i]->GetRmax();
+      fParameters[Radius()].SetMapMin(R_min);
+      fParameters[Radius()].SetMapMax(R_max);
       Int_t R_bins   = fMaps[i]->GetNRbins();
       Double_t Kmin  = fMaps[i]->GetKstarMin();
       Double_t Kmax  = fMaps[i]->GetKstarMax();
@@ -170,8 +172,5 @@ namespace Hal {
     fMaps.push_back(map);
   }
 
-  void CorrFitKisiel::AddMap(CorrFitMapKstarRstar* map) {
-    map->Recalc();
-    fMaps.push_back(map);
-  }
+  void CorrFitKisiel::AddMap(CorrFitMapKstarRstar* map) { fMaps.push_back(map); }
 }  // namespace Hal

@@ -171,7 +171,7 @@ namespace Hal {
      * uset do full recalcuate function and smoth function
      * @param histo
      */
-    void ParametersChanged() const {
+    void ParametersChanged() const {  // TODO optimize
       RecalculateFunction();
       RecalculateSmoothFunction();
     }

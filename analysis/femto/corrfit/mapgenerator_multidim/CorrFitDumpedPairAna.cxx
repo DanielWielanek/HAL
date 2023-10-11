@@ -354,8 +354,8 @@ namespace Hal {
       std::cout << "CHECK " << key->GetName() << std::endl;
       TObject* obj = dir->Get(key->GetName());
       if (obj->InheritsFrom("TDirectory")) {
-        TDirectory* dir = (TDirectory*) obj;
-        FindTree(dir, dir->GetListOfKeys());
+        TDirectory* dirl = (TDirectory*) obj;
+        FindTree(dirl, dirl->GetListOfKeys());
       }
       std::cout << "CHECK " << key->GetName() << " " << obj->ClassName() << " " << fTree << std::endl;
 

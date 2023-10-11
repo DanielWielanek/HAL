@@ -27,7 +27,7 @@ namespace Hal {
   CorrFitMapKstarRstar::CorrFitMapKstarRstar(const CorrFitMapKstarRstar& other) :
     Object(other), fHisto2d(nullptr), fSplined(nullptr), fFrameScale(other.fFrameScale), fFrame(other.fFrame) {
     if (other.fHisto2d) fHisto2d = (TH2D*) other.fHisto2d->Clone();
-    if (other.fSplined) fSplined = (Spline2D*) other.fSplined->Clone();
+    // if (other.fSplined) fSplined = (Spline2D*) other.fSplined->Clone();
   }
 
   Double_t CorrFitMapKstarRstar::Eval(Double_t q, Double_t R) const {
@@ -50,7 +50,7 @@ namespace Hal {
 
   void CorrFitMapKstarRstar::Recalc(TString extrOpt) {
     if (fSplined != nullptr) {
-      Cout::Text("Splinned alread exist in CorrFitMap1D::BuildSpline");
+      Cout::Text("Splinned already exist in CorrFitMap1D::BuildSpline");
       delete fSplined;
       fSplined = nullptr;
     }

@@ -32,7 +32,7 @@ namespace Hal {
   class CorrFitKisiel : public CorrFit1DCF {
 
   protected:
-    std::vector<CorrFitMapKstarRstar*> fMaps;
+    std::vector<CorrFitMapKstarRstar*> fMaps;  //!
     Bool_t fSkipError;
     TH1D* fOldNumErr = {nullptr};
     virtual void Check();

@@ -29,10 +29,12 @@ namespace Hal {
     Bool_t fDiag1        = {kFALSE};
     Bool_t fDiag2        = {kFALSE};
     Bool_t fRgb          = {kFALSE};
+    Bool_t fYRangeSet    = {kFALSE};
     Bool_t fLegendPosSet = {kFALSE};
     Bool_t fDrawRealOnly = {kTRUE};
     Bool_t fDrawNegative = {kFALSE};
     Double_t fMin = {0}, fMax = {0};
+    Double_t fMin2 = {0}, fMax2 = {0};
     Double_t fRangeMin = {0}, fRangeMax = {0};
     Double_t fXLegend[4] = {0, 0, 0, 0};
     TString fRawCommand;
@@ -63,9 +65,12 @@ namespace Hal {
     Bool_t Diag2() const { return fDiag2; };
     Bool_t Rgb() const { return fRgb; }
     Bool_t Chi2() const { return fDrawChi2; }
+    Bool_t IsYRangeSet() const { return fYRangeSet; };
     Bool_t LegendPos() const { return (fXLegend[0] == fXLegend[1] ? kFALSE : kTRUE); }
     Double_t GetMax() const { return fMax; }
     Double_t GetMin() const { return fMin; }
+    Double_t GetMax2() const { return fMax2; }
+    Double_t GetMin2() const { return fMin2; }
     Double_t GetLegendPos(Int_t id) const;
     void SetLegendPos(Double_t x1, Double_t x2, Double_t y1, Double_t y2);
     void SetAutoNorm(Bool_t autoNorm = kTRUE) { fAutoNorm = autoNorm; }

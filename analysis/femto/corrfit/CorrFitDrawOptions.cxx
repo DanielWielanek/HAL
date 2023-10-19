@@ -9,6 +9,7 @@
 
 #include "CorrFitDrawOptions.h"
 
+#include "Std.h"
 #include "StdString.h"
 
 #include <initializer_list>
@@ -70,13 +71,15 @@ namespace Hal {
     for (auto i : opt) {
       SetIntOpt(i);
     }
-    if (val.size() == 2) {
-      int cval = 0;
-      for (auto v : val) {
-        cval++;
-        if (cval == 1) fMin = v;
-        if (cval == 2) fMax = v;
-      }
+    auto vec = Hal::Std::GetVector(val);
+    if (vec.size() == 2 || vec.size() == 4) {
+      fMin = fMin2 = vec[0];
+      fMax = fMax2 = vec[1];
+      fYRangeSet   = kTRUE;
+    }
+    if (val.size() == 4) {
+      fMin2 = vec[2];
+      fMax2 = vec[3];
     }
     CheckConflicts();
   }
@@ -97,8 +100,8 @@ namespace Hal {
       case kNumError: fDrawNumErr = kTRUE; break;
       case kLegend: fDrawLegend = kTRUE; break;
       case kDrawCF: fDrawCF = kTRUE; break;
-      case kDiag1: fDrawLegend = kTRUE; break;
-      case kDiag2: fDrawCF = kTRUE; break;
+      case kDiag1: fDiag1 = kTRUE; break;
+      case kDiag2: fDiag2 = kTRUE; break;
       case kRgb: fRgb = kTRUE; break;
       case kDrawChi2: fDrawChi2 = kTRUE; break;
     }

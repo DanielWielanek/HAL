@@ -144,6 +144,15 @@ namespace Hal {
      * @return return name of axis
      */
     TString KinematicsToAxisLabel(EKinematics kin, Int_t ax, Int_t ndim);
+    /**
+     * fill femto pair with random variables
+     * @param p
+     * @param pid1 pid of first particle
+     * @param pid2 pid of second particle
+     * @param sigmaq -std of momentum coordinate
+     * @param sigmar - std of freezout coordinate
+     */
+    void FillRandomPair(FemtoPair* p, Int_t pid1, Int_t pid2, Double_t sigmaq = 0.1, Double_t sigmar = 1);
   }  // namespace Femto
 }  // namespace Hal
 

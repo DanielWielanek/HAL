@@ -59,9 +59,12 @@ namespace Hal {
   class FemtoSourceModelGauss3DCross : public FemtoSourceModel3D {
     TMatrixD fAMatrix;
     TMatrixD fCovMatrix;
-    Double_t fRowA[3];
-    Double_t fRowB[3];
-    Double_t fRowC[3];
+    Double_t fRowX[3];
+    Double_t fRowY[3];
+    Double_t fRowZ[3];
+    // Double_t fSigmaXY = {0};
+    // Double_t fSigmaXZ = {0};
+    // Double_t fSigmaYZ = {0};
 
   public:
     /**
@@ -78,17 +81,17 @@ namespace Hal {
      * set out radius
      * @param out radius
      */
-    void SetOutSideRadius(Double_t os) { SetParameter(os, 3); };
+    void SetOutSideRadius(Double_t os) { SetParameter(3, os); };
     /**
      * set side radius
      * @param side radius
      */
-    void SetOutLongRadius(Double_t sl) { SetParameter(sl, 4); };
+    void SetOutLongRadius(Double_t sl) { SetParameter(4, sl); };
     /**
      * set long radius
      * @param longr radius
      */
-    void SetSideLongRadius(Double_t ol) { SetParameter(ol, 5); };
+    void SetSideLongRadius(Double_t ol) { SetParameter(5, ol); };
 
     Double_t GetOutSide() const { return GetParameter(3); };
     Double_t GetOutLong() const { return GetParameter(4); };

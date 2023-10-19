@@ -10,6 +10,7 @@
 #include "FemtoSourceModelGauss.h"
 
 #include "Const.h"
+#include "Cout.h"
 
 #include <TDecompChol.h>
 #include <TMath.h>
@@ -95,12 +96,12 @@ namespace Hal {
 
   //=================================================
   FemtoSourceModelGauss3DCross::FemtoSourceModelGauss3DCross() : FemtoSourceModel3D(6), fAMatrix(3, 3), fCovMatrix(3, 3) {
-    SetParameter(1, 3);
-    SetParameter(1, 4);
-    SetParameter(1, 5);
-    SetParName("R_{out-side}", 3);
-    SetParName("R_{out-long}", 4);
-    SetParName("R_{side-long}", 5);
+    SetParameter(3, 1);
+    SetParameter(4, 0);
+    SetParameter(5, 0);
+    SetParName(3, "R_{out-side}");
+    SetParName(4, "R_{out-long}");
+    SetParName(5, "R_{side-long}");
   }
 
   FemtoSourceModelGauss3DCross::FemtoSourceModelGauss3DCross(const FemtoSourceModelGauss3DCross& model) :
@@ -108,9 +109,9 @@ namespace Hal {
     fAMatrix   = model.fAMatrix;
     fCovMatrix = model.fCovMatrix;
     for (int i = 0; i < 3; i++) {
-      fRowA[i] = model.fRowA[i];
-      fRowB[i] = model.fRowB[i];
-      fRowC[i] = model.fRowC[i];
+      fRowX[i] = model.fRowX[i];
+      fRowY[i] = model.fRowY[i];
+      fRowZ[i] = model.fRowZ[i];
     }
   }
 
@@ -123,9 +124,14 @@ namespace Hal {
     Double_t Z1 = fRandom->Gaus(0, TMath::Sqrt2());
     Double_t Z2 = fRandom->Gaus(0, TMath::Sqrt2());
     Double_t Z3 = fRandom->Gaus(0, TMath::Sqrt2());
-    fRout       = Z1 * fRowA[0] + Z2 * fRowA[1] + Z3 * fRowA[2];
-    fRside      = Z1 * fRowB[0] + Z2 * fRowB[1] + Z3 * fRowB[2];
-    fRlong      = Z1 * fRowC[0] + Z2 * fRowC[1] + Z3 * fRowC[2];
+    // Double_t Z1 = fRandom->Gaus(0, 1);
+    // Double_t Z2 = fRandom->Gaus(0, 1);
+    // Double_t Z3 = fRandom->Gaus(0, 1);
+    // option 1
+    fRout  = Z1 * fRowX[0] + Z2 * fRowX[1] + Z3 * fRowX[2];
+    fRside = Z1 * fRowY[0] + Z2 * fRowY[1] + Z3 * fRowY[2];
+    fRlong = Z1 * fRowZ[0] + Z2 * fRowZ[1] + Z3 * fRowZ[2];
+    // option 2
   }
 
   Bool_t FemtoSourceModelGauss3DCross::Init() {
@@ -144,16 +150,24 @@ namespace Hal {
         sigma[i][j] = sigma[i][j] * sigma[i][j];
       }
     }
-    sigma = sigma.Invert();
-
-
+    /**
+     * this is complicated math that I found on:
+     * https://www.visiondummy.com/2014/04/geometric-interpretation-covariance-matrix/
+     */
     TDecompChol chol(sigma);
-    if (!chol.Decompose()) return kFALSE;
-    fAMatrix = chol.GetU();
+    Bool_t decomposed = chol.Decompose();
+    if (!decomposed) {
+      Hal::Cout::PrintInfo("Cannot decompose matrix in FemtoSourceModelGauss3DCross", Hal::EInfo::kError);
+      return kFALSE;
+    }
+    auto m = chol.GetU();
+    m.Transpose(m);
+    m.Print();
+
     for (int i = 0; i < 3; i++) {
-      fRowA[i] = fAMatrix[i][0];
-      fRowB[i] = fAMatrix[i][1];
-      fRowC[i] = fAMatrix[i][2];
+      fRowX[i] = m[0][i];
+      fRowY[i] = m[1][i];
+      fRowZ[i] = m[2][i];
     }
     return kFALSE;
   }

@@ -58,7 +58,7 @@ namespace Hal {
      * name of this model
      */
     TString fModelName;
-    void SetParName(TString name, Int_t no) { fParameterNames[no] = name; };
+    void SetParName(Int_t no, TString name) { fParameterNames[no] = name; };
     // FemtoSourceModel();
   public:
     enum class ENumProperty { kNonAnalytical, kAnalytical1d, kAnalytical3d, kFullyAnalytical };
@@ -93,16 +93,16 @@ namespace Hal {
     void SetSeed(UInt_t seed) { fRandom->SetSeed(seed); };
     /**
      * se
-     * @param par_val value of parameter
      * @param par_no parameter number
+     * @param par_val value of parameter
      */
-    inline void SetParameter(Double_t par_val, Int_t par_no) { fParams[par_no] = par_val; };
+    inline void SetParameter(Int_t par_no, Double_t par_val) { fParams[par_no] = par_val; };
     /**
      * set value of parameter
-     * @param par
      * @param name
+     * @param par
      */
-    void SetParameterByName(Double_t par, TString name);
+    void SetParameterByName(TString name, Double_t par);
     /**
      * calculate coordinates
      */
@@ -173,7 +173,7 @@ namespace Hal {
      * set generated radiius
      * @param radii
      */
-    void SetRadius(Double_t radii) { SetParameter(radii, 0); };
+    void SetRadius(Double_t radii) { SetParameter(0, radii); };
     virtual FemtoSourceModel* MakeCopy() const = 0;
     virtual ~FemtoSourceModel1D();
     ClassDef(FemtoSourceModel1D, 1)
@@ -196,17 +196,17 @@ namespace Hal {
      * set out radius
      * @param out radius
      */
-    void SetOutRadius(Double_t out) { SetParameter(out, 0); };
+    void SetOutRadius(Double_t out) { SetParameter(0, out); };
     /**
      * set side radius
      * @param side radius
      */
-    void SetSideRadius(Double_t side) { SetParameter(side, 1); };
+    void SetSideRadius(Double_t side) { SetParameter(1, side); };
     /**
      * set long radius
      * @param longr radius
      */
-    void SetLongRadius(Double_t longr) { SetParameter(longr, 2); };
+    void SetLongRadius(Double_t longr) { SetParameter(2, longr); };
     /**
      * set out long and side radii where R-out/side/long = radii/sqrt(3)
      * @param radii

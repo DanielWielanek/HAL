@@ -76,7 +76,7 @@ namespace Hal {
     return fParameterNames[n];
   }
 
-  void FemtoSourceModel::SetParameterByName(Double_t par, TString name) {
+  void FemtoSourceModel::SetParameterByName(TString name, Double_t par) {
     Int_t n = -1;
     for (int i = 0; i < fParametersNo; i++) {
       if (name == fParameterNames[i]) {
@@ -104,8 +104,8 @@ namespace Hal {
   // FemtoSourceModel1D
 
   FemtoSourceModel1D::FemtoSourceModel1D(Int_t par) : FemtoSourceModel(par) {
-    SetParName("R", 0);
-    SetParameter(1.0, 1);
+    SetParName(0, "R");
+    SetParameter(0, 1);
   }
 
   FemtoSourceModel1D::FemtoSourceModel1D() : FemtoSourceModel1D(1) {}
@@ -120,12 +120,12 @@ namespace Hal {
 
   FemtoSourceModel3D::FemtoSourceModel3D(Int_t no) : FemtoSourceModel(no) {
     if (no >= 3) {
-      SetParameter(1, 0);
+      SetParameter(0, 1);
       SetParameter(1, 1);
-      SetParameter(1, 2);
-      SetParName("R_{out}", 0);
-      SetParName("R_{side}", 1);
-      SetParName("R_{long}", 2);
+      SetParameter(2, 2);
+      SetParName(0, "R_{out}");
+      SetParName(2, "R_{side}");
+      SetParName(3, "R_{long}");
     }
   }
 

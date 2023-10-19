@@ -16,10 +16,10 @@ namespace Hal {
     SetSideParams(1, 1);
     SetLongParams(1, 1);
     SetM2(0);
-    SetParName("R_out^A", 3);
-    SetParName("R_side^A", 4);
-    SetParName("R_long^A", 5);
-    SetParName("m^{2}", 6);
+    SetParName(3, "R_out^A");
+    SetParName(4, "R_side^A");
+    SetParName(5, "R_long^A");
+    SetParName(6, "m^{2}");
   }
 
   FemtoSourceModelGausMt::FemtoSourceModelGausMt(const FemtoSourceModelGausMt& model) : FemtoSourceModel3D(model) {}

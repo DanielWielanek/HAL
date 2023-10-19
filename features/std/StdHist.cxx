@@ -1022,5 +1022,20 @@ namespace Hal {
       }
       return nh;
     }
+    std::vector<TObject*> GetPadChildren(TString objName, TString className, TVirtualPad* pad) {
+      if (!pad) pad = gPad;
+      std::vector<TObject*> list;
+      if (!pad) return list;
+      TList* l = gPad->GetListOfPrimitives();
+      for (int i = 0; i < l->GetEntries(); i++) {
+        auto obj             = l->At(i);
+        TString classNameObj = obj->ClassName();
+        TString objectName   = obj->GetName();
+        Bool_t objNameSame   = ((objName == objectName) || objName.Length() == 0);
+        Bool_t classNameSame = (className == classNameObj || className.Length() == 0);
+        if (objNameSame && classNameSame) { list.push_back(obj); }
+      }
+      return list;
+    }
   }  // namespace Std
 }  // namespace Hal

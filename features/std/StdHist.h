@@ -272,6 +272,7 @@ namespace Hal {
                  Double_t minZ,
                  Double_t maxZ,
                  TString opt = "vals");
+    std::vector<TObject*> GetPadChildren(TString objName, TString className = "", TVirtualPad* pad = nullptr);
   }  // namespace Std
 }  // namespace Hal
 #endif /* HALSTDHIST_H_ */

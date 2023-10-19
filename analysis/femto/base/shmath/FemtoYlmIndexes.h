@@ -42,7 +42,7 @@ namespace Hal {
      */
     FemtoYlmIndexes& operator=(const FemtoYlmIndexes& other);
     /**
-     * changes L to newL
+     * changes max L to newL
      * @param newL
      */
     void Resize(Int_t newL);

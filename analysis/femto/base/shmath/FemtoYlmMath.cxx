@@ -12,6 +12,7 @@
 #include <TMath.h>
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
 
 namespace Hal {
 
@@ -291,7 +292,7 @@ namespace Hal {
     double coss[6];
     double sins[6];
 
-    double lbuf[36];
+    double lbuf[21];  // was 36 but not used
     LegendreUpToYlm(lmax, ctheta, lbuf);
 
     for (int iter = 1; iter <= lmax; iter++) {

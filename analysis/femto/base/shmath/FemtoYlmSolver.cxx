@@ -322,7 +322,7 @@ namespace Hal {
           b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
           c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
           d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
-          std::cout << ">" << a << " " << b << " " << c << " " << d << " " << fNumEnt << std::endl;
+          if (fDebug) std::cout << ">" << a << " " << b << " " << c << " " << d << " " << fNumEnt << std::endl;
 
           fSlice.fCovNum[ilmzero2][ilmprim2] /= fNumEnt;
           fSlice.fCovNum[ilmzero2][ilmprim2 + 1] /= fNumEnt;
@@ -333,7 +333,7 @@ namespace Hal {
           b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
           c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
           d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
-          std::cout << "->" << a << " " << b << " " << c << " " << d << std::endl;
+          if (fDebug) std::cout << "->" << a << " " << b << " " << c << " " << d << std::endl;
 
 
           fSlice.fCovNum[ilmzero2][ilmprim2] -= real(tTq0[ilmzero]) * real(tTq0[ilmprim]);
@@ -344,7 +344,7 @@ namespace Hal {
           b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
           c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
           d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
-          std::cout << "-->" << a << " " << b << " " << c << " " << d << std::endl;
+          if (fDebug) std::cout << "-->" << a << " " << b << " " << c << " " << d << std::endl;
           fSlice.fCovNum[ilmzero2][ilmprim2] /= ((fNumEnt) -1);
           fSlice.fCovNum[ilmzero2][ilmprim2 + 1] /= ((fNumEnt) -1);
           fSlice.fCovNum[ilmzero2 + 1][ilmprim2] /= ((fNumEnt) -1);
@@ -353,7 +353,7 @@ namespace Hal {
           b = fSlice.fCovNum[ilmzero2][ilmprim2 + 1];
           c = fSlice.fCovNum[ilmzero2 + 1][ilmprim2];
           d = fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1];
-          std::cout << "--->" << a << " " << b << " " << c << " " << d << std::endl;
+          if (fDebug) std::cout << "--->" << a << " " << b << " " << c << " " << d << std::endl;
         }
       }
     }

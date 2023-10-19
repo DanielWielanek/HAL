@@ -201,7 +201,7 @@ namespace Hal {
       for (int i = 0; i < parameters->GetNChildren(); i++) {
         XMLNode* parameter = parameters->GetChild(i);
         Double_t val       = setup.GetMin(i) + setup.GetStepSize(i) * ((Double_t) arPos[i]);
-        freez->SetParameterByName(val, setup.GetParName(i));
+        freez->SetParameterByName(setup.GetParName(i), val);
         freez->Init();
       }
     }

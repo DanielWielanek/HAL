@@ -137,7 +137,7 @@ namespace Hal {
       fSlices = new CorrFitVerticalSlices*[fMultiplyJobs];
       for (int i = 0; i < fMultiplyJobs; i++) {
         Int_t parNo = fMultiplyJobs * fJobId + i;
-        fSlices[i]  = new CorrFitVerticalSlicesSH(totalNumberOfParams, parNo, cfsh->GetL());
+        fSlices[i]  = new CorrFitVerticalSlicesSH(totalNumberOfParams, parNo, cfsh->GetLMax());
       }
     }
     fTempCF = nullptr;

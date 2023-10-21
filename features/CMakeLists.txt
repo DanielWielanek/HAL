@@ -30,11 +30,10 @@ Options.cxx
 Parameter.cxx
 Std.cxx
 ObjectMatrix.cxx
-Helix.cxx
-HelixBase.cxx
 Const.cxx
 XMLNode.cxx
 CompressionMap.cxx
+
 
 io/Link.cxx
 io/Jobs.cxx
@@ -62,6 +61,10 @@ hist/Style.cxx
 std/StdHist.cxx
 std/StdString.cxx
 std/StdMath.cxx
+
+phys/ErrorCalc.cxx
+phys/Helix.cxx
+phys/HelixBase.cxx
 
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx

@@ -25,6 +25,10 @@ namespace Hal {
      * @param val
      */
     ErrorCalc(TString name = "", Double_t val = 0, Double_t err = 0);
+    /**
+     * set measured value of paramter
+     * @param val
+     */
     void SetMeasuredVal(Double_t val) { fMeasurement = val; }
     /**
      *
@@ -35,11 +39,30 @@ namespace Hal {
      * add systematic error source, if name is duplicated then error treated as a next measurement
      * @param name
      * @param value
-     * @param sysUncert  - sys uncert of measurent if  negative then assumed as abs(measurement - value)
+     * @param sysUncert  - statistical uncert of variation measurement,
+     * if -2 then assumed as abs(measurement - value)
+     * if any other negative value then assumed the same as stat error of measurement
      */
     void AddSysError(TString name, Double_t value, Double_t uncert = -1);
-    Double_t GetStat(TString name) const;
+    /**
+     * return statistical uncertainty for measurement
+     * @param name
+     * @return
+     */
+    Double_t GetStatError() const;
+    /**
+     * performs barlow test and print results
+     * @param prec precision of printing
+     * @return
+     */
     Double_t BarlowTest(Int_t prec = 4) const;
+    /**
+     * pefrom other test and print results in principle:
+     * - the uncertainty of measurement with single method is assued as max(X-xi)
+     * - then total uncertainty is sqrt(sum uncert_j)
+     * @param prec
+     * @return
+     */
     Double_t TotalSys(Int_t prec = 4) const;
     virtual ~ErrorCalc() = default;
     ClassDef(ErrorCalc, 0)

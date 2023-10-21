@@ -13,7 +13,7 @@
 #include <iostream>
 namespace Hal {
 
-  Double_t ErrorCalc::GetStat(TString name) const { return fStatisticalUncert; }
+  Double_t ErrorCalc::GetStatError() const { return fStatisticalUncert; }
 
   Double_t ErrorCalc::BarlowTest(Int_t prec) const {
     Double_t totalErr = 0;
@@ -71,7 +71,11 @@ namespace Hal {
   }
 
   void ErrorCalc::AddSysError(TString name, Double_t value, Double_t statUncert) {
-    if (statUncert < 0) { statUncert = TMath::Abs(fMeasurement - value); }
+    if (statUncert == -1) {
+      statUncert = TMath::Abs(fMeasurement - value);
+    } else if (statUncert < 0) {
+      statUncert = fStatisticalUncert;
+    }
     std::pair<Double_t, Double_t> p(value, statUncert);
     for (auto& i : fValues) {
       if (i.first == name) {

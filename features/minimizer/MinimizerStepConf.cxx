@@ -7,6 +7,8 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "MinimizerStepConf.h"
+
+#include "Cout.h"
 #include <TMath.h>
 #include <iostream>
 
@@ -56,4 +58,16 @@ namespace Hal {
       }
     }
   }
+
+  MinimizerStepConf::MinimizerStepConf(const MinimizerStepConf& other, std::vector<int> order) {
+    if (order.size() != other.fParams.size()) {
+      Hal::Cout::PrintInfo("Cannot configure MinimizerStepConf::MinimizerStepConf", EInfo::kError);
+      return;
+    }
+    fParams.resize(other.fParams.size());
+    for (unsigned int i = 0; i < order.size(); i++) {
+      fParams[i] = other.fParams[order[i]];
+    }
+  }
+
 } /* namespace Hal */

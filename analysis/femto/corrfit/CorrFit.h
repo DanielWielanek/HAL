@@ -98,11 +98,16 @@ namespace Hal {
      * max step
      */
     std::vector<FitParam> fParameters;
+    std::vector<Int_t> fFitOrder;
     std::vector<std::pair<TF1*, TVirtualPad*>> fDrawFunc;  //!
     /**
      * flat array used to pass arguments int cf eval and recalculate
      */
     mutable Double_t* fTempParamsEval;  // [fParametersNo]
+    /**
+     * check parameter order, if wrong, fix it
+     */
+    void CheckOrder();
     /**
      * resize arrays used for storing parameters, it should be called only if
      * number of parameters is not the same as in ctor
@@ -154,6 +159,11 @@ namespace Hal {
 
     /**set all uncertainties negative (uses for gui when user change params */
     void SetErrorsNegative();
+    /**
+     * set order of parameters pass to minizer - can be used for optimization code performance
+     * @param order
+     */
+    void SetFitOrder(std::initializer_list<Int_t> order);
 
   public:
     CorrFit(Int_t parameters_no = 2);

@@ -99,6 +99,7 @@ namespace Hal {
     }
     Paint(kFALSE, kTRUE);
   };
+
   void CorrFitFunc::SetDrawOption(const CorrFitDrawOptions& options) {
     if (fDrawOptionSet || fDrawFunc.size() > 0) {
       std::cout << "Canot set CorrFitDrawOptions when function was set or draw options were set" << std::endl;
@@ -162,7 +163,13 @@ namespace Hal {
     TString opt1, opt2;
     AlgoToOptions(fMinAlgo, opt1, opt2);
     ROOT::Math::Minimizer *min, *min2 = nullptr;
+    auto setPars = [&](ROOT::Math::Minimizer* min) {
+      min->SetMaxFunctionCalls(fMaxIterations);
+      min->SetMaxIterations(fMaxIterations);
+      min->SetTolerance(fTolerance);
+    };
     Bool_t custom_minimizer = kFALSE;
+    CheckOrder();
     if (fMinAlgo == kDefaultAlgo) {
       min = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Scan");
     } else if (fMinAlgo == kMinimizerScan || fMinAlgo == kMinimizerSmartScan) {
@@ -173,9 +180,7 @@ namespace Hal {
     } else {
       min = ROOT::Math::Factory::CreateMinimizer(opt1.Data(), opt2.Data());
     }
-    min->SetMaxFunctionCalls(fMaxIterations);
-    min->SetMaxIterations(fMaxIterations);
-    min->SetTolerance(fTolerance);
+    setPars(min);
     Double_t free_parameters = 0;
     for (int i = 0; i < GetParametersNo(); i++) {
       if (!fParameters[i].IsFixed()) free_parameters++;
@@ -202,24 +207,23 @@ namespace Hal {
       const double* parameters_guess = min->X();
       const double* errors_guess     = min->Errors();
       for (int i = 0; i < GetParametersNo(); i++) {
-        if (fParameters[i].IsFixed()) {
-          min2->SetFixedVariable(i, GetParameterName(i).Data(), fParameters[i].GetStartVal());
+        auto Param = fParameters[fFitOrder[i]];
+        if (Param.IsFixed()) {
+          min2->SetFixedVariable(i, Param.GetParName().Data(), Param.GetStartVal());
         } else {
           Double_t param  = parameters_guess[i];
           Double_t minpar = param - 3.0 * errors_guess[i];
           Double_t maxpar = param + 3.0 * errors_guess[i];
-          minpar          = TMath::Max(fParameters[i].GetMin(), minpar);
-          maxpar          = TMath::Min(fParameters[i].GetMax(), maxpar);
+          minpar          = TMath::Max(Param.GetMin(), minpar);
+          maxpar          = TMath::Min(Param.GetMax(), maxpar);
           Double_t step   = (maxpar - minpar) * 0.1;
-          min2->SetLimitedVariable(i, GetParameterName(i).Data(), parameters_guess[i], step, minpar, maxpar);
+          min2->SetLimitedVariable(i, Param.GetParName().Data(), parameters_guess[i], step, minpar, maxpar);
           if (fTrace)
-            std::cout << "Set limits " << GetParameterName(i) << "\t"
+            std::cout << "Set limits " << Param.GetParName() << "\t"
                       << Form(" %4.4f+/-%4.4f", parameters_guess[i], 3.0 * errors_guess[i]) << std::endl;
         }
       }
-      min2->SetMaxFunctionCalls(fMaxIterations);
-      min2->SetMaxIterations(fMaxIterations);
-      min2->SetTolerance(fTolerance);
+      setPars(min2);
       min2->Minimize();
     }
 
@@ -240,9 +244,10 @@ namespace Hal {
      */
     //=== COPY FROM NUMERICAL FUNCTION TO "FITTED" FUNCTION
     for (int i = 0; i < GetParametersNo(); i++) {
-      fParameters[i].SetFittedValue(parameters[i]);
-      fParameters[i].SetError(errors[i]);
-      fTempParamsEval[i] = parameters[i];
+      int to = fFitOrder[i];
+      fParameters[to].SetFittedValue(parameters[i]);
+      fParameters[to].SetError(errors[i]);
+      fTempParamsEval[to] = parameters[i];
     }
 
     ParametersChanged();
@@ -437,16 +442,18 @@ namespace Hal {
       min->SetMinimizerType("ant");
     }
     for (int i = 0; i < GetParametersNo(); i++) {
-      std::string name = GetParameterName(i).Data();
-      if (IsParFixed(i)) {
-        min->SetFixedVariable(i, name, fParameters[i].GetStartVal());
+      auto Param       = fParameters[fFitOrder[i]];
+      std::string name = Param.GetParName().Data();
+      if (Param.IsFixed()) {
+        min->SetFixedVariable(i, name, Param.GetStartVal());
       } else {
-        Double_t lower = GetParMin(i);
-        Double_t upper = GetParMax(i);
+        Double_t lower = Param.GetMin();
+        Double_t upper = Param.GetMax();
         min->SetLimitedVariable(i, name, 0.5 * (lower + upper), (upper - lower), lower, upper);
       }
     }
-    min->SetParamConf(fDiscretteMinimzerConf);
+    MinimizerStepConf conf(fDiscretteMinimzerConf, fFitOrder);
+    min->SetParamConf(conf);
   }
 
   void CorrFitFunc::Fit(TObject* histo) {
@@ -556,14 +563,16 @@ namespace Hal {
 
   void CorrFitFunc::PrepareRootMinimizer(ROOT::Math::Minimizer* min) {
     for (int i = 0; i < GetParametersNo(); i++) {
-      if (fParameters[i].IsFixed()) {
-        if (TMath::IsNaN(fParameters[i].GetStartVal())) { Cout::Text(Form(" Par No. %i Is Nan fixed parameter", i), "M", kRed); }
-        min->SetFixedVariable(i, GetParameterName(i).Data(), fParameters[i].GetStartVal());
+      auto Param = fParameters[fFitOrder[i]];
+      if (Param.IsFixed()) {
+        if (TMath::IsNaN(Param.GetStartVal())) {
+          Cout::Text(Form(" Par No. %i Is Nan fixed parameter", fFitOrder[i]), "M", kRed);
+        }
+        min->SetFixedVariable(i, Param.GetParName().Data(), Param.GetStartVal());
       } else {
-        if (TMath::IsNaN(fParameters[i].GetStartVal())) { Cout::Text(Form(" Par No. %i Is Nan parameter", i), "M", kRed); }
-        Double_t step = TMath::Max(fParameters[i].GetDParam(), (fParameters[i].GetMax() - fParameters[i].GetMin()) / 100.0);
-        min->SetLimitedVariable(
-          i, GetParameterName(i).Data(), fParameters[i].GetMin(), step, fParameters[i].GetMin(), fParameters[i].GetMax());
+        if (TMath::IsNaN(Param.GetStartVal())) { Cout::Text(Form(" Par No. %i Is Nan parameter", fFitOrder[i]), "M", kRed); }
+        Double_t step = TMath::Max(Param.GetDParam(), (Param.GetMax() - Param.GetMin()) / 100.0);
+        min->SetLimitedVariable(i, Param.GetParName().Data(), Param.GetMin(), step, Param.GetMin(), Param.GetMax());
       }
     }
   }

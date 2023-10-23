@@ -9,6 +9,7 @@
 #include "CorrFit.h"
 
 #include "Cout.h"
+#include "Std.h"
 #include <TF1.h>
 
 namespace Hal {
@@ -196,6 +197,35 @@ namespace Hal {
   void CorrFit::SetErrorsNegative() {
     for (auto& i : fParameters)
       i.SetError(-1);
+  }
+
+  void CorrFit::SetFitOrder(std::initializer_list<Int_t> order) {
+    auto vec = Hal::Std::GetVector(order);
+    if (vec.size() != fParametersNo) {
+      Hal::Cout::PrintInfo("Cannot change fit order, wrong size of list", EInfo::kWarning);
+      return;
+    }
+    std::vector<bool> vals(fParametersNo, false);
+    for (unsigned int it = 0; it < vec.size(); it++) {
+      vals[vec[it]] = true;
+    }
+
+    for (auto i : vals) {
+      if (i == false) {
+        Hal::Cout::PrintInfo("Cannot change fit order, wrong values", EInfo::kWarning);
+        return;
+      }
+    }
+    fFitOrder = vec;
+  }
+
+  void CorrFit::CheckOrder() {
+    if (fFitOrder.size() == 0) {
+      fFitOrder.resize(fParametersNo);
+      for (unsigned int i = 0; i < fParametersNo; i++) {
+        fFitOrder[i] = i;
+      }
+    }
   }
 
 }  // namespace Hal

@@ -18,6 +18,7 @@ namespace Hal {
     std::vector<FitParam> fParams;
 
   public:
+    MinimizerStepConf(const MinimizerStepConf& othe, std::vector<int> order);
     MinimizerStepConf();
     Int_t GetNParams() const { return fParams.size(); }
     /**

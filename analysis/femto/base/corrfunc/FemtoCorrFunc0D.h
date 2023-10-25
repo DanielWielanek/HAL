@@ -16,7 +16,7 @@ namespace Hal {
   public:
     FemtoCorrFunc0D() : FemtoCorrFunc() {};
     virtual Bool_t Check() { return kTRUE; };
-    FemtoCorrFunc0D(const DividedHisto1D& h) : FemtoCorrFunc(h) {};
+    FemtoCorrFunc0D(const DividedHisto1D& h, Int_t size = 0) : FemtoCorrFunc(h, size) {};
     virtual ~FemtoCorrFunc0D() {}
     ClassDef(FemtoCorrFunc0D, 1)
   };

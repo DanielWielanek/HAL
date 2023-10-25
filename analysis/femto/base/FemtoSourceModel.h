@@ -28,20 +28,20 @@ namespace Hal {
      * numer of parameters
      */
     const Int_t fParametersNo;
-    Double_t* fParams;  //[fParametersNo]
+    Double_t* fParams = {nullptr};  //[fParametersNo]
     /**
      * array of parameter names
      */
-    TString* fParameterNames;  //[fParametersNo]
+    TString* fParameterNames = {nullptr};  //[fParametersNo]
   protected:
     /**
      * used for generating random coordinates
      */
-    TRandom* fRandom;
+    TRandom* fRandom = {nullptr};
     /**
      * stores information about source model density
      */
-    FemtoSourceDensity* fDensity;
+    FemtoSourceDensity* fDensity = {nullptr};
     /**
      * current out-radius
      */

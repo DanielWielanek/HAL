@@ -15,19 +15,24 @@ namespace Hal {
     fNParams = other.fNParams;
     fAna1d   = other.fAna1d;
     fAna3d   = other.fAna3d;
-    if (fNParams) {
+    if (fNParams > 0) {
       fParams = new Double_t[fNParams];
       for (int i = 0; i < fNParams; i++) {
         fParams[i] = other.fParams[i];
       }
     } else {
-      fParams = nullptr;
+      fNParams = 0;
+      fParams  = nullptr;
     }
   }
 
   FemtoSourceDensity& FemtoSourceDensity::operator=(const FemtoSourceDensity& other) {
     if (&other == this) return *this;
-    if (other.fNParams != fNParams) return *this;
+    if (other.fNParams != fNParams) {
+      delete[] fParams;
+      fNParams = other.fNParams;
+      fParams  = new Double_t[fNParams];
+    }
     for (int i = 0; i < fNParams; i++) {
       fParams[i] = other.fParams[i];
     }

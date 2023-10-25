@@ -30,16 +30,8 @@
  */
 namespace Hal {
   FemtoSourceModel::FemtoSourceModel(Int_t params_no) :
-    fParametersNo(params_no),
-    fParams(nullptr),
-    fParameterNames(nullptr),
-    fRandom(new TRandom2()),
-    fDensity(nullptr),
-    fRout(0),
-    fRside(0),
-    fRlong(0),
-    fModelName("unknown") {
-    fParameterNames = new TString[fParametersNo]();
+    fParametersNo(TMath::Max(1, params_no)), fRandom(new TRandom2()), fRout(0), fRside(0), fRlong(0), fModelName("unknown") {
+    fParameterNames = new TString[fParametersNo];
     fParams         = new Double_t[fParametersNo];
   }
 
@@ -57,7 +49,6 @@ namespace Hal {
       fParameterNames[i] = model.fParameterNames[i];
       fParams[i]         = model.fParams[i];
     }
-    fDensity = nullptr;
     if (model.fDensity) { fDensity = (FemtoSourceDensity*) model.fDensity->Clone(); }
   }
 
@@ -98,8 +89,8 @@ namespace Hal {
   FemtoSourceModel::~FemtoSourceModel() {
     delete fRandom;
     if (fDensity) delete fDensity;
-    if (fParameterNames) delete[] fParameterNames;
     if (fParams) delete[] fParams;
+    if (fParameterNames) delete[] fParameterNames;
   }
   // FemtoSourceModel1D
 
@@ -124,8 +115,8 @@ namespace Hal {
       SetParameter(1, 1);
       SetParameter(2, 2);
       SetParName(0, "R_{out}");
-      SetParName(2, "R_{side}");
-      SetParName(3, "R_{long}");
+      SetParName(1, "R_{side}");
+      SetParName(2, "R_{long}");
     }
   }
 

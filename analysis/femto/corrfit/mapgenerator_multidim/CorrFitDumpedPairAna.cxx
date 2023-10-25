@@ -176,8 +176,8 @@ namespace Hal {
   Bool_t CorrFitDumpedPairAna::ConfigureFromXML() {
     XMLFile file("corrfit_conf.xml");
     CorrFitParamsSetup setup("corrfit_conf.xml");
-    XMLNode* root       = file.GetRootNode();
-    fPairFile           = root->GetChild("PairFile")->GetValue();
+    XMLNode* root = file.GetRootNode();
+    fPairFile     = root->GetChild("PairFile")->GetValue();
     XMLNode* parameters = root->GetChild("Parameters");
     XMLNode* dumpAna    = root->GetChild("DumpAnalysisConf");
     if (dumpAna == nullptr) return kFALSE;

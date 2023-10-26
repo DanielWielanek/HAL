@@ -85,7 +85,6 @@ namespace Hal {
     if (fTempCF->GetEntries() > 1) return kFALSE;
     if (!fTree) return kFALSE;
     if (fJobId == -1) return kFALSE;
-
     DividedHisto1D* dummy    = fTempCF->GetCF(0);
     Femto::EKinematics kinem = Femto::EKinematics::kLCMS;
     if (dummy->GetLabelsNo() > 0) {
@@ -93,7 +92,6 @@ namespace Hal {
       kinem         = Femto::LabelToKinematics(label);
     }
     fPair = Femto::MakePair(kinem, fImgMom);
-
     if (!ConnectToData()) return kFALSE;
 
     if (fIgnoreSing) {
@@ -350,8 +348,7 @@ namespace Hal {
   Bool_t CorrFitDumpedPairAna::FindTree(TDirectory* dir, TList* list) {
     if (fTree) return kTRUE;
     for (int i = 0; i < list->GetEntries(); i++) {
-      TKey* key = (TKey*) list->At(i);
-      std::cout << "CHECK " << key->GetName() << std::endl;
+      TKey* key    = (TKey*) list->At(i);
       TObject* obj = dir->Get(key->GetName());
       if (obj->InheritsFrom("TDirectory")) {
         TDirectory* dirl = (TDirectory*) obj;

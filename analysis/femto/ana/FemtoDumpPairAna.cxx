@@ -191,8 +191,8 @@ namespace Hal {
     Int_t lowBin  = (fMin - min) * fStep;
     Int_t highBin = (fMax - min) * fStep;
     std::vector<TString> result;
-    TString pattern = "FemtoBackground_%i.";
-    if (signal) { pattern = "FemtoSignal_%i."; }
+    TString pattern = "FemtoBackground_%i";
+    if (signal) { pattern = "FemtoSignal_%i"; }
     for (int i = lowBin; i < highBin; i++) {
       TString name = Form(pattern, i);
       result.push_back(name);

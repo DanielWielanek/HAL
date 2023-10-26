@@ -13,6 +13,8 @@
 #include <TObject.h>
 #include <TString.h>
 
+
+#define HalCoutDebug() Hal::Cout::DebugInfo(__FILE__, __LINE__)
 /**
  * class for "friendly printing"
  */
@@ -146,6 +148,12 @@ namespace Hal {
      * @param i value
      */
     static void DebugInfo(Int_t i);
+    /**
+     * print number if violet color
+     * @param file - name of the file (use __FILE__)
+     * @param i value (__LINE__)
+     */
+    static void DebugInfo(TString file, Int_t i);
     /**
      *
      * @return verbolse mode

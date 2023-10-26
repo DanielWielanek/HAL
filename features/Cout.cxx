@@ -248,6 +248,12 @@ namespace Hal {
     Cout::Stars(kViolet);
   }
 
+  void Cout::DebugInfo(TString filename, Int_t i) {
+    Cout::Stars(kViolet);
+    Cout::Text(Form("%s %i", filename.Data(), i), "L", kViolet);
+    Cout::Stars(kViolet);
+  }
+
   TString Cout::GetDisableColor() {
 #ifdef __linux__
     return ("\e[0;0m");

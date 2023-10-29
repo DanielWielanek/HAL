@@ -21,7 +21,7 @@ namespace Hal {
     /**
      * model that generate coordinates in pair frame
      */
-    FemtoSourceModel* fModel;
+    FemtoSourceModel* fModel = {nullptr};
     /**
      * boost coordinates from model to lab and set them to pair
      * @param pair pair than need coordinates

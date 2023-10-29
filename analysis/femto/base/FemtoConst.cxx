@@ -477,7 +477,7 @@ namespace Hal {
       } else if (classType.EqualTo("FemtoDPhiDEta")) {
         return new FemtoDPhiDEta(cfName, bins[0], bins[1], min[1], max[1]);
       }
-      std::cout << "Cannot create correlation fuction from this node" << std::endl;
+      std::cout << "Cannot create correlation function from this node" << std::endl;
       return nullptr;
     }
 

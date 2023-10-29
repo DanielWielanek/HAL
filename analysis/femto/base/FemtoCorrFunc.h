@@ -34,7 +34,7 @@ namespace Hal {
     TString fComment;
 
   protected:
-    ObjectMatrix_1* fArray;
+    ObjectMatrix_1* fArray = {nullptr};
     /**
      * deafult c-tor
      * @param h correlation function to duplication

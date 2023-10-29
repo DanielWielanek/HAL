@@ -22,7 +22,7 @@
 
 
 namespace Hal {
-  FemtoCorrFunc::FemtoCorrFunc(const DividedHisto1D* h, Int_t size) : fArray(NULL) {
+  FemtoCorrFunc::FemtoCorrFunc(const DividedHisto1D* h, Int_t size) {
     fEventCol.SetName("EventColID");
     fPairCol.SetName("TrackColID");
     if (h != NULL && size > 0) {
@@ -31,7 +31,7 @@ namespace Hal {
     }
   }
 
-  FemtoCorrFunc::FemtoCorrFunc(const DividedHisto1D& h, Int_t size) : fArray(nullptr) {
+  FemtoCorrFunc::FemtoCorrFunc(const DividedHisto1D& h, Int_t size) {
     fEventCol.SetName("EventColID");
     fPairCol.SetName("TrackColID");
     if (size > 0) {
@@ -77,6 +77,8 @@ namespace Hal {
     return *this;
   }
 
-  FemtoCorrFunc::~FemtoCorrFunc() { delete fArray; }
+  FemtoCorrFunc::~FemtoCorrFunc() {
+    if (fArray) delete fArray;
+  }
 
 }  // namespace Hal

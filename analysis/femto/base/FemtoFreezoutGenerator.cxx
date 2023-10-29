@@ -19,7 +19,7 @@
 #include "Std.h"
 
 namespace Hal {
-  FemtoFreezoutGenerator::FemtoFreezoutGenerator() : fModel(nullptr) {}
+  FemtoFreezoutGenerator::FemtoFreezoutGenerator() {}
 
   FemtoFreezoutGenerator::FemtoFreezoutGenerator(const FemtoSourceModel& source) {
     fModel = (FemtoSourceModel*) source.MakeCopy();
@@ -36,7 +36,7 @@ namespace Hal {
   }
 
   Bool_t FemtoFreezoutGenerator::Init() {
-    if (fModel == NULL) {
+    if (!fModel) {
       Cout::PrintInfo("No freezout model !", EInfo::kLowWarning);
       fModel = new FemtoSourceModelGauss1D();
     }

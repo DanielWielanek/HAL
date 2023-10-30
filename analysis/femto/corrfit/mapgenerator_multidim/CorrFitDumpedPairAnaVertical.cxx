@@ -57,8 +57,8 @@ namespace Hal {
       if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
       for (int iMulti = 0; iMulti < fMultiplyJobs; iMulti++) {
         for (int jPair = 0; jPair < fPairsSignal[iMulti]->GetEntriesFast(); jPair++) {
-          fMiniPair = (FemtoMicroPair*) fPairsSignal[iMulti]->UncheckedAt(jPair);
-          *fPair    = *fMiniPair;
+          auto MiniPair = (FemtoMicroPair*) fPairsSignal[iMulti]->UncheckedAt(jPair);
+          *fPair        = *MiniPair;
           for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
             PreprocessPair();
             fPair->Compute();

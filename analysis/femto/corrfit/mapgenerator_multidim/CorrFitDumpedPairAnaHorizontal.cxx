@@ -56,7 +56,6 @@ namespace Hal {
 
   void CorrFitDumpedPairAnaHorizontal::Finish() {
     TObject* obj = nullptr;
-
     for (int iJob = 0; iJob < fMultiplyJobs; iJob++) {
       obj = fCF[iJob]->GetCF(0);
       if (obj->InheritsFrom("Hal::Femto1DCF")) {
@@ -100,8 +99,8 @@ namespace Hal {
       if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
       for (auto clones : fSignalClones) {
         for (int jPair = 0; jPair < clones->GetEntriesFast(); jPair++) {
-          fMiniPair = (FemtoMicroPair*) clones->UncheckedAt(jPair);
-          *fPair    = *fMiniPair;
+          auto MiniPair = (FemtoMicroPair*) clones->UncheckedAt(jPair);
+          *fPair        = *MiniPair;
           for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
             PreprocessPair();
             fPair->Compute();
@@ -128,8 +127,8 @@ namespace Hal {
 
       for (auto clones : fSignalClones) {
         for (int jSig = 0; jSig < clones->GetEntriesFast(); jSig++) {
-          fMiniPair = (FemtoMicroPair*) clones->UncheckedAt(jSig);
-          *fPair    = *fMiniPair;
+          auto MiniPair = (FemtoMicroPair*) clones->UncheckedAt(jSig);
+          *fPair        = *MiniPair;
           for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
             PreprocessPair();
             fPair->Compute();
@@ -145,8 +144,8 @@ namespace Hal {
       }
       for (auto clones : fBackgroundClones) {
         for (int jSig = 0; jSig < clones->GetEntriesFast(); jSig++) {
-          fMiniPair = (FemtoMicroPair*) clones->UncheckedAt(jSig);
-          *fPair    = *fMiniPair;
+          auto MiniPair = (FemtoMicroPair*) clones->UncheckedAt(jSig);
+          *fPair        = *MiniPair;
           for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
             PreprocessPair();
             fPair->Compute();
@@ -167,8 +166,8 @@ namespace Hal {
       if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
       for (auto clones : fSignalClones) {
         for (int jMix = 0; jMix < clones->GetEntriesFast(); jMix++) {
-          fMiniPair = (FemtoMicroPair*) clones->UncheckedAt(jMix);
-          *fPair    = *fMiniPair;
+          auto MiniPair = (FemtoMicroPair*) clones->UncheckedAt(jMix);
+          *fPair        = *MiniPair;
           for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
             PreprocessPair();
             fPair->Compute();
@@ -194,6 +193,7 @@ namespace Hal {
   Bool_t CorrFitDumpedPairAnaHorizontal::InitGenerators(const std::vector<int>& dims,
                                                         XMLNode* parameters,
                                                         const CorrFitParamsSetup& setup) {
+    fGenerator.clear();
     for (int j = 0; j < fMultiplyJobs; j++) {
       fGenerator.push_back(fTempGenerator->MakeCopy());
       FemtoSourceModel* freez = fGenerator[j]->GetSourceModel();
@@ -202,8 +202,8 @@ namespace Hal {
         XMLNode* parameter = parameters->GetChild(i);
         Double_t val       = setup.GetMin(i) + setup.GetStepSize(i) * ((Double_t) arPos[i]);
         freez->SetParameterByName(setup.GetParName(i), val);
-        freez->Init();
       }
+      fGenerator[j]->Init();
     }
     return kTRUE;
   }
@@ -240,8 +240,9 @@ namespace Hal {
   }
 
   CorrFitDumpedPairAnaHorizontal::~CorrFitDumpedPairAnaHorizontal() {
-    for (auto cf : fCF)
+    for (auto cf : fCF) {
       delete cf;
+    }
   }
 
 } /* namespace Hal */

@@ -142,7 +142,6 @@ namespace Hal {
       engine.DocSetRootElement(xmldoc, mainnode);
       engine.SaveDoc(xmldoc, fName);
       engine.FreeDoc(xmldoc);
-      fRootNode.reset(nullptr);
     }
   }
 

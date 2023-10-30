@@ -65,7 +65,7 @@ namespace Hal {
     /**
      * default ctor
      */
-    FemtoSourceModel(Int_t nparams);
+    FemtoSourceModel(Int_t nparams = 1);
     /**
      * copy ctor
      * @param model

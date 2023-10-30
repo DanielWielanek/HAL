@@ -15,6 +15,7 @@
 #include "Parameter.h"
 
 #include <TRandom2.h>
+#include <iostream>
 
 
 // FemtoSourceModel
@@ -68,14 +69,12 @@ namespace Hal {
   }
 
   void FemtoSourceModel::SetParameterByName(TString name, Double_t par) {
-    Int_t n = -1;
     for (int i = 0; i < fParametersNo; i++) {
       if (name == fParameterNames[i]) {
-        n = i;
-        break;
+        SetParameter(i, par);
+        return;
       }
     }
-    if (n >= 0) SetParameter(par, n);
   }
 
   FemtoSourceModel::ENumProperty FemtoSourceModel::GetModelNumProp() const {

@@ -39,7 +39,7 @@ namespace Hal {
     SetParameter(b, 5);
   }
 
-  void FemtoSourceModelGausMt::SetM2(Double_t par) { SetParameter(par, 6); }
+  void FemtoSourceModelGausMt::SetM2(Double_t par) { SetParameter(6, par); }
 
   FemtoSourceModel* FemtoSourceModelGausMt::MakeCopy() const { return new FemtoSourceModelGausMt(*this); }
 

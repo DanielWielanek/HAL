@@ -12,6 +12,7 @@
 
 #include <TApplication.h>
 #include <TClass.h>
+#include <TFile.h>
 #include <TMath.h>
 #include <TSQLResult.h>
 #include <TSQLRow.h>
@@ -129,13 +130,27 @@ namespace Hal {
   }
 
   Bool_t CorrFitParamsSetup::TestMapFile(Int_t jobId) {
+    TString name = Form("files/corrfit_map_%i.root", jobId);
     std::ifstream testFile;
-    testFile.open(Form("files/corrfit_map_%i.root", jobId));
-    if (testFile.good()) {
+    testFile.open(name);
+    if (!testFile.good()) {
       testFile.close();
-      return kTRUE;
+      return kFALSE;
     }
     testFile.close();
-    return kFALSE;
+    TFile* f = new TFile(name);
+    if (f->IsZombie()) {
+      delete f;
+      gSystem->Exec(Form("rm %s", name.Data()));
+      return kFALSE;
+    }
+    TTree* t = (TTree*) f->Get("map");
+    if (t == nullptr) {
+      delete f;
+      gSystem->Exec(Form("rm %s", name.Data()));
+      return kFALSE;
+    }
+    delete f;
+    return kTRUE;
   }
 }  // namespace Hal

@@ -24,7 +24,9 @@ namespace HalOTF {
   class RecoEvent;
 } /* namespace HalOTF */
 
-
+/**
+ * class that generates on the fly data
+ */
 namespace HalOTF {
   class Reader : public Hal::Reader {
   protected:
@@ -48,7 +50,7 @@ namespace HalOTF {
      * @param pid pid of particle
      * @param m multiplicity
      */
-    void SetSpiecies(const TH2D& h, Int_t pid, Double_t m);
+    void SetSpiecies(const TH2D& h, Int_t pid, Double_t multiplicity);
     void SetSmear(Double_t smear) { fSmear = smear; }
     void Register(Bool_t reg) { fRegister = reg; }
     void Exec(Option_t* opt);

@@ -26,11 +26,6 @@
 #include <TRandom.h>
 #include <TString.h>
 
-namespace Hal {
-  class Cout;
-} /* namespace Hal */
-
-
 namespace HalOTF {
   Reader::Reader() :
     fSpectras(nullptr),

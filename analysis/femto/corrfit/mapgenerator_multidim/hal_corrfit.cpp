@@ -195,7 +195,7 @@ void preparetemplate() {
   xml_file << "\t<WeightConf>" << std::endl;
   xml_file << "\t\t<Type>Hal::FemtoWeightGeneratorLednicky</Type>" << std::endl;
   xml_file << "\t\t<QuantumOn>kTRUE</QuantumOn>" << std::endl;
-  xml_file << "\t\t<StronOn>kFALSE</StronOn>" << std::endl;
+  xml_file << "\t\t<StrongOn>kFALSE</StrongOn>" << std::endl;
   xml_file << "\t\t<CoulombOn>kFALSE</CoulombOn>" << std::endl;
   xml_file << "\t\t<PairType>211;211</PairType>" << std::endl;
   xml_file << "\t</WeightConf>" << std::endl;

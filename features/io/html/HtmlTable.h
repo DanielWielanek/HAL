@@ -31,7 +31,7 @@ namespace Hal {
     TString TaskStyle();
     TString ExpandableStyle();
     TString SummaryStyle();
-  };  // namespace HtmlTableRowClass
+  }  // namespace HtmlTableRowClass
 
   class HtmlTable : public HtmlObject {
   public:

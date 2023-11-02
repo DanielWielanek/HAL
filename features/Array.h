@@ -115,7 +115,7 @@ namespace Hal {
   template<typename T>
   T Array_1<T>::IncrementAfter(Int_t i) {
     return fArray[i]++;
-  };
+  }
   template<>
   inline Bool_t Array_1<Bool_t>::IncrementAfter(Int_t i) {
     return fArray[i];

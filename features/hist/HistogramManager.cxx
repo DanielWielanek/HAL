@@ -65,6 +65,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_1_1D<T>::Init(Int_t size, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
     fSize     = size;
@@ -114,6 +115,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_1_1D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -122,7 +124,7 @@ namespace Hal {
       list->Add(fArray[i]);
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_1_2D<T>::HistogramManager_1_2D(const HistogramManager_1_2D& manager) :
@@ -136,6 +138,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_1_2D<T>& HistogramManager_1_2D<T>::operator=(const HistogramManager_1_2D& manager) {
     if (this == &manager) { return *this; }
@@ -183,6 +186,7 @@ namespace Hal {
       fComments[i] = " ";
     }
   }
+
   template<class T>
   void HistogramManager_1_2D<T>::Init(Int_t size,
                                       Int_t binsX,
@@ -223,6 +227,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_1_2D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -245,6 +250,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_1_3D<T>& HistogramManager_1_3D<T>::operator=(const HistogramManager_1_3D& manager) {
     if (this == &manager) { return *this; }
@@ -269,6 +275,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_1_3D<T>::Init(Int_t size, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
     fSize     = size;
@@ -339,6 +346,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_1_3D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -359,6 +367,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_2_1D<T>& HistogramManager_2_1D<T>::operator=(const HistogramManager_2_1D& manager) {
     if (this == &manager) { return *this; }
@@ -376,6 +385,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_2_1D<T>::Init(Int_t sizeX, Int_t sizeY, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
     fSize   = sizeX;
@@ -387,6 +397,7 @@ namespace Hal {
       fArray[i].Init(sizeY, axisconf, Title, Sumw);
     }
   }
+
   template<class T>
   void HistogramManager_2_1D<T>::Init(Int_t sizeX, Int_t sizeY, Int_t binsX, Double_t minX, Double_t maxX, Bool_t Sumw) {
     fSize   = sizeX;
@@ -396,6 +407,7 @@ namespace Hal {
       fArray[i].Init(sizeY, binsX, minX, maxX, Sumw);
     }
   }
+
   template<class T>
   Package* HistogramManager_2_1D<T>::Report() const {
     Package* pack = new Package(this);
@@ -404,6 +416,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_2_1D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -414,7 +427,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_2_2D<T>::HistogramManager_2_2D(const HistogramManager_2_2D& manager) :
@@ -426,6 +439,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_2_2D<T>& HistogramManager_2_2D<T>::operator=(const HistogramManager_2_2D& manager) {
     if (this == &manager) { return *this; }
@@ -443,6 +457,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_2_2D<T>::Init(Int_t sizeX, Int_t sizeY, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
     fSize   = sizeX;
@@ -454,6 +469,7 @@ namespace Hal {
       fArray[i].Init(sizeY, axisconf, Title, Sumw);
     }
   }
+
   template<class T>
   void HistogramManager_2_2D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -471,6 +487,7 @@ namespace Hal {
       fArray[i].Init(sizeY, binsX, minX, maxX, binsY, minY, maxY, Sumw);
     }
   }
+
   template<class T>
   Package* HistogramManager_2_2D<T>::Report() const {
     Package* pack = new Package(this);
@@ -479,6 +496,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_2_2D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -489,7 +507,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_2_3D<T>::HistogramManager_2_3D(const HistogramManager_2_3D& manager) :
@@ -501,6 +519,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_2_3D<T>& HistogramManager_2_3D<T>::operator=(const HistogramManager_2_3D& manager) {
     if (this == &manager) { return *this; }
@@ -518,6 +537,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_2_3D<T>::Init(Int_t sizeX, Int_t sizeY, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
     fSize   = sizeX;
@@ -529,6 +549,7 @@ namespace Hal {
       fArray[i].Init(sizeY, axisconf, Title, Sumw);
     }
   }
+
   template<class T>
   void HistogramManager_2_3D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -549,6 +570,7 @@ namespace Hal {
       fArray[i].Init(sizeY, binsX, minX, maxX, binsY, minY, maxY, binsZ, minZ, maxZ, Sumw);
     }
   }
+
   template<class T>
   Package* HistogramManager_2_3D<T>::Report() const {
     Package* pack = new Package(this);
@@ -557,6 +579,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_2_3D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -567,7 +590,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_3_1D<T>::HistogramManager_3_1D(const HistogramManager_3_1D& manager) :
@@ -579,6 +602,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_3_1D<T>& HistogramManager_3_1D<T>::operator=(const HistogramManager_3_1D& manager) {
     if (this == &manager) { return *this; }
@@ -596,6 +620,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_3_1D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -612,6 +637,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, axisconf, Title, Sumw);
     }
   }
+
   template<class T>
   void
   HistogramManager_3_1D<T>::Init(Int_t sizeX, Int_t sizeY, Int_t sizeZ, Int_t binsX, Double_t minX, Double_t maxX, Bool_t Sumw) {
@@ -622,6 +648,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, binsX, minX, maxX, Sumw);
     }
   }
+
   template<class T>
   Package* HistogramManager_3_1D<T>::Report() const {
     Package* pack = new Package(this);
@@ -630,6 +657,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_3_1D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -642,7 +670,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_3_2D<T>::HistogramManager_3_2D(const HistogramManager_3_2D& manager) :
@@ -654,6 +682,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_3_2D<T>& HistogramManager_3_2D<T>::operator=(const HistogramManager_3_2D& manager) {
     if (this == &manager) { return *this; }
@@ -671,6 +700,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_3_2D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -687,6 +717,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, axisconf, Title, Sumw);
     }
   }
+
   template<class T>
   void HistogramManager_3_2D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -705,6 +736,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, binsX, minX, maxX, binsY, minY, maxY, Sumw);
     }
   }
+
   template<class T>
   Package* HistogramManager_3_2D<T>::Report() const {
     Package* pack = new Package(this);
@@ -713,6 +745,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_3_2D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -737,6 +770,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_3_3D<T>& HistogramManager_3_3D<T>::operator=(const HistogramManager_3_3D& manager) {
     if (this == &manager) { return *this; }
@@ -754,6 +788,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_3_3D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -770,6 +805,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, axisconf, Title, Sumw);
     }
   }
+
   template<class T>
   void HistogramManager_3_3D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -791,6 +827,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, binsX, minX, maxX, binsY, minY, maxY, binsZ, minZ, maxZ, Sumw);
     }
   }
+
   template<class T>
   Package* HistogramManager_3_3D<T>::Report() const {
     Package* pack = new Package(this);
@@ -799,6 +836,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_3_3D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -811,7 +849,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_4_1D<T>::HistogramManager_4_1D(const HistogramManager_4_1D& manager) :
@@ -823,6 +861,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_4_1D<T>& HistogramManager_4_1D<T>::operator=(const HistogramManager_4_1D& manager) {
     if (this == &manager) { return *this; }
@@ -840,6 +879,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_4_1D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -857,6 +897,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, sizeD, axisconf, Title, Sumw);
     }
   }
+
   template<class T>
   void HistogramManager_4_1D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -873,6 +914,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, sizeT, binsX, minX, maxX, Sumw);
     }
   }
+
   template<class T>
   Package* HistogramManager_4_1D<T>::Report() const {
     Package* pack = new Package(this);
@@ -881,6 +923,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_4_1D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -907,6 +950,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_4_2D<T>& HistogramManager_4_2D<T>::operator=(const HistogramManager_4_2D& manager) {
     if (this == &manager) { return *this; }
@@ -924,6 +968,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_4_2D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -941,6 +986,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, sizeD, axisconf, Title, Sumw);
     }
   }
+
   template<class T>
   void HistogramManager_4_2D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -960,6 +1006,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, sizeT, binsX, minX, maxX, binsY, minY, maxY, Sumw);
     }
   }
+
   template<class T>
   Package* HistogramManager_4_2D<T>::Report() const {
     Package* pack = new Package(this);
@@ -968,6 +1015,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_4_2D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -982,7 +1030,8 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
+
   template<class T>
   HistogramManager_4_3D<T>::HistogramManager_4_3D(const HistogramManager_4_3D& manager) :
     TObject(manager), fSize(manager.fSize), fAxisNo(manager.fAxisNo), fArray(NULL) {
@@ -993,6 +1042,7 @@ namespace Hal {
       }
     }
   }
+
   template<class T>
   HistogramManager_4_3D<T>& HistogramManager_4_3D<T>::operator=(const HistogramManager_4_3D& manager) {
     if (this == &manager) { return *this; }
@@ -1010,6 +1060,7 @@ namespace Hal {
     }
     return *this;
   }
+
   template<class T>
   void HistogramManager_4_3D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -1028,6 +1079,7 @@ namespace Hal {
       fArray[i].Init(sizeY, sizeZ, sizeD, axisconf, Title, Sumw);
     }
   }
+
   template<class T>
   void HistogramManager_4_3D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
@@ -1045,12 +1097,12 @@ namespace Hal {
                                       Bool_t Sumw) {
     fSize   = sizeX;
     fAxisNo = 3;
-    ;
-    fArray = new HistogramManager_3_3D<T>[fSize];
+    fArray  = new HistogramManager_3_3D<T>[fSize];
     for (int i = 0; i < fSize; i++) {
       fArray[i].Init(sizeY, sizeZ, sizeT, binsX, minX, maxX, binsY, minY, maxY, binsZ, minZ, maxZ, Sumw);
     }
   }
+
   template<class T>
   Package* HistogramManager_4_3D<T>::Report() const {
     Package* pack = new Package(this);
@@ -1059,6 +1111,7 @@ namespace Hal {
     }
     return pack;
   }
+
   template<class T>
   TList* HistogramManager_4_3D<T>::GetFlatList() const {
     TList* list = new TList();
@@ -1074,7 +1127,7 @@ namespace Hal {
     }
     list->SetOwner(kFALSE);
     return list;
-  };
+  }
 
   template class HistogramManager_1_1D<TH1D>;
   template class HistogramManager_1_1D<TH1F>;

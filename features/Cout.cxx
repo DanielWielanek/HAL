@@ -64,7 +64,7 @@ namespace Hal {
         line = " " + line;
       }
       total += act_wide;
-      if (i < no - 1) line = line + "|";
+      if (i < (unsigned int) (no - 1)) line = line + "|";
       begin = begin + line;
     }
     Text(begin, "R");

@@ -159,7 +159,6 @@ namespace Hal {
      * @param merge_mode mode of merging
      */
     ParameterFloat(TString name, Float_t value, Char_t merge_mode = '=');
-    ;
     void Add(const Object* val);
     /**
      * set value
@@ -190,7 +189,6 @@ namespace Hal {
      * @param merge_mode mode of merging
      */
     ParameterString(TString name, TString value, Char_t merge_mode = '=');
-    ;
     void Add(const Object* val);
     /**
      * set value
@@ -221,7 +219,6 @@ namespace Hal {
      * @param merge_mode mode of merging
      */
     ParameterUInt(TString name, UInt_t value, Char_t merge_mode = '=');
-    ;
     void Add(const Object* val);
     /**
      * set value
@@ -252,7 +249,6 @@ namespace Hal {
      * @param merge_mode mode of merging
      */
     ParameterULong(TString name, ULong_t value, Char_t merge_mode = '=');
-    ;
     void Add(const Object* val);
     /**
      * set value
@@ -313,7 +309,6 @@ namespace Hal {
      * @param merge_mode mode of merging
      */
     ParameterBool(TString name, Bool_t value, Char_t merge_mode = '=');
-    ;
     void Add(const Object* val);
     /**
      * set value

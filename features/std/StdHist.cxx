@@ -131,7 +131,7 @@ namespace Hal {
       projection->GetXaxis()->SetTitle(axisC->GetTitle());
       // projection->SetDirectory(0);
       return projection;
-    };
+    }
 
     TH1D* GetProjection1D(const TH2* histo, Double_t min, Double_t max, Option_t* opt) {
       TString option = opt;
@@ -169,7 +169,7 @@ namespace Hal {
       }
       projection->SetDirectory(0);
       return projection;
-    };
+    }
 
     TH2D* GetProjection2D(const TH3* histo, Double_t min, Double_t max, Option_t* opt) {
       TString option    = opt;
@@ -218,7 +218,7 @@ namespace Hal {
       if (option.Contains("scale")) { projection->Scale(1.0 / nbins); }
       projection->SetDirectory(0);
       return projection;
-    };
+    }
 
     TH1D* SmearHistogram(TH1D* input_histogram, TH2D* smear_matrix, Option_t* opt) {
       TString option = opt;
@@ -340,7 +340,7 @@ namespace Hal {
           break;
       }
       return nullptr;
-    };
+    }
 
     TH3* MakeHisto3D(TString name, TString title, TVector3 Xaxis, TVector3 Yaxis, TVector3 Zaxis, Char_t type) {
       switch (type) {
@@ -385,7 +385,7 @@ namespace Hal {
           break;
       }
       return nullptr;
-    };
+    }
 
     void HistogramEdges(TH1* h, TString option, Double_t value) {
       Char_t axis = 'x';

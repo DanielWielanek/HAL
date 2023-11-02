@@ -71,24 +71,24 @@ namespace Hal {
   HtmlCellRow::~HtmlCellRow() {}
 
   namespace HtmlTableRowClass {
-    TString LightBlue() { return "light_blue"; };
-    TString MedBlue() { return "med_blue"; };
-    TString DarkBlue() { return "dark_blue"; };
-    TString LightGreen() { return "green_"; };
+    TString LightBlue() { return "light_blue"; }
+    TString MedBlue() { return "med_blue"; }
+    TString DarkBlue() { return "dark_blue"; }
+    TString LightGreen() { return "green_"; }
     TString Green() { return "med_green"; };  // not exist!
-    TString DarkGreen() { return "dark_green"; };
-    TString Yellow() { return "yellow_"; };
-    TString Grey() { return "grey_"; };
-    TString Red() { return "red_"; };
-    TString Violet() { return "violet_"; };
+    TString DarkGreen() { return "dark_green"; }
+    TString Yellow() { return "yellow_"; }
+    TString Grey() { return "grey_"; }
+    TString Red() { return "red_"; }
+    TString Violet() { return "violet_"; }
 
-    TString DefStyle() { return LightBlue(); };
-    TString LegendStyle() { return LightGreen(); };
-    TString TitleStyle() { return DarkBlue(); };
-    TString ExtraStyle() { return MedBlue(); };
+    TString DefStyle() { return LightBlue(); }
+    TString LegendStyle() { return LightGreen(); }
+    TString TitleStyle() { return DarkBlue(); }
+    TString ExtraStyle() { return MedBlue(); }
     TString TaskStyle() { return Red(); };
-    TString ExpandableStyle() { return Yellow(); };
-    TString SummaryStyle() { return Violet(); };
+    TString ExpandableStyle() { return Yellow(); }
+    TString SummaryStyle() { return Violet(); }
   }  // namespace HtmlTableRowClass
 
   void HtmlRow::AddSimpleCells(std::initializer_list<TString> cels) {

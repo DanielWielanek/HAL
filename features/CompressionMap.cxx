@@ -15,7 +15,7 @@ namespace Hal {
   CompressionMap::CompressionMap() : fSize(0), fAllocatedSize(0), fCounter(0), fOldToNewIndex(nullptr), fNewToOldIndex(nullptr) {}
 
   CompressionMap::CompressionMap(const CompressionMap& other) :
-    fSize(other.fSize), fAllocatedSize(other.fAllocatedSize), fCounter(other.fCounter), fOldToNewIndex(nullptr) {
+    TObject(other), fSize(other.fSize), fAllocatedSize(other.fAllocatedSize), fCounter(other.fCounter), fOldToNewIndex(nullptr) {
     if (fAllocatedSize > 0) {
       fOldToNewIndex = new Int_t[fAllocatedSize];
       fNewToOldIndex = new Int_t[fAllocatedSize];

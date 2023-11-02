@@ -75,7 +75,7 @@ namespace Hal {
       list->Add(fArray[i]);
     }
     return list;
-  };
+  }
 
   ObjectMatrix_2::ObjectMatrix_2(const ObjectMatrix_2& manager) : TNamed(manager), fSize(manager.fSize), fArray(NULL) {
     if (manager.fArray) {
@@ -132,7 +132,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   ObjectMatrix_2::~ObjectMatrix_2() {
     if (fArray == NULL) return;
@@ -199,7 +199,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   ObjectMatrix_3::~ObjectMatrix_3() {
     if (fArray == NULL) return;
@@ -267,7 +267,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   ObjectMatrix_4::~ObjectMatrix_4() {
     if (fArray == NULL) return;

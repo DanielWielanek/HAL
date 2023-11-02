@@ -300,13 +300,15 @@ namespace Hal {
     // from the temporary covariance matrices
     //    int tabshift = (ibin-1)*GetMaxJM()*GetMaxJM()*4;
     if (recalc) {
-      if (fDebug) {
-        std::cout << "COVNUM" << std::endl;
-        for (int ilmzero = 0; ilmzero < GetMaxJM() * 2; ilmzero++) {
-          for (int ilmprim = 0; ilmprim < GetMaxJM() * 2; ilmprim++) {
-            std::cout << "* " << fSlice.fCovNum[ilmzero][ilmprim] << std::endl;
-          }
-        }
+      if (fDebug) { /*
+         std::cout << "COVNUM" << std::endl;
+         for (int ilmzero = 0; ilmzero < GetMaxJM() * 2; ilmzero++) {
+           for (int ilmprim = 0; ilmprim < GetMaxJM() * 2; ilmprim++) {
+             std::cout << fSlice.fCovNum[ilmzero][ilmprim] << " ";
+           }
+           std::cout << std::endl;
+         }
+         std::cout << std::endl;*/
       }
 
       for (int ilmzero = 0; ilmzero < GetMaxJM(); ilmzero++) {
@@ -364,11 +366,13 @@ namespace Hal {
         const int ilmzero2 = ilmzero * 2;
         for (int ilmprim = 0; ilmprim < GetMaxJM(); ilmprim++) {
           const int ilmprim2 = ilmprim * 2;
-          std::cout << ilmzero << " " << ilmprim << "\t" << fSlice.fCovNum[ilmzero2 + 0][ilmprim2 + 0] << std::endl;
-          std::cout << ilmzero << " " << ilmprim << "\t" << fSlice.fCovNum[ilmzero2 + 0][ilmprim2 + 1] << std::endl;
-          std::cout << ilmzero << " " << ilmprim << "\t" << fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 0] << std::endl;
-          std::cout << ilmzero << " " << ilmprim << "\t" << fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1] << std::endl;
+          std::cout << fSlice.fCovNum[ilmzero + 0][ilmprim2 + 0] << " ";
+          std::cout << fSlice.fCovNum[ilmzero + 0][ilmprim2 + 1] << " ";
+          std::cout << fSlice.fCovNum[ilmzero + 1][ilmprim2 + 0] << " ";
+          std::cout << fSlice.fCovNum[ilmzero + 1][ilmprim2 + 1] << " ";
+          std::cout << std::endl;
         }
+        std::cout << std::endl;
       }
     }
 
@@ -800,8 +804,8 @@ namespace Hal {
     }
     for (int a = 0; a < 2 * fMaxJM; a++) {
       for (int b = 0; b < 2 * fMaxJM; b++) {
-        fCF->fCovCf[bin - 1][a][b]  = fSlice.fCovCF[a][b];
-        fCF->fCovNum[bin - 1][a][b] = fSlice.fCovNum[a][b];
+        fCF->fCovCf[bin - 1][a][b] = fSlice.fCovCF[a][b];
+        // fCF->fCovNum[bin - 1][a][b] = fSlice.fCovNum[a][b]; do not update cov matrix in num
       }
     }
   }
@@ -851,7 +855,6 @@ namespace Hal {
   }
 
   void FemtoYlmSolver::MakeFakeCovMatrix() {
-    Hal::Cout::DebugInfo(10);
     double nent  = fNumEnt;
     double nentd = fDenEnt;
     for (int ilmx = 0; ilmx < GetMaxJM(); ilmx++) {

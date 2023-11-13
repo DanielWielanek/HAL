@@ -164,10 +164,12 @@ namespace Hal {
             std::cout << "*************************" << std::endl;
             EstimateErrors();
             FinishFit();*/
+        std::cout << "Ant Minimiser" << std::endl;
         MinimizeAnt();
       } break;
       case eMinimizeType::kScan: {
         // MinimizeAnt();
+        std::cout << "Scan minimizer" << std::endl;
         MinimizeScan();
       } break;
     }
@@ -224,9 +226,16 @@ namespace Hal {
       } else {
         Double_t par, err, parQ;
         EstimateError(i, par, parQ, err);
-        fQuantumFits[i] = parQ;
-        fSmoothFits[i]  = par;
-        fErrors[i]      = err;
+
+        if (fParameters[i].IsDiscrete()) {
+          fQuantumFits[i] = fParamsMin[i];
+          fSmoothFits[i]  = fParamsMin[i];
+        } else {
+          fQuantumFits[i] = parQ;
+          fSmoothFits[i]  = par;
+        }
+
+        fErrors[i] = err;
       }
     }
   }
@@ -410,10 +419,10 @@ namespace Hal {
     }
     LoopOverParameter(0);
     for (int i = 0; i < GetNParams(); i++) {
-      fTempParams[i] = fParamsMin[i];
-      fSmoothFits[i] = fParamsMin[i];
+      fTempParams[i]  = fParamsMin[i];
+      fSmoothFits[i]  = fParamsMin[i];
+      fQuantumFits[i] = fParamsMin[i];
     }
-    std::cout << "*************************" << std::endl;
   }
 
   void Minimizer::MinimizeNelderMead() {

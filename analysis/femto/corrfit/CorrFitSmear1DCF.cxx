@@ -109,7 +109,7 @@ namespace Hal {
       }
     } else {
       auto maph = fMap->GetHisto();
-      for (int i = 1; i <= sizeQ; i++) {
+      for (int i = 1; i <= maph->GetNbinsY(); i++) {
         auto sim = GetVec(*maph, i);
 
         auto reco = smearMT * sim;

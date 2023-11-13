@@ -123,7 +123,7 @@ namespace Hal {
     if (bins != fBins) return kFALSE;
     if (max != fMax) return kFALSE;
     if (min != fMin) return kFALSE;
-    if (sh->GetL() != fL) return kFALSE;
+    if (sh->GetLMax() != fL) return kFALSE;
     return kTRUE;
   }
 

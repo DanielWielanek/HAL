@@ -108,7 +108,6 @@ corrfit/fittingfunctions/CorrFit3DCFGaussCross.cxx
 corrfit/fittingfunctions/CorrFit1DCFCumac.cxx
 corrfit/fittingfunctions/CorrFit3DCFBowlerSinyukov.cxx
 corrfit/fittingfunctions/CorrFit3DCFBowlerSinyukovExtra.cxx
-corrfit/sh/CorrFitSHFrom3D.cxx
 corrfit/corrfitopt/CorrFitHDFunc1D.cxx
 corrfit/corrfitopt/CorrFitHDFunc3D.cxx
 corrfit/corrfitopt/CorrFitHDFuncSH.cxx
@@ -139,7 +138,6 @@ imaging/FemtoImaging.cxx
 imaging/FemtoImaging1D.cxx
 imaging/FemtoImaging3D.cxx
 base/FemtoSHCF.cxx
-corrfit/CorrFitSHCF.cxx
 )
 
 

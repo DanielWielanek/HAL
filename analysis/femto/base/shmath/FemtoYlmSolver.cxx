@@ -52,7 +52,7 @@ namespace Hal {
         //       if (mbis<0) continue;
 
         std::complex<double> val = std::complex<double>(0.0, 0.0);
-        std::complex<double> mcomp[fMaxJM];
+        std::unique_ptr<std::complex<double>[]> mcomp(new std::complex<double>[fMaxJM]());
         for (int iprim = 0; iprim < GetMaxJM(); iprim++) {
           GetElEmForIndex(iprim, lprim, mprim);
           GetElEmForIndex(iprim, lprimi, mprimi);
@@ -88,14 +88,15 @@ namespace Hal {
     // Invert the Ylm matrix by inverting only the matrix
     // with independent elements and filling in the rest
     // according to sign rules
-    double mU[GetMaxJM() * GetMaxJM() * 4];
-    int isize = PackYlmMatrixIndependentOnly(inmat, mU);
+
+    std::unique_ptr<double[]> mU(new double[GetMaxJM() * GetMaxJM() * 4]);
+    int isize = PackYlmMatrixIndependentOnly(inmat, mU.get());
     //  cout << "Independent count " << isize << std::endl;
 #ifndef DISABLE_GSL
-    gsl_matrix_view matU = gsl_matrix_view_array(mU, isize, isize);
+    gsl_matrix_view matU = gsl_matrix_view_array(mU.get(), isize, isize);
 #endif
     // Identity matrix helper for inversion
-    double mI[GetMaxJM() * GetMaxJM() * 4];
+    std::unique_ptr<double[]> mI(new double[GetMaxJM() * GetMaxJM() * 4]);
     for (int iterm = 0; iterm < isize; iterm++)
       for (int iterp = 0; iterp < isize; iterp++)
         if (iterm == iterp)
@@ -103,13 +104,13 @@ namespace Hal {
         else
           mI[iterm * isize + iterp] = 0.0;
 #ifndef DISABLE_GSL
-    gsl_matrix_view matI = gsl_matrix_view_array(mI, isize, isize);
+    gsl_matrix_view matI = gsl_matrix_view_array(mI.get(), isize, isize);
     // Invert the matrix
     gsl_blas_dtrsm(CblasLeft, CblasUpper, CblasNoTrans, CblasNonUnit, 1.0, &matU.matrix, &matI.matrix);
 #else
     std::cout << "GLS NOT ENABLED!" << std::endl;
 #endif
-    UnPackYlmMatrixIndependentOnly(mI, outmat, isize);
+    UnPackYlmMatrixIndependentOnly(mI.get(), outmat, isize);
   }
 
   void FemtoYlmSolver::UnPackYlmMatrixIndependentOnly(double* inmat, double* outmat, int insize) const {
@@ -117,8 +118,8 @@ namespace Hal {
     //  cout << "lmax is  " << lmax << std::endl;
     if (0) { lmax *= 2; }
     int tmax = (lmax + 1) * (lmax + 1) * 2;
-    int indexfrom[tmax];
-    int multfrom[tmax];
+    std::unique_ptr<int[]> indexfrom(new int[tmax]);
+    std::unique_ptr<int[]> multfrom(new int[tmax]);
 
     int el, em;
     for (int iter = 0; iter < tmax; iter++) {
@@ -247,9 +248,10 @@ namespace Hal {
   }
 
   void FemtoYlmSolver::DoMath(Bool_t recalc) {
-    std::complex<double> tMq0[fMaxJM];
-    std::complex<double> tTq0[fMaxJM];
-    double tMTilde[fMaxJM * fMaxJM * 4];
+
+    std::unique_ptr<std::complex<double>[]> tMq0(new std::complex<double>[fMaxJM]);
+    std::unique_ptr<std::complex<double>[]> tTq0(new std::complex<double>[fMaxJM]);
+    std::unique_ptr<double[]> tMTilde(new double[fMaxJM * fMaxJM * 4]);
 
     for (int i = 0; i < fMaxJM; i++) {
       fSlice.fCFImag[i]  = 0;
@@ -377,7 +379,7 @@ namespace Hal {
     }
 
 
-    GetMtilde(tMq0, tMTilde);
+    GetMtilde(tMq0.get(), tMTilde.get());
 
     // Perform the solution for the correlation function itself and the errors
     //     cout << "=============================" << std::endl;
@@ -410,7 +412,8 @@ namespace Hal {
     }
 
     // Rewrite the new way to use the solving wherever there is inversion
-    double mDeltaT[fMaxJM * fMaxJM * 4];
+
+    std::unique_ptr<double[]> mDeltaT(new double[fMaxJM * fMaxJM * 4]);
     for (int ilmzero = 0; ilmzero < GetMaxJM() * 2; ilmzero++)
       for (int ilmprim = 0; ilmprim < GetMaxJM() * 2; ilmprim++)
         mDeltaT[(ilmzero * fMaxJM * 2) + ilmprim] = fSlice.fCovNum[ilmzero][ilmprim];
@@ -427,8 +430,8 @@ namespace Hal {
       }
     }
 
-    double mDeltaTPacked[fMaxJM * fMaxJM * 4];
-    int msize = PackYlmMatrixIndependentOnly(mDeltaT, mDeltaTPacked);
+    std::unique_ptr<double[]> mDeltaTPacked(new double[fMaxJM * fMaxJM * 4]);
+    int msize = PackYlmMatrixIndependentOnly(mDeltaT.get(), mDeltaTPacked.get());
 
     if (fDebug) {
       std::cout << "Delta T matrix packed " << std::endl;
@@ -446,13 +449,13 @@ namespace Hal {
 
     // Prepare halper matrices
 
-    double mM[fMaxJM * fMaxJM * 4];
-    double mMPacked[fMaxJM * fMaxJM * 4];
+    std::unique_ptr<double[]> mM(new double[fMaxJM * fMaxJM * 4]);
+    std::unique_ptr<double[]> mMPacked(new double[fMaxJM * fMaxJM * 4]);
     for (int iter = 0; iter < fMaxJM * fMaxJM * 4; iter++)
       mM[iter] = tMTilde[iter];
-    PackYlmMatrixIndependentOnly(mM, mMPacked);
+    PackYlmMatrixIndependentOnly(mM.get(), mMPacked.get());
 
-    gsl_matrix_view matM = gsl_matrix_view_array(mMPacked, msize, msize);
+    gsl_matrix_view matM = gsl_matrix_view_array(mMPacked.get(), msize, msize);
     if (fDebug) {
       std::cout << "Mtilde matrix " << std::endl;
       for (int ilmz = 0; ilmz < GetMaxJM() * 2; ilmz++) {
@@ -477,13 +480,13 @@ namespace Hal {
 
     // Inverting matrix DeltaT.
 
-    double mU[fMaxJM * fMaxJM * 4];
-    InvertYlmIndependentMatrix(mDeltaT, mU);
+    std::unique_ptr<double[]> mU(new double[fMaxJM * fMaxJM * 4]);
+    InvertYlmIndependentMatrix(mDeltaT.get(), mU.get());
 
-    double mDTInvertedPacked[fMaxJM * fMaxJM * 4];
-    PackYlmMatrixIndependentOnly(mU, mDTInvertedPacked);
+    std::unique_ptr<double[]> mDTInvertedPacked(new double[fMaxJM * fMaxJM * 4]);
+    PackYlmMatrixIndependentOnly(mU.get(), mDTInvertedPacked.get());
 
-    gsl_matrix_view matDTI = gsl_matrix_view_array(mDTInvertedPacked, msize, msize);
+    gsl_matrix_view matDTI = gsl_matrix_view_array(mDTInvertedPacked.get(), msize, msize);
 
     if (fDebug) {
       std::cout << "Delta T matrix inverted packed " << std::endl;
@@ -498,20 +501,21 @@ namespace Hal {
     }
 
     // (2) Multiply DeltaT^1 M = Q
-    double mQ[fMaxJM * fMaxJM * 4];
+    std::unique_ptr<double[]> mQ(new double[fMaxJM * fMaxJM * 4]);
     for (int iter = 0; iter < msize * msize; iter++)
       mQ[iter] = 0.0;
-    gsl_matrix_view matQ = gsl_matrix_view_array(mQ, msize, msize);
+    gsl_matrix_view matQ = gsl_matrix_view_array(mQ.get(), msize, msize);
 
     gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &matDTI.matrix, &matM.matrix, 0.0, &matQ.matrix);
 
-    double mTest[fMaxJM * fMaxJM * 4];
-    gsl_matrix_view matTest = gsl_matrix_view_array(mTest, msize, msize);
 
-    double mF[fMaxJM * fMaxJM * 4];
+    std::unique_ptr<double[]> mTest(new double[fMaxJM * fMaxJM * 4]);
+    gsl_matrix_view matTest = gsl_matrix_view_array(mTest.get(), msize, msize);
+
+    std::unique_ptr<double[]> mF(new double[fMaxJM * fMaxJM * 4]);
     for (int iter = 0; iter < fMaxJM * fMaxJM * 4; iter++)
       mF[iter] = mDeltaTPacked[iter];
-    gsl_matrix_view matF = gsl_matrix_view_array(mF, msize, msize);
+    gsl_matrix_view matF = gsl_matrix_view_array(mF.get(), msize, msize);
 
     gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &matF.matrix, &matQ.matrix, 0.0, &matTest.matrix);
 
@@ -529,11 +533,11 @@ namespace Hal {
 
     // (2) Multiply Mtilde^T Q = P
 
-    double mP[fMaxJM * fMaxJM * 4];
+    std::unique_ptr<double[]> mP(new double[fMaxJM * fMaxJM * 4]);
     for (int iter = 0; iter < fMaxJM * fMaxJM * 4; iter++)
       mP[iter] = 0;
 
-    gsl_matrix_view matP = gsl_matrix_view_array(mP, msize, msize);
+    gsl_matrix_view matP = gsl_matrix_view_array(mP.get(), msize, msize);
 
     gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &matM.matrix, &matQ.matrix, 0.0, &matP.matrix);
 
@@ -550,8 +554,8 @@ namespace Hal {
     }
 
     // (3) Solve P^-1 Mtilde^T = R
-    double mPUnpacked[fMaxJM * fMaxJM * 4];
-    UnPackYlmMatrixIndependentOnly(mP, mPUnpacked, msize);
+    std::unique_ptr<double[]> mPUnpacked(new double[fMaxJM * fMaxJM * 4]);
+    UnPackYlmMatrixIndependentOnly(mP.get(), mPUnpacked.get(), msize);
 
     if (fDebug) {
       std::cout << "P matrix unpacked " << std::endl;
@@ -567,13 +571,13 @@ namespace Hal {
 
     // Invert the P matrix
 
-    double mPInverted[fMaxJM * fMaxJM * 4];
-    InvertYlmIndependentMatrix(mPUnpacked, mPInverted);
+    std::unique_ptr<double[]> mPInverted(new double[fMaxJM * fMaxJM * 4]);
+    InvertYlmIndependentMatrix(mPUnpacked.get(), mPInverted.get());
 
-    double mPInvertedPacked[fMaxJM * fMaxJM * 4];
-    PackYlmMatrixIndependentOnly(mPInverted, mPInvertedPacked);
+    std::unique_ptr<double[]> mPInvertedPacked(new double[fMaxJM * fMaxJM * 4]);
+    PackYlmMatrixIndependentOnly(mPInverted.get(), mPInvertedPacked.get());
 
-    gsl_matrix_view matPI = gsl_matrix_view_array(mPInvertedPacked, msize, msize);
+    gsl_matrix_view matPI = gsl_matrix_view_array(mPInvertedPacked.get(), msize, msize);
 
     if (fDebug) {
       std::cout << "P matrix inverted packed " << std::endl;
@@ -612,10 +616,11 @@ namespace Hal {
     //    mR[itert*msize + iterm] = vXT[iterm];
     //       }
 
-    double mR[fMaxJM * fMaxJM * 4];
+
+    std::unique_ptr<double[]> mR(new double[fMaxJM * fMaxJM * 4]);
     for (int ir = 0; ir < fMaxJM * fMaxJM * 4; ir++)
       mR[ir] = 0.0;
-    gsl_matrix_view matR = gsl_matrix_view_array(mR, msize, msize);
+    gsl_matrix_view matR = gsl_matrix_view_array(mR.get(), msize, msize);
 
     // (2) Multiply P^-1 M (Trans) = R
 
@@ -647,23 +652,25 @@ namespace Hal {
     }
 
     // (4) Solve DeltaT^-1 T = L
-    double vL[fMaxJM * 2] = {0};
-    gsl_vector_view vecL  = gsl_vector_view_array(vL, msize);
+    std::unique_ptr<double[]> vL(new double[fMaxJM * 2]);
+    for (int i = 0; i < fMaxJM * 2; i++)
+      vL[i] = 0;
+    gsl_vector_view vecL = gsl_vector_view_array(vL.get(), msize);
 
     //       // Decomposing the M matrix
     //       gsl_linalg_SV_decomp(&matF.matrix, &matS.matrix, &vecST.vector,
     //       &vecWT.vector);
 
-    double vB[fMaxJM * 2];
+    std::unique_ptr<double[]> vB(new double[fMaxJM * 2]);
     for (int iter = 0; iter < GetMaxJM(); iter++) {
       vB[iter * 2]     = real(tTq0[iter]);
       vB[iter * 2 + 1] = imag(tTq0[iter]);
     }
 
-    double vBPacked[fMaxJM * 2];
-    PackYlmVectorIndependentOnly(vB, vBPacked);
+    std::unique_ptr<double[]> vBPacked(new double[fMaxJM * 2]);
+    PackYlmVectorIndependentOnly(vB.get(), vBPacked.get());
 
-    gsl_vector_view vecB = gsl_vector_view_array(vBPacked, msize);
+    gsl_vector_view vecB = gsl_vector_view_array(vBPacked.get(), msize);
 
     //       // Solving the problem
     //       gsl_linalg_SV_solve(&matF.matrix, &matS.matrix, &vecST.vector,
@@ -685,13 +692,13 @@ namespace Hal {
 
     // (5) Multiply R L = C
 
-    double vY[fMaxJM * 2];
+    std::unique_ptr<double[]> vY(new double[fMaxJM * 2]);
     for (int iter = 0; iter < GetMaxJM() * 2; iter++) {
       vY[iter] = 0.0;
     }
 
     // Prepare inputs for solving the problem
-    gsl_vector_view vecY = gsl_vector_view_array(vY, msize);
+    gsl_vector_view vecY = gsl_vector_view_array(vY.get(), msize);
 
     gsl_blas_dgemv(CblasNoTrans, 1.0, &matR.matrix, &vecL.vector, 0.0, &vecY.vector);
 

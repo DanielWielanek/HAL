@@ -51,18 +51,11 @@ namespace Hal {
   FemtoSHCF::FemtoSHCF() :
     DividedHisto1D(),
     fMaxJM(0),
-    fNumReal(nullptr),
-    fNumImag(nullptr),
-    fDenReal(nullptr),
-    fDenImag(nullptr),
     fFrame(Femto::EKinematics::kLCMS),
-    fCFReal(nullptr),
-    fCFImag(nullptr),
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
-    fLmVals(FemtoYlmIndexes(1)),
-    fCfcov(nullptr) {
+    fLmVals(FemtoYlmIndexes(1)) {
     gSystem->Load("libgsl.so");
     gSystem->Load("libgslcblas.so");
   }
@@ -70,19 +63,12 @@ namespace Hal {
   FemtoSHCF::FemtoSHCF(TString name, Int_t maxL, Int_t bins, Double_t min, Double_t max, Femto::EKinematics kinematics) :
     DividedHisto1D(name, bins, min, max),
     fMaxJM((TMath::Min(maxL, 5) + 1) * (TMath::Min(maxL, 5) + 1)),
-    fNumReal(nullptr),
-    fNumImag(nullptr),
-    fDenReal(nullptr),
-    fDenImag(nullptr),
     fFrame(kinematics),
-    fCFReal(nullptr),
-    fCFImag(nullptr),
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
     fLmVals(FemtoYlmIndexes(TMath::Min(maxL, 5))),
-    fLmMath(),
-    fCfcov(nullptr) {
+    fLmMath() {
     SetNorm(0, 0.5, 0);
     if (maxL > 5) { Hal::Cout::PrintInfo("MaxL > 5 not supported", EInfo::kError); }
     fNumReal = new TH1D*[fMaxJM];
@@ -132,8 +118,8 @@ namespace Hal {
     fCovCf.MakeBigger(bins, fMaxJM * 2, fMaxJM * 2);
 
 
-    gSystem->Load("libgsl.so");
-    gSystem->Load("libgslcblas.so");
+    // gSystem->Load("libgsl.so");
+    // gSystem->Load("libgslcblas.so");
     switch (fFrame) {
       case Femto::EKinematics::kPRF: AddLabel("prf"); break;
       case Femto::EKinematics::kLCMS: AddLabel("lcms"); break;
@@ -326,15 +312,15 @@ namespace Hal {
 
     TVirtualPad* temp_pad = gPad;
     Int_t padsNo          = Hal::Std::GetListOfSubPads(temp_pad);
-    Int_t req             = (GetL() + 1) * (GetL() + 1);
+    Int_t req             = (GetLMax() + 1) * (GetLMax() + 1);
     if (padsNo == req) {
       // do nothing we have enough pads
     } else {
       gPad->Clear();
-      gPad->Divide(GetL() + 1, GetL() + 1);
+      gPad->Divide(GetLMax() + 1, GetLMax() + 1);
     }
 
-    for (int l = 0; l <= GetL(); l++) {
+    for (int l = 0; l <= GetLMax(); l++) {
       for (int m = -l; m <= l; m++) {
         temp_pad->cd(fLmVals.GetPadId(l, m));
         if ((m < 0 && drawNeg) || m >= 0) drawSub(l, m, this, drawImg, drawReal, option);
@@ -479,7 +465,7 @@ namespace Hal {
       return nullptr;
     }
     TString option = opt;
-    if (option.Length() > GetL()) return nullptr;
+    if (option.Length() > GetLMax()) return nullptr;
     TH1D* cf  = nullptr;
     TH1D* cf2 = nullptr;
     TH1D* cf3 = nullptr;
@@ -729,7 +715,7 @@ namespace Hal {
     }
     fCFReal = new TH1D*[fMaxJM];
     fCFImag = new TH1D*[fMaxJM];
-    UnpackCovariances();
+    // UnpackCovariances(); do nothing
     for (int i = 0; i < fMaxJM; i++) {
       TString name = fNumReal[i]->GetName();
       name.ReplaceAll("Num", "CF");
@@ -760,7 +746,7 @@ namespace Hal {
     }
 
     //=====================================================
-    FemtoYlmSolver solver(GetL(), this);
+    FemtoYlmSolver solver(GetLMax(), this);
     solver.SetDebugBin(debug);
     solver.SetNormalizationArea(GetNormMin(0), GetNormMax(0));
     solver.Solve(kTRUE);
@@ -806,12 +792,18 @@ namespace Hal {
   }
 
   FemtoSHCF::~FemtoSHCF() {
-    if (fNumImag) delete[] fNumImag;
-    if (fNumReal) delete[] fNumReal;
-    if (fDenReal) delete[] fDenReal;
-    if (fDenImag) delete[] fDenImag;
-    if (fCFReal) delete[] fCFReal;
-    if (fCFImag) delete[] fCFImag;
+    auto cleanArray = [&](TH1D** x) {
+      if (x == nullptr) return;
+      for (int i = 0; i < fMaxJM; i++)
+        delete x[i];
+      delete[] x;
+    };
+    cleanArray(fNumImag);
+    cleanArray(fNumReal);
+    cleanArray(fDenReal);
+    cleanArray(fDenImag);
+    cleanArray(fCFReal);
+    cleanArray(fCFImag);
     if (fCfcov) delete fCfcov;
   }
 
@@ -865,15 +857,15 @@ namespace Hal {
     HtmlTable table3;
     Bool_t batch = gROOT->IsBatch();
     gROOT->SetBatch(kTRUE);
-    Int_t jmax   = GetL() * 2 + 1;
+    Int_t jmax   = GetLMax() * 2 + 1;
     Int_t width  = 966 / jmax;
-    Int_t height = 966 / GetL();
+    Int_t height = 966 / GetLMax();
     if (height > width) height = width;
-    for (int i = 0; i <= GetL(); i++) {
+    for (int i = 0; i <= GetLMax(); i++) {
       HtmlRow row7("", "dark_blue", "");
 
       int I = i;
-      for (int j = 0; j <= GetL(); j++) {
+      for (int j = 0; j <= GetLMax(); j++) {
         int J = j - i;
         if (j <= i) I = i;
         TH1D* cfr = GetHisto(I, J, kFALSE, "re");
@@ -967,7 +959,7 @@ namespace Hal {
     Int_t bin              = 0;
     Int_t nbins            = GetNum()->GetNbinsX();
     for (int ibin = 1; ibin <= nbins; ibin++) {
-      for (int l = 0; l <= GetL(); l++) {
+      for (int l = 0; l <= GetLMax(); l++) {
         for (int m = -l; m <= l; m++) {
           TH1D* h        = GetCFRe(l, m);
           (*data)[bin++] = h->GetBinContent(ibin);
@@ -998,10 +990,14 @@ namespace Hal {
 
   void FemtoSHCF::Rebin(Int_t ngroup, Option_t* opt) { std::cout << "REBIN of SHCF not implented !" << std::endl; }
 
-  void FemtoSHCF::Fit(CorrFitSHCF* fit) {  // fit->Fit(this); //
+  void FemtoSHCF::Fit(CorrFitSHCF* fit) { fit->Fit(this); }
+
+  void FemtoSHCF::FitDummy(CorrFitSHCF* fit) { fit->FitDummy(this); }
+
+  CorrFitMaskSH FemtoSHCF::MakeEmptyMask() const {
+    CorrFitMaskSH mask;
+    mask.Build(*this);
+    return mask;
   }
 
-  void FemtoSHCF::FitDummy(CorrFitSHCF* fit) {
-    // fit->FitDummy(this);
-  }
 }  // namespace Hal

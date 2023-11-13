@@ -12,6 +12,7 @@
 #include "FemtoConst.h"
 
 #include "Array.h"
+#include "CorrFitMaskSH.h"
 #include "DividedHisto.h"
 #include "FemtoYlmIndexes.h"
 #include "FemtoYlmMath.h"
@@ -19,6 +20,10 @@
 #include <TMath.h>
 #include <TString.h>
 #include <complex>
+
+/**
+ * note I blocked in FemtoSolver filling the CovNum matrix
+ */
 
 namespace Hal {
   class CorrFitSHCF;
@@ -33,21 +38,21 @@ namespace Hal {
     friend class FemtoSHSlice;
     friend class FemtoYlmSolver;
     const Int_t fMaxJM;
-    TH1D** fNumReal;  //[fMaxJM] Real parts of Ylm components of the numerator
-    TH1D** fNumImag;  // [fMaxJM]Imaginary parts of Ylm components of the numerator
-    TH1D** fDenReal;  //[fMaxJM] Real parts of Ylm components of the denominator
-    TH1D** fDenImag;  //[fMaxJM] Imaginary parts of Ylm components of the denominator
+    TH1D** fNumReal = {nullptr};  //[fMaxJM] Real parts of Ylm components of the numerator
+    TH1D** fNumImag = {nullptr};  // [fMaxJM]Imaginary parts of Ylm components of the numerator
+    TH1D** fDenReal = {nullptr};  //[fMaxJM] Real parts of Ylm components of the denominator
+    TH1D** fDenImag = {nullptr};  //[fMaxJM] Imaginary parts of Ylm components of the denominator
     Femto::EKinematics fFrame;
 
-    TH1D** fCFReal;  //[fMaxJM] real CF's
-    TH1D** fCFImag;  //[fMaxJM] img CF's
+    TH1D** fCFReal = {nullptr};  //[fMaxJM] real CF's
+    TH1D** fCFImag = {nullptr};  //[fMaxJM] img CF's
     Array_3<Double_t> fCovNum;
     Array_3<Double_t> fCovDen;
     Array_3<Double_t> fCovCf;
-    Double_t fNormPurity;  //
-    Double_t fNormRadius;  //
-    Double_t fNormBohr;    //
-    TH3D* fCfcov;          //
+    Double_t fNormPurity;      //
+    Double_t fNormRadius;      //
+    Double_t fNormBohr;        //
+    TH3D* fCfcov = {nullptr};  //
     FemtoYlmIndexes fLmVals;
     FemtoYlmMath fLmMath;
     Bool_t fColzSet = {kFALSE};
@@ -106,6 +111,7 @@ namespace Hal {
     }
     virtual void FillNumObj(TObject* obj);
     virtual void FillDenObj(TObject* obj);
+    FemtoYlmIndexes GetYlmIndexes() const { return fLmVals; }
     /**
      * primitive constructor to conver angular Femto3DCF into SH CF
      * @param cf
@@ -279,8 +285,14 @@ namespace Hal {
      *
      * @return L
      */
-    Int_t GetL() const { return TMath::Sqrt(fMaxJM - 1); };
+    Int_t GetLMax() const { return TMath::Sqrt(fMaxJM - 1); };
     void Rebin(Int_t ngroup, Option_t* opt = "");
+    TH2D* GetMaskDraw() const;
+    /**
+     *
+     * @return empty mask for fitting
+     */
+    CorrFitMaskSH MakeEmptyMask() const;
     Array_1<Float_t>* ExportToFlatNum() const;
     virtual void Add(const Object* pack);
     virtual Long64_t Merge(TCollection* collection);

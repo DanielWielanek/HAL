@@ -24,7 +24,7 @@ namespace Hal {
     Double_t* fParams;  //[fNParams]
   public:
     FemtoSourceDensity(Int_t params = 0, Bool_t ana1d = kFALSE, Bool_t ana3d = kTRUE) :
-      fNParams(TMath::Min(1, params)), fParams(nullptr), fAna1d(ana1d), fAna3d(ana3d) {
+      fNParams(TMath::Min(1, params)), fAna1d(ana1d), fAna3d(ana3d), fParams(nullptr) {
       fParams = new Double_t[fNParams];
     };
     /**

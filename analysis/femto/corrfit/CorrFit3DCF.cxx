@@ -377,8 +377,7 @@ namespace Hal {
   }
 
   void CorrFit3DCF::EstimateActiveBins() {
-    fActiveBins     = 0;
-    Bool_t allocate = kFALSE;
+    fActiveBins = 0;
     if (fMask == nullptr) {
       fMask        = new CorrFitMask3D(fDenominatorHistogram->GetNbinsX(),
                                 fDenominatorHistogram->GetXaxis()->GetXmin(),

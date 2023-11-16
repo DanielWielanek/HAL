@@ -21,7 +21,7 @@
 
 
 namespace Hal {
-  EventBinningCut::EventBinningCut() : EventCut(1), fEventCut(nullptr), fTotalBinsNo(1) {}
+  EventBinningCut::EventBinningCut() : EventCut(1) {}
 
   Package* EventBinningCut::Report() const {
     Package* report = new Package(this);
@@ -46,7 +46,7 @@ namespace Hal {
     return report;
   }
 
-  EventBinningCut::EventBinningCut(const EventBinningCut& other) : EventCut(other), fEventCut(nullptr) {
+  EventBinningCut::EventBinningCut(const EventBinningCut& other) : EventCut(other) {
     fMinTotal    = other.fMinTotal;
     fMaxTotal    = other.fMaxTotal;
     fBinConv     = other.fBinConv;
@@ -63,7 +63,6 @@ namespace Hal {
 
   EventBinningCut::EventBinningCut(const EventCut& cut, const std::initializer_list<int>& init) :
     EventCut(cut.GetCutSize()), fEventCut((EventCut*) cut.MakeCopy()) {
-    Int_t cutSize = fEventCut->GetCutSize();
     std::vector<std::vector<Double_t>> xvals;
     Int_t counter = 0;
     for (auto val : init) {
@@ -93,7 +92,7 @@ namespace Hal {
     for (auto i : init) {
       vec.push_back(Hal::Std::GetVector(i));
     }
-    for (unsigned int i = vec.size(); i < fEventCut->GetCutSize(); i++) {
+    for (int i = (int) vec.size(); i < fEventCut->GetCutSize(); i++) {
       std::vector<Double_t> temp;
       temp.push_back(fEventCut->GetMin(i));
       temp.push_back(fEventCut->GetMax(i));
@@ -163,7 +162,7 @@ namespace Hal {
         if (val <= fValuesUp[iParam][iRange]) { break; }
         bin++;
       }
-      if (bin < 0 || bin >= fValuesUp[iParam].size()) { std::cout << " EER" << std::endl; }
+      if (bin < 0 || bin >= int(fValuesUp[iParam].size())) { std::cout << " EER" << std::endl; }
       res = res + bin * fBinConv.at(iParam);
     }
 

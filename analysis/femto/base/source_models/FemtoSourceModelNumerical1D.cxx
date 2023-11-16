@@ -18,7 +18,7 @@ namespace Hal {
   }
 
   FemtoSourceModelNumerical1D::FemtoSourceModelNumerical1D(const FemtoSourceModelNumerical1D& other) :
-    FemtoSourceModel1D(other), ff(other.ff), fRawDistribution(nullptr) {
+    FemtoSourceModel1D(other), fRawDistribution(nullptr), ff(other.ff) {
     if (other.fRawDistribution) fRawDistribution = (TH1D*) other.fRawDistribution->Clone();
     fRandomDistributionX = other.fRandomDistributionX;
     fRandomDistributionY = other.fRandomDistributionY;

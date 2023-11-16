@@ -30,17 +30,17 @@ namespace Hal {
   class DividedHisto2D;
   class Femto1DCF;
   class Femto1DCFAnaMapMCRoco : public Femto1DMapGenerator {
-    Double_t fRMinEff, fRStep;
-    Double_t fIntegralScale;
-    Double_t* fSourceParams;
-    TH1D* fSampleRandom;
+    Double_t fRMinEff = {0}, fRStep = {0};
+    Double_t fIntegralScale = {1.0};
+    Double_t* fSourceParams = {nullptr};
+    TH1D* fSampleRandom     = {nullptr};
     enum class EModelType { k1dModel, k3dModel, kOther };
-    EModelType fModelType;
-    Bool_t fDebugDistribution;
+    EModelType fModelType     = {EModelType::kOther};
+    Bool_t fDebugDistribution = {kFALSE};
 
 
   protected:
-    FemtoFreezoutGenerator* fGeneratorIntegrated;
+    FemtoFreezoutGenerator* fGeneratorIntegrated = {nullptr};
 
   public:
     Femto1DCFAnaMapMCRoco();

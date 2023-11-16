@@ -368,10 +368,10 @@ namespace Hal {
         const int ilmzero2 = ilmzero * 2;
         for (int ilmprim = 0; ilmprim < GetMaxJM(); ilmprim++) {
           const int ilmprim2 = ilmprim * 2;
-          std::cout << fSlice.fCovNum[ilmzero + 0][ilmprim2 + 0] << " ";
-          std::cout << fSlice.fCovNum[ilmzero + 0][ilmprim2 + 1] << " ";
-          std::cout << fSlice.fCovNum[ilmzero + 1][ilmprim2 + 0] << " ";
-          std::cout << fSlice.fCovNum[ilmzero + 1][ilmprim2 + 1] << " ";
+          std::cout << fSlice.fCovNum[ilmzero2 + 0][ilmprim2 + 0] << " ";
+          std::cout << fSlice.fCovNum[ilmzero2 + 0][ilmprim2 + 1] << " ";
+          std::cout << fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 0] << " ";
+          std::cout << fSlice.fCovNum[ilmzero2 + 1][ilmprim2 + 1] << " ";
           std::cout << std::endl;
         }
         std::cout << std::endl;

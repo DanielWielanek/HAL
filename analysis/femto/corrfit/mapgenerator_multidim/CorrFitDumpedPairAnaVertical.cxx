@@ -142,7 +142,7 @@ namespace Hal {
     }
     fTempCF = nullptr;
     //   if (fGenerator) { fGenerator[0]->Init(); }
-    return kTRUE;
+    return preinit;
   }
 
   void CorrFitDumpedPairAnaVertical::Finish() {}

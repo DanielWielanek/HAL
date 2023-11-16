@@ -35,16 +35,7 @@
 
 
 namespace Hal {
-  Femto1DCFAnaMapMCRoco::Femto1DCFAnaMapMCRoco() :
-    Femto1DMapGenerator(),
-    fRMinEff(0),
-    fRStep(0),
-    fIntegralScale(1),
-    fSourceParams(nullptr),
-    fDebugDistribution(kFALSE),
-    fGeneratorIntegrated(nullptr),
-    fModelType(EModelType::kOther),
-    fSampleRandom(nullptr) {}
+  Femto1DCFAnaMapMCRoco::Femto1DCFAnaMapMCRoco() : Femto1DMapGenerator() {}
 
   Femto1DCFAnaMapMCRoco::~Femto1DCFAnaMapMCRoco() {
     if (fGeneratorIntegrated) delete fGeneratorIntegrated;
@@ -94,6 +85,9 @@ namespace Hal {
           parametrizations[i][1] = fRadiiBins[i] * scale;
           parametrizations[i][2] = fRadiiBins[i] * scale;
         }
+      } break;
+      case EModelType::kOther: {
+        // DO NOTHING TODO check
       } break;
     };
     // Int_t mainBin = fRBins * 0.5;

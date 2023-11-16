@@ -26,10 +26,10 @@ namespace Hal {
     fOutFile(nullptr),
     fInTree(nullptr),
     fOutTree(nullptr),
+    fInfo(nullptr),
     fRebinX(0),
     fRebinY(0),
-    fRebinZ(0),
-    fInfo(nullptr) {}
+    fRebinZ(0) {}
 
   Bool_t CorrFitMapRebin::Compress(TString outFile) {
     fInFile         = new TFile(fInFileName, "read");
@@ -86,7 +86,7 @@ namespace Hal {
     Array_1<Float_t> weight(sizeX);
 
     Float_t* temp = new Float_t[fRebinX];
-    Int_t newBins = sizeX / fRebinX;
+    // Int_t newBins = sizeX / fRebinX;
     for (int i = 0; i < sizeX / fRebinX; i++) {
       Float_t sum = 0;
       for (int j = 0; j < fRebinX; j++) {
@@ -176,7 +176,7 @@ namespace Hal {
               const Int_t tY = j * fRebinY + b;
               for (int c = 0; c < fRebinZ; c++) {
                 const Int_t tZ = k * fRebinZ + c;
-                Int_t bin      = mapL[tX][tY][tZ];
+                // Int_t bin      = mapL[tX][tY][tZ];
                 sum += den->GetBinContent(tX, tY, tZ);
               }
             }

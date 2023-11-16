@@ -201,7 +201,7 @@ namespace Hal {
 
   void CorrFit::SetFitOrder(std::initializer_list<Int_t> order) {
     auto vec = Hal::Std::GetVector(order);
-    if (vec.size() != fParametersNo) {
+    if (int(vec.size()) != fParametersNo) {
       Hal::Cout::PrintInfo("Cannot change fit order, wrong size of list", EInfo::kWarning);
       return;
     }

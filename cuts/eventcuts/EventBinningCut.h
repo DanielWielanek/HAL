@@ -19,14 +19,14 @@
 namespace Hal {
   class EventBinningCut : public EventCut {
   protected:
-    Int_t fTotalBinsNo;
+    Int_t fTotalBinsNo = {1};
     std::vector<Double_t> fMinTotal;
     std::vector<Double_t> fMaxTotal;
     std::vector<Int_t> fBinConv;
     std::vector<Int_t> fStepsNo;
 
     std::vector<std::vector<Double_t>> fValuesUp;
-    EventCut* fEventCut;
+    EventCut* fEventCut = {nullptr};
     EventBinningCut(const EventCut& cut, const std::vector<std::vector<Double_t>>& init);
     void PreInit(const std::vector<std::vector<Double_t>>& vals);
 

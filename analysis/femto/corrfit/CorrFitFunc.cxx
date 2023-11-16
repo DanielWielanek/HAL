@@ -163,10 +163,10 @@ namespace Hal {
     TString opt1, opt2;
     AlgoToOptions(fMinAlgo, opt1, opt2);
     ROOT::Math::Minimizer *min, *min2 = nullptr;
-    auto setPars = [&](ROOT::Math::Minimizer* min) {
-      min->SetMaxFunctionCalls(fMaxIterations);
-      min->SetMaxIterations(fMaxIterations);
-      min->SetTolerance(fTolerance);
+    auto setPars = [&](ROOT::Math::Minimizer* minn) {
+      minn->SetMaxFunctionCalls(fMaxIterations);
+      minn->SetMaxIterations(fMaxIterations);
+      minn->SetTolerance(fTolerance);
     };
     Bool_t custom_minimizer = kFALSE;
     CheckOrder();

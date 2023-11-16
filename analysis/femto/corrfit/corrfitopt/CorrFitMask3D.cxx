@@ -20,9 +20,9 @@
 namespace Hal {
   Bool_t CorrFitMask3D::Init() {
     fActiveBins = 0;
-    for (int i = 1; i < fRawMask.size() - 1; i++) {  // dont take into account overflow/underflow bins
-      for (int j = 1; j < fRawMask[0].size() - 1; j++) {
-        for (int k = 1; k < fRawMask[0][0].size() - 1; k++) {
+    for (int i = 1; i < (int) fRawMask.size() - 1; i++) {  // dont take into account overflow/underflow bins
+      for (int j = 1; j < (int) fRawMask[0].size() - 1; j++) {
+        for (int k = 1; k < (int) fRawMask[0][0].size() - 1; k++) {
           if (fRawMask[i][j][k]) fActiveBins++;
         }
       }
@@ -100,9 +100,9 @@ namespace Hal {
         }
       }
     } else {
-      for (int i = 0; i < fRawMask.size(); i++) {
-        for (int j = 0; j < fRawMask[0].size(); j++) {
-          for (int k = 0; k < fRawMask[0][0].size(); k++) {
+      for (int i = 0; i < (int) fRawMask.size(); i++) {
+        for (int j = 0; j < (int) fRawMask[0].size(); j++) {
+          for (int k = 0; k < (int) fRawMask[0][0].size(); k++) {
             if (i < low[0]) fRawMask[i][j][k] = false;
             if (i > high[0]) fRawMask[i][j][k] = false;
             if (j < low[1]) fRawMask[i][j][k] = false;
@@ -118,9 +118,9 @@ namespace Hal {
   void CorrFitMask3D::SetBin(Int_t binX, Int_t binY, Int_t binZ, Bool_t state) { fRawMask[binX][binY][binZ] = state; }
 
   void CorrFitMask3D::Reset(Bool_t state) {
-    for (int i = 0; i < fRawMask.size(); i++) {
-      for (int j = 0; j < fRawMask[0].size(); j++) {
-        for (int k = 0; k < fRawMask[0][0].size(); k++) {
+    for (int i = 0; i < (int) fRawMask.size(); i++) {
+      for (int j = 0; j < (int) fRawMask[0].size(); j++) {
+        for (int k = 0; k < (int) fRawMask[0][0].size(); k++) {
           fRawMask[i][j][k] = state;
         }
       }
@@ -177,8 +177,8 @@ namespace Hal {
     Int_t nBinZ    = GetNbinsZ();
     Double_t x     = 0;
     Int_t middle_x = 1 + int(nBinX * (x - fMin[0]) / (fMax[0] - fMin[0]));
-    Int_t middle_y = 1 + int(nBinX * (x - fMin[1]) / (fMax[1] - fMin[1]));
-    Int_t middle_z = 1 + int(nBinX * (x - fMin[2]) / (fMax[2] - fMin[2]));
+    // Int_t middle_y = 1 + int(nBinX * (x - fMin[1]) / (fMax[1] - fMin[1]));
+    // Int_t middle_z = 1 + int(nBinX * (x - fMin[2]) / (fMax[2] - fMin[2]));
     CalculateSliceBins(map);
 
     if (nBinX != nBinY || nBinY != nBinZ) {

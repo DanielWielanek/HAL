@@ -132,7 +132,7 @@ namespace Hal {
   double CorrFit1DCF::GetChiTFD(const double* /*par*/) const {
     Double_t f = 0.0;
     Double_t A, B;
-    Double_t e3, x, chi;
+    Double_t e3, chi;
     CorrFitHDFunc1D* cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
     Bool_t useHD        = kFALSE;
     if (fBinCalc == kExtrapolated) useHD = kTRUE;
@@ -165,7 +165,7 @@ namespace Hal {
 
   double CorrFit1DCF::GetLogTFD(const double* /*par*/) const {
     Double_t f = 0.0;
-    Double_t A, B, C, x;
+    Double_t A, B, C;
     CorrFitHDFunc1D* cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
     Bool_t useHD        = kFALSE;
     if (fBinCalc == kExtrapolated) useHD = kTRUE;
@@ -191,7 +191,7 @@ namespace Hal {
 
   double CorrFit1DCF::GetChiTF(const double* /*par*/) const {
     Double_t f = 0.0;
-    Double_t C, x;
+    Double_t C;
     CorrFitHDFunc1D* Cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
     Bool_t useHD        = kFALSE;
     if (fBinCalc == kExtrapolated) useHD = kTRUE;

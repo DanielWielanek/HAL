@@ -54,7 +54,7 @@ namespace Hal {
       for (int i = 0; i < low; i++) {
         fRawMask[i] = false;
       }
-      for (int i = high + 1; i < fRawMask.size(); i++) {
+      for (int i = high + 1; i < (int) fRawMask.size(); i++) {
         fRawMask[i] = false;
       }
     }

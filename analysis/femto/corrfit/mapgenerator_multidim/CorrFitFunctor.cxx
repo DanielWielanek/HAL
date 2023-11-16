@@ -34,7 +34,7 @@ namespace Hal {
 
   Bool_t CorrFitFunctor::GetParameterConfig(TString name, Double_t& min, Double_t& max, Int_t& point) {
     int paramId = -1;
-    for (unsigned int i = 0; i < fSetup.GetNParams(); i++) {
+    for (int i = 0; i < fSetup.GetNParams(); i++) {
       if (fSetup.GetParName(i) == name) {
         paramId = i;
         break;
@@ -65,7 +65,7 @@ namespace Hal {
 
   Array_1<Float_t>* CorrFitFunctor::GetData(Double_t* params) {
     Int_t entry_val = 0;
-    Int_t prestep   = 1;
+    // Int_t prestep   = 1;
     for (int i = 0; i < fSetup.GetNParams(); i++) {
       Double_t par      = params[i];
       Double_t dif      = par - fSetup.GetMin(i);

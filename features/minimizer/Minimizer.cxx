@@ -316,7 +316,7 @@ namespace Hal {
   }
 
   void Minimizer::FinishFit() {
-    for (unsigned int i = 0; i < GetNParams(); i++) {
+    for (int i = 0; i < GetNParams(); i++) {
       fParamsMin[i] = fAllowedValues[i][fStateVectorMin[i]];
     }
     EstimateErrors();
@@ -357,7 +357,7 @@ namespace Hal {
     Bool_t cont = kTRUE;
 
     auto applyVector = [&]() {
-      for (unsigned int p = 0; p < freePars; p++) {
+      for (int p = 0; p < freePars; p++) {
         int constToPar = fNonConstMap[p];
         tmpVec[constToPar] += directionIndex[direction][p];
         if (tmpVec[constToPar] < 0 || tmpVec[constToPar] > fParameters[constToPar].GetNPoints()) { return kFALSE; }
@@ -373,7 +373,7 @@ namespace Hal {
         std::cout << i << " ";
       }
       std::cout << std::endl;*/
-      for (unsigned int p = 0; p < freePars; p++) {
+      for (int p = 0; p < freePars; p++) {
         fStateVector[fNonConstMap[p]] = tmpVec[p];
       }
 
@@ -534,7 +534,7 @@ namespace Hal {
   }
 
   void Minimizer::SetTempParams() {
-    for (unsigned int i = 0; i < GetNParams(); i++) {
+    for (int i = 0; i < GetNParams(); i++) {
       fTempParams[i] = fAllowedValues[i][fStateVector[i]];
     }
   }

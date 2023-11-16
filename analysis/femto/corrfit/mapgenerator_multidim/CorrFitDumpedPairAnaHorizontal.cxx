@@ -69,6 +69,7 @@ namespace Hal {
       }
     }
     if (fJobId == 0) {
+      obj               = fCF[0]->GetCF(0);
       TFile* file       = new TFile("files/config.root", "recreate");
       CorrFitInfo* info = new CorrFitInfo();
       // TODO don't forget about vertical flag !
@@ -85,6 +86,9 @@ namespace Hal {
       info->SetMacroText(val);
       info->SetPairFile(fPairFile);
       info->SetCf(obj);
+      auto source = fGenerator[0]->GetSourceModel();
+      HalCoutDebug();
+      source->Print();
       CorrFitParamsSetup* setup = new CorrFitParamsSetup("corrfit_conf.xml");
       info->SetSetup(*setup);
       info->Write();
@@ -199,8 +203,8 @@ namespace Hal {
       FemtoSourceModel* freez = fGenerator[j]->GetSourceModel();
       std::vector<int> arPos  = Hal::Std::OneToMultiDimIndex(dims, fJobId * fMultiplyJobs + j);
       for (int i = 0; i < parameters->GetNChildren(); i++) {
-        XMLNode* parameter = parameters->GetChild(i);
-        Double_t val       = setup.GetMin(i) + setup.GetStepSize(i) * ((Double_t) arPos[i]);
+        // XMLNode* parameter = parameters->GetChild(i);
+        Double_t val = setup.GetMin(i) + setup.GetStepSize(i) * ((Double_t) arPos[i]);
         freez->SetParameterByName(setup.GetParName(i), val);
       }
       fGenerator[j]->Init();

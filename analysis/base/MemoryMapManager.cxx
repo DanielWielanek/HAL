@@ -164,7 +164,7 @@ namespace Hal {
     fTotalTracks  = new Int_t[fEventCollectionsNo];
     fTrackMap     = new Array_4<Int_t>();
     fTrackCounter = new Array_3<Int_t>();
-    fTrackCounter->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize);
+    fTrackCounter->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize);  // TODO swap order
     fTrackMap->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize, fTrackMapSize);
     fReadyToMix = new Bool_t[fEventCollectionsNo];
     for (int i = 0; i < fEventCollectionsNo; i++) {

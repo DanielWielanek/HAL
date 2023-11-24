@@ -51,6 +51,7 @@ dataformat/detector/ExpEventInterface.cxx
 dataformat/detector/DetectorTrack.cxx
 dataformat/detector/DetectorEvent.cxx
 dataformat/hiddeninfo/V0Track.cxx
+dataformat/hiddeninfo/HiddenInfo.cxx
 
 io/AnalysisManager.cxx
 io/DataManager.cxx

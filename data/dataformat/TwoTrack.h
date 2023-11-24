@@ -13,6 +13,7 @@
 #include <TObject.h>
 namespace Hal {
   class Track;
+  class HiddenInfo;
 
   /**
    * class for storing pair of tracks
@@ -22,10 +23,11 @@ namespace Hal {
     enum PairType { kSignal, kBackground, kMixed, kRotated, kHemishpere, kOther };
 
   private:
-    Track* fTrack1;
-    Track* fTrack2;
-    PairType fType;
-    Bool_t fSame;
+    Track* fTrack1          = {nullptr};
+    Track* fTrack2          = {nullptr};
+    PairType fType          = {PairType::kOther};
+    Bool_t fSame            = {kTRUE};
+    HiddenInfo* fHiddenInfo = {nullptr};
 
   public:
     TwoTrack();
@@ -77,10 +79,20 @@ namespace Hal {
      */
     inline Track* GetTrack2() const { return fTrack2; };
     /**
+     *
+     * @return hidden info for pair (if available)
+     */
+    inline HiddenInfo* GetHiddenInfo() const { return fHiddenInfo; }
+    /**
      * same if particles have the same type
      * @param same
      */
     inline void SetSame(Bool_t same) { fSame = same; };
+    /**
+     * set pair hidden info
+     * @param info
+     */
+    inline void SetHiddenInfo(HiddenInfo* info) { fHiddenInfo = info; };
     /**
      *
      * @return true if both particles are the same type

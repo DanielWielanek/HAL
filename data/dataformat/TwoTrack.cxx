@@ -9,7 +9,7 @@
 
 #include "TwoTrack.h"
 namespace Hal {
-  TwoTrack::TwoTrack() : fTrack1(NULL), fTrack2(NULL), fType(PairType::kOther), fSame(kTRUE) {}
+  TwoTrack::TwoTrack() {}
 
   TwoTrack::~TwoTrack() {
     // TODO Auto-generated destructor stub

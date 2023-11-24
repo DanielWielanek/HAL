@@ -14,13 +14,14 @@
 #include <TVector3.h>
 
 #include "Const.h"
+#include "HiddenInfo.h"
 
 /**
  * representation of V0 track
  */
 namespace Hal {
   class Track;
-  class V0Track : public TObject {
+  class V0Track : public HiddenInfo {
     Int_t fTrackId;
     Int_t fPosId;
     Int_t fNegId;

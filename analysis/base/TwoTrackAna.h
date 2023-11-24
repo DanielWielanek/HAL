@@ -168,6 +168,14 @@ namespace Hal {
     Bool_t IdenticalParticles() const { return (fIdentical); };
     virtual Package* Report() const;
     /**
+     * set hidden pair info if necessary
+     */
+    virtual void SetPairHiddenInfo() {};
+    /**
+     * delete hidden pair info, by default it's done automatically
+     */
+    virtual void DeleteHiddenPairInfo();
+    /**
      * process pair of identical particles in signal
      */
     virtual void ProcessPair() {};

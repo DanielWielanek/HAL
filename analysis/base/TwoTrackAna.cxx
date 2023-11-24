@@ -118,6 +118,7 @@ namespace Hal {
       case kChargedNID3: fCurrentBackgroundPair->SetSame(kTRUE); break;
       default: break;
     }
+    SetPairHiddenInfo();
     if (fIdentical) {
       Cout::PrintInfo("IDENTICAL two track analysis enabled", EInfo::kDebugInfo);
     } else {
@@ -531,7 +532,11 @@ namespace Hal {
     }
   }
 
-  TwoTrackAna::~TwoTrackAna() {}
+  TwoTrackAna::~TwoTrackAna() {
+    DeleteHiddenPairInfo();
+    if (fCurrentSignalPair) delete fCurrentSignalPair;
+    if (fCurrentBackgroundPair) delete fCurrentBackgroundPair;
+  }
   //----- PROCES Event Mixing
 
   //--------- ANALISE IDENTICAL EVENTS DIFFERENT PARTICLES
@@ -799,5 +804,19 @@ namespace Hal {
     }
     return *this;
   }
+
+  void TwoTrackAna::DeleteHiddenPairInfo() {
+    if (fCurrentSignalPair)
+      if (fCurrentSignalPair->GetHiddenInfo()) {
+        delete fCurrentSignalPair->GetHiddenInfo();
+        fCurrentSignalPair->SetHiddenInfo(nullptr);
+      }
+    if (fCurrentBackgroundPair)
+      if (fCurrentBackgroundPair->GetHiddenInfo()) {
+        delete fCurrentBackgroundPair->GetHiddenInfo();
+        fCurrentBackgroundPair->SetHiddenInfo(nullptr);
+      }
+  }
+
 }  // namespace Hal
 //---------------------------------------------------------------------------------------

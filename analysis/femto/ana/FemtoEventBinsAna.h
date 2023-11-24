@@ -25,8 +25,9 @@ namespace Hal {
     /**
      * holds array of event cuts used for binning mixing
      */
-    EventBinningCut* fEventBinningCut;
-    Int_t fTotalEventBins;
+    std::vector<EventBinningCut*> fEventBinningCuts;
+    Int_t fEventBins;
+    Int_t fFakeEventBinID = {0};
 
     virtual void ProcessEvent();
     virtual Package* Report() const;
@@ -34,6 +35,12 @@ namespace Hal {
     virtual Bool_t InitArray();
     virtual Task::EInitFlag Init();
     virtual void InitMemoryMap();
+    virtual void ProcessFemtoPair();
+    virtual void ProcessFemtoPair_Perfect();
+    virtual void ProcessFemtoPair_Rotated();
+    virtual void ProcessFemtoPair_Hemisphere();
+    virtual void ProcessFemtoPair_Mixed();
+    virtual void ProcessFemtoPair_Charged();
 
   public:
     FemtoEventBinsAna();

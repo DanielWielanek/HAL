@@ -62,7 +62,7 @@ base/shmath/FemtoSHSlice.cxx
 base/shmath/FemtoYlmIndexes.cxx
 base/shmath/FemtoYlmMath.cxx
 base/shmath/FemtoYlmSolver.cxx
-//base/shmath/FemtoSHArray.cxx
+#base/shmath/FemtoSHArray.cxx
 
 corrfit/CorrFitDrawOptions.cxx
 corrfit/CorrFit.cxx
@@ -96,8 +96,8 @@ corrfit/mapgenerator_multidim/CorrFitParamsSetup.cxx
 corrfit/mapgenerator_multidim/CorrFitVerticalSlices.cxx
 corrfit/mapgenerator_multidim/CorrFit3DCFMultiDim.cxx
 corrfit/mapgenerator_multidim/FemtoDumpPairAnaMC.cxx
-//corrfit/mapgenerator_multidim/CorrFitSHCFMultiDim.cxx
-//corrfit/sh/CorrFitSHFrom3D.cxx
+#corrfit/mapgenerator_multidim/CorrFitSHCFMultiDim.cxx
+#corrfit/sh/CorrFitSHFrom3D.cxx
 
 corrfit/fittingfunctions/CorrFit1DCFSquare.cxx
 corrfit/fittingfunctions/CorrFit1DCFLorentz.cxx
@@ -144,7 +144,7 @@ imaging/FemtoImaging.cxx
 imaging/FemtoImaging1D.cxx
 imaging/FemtoImaging3D.cxx
 base/FemtoSHCF.cxx
-//corrfit/CorrFitSHCF.cxx
+#corrfit/CorrFitSHCF.cxx
 )
 
 

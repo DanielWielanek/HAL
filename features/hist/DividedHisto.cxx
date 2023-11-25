@@ -1503,4 +1503,9 @@ namespace Hal {
       }
     }
   }
+
+  void DividedHisto1D::AddScaled(const DividedHisto1D& other, Double_t scale) {
+    fNum->Add(other.fNum, scale);
+    fDen->Add(other.fDen, scale);
+  }
 }  // namespace Hal

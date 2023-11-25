@@ -35,4 +35,10 @@ namespace Hal {
 
   void FemtoSHCFQinv::FillDenObj(TObject* obj) { FemtoSHCF::FillDenObj(obj); }
 
+  void FemtoSHCFQinv::AddScaled(const Hal::DividedHisto1D& other, Double_t scale) {
+    FemtoSHCF::AddScaled(other, scale);
+    auto shcf = dynamic_cast<Hal::FemtoSHCFQinv&>(other);
+    fQinvDist->Add(shcf.fQinvDist, scale);
+  }
+
 } /* namespace Hal */

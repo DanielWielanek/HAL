@@ -240,6 +240,12 @@ namespace Hal {
      */
     virtual void AddNumDen(TH1* num, TH1* den, Option_t* opt = "");
     /**
+     * add num/den according to scale
+     * @param other
+     * @param scale
+     */
+    virtual void AddScaled(const DividedHisto1D& other, Double_t scale = 1);
+    /**
      * makes folding of histogram around given point, point must be in the middle
      * of bin or in the edge of bin, if point is in the middle of bin then content
      * of such bin is multiplied by 2 and error by sqrt(2) in case of 2 and 3D

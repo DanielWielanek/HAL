@@ -42,6 +42,7 @@ namespace Hal {
     TH3D* GetQinvHist(TString opt = "av") const;
     virtual void AddNum(TH1* num, Option_t* opt = "");
     virtual void AddDen(TH1* den, Option_t* opt = "");
+    virtual void AddScaled(const Hal::DividedHisto1D& other, Double_t scale);
     virtual Long64_t Merge(TCollection* collection);
     virtual void Add(const Object* h);
     virtual void Browse(TBrowser* b);

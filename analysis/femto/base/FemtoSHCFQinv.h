@@ -23,6 +23,7 @@ namespace Hal {
     FemtoSHCFQinv(TString name, Int_t maxL, Int_t bins, Double_t min, Double_t max, Femto::EKinematics kinematics);
     virtual void FillNumObj(TObject* obj);
     virtual void FillDenObj(TObject* obj);
+    virtual void AddScaled(const Hal::DividedHisto1D& other, Double_t scale);
     TH1D* GetQinv() const { return fQinvDist; }
     virtual ~FemtoSHCFQinv();
     ClassDef(FemtoSHCFQinv, 1)

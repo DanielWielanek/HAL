@@ -45,12 +45,11 @@ namespace Hal {
   public:
     FemtoEventBinsAna();
     virtual ~FemtoEventBinsAna();
+    virtual void AddCut(const Hal::Cut& cut, Option_t* opt = "");
     virtual void SetEventBinCut(const EventBinningCut& bin, Option_t* opt = "");
     FemtoEventBinsAna(const FemtoEventBinsAna& other);
     FemtoEventBinsAna& operator=(const FemtoEventBinsAna& other);
     ClassDef(FemtoEventBinsAna, 1)
-
-      virtual void AddCut(const Hal::Cut& cut, Option_t* opt = "");
   };
 }  // namespace Hal
 

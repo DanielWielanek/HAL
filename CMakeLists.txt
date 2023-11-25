@@ -8,7 +8,7 @@ enable_language(Fortran)
 #set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
 if(NOT DEFINED CMAKE_CXX_STANDARD)
-    Message(WARNING "CMAke standard not set, setting to 17")
+    #Message(WARNING "CMAke standard not set, setting to 17")
     Set(CMAKE_CXX_STANDARD 17)
 endif()
 

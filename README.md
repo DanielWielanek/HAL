@@ -28,3 +28,9 @@ EXAMPLES=ON - enable examples
 * Page @subpage femto_analysis
 * Page @subpage subpage_2
 * Page @subpage subpage_3
+
+
+## To do
+ * simplification of buffer class - using pointers instead of int maps?
+ * std::fuction for custom class cuts?
+ * generator of simple cuts on macro level

@@ -54,6 +54,7 @@
 #pragma link C++ class Hal::Femto3DCF + ;
 #pragma link C++ class Hal::Femto3DCFQinv + ;
 #pragma link C++ class Hal::FemtoDPhiDEta + ;
+#pragma link C++ class Hal::FemtoDebug2DCF + ;
 
 #pragma link C++ class Hal::CorrFit + ;
 #pragma link C++ class Hal::CorrFitFunc + ;
@@ -87,6 +88,7 @@
 #pragma link C++ class Hal::CorrFitHDFunc + ;
 #pragma link C++ class Hal::CorrFitHDFunc1D + ;
 #pragma link C++ class Hal::CorrFitHDFunc3D + ;
+//#pragma link C++ class Hal::CorrFitHDFuncSH + ;
 
 #pragma link C++ class Hal::CorrFit1DCF + ;
 #pragma link C++ class Hal::CorrFit3DCF + ;
@@ -148,8 +150,12 @@
 #pragma link C++ class Hal::FemtoImaging1D + ;
 #pragma link C++ class Hal::FemtoImaging3D + ;
 
+//#pragma link C++ class Hal::CorrFitSHCF + ;
+//#pragma link C++ class Hal::CorrFitSHFrom3D + ;
 #pragma link C++ class Hal::FemtoYlmIndexes + ;
 #pragma link C++ class Hal::FemtoSHCF + ;
+//#pragma link C++ class Hal::FemtoSHArray + ;
+//#pragma link C++ class Hal::CorrFitMaskHisto + ;
 
 #pragma link C++ class Hal::FemtoSHSlice + ;
 #pragma link C++ class Hal::FemtoYlmMath + ;
@@ -159,6 +165,8 @@
 #pragma link C++ class Hal::CorrFitMask1D + ;
 #pragma link C++ class Hal::CorrFitMask3D + ;
 #pragma link C++ class Hal::CorrFitMaskSH + ;
+
+//#pragma link C++ class Hal::CorrFitSHCFMultiDim + ;
 
 #endif
 

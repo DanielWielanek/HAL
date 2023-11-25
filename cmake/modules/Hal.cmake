@@ -98,9 +98,9 @@ Macro(PrintConfig)
       Set(INFOFLAG_2 "${ColourReset}")
     endif()
         message(STATUS "${INFOFLAG_1}Compilation with FairRoot: ${USE_FAIRROOT}${INFOFLAG_2}")
-        message(STATUS "${INFOFLAG_1}Build examples: ${USE_EXAMPLES}${INFOFLAG_2}")
-        message(STATUS "${INFOFLAG_1}Installation path: ${CMAKE_INSTALL_PREFIX}${INFOFLAG_2}")
-        message(STATUS "${INFOFLAG_1}C++ standard: ${CMAKE_CXX_STANDARD}${INFOFLAG_2}")
+        message(STATUS "${INFOFLAG_1}Build examples:            ${USE_EXAMPLES}${INFOFLAG_2}")
+        message(STATUS "${INFOFLAG_1}C++ standard:              ${CMAKE_CXX_STANDARD}${INFOFLAG_2}")
+        message(STATUS "${INFOFLAG_1}Installation path:         ${CMAKE_INSTALL_PREFIX}${INFOFLAG_2}")
 
 EndMacro()
 

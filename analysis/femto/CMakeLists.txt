@@ -44,6 +44,7 @@ ana/FemtoEventBinsAna.cxx
 base/FemtoDPhiDEta.cxx
 base/Femto1DCF.cxx
 base/Femto3DCF.cxx
+base/FemtoDebug2DCF.cxx
 base/Femto3DCFQinv.cxx
 base/FemtoFastCut.cxx
 base/FemtoFreezoutGenerator.cxx
@@ -61,6 +62,7 @@ base/shmath/FemtoSHSlice.cxx
 base/shmath/FemtoYlmIndexes.cxx
 base/shmath/FemtoYlmMath.cxx
 base/shmath/FemtoYlmSolver.cxx
+//base/shmath/FemtoSHArray.cxx
 
 corrfit/CorrFitDrawOptions.cxx
 corrfit/CorrFit.cxx
@@ -94,6 +96,8 @@ corrfit/mapgenerator_multidim/CorrFitParamsSetup.cxx
 corrfit/mapgenerator_multidim/CorrFitVerticalSlices.cxx
 corrfit/mapgenerator_multidim/CorrFit3DCFMultiDim.cxx
 corrfit/mapgenerator_multidim/FemtoDumpPairAnaMC.cxx
+//corrfit/mapgenerator_multidim/CorrFitSHCFMultiDim.cxx
+//corrfit/sh/CorrFitSHFrom3D.cxx
 
 corrfit/fittingfunctions/CorrFit1DCFSquare.cxx
 corrfit/fittingfunctions/CorrFit1DCFLorentz.cxx
@@ -108,12 +112,14 @@ corrfit/fittingfunctions/CorrFit3DCFGaussCross.cxx
 corrfit/fittingfunctions/CorrFit1DCFCumac.cxx
 corrfit/fittingfunctions/CorrFit3DCFBowlerSinyukov.cxx
 corrfit/fittingfunctions/CorrFit3DCFBowlerSinyukovExtra.cxx
+
 corrfit/corrfitopt/CorrFitHDFunc1D.cxx
 corrfit/corrfitopt/CorrFitHDFunc3D.cxx
 corrfit/corrfitopt/CorrFitHDFuncSH.cxx
 corrfit/corrfitopt/CorrFitMask1D.cxx
 corrfit/corrfitopt/CorrFitMask3D.cxx
 corrfit/corrfitopt/CorrFitMaskSH.cxx
+
 
 
 weights/FemtoFsiParsed.cxx
@@ -138,6 +144,7 @@ imaging/FemtoImaging.cxx
 imaging/FemtoImaging1D.cxx
 imaging/FemtoImaging3D.cxx
 base/FemtoSHCF.cxx
+//corrfit/CorrFitSHCF.cxx
 )
 
 
@@ -198,10 +205,7 @@ Set(Exe_Source
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    Set(DEPENDENCIES gsl gslcblas HalFeatures Tree HalAna HalFemto )
-    if(NOT DEFINED DISABLE_SQLITE)
-      #  Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
-    endif()
+    Set(DEPENDENCIES gsl gslcblas HalData HalFeatures Tree EG HalAna HalFemto)
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
 

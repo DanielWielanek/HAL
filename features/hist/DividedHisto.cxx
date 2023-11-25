@@ -1507,5 +1507,11 @@ namespace Hal {
   void DividedHisto1D::AddScaled(const DividedHisto1D& other, Double_t scale) {
     fNum->Add(other.fNum, scale);
     fDen->Add(other.fDen, scale);
+    TString className      = ClassName();
+    TString otherClassName = other.ClassName();
+    if (className != otherClassName) {
+      Hal::Cout::PrintInfo(
+        Form("%s %i: probably wrong AddScaled %s + %s", __FILE__, __LINE__, className.Data(), other.ClassName()), EInfo::kError);
+    }
   }
 }  // namespace Hal

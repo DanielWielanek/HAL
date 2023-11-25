@@ -135,7 +135,7 @@ namespace Hal {
 
   void Femto3DCFQinv::AddScaled(const Hal::DividedHisto1D& other, Double_t scale) {
     Hal::DividedHisto3D::AddScaled(other);
-    auto other2 = dynamic_cast<Hal::Femto3DCFQinv&>(other);
+    auto other2 = dynamic_cast<const Hal::Femto3DCFQinv&>(other);
     fPureNum->Add(other2.fPureNum, scale);
     fQinvNum->Add(other2.fQinvNum, scale);
   }

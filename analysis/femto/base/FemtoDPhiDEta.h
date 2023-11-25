@@ -15,40 +15,39 @@
  */
 
 namespace Hal {
-class FemtoDPhiDEta : public DividedHisto2D {
- protected:
-  virtual void SetAxisNames(TH1 *h);
+  class FemtoDPhiDEta : public DividedHisto2D {
+  protected:
+    virtual void SetAxisNames(TH1* h);
 
- public:
-  /**
-   * constructor for Streamer
-   */
-  FemtoDPhiDEta();
-  /**
-   * main constructor
-   * @param name
-   * @param phibins
-   * @param eta_bins
-   * @param min
-   * @param max
-   */
-  FemtoDPhiDEta(TString name, Int_t phibins, Int_t eta_bins, Double_t min,
-                    Double_t max);
-  /**
-   * draw this object
-   * @param opt if "num" then only numerator is drawn, if "den" only denominator
-   * is drawn, if "all" current pad is divided and numertor, by default when
-   * "all" is called then histograms are rebinned for performance optimization,
-   * this rebinning can be ingored by adding "hd", othrerwise only divided
-   * histogram is drawn denominator and CF are drawn
-   */
-  virtual void Draw(Option_t *opt);
-  virtual void Browse(TBrowser *b);
-  void FillNumObj(TObject *obj);
-  void FillDenObj(TObject *obj);
-  virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
-  virtual ~FemtoDPhiDEta();
-  ClassDef(FemtoDPhiDEta, 2)
-};
-}
+  public:
+    /**
+     * constructor for Streamer
+     */
+    FemtoDPhiDEta();
+    /**
+     * main constructor
+     * @param name
+     * @param phibins
+     * @param eta_bins
+     * @param min
+     * @param max
+     */
+    FemtoDPhiDEta(TString name, Int_t phibins, Int_t eta_bins, Double_t min, Double_t max);
+    /**
+     * draw this object
+     * @param opt if "num" then only numerator is drawn, if "den" only denominator
+     * is drawn, if "all" current pad is divided and numertor, by default when
+     * "all" is called then histograms are rebinned for performance optimization,
+     * this rebinning can be ingored by adding "hd", othrerwise only divided
+     * histogram is drawn denominator and CF are drawn
+     */
+    virtual void Draw(Option_t* opt);
+    virtual void Browse(TBrowser* b);
+    void FillNumObj(TObject* obj);
+    void FillDenObj(TObject* obj);
+    virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
+    virtual ~FemtoDPhiDEta();
+    ClassDef(FemtoDPhiDEta, 2)
+  };
+}  // namespace Hal
 #endif /* HALFEMTODPHIDETA_H_ */

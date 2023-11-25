@@ -32,8 +32,6 @@ namespace Hal {
     void VerifyOrder(TObjArray* obj);
     void ExtractComplexMonitor(CutMonitor* mon, TString& opt);
     void MakeComplexAxis(CutMonitor* mon, Int_t axis, Int_t opt);
-    Bool_t ExtractRegExp(const Cut& cut, Option_t* opt);
-    Bool_t ExtrackRegExp2(const Cut& cut, Option_t* opt);
     Bool_t ExtractRegExp(const CutMonitor& cut, Option_t* opt);
     Bool_t ExtractRegExp2(const CutMonitor& cut, Option_t* opt);
     Bool_t CheckTwoTracksOptions(const CutMonitor& cutmon, Option_t* opt);
@@ -193,8 +191,7 @@ namespace Hal {
      * @return true if passed false otherwise
      */
     inline Bool_t PassEvent(Event* event, const Int_t collection) {
-      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kEvent)]->UncheckedAt(collection))
-        ->PassEvent(event);
+      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kEvent)]->UncheckedAt(collection))->PassEvent(event);
     }
     /**
      * check track cuts
@@ -203,8 +200,7 @@ namespace Hal {
      * @return true if passed false otherwise
      */
     inline Bool_t PassTrack(Track* track, const Int_t collection) {
-      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTrack)]->UncheckedAt(collection))
-        ->PassTrack(track);
+      return ((CutCollection*) fCutContainers[static_cast<Int_t>(ECutUpdate::kTrack)]->UncheckedAt(collection))->PassTrack(track);
     };
     /**
      * check pair cuts

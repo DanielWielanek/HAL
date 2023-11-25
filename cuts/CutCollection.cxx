@@ -930,4 +930,5 @@ namespace Hal {
       return ECutUpdate::kTwoTrack;
     }
   }
+
 }  // namespace Hal

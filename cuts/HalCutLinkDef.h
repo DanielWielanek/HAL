@@ -6,6 +6,7 @@
 #pragma link off all typedefs;
 
 #ifdef __MAKECINT__
+#pragma link C++ namespace Hal::Cuts;
 #pragma link C++ class Hal::Cut + ;
 #pragma link C++ class Hal::SubCut + ;
 #pragma link C++ class Hal::SubCutHisto + ;

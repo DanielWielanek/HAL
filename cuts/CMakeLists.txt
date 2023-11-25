@@ -32,6 +32,7 @@ TrackCut.cxx
 TwoTrackCut.cxx
 CutsAndMonitors.cxx
 CutMonitorRequest.cxx
+CutFuncs.cxx
 #EVENT CUTS
 eventcuts/mc/EventImpactParameterCut.cxx
 eventcuts/EventModuloCut.cxx

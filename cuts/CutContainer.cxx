@@ -16,6 +16,8 @@
 #include <iostream>
 
 #include "Cout.h"
+#include "CutFuncs.h"
+#include "EventBinningCut.h"
 #include "EventComplexCut.h"
 #include "EventVirtualCut.h"
 #include "Package.h"
@@ -70,17 +72,12 @@ namespace Hal {
     TString option = opt;
     if (Hal::Std::FindParam(option, "im", kTRUE)) {
       Cut* tempcut = NULL;
-      Bool_t nulls = Hal::Std::FindParam(option, "null", kTRUE);
-      if (cut.InheritsFrom("Hal::TrackCut")) {
-        tempcut = new TrackImaginaryCut(static_cast<const TrackCut&>(cut));
-        if (nulls) static_cast<TrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
-      } else if (cut.InheritsFrom("Hal::EventCut")) {
-        tempcut = new EventImaginaryCut(static_cast<const EventCut&>(cut));
-        if (nulls) static_cast<EventImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
-      } else if (cut.InheritsFrom("Hal::TwoTrackCut")) {
-        tempcut = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
-        if (nulls) static_cast<TwoTrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
+      if (dynamic_cast<const Hal::EventBinningCut*>(&cut)) {
+        Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with im flag", __FILE__, __LINE__), EInfo::kError);
+        return;
       }
+      Bool_t nulls = Hal::Std::FindParam(option, "null", kTRUE);
+      tempcut      = Hal::Cuts::MakeCutCopy(cut, "im", kTRUE);
       if (tempcut == nullptr) return;
       tempcut->SetCollectionID(cut.GetCollectionID());
       AddCut(*tempcut, option);
@@ -88,32 +85,18 @@ namespace Hal {
       return;
     } else if (Hal::Std::FindParam(option, "re", kTRUE)) {
       Cut* tempcut = NULL;
-      if (cut.InheritsFrom("Hal::TrackCut")) {
-        tempcut = new TrackRealCut(static_cast<const TrackCut&>(cut));
-      } else if (cut.InheritsFrom("Hal::EventCut")) {
-        tempcut = new EventRealCut(static_cast<const EventCut&>(cut));
-      } else if (cut.InheritsFrom("Hal::TwoTrackCut")) {
-        tempcut = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
+      if (dynamic_cast<const Hal::EventBinningCut*>(&cut)) {
+        Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with re flag", __FILE__, __LINE__), EInfo::kError);
+        return;
       }
+      tempcut = Hal::Cuts::MakeCutCopy(cut, "re", kFALSE);
       if (tempcut == nullptr) return;
       tempcut->SetCollectionID(cut.GetCollectionID());
       AddCut(*tempcut, option);
       delete tempcut;
       return;
     }
-    if (ExtrackRegExp2(cut, opt)) {
-#ifdef HAL_DEBUG
-      Cout::PrintInfo("CutContainer using ExtrackRegExp2", EInfo::kDebugInfo);
-#endif
-      return;
-    }
-    if (ExtractRegExp(cut, opt)) {
-#ifdef HAL_DEBUG
-      Cout::PrintInfo("CutContainer using ExtrackRegExp", EInfo::kDebugInfo);
-#endif
-      return;
-    }
-    Int_t collection = cut.GetCollectionID();
+    auto collections = Hal::Cuts::GetCollectionsFlags(cut.GetCollectionID(), option);
     ECutUpdate place = cut.GetUpdateRatio();
     if (CheckTwoTracksOptions(cut, opt)) {
 #ifdef HAL_DEBUG
@@ -123,17 +106,7 @@ namespace Hal {
     }
     if (Hal::Std::FindParam(option, "bckg")) place = ECutUpdate::kTwoTrackBackground;
     if (fSize <= static_cast<Int_t>(place)) {
-      TString update_ratio_name;
-      switch (place) {
-        case ECutUpdate::kEvent: update_ratio_name = "event"; break;
-        case ECutUpdate::kTrack: update_ratio_name = "track"; break;
-        case ECutUpdate::kTwoTrack: update_ratio_name = "two_track"; break;
-        case ECutUpdate::kTwoTrackBackground: update_ratio_name = "two_track<background>"; break;
-        default:
-          Cout::PrintInfo(Form("Unknown update ratio for  %s", cut.CutName().Data()), EInfo::kLowWarning);
-          update_ratio_name = "unknown";
-          break;
-      }
+      TString update_ratio_name = Hal::Cuts::GetCutUpdateRatioName(place);
       Cout::PrintInfo(Form("CutContainer can't hold %s cut because it's update ratio (%s) is "
                            "too big, check fTries or call SetOption(backround) before adding cuts "
                            "or cut monitors",
@@ -143,16 +116,18 @@ namespace Hal {
       return;
     }
     // add to cut containers
-    if (GetCutContainer(place)->At(collection) == nullptr) {
-      CutCollection* subcont = new CutCollection(fCutContainers, fSize, place, collection);
-      subcont->AddCut(cut.MakeCopy(), opt);
-      GetCutContainer(place)->AddAtAndExpand(subcont, collection);
-    } else if ((collection >= GetCutContainer(place)->GetEntriesFast())) {
-      CutCollection* subcont = new CutCollection(fCutContainers, fSize, place, collection);
-      subcont->AddCut(cut.MakeCopy(), opt);
-      GetCutContainer(place)->AddAtAndExpand(subcont, collection);
-    } else {
-      ((CutCollection*) GetCutContainer(place)->UncheckedAt(collection))->AddCut(cut.MakeCopy(), opt);
+    for (auto collection : collections) {
+      if (GetCutContainer(place)->At(collection) == nullptr) {
+        CutCollection* subcont = new CutCollection(fCutContainers, fSize, place, collection);
+        subcont->AddCut(cut.MakeCopy(), opt);
+        GetCutContainer(place)->AddAtAndExpand(subcont, collection);
+      } else if ((collection >= GetCutContainer(place)->GetEntriesFast())) {
+        CutCollection* subcont = new CutCollection(fCutContainers, fSize, place, collection);
+        subcont->AddCut(cut.MakeCopy(), opt);
+        GetCutContainer(place)->AddAtAndExpand(subcont, collection);
+      } else {
+        ((CutCollection*) GetCutContainer(place)->UncheckedAt(collection))->AddCut(cut.MakeCopy(), opt);
+      }
     }
   }
 
@@ -352,22 +327,6 @@ namespace Hal {
     return pack;
   }
 
-  Bool_t CutContainer::ExtractRegExp(const Cut& cut, Option_t* opt) {
-    TString option = opt;
-    Int_t number, jump;
-    Bool_t found = Hal::Std::FindExpressionTwoValues(option, number, jump, kTRUE);
-    if (!found) return kFALSE;
-    Int_t begin_collection = cut.GetCollectionID();
-    Cut* temp_cut;
-    for (int i = 0; i < number; i++) {
-      temp_cut = cut.MakeCopy();
-      temp_cut->SetCollectionID(begin_collection + i * jump);
-      AddCut(*temp_cut, option.Data());
-      delete temp_cut;
-    }
-    return kTRUE;
-  }
-
   Bool_t CutContainer::ExtractRegExp(const CutMonitor& cut, Option_t* opt) {
     TString option = opt;
     TRegexp regexp("{[0-9]+x[0-9]+}");
@@ -460,17 +419,6 @@ namespace Hal {
   Int_t CutContainer::GetTwoTrackCollectionsBackgroundNo() const {
     if (fSize < 4) return 0;
     return GetCutContainer(ECutUpdate::kTwoTrackBackground)->GetEntriesFast();
-  }
-
-  Bool_t CutContainer::ExtrackRegExp2(const Cut& cut, Option_t* opt) {
-    TString option = opt;
-    Int_t number;
-    if (!Hal::Std::FindExpressionSingleValue(option, number, kTRUE)) return kFALSE;
-    Cut* temp_cut = cut.MakeCopy();
-    temp_cut->SetCollectionID(number);
-    AddCut(*temp_cut, option.Data());
-    delete temp_cut;
-    return kTRUE;
   }
 
   Bool_t CutContainer::ExtractRegExp2(const CutMonitor& monit, Option_t* opt) {

@@ -24,7 +24,7 @@ namespace Hal {
   EventBinningCut::EventBinningCut() : EventCut(1) {}
 
   Package* EventBinningCut::Report() const {
-    Package* report = new Package(this);
+    Package* report = fEventCut->Report();
     report->SetName("EventBinningCut");
 
     for (int i = 0; i < GetCutSize(); i++) {
@@ -53,6 +53,7 @@ namespace Hal {
     fStepsNo     = other.fStepsNo;
     fValuesUp    = other.fValuesUp;
     fTotalBinsNo = other.fTotalBinsNo;
+    fLastPassed  = other.fLastPassed;
     if (other.fEventCut) { fEventCut = (EventCut*) other.fEventCut->MakeCopy(); }
   }
 
@@ -151,8 +152,13 @@ namespace Hal {
 
   EventBinningCut* EventBinningCut::MakeCopy() const { return new EventBinningCut(*this); }
 
+  Bool_t EventBinningCut::Pass(Event* event) {
+    fLastPassed = fEventCut->Pass(event);
+    return fLastPassed;
+  }
+
   Int_t EventBinningCut::CheckBin(Event* event) {
-    if (fEventCut->Pass(event) == kFALSE) return -1;
+    if (!fLastPassed) return -1;
     Int_t res = 0;
 
     for (int iParam = 0; iParam < GetCutSize(); iParam++) {
@@ -165,12 +171,12 @@ namespace Hal {
       if (bin < 0 || bin >= int(fValuesUp[iParam].size())) { std::cout << " EER" << std::endl; }
       res = res + bin * fBinConv.at(iParam);
     }
-
     return res;
   }
 
   Bool_t EventBinningCut::Init(Int_t task_id) {
     if (fEventCut == nullptr) { return kFALSE; }
+    fEventCut->SetCollectionID(GetCollectionID());
     return fEventCut->Init(task_id);
   }
 
@@ -229,5 +235,7 @@ namespace Hal {
 
     // TODO Fix this
   }
+
+  TString EventBinningCut::CutName(Option_t* opt) const { return Form("Hal::EventBinningCut(%s)", fEventCut->CutName().Data()); }
 
 }  // namespace Hal

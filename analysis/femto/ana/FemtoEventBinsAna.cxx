@@ -16,19 +16,16 @@
 #include "EventVirtualCut.h"
 #include "FemtoPair.h"
 #include "MemoryMapManager.h"
+#include <TList.h>
 
 
 namespace Hal {
-  FemtoEventBinsAna::FemtoEventBinsAna() : FemtoBasicAna(), fEventBins(0) {}
+  FemtoEventBinsAna::FemtoEventBinsAna() : FemtoBasicAna(), fEventBinsMax(0) {}
 
-  FemtoEventBinsAna::~FemtoEventBinsAna() {
-    for (auto i : fEventBinningCuts) {
-      if (i) delete i;
-    }
-  }
+  FemtoEventBinsAna::~FemtoEventBinsAna() {}
 
   FemtoEventBinsAna::FemtoEventBinsAna(const FemtoEventBinsAna& other) :
-    FemtoBasicAna(other), fEventBins(other.fEventBins), fFakeEventBinID(other.fFakeEventBinID) {
+    FemtoBasicAna(other), fEventBinsMax(other.fEventBinsMax), fFakeEventBinID(other.fFakeEventBinID) {
     if (other.fEventBinningCuts.size()) {
       fEventBinningCuts.resize(other.fEventBinningCuts.size(), nullptr);
       for (unsigned int i = 0; i < other.fEventBinningCuts.size(); i++) {
@@ -38,71 +35,13 @@ namespace Hal {
   }
 
   Task::EInitFlag FemtoEventBinsAna::Init() {
-    if (fEventBinningCuts.size() < fCutContainer->GetEventCollectionsNo()) {
-      fEventBinningCuts.resize(fCutContainer->GetEventCollectionsNo(), nullptr);
-    }
-    int maxSize  = 0;
-    Bool_t ready = kTRUE;
+    if (!CheckBinningCuts()) return Task::EInitFlag::kFATAL;
+    fEventBinsMax = 0;
     for (unsigned int i = 0; i < fEventBinningCuts.size(); i++) {
-      if (fEventBinningCuts[i] == nullptr) {
-        Hal::Cout::PrintInfo(Form("%s %s null event binning cut at event col %i", __FILE__, __LINE__, i), EInfo::kError);
-        EventVirtualCut vcut;
-        fEventBinningCuts[i] = new EventBinningCut(vcut, {1});
-      }
-      if (!fEventBinningCuts[i]->Init(GetTaskID())) ready = kFALSE;
-      EventCut* cut = fEventBinningCuts[i]->GetCut();
-      cut->SetCollectionID(i);
-      AddCut(*cut);
-      delete cut;
-      maxSize = TMath::Max(maxSize, fEventBinningCuts[i]->GetBinsNo());
-    }
-    fEventBins = maxSize;
-
-    if (ready == kFALSE) {
-      Cout::PrintInfo(Form("Problem with initialization of  %s", fEventBinningCuts[0]->ClassName()), EInfo::kError);
-      return Task::EInitFlag::kFATAL;
+      fEventBinningCuts[i]->SetCollectionID(i);
+      fEventBinsMax = TMath::Max(fEventBinsMax, fEventBinningCuts[i]->GetBinsNo());
     }
     return FemtoBasicAna::Init();
-  }
-
-  void FemtoEventBinsAna::SetEventBinCut(const EventBinningCut& bin, Option_t* opt) {
-
-    TString option = opt;
-    int times = -1, jump = -1;
-    int single = -1;
-    std::vector<int> cols;
-
-    if (Hal::Std::FindExpressionSingleValue(option, single, kTRUE)) {
-      cols.push_back(single);
-    } else {
-      cols.push_back(bin.GetCollectionID());
-    }
-    if (Hal::Std::FindExpressionTwoValues(option, times, jump, kTRUE)) {
-      for (int i = 0; i < times; i++) {
-        cols.push_back(cols[cols.size() - 1] + jump);
-      }
-    }
-    int maxVal = 0;
-    for (auto col : cols) {
-      maxVal = TMath::Max(maxVal, col);
-    }
-    fEventBinningCuts.resize(maxVal, nullptr);
-
-
-    auto makeCopy = [&]() {
-      if (Hal::Std::FindParam(option, "re")) {
-        return bin.MakeCopyReal();
-      } else if (Hal::Std::FindParam(option, "im")) {
-        return bin.MakeCopyImg();
-      } else {
-        return bin.MakeCopy();
-      }
-    };
-
-    for (auto col : cols) {
-      fEventBinningCuts[col] = makeCopy();
-      fEventBinningCuts[col]->SetCollectionID(col);
-    }
   }
 
   void FemtoEventBinsAna::InitMemoryMap() {
@@ -119,16 +58,20 @@ namespace Hal {
       brName.push_back(Form("%s.", evName.Data()));
       brName.push_back(evName);
     }
-    fMemoryMap->Init(fEventBins, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
+    fMemoryMap->Init(fEventBinsMax, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
   }
 
   Int_t FemtoEventBinsAna::GetEventBin() { return fEventBinningCuts[fCurrentEventCollectionID]->CheckBin(fCurrentEvent); }
 
   Package* FemtoEventBinsAna::Report() const {
     Package* pack = FemtoBasicAna::Report();
+    TList* list   = new TList();
+    list->SetName("EventBinCuts");
     for (auto& rep : fEventBinningCuts) {
-      AddToAnaMetadata(pack, rep->Report());
+      list->AddLast(rep->Report());
     }
+    AddToAnaMetadata(pack, list);
+
     return pack;
   }
 
@@ -136,12 +79,11 @@ namespace Hal {
     const Int_t eventBin = GetEventBin();
     fFakeEventBinID      = fCurrentEventCollectionID;
     if (eventBin < 0) return;
-    fCurrentEventCollectionID = fEventCollectionsNo * fFakeEventBinID + eventBin;
-
+    fCurrentEventCollectionID = fEventBinsMax * fFakeEventBinID + eventBin;
     // we are using DummyEventCol to point event collection but still use
     // fCurrentEvent to numbering cuts
     fMemoryMap->PrepareMaps(fCurrentEventCollectionID);
-    CutCollection* cont = fCutContainer->GetEventCollection(0);
+    CutCollection* cont = fCutContainer->GetEventCollection(fFakeEventBinID);
     for (fTrackIndex = 0; fTrackIndex < fMemoryMap->GetTemporaryTotalTracksNo(); fTrackIndex++) {
       fCurrentTrack = fCurrentEvent->GetTrack(fTrackIndex);
       for (int j = 0; j < cont->GetNextNo(); j++) {
@@ -189,7 +131,7 @@ namespace Hal {
           if (other.fEventBinningCuts[i]) { fEventBinningCuts[i] = other.fEventBinningCuts[i]->MakeCopy(); }
         }
       }
-      fEventBins      = other.fEventBins;
+      fEventBinsMax   = other.fEventBinsMax;
       fFakeEventBinID = other.fFakeEventBinID;
     }
     return *this;
@@ -221,20 +163,8 @@ namespace Hal {
     return kTRUE;
   }
 
-  void FemtoEventBinsAna::AddCut(const Hal::Cut& cut, Option_t* opt) {
-    if (cut.GetUpdateRatio() == ECutUpdate::kEvent) {
-      TString option = opt;
-      if (option.Contains("im")) { /*imaginary cut */
-        FemtoBasicAna::AddCut(cut, "im");
-      } else if (option.Contains("re")) { /*real cut*/
-        FemtoBasicAna::AddCut(cut, "re");
-      } else { /* normal cut */
-        FemtoBasicAna::AddCut(cut);
-      }
-    } else {
-      FemtoBasicAna::AddCut(cut, opt);
-    }
-  }
+  void FemtoEventBinsAna::AddCut(const Hal::Cut& cut, Option_t* opt) { FemtoBasicAna::AddCut(cut, opt); }
+
   void FemtoEventBinsAna::ProcessFemtoPair() {
     fFemtoPair->Compute();
     Double_t weight = fCalc->GenerateWeight(fFemtoPair);
@@ -273,6 +203,49 @@ namespace Hal {
     Double_t weight = fCalc->GenerateWeight(fFemtoPair);
     fFemtoPair->SetWeight(weight);
     ((FemtoCorrFunc*) fCFs->At(fFakeEventBinID, fCurrentPairCollectionID))->FillDenCharged(fFemtoPair);
+  }
+
+  Bool_t FemtoEventBinsAna::CheckBinningCuts() {
+    /** match binned cut from cut container with vector **/
+    Int_t eventCol = fCutContainer->GetEventCollectionsNo();
+    fEventBinningCuts.resize(eventCol, nullptr);
+    auto FindBinCut = [&](int i) {
+      auto subCont  = fCutContainer->GetEventCollection(i);
+      int eventCuts = subCont->GetCutNo();
+      Bool_t found  = false;
+      for (int evCut = 0; evCut < eventCuts; evCut++) {
+        EventCut* ev = (EventCut*) subCont->GetCut(evCut);
+        if (dynamic_cast<EventBinningCut*>(ev)) {
+          if (fEventBinningCuts[i] == nullptr) {
+            fEventBinningCuts[i] = (EventBinningCut*) ev;
+            found                = true;
+          } else {
+            TString message =
+              Form("%s %i: double event binning cut at col %i, cut %s will be ingored", __FILE__, __LINE__, i, ev->ClassName());
+            Hal::Cout::PrintInfo(message, EInfo::kError);
+          }
+        }
+      }
+      return found;
+    };
+    for (int i = 0; i < eventCol; i++) {
+      auto subCont = fCutContainer->GetEventCollection(i);
+      FindBinCut(i);
+      if (fEventBinningCuts[i] == nullptr) {
+        TString message = Form("%s %i: missing bining cut at col=%i, automatic cut will be added", __FILE__, __LINE__, i);
+        Hal::Cout::PrintInfo(message, EInfo::kError);
+        Hal::EventVirtualCut v;
+        EventBinningCut ev(v, {1});
+        ev.SetCollectionID(i);
+        AddCut(ev);
+        bool found = FindBinCut(i);
+        if (!found) return kFALSE;
+      }
+    }
+    /**
+     * cuts are matched, check them and initialize
+     */
+    return kTRUE;
   }
 
 }  // namespace Hal

@@ -20,6 +20,7 @@ namespace Hal {
   class EventBinningCut : public EventCut {
   protected:
     Int_t fTotalBinsNo = {1};
+    Bool_t fLastPassed = {kFALSE};
     std::vector<Double_t> fMinTotal;
     std::vector<Double_t> fMaxTotal;
     std::vector<Int_t> fBinConv;
@@ -43,10 +44,11 @@ namespace Hal {
     Int_t GetBinsNo() const { return fTotalBinsNo; };
     void GetBinParam(Int_t bin, std::vector<Double_t>& mini, std::vector<Double_t>& maxi, std::vector<TString>& strings) const;
     virtual Package* Report() const;
-    virtual Bool_t Pass(Event* /*event*/) { return kTRUE; };
+    virtual Bool_t Pass(Event* event);
     virtual Int_t CheckBin(Event* event);
     virtual Bool_t Init(Int_t task_id);
     virtual void Print(Option_t* opt = 0) const;
+    virtual TString CutName(Option_t* opt = "") const;
     virtual ~EventBinningCut();
     ClassDef(EventBinningCut, 1)
   };

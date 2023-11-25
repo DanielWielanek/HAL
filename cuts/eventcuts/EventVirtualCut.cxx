@@ -10,7 +10,11 @@
 #include "EventVirtualCut.h"
 
 namespace Hal {
-  EventVirtualCut::EventVirtualCut() : EventCut(1) { SetUnitName("Virtual Unit [VU]"); }
+  EventVirtualCut::EventVirtualCut() : EventCut(1) {
+    SetUnitName("Virtual Unit [VU]");
+    SetValue(0);
+    SetMinMax(0, 0);
+  }
 
   EventVirtualCut::~EventVirtualCut() {}
 }  // namespace Hal

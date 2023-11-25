@@ -34,7 +34,6 @@ namespace Hal {
   void FemtoWielanekMapGenerator::Exec(Int_t pairs_per_bin) {
     fPairsNo           = pairs_per_bin;
     FemtoPairPRF* pair = new FemtoPairPRF();
-    TDatabasePDG* pdg  = TDatabasePDG::Instance();
     fWeightArray       = new Double_t[fPairsNo];
     fAngleArray        = new Double_t[fPairsNo];
     Double_t step      = TMath::Pi() / ((Double_t) fPairsNo);

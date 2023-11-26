@@ -129,7 +129,7 @@ namespace Hal {
 
   void FemtoDumpPairAna::FinishTask() {
     Hal::FemtoBasicAna::FinishTask();
-    Package* pack = Report();
+    // Package* pack = Report();
     GoToDir("HalInfo");
     fGrouping.Clone()->Write();
     gFile->cd();

@@ -66,7 +66,7 @@ namespace Hal {
 
   void FemtoWeightGenerator::SetPairTypeFromPair(FemtoPair* pair) { fPairType = GetPairTypeFromPair(pair); }
 
-  void FemtoWeightGenerator::Print(Option_t* option) const {
+  void FemtoWeightGenerator::Print(Option_t* /*option*/) const {
     Cout::Text(ClassName(), "L");
     Cout::Text(Femto::PairTypeToString(fPairType), "L");
   }

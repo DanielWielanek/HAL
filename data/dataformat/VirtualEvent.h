@@ -21,7 +21,7 @@ namespace Hal {
 
   class VirtualEventInterface : public EventInterface {
   protected:
-    virtual void ConnectToTreeInternal(eMode mode) {};
+    virtual void ConnectToTreeInternal(eMode /*mode*/) {};
 
   public:
     VirtualEventInterface() {};

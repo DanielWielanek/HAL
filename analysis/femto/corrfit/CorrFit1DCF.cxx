@@ -223,7 +223,7 @@ namespace Hal {
   Double_t CorrFit1DCF::Eval(Double_t q) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(q);
     return CalculateCF(&q, fTempParamsEval);
-  };
+  }
 
   void CorrFit1DCF::EstimateActiveBins() {
     fActiveBins = 0;

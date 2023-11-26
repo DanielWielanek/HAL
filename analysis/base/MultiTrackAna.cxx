@@ -54,7 +54,7 @@ namespace Hal {
 
   MultiTrackAna::~MultiTrackAna() {}
 
-  MultiTrackAna::MultiTrackAna(ECutUpdate tiers) : TrackAna(tiers) {};
+  MultiTrackAna::MultiTrackAna(ECutUpdate tiers) : TrackAna(tiers) {}
 
   MultiTrackAna::MultiTrackAna() : MultiTrackAna(ECutUpdate::kTwoTrack) {}
 

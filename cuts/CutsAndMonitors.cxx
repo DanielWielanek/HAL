@@ -144,7 +144,7 @@ namespace Hal {
     TString opt = static_cast<TObjString*>(fCutsOptions->UncheckedAt(i))->GetString();
     if (opt == "" || fGlobalOptionCuts == "") { return opt + fGlobalOptionCuts; }
     return opt + "+" + fGlobalOptionCuts;
-  };
+  }
 
   const CutMonitor* CutsAndMonitors::GetMonitor(Int_t i) const { return static_cast<CutMonitor*>(fCutMonitors->UncheckedAt(i)); }
 
@@ -152,7 +152,7 @@ namespace Hal {
     TString opt = static_cast<TObjString*>(fCutMonitorsOptions->UncheckedAt(i))->GetString();
     if (opt == "" || fGlobalOptionsCutMonitors == "") { return opt + fGlobalOptionsCutMonitors; }
     return opt + "+" + fGlobalOptionsCutMonitors;
-  };
+  }
 
   CutsAndMonitors::~CutsAndMonitors() {
     if (fCutMonitors) delete fCutMonitors;

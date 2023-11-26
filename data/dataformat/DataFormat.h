@@ -148,7 +148,7 @@ namespace Hal {
     const UInt_t kTPC = 38496;
     const UInt_t kTOF = 38463;
     const UInt_t kSTS = 37360;
-  };  // namespace DetectorID
+  }  // namespace DetectorID
 }  // namespace Hal
 
 #endif /* HALFEMTO_DATAFORMAT_HALDATAFORMAT_H_ */

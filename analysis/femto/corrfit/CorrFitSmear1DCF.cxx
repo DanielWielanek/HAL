@@ -245,7 +245,7 @@ namespace Hal {
     return params[1] * TMath::Exp(-(x[0] * x[0] / (2.0 * params[0] * params[0])));
   }
 
-  Double_t CorrFitSmear1DCF::CorrFunc(Double_t* x, Double_t* params) const { return fSpline->Eval(x[0]); }
+  Double_t CorrFitSmear1DCF::CorrFunc(Double_t* x, Double_t* /*params*/) const { return fSpline->Eval(x[0]); }
 
   Double_t CorrFitSmear1DCF::Splot(Double_t* x, Double_t* params) const {
     Double_t kstar = x[0] + params[0];
@@ -341,7 +341,7 @@ namespace Hal {
         Double_t qsim  = x->GetBinCenter(iSim);
         Double_t sigma = smearfunc->Eval(qsim);
         for (int jReco = 1; jReco <= nbins; jReco++) {
-          Double_t qreco       = x->GetBinCenter(jReco);
+          // Double_t qreco       = x->GetBinCenter(jReco);
           Double_t density     = fFunc->Eval(sigma);
           smearMT[jReco][iSim] = density;
         }

@@ -104,7 +104,8 @@ namespace Hal {
     TCanvas* cden = new TCanvas("Cden");
     fDenProp->DrawClone("colz");
     cden->SaveAs(Form("%s/den.root", path.Data()));
-    delete cnum, cden;
+    delete cnum;
+    delete cden;
     gROOT->SetBatch(batch);
     row4.AddContent(cell1);
     row4.AddContent(cell2);
@@ -223,6 +224,7 @@ namespace Hal {
   }
 
   FemtoCorrFunc2D::FemtoCorrFunc2D(const FemtoCorrFunc2D& other) :
+    Hal::FemtoCorrFunc(other),
     fLabelX(other.fLabelX),
     fLabelY(other.fLabelY),
     fRangeX(other.fRangeX),

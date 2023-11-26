@@ -14,7 +14,7 @@ namespace Hal {
 
   VirtualEvent::VirtualEvent() : Event("VirtualTrack"), fVirtualEvent(NULL) {}
 
-  void VirtualEvent::Update(Hal::EventInterface* interface) {
+  void VirtualEvent::Update(Hal::EventInterface* /*interface*/) {
     if (fVirtualEvent) {
       ShallowCopyEvent(fVirtualEvent);
       fTotalTracksNo = fVirtualEvent->GetTotalTrackNo();

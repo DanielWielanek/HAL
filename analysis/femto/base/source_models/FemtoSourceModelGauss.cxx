@@ -117,7 +117,7 @@ namespace Hal {
 
   FemtoSourceModel* FemtoSourceModelGauss3DCross::MakeCopy() const { return new FemtoSourceModelGauss3DCross(*this); }
 
-  void FemtoSourceModelGauss3DCross::GenerateCoordinates(FemtoPair* Pair) {
+  void FemtoSourceModelGauss3DCross::GenerateCoordinates(FemtoPair* /*Pair*/) {
     // fRout       = fRandom->Gaus(0, GetParameter(0) * TMath::Sqrt2());
     // fRside      = fRandom->Gaus(0, GetParameter(1) * TMath::Sqrt2());
     // fRlong      = fRandom->Gaus(0, GetParameter(2) * TMath::Sqrt2());

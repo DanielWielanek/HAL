@@ -11,7 +11,7 @@
 
 namespace Hal {
 
-  FemtoSourceDensity::FemtoSourceDensity(const FemtoSourceDensity& other) {
+  FemtoSourceDensity::FemtoSourceDensity(const FemtoSourceDensity& other) : TObject(other) {
     fNParams = other.fNParams;
     fAna1d   = other.fAna1d;
     fAna3d   = other.fAna3d;

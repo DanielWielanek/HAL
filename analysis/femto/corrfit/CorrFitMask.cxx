@@ -19,6 +19,6 @@ namespace Hal {
 
   CorrFitMask::CorrFitMask() {}
 
-  void CorrFitMask::ApplyThreshold(const TH1& h, Double_t threshold) {}
+  void CorrFitMask::ApplyThreshold(const TH1& /*h*/, Double_t /*threshold*/) {}
 
 }  // namespace Hal

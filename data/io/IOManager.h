@@ -40,7 +40,7 @@ namespace Hal {
     void SetFlag(EFlag Flag = EFlag::kNull) { fFlag = Flag; }
     void SetBranchName(const TString name) { fBrName = name; }
     TObject* GetPointer() const { return fPointer; }
-    void SetPointer(TObject* pointer = nullptr) { pointer = fPointer; }
+    void SetPointer(TObject* pointer = nullptr) { fPointer = pointer; }
     virtual ~BranchInfo() {};
     ClassDef(BranchInfo, 1)
   };

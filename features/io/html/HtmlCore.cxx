@@ -157,7 +157,7 @@ namespace Hal {
   }
   **/
     return;
-  };
+  }
 
   Bool_t HtmlCore::CanBeTableElement(TObject* /*obj*/) { return kFALSE; }
 

@@ -236,7 +236,7 @@ namespace Hal {
       list->Add(fArray[i]);
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_1_3D<T>::HistogramManager_1_3D(const HistogramManager_1_3D& manager) :
@@ -355,7 +355,7 @@ namespace Hal {
       list->Add(fArray[i]);
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_2_1D<T>::HistogramManager_2_1D(const HistogramManager_2_1D& manager) :
@@ -758,7 +758,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_3_3D<T>::HistogramManager_3_3D(const HistogramManager_3_3D& manager) :
@@ -938,7 +938,7 @@ namespace Hal {
       }
     }
     return list;
-  };
+  }
 
   template<class T>
   HistogramManager_4_2D<T>::HistogramManager_4_2D(const HistogramManager_4_2D& manager) :

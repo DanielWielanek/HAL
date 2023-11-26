@@ -445,7 +445,7 @@ namespace Hal {
       vertices[fFreePars][j] = fParameters[fNonConstMap[0]].GetMax();
     }
 
-    auto copyPars = [&](const Hal::Array_1<Double_t>& val) {
+    auto copyPars = [&](const Hal::Array_1<Double_t>& /*val*/) {
       for (int i = 0; i < fFreePars; i++) {
         //    fTempParams[fNonConstMap[i]] = fParameters[i].FindClosest(val[i]);
       }

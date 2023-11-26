@@ -70,7 +70,7 @@ namespace HalOTF {
     fCharge       = part->Charge() * 3;
   }
 
-  void Reader::Exec(Option_t* opt) {
+  void Reader::Exec(Option_t* /*opt*/) {
     if (fOwner) {
       fRecoEvent->Clear();
       fMcEvent->Clear();

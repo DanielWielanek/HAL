@@ -28,7 +28,7 @@ namespace Hal {
 
   QAPlot::QAPlot() : fUpdate(ECutUpdate::kNo), fReport(nullptr) {}
 
-  QAPlot::QAPlot(ECutUpdate upd) : QAPlot("", upd) {};
+  QAPlot::QAPlot(ECutUpdate upd) : QAPlot("", upd) {}
 
   QAPlot::~QAPlot() {
     if (fReport) delete fReport;

@@ -41,17 +41,17 @@ namespace HalOTF {
 
   TFile* IOManager::GetInFile() { return fInFile; }
 
-  void IOManager::RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
-    if (toFile) { TBranch* br = fOutTree->Branch(name, obj); }
+  void IOManager::RegisterInternal(const char* name, const char* /*folderName*/, TNamed* obj, Bool_t toFile) {
+    if (toFile) { fOutTree->Branch(name, obj); }
   }
 
-  void IOManager::RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
-    if (toFile) { TBranch* br = fOutTree->Branch(name, obj); }
+  void IOManager::RegisterInternal(const char* name, const char* /*Foldername*/, TCollection* obj, Bool_t toFile) {
+    if (toFile) { fOutTree->Branch(name, obj); }
   }
 
-  void IOManager::SetInChain(TChain* tempChain, Int_t ident) {}
+  void IOManager::SetInChain(TChain* /*tempChain*/, Int_t /*ident*/) {}
 
-  Int_t IOManager::GetEntry(Int_t i, Int_t flag) {
+  Int_t IOManager::GetEntry(Int_t i, Int_t /*flag*/) {
     if (i < fEntries) return 1;
     return -1;
   }

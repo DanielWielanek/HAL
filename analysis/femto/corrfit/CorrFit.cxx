@@ -222,7 +222,7 @@ namespace Hal {
   void CorrFit::CheckOrder() {
     if (fFitOrder.size() == 0) {
       fFitOrder.resize(fParametersNo);
-      for (unsigned int i = 0; i < fParametersNo; i++) {
+      for (int i = 0; i < fParametersNo; i++) {
         fFitOrder[i] = i;
       }
     }

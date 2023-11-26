@@ -28,7 +28,11 @@ namespace Hal {
   }
 
   FemtoWeightGeneratorResidual::FemtoWeightGeneratorResidual(const FemtoWeightGeneratorResidual& other) :
-    fMainWeight(nullptr), fResPair(nullptr), fWeightType(eWeightType::kOther), fComplexFormat(kFALSE) {}
+    FemtoWeightGenerator(other),
+    fMainWeight(nullptr),
+    fResPair(nullptr),
+    fWeightType(eWeightType::kOther),
+    fComplexFormat(kFALSE) {}
 
   Double_t FemtoWeightGeneratorResidual::GenerateWeight(FemtoPair* pair) {
     McTrack *tr1, *tr2;
@@ -104,8 +108,6 @@ namespace Hal {
   }
 
   void FemtoWeightGeneratorResidual::SetPairData(McTrack* track1, McTrack* track2) {
-    const TLorentzVector& p1  = track1->GetMomentum();
-    const TLorentzVector& p2  = track2->GetMomentum();
     const TLorentzVector& pt1 = track1->GetMomentum();
     const TLorentzVector& pt2 = track2->GetMomentum();
     fResPair->SetPdg1(track1->GetPdg());

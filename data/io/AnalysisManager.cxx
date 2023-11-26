@@ -163,9 +163,9 @@ namespace Hal {
     if (fField) delete fField;
   }
 
-  void AnalysisManager::AddReader(Reader* reader) {}
+  void AnalysisManager::AddReader(Reader* /*reader*/) {}
 
-  void AnalysisManager::AddTrigger(TriggerTask* trigger) {}
+  void AnalysisManager::AddTrigger(TriggerTask* /*trigger*/) {}
 
   void AnalysisManager::DoStep(Int_t entry) {
     if (fTriggersEnabled) {

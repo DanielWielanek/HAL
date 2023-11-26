@@ -26,8 +26,8 @@ namespace Hal {
 
   public:
     CorrFitMask();
-    virtual Bool_t AreCompatible(TObject* cf) const { return kFALSE; }
-    virtual void Reset(Bool_t state = kTRUE) {};
+    virtual Bool_t AreCompatible(TObject* /*cf*/) const { return kFALSE; }
+    virtual void Reset(Bool_t /*state*/ = kTRUE) {};
     virtual void ApplyThreshold(const TH1& h, Double_t threshold = 0);
     virtual Bool_t Init() = 0;
     Int_t GetActiveBins() const { return fActiveBins; };

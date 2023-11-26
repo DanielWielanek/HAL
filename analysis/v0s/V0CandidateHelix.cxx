@@ -15,7 +15,7 @@
 namespace Hal {
   V0CandidateHelix::V0CandidateHelix() {}
 
-  void V0CandidateHelix::MakeV0(Double_t mPos, Double_t mNeg, Int_t pidThis, Int_t pidPos, Int_t pidNeg) {
+  void V0CandidateHelix::MakeV0(Double_t /*mPos*/, Double_t /*mNeg*/, Int_t pidThis, Int_t pidPos, Int_t pidNeg) {
     fV0Track.SetPosId(GetTrack1()->GetThisID());
     fV0Track.SetNegId(GetTrack2()->GetThisID());
     const Helix& helix1 = static_cast<ExpTrackHelix*>(GetTrack1())->GetHelix();

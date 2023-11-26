@@ -206,29 +206,29 @@ ClassImp(FemtoWeightGeneratorLednicky)
 
   bool FemtoWeightGeneratorLednicky::SetPid(const int aPid1, const int aPid2) {
     // set calculated system for basing on particles' pids
-    static const int ksPi0Pid  = 111;
-    static const int ksPionPid = 211;
-    static const int ksK0Pid   = 130;
-    static const int ksKPid    = 321;
-    static const int ksNeutPid = 2112;
-    static const int ksProtPid = 2212;
-    static const int ksLamPid  = 3122;
+    /* static const int ksPi0Pid  = 111;
+     static const int ksPionPid = 211;
+     static const int ksK0Pid   = 130;
+     static const int ksKPid    = 321;
+     static const int ksNeutPid = 2112;
+     static const int ksProtPid = 2212;
+     static const int ksLamPid  = 3122;*/
     //  static const int sLamLamPid=3122;
 
     // cout << "Setting PID to " << aPid1 << " " << aPid2 << endl;
 
-    int tPidl, tPidh;
+    // int tPidl, tPidh;
     int tChargeFactor = 1;
 
     if (abs(aPid1) < abs(aPid2)) {
       if (aPid1 < 0) tChargeFactor = -1;
-      tPidl = aPid1 * tChargeFactor;
-      tPidh = aPid2 * tChargeFactor;
+      //  tPidl = aPid1 * tChargeFactor;
+      //  tPidh = aPid2 * tChargeFactor;
       fSwap = false;
     } else {
       if (aPid2 < 0) tChargeFactor = -1;
-      tPidl = aPid2 * tChargeFactor;
-      tPidh = aPid1 * tChargeFactor;
+      //  tPidl = aPid2 * tChargeFactor;
+      //  tPidh = aPid1 * tChargeFactor;
       fSwap = true;
     }
 
@@ -490,6 +490,7 @@ ClassImp(FemtoWeightGeneratorLednicky)
     case Femto::EPairType::kPionZeroPionZero: {SetFlags(1, 0, 0);} break;
     case Femto::EPairType::kNeutronLambda: {SetFlags(0, 1, 0);} break;
         // clang-format on
+      default: break;
     }
     FsiInit();
     SetPid(ktPid1, ktPid2);
@@ -805,7 +806,7 @@ ClassImp(FemtoWeightGeneratorLednicky)
     return Femto::EPairType::kUnknown;
   }
 
-  void FemtoWeightGeneratorLednicky::Print(Option_t * option) const {
+  void FemtoWeightGeneratorLednicky::Print(Option_t * /*option*/) const {
     Cout::Text(ClassName(), "L");
     Cout::Text(Femto::PairTypeToString(fPairType), "L");
     if (fIqs == 1) {
@@ -840,7 +841,7 @@ ClassImp(FemtoWeightGeneratorLednicky)
 
   void FemtoWeightGeneratorLednicky::FsiSetKpKmModelType() {
     //    setkpkmmodel(fKpKmModel, fPhi_OffOn);
-  };
+  }
 
   Bool_t FemtoWeightGeneratorLednicky::IsPairSupported(Femto::EPairType type) const {
     if (static_cast<int>(type) <= 200) return kTRUE;

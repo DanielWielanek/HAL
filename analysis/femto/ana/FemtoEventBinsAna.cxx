@@ -229,7 +229,6 @@ namespace Hal {
       return found;
     };
     for (int i = 0; i < eventCol; i++) {
-      auto subCont = fCutContainer->GetEventCollection(i);
       FindBinCut(i);
       if (fEventBinningCuts[i] == nullptr) {
         TString message = Form("%s %i: missing bining cut at col=%i, automatic cut will be added", __FILE__, __LINE__, i);

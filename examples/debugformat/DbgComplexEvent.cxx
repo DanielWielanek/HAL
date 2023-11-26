@@ -26,7 +26,6 @@ namespace HalDbg {
     fTracks->Clear();
     fTotalTracksNo = fRealEvent->GetTotalTrackNo();
     fTracks->ExpandCreateFast(fTotalTracksNo);
-    RecoEventInterface* s = (RecoEventInterface*) interface;
     for (Int_t i = 0; i < fTotalTracksNo; i++) {
       Hal::ComplexTrack* track = (Hal::ComplexTrack*) fTracks->UncheckedAt(i);
       track->ResetTrack(i, this);

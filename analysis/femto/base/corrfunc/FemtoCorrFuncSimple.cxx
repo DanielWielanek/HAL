@@ -13,7 +13,7 @@
 namespace Hal {
   FemtoCorrFuncSimple::FemtoCorrFuncSimple() : FemtoCorrFunc0D() {}
 
-  FemtoCorrFuncSimple::FemtoCorrFuncSimple(const DividedHisto1D& h) : FemtoCorrFunc0D(h, 1) {};
+  FemtoCorrFuncSimple::FemtoCorrFuncSimple(const DividedHisto1D& h) : FemtoCorrFunc0D(h, 1) {}
 
   FemtoCorrFuncSimple::FemtoCorrFuncSimple(const FemtoCorrFuncSimple& other) : FemtoCorrFunc0D(other) {}
 

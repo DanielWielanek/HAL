@@ -98,7 +98,7 @@ namespace Hal {
       fDrawOptionSet = kTRUE;
     }
     Paint(kFALSE, kTRUE);
-  };
+  }
 
   void CorrFitFunc::SetDrawOption(const CorrFitDrawOptions& options) {
     if (fDrawOptionSet || fDrawFunc.size() > 0) {

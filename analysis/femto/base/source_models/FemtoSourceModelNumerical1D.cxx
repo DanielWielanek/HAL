@@ -70,7 +70,7 @@ namespace Hal {
     fRawDistribution->SetDirectory(nullptr);
   }
 
-  Double_t FemtoSourceDensityNumerical1D::GetProbDensity1d(const Double_t r, const Double_t* params) const {
+  Double_t FemtoSourceDensityNumerical1D::GetProbDensity1d(const Double_t r, const Double_t* /*params*/) const {
     Int_t bin = fRawDistribution->GetXaxis()->FindBin(r);
     return fRawDistribution->GetBinContent(bin);
   }

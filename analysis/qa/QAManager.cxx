@@ -62,7 +62,7 @@ namespace Hal {
 
   void QAManager::SetRecoTrackCut(TrackAna* /*ana*/, ePidCut /*cut*/, eParticleType /*primary*/, TString /*flag*/) {}
 
-  void QAManager::SetEventCut(TrackAna* /*ana*/, Int_t /*col*/, TString /*flag*/) {};
+  void QAManager::SetEventCut(TrackAna* /*ana*/, Int_t /*col*/, TString /*flag*/) {}
 
   AnalysisManager* QAManager::GetAna(TString outFile, TString simFile, TString recoFile) {
     AnalysisManager* run = new AnalysisManager();
@@ -73,7 +73,7 @@ namespace Hal {
     return run;
   }
 
-  void QAManager::SetPairCut(TwoTrackAna* /*ana*/, ePidCut /*pid1*/, ePidCut /*pid2*/) {};
+  void QAManager::SetPairCut(TwoTrackAna* /*ana*/, ePidCut /*pid1*/, ePidCut /*pid2*/) {}
 
   QAManager::ePidCut QAManager::ToPid(Int_t i) {
     switch (i) {

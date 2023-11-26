@@ -44,7 +44,7 @@ namespace Hal {
     void InitializeYlms();
     ClassDef(FemtoYlmMath, 1)
   };
-};  // namespace Hal
+}  // namespace Hal
 
 
 #endif /* HAL_ANALYSIS_FEMTO_BASE_SHMATH_FEMTOYLMMATH_H_ */

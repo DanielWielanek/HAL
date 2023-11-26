@@ -124,7 +124,7 @@ namespace Hal {
     h->GetYaxis()->SetTitle("Yval");
   }
 
-  TObject* FemtoDebug2DCF::Clone(const char* c) const { return new FemtoDebug2DCF(*this); }
+  TObject* FemtoDebug2DCF::Clone(const char* /*c*/) const { return new FemtoDebug2DCF(*this); }
 
   FemtoDebug2DCF::FemtoDebug2DCF(const FemtoDebug2DCF& other) : Hal::DividedHisto2D(other) {}
 

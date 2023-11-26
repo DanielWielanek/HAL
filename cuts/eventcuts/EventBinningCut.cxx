@@ -157,7 +157,7 @@ namespace Hal {
     return fLastPassed;
   }
 
-  Int_t EventBinningCut::CheckBin(Event* event) {
+  Int_t EventBinningCut::CheckBin(Event* /*event*/) {
     if (!fLastPassed) return -1;
     Int_t res = 0;
 
@@ -236,6 +236,8 @@ namespace Hal {
     // TODO Fix this
   }
 
-  TString EventBinningCut::CutName(Option_t* opt) const { return Form("Hal::EventBinningCut(%s)", fEventCut->CutName().Data()); }
+  TString EventBinningCut::CutName(Option_t* /*opt*/) const {
+    return Form("Hal::EventBinningCut(%s)", fEventCut->CutName().Data());
+  }
 
 }  // namespace Hal

@@ -89,8 +89,8 @@ namespace Dbg {
   };
 
   class McEvent : public TNamed {
-    TClonesArray* fTracks;
     Double_t fB;
+    TClonesArray* fTracks;
     Int_t fEventId = {0};
 
   public:

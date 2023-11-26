@@ -75,7 +75,7 @@ namespace Hal {
     TString MedBlue() { return "med_blue"; }
     TString DarkBlue() { return "dark_blue"; }
     TString LightGreen() { return "green_"; }
-    TString Green() { return "med_green"; };  // not exist!
+    TString Green() { return "med_green"; }  // not exist!
     TString DarkGreen() { return "dark_green"; }
     TString Yellow() { return "yellow_"; }
     TString Grey() { return "grey_"; }
@@ -86,7 +86,7 @@ namespace Hal {
     TString LegendStyle() { return LightGreen(); }
     TString TitleStyle() { return DarkBlue(); }
     TString ExtraStyle() { return MedBlue(); }
-    TString TaskStyle() { return Red(); };
+    TString TaskStyle() { return Red(); }
     TString ExpandableStyle() { return Yellow(); }
     TString SummaryStyle() { return Violet(); }
   }  // namespace HtmlTableRowClass

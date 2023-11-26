@@ -90,7 +90,7 @@ namespace OTF {
     Double_t fB;
 
   public:
-    McEvent() : fB(0), fTracks(new TClonesArray("OTF::McTrack")) {};
+    McEvent() : fTracks(new TClonesArray("OTF::McTrack")), fB(0) {};
     void SetB(Double_t b) { fB = b; }
     void Clear(Option_t* /*option*/ = "") { fTracks->Clear(); };
     void AddTrack(const McTrack& track);

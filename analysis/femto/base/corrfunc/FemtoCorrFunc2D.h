@@ -38,7 +38,7 @@ namespace Hal {
     virtual std::pair<Double_t, Double_t> GetPairValDenMix(FemtoPair* pair) const { return GetPairValNum(pair); };
     Int_t ConvertVal(std::pair<Double_t, Double_t> vals) const;
     FemtoCorrFunc2D(const DividedHisto1D* h, TString labelX = "", TString labelY = "", Int_t sizeX = 0, Int_t sizeY = 0);
-    virtual Bool_t Angle(Char_t opt) const { return kFALSE; }
+    virtual Bool_t Angle(Char_t /*opt*/) const { return kFALSE; }
 
   public:
     FemtoCorrFunc2D() : FemtoCorrFunc() {};

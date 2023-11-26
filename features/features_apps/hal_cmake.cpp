@@ -158,7 +158,7 @@ void UpdateLib() {
     return;
   }
   MakeLinkDef(linkdef, cppFiles);
-};
+}
 
 void SetNames(TString& plusPath,
               TString& pattern,
@@ -274,7 +274,7 @@ std::vector<TString> ParseHeader(TString sourceName) {
     };
   }
   return res;
-};
+}
 
 void MakeLinkDef(TString name, std::vector<TString> sources) {
   std::ofstream linkdef;
@@ -295,7 +295,7 @@ void MakeLinkDef(TString name, std::vector<TString> sources) {
   linkdef << "" << std::endl;
   linkdef << "#endif" << std::endl;
   linkdef.close();
-};
+}
 
 void PrepareMonitor(TString name, TString type1, TString type2) {
   TString baseClassName;

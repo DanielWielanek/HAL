@@ -42,7 +42,7 @@ namespace HalUni {
     virtual void FillTrackInterface(Hal::TrackInterface* track, Int_t index);
     TObject* GetRawEventPointer() const { return fEvent; };
     virtual TObject* GetRawTrackPointer(Int_t index) const { return fEvent->GetParticle(index); };
-    virtual void Clear(Option_t* opt = "") { fEvent->Clear(); };
+    virtual void Clear(Option_t* /*opt*/ = "") { fEvent->Clear(); };
     /** GETTER SETTER SECTION*/
     virtual void SetB(Double_t b) { fEvent->SetB(b); };
     virtual void SetVertex(Double_t /*x*/, Double_t /*y*/, Double_t /*z*/) {};

@@ -263,7 +263,7 @@ namespace Hal {
       TString regstring = text(match);
       if (regstring > 0) newword.Remove(text.Index(match), regstring.Length());
       return newword;
-    };
+    }
 
     TString RemoveNChars(TString str, Int_t n, Char_t opt) {
       Int_t lenght = str.Length();

@@ -77,9 +77,9 @@ namespace Hal {
     }
   }
 
-  void CorrFitDumpedPairAnaVertical::RunSignalBackgroundPairs(Int_t nEvents) {}
+  void CorrFitDumpedPairAnaVertical::RunSignalBackgroundPairs(Int_t /*nEvents*/) {}
 
-  void CorrFitDumpedPairAnaVertical::RunBackgroundPairs(Int_t nEvents) {}
+  void CorrFitDumpedPairAnaVertical::RunBackgroundPairs(Int_t /*nEvents*/) {}
 
   Bool_t CorrFitDumpedPairAnaVertical::Connect() {
     TObjArray* obj = fTree->GetListOfBranches();

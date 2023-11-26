@@ -19,10 +19,10 @@ namespace Hal {
 
   class CorrFit3DCFMultiDim : public CorrFit3DCF {
   protected:
-    Int_t fParameterIDs[3];
-    Int_t fFunctorXbins, fFunctorYbins;
-    CorrFitFunctor* fFunctor;
-    mutable Array_1<Float_t>* fData;
+    Int_t fParameterIDs[3] = {0, 0, 0};
+    Int_t fFunctorXbins = {0}, fFunctorYbins = {0};
+    CorrFitFunctor* fFunctor        = {nullptr};
+    mutable Array_1<Float_t>* fData = {nullptr};
     virtual void Check();
     virtual void RecalculateFunction() const;
     virtual void PrepareMinimizer();

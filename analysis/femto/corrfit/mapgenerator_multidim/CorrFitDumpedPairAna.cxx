@@ -50,41 +50,58 @@ namespace Hal {
   CorrFitDumpedPairAna::CorrFitDumpedPairAna(Int_t jobid, Int_t maps_perAna) :
     TObject(),
     fPairFile(""),
-    fFile(nullptr),
-    fTree(nullptr),
     fJobId(jobid),
     fMultiplyWeight(1),
     fMultiplyPreprocess(1),
     fMultiplyJobs(maps_perAna),
     fIgnoreSing(kFALSE),
     fImgMom(kFALSE),
-    fTempCF(nullptr),
-    fPair(nullptr),
-    fMiniPair(nullptr),
-    fTempGenerator(nullptr),
-    fWeight(nullptr),
-    fGrouping(nullptr),
     fMode(eDumpCalcMode::kSignalPairs) {}
 
-  void CorrFitDumpedPairAna::SetCorrFunc(const FemtoCorrFunc& func) { fTempCF = (FemtoCorrFunc*) func.Clone(); }
+  void CorrFitDumpedPairAna::SetCorrFunc(const FemtoCorrFunc& func) {
+    if (fTempCF) delete fTempCF;
+    fTempCF = (FemtoCorrFunc*) func.Clone();
+  }
 
-  void CorrFitDumpedPairAna::SetWeightGenerator(const FemtoWeightGenerator& weight) { fWeight = weight.MakeCopy(); }
+  void CorrFitDumpedPairAna::SetWeightGenerator(const FemtoWeightGenerator& weight) {
+    if (fWeight) delete fWeight;
+    fWeight = weight.MakeCopy();
+  }
 
   Bool_t CorrFitDumpedPairAna::Init() {
-    Bool_t fileOk = CorrFitParamsSetup::TestMapFile(fJobId);
+    if (!ConfigureFromXML()) {
+      Hal::Cout::PrintInfo("Cannot configure XML input", EInfo::kError);
+      return kFALSE;
+    }
+    Bool_t fileOk = CorrFitParamsSetup::TestMapFile(fJobId * fMultiplyJobs);
     if (fileOk) {
       Hal::Cout::PrintInfo("Test file found no need to calculate map", EInfo::kError);
       return kFALSE;
     }
-
-    if (!ConfigureFromXML()) return kFALSE;
-    if (!ConfigureInput()) return kFALSE;
-    //--- file with pairs loaded
-    if (fWeight == nullptr) return kFALSE;
-    if (fTempCF == nullptr) return kFALSE;
-    if (fTempCF->GetEntries() > 1) return kFALSE;
-    if (!fTree) return kFALSE;
-    if (fJobId == -1) return kFALSE;
+    if (!ConfigureInput()) {
+      Hal::Cout::PrintInfo("Cannot configure input", EInfo::kError);
+      return kFALSE;
+    }
+    if (!fWeight) {
+      Hal::Cout::PrintInfo("Cannot find weight", EInfo::kError);
+      return kFALSE;
+    }
+    if (!fTempCF) {
+      Hal::Cout::PrintInfo("Cannot find CF", EInfo::kError);
+      return kFALSE;
+    }
+    if (fTempCF->GetEntries() > 1) {
+      Hal::Cout::PrintInfo("To many CF", EInfo::kError);
+      return kFALSE;
+    }
+    if (!fTree) {
+      Hal::Cout::PrintInfo("Cannot find tree", EInfo::kError);
+      return kFALSE;
+    }
+    if (fJobId == -1) {
+      Hal::Cout::PrintInfo("Wrong job iD", EInfo::kError);
+      return kFALSE;
+    }
     DividedHisto1D* dummy    = fTempCF->GetCF(0);
     Femto::EKinematics kinem = Femto::EKinematics::kLCMS;
     if (dummy->GetLabelsNo() > 0) {
@@ -92,7 +109,10 @@ namespace Hal {
       kinem         = Femto::LabelToKinematics(label);
     }
     fPair = Femto::MakePair(kinem, fImgMom);
-    if (!ConnectToData()) return kFALSE;
+    if (!ConnectToData()) {
+      Hal::Cout::PrintInfo("Cant connect to data", EInfo::kError);
+      return kFALSE;
+    }
 
     if (fIgnoreSing) {
       if (dummy->InheritsFrom("Hal::FemtoSHCF")) {
@@ -164,7 +184,6 @@ namespace Hal {
       return kFALSE;
     }
     TList* list = fFile->GetListOfKeys();
-    std::cout << "CONFIGURE INPUT " << std::endl;
     FindTree(fFile, list);
 
     if (fTree == nullptr) return kFALSE;
@@ -172,25 +191,38 @@ namespace Hal {
   }
 
   Bool_t CorrFitDumpedPairAna::ConfigureFromXML() {
+    auto printErr = [](TString str) {
+      Hal::Cout::PrintInfo(Form("Cannot find node: %s in XML", str.Data()), EInfo::kError);
+      return kFALSE;
+    };
     XMLFile file("corrfit_conf.xml");
     CorrFitParamsSetup setup("corrfit_conf.xml");
-    XMLNode* root = file.GetRootNode();
-    fPairFile     = root->GetChild("PairFile")->GetValue();
+    XMLNode* root       = file.GetRootNode();
+    fPairFile           = root->GetChild("PairFile")->GetValue();
     XMLNode* parameters = root->GetChild("Parameters");
     XMLNode* dumpAna    = root->GetChild("DumpAnalysisConf");
-    if (dumpAna == nullptr) return kFALSE;
+    if (!dumpAna) return printErr("DumpAnalysisConf");
+
+    if (!parameters) return printErr("Parameters");
+
     XMLNode* freezXml  = dumpAna->GetChild("FreezoutGenerator");
     XMLNode* sourceXml = dumpAna->GetChild("SourceModel");
-    if (freezXml && sourceXml) {
-      TClass* freezoutClass             = TClass::GetClass(freezXml->GetValue(), 1, 0);
-      TClass* sourceClass               = TClass::GetClass(sourceXml->GetValue(), 1, 0);
-      FemtoFreezoutGenerator* generator = static_cast<FemtoFreezoutGenerator*>(freezoutClass->New());
-      FemtoSourceModel* source          = static_cast<FemtoSourceModel*>(sourceClass->New());
-      if (source && generator) {
-        generator->SetSourceModel(*source);
-        SetGenerator(*generator);
-      }
+    if (!freezXml) return printErr("FreezoutGenerator");
+
+    if (!sourceXml) return printErr("SourceModel");
+    TClass* freezoutClass             = TClass::GetClass(freezXml->GetValue(), 1, 0);
+    TClass* sourceClass               = TClass::GetClass(sourceXml->GetValue(), 1, 0);
+    FemtoFreezoutGenerator* generator = static_cast<FemtoFreezoutGenerator*>(freezoutClass->New());
+    FemtoSourceModel* source          = static_cast<FemtoSourceModel*>(sourceClass->New());
+    if (source && generator) {
+      generator->SetSourceModel(*source);
+      SetGenerator(*generator);
+    } else {
+      Hal::Cout::PrintInfo("Cannot create source or generator class", EInfo::kError);
+      return kFALSE;
     }
+    if (source) delete source;
+    if (generator) delete generator;
     XMLNode* calcOpts = dumpAna->GetChild("CalcOptions");
 
     XMLNode* multiJobs = calcOpts->GetChild("JobMultiplyFactor");
@@ -198,16 +230,11 @@ namespace Hal {
       if (multiJobs->GetValue().Length() > 0 && fMultiplyJobs <= 0) { fMultiplyJobs = multiJobs->GetValue().Atoi(); }
     }
     if (fMultiplyJobs <= 0) fMultiplyJobs = 1;
-
     std::vector<int> dims = setup.GetDimensions();
     if (!InitGenerators(dims, parameters, setup)) {
       Cout::PrintInfo("Cannot init generators !", EInfo::kError);
       return kFALSE;
     }
-
-    delete fTempGenerator;
-    fTempGenerator = nullptr;
-
     if (calcOpts) {
       XMLNode* multiplyXmlWeight = calcOpts->GetChild("WeightMultiplyFactor");
       if (multiplyXmlWeight) SetMultiplyFactorWeight(multiplyXmlWeight->GetValue().Atoi());
@@ -252,13 +279,13 @@ namespace Hal {
         XMLNode* quantum = weight->GetChild("QuantumOn");
         XMLNode* strong  = weight->GetChild("StrongOn");
         XMLNode* coul    = weight->GetChild("CoulombOn");
-        if (quantum && lednicky) {
+        if (quantum) {
           if (quantum->GetValue() == "kTRUE") lednicky->SetQuantumOn();
         }
-        if (strong && lednicky) {
+        if (strong) {
           if (strong->GetValue() == "kTRUE") lednicky->SetStrongOn();
         }
-        if (coul && lednicky) {
+        if (coul) {
           if (coul->GetValue() == "kTRUE") lednicky->SetCoulOn();
         }
       }
@@ -287,7 +314,7 @@ namespace Hal {
     }
   }
 
-  void CorrFitDumpedPairAna::Print(Option_t* option) const {
+  void CorrFitDumpedPairAna::Print(Option_t* /*option*/) const {
     Cout::Text("CorrFitDumpedPairAna Info", "M");
     Cout::Text(Form("JobID: %i", fJobId), "L");
     Cout::Text(Form("Multiply factor jobs: %i", fMultiplyJobs), "L");
@@ -311,7 +338,7 @@ namespace Hal {
     Cout::Text("Generator Info", "M");
 
     for (auto& gen : fGenerator) {
-      gen->Print();
+      if (gen) gen->Print();
     }
     Cout::Text("Weight Info", "M");
     if (fWeight) fWeight->Print();
@@ -354,8 +381,6 @@ namespace Hal {
         TDirectory* dirl = (TDirectory*) obj;
         FindTree(dirl, dirl->GetListOfKeys());
       }
-      std::cout << "CHECK " << key->GetName() << " " << obj->ClassName() << " " << fTree << std::endl;
-
       if (obj->InheritsFrom("TTree")) {
         fTree = (TTree*) obj;
         break;

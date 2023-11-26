@@ -36,18 +36,13 @@ namespace Hal {
   }
 
   Double_t CorrFit3DCFMultiDim::CalculateCF(const Double_t* /*x*/, const Double_t* params) const {
-    Int_t sizeX = fNumeratorHistogram->GetNbinsX();
-    Int_t sizeY = fNumeratorHistogram->GetNbinsY();
     /**calcuclate bin in flat array **/
     Double_t bin = (fBinX - 1) * fFunctorXbins * fFunctorYbins + (fBinY - 1) * fFunctorYbins + fBinZ - 1;
     Double_t num = fData->Get(bin) - 1.0;
     return params[Norm()] * (1.0 + num * params[Lambda()]);
   }
 
-  CorrFit3DCFMultiDim::CorrFit3DCFMultiDim(Int_t params) :
-    CorrFit3DCF(params), fFunctor(nullptr), fData(nullptr), fFunctorXbins(0), fFunctorYbins(0) {
-    fMinAlgo = EMinAlgo::kMinimizerScan;
-  }
+  CorrFit3DCFMultiDim::CorrFit3DCFMultiDim(Int_t params) : CorrFit3DCF(params) { fMinAlgo = EMinAlgo::kMinimizerScan; }
 
   void CorrFit3DCFMultiDim::SetFunctor(CorrFitFunctor* functor) {
     fFunctor = functor;
@@ -98,8 +93,6 @@ namespace Hal {
     for (int i = 0; i < GetParametersNo(); i++) {
       std::string par_name = GetParameterName(i).Data();
       if (!IsParFixed(i)) {  // fixed parameters will be configured later
-        Double_t lower = GetParMin(i);
-        Double_t upper = GetParMax(i);
 
         TString name = par_name;
         Double_t Min, Max;

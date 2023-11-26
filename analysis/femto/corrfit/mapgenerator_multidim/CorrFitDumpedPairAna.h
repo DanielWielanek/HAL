@@ -40,21 +40,20 @@ namespace Hal {
   class CorrFitDumpedPairAna : public TObject {
   protected:
     TString fPairFile;
-    TFile* fFile;
-    TTree* fTree;
+    TFile* fFile = {nullptr};
+    TTree* fTree = {nullptr};
     Int_t fJobId;
     Int_t fMultiplyWeight;
     Int_t fMultiplyPreprocess;
     Int_t fMultiplyJobs;
     Bool_t fIgnoreSing;
     Bool_t fImgMom;
-    FemtoCorrFunc* fTempCF;
-    FemtoPair* fPair;
-    FemtoMicroPair* fMiniPair;
-    FemtoFreezoutGenerator* fTempGenerator;
+    FemtoCorrFunc* fTempCF                 = {nullptr};
+    FemtoPair* fPair                       = {nullptr};
+    FemtoFreezoutGenerator* fTempGenerator = {nullptr};
     std::vector<FemtoFreezoutGenerator*> fGenerator;
-    FemtoWeightGenerator* fWeight;
-    CorrFitMapGroupConfig* fGrouping;
+    FemtoWeightGenerator* fWeight    = {nullptr};
+    CorrFitMapGroupConfig* fGrouping = {nullptr};
     std::vector<TClonesArray*> fSignalClones;      //!
     std::vector<TClonesArray*> fBackgroundClones;  //!
     enum class eDumpCalcMode { kSignalPairs = 0, kSignalBackgroundPairs = 1, kBackgroundPairsOnly = 2 };

@@ -69,6 +69,9 @@ set(HAL_HBT
 	${HAL_CORE}/analysis/femto
 	
 )
+set(HAL_QA
+    ${HAL_CORE}/analysis/qa
+)
 if(DEFINED CIA)
     add_compile_definitions(__CIA__)
     Set(HAL_HBT ${HAL_HBT} ${HAL_CORE}/analysis/femto/top_secret)

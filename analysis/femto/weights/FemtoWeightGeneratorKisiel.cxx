@@ -13,7 +13,10 @@
 #include "Parameter.h"
 
 #include <TMath.h>
+
+#include <cmath>
 #include <iostream>
+
 #define COULOMBSTEPS 170
 
 namespace Hal {
@@ -493,9 +496,11 @@ namespace Hal {
 
     long double smult = 1 + wavesign;
 
-    if (!finite(ffminus.re)) std::cout << "FFMinus Re not a number ! " << testp << " " << testm << " " << ccase << std::endl;
+    if (!std::isfinite(ffminus.re))
+      std::cout << "FFMinus Re not a number ! " << testp << " " << testm << " " << ccase << std::endl;
 
-    if (!finite(ffminus.im)) std::cout << "FFMinus Im not a number !" << testp << " " << testm << " " << ccase << std::endl;
+    if (!std::isfinite(ffminus.im))
+      std::cout << "FFMinus Im not a number !" << testp << " " << testm << " " << ccase << std::endl;
 
     if ((ffplus.re > 2.0) || (ffplus.re < -2.0))
       std::cout << std::endl << "FFplus Re wild !" << ffplus.re << " case " << ccase << " " << testp << " " << testm << std::endl;
@@ -1006,13 +1011,13 @@ namespace Hal {
     dcomplex ffplus;
     GetFFsingle(ffplus);
 
-    if (!finite(ffplus.re)) {
+    if (!std::isfinite(ffplus.re)) {
       std::cout << "FFPlus Re not a number !"
                 << " " << std::endl;
       std::cout << fRStarS << " " << fKStar << " " << fRStarOutS << " " << fRStarSideS << " " << fRStarLongS << std::endl;
     }
 
-    if (!finite(ffplus.im))
+    if (!std::isfinite(ffplus.im))
       std::cout << "FFPlus Im not a number !"
                 << " " << std::endl;
 
@@ -1102,11 +1107,11 @@ namespace Hal {
     dcomplex tterm    = mult(expikrc2, mult(ffminus, ffplusc));
 
 
-    if (!finite(ffminus.re))
+    if (!std::isfinite(ffminus.re))
       std::cout << "FFMinus Re not a number !"
                 << " " << ccase << std::endl;
 
-    if (!finite(ffminus.im))
+    if (!std::isfinite(ffminus.im))
       std::cout << "FFMinus Im not a number !"
                 << " " << ccase << std::endl;
 

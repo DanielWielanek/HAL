@@ -12,7 +12,9 @@
 #include "FemtoConst.h"
 
 #include "Array.h"
+#ifdef __CIA__
 #include "CorrFitMaskSH.h"
+#endif
 #include "DividedHisto.h"
 #include "FemtoYlmIndexes.h"
 #include "FemtoYlmMath.h"
@@ -26,7 +28,9 @@
  */
 
 namespace Hal {
+#ifdef __CIA__
   class CorrFitSHCF;
+#endif
   class FemtoSHSlice;
   class FemtoYlmSolver;
 
@@ -292,11 +296,13 @@ namespace Hal {
     Int_t GetLMax() const { return TMath::Sqrt(fMaxJM - 1); };
     void Rebin(Int_t ngroup, Option_t* opt = "");
     TH2D* GetMaskDraw() const;
+#ifdef __CIA__
     /**
      *
      * @return empty mask for fitting
      */
     CorrFitMaskSH MakeEmptyMask() const;
+#endif
     Array_1<Float_t>* ExportToFlatNum() const;
     virtual void Add(const Object* pack);
     virtual Long64_t Merge(TCollection* collection);

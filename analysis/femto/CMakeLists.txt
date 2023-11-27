@@ -144,13 +144,22 @@ imaging/FemtoImaging1D.cxx
 imaging/FemtoImaging3D.cxx
 base/FemtoSHCF.cxx
 
-#top_secret/CorrFitSHCF.cxx
-#top_secret/CorrFitSHFrom3D.cxx
-#top_secret/FemtoSHArray.cxx
-#top_secret/CorrFitMaskSH.cxx
-#top_secret/CorrFitHDFuncSH.cxx
+
 )
 
+
+if(DEFINED CIA)
+    Set(INCLUDE_DIRECTORIES
+        ${INCLUDE_DIRECTORIES} top_secret
+    )
+    set(SRCS ${SRCS}
+        top_secret/CorrFitSHCF.cxx
+        top_secret/CorrFitSHFrom3D.cxx
+        top_secret/FemtoSHArray.cxx
+        top_secret/CorrFitMaskSH.cxx
+        top_secret/CorrFitHDFuncSH.cxx
+    )
+endif()
 
 set(NO_DICT_SRCS
 weights/FemtoFsiTools.F
@@ -162,7 +171,12 @@ base/FemtoConst.h
 )
 
 Set(HEADERS)
-Set(LINKDEF HalFemtoLinkDef.h)
+if(DEFINED CIA)
+    Set(LINKDEF HalFemtoLinkDef2.h)
+else()
+    Set(LINKDEF HalFemtoLinkDef.h)
+endif()
+
 Set(LIBRARY_NAME HalFemto)
 
 

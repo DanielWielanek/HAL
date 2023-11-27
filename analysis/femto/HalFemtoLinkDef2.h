@@ -164,6 +164,15 @@
 #pragma link C++ class Hal::CorrFitMask3D + ;
 #pragma link C++ class Hal::CorrFitMaskSH + ;
 
+
+#pragma link C++ class Hal::CorrFitSHCF + ;
+#pragma link C++ class Hal::CorrFitSHFrom3D + ;
+#pragma link C++ class Hal::FemtoSHArray + ;
+#pragma link C++ class Hal::CorrFitMaskHisto + ;
+#pragma link C++ class Hal::CorrFitSHCFMultiDim + ;
+#pragma link C++ class Hal::CorrFitHDFuncSH + ;
+
+
 //
 
 #endif

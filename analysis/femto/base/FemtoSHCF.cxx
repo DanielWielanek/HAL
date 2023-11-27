@@ -30,8 +30,9 @@
 #include <gsl/gsl_vector_double.h>
 #endif
 #include <iostream>
-
+#ifdef __CIA__
 #include "CorrFitSHCF.h"
+#endif
 #include "Cout.h"
 #include "FemtoPair.h"
 #include "FemtoSHCF.h"
@@ -989,7 +990,7 @@ namespace Hal {
   }
 
   void FemtoSHCF::Rebin(Int_t ngroup, Option_t* opt) { std::cout << "REBIN of SHCF not implented !" << std::endl; }
-
+#ifdef __CIA__
   void FemtoSHCF::Fit(CorrFitSHCF* fit) { fit->Fit(this); }
 
   void FemtoSHCF::FitDummy(CorrFitSHCF* fit) { fit->FitDummy(this); }
@@ -999,5 +1000,6 @@ namespace Hal {
     mask.Build(*this);
     return mask;
   }
+#endif
 
 }  // namespace Hal

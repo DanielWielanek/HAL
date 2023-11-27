@@ -69,6 +69,10 @@ set(HAL_HBT
 	${HAL_CORE}/analysis/femto
 	
 )
+if(DEFINED CIA)
+    add_compile_definitions(__CIA__)
+    Set(HAL_HBT ${HAL_HBT} ${HAL_CORE}/analysis/femto/top_secret)
+endif()
 
 EndMacro(SetHeaderVariables)
 

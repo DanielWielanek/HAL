@@ -268,6 +268,7 @@ namespace Hal {
         fF0t.re = 0.88 / 0.197327;
         fD0t.re = 4.34 / 0.197327;
       } break;
+      default: fPionac = 0; break;
     }
     fOneoveracsq = 1.0 / (fPionac * fPionac);
     fTwopioverac = 2.0 * TMath::Pi() / fPionac;

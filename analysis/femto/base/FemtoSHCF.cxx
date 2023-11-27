@@ -331,12 +331,11 @@ namespace Hal {
   }
 
   void FemtoSHCF::PackCfcCovariance() {
-    char bufname[200];
-
+    TString bufName;
     if (fCfcov) delete fCfcov;
-    sprintf(bufname, "CovCfc%s", fNumReal[0]->GetName() + 10);
-    fCfcov = new TH3D(bufname,
-                      bufname,
+    bufName = Form("CovCfc%s", fNumReal[0]->GetName());
+    fCfcov  = new TH3D(bufName,
+                      bufName,
                       fCFReal[0]->GetNbinsX(),
                       fCFReal[0]->GetXaxis()->GetXmin(),
                       fCFReal[0]->GetXaxis()->GetXmax(),

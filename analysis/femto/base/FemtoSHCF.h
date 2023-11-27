@@ -34,6 +34,9 @@ namespace Hal {
    * class for storing sphercial harmonics correlation functions
    */
   class FemtoSHCF : public DividedHisto1D {
+#ifdef __CIA__
+    friend class CorrFitSCHF;
+#endif
     friend class FemtoSHSlice;
     friend class FemtoYlmSolver;
     const Int_t fMaxJM;
@@ -204,16 +207,18 @@ namespace Hal {
      * @param b
      */
     void Browse(TBrowser* b);
+#ifdef __CIA__
     /**
      * fit this function
      */
-    // void Fit(CorrFitSHCF* fit);
+    void Fit(CorrFitSHCF* fit);
     /**
      * make "dummy fit" (allows to draw function)
      * does not perform any fit
      * @param fit
      */
-    // void FitDummy(CorrFitSHCF* fit);
+    void FitDummy(CorrFitSHCF* fit);
+#endif
     /**
      * fast direct acess to real CF
      * @param pos

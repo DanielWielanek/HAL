@@ -31,7 +31,7 @@
 #endif
 #include <iostream>
 
-//#include "CorrFitSHCF.h"
+#include "CorrFitSHCF.h"
 #include "Cout.h"
 #include "FemtoPair.h"
 #include "FemtoSHCF.h"
@@ -989,14 +989,14 @@ namespace Hal {
   }
 
   void FemtoSHCF::Rebin(Int_t ngroup, Option_t* opt) { std::cout << "REBIN of SHCF not implented !" << std::endl; }
-  /*
-    void FemtoSHCF::Fit(CorrFitSHCF* fit) { fit->Fit(this); }
 
-    void FemtoSHCF::FitDummy(CorrFitSHCF* fit) { fit->FitDummy(this); }
-  */
+  void FemtoSHCF::Fit(CorrFitSHCF* fit) { fit->Fit(this); }
+
+  void FemtoSHCF::FitDummy(CorrFitSHCF* fit) { fit->FitDummy(this); }
+
   CorrFitMaskSH FemtoSHCF::MakeEmptyMask() const {
     CorrFitMaskSH mask;
-    // mask.Build(*this);
+    mask.Build(*this);
     return mask;
   }
 

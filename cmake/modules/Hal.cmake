@@ -72,6 +72,15 @@ set(HAL_HBT
 set(HAL_QA
     ${HAL_CORE}/analysis/qa
 )
+set(HAL_SPECTRA
+    ${HAL_CORE}/analysis/spectra
+)
+set(HAL_V0
+    ${HAL_CORE}/analysis/v0s
+)
+set(HAL_FLUCTUATIONS
+    ${HAL_CORE}/analysis/fluctuations
+_)
 if(DEFINED CIA)
     add_compile_definitions(__CIA__)
     Set(HAL_HBT ${HAL_HBT} ${HAL_CORE}/analysis/femto/top_secret)

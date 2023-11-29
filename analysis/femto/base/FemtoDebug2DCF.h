@@ -9,6 +9,7 @@
 #ifndef HAL_ANALYSIS_FEMTO_BASE_FEMTODEBUG2DCF_H_
 #define HAL_ANALYSIS_FEMTO_BASE_FEMTODEBUG2DCF_H_
 #include "DividedHisto.h"
+#include <functional>
 
 namespace Hal {
   class FemtoPair;

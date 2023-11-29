@@ -3,7 +3,6 @@
 # The extension is already found.  Any number of sources could be listed here.
 
 Set(INCLUDE_DIRECTORIES
- 
 ${HAL_DATA}
 ${HAL_FEATURES}
 ${HAL_ANA}

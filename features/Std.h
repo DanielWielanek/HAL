@@ -149,7 +149,75 @@ namespace Hal {
      * get JSroot version
      */
     Int_t GetJsRootVer();
+    /**
+     * allocate on dim vector with given size
+     * @tparam T
+     * @param vec
+     * @param size
+     */
+    template<typename T>
+    void ResizeVector1D(std::vector<T>& vec, int size) {
+      vec.resize(size);
+    }
+    /**
+     * allocate two dim vector with given sizes
+     */
+    template<typename T>
+    void ResizeVector2D(std::vector<std::vector<T>>& vec, int sizeX, int sizeY) {
+      vec.resize(sizeX);
+      for (auto& el : vec)
+        el.resize(sizeY);
+    }
+    /**
+     * allocate 3d vector wight given sizes
+     * @tparam T
+     * @param vec
+     * @param sizeX
+     * @param sizeY
+     * @param sizeZ
+     */
+    template<typename T>
+    void ResizeVector3D(std::vector<std::vector<std::vector<T>>>& vec, int sizeX, int sizeY, int sizeZ) {
+      vec.resize(sizeX);
+      for (auto& ela : vec) {
+        ela.resize(sizeY);
+        for (auto& el : ela) {
+          el.resize(sizeZ);
+        }
+      }
+    }
+    /**
+     * return total size of 2D vector
+     * @tparam T
+     * @param vec
+     * @return
+     */
+    template<typename T>
+    unsigned intGetTotalSize(const std::vector<std::vector<T>>& vec) {
+      unsigned int rowSize = vec.size();
+      unsigned int totSize = 0;
+      for (auto& i : vec) {
+        totSize += rowSize * i.size();
+      }
+      return totSize;
+    }
+    /**
+     * returns total size of 3D vector
+     * @tparam T
+     * @param vec
+     * @return
+     */
+    template<typename T>
+    unsigned int GetTotalSize(const std::vector<std::vector<std::vector<T>>>& vec) {
+      unsigned int rowSize = vec.size();
+      unsigned int totSize = 0;
+      for (auto& i : vec) {
+        totSize += rowSize * GetTotalSize(i);
+      }
+      return totSize;
+    }
   }  // namespace Std
 }  // namespace Hal
+
 
 #endif

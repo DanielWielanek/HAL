@@ -399,7 +399,6 @@ namespace Hal::Std {
     array->Compress();
   }
 
-
 }  // namespace Hal::Std
 Int_t Hal::Std::GetJsRootVer() {
   Int_t ver = ::ROOT::GetROOT()->GetVersionInt();

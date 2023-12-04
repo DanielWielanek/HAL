@@ -66,6 +66,7 @@ namespace HalUni {
     if (manager->CheckBranch("UEvent.")) { return kTRUE; };
     if (manager->CheckBranch("UEvent")) { return kTRUE; };
     if (manager->CheckBranch("events")) { return kTRUE; };
+    if (manager->CheckBranch("event")) { return kTRUE; };
     return kFALSE;
   }
 }  // namespace HalUni

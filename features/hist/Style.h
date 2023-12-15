@@ -70,6 +70,12 @@ namespace Hal {
 
   public:
     Style() {};
+    /**
+     *
+     * @param key
+     * @return true if key is found
+     */
+    Bool_t FindKey(TString key) const;
     Style& operator=(const Style& style) = default;
     virtual ~Style() {};
     ClassDef(Style, 1);
@@ -105,9 +111,9 @@ namespace Hal {
   class HistoStyle : public Style {
     TString fTitle;
     TString fAxTitle[3];
-    void ApplyTH(TH1& h);
-    void ApplyTGraph(TGraph& gr);
-    void ApplyMGraph(MultiGraph& gr, Int_t no);
+    void ApplyTH(TH1& h) const;
+    void ApplyTGraph(TGraph& gr) const;
+    void ApplyMGraph(MultiGraph& gr, Int_t no) const;
 
   public:
     HistoStyle();
@@ -210,7 +216,12 @@ namespace Hal {
      * @param h
      * @param no - for multigraph of hall
      */
-    void Apply(TObject& h, Int_t no = 0);
+    void Apply(TObject& h, Int_t no = 0) const;
+    /**
+     * sets anti-color if color is set
+     * @param safe - check if color is not to bright (currenty not used)
+     */
+    void SetAntiColor(Bool_t safe = kFALSE);
     virtual ~HistoStyle() {};
     ClassDef(HistoStyle, 1);
   };

@@ -8,6 +8,8 @@
  */
 
 #include "Style.h"
+#include "Cout.h"
+#include "DividedHisto.h"
 #include "MultiGraph.h"
 #include "Std.h"
 
@@ -161,7 +163,7 @@ namespace Hal {
     }
   }
 
-  void HistoStyle::ApplyMGraph(MultiGraph& g, Int_t no) {
+  void HistoStyle::ApplyMGraph(MultiGraph& g, Int_t no) const {
     Int_t i;
     Double_t d, e;
 
@@ -217,7 +219,7 @@ namespace Hal {
     }
   }
 
-  void HistoStyle::ApplyTGraph(TGraph& gr) {
+  void HistoStyle::ApplyTGraph(TGraph& gr) const {
     Int_t i;
     Double_t d, e;
     if (fTitle.Length()) gr.SetTitle(fTitle);
@@ -253,13 +255,18 @@ namespace Hal {
     }
   }
 
-  void HistoStyle::Apply(TObject& h, Int_t no) {
+  void HistoStyle::Apply(TObject& h, Int_t no) const {
     if (h.InheritsFrom("TH1")) { ApplyTH(dynamic_cast<TH1&>(h)); }
     if (h.InheritsFrom("Hal::MultiGraph")) { ApplyMGraph(dynamic_cast<Hal::MultiGraph&>(h), no); }
     if (h.InheritsFrom("TGraph")) { ApplyTGraph(dynamic_cast<TGraph&>(h)); }
+    Hal::DividedHisto1D* hx = dynamic_cast<Hal::DividedHisto1D*>(&h);
+    if (hx) {
+      HalCoutDebug();
+      hx->ApplyStyle(*this);
+    }
   }
 
-  void HistoStyle::ApplyTH(TH1& h) {
+  void HistoStyle::ApplyTH(TH1& h) const {
     Int_t i;
     Double_t d, e;
     if (fTitle.Length()) h.SetTitle(fTitle);
@@ -307,5 +314,23 @@ namespace Hal {
   void HistoStyle::SetLineColor(Color_t c) { Register("lCol", c); }
 
   void HistoStyle::SetLineStyle(Style_t s) { Register("lStyle", s); }
+
+  void HistoStyle::SetAntiColor(Bool_t /*safe*/) {
+    Int_t i;
+    auto GetCol = [&](Int_t col) {
+      col = Hal::Std::GetAntiColor(col);
+      return col;
+    };
+    if (Find("mCol", i)) SetMarkerColor(GetCol(i));
+    if (Find("lCol", i)) SetLineColor(GetCol(i));
+  }
+
+  Bool_t Style::FindKey(TString key) const {
+    int intVal;
+    if (Find(key, intVal)) return kTRUE;
+    double dVal;
+    if (Find(key, dVal)) return kTRUE;
+    return kFALSE;
+  }
 
 } /* namespace Hal */

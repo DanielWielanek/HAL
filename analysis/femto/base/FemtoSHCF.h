@@ -11,13 +11,16 @@
 
 #include "FemtoConst.h"
 
-#include "Array.h"
+#include <initializer_list>
+
 #ifdef __CIA__
 #include "CorrFitMaskSH.h"
 #endif
+#include "Array.h"
 #include "DividedHisto.h"
 #include "FemtoYlmIndexes.h"
 #include "FemtoYlmMath.h"
+#include "Style.h"
 
 #include <TMath.h>
 #include <TString.h>
@@ -90,6 +93,7 @@ namespace Hal {
      * @param obj
      */
     virtual void FastAdd(const FemtoSHCF* obj);
+    virtual void ApplyStyle(const Hal::HistoStyle& h);
 
   public:
     /** default constructor for streamer
@@ -193,6 +197,13 @@ namespace Hal {
      * @param opt
      */
     void Draw(Option_t* opt = "");
+    /**
+     *
+     * @param option option like in Draw
+     * @param lowMin {min C00, max C00, min other, max others}
+     * @param userRange {minX, maxX}
+     */
+    void DrawRanges(TString option, std::initializer_list<double> lowMin, std::initializer_list<double> userRange);
     /**
      * normalize by using normalization algorithm for given histogram
      * @param el L
@@ -304,6 +315,14 @@ namespace Hal {
     CorrFitMaskSH MakeEmptyMask() const;
 #endif
     Array_1<Float_t>* ExportToFlatNum() const;
+#ifdef __CIA__
+    /**
+     * import into this CF a flat array
+     * @param array
+     * @param bin
+     */
+    virtual void ImportSlice(Array_1<Float_t>* array, Int_t bin);
+#endif
     virtual void Add(const Object* pack);
     virtual Long64_t Merge(TCollection* collection);
     void MakeDummyCov();

@@ -45,6 +45,7 @@
 #include "Std.h"
 #include "StdHist.h"
 #include "StdString.h"
+#include "Style.h"
 
 //#define FULL_CALC
 //#define _FINISH_DEBUG_
@@ -254,81 +255,7 @@ namespace Hal {
     }
   }
 
-  void FemtoSHCF::Draw(Option_t* opt) {
-    if (gPad == nullptr) { new TCanvas(); }
-    TVirtualPad* pad = gPad;
-    // gPad->Clear();??
-
-    TString option  = opt;
-    Bool_t drawImg  = kTRUE;
-    Bool_t drawReal = kTRUE;
-    Bool_t drawNeg  = kTRUE;
-    if (Hal::Std::FindParam(option, "im", kTRUE)) drawReal = kFALSE;
-    if (Hal::Std::FindParam(option, "re", kTRUE)) drawImg = kFALSE;
-    if (Hal::Std::FindParam(option, "short", kTRUE)) drawNeg = kFALSE;
-    Bool_t range00 = kFALSE;
-    Bool_t range11 = kFALSE;
-
-    auto drawSub = [&](Int_t l, Int_t m, const FemtoSHCF* thiz, Bool_t dImg, Bool_t dReal, TString opT) {
-      gPad->SetBottomMargin(0.045);
-      gPad->SetTopMargin(0.025);
-      gPad->SetLeftMargin(0.045);
-      gPad->SetRightMargin(0.025);
-      TH1D* cfr = thiz->GetCFRe(l, m);  // GetHisto(I,J,kTRUE,"re");
-      TH1D* cfi = thiz->GetCFIm(l, m);  // GetHisto(I,J,kTRUE,"im");
-      if (cfr == nullptr) return;
-      if (cfi == nullptr) return;
-      cfr->SetMinimum(0);
-      double max = cfr->GetBinContent(cfr->GetMaximumBin());
-      double min = cfr->GetBinContent(cfr->GetMinimumBin());
-      if (min < 0) {
-        cfr->SetMinimum(-1);
-      } else {
-        cfr->SetMinimum(0);
-      }
-      if (max < 1) { cfr->SetMaximum(1); }
-      cfr->SetStats(kFALSE);
-      cfr->SetName(Form("%4.5f", gRandom->Rndm()));
-      if (fColzSet) {
-        Hal::Std::SetColor(*cfr, fColRe);
-        Hal::Std::SetColor(*cfi, fColIm);
-      } else {
-        Hal::Std::SetColor(*cfr, kBlue);
-        Hal::Std::SetColor(*cfi, kRed);
-      }
-      cfr->SetMarkerStyle(GetNum()->GetMarkerStyle());
-      cfi->SetMarkerStyle(GetNum()->GetMarkerStyle());
-      cfr->SetMarkerSize(GetNum()->GetMarkerSize());
-      cfi->SetMarkerSize(GetNum()->GetMarkerSize());
-      cfr->SetObjectStat(kFALSE);
-      cfi->SetObjectStat(kFALSE);
-      if (dImg && dReal) {
-        cfr->Draw(opT);
-        cfi->Draw("SAME" + opT);
-      } else {
-        if (dImg) cfi->Draw(opT);
-        if (dReal) cfr->Draw(opT);
-      }
-    };
-
-    TVirtualPad* temp_pad = gPad;
-    Int_t padsNo          = Hal::Std::GetListOfSubPads(temp_pad);
-    Int_t req             = (GetLMax() + 1) * (GetLMax() + 1);
-    if (padsNo == req) {
-      // do nothing we have enough pads
-    } else {
-      gPad->Clear();
-      gPad->Divide(GetLMax() + 1, GetLMax() + 1);
-    }
-
-    for (int l = 0; l <= GetLMax(); l++) {
-      for (int m = -l; m <= l; m++) {
-        temp_pad->cd(fLmVals.GetPadId(l, m));
-        if ((m < 0 && drawNeg) || m >= 0) drawSub(l, m, this, drawImg, drawReal, option);
-      }
-    }
-    gPad = temp_pad;
-  }
+  void FemtoSHCF::Draw(Option_t* opt) { DrawRanges(opt, {}, {}); }
 
   void FemtoSHCF::PackCfcCovariance() {
     TString bufName;
@@ -791,6 +718,89 @@ namespace Hal {
     fDen->Add(cf->fDen);
   }
 
+  void FemtoSHCF::DrawRanges(TString option, std::initializer_list<double> lowMin, std::initializer_list<double> userRange) {
+    auto rangesY = Hal::Std::GetVector(lowMin);
+    auto rangesX = Hal::Std::GetVector(userRange);
+    if (gPad == nullptr) { new TCanvas(); }
+    TVirtualPad* pad = gPad;
+    // gPad->Clear();??
+    Bool_t drawImg  = kTRUE;
+    Bool_t drawReal = kTRUE;
+    Bool_t drawNeg  = kTRUE;
+    if (Hal::Std::FindParam(option, "im", kTRUE)) drawReal = kFALSE;
+    if (Hal::Std::FindParam(option, "re", kTRUE)) drawImg = kFALSE;
+    if (Hal::Std::FindParam(option, "short", kTRUE)) drawNeg = kFALSE;
+    auto drawSub = [&](Int_t l, Int_t m, const FemtoSHCF* thiz, Bool_t dImg, Bool_t dReal, TString opT) {
+      gPad->SetBottomMargin(0.045);
+      gPad->SetTopMargin(0.025);
+      gPad->SetLeftMargin(0.045);
+      gPad->SetRightMargin(0.025);
+      TH1D* cfr = thiz->GetCFRe(l, m);  // GetHisto(I,J,kTRUE,"re");
+      TH1D* cfi = thiz->GetCFIm(l, m);  // GetHisto(I,J,kTRUE,"im");
+      if (cfr == nullptr) return;
+      if (cfi == nullptr) return;
+      cfr->SetMinimum(0);
+      double max = cfr->GetBinContent(cfr->GetMaximumBin());
+      double min = cfr->GetBinContent(cfr->GetMinimumBin());
+      if (min < 0) {
+        cfr->SetMinimum(-1);
+      } else {
+        cfr->SetMinimum(0);
+      }
+      if (max < 1) { cfr->SetMaximum(1); }
+      cfr->SetStats(kFALSE);
+      cfr->SetName(Form("%4.5f", gRandom->Rndm()));
+      if (fColzSet) {
+        Hal::Std::SetColor(*cfr, fColRe);
+        Hal::Std::SetColor(*cfi, fColIm);
+      } else {
+        Hal::Std::SetColor(*cfr, kBlue);
+        Hal::Std::SetColor(*cfi, kRed);
+      }
+      cfr->SetMarkerStyle(GetNum()->GetMarkerStyle());
+      cfi->SetMarkerStyle(GetNum()->GetMarkerStyle());
+      cfr->SetMarkerSize(GetNum()->GetMarkerSize());
+      cfi->SetMarkerSize(GetNum()->GetMarkerSize());
+      cfr->SetObjectStat(kFALSE);
+      cfi->SetObjectStat(kFALSE);
+      if (rangesY.size() == 4) {
+        if (l == 0) {
+          cfr->SetMinimum(rangesY[0]);
+          cfr->SetMaximum(rangesY[1]);
+        } else {
+          cfr->SetMinimum(rangesY[2]);
+          cfr->SetMaximum(rangesY[3]);
+        }
+      }
+      if (rangesX.size() == 2) { cfr->GetXaxis()->SetRangeUser(rangesX[0], rangesX[1]); }
+      if (dImg && dReal) {
+        cfr->Draw(opT);
+        cfi->Draw("SAME" + opT);
+      } else {
+        if (dImg) cfi->Draw(opT);
+        if (dReal) cfr->Draw(opT);
+      }
+    };
+
+    TVirtualPad* temp_pad = gPad;
+    Int_t padsNo          = Hal::Std::GetListOfSubPads(temp_pad);
+    Int_t req             = (GetLMax() + 1) * (GetLMax() + 1);
+    if (padsNo == req) {
+      // do nothing we have enough pads
+    } else {
+      gPad->Clear();
+      gPad->Divide(GetLMax() + 1, GetLMax() + 1);
+    }
+
+    for (int l = 0; l <= GetLMax(); l++) {
+      for (int m = -l; m <= l; m++) {
+        temp_pad->cd(fLmVals.GetPadId(l, m));
+        if ((m < 0 && drawNeg) || m >= 0) drawSub(l, m, this, drawImg, drawReal, option);
+      }
+    }
+    gPad = temp_pad;
+  }
+
   FemtoSHCF::~FemtoSHCF() {
     auto cleanArray = [&](TH1D** x) {
       if (x == nullptr) return;
@@ -1000,5 +1010,47 @@ namespace Hal {
     return mask;
   }
 #endif
+#ifdef __CIA__
+  void FemtoSHCF::ImportSlice(Array_1<Float_t>* array, Int_t bin) {
+    if (bin < 0) {
+      return;
+    } else {
+      int count = 0;
+      fNum->SetBinContent(bin, array->Get(count++));
+      fDen->SetBinContent(bin, array->Get(count++));
+      for (int i = 0; i < fMaxJM; i++) {
+        fNumReal[i]->SetBinContent(bin, array->Get(count++));
+        fDenReal[i]->SetBinContent(bin, array->Get(count++));
+        fNumImag[i]->SetBinContent(bin, array->Get(count++));
+        fDenImag[i]->SetBinContent(bin, array->Get(count++));
+      }
+      for (int i = 0; i < fMaxJM; i++) {
+        for (int j = 0; j < fMaxJM; j++) {
+          fCovNum[i][j] = array->Get(count++);
+        }
+      }
+    }
+  }
+#endif
+
+  void FemtoSHCF::ApplyStyle(const Hal::HistoStyle& h) {
+    Hal::HistoStyle anti = h;
+    anti.SetAntiColor();
+    Hal::DividedHisto1D::ApplyStyle(h);
+    for (int i = 0; i < fMaxJM; i++) {
+      h.Apply(*fNumReal[i]);
+      h.Apply(*fDenReal[i]);
+      anti.Apply(*fNumImag[i]);
+      anti.Apply(*fDenImag[i]);
+      if (fCFReal[i]) h.Apply(*fCFReal[i]);
+      if (fCFImag[i]) anti.Apply(*fCFImag[i]);
+      if (i == 0 && (h.FindKey("mCol") || h.FindKey("lCol"))) {  // cols set by style, overwrite colz that are use by draw
+        fColzSet = kTRUE;
+        fColRe   = fCFReal[i]->GetMarkerColor();
+        fColIm   = fCFImag[i]->GetMarkerColor();
+        HalCoutDebug();
+      }
+    }
+  }
 
 }  // namespace Hal

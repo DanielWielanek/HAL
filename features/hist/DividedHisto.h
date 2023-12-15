@@ -26,7 +26,10 @@
  * new histogram.
  */
 namespace Hal {
+  class HistoStyle;
   class DividedHisto1D : public Object {
+    friend class HistoStyle;
+
   private:
     /**
      * true if numerator was added by cloning
@@ -110,6 +113,8 @@ namespace Hal {
      * return line with pictures that show this class
      */
     virtual TString GetPic() const;
+    /**apply style for this object **/
+    virtual void ApplyStyle(const HistoStyle& h);
 
   public:
     /**

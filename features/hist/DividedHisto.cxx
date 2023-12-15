@@ -16,6 +16,7 @@
 #include "Std.h"
 #include "StdHist.h"
 #include "StdString.h"
+#include "Style.h"
 
 #include <TAttFill.h>
 #include <TAttLine.h>
@@ -1514,4 +1515,10 @@ namespace Hal {
         Form("%s %i: probably wrong AddScaled %s + %s", __FILE__, __LINE__, className.Data(), other.ClassName()), EInfo::kError);
     }
   }
+
+  void DividedHisto1D::ApplyStyle(const HistoStyle& h) {
+    h.Apply(*fNum);
+    h.Apply(*fDen);
+  }
+
 }  // namespace Hal

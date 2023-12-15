@@ -93,7 +93,7 @@ namespace Hal {
     fGrouping.SetAxis(bins, min, max);
     fLimitsN.MakeBigger(bins);
     fLimitsD.MakeBigger(bins);
-    auto vec = fGrouping.GetBranches(0, 0, kTRUE);  // 0,0 -> get all branches
+    auto vec = fGrouping.GetBranchesByValue(0, 0, kTRUE);  // 0,0 -> get all branches
     int idx  = 0;
     for (auto branchName : vec) {
       fSignalPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
@@ -101,7 +101,7 @@ namespace Hal {
     }
     if (fWriteBackground) {
       idx = 0;
-      vec = fGrouping.GetBranches(0, 0, kFALSE);
+      vec = fGrouping.GetBranchesByValue(0, 0, kFALSE);
       for (auto branchName : vec) {
         fBackgroundPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
         mngr->Register(branchName, "FemtoPairs", fBackgroundPairs[idx++], kTRUE);
@@ -186,14 +186,25 @@ namespace Hal {
     if (fMin != data->fMin) { printError(); }
   }
 
-  std::vector<TString> CorrFitMapGroupConfig::GetBranches(Double_t min, Double_t max, Bool_t signal) const {
-    if (min == max && fMin != fMax) { return GetBranches(fMin, fMax, signal); }
+  std::vector<TString> CorrFitMapGroupConfig::GetBranchesByValue(Double_t min, Double_t max, Bool_t signal) const {
+    if (min == max && fMin != fMax) { return GetBranchesByValue(fMin, fMax, signal); }
     Int_t lowBin  = (fMin - min) * fStep;
     Int_t highBin = (fMax - min) * fStep;
     std::vector<TString> result;
     TString pattern = "FemtoBackground_%i";
     if (signal) { pattern = "FemtoSignal_%i"; }
     for (int i = lowBin; i < highBin; i++) {
+      TString name = Form(pattern, i);
+      result.push_back(name);
+    }
+    return result;
+  }
+
+  std::vector<TString> CorrFitMapGroupConfig::GetBranchesByIndex(Int_t min, Int_t max, Bool_t signal) const {
+    std::vector<TString> result;
+    TString pattern = "FemtoBackground_%i";
+    if (signal) { pattern = "FemtoSignal_%i"; }
+    for (int i = min; i < max; i++) {
       TString name = Form(pattern, i);
       result.push_back(name);
     }

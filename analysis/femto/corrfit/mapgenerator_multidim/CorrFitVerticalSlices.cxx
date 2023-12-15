@@ -8,36 +8,24 @@
  */
 #include "CorrFitVerticalSlices.h"
 
+#include "Femto1DCF.h"
+#include "Femto3DCF.h"
 #include "FemtoPair.h"
+#include "FemtoSHCF.h"
+#include "Std.h"
 
 namespace Hal {
-
-  CorrFitVerticalSlices::CorrFitVerticalSlices(Int_t paramSpace, Int_t binNo) : fBinNo(binNo) {
-    if (paramSpace > 0) {
-      fNum.resize(paramSpace);
-      fDen.resize(paramSpace);
-    }
-  }
 
   void CorrFitVerticalSlices1D::FillNum(Int_t bin, FemtoPair* pair) { fNum[bin] += pair->GetWeight(); }
 
   void CorrFitVerticalSlices1D::FillDen(Int_t bin, FemtoPair* pair) { fDen[bin] += pair->GetWeight(); }
 
-  void CorrFitVerticalSlices3D::FillNum(Int_t bin, FemtoPair* pair) { fNum[bin] += pair->GetWeight(); }
+  void CorrFitVerticalSlices3D::FillNum(Int_t bin, FemtoPair* pair) {  // fNum[bin] += pair->GetWeight();
+                                                                       // TODO
+  }
 
-  void CorrFitVerticalSlices3D::FillDen(Int_t bin, FemtoPair* pair) { fDen[bin] += pair->GetWeight(); }
-
-  CorrFitVerticalSlicesSH::CorrFitVerticalSlicesSH(Int_t paramSpace, Int_t binNo, Int_t lmax) :
-    CorrFitVerticalSlices(paramSpace, binNo), fLmVals(FemtoYlmIndexes(lmax)), fMaxJM((lmax + 1) * (lmax + 1)) {
-    auto resize = [&](std::vector<std::vector<Double_t>>& vec) {
-      vec.resize(paramSpace);
-      for (auto& s : vec)
-        s.resize(fMaxJM);
-    };
-    resize(fShDenReal);
-    resize(fShDenImag);
-    resize(fShNumReal);
-    resize(fShNumImag);
+  void CorrFitVerticalSlices3D::FillDen(Int_t bin, FemtoPair* pair) {
+    // fDen[bin] += pair->GetWeight();  TODO
   }
 
   void CorrFitVerticalSlicesSH::FillNum(Int_t bin, FemtoPair* pair) {
@@ -57,5 +45,109 @@ namespace Hal {
       fDen[bin] += pair->GetWeight();
     }
   }
+
+  void CorrFitVerticalSlicesSH::FillNumBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin) {
+    for (int ilm = 0; ilm < fMaxJM; ilm++) {
+      fShNumReal[paramBin][ilm] += real(shCoord[ilm]) * weight;
+      fShNumImag[paramBin][ilm] -= imag(shCoord[ilm]) * weight;
+      fNum[paramBin] += weight;
+      for (int ilm2 = 0; ilm2 < fMaxJM; ilm2++) {}
+    }
+    Double_t weight2 = weight * weight;
+    for (int ilmzero = 0; ilmzero < fMaxJM; ilmzero++) {
+      const int twoilmzero = ilmzero * 2;
+      for (int ilmprim = 0; ilmprim < fMaxJM; ilmprim++) {
+        const int twoilmprim = ilmprim * 2;
+        fCovMatrix[paramBin][twoilmzero][twoilmprim] += real(shCoord[ilmzero]) * real(shCoord[ilmprim]) * weight2;
+        fCovMatrix[paramBin][twoilmzero][twoilmprim + 1] += real(shCoord[ilmzero]) * -imag(shCoord[ilmprim]) * weight2;
+        fCovMatrix[paramBin][twoilmzero + 1][twoilmprim] -= imag(shCoord[ilmzero]) * real(shCoord[ilmprim]) * weight2;
+        fCovMatrix[paramBin][twoilmzero + 1][twoilmprim + 1] -= imag(shCoord[ilmzero]) * -imag(shCoord[ilmprim]) * weight2;
+      }
+    }
+  }
+
+  void CorrFitVerticalSlicesSH::FillDenBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin) {
+    for (int ilm = 0; ilm < fMaxJM; ilm++) {
+      fShDenReal[paramBin][ilm] += real(shCoord[ilm]) * weight;
+      fShDenImag[paramBin][ilm] -= imag(shCoord[ilm]) * weight;
+      fDen[paramBin] += weight;
+      for (int ilm2 = 0; ilm2 < fMaxJM; ilm2++) {}
+    }
+  }
+
+  void CorrFitVerticalSlices1D::ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const {
+    if (first) { array->MakeBigger(2); }
+    array->Set(0, fNum[paramId]);
+    array->Set(1, fDen[paramId]);
+  }
+
+  void CorrFitVerticalSlices3D::ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const {
+    if (first) { array->MakeBigger(fOutBins * fSideBins * 2); }
+    for (unsigned int iO = 0; iO < fOutBins; iO++) {
+      for (unsigned int iS = 0; iS < fSideBins; iS++) {
+        array->Set(2 * (fSideBins * iO + iS), fNum[iO][iS][paramId]);
+        array->Set(2 * (fSideBins * iO + iS) + 1, fDen[iO][iS][paramId]);
+      }
+    }
+  }
+
+  void CorrFitVerticalSlicesSH::ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const {
+    if (first) {
+      unsigned int dim = 2 + fMaxJM * 4 + fMaxJM * fMaxJM;
+      array->MakeBigger(dim);
+    }
+    int count = 0;
+    array->Set(count++, fNum[paramId]);
+    array->Set(count++, fDen[paramId]);
+    for (int i = 0; i < fMaxJM; i++) {
+      array->Set(count++, fShNumReal[paramId][i]);
+      array->Set(count++, fShDenReal[paramId][i]);
+      array->Set(count++, fShNumImag[paramId][i]);
+      array->Set(count++, fShDenImag[paramId][i]);
+    }
+    for (int i = 0; i < fMaxJM; i++) {
+      for (int j = 0; j < fMaxJM; j++) {
+        array->Set(count++, fCovMatrix[paramId][i][j]);
+      }
+    }
+  }
+
+  CorrFitVerticalSlices* CorrFitVerticalSlices::MakeSlice(const Hal::DividedHisto1D& h, Int_t nParams) {
+    if (dynamic_cast<const Hal::FemtoSHCF*>(&h)) {
+      return new CorrFitVerticalSlicesSH(dynamic_cast<const Hal::FemtoSHCF&>(h), nParams);
+    }
+    if (dynamic_cast<const Hal::Femto1DCF*>(&h)) {
+      return new CorrFitVerticalSlices1D(dynamic_cast<const Hal::Femto1DCF&>(h), nParams);
+    }
+    if (dynamic_cast<const Hal::Femto3DCF*>(&h)) {
+      return new CorrFitVerticalSlices3D(dynamic_cast<const Hal::Femto3DCF&>(h), nParams);
+    }
+    return nullptr;
+  }
+
+  CorrFitVerticalSlices1D::CorrFitVerticalSlices1D(const Hal::Femto1DCF& h, Int_t nSamples) {
+    Hal::Std::ResizeVector1D(fNum, nSamples);
+    Hal::Std::ResizeVector1D(fDen, nSamples);
+  }
+
+  CorrFitVerticalSlices3D::CorrFitVerticalSlices3D(const Hal::Femto3DCF& h, Int_t nSamples) {
+    fOutBins  = h.GetNum()->GetNbinsX();
+    fSideBins = h.GetNum()->GetNbinsY();
+    Hal::Std::ResizeVector3D(fNum, fOutBins, fSideBins, nSamples);
+    Hal::Std::ResizeVector3D(fDen, fOutBins, fSideBins, nSamples);
+  }
+
+  CorrFitVerticalSlicesSH::CorrFitVerticalSlicesSH(const Hal::FemtoSHCF& h, Int_t nSamples) :
+    fMaxJM((h.GetLMax() + 1) * (h.GetLMax() + 1)) {
+    fLmVals = Hal::FemtoYlmIndexes(h.GetLMax());
+    Hal::Std::ResizeVector1D(fNum, nSamples);
+    Hal::Std::ResizeVector1D(fDen, nSamples);
+    Hal::Std::ResizeVector2D(fShNumReal, nSamples, fMaxJM);
+    Hal::Std::ResizeVector2D(fShDenReal, nSamples, fMaxJM);
+    Hal::Std::ResizeVector2D(fShNumImag, nSamples, fMaxJM);
+    Hal::Std::ResizeVector2D(fShDenImag, nSamples, fMaxJM);
+    Hal::Std::ResizeVector3D(fCovMatrix, nSamples, fMaxJM, fMaxJM);
+  }
+
 
 } /* namespace Hal */

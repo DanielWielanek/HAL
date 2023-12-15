@@ -87,7 +87,6 @@ corrfit/mapgenerators/FemtoWielanekMapGenerator.cxx
 corrfit/mapgenerators/Femto1DCFAnaMapPairsDumped.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
-corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaVertical.cxx
 corrfit/mapgenerator_multidim/CorrFitFunctor.cxx
 corrfit/mapgenerator_multidim/CorrFitInfo.cxx
 corrfit/mapgenerator_multidim/CorrFitMapRebin.cxx
@@ -158,6 +157,7 @@ if(DEFINED CIA)
         top_secret/FemtoSHArray.cxx
         top_secret/CorrFitMaskSH.cxx
         top_secret/CorrFitHDFuncSH.cxx
+        top_secret/CorrFitDumpedPairAnaVertical.cxx
     )
 endif()
 

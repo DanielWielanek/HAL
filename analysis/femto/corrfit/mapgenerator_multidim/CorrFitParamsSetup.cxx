@@ -54,7 +54,8 @@ namespace Hal {
       XMLNode* par = parameters->GetChild(i);
       fMin[i]      = par->GetAttrib("min")->GetValue().Atof();
       fMax[i]      = par->GetAttrib("max")->GetValue().Atof();
-      fNpoints[i]  = par->GetAttrib("points")->GetValue().Atoi();
+      Int_t step   = par->GetAttrib("step")->GetValue().Atoi();
+      fNpoints[i]  = fMax[i] - fMin[i] / double(step) + 1;
       fNames[i]    = par->GetAttrib("name")->GetValue();
     }
   }

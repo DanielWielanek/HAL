@@ -86,7 +86,7 @@ namespace Hal {
       FillCenters(fCentersX, bins, min, max);
     }
 
-    auto vec = fGrouping.GetBranches(0, 0, kTRUE);  // 0,0 -> get all branches
+    auto vec = fGrouping.GetBranchesByValue(0, 0, kTRUE);  // 0,0 -> get all branches
     int idx  = 0;
     for (auto branchName : vec) {
       fSignalPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));

@@ -35,7 +35,8 @@ namespace Hal {
     Double_t GetMin() const { return fMin; };
     Double_t GetMax() const { return fMax; };
     virtual void Add(const Object* pack);
-    std::vector<TString> GetBranches(Double_t min, Double_t max, Bool_t signal = kTRUE) const;
+    std::vector<TString> GetBranchesByValue(Double_t min, Double_t max, Bool_t signal = kTRUE) const;
+    std::vector<TString> GetBranchesByIndex(Int_t min, Int_t max, Bool_t signal = kTRUE) const;
     virtual ~CorrFitMapGroupConfig() {};
     ClassDef(CorrFitMapGroupConfig, 1)
   };  // namespace Hal

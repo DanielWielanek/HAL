@@ -218,17 +218,17 @@ namespace Hal {
     Hal::Std::GetAxisPar(*fCF[0]->GetCF(0)->GetNum(), bins, min, max, "x");
     switch (fMode) {
       case eDumpCalcMode::kSignalPairs: {
-        auto vec = fGrouping->GetBranches(min, max, true);
+        auto vec = fGrouping->GetBranchesByValue(min, max, true);
         ConnectToSignal(vec);
       } break;
       case eDumpCalcMode::kBackgroundPairsOnly: {
-        auto vec = fGrouping->GetBranches(min, max, false);
+        auto vec = fGrouping->GetBranchesByValue(min, max, false);
         ConnectToBackground(vec);
       } break;
       case eDumpCalcMode::kSignalBackgroundPairs: {
-        auto vec = fGrouping->GetBranches(min, max, false);
+        auto vec = fGrouping->GetBranchesByValue(min, max, false);
         ConnectToBackground(vec);
-        vec = fGrouping->GetBranches(min, max, true);
+        vec = fGrouping->GetBranchesByValue(min, max, true);
         ConnectToSignal(vec);
       } break;
     }

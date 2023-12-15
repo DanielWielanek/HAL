@@ -40,16 +40,18 @@ namespace Hal {
   class CorrFitDumpedPairAna : public TObject {
   protected:
     TString fPairFile;
-    TFile* fFile = {nullptr};
-    TTree* fTree = {nullptr};
-    Int_t fJobId;
-    Int_t fMultiplyWeight;
-    Int_t fMultiplyPreprocess;
-    Int_t fMultiplyJobs;
-    Bool_t fIgnoreSing;
-    Bool_t fImgMom;
+    TFile* fFile                           = {nullptr};
+    TTree* fTree                           = {nullptr};
+    Int_t fJobId                           = {-1};
+    Int_t fMultiplyWeight                  = {1};
+    Int_t fMultiplyPreprocess              = {1};
+    Int_t fMultiplyJobs                    = {1};
+    Int_t fTotalNumberOfPoints             = {0};
+    Bool_t fIgnoreSing                     = {kFALSE};
+    Bool_t fImgMom                         = {kFALSE};
     FemtoCorrFunc* fTempCF                 = {nullptr};
     FemtoPair* fPair                       = {nullptr};
+    std::vector<FemtoCorrFunc*> fCF        = {nullptr};
     FemtoFreezoutGenerator* fTempGenerator = {nullptr};
     std::vector<FemtoFreezoutGenerator*> fGenerator;
     FemtoWeightGenerator* fWeight    = {nullptr};
@@ -66,6 +68,7 @@ namespace Hal {
     Bool_t ConfigureInput();
     Bool_t FindTree(TDirectory* dir, TList* list);
     Bool_t ConfigureFromXML();
+    Int_t GetSimStepNo() const { return fMultiplyJobs * fJobId; }
     virtual void RunSignalPairs(Int_t nEvents)           = 0;
     virtual void RunSignalBackgroundPairs(Int_t nEvents) = 0;
     virtual void RunBackgroundPairs(Int_t nEvents)       = 0;

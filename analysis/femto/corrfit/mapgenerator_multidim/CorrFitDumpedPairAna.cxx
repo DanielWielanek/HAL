@@ -48,15 +48,7 @@
 
 namespace Hal {
   CorrFitDumpedPairAna::CorrFitDumpedPairAna(Int_t jobid, Int_t maps_perAna) :
-    TObject(),
-    fPairFile(""),
-    fJobId(jobid),
-    fMultiplyWeight(1),
-    fMultiplyPreprocess(1),
-    fMultiplyJobs(maps_perAna),
-    fIgnoreSing(kFALSE),
-    fImgMom(kFALSE),
-    fMode(eDumpCalcMode::kSignalPairs) {}
+    TObject(), fPairFile(""), fJobId(jobid), fMultiplyJobs(maps_perAna), fMode(eDumpCalcMode::kSignalPairs) {}
 
   void CorrFitDumpedPairAna::SetCorrFunc(const FemtoCorrFunc& func) {
     if (fTempCF) delete fTempCF;
@@ -146,7 +138,7 @@ namespace Hal {
   }
 
   void CorrFitDumpedPairAna::RootExport1D(Femto1DCF* cf, Int_t step) {
-    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", fJobId * fMultiplyJobs + step), "recreate");
+    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", GetSimStepNo() + step), "recreate");
     Array_1<Float_t>* Data = cf->ExportToFlatNum();
     TTree* tree            = new TTree("map", "map");
     tree->Branch("data", &Data);
@@ -156,7 +148,7 @@ namespace Hal {
   }
 
   void CorrFitDumpedPairAna::RootExport3D(Femto3DCF* cf, Int_t step) {
-    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", fJobId * fMultiplyJobs + step), "recreate");
+    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", GetSimStepNo() + step), "recreate");
     Array_1<Float_t>* Data = cf->ExportToFlatNum();
     TTree* tree            = new TTree("map", "map");
     tree->Branch("data", &Data);
@@ -167,7 +159,7 @@ namespace Hal {
 
   void CorrFitDumpedPairAna::RootExportSH(FemtoSHCF* cf, Int_t step) {
     cf->RecalculateCF();
-    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", fJobId * fMultiplyJobs + step), "recreate");
+    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", GetSimStepNo() + step), "recreate");
     Array_1<Float_t>* Data = cf->ExportToFlatNum();
     TTree* tree            = new TTree("map", "map");
     tree->Branch("data", &Data);
@@ -197,6 +189,11 @@ namespace Hal {
     };
     XMLFile file("corrfit_conf.xml");
     CorrFitParamsSetup setup("corrfit_conf.xml");
+    fTotalNumberOfPoints = 1;
+    int parNo            = setup.GetNParams();
+    for (int i = 0; i < parNo; i++) {
+      fTotalNumberOfPoints = fTotalNumberOfPoints * setup.GetNPoints(i);
+    }
     XMLNode* root       = file.GetRootNode();
     fPairFile           = root->GetChild("PairFile")->GetValue();
     XMLNode* parameters = root->GetChild("Parameters");

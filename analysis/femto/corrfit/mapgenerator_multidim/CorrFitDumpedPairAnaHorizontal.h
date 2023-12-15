@@ -13,7 +13,6 @@
 
 namespace Hal {
   class CorrFitDumpedPairAnaHorizontal : public CorrFitDumpedPairAna {
-    std::vector<FemtoCorrFunc*> fCF;
 
   protected:
     void RunSignalPairs(Int_t nEvents);

@@ -139,7 +139,6 @@
 #pragma link C++ class Hal::CorrFitVerticalSlices3D + ;
 #pragma link C++ class Hal::CorrFitVerticalSlicesSH + ;
 #pragma link C++ class Hal::CorrFitInfo + ;
-#pragma link C++ class Hal::CorrFitDumpedPairAnaVertical + ;
 #pragma link C++ class Hal::CorrFitDumpedPairAnaHorizontal + ;
 #pragma link C++ class Hal::CorrFitDumpedPairAna + ;
 #pragma link C++ class Hal::FemtoDumpPairAnaMC + ;

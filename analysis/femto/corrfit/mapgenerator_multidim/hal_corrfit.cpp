@@ -164,9 +164,9 @@ void preparetemplate() {
   xml_file.open("corrfit_conf.xml");
   xml_file << "<CorrfitConfig>" << std::endl;
   xml_file << "<Parameters>" << std::endl;
-  xml_file << "\t<Param name=\"R_{out}\" min=\"1\" max=\"10\" points=\"10\"></Param>" << std::endl;
-  xml_file << "\t<Param name=\"R_{side}\" min=\"1\" max=\"10\" points=\"10\"></Param>" << std::endl;
-  xml_file << "\t<Param name=\"R_{long}\" min=\"1\" max=\"10\" points=\"10\"></Param>" << std::endl;
+  xml_file << "\t<Param name=\"R_{out}\" min=\"1\" max=\"10\" step=\"1\"></Param>" << std::endl;
+  xml_file << "\t<Param name=\"R_{side}\" min=\"1\" max=\"10\" step=\"1\"></Param>" << std::endl;
+  xml_file << "\t<Param name=\"R_{long}\" min=\"1\" max=\"10\" step=\"1\"></Param>" << std::endl;
   xml_file << "</Parameters>" << std::endl;
   xml_file << "<!-- full path to file with pairs-->" << std::endl;
   xml_file << "<PairFile>zz.root</PairFile>" << std::endl;

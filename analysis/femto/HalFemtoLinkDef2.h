@@ -48,6 +48,7 @@
 #pragma link C++ class Hal::FemtoSourceDensityGaus3d + ;
 #pragma link C++ class Hal::FemtoSourceDensityNumerical1D + ;
 #pragma link C++ class Hal::CorrFitMapGroupConfig + ;
+#pragma link C++ class Hal::CorrFitDumpedPairAnaVertical + ;
 
 
 #pragma link C++ class Hal::Femto1DCF + ;

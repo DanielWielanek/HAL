@@ -14,13 +14,9 @@
 
 namespace Hal {
 
-  MinimizerStepConf::MinimizerStepConf() {
-    // TODO Auto-generated constructor stub
-  }
+  MinimizerStepConf::MinimizerStepConf() {}
 
-  MinimizerStepConf::~MinimizerStepConf() {
-    // TODO Auto-generated destructor stub
-  }
+  MinimizerStepConf::~MinimizerStepConf() {}
 
   void MinimizerStepConf::ConfigureParameter(TString name, Double_t step, Double_t min, Double_t max, TString /*option*/) {
     if (step <= 0) step = 0.01;

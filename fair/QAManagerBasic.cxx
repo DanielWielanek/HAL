@@ -18,11 +18,9 @@
 namespace Hal {
   namespace Fair {
     QAManagerBasic::QAManagerBasic() {
-      // TODO Auto-generated constructor stub
     }
 
     QAManagerBasic::~QAManagerBasic() {
-      // TODO Auto-generated destructor stub
     }
 
     FairRunAna* QAManagerBasic::GetRunAna(TString outFile, TString simFile, TString recoFile, TString parFile) {

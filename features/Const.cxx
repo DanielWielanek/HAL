@@ -8,11 +8,7 @@
  */
 #include "Const.h"
 namespace Hal {
-  Const::Const() {
-    // TODO Auto-generated constructor stub
-  }
+  Const::Const() {}
 
-  Const::~Const() {
-    // TODO Auto-generated destructor stub
-  }
+  Const::~Const() {}
 }  // namespace Hal

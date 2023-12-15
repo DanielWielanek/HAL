@@ -117,8 +117,6 @@ namespace Hal {
       }
     }
 
-    TaskManager::~TaskManager() {
-      // TODO Auto-generated destructor stub
-    }
+    TaskManager::~TaskManager() {}
   }  // namespace Fair
 } /* namespace Hal */

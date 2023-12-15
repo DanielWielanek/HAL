@@ -49,7 +49,5 @@ namespace HalDbg {
     return kFALSE;
   }
 
-  McEvent::~McEvent() {
-    // TODO Auto-generated destructor stub
-  }
+  McEvent::~McEvent() {}
 }  // namespace HalDbg

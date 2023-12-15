@@ -19,9 +19,7 @@ namespace Hal {
 
   TString Object::HTMLExtract(Int_t /*no*/, TString /*dir*/) const { return "NULL"; }
 
-  Object::~Object() {
-    // TODO Auto-generated destructor stub
-  }
+  Object::~Object() {}
 
   void Object::Add(const Object* /*pack*/) {}
 

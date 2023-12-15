@@ -48,7 +48,5 @@ namespace HalOTF {
     return kFALSE;
   }
 
-  McEvent::~McEvent() {
-    // TODO Auto-generated destructor stub
-  }
+  McEvent::~McEvent() {}
 }  // namespace HalOTF

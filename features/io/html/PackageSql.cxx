@@ -145,9 +145,7 @@ namespace Hal {
     delete extr;
   }
 
-  PackageSql::~PackageSql() {
-    // TODO Auto-generated destructor stub
-  }
+  PackageSql::~PackageSql() {}
 
   TString PackageSql::RemoveDir(TString path) {
     TRegexp reg(".*/");

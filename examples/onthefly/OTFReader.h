@@ -40,7 +40,10 @@ namespace HalOTF {
     Double_t fSmear;
     OTF::McEvent* fMcEvent;
     OTF::RecoEvent* fRecoEvent;
-
+    /**
+     * cleans up events if neccessary
+     */
+    void PrepareTables();
 
   public:
     Reader();
@@ -53,7 +56,7 @@ namespace HalOTF {
     void SetSpiecies(const TH2D& h, Int_t pid, Double_t multiplicity);
     void SetSmear(Double_t smear) { fSmear = smear; }
     void Register(Bool_t reg) { fRegister = reg; }
-    void Exec(Option_t* opt);
+    virtual void Exec(Option_t* opt);
     virtual Hal::Task::EInitFlag Init();
     virtual ~Reader();
     ClassDef(Reader, 1)

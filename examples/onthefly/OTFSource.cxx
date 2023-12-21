@@ -12,8 +12,7 @@
 #include "Source.h"
 
 namespace HalOTF {
-  Source::Source(Int_t events) : Hal::Source("root_virtual.root") {
-    fEvents  = events;
+  Source::Source(Int_t events) : Hal::Source("root_virtual.root"), fEvents(events) {
     fManager = new HalOTF::IOManager("root_virtual.root", fEvents);
   }
 

@@ -71,10 +71,7 @@ namespace HalOTF {
   }
 
   void Reader::Exec(Option_t* /*opt*/) {
-    if (fOwner) {
-      fRecoEvent->Clear();
-      fMcEvent->Clear();
-    }
+    PrepareTables();
     Int_t shift = fMcEvent->GetNTracks();
     for (int i = 0; i < fMultiplicity; i++) {
       Double_t pt, y;
@@ -114,4 +111,12 @@ namespace HalOTF {
       if (fRecoEvent) delete fRecoEvent;
     }
   }
+
+  void Reader::PrepareTables() {
+    if (fOwner) {
+      fRecoEvent->Clear();
+      fMcEvent->Clear();
+    }
+  }
+
 }  // namespace HalOTF

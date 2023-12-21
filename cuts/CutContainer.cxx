@@ -329,9 +329,6 @@ namespace Hal {
 
   Bool_t CutContainer::ExtractRegExp(const CutMonitor& cut, Option_t* opt) {
     TString option = opt;
-    TRegexp regexp("{[0-9]+x[0-9]+}");
-    TString expr = option(regexp);
-    if (expr.Length() <= 0) { return kFALSE; }
     Int_t number, jump;
     Bool_t found = Hal::Std::FindExpressionTwoValues(option, number, jump, kTRUE);
     if (!found) return kFALSE;

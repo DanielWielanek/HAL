@@ -200,10 +200,10 @@ namespace Hal {
   }
 
   void FemtoFsiParsed::Ltran(Double_t* p0, Double_t* p, Double_t* ps) {
-    Double_t d__1, d__2, d__3;
+    Double_t d1, d2, d3;
 
     /* Local variables */
-    static Double_t h__, am0, pp0, p0s, epm;
+    static Double_t h, am0, pp0, p0s, epm;
 
     /* ==>calculating particle 4-momentum PS={PSX,PSY,PSZ,ES} */
     /*   in rest frame of a system 0 with 4-momentum P0={P0X,P0Y,P0Z,E0} */
@@ -216,21 +216,21 @@ namespace Hal {
 
     /* Function Body */
     /* Computing 2nd power */
-    d__1 = p0[1];
+    d1 = p0[1];
     /* Computing 2nd power */
-    d__2 = p0[2];
+    d2 = p0[2];
     /* Computing 2nd power */
-    d__3 = p0[3];
-    p0s  = d__1 * d__1 + d__2 * d__2 + d__3 * d__3;
+    d3  = p0[3];
+    p0s = d1 * d1 + d2 * d2 + d3 * d3;
     /* Computing 2nd power */
-    d__1  = p0[4];
-    am0   = TMath::Sqrt(d__1 * d__1 - p0s);
+    d1    = p0[4];
+    am0   = TMath::Sqrt(d1 * d1 - p0s);
     epm   = p0[4] + am0;
     pp0   = p[1] * p0[1] + p[2] * p0[2] + p[3] * p0[3];
-    h__   = (pp0 / epm - p[4]) / am0;
-    ps[1] = p[1] + p0[1] * h__;
-    ps[2] = p[2] + p0[2] * h__;
-    ps[3] = p[3] + p0[3] * h__;
+    h     = (pp0 / epm - p[4]) / am0;
+    ps[1] = p[1] + p0[1] * h;
+    ps[2] = p[2] + p0[2] * h;
+    ps[3] = p[3] + p0[3] * h;
     ps[4] = (p0[4] * p[4] - pp0) / am0;
   }
 

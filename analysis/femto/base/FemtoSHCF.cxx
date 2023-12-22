@@ -727,9 +727,11 @@ namespace Hal {
     Bool_t drawImg  = kTRUE;
     Bool_t drawReal = kTRUE;
     Bool_t drawNeg  = kTRUE;
+    Bool_t drawGrid = kFALSE;
     if (Hal::Std::FindParam(option, "im", kTRUE)) drawReal = kFALSE;
     if (Hal::Std::FindParam(option, "re", kTRUE)) drawImg = kFALSE;
     if (Hal::Std::FindParam(option, "short", kTRUE)) drawNeg = kFALSE;
+    if (Hal::Std::FindParam(option, "grid", kTRUE)) drawGrid = kFALSE;
     auto drawSub = [&](Int_t l, Int_t m, const FemtoSHCF* thiz, Bool_t dImg, Bool_t dReal, TString opT) {
       gPad->SetBottomMargin(0.045);
       gPad->SetTopMargin(0.025);
@@ -779,6 +781,10 @@ namespace Hal {
       } else {
         if (dImg) cfi->Draw(opT);
         if (dReal) cfr->Draw(opT);
+      }
+      if (drawGrid) {
+        gPad->SetGridx();
+        gPad->SetGridy();
       }
     };
 

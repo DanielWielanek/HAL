@@ -26,12 +26,12 @@
  */
 
 namespace Hal {
+  class DividedHisto2D;
   class SimpleVnAnalysis : public TrackAna {
     Int_t fBinsX, fBinsY;
     FlowVariable *fVarX, *fVarY;
     Double_t fMinX, fMinY, fMaxX, fMaxY, fN, fPhi;
-    HistogramManager_1_2D<TH2D>* fNum;
-    HistogramManager_1_2D<TH2D>* fDen;
+    DividedHisto2D** fHistos = {nullptr};  //[fTrackCollectionsNo]
     Double_t GetPhi();
 
   protected:

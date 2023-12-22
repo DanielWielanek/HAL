@@ -13,9 +13,9 @@
 #include "CutContainer.h"
 #include "DividedHisto.h"
 #include "Event.h"
-#include "Std.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Std.h"
 #include "Track.h"
 
 #include <TMath.h>
@@ -24,19 +24,7 @@
 
 namespace Hal {
   SimpleVnAnalysis::SimpleVnAnalysis(Double_t n) :
-    TrackAna(),
-    fBinsX(1),
-    fBinsY(1),
-    fVarX(NULL),
-    fVarY(NULL),
-    fMinX(0),
-    fMinY(0),
-    fMaxX(1),
-    fMaxY(0),
-    fN(n),
-    fPhi(0.0),
-    fNum(NULL),
-    fDen(NULL) {}
+    TrackAna(), fBinsX(1), fBinsY(1), fVarX(NULL), fVarY(NULL), fMinX(0), fMinY(0), fMaxX(1), fMaxY(0), fN(n), fPhi(0.0) {}
 
   void SimpleVnAnalysis::ProcessTrack() {
     Double_t px     = fCurrentTrack->GetPx();
@@ -46,8 +34,9 @@ namespace Hal {
     Double_t v2N    = TMath::Cos(fN * (phi - Phi));
     Double_t valueX = fVarX->GetVariable(fCurrentTrack);
     Double_t valueY = fVarY->GetVariable(fCurrentTrack);
-    fNum->Fill(fCurrentTrackCollectionID, valueX, valueY, v2N);
-    fDen->Fill(fCurrentTrackCollectionID, valueX, valueY);
+    auto div        = fHistos[fCurrentTrackCollectionID];
+    div->FillNum(valueX, valueY, v2N);
+    div->FillDen(valueX, valueY, 1);
   }
 
   void SimpleVnAnalysis::SetAxis(Int_t nbins, Double_t min, Double_t max, Int_t axis) {
@@ -90,14 +79,31 @@ namespace Hal {
         fVarY = new FlowVirtualVariable();
         SetAxis(1, 0, 1, 1);
       }
-      fNum                     = new HistogramManager_1_2D<TH2D>;
-      fDen                     = new HistogramManager_1_2D<TH2D>;
       HistogramAxisConf** axis = new HistogramAxisConf*[3];
       axis[0]                  = new HistogramAxisConf(fVarX->GetAxisName(), fBinsX, fMinX, fMaxX);
       axis[1]                  = new HistogramAxisConf(fVarY->GetAxisName(), fBinsY, fMinY, fMaxY);
       axis[2] = new HistogramAxisConf(Form("dN/%s%s", fVarX->GetAxisUnit().Data(), fVarY->GetAxisUnit().Data()), 0, 0, 1);
-      fNum->Init(fTrackCollectionsNo, axis, Form("V_{%i num}", (int) fN), kTRUE);
-      fDen->Init(fTrackCollectionsNo, axis, Form("V_{%i den}", (int) fN), kTRUE);
+      fHistos = new DividedHisto2D*[fTrackCollectionsNo];
+      for (int i = 0; i < fTrackCollectionsNo; i++) {
+        Int_t binsX = axis[0]->GetNBins();
+        Int_t binsY = axis[1]->GetNBins();
+        fHistos[i]  = new DividedHisto2D(Form("V_{%i}[%i]", (int) fN, i),
+                                        axis[0]->GetNBins(),
+                                        axis[0]->GetMin(),
+                                        axis[0]->GetMax(),
+                                        axis[1]->GetNBins(),
+                                        axis[1]->GetMin(),
+                                        axis[1]->GetMax(),
+                                        'D');
+        fHistos[i]->GetNum()->GetXaxis()->SetTitle(axis[0]->GetTitle());
+        fHistos[i]->GetNum()->GetYaxis()->SetTitle(axis[1]->GetTitle());
+        fHistos[i]->GetNum()->GetZaxis()->SetTitle(axis[2]->GetTitle());
+
+        fHistos[i]->GetDen()->GetXaxis()->SetTitle(axis[0]->GetTitle());
+        fHistos[i]->GetDen()->GetYaxis()->SetTitle(axis[1]->GetTitle());
+        fHistos[i]->GetDen()->GetZaxis()->SetTitle(axis[2]->GetTitle());
+        fHistos[i]->SetAxisName(Form("v_%i{RP}", (int) fN));
+      }
       delete[] axis;
       return Task::EInitFlag::kSUCCESS;
     } else {
@@ -113,13 +119,7 @@ namespace Hal {
     AddToAnaMetadata(pack, new ParameterString("Variable_class on Y", fVarY->ClassName()));
     DividedHisto2D** flows = new DividedHisto2D*[fTrackCollectionsNo];
     for (int i = 0; i < fTrackCollectionsNo; i++) {
-      TString name = Form("flow_%i", i);
-      flows[i]     = new DividedHisto2D(name);
-      flows[i]->SetScale(1.0);
-      flows[i]->AddNum(fNum->fArray[i]);
-      flows[i]->AddDen(fDen->fArray[i]);
-      flows[i]->SetAxisName(Form("v_%i{RP}", (int) fN));
-      pack->AddObject(flows[i]);
+      pack->AddObject(fHistos[i]);
     }
     delete[] flows;
     return pack;
@@ -153,8 +153,12 @@ namespace Hal {
     fMaxY  = ana.fMaxY;
     fN     = ana.fN;
     fPhi   = ana.fPhi;
-    if (ana.fNum) fNum = new HistogramManager_1_2D<TH2D>(*(ana.fNum));
-    if (ana.fDen) fDen = new HistogramManager_1_2D<TH2D>(*(ana.fDen));
+    if (ana.fHistos) {
+      fHistos = new DividedHisto2D*[fTrackCollectionsNo];
+      for (int i = 0; i < ana.fTrackCollectionsNo; i++) {
+        fHistos[i] = (DividedHisto2D*) ana.fHistos[i]->Clone();
+      }
+    }
     if (ana.fVarX) fVarX = ana.fVarX->MakeCopy();
     if (ana.fVarY) fVarY = ana.fVarY->MakeCopy();
   }

@@ -23,6 +23,7 @@
 #include <TAxis.h>
 #include <TH1.h>
 #include <TString.h>
+#include <iostream>
 
 
 namespace Hal {
@@ -41,11 +42,11 @@ namespace Hal {
   }
 
   PropertyMonitorX::PropertyMonitorX(TString xLabel, TString yLabel, ECutUpdate update) :
-    fXaxisName(xLabel), fYaxisName(yLabel), fFormatType(EFormatType::kReco) {
+    CutMonitorX(), fXaxisName(xLabel), fYaxisName(yLabel), fFormatType(EFormatType::kReco) {
     fUpdateRatio = update;
   }
 
-  PropertyMonitorX::PropertyMonitorX(const PropertyMonitorX& other) : CutMonitorX(*this) {
+  PropertyMonitorX::PropertyMonitorX(const PropertyMonitorX& other) : CutMonitorX(other) {
     fXaxisName  = other.fXaxisName;
     fYaxisName  = other.fYaxisName;
     fFormatType = other.fFormatType;

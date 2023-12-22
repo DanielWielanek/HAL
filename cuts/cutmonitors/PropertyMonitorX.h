@@ -40,7 +40,7 @@ namespace Hal {
     PropertyMonitorX& operator=(const PropertyMonitorX& other);
     virtual Bool_t Init(Int_t task_id);
     virtual Bool_t ObjMonitor() const { return kTRUE; };
-    virtual CutMonitor* MakeCopy() const { return (CutMonitor*) this->Clone(); };
+    virtual CutMonitor* MakeCopy() const { return new PropertyMonitorX(*this); };
     virtual Package* Report() const;
     virtual ~PropertyMonitorX();
     ClassDef(PropertyMonitorX, 1)

@@ -27,6 +27,12 @@ namespace Hal {
     if (fValues) delete[] fValues;
   }
 
+  void FastHist::Reset() {
+    for (int i = 0; i < fTotalBinsNo; i++) {
+      fValues[i] = 0;
+    }
+  }
+
   FastHist1D::FastHist1D(TString name, TString title, Int_t nbins, Double_t min, Double_t max) : FastHist(name, title) {
     fBinsNoX = nbins + 2;
     if (nbins != 0) {

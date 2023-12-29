@@ -13,6 +13,8 @@
 
 #include "Std.h"
 
+#include "FastHist.h"
+
 namespace Hal {
   class Cut;
   class Package;
@@ -48,11 +50,11 @@ namespace Hal {
     /**
      * histogram with passed objects
      */
-    TH1* fHistoPassed;
+    FastHist* fHistoPassed;
     /**
      * histogram with failed objects
      */
-    TH1* fHistoFailed;
+    FastHist* fHistoFailed;
     /**
      * array with lower edges of axes
      */

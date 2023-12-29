@@ -71,11 +71,11 @@ namespace Hal {
     }
 #endif
     if (pass) {
-      ((TH3D*) fHistoPassed)
-        ->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]), fCut[2]->GetValue(fOptionAxis[2]));
+      ((FastHist3D*) fHistoPassed)
+        ->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]), fCut[2]->GetValue(fOptionAxis[2]), 1);
     } else {
-      ((TH3D*) fHistoFailed)
-        ->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]), fCut[2]->GetValue(fOptionAxis[2]));
+      ((FastHist3D*) fHistoFailed)
+        ->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]), fCut[2]->GetValue(fOptionAxis[2]), 1);
     }
   }
 
@@ -116,23 +116,36 @@ namespace Hal {
     name = "Passed";
     // title = title + Form(" ** %s %s %s
     // ",fCut[0]->ClassName(),fCut[1]->ClassName(),fCut[2]->ClassName());
-    fHistoPassed = new TH3D(name,
-                            title,
-                            fAxisBins[0],
-                            fAxisMin[0],
-                            fAxisMax[0],
-                            fAxisBins[1],
-                            fAxisMin[1],
-                            fAxisMax[1],
-                            fAxisBins[2],
-                            fAxisMin[2],
-                            fAxisMax[2]);
-    fHistoPassed->GetXaxis()->SetTitle(fCut[0]->GetUnit(fOptionAxis[0]));
-    fHistoPassed->GetYaxis()->SetTitle(fCut[1]->GetUnit(fOptionAxis[1]));
-    fHistoPassed->GetZaxis()->SetTitle(fCut[2]->GetUnit(fOptionAxis[2]));
+    fHistoPassed = new FastHist3D(name,
+                                  title,
+                                  fAxisBins[0],
+                                  fAxisMin[0],
+                                  fAxisMax[0],
+                                  fAxisBins[1],
+                                  fAxisMin[1],
+                                  fAxisMax[1],
+                                  fAxisBins[2],
+                                  fAxisMin[2],
+                                  fAxisMax[2]);
+    fHistoPassed->SetXaxisName(fCut[0]->GetUnit(fOptionAxis[0]));
+    fHistoPassed->SetYaxisName(fCut[1]->GetUnit(fOptionAxis[1]));
+    fHistoPassed->SetZaxisName(fCut[2]->GetUnit(fOptionAxis[2]));
     name         = "Failed";
-    fHistoFailed = (TH3D*) fHistoPassed->Clone(name);
-    fInit        = kTRUE;
+    fHistoFailed = new FastHist3D(name,
+                                  title,
+                                  fAxisBins[0],
+                                  fAxisMin[0],
+                                  fAxisMax[0],
+                                  fAxisBins[1],
+                                  fAxisMin[1],
+                                  fAxisMax[1],
+                                  fAxisBins[2],
+                                  fAxisMin[2],
+                                  fAxisMax[2]);
+    fHistoFailed->SetXaxisName(fCut[0]->GetUnit(fOptionAxis[0]));
+    fHistoFailed->SetYaxisName(fCut[1]->GetUnit(fOptionAxis[1]));
+    fHistoFailed->SetZaxisName(fCut[2]->GetUnit(fOptionAxis[2]));
+    fInit = kTRUE;
   }
 
   Bool_t CutMonitorXYZ::Init(Int_t task_id) {

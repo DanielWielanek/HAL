@@ -37,23 +37,36 @@ namespace Hal {
     name = "Passed";
     // title = title + Form(" ** %s %s %s
     // ",fCut[0]->ClassName(),fCut[1]->ClassName(),fCut[2]->ClassName());
-    fHistoPassed = new TH3D(name,
-                            title,
-                            fAxisBins[0],
-                            fAxisMin[0],
-                            fAxisMax[0],
-                            fAxisBins[1],
-                            fAxisMin[1],
-                            fAxisMax[1],
-                            fAxisBins[2],
-                            fAxisMin[2],
-                            fAxisMax[2]);
-    fHistoPassed->GetXaxis()->SetTitle(fXaxisName);
-    fHistoPassed->GetYaxis()->SetTitle(fYaxisName);
-    fHistoPassed->GetZaxis()->SetTitle(fZaxisName);
+    fHistoPassed = new FastHist3D(name,
+                                  title,
+                                  fAxisBins[0],
+                                  fAxisMin[0],
+                                  fAxisMax[0],
+                                  fAxisBins[1],
+                                  fAxisMin[1],
+                                  fAxisMax[1],
+                                  fAxisBins[2],
+                                  fAxisMin[2],
+                                  fAxisMax[2]);
+    fHistoPassed->SetXaxisName(fXaxisName);
+    fHistoPassed->SetYaxisName(fYaxisName);
+    fHistoPassed->SetZaxisName(fZaxisName);
     name         = "Failed";
-    fHistoFailed = (TH3D*) fHistoPassed->Clone(name);
-    fInit        = kTRUE;
+    fHistoFailed = new FastHist3D(name,
+                                  title,
+                                  fAxisBins[0],
+                                  fAxisMin[0],
+                                  fAxisMax[0],
+                                  fAxisBins[1],
+                                  fAxisMin[1],
+                                  fAxisMax[1],
+                                  fAxisBins[2],
+                                  fAxisMin[2],
+                                  fAxisMax[2]);
+    fHistoFailed->SetXaxisName(fXaxisName);
+    fHistoFailed->SetYaxisName(fYaxisName);
+    fHistoFailed->SetZaxisName(fZaxisName);
+    fInit = kTRUE;
   }
 
   PropertyMonitorXYZ::PropertyMonitorXYZ(TString xLabel, TString yLabel, TString zLabel, ECutUpdate update) :
@@ -141,9 +154,9 @@ namespace Hal {
 
     Event* ev = (Event*) obj;
     if (passed) {
-      ((TH3*) fHistoPassed)->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), ev->GetFieldVal(fFieldIDZ));
+      ((FastHist3D*) fHistoPassed)->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), ev->GetFieldVal(fFieldIDZ), 1);
     } else {
-      ((TH3*) fHistoFailed)->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), ev->GetFieldVal(fFieldIDZ));
+      ((FastHist3D*) fHistoFailed)->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), ev->GetFieldVal(fFieldIDZ), 1);
     }
   }
 
@@ -175,9 +188,9 @@ namespace Hal {
 
     Track* tr = (Track*) obj;
     if (passed) {
-      ((TH3*) fHistoPassed)->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY), tr->GetFieldVal(fFieldIDZ));
+      ((TH3*) fHistoPassed)->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY), tr->GetFieldVal(fFieldIDZ), 1);
     } else {
-      ((TH3*) fHistoFailed)->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY), tr->GetFieldVal(fFieldIDZ));
+      ((TH3*) fHistoFailed)->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY), tr->GetFieldVal(fFieldIDZ), 1);
     }
   }
 

@@ -254,8 +254,8 @@ namespace Hal {
       if (fHistoPassed) delete fHistoPassed;
       fHistoPassed = nullptr;
       if (other.fInit) {
-        fHistoPassed = (TH1*) other.fHistoPassed->Clone();
-        fHistoFailed = (TH1*) other.fHistoFailed->Clone();
+        fHistoPassed = (FastHist*) other.fHistoPassed->Clone();
+        fHistoFailed = (FastHist*) other.fHistoFailed->Clone();
       }
       fInit        = other.fInit;
       fExUpdate    = other.fExUpdate;
@@ -271,9 +271,15 @@ namespace Hal {
     pack->AddObject(new ParameterInt("UpdateRatio", (Int_t) fUpdateRatio));
     pack->AddObject(new ParameterInt("ExclusiveUpdate", (Int_t) fExUpdate));
 
+    Bool_t oneDim = false;
+    if (dynamic_cast<FastHist1D*>(fHistoPassed)) { oneDim = true; }
     if (!ObjMonitor()) {
-      TH1* hP = (TH1*) fHistoPassed->Clone();
-      TH1* hF = (TH1*) fHistoFailed->Clone();
+      TH1* hP = fHistoPassed->GetTH1();
+      TH1* hF = fHistoFailed->GetTH1();
+      if (oneDim) {
+        hP->SetFillColor(kGreen);
+        hF->SetFillColor(kRed);
+      }
       pack->AddObject(hP);
       pack->AddObject(hF);
       if (fAxisNo >= 1) {
@@ -331,8 +337,14 @@ namespace Hal {
         pack->AddObject(new ParameterInt("CutZCollection", fCut[2]->GetCollectionID()));
       }
     } else {
-      pack->AddObject(fHistoPassed->Clone());
-      pack->AddObject(fHistoFailed->Clone());
+      TH1* hP = fHistoPassed->GetTH1();
+      TH1* hF = fHistoFailed->GetTH1();
+      if (oneDim) {
+        hP->SetFillColor(kGreen);
+        hF->SetFillColor(kRed);
+      }
+      pack->AddObject(hP);
+      pack->AddObject(hF);
     }
     pack->SetComment(this->ClassName());
 

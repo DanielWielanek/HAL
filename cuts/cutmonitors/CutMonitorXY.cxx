@@ -58,9 +58,9 @@ namespace Hal {
     }
 #else
     if (passed) {
-      ((TH2D*) fHistoPassed)->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]));
+      ((FastHist2D*) fHistoPassed)->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]), 1);
     } else {
-      ((TH2D*) fHistoFailed)->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]));
+      ((FastHist2D*) fHistoFailed)->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]), 1);
     }
 #endif
   }
@@ -97,14 +97,14 @@ namespace Hal {
     TString name;  // = Form("%s_vs_%s",
                    // fCut[0]->GetUnit(fOptionAxis[0]).Data(),fCut[1]->GetUnit(fOptionAxis[1]).Data());
     name         = "Passed";
-    fHistoPassed = new TH2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
-    fHistoPassed->GetXaxis()->SetTitle(fCut[0]->GetUnit(fOptionAxis[0]));
-    fHistoPassed->GetYaxis()->SetTitle(fCut[1]->GetUnit(fOptionAxis[1]));
+    fHistoPassed = new FastHist2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
+    fHistoPassed->SetXaxisName(fCut[0]->GetUnit(fOptionAxis[0]));
+    fHistoPassed->SetYaxisName(fCut[1]->GetUnit(fOptionAxis[1]));
     name         = name + "_F";
     name         = "Failed";
-    fHistoFailed = new TH2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
-    fHistoFailed->GetXaxis()->SetTitle(fCut[0]->GetUnit(fOptionAxis[0]));
-    fHistoFailed->GetYaxis()->SetTitle(fCut[1]->GetUnit(fOptionAxis[1]));
+    fHistoFailed = new FastHist2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
+    fHistoFailed->SetXaxisName(fCut[0]->GetUnit(fOptionAxis[0]));
+    fHistoFailed->SetYaxisName(fCut[1]->GetUnit(fOptionAxis[1]));
 
 #ifdef MPPCUTFULL
     if (fCut[0] == fCut[1]) { fIdenticalCuts = kTRUE; }

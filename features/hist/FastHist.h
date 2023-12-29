@@ -14,6 +14,8 @@
 #include <TH3.h>
 #include <TNamed.h>
 
+#include <iostream>
+
 namespace Hal {
 
   class FastHist : public TNamed {
@@ -42,9 +44,14 @@ namespace Hal {
     virtual Double_t GetBinContent(Int_t /*i*/) const { return 0; };
     virtual Double_t GetBinContent(Int_t /*i*/, Int_t /*j*/) const { return 0; };
     virtual Double_t GetBinContent(Int_t /*i*/, Int_t /*j*/, Int_t /*k*/) const { return 0; };
-    virtual void Fill(Double_t /*x*/, Double_t /*w*/) {};
-    virtual void Fill(Double_t /*x*/, Double_t /*y*/, Double_t /*w*/) {};
-    virtual void Fill(Double_t /*x*/, Double_t /*y*/, Double_t /*z*/, Double_t /*w*/) {};
+    virtual void Fill(Double_t /*x*/, Double_t /*w*/) { std::cout << "Not implemented Fill" << ClassName() << std::endl; };
+    virtual void Fill(Double_t /*x*/, Double_t /*y*/, Double_t /*w*/) {
+      std::cout << "Not implemented Fill" << ClassName() << std::endl;
+    };
+    virtual void Fill(Double_t /*x*/, Double_t /*y*/, Double_t /*z*/, Double_t /*w*/) {
+      std::cout << "Not implemented Fill" << ClassName() << std::endl;
+    };
+    virtual void Reset();
     inline void SetRawBinContent(Int_t bin, Double_t w) { fValues[bin] = w; };
     inline void IncrementRawBinContent(Int_t bin, Double_t w) { fValues[bin] += w; };
     virtual TH1* GetTH1() const { return nullptr; };

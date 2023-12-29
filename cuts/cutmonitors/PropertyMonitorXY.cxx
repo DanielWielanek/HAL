@@ -34,14 +34,14 @@ namespace Hal {
     TString name;  // = Form("%s_vs_%s",
                    // fCut[0]->GetUnit(fOptionAxis[0]).Data(),fCut[1]->GetUnit(fOptionAxis[1]).Data());
     name         = "Passed";
-    fHistoPassed = new TH2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
-    fHistoPassed->GetXaxis()->SetTitle(fXaxisName);
-    fHistoPassed->GetYaxis()->SetTitle(fYaxisName);
+    fHistoPassed = new FastHist2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
+    fHistoPassed->SetXaxisName(fXaxisName);
+    fHistoPassed->SetYaxisName(fYaxisName);
     name         = name + "_F";
     name         = "Failed";
-    fHistoFailed = new TH2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
-    fHistoFailed->GetXaxis()->SetTitle(fXaxisName);
-    fHistoFailed->GetYaxis()->SetTitle(fYaxisName);
+    fHistoFailed = new FastHist2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
+    fHistoFailed->SetXaxisName(fXaxisName);
+    fHistoFailed->SetYaxisName(fYaxisName);
     TH1::AddDirectory(kTRUE);
   }
 
@@ -118,9 +118,9 @@ namespace Hal {
   void EventFieldMonitorXY::Update(Bool_t passed, TObject* obj) {
     Event* ev = (Event*) obj;
     if (passed) {
-      fHistoPassed->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY));
+      fHistoPassed->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), 1);
     } else {
-      fHistoFailed->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY));
+      fHistoFailed->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), 1);
     }
   }
 
@@ -146,9 +146,9 @@ namespace Hal {
   void TrackFieldMonitorXY::Update(Bool_t passed, TObject* obj) {
     Track* tr = (Track*) obj;
     if (passed) {
-      fHistoPassed->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY));
+      fHistoPassed->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY), 1);
     } else {
-      fHistoFailed->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY));
+      fHistoFailed->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY), 1);
     }
   }
 

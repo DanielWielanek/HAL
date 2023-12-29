@@ -61,17 +61,15 @@ namespace Hal {
   void CutMonitorX::CreateHistograms() {
     TString title = Form("%s", Hal::Std::RemoveUnits(fCut[0]->GetUnit(fOptionAxis[0])).Data());
     TString name  = "Passed";
-    fHistoPassed  = new TH1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
-    fHistoPassed->GetXaxis()->SetTitle(fCut[0]->GetUnit(fOptionAxis[0]).Data());
+    fHistoPassed  = new FastHist1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
+    fHistoPassed->SetXaxisName(fCut[0]->GetUnit(fOptionAxis[0]).Data());
     TString y_axis_name       = fCut[0]->GetGroupFlag();  // take flag group like dNTracks
     TString y_axis_name_units = fCut[0]->GetUnit(fOptionAxis[0]);
     y_axis_name               = y_axis_name + "/";
     y_axis_name               = y_axis_name + Hal::Std::RemoveUnits(y_axis_name_units);
-    fHistoPassed->GetYaxis()->SetTitle(y_axis_name);
-    fHistoPassed->SetFillColor(kGreen);
+    fHistoPassed->SetYaxisName(y_axis_name);
     name         = "Failed";
-    fHistoFailed = (TH1D*) fHistoPassed->Clone(name);
-    fHistoFailed->SetFillColor(kRed);
+    fHistoFailed = (FastHist1D*) fHistoPassed->Clone(name);
   }
 
   Bool_t CutMonitorX::Init(Int_t task_id) {

@@ -31,13 +31,11 @@ namespace Hal {
     TH1::AddDirectory(kFALSE);
     TString title = Form("%s", Hal::Std::RemoveUnits(fXaxisName).Data());
     TString name  = "Passed";
-    fHistoPassed  = new TH1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
-    fHistoPassed->GetXaxis()->SetTitle(fXaxisName);
-    fHistoPassed->GetYaxis()->SetTitle(fYaxisName);
-    fHistoPassed->SetFillColor(kGreen);
+    fHistoPassed  = new FastHist1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
+    fHistoPassed->SetXaxisName(fXaxisName);
+    fHistoPassed->SetYaxisName(fYaxisName);
     name         = "Failed";
-    fHistoFailed = (TH1D*) fHistoPassed->Clone(name);
-    fHistoFailed->SetFillColor(kRed);
+    fHistoFailed = (FastHist1D*) fHistoPassed->Clone(name);
     TH1::AddDirectory(kTRUE);
   }
 
@@ -102,9 +100,9 @@ namespace Hal {
   void EventFieldMonitorX::Update(Bool_t passed, TObject* obj) {
     Event* ev = (Event*) obj;
     if (passed) {
-      fHistoPassed->Fill(ev->GetFieldVal(fFieldID));
+      fHistoPassed->Fill(ev->GetFieldVal(fFieldID), 1);
     } else {
-      fHistoFailed->Fill(ev->GetFieldVal(fFieldID));
+      fHistoFailed->Fill(ev->GetFieldVal(fFieldID), 1);
     }
   }
 
@@ -124,9 +122,9 @@ namespace Hal {
   void TrackFieldMonitorX::Update(Bool_t passed, TObject* obj) {
     Track* tr = (Track*) obj;
     if (passed) {
-      fHistoPassed->Fill(tr->GetFieldVal(fFieldID));
+      fHistoPassed->Fill(tr->GetFieldVal(fFieldID), 1);
     } else {
-      fHistoFailed->Fill(tr->GetFieldVal(fFieldID));
+      fHistoFailed->Fill(tr->GetFieldVal(fFieldID), 1);
     }
   }
 

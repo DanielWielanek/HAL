@@ -42,18 +42,13 @@ namespace Hal {
     fFastCutsNo(0),
     fSlowCutsNo(0),
     fCutMonitorsNo(0),
-    fPreviousAddress(NULL),
-    fNextAddress(NULL),
-    fNextNo(NULL),
-    fPreviousNo(NULL),
     fInit(kFALSE),
     fDummy(kFALSE),
     fCollectionID(0),
     fContainerSize(cont_size),
     fStep(1),
-    fCutContainerArr(NULL),  // this is needed to link cut monitors in case of cloning
-    fNextUsed(kFALSE),
-    fPrevUsed(kFALSE) {
+    fCutContainerArr(NULL)  // this is needed to link cut monitors in case of cloning
+  {
     fCutContainerArr = container;
     fCutMonitors     = new TObjArray();
     fCuts            = new TObjArray();
@@ -155,16 +150,8 @@ namespace Hal {
   void CutCollection::Init(Int_t task_id) {
     if (fDummy) {
       fInit = kTRUE;
-      if (fNextNo == NULL) {
-        fNextNo = new Array_1<Int_t>();
-        fNextNo->MakeBigger(1);
-        fNextNo->Set(0, 0);
-      }
-      if (fPreviousNo == NULL) {
-        fPreviousNo = new Array_1<Int_t>();
-        fPreviousNo->MakeBigger(1);
-        fPreviousNo->Set(0, 0);
-      }
+      fNext.SafeInit();
+      fPrev.SafeInit();
       return;
     }
     if (fInit) {
@@ -216,19 +203,15 @@ namespace Hal {
 #endif
       AdvancedMonitorInitialization(task_id);
       fInit = kTRUE;
-      if (fNextNo == NULL) {
-        fNextNo = new Array_1<Int_t>();
-        fNextNo->MakeBigger(1);
-        fNextNo->Set(0, 0);
+      if (fNext.GetSize() == 0) {
+        fNext.SafeInit();
       } else {
-        fNextUsed = kTRUE;
+        fNext.MakeUsed();
       }
-      if (fPreviousNo == NULL) {
-        fPreviousNo = new Array_1<Int_t>();
-        fPreviousNo->MakeBigger(1);
-        fPreviousNo->Set(0, 0);
+      if (fPrev.GetSize() == 0) {
+        fPrev.SafeInit();
       } else {
-        fPrevUsed = kTRUE;
+        fPrev.MakeUsed();
       }
     }
     fFastCutsNo    = fFastCuts->GetEntriesFast();
@@ -247,34 +230,20 @@ namespace Hal {
 
   void CutCollection::AddPreviousAddr(Int_t value, Bool_t backround) {
     if (fDummy) return;
-    if (value < 0) return;  // ignore
-    if (fPreviousAddress == NULL) {
-      fPreviousAddress = new Array_2<Int_t>();
-      fPreviousNo      = new Array_1<Int_t>();
+    if (backround) {
+      fPrevBckg.AddAddr(value);
+    } else {
+      fPrev.AddAddr(value);
     }
-    Int_t layer = 0;
-    if (backround) layer = 1;
-    fPreviousNo->MakeBigger(layer + 1);
-    fPreviousAddress->MakeBigger(layer + 1, fPreviousNo->Get(layer) + 1);
-    fPreviousAddress->Set(layer, fPreviousNo->Get(layer), value);
-    fPreviousNo->IncrementAfter(layer);
-    fPrevUsed = kTRUE;
   }
 
   void CutCollection::AddNextAddr(Int_t value, Bool_t backround) {
     if (fDummy) return;
-    if (value < 0) return;  // ignore
-    Int_t layer = 0;
-    if (backround) layer = 1;
-    if (fNextAddress == NULL) {
-      fNextAddress = new Array_2<Int_t>();
-      fNextNo      = new Array_1<Int_t>();
+    if (backround) {
+      fNextBckg.AddAddr(value);
+    } else {
+      fNext.AddAddr(value);
     }
-    fNextNo->MakeBigger(layer + 1);
-    fNextAddress->MakeBigger(layer + 1, fNextNo->Get(layer) + 1);
-    fNextAddress->Set(layer, fNextNo->Get(layer), value);
-    fNextNo->IncrementAfter(layer);
-    fNextUsed = kTRUE;
   }
 
   Cut* CutCollection::FindCut(TString name) const {
@@ -335,7 +304,7 @@ namespace Hal {
     // linking cuts by names with pointers with cuts
     Int_t oryginal_monitors_no = fCutMonitors->GetEntries();
     Int_t prev_size            = 0;
-    if (fPrevUsed) prev_size = fPreviousNo->GetSize();
+    if (fPrev.IsUsed()) prev_size = fPrev.GetSize();
     for (int i = 0; i < oryginal_monitors_no; i++) {
       CutMonitor* cutmon = (CutMonitor*) fCutMonitors->UncheckedAt(i);
       if (cutmon->ObjMonitor()) {
@@ -604,7 +573,7 @@ namespace Hal {
       Cut* cut = FindCut(classname);
       arr->AddLast(cut);
       return arr;
-    } else if (fPrevUsed) {
+    } else if (fPrev.IsUsed()) {
 #ifdef HAL_DEBUG
       Cout::PrintInfo("Looking for cuts in lower collections", EInfo::kDebugInfo);
 #endif
@@ -727,30 +696,31 @@ namespace Hal {
     } else {
       pack->AddObject(new ParameterString("State", "Normal"));
     }
-    if (fNextAddress && fNextUsed) {
-      pack->AddObject(new ParameterInt("NextLayers", fNextAddress->GetSize()));
-      for (Int_t j = 0; j < fNextAddress->GetSize(); j++) {
-        TList* list = new TList();
-        list->SetOwner(kTRUE);
-        list->SetName(Form("NextObj_%i", j));
-        for (int i = 0; i < fNextNo->Get(j); i++) {
-          list->AddAt(new ParameterInt(Form("%i", i), fNextAddress->Get(j, i)), i);
-        }
-        pack->AddObject(list);
+
+    auto MakeList = [](TString name, const CutCollectionLinks& col) {
+      TList* list = new TList();
+      list->SetOwner(kTRUE);
+      list->SetName(name);
+      for (int i = 0; i < col.GetSize(); i++) {
+        list->AddAt(new ParameterInt(Form("%i", i), col.GetAddr(i)), i);
       }
-    }
-    if (fPreviousAddress && fPrevUsed) {
-      pack->AddObject(new ParameterInt("PreviousLayers", fPreviousAddress->GetSize()));
-      for (Int_t j = 0; j < fPreviousAddress->GetSize(); j++) {
-        TList* list = new TList();
-        list->SetOwner(kTRUE);
-        list->SetName(Form("PrevObj_%i", j));
-        for (int i = 0; i < fPreviousNo->Get(j); i++) {
-          list->AddAt(new ParameterInt(Form("%i", i), fPreviousAddress->Get(j, i)), i);
-        }
-        pack->AddObject(list);
-      }
-    }
+      return list;
+    };
+    int used = 0;
+    if (fNext.IsUsed()) used++;
+    if (fNextBckg.IsUsed()) used++;
+    pack->AddObject(new ParameterInt("NextLayers", used));
+    if (fNext.IsUsed()) pack->AddObject(MakeList("NextObj_0", fNext));
+    if (fNextBckg.IsUsed()) pack->AddObject(MakeList("NextObj_1", fNextBckg));
+
+    used = 0;
+    if (fPrev.IsUsed()) used++;
+    if (fPrevBckg.IsUsed()) used++;
+
+    pack->AddObject(new ParameterInt("PreviousLayers", used));
+    if (fPrev.IsUsed()) pack->AddObject(MakeList("PrevObj_0", fPrev));
+    if (fPrevBckg.IsUsed()) pack->AddObject(MakeList("PrevObj_1", fPrevBckg));
+
     TList* CutMonitorList = new TList();
     CutMonitorList->SetOwner(kTRUE);
     CutMonitorList->SetName("CutMonitorList");
@@ -784,19 +754,13 @@ namespace Hal {
     fFastCutsNo(0),
     fSlowCutsNo(0),
     fCutMonitorsNo(0),
-    fPreviousAddress(NULL),
-    fNextAddress(NULL),
-    fNextNo(NULL),
-    fPreviousNo(NULL),
     fMode(ECutUpdate::kNo),
     fInit(kFALSE),
     fDummy(kFALSE),
     fCollectionID(0),
     fContainerSize(0),
     fStep(1),
-    fCutContainerArr(0),
-    fNextUsed(kFALSE),
-    fPrevUsed(kFALSE) {
+    fCutContainerArr(0) {
     Cout::PrintInfo("default constructor of CutCollection should never be used !!", EInfo::kLowWarning);
   }
 
@@ -819,28 +783,7 @@ namespace Hal {
       delete fCutMonitors;
       delete fCuts;
       delete fFastCuts;
-      fPreviousNo = 0;
-      fNextNo     = 0;
-      fPrevUsed   = kFALSE;
-      fNextUsed   = kFALSE;
-      if (fNextNo) {
-        delete fNextNo;
-        fNextNo = nullptr;
-      }
-      if (fNextAddress) {
-        delete fNextAddress;
-        fNextAddress = nullptr;
-      }
     }
-    if (fPreviousNo) {
-      delete fPreviousNo;
-      fPreviousNo = nullptr;
-    }
-    if (fPreviousAddress) {
-      delete fPreviousAddress;
-      fPreviousAddress = nullptr;
-    }
-
     fCutMonitors   = copy->fCutMonitors;
     fCuts          = copy->fCuts;
     fFastCuts      = copy->fFastCuts;
@@ -860,21 +803,13 @@ namespace Hal {
     fCutMonitorsNo = copy->fCutMonitorsNo;
     fFastCutsNo    = copy->fFastCutsNo;
     fSlowCutsNo    = copy->fSlowCutsNo;
-    if (copy->fPrevUsed) {
-      fPreviousNo      = new Array_1<Int_t>(*copy->fPreviousNo);
-      fPreviousAddress = new Array_2<Int_t>(*copy->fPreviousAddress);
-    }
+    if (copy->fPrev.IsUsed()) fPrev = copy->fPrev;
+    if (copy->fPrevBckg.IsUsed()) fPrevBckg = copy->fPrevBckg;
     if (copy_high_links) {
-      if (copy->fNextUsed) {
-        if (fNextNo) delete fNextNo;
-        if (fNextAddress) delete fNextAddress;
-        fNextNo      = new Array_1<Int_t>(*copy->fNextNo);
-        fNextAddress = new Array_2<Int_t>(*copy->fNextAddress);
-        fNextUsed    = copy->fNextUsed;
-      }
+      if (copy->fNext.IsUsed()) fNext = copy->fNext;
+      if (copy->fNextBckg.IsUsed()) fNextBckg = copy->fNextBckg;
     }
-    fPrevUsed = copy->fPrevUsed;
-    fDummy    = kTRUE;
+    fDummy = kTRUE;
   }
 
   CutCollection::~CutCollection() {
@@ -885,10 +820,6 @@ namespace Hal {
       delete fFastCuts;
       delete fCutMonitors;
     }
-    if (fNextNo) delete fNextNo;
-    if (fNextAddress) delete fNextAddress;
-    if (fPreviousNo) delete fPreviousNo;
-    if (fPreviousAddress) delete fPreviousAddress;
   }
 
   ULong64_t CutCollection::GetPassed(Option_t* opt) const {
@@ -929,6 +860,16 @@ namespace Hal {
     } else {
       return ECutUpdate::kTwoTrack;
     }
+  }
+
+  void CutCollectionLinks::SafeInit() {
+    if (fLinks.size() == 0) fLinks.push_back(0);
+  }
+
+  void CutCollectionLinks::AddAddr(Int_t addr) {
+    if (addr < 0) return;
+    fLinks.push_back(addr);
+    fUsed = kTRUE;
   }
 
 }  // namespace Hal

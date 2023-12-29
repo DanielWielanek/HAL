@@ -30,6 +30,21 @@ namespace Hal {
    * basic class for storing all cuts and cut monitors used for one group of
    * objects, called also collection or cut sub-container
    */
+
+  class CutCollectionLinks : public TObject {
+    std::vector<int> fLinks;
+    Bool_t fUsed = {kFALSE};
+
+  public:
+    CutCollectionLinks() {};
+    void SafeInit();
+    void AddAddr(Int_t addr);
+    inline Int_t GetAddr(Int_t index) const { return fLinks[index]; }
+    inline Int_t GetSize() const { return fLinks.size(); }
+    void MakeUsed() { fUsed = kTRUE; }
+    Bool_t IsUsed() const { return fUsed; };
+    virtual ~CutCollectionLinks() {};
+  };
   class CutCollection : public TObject {
   private:
     TObjArray* fCutMonitors;
@@ -38,15 +53,11 @@ namespace Hal {
     Int_t fFastCutsNo;
     Int_t fSlowCutsNo;
     Int_t fCutMonitorsNo;
-    Array_2<Int_t>* fPreviousAddress;
-    Array_2<Int_t>* fNextAddress;
-    Array_1<Int_t>* fNextNo;
-    Array_1<Int_t>* fPreviousNo;
+    CutCollectionLinks fPrev, fNext, fPrevBckg, fNextBckg;
     ECutUpdate fMode;  // mode event/ track. two track
     Bool_t fInit, fDummy;
     Int_t fCollectionID, fContainerSize, fStep;
     TObjArray** fCutContainerArr;  //[fContainerSize]
-    Bool_t fNextUsed, fPrevUsed;
     /**
      * update cut monitors
      * @param val value to update - true if object pass, false otherwise
@@ -278,48 +289,48 @@ namespace Hal {
      *
      * @return number of links to lower collections
      */
-    inline Int_t GetPrevNo() const { return fPreviousNo->Get(0); };
+    inline Int_t GetPrevNo() const { return fPrev.GetSize(); };
     /**
      *
      * @return number of links to higher collections
      */
-    inline Int_t GetNextNo() const { return fNextNo->Get(0); };
+    inline Int_t GetNextNo() const { return fNext.GetSize(); };
     /**
      * return value of given link that points to lower sub-containers
      * @param index number of link
      * @return number of collection (lower sub-container linked with this)
      */
-    inline Int_t GetPrevAddr(Int_t index) const { return fPreviousAddress->Get(0, index); };
+    inline Int_t GetPrevAddr(Int_t index) const { return fPrev.GetAddr(index); };
     /**
      * return value of given link that points to higher sub-containers
      * @param index number of link
      * @return number of collection (higher sub-container linked with this)
      */
-    inline Int_t GetNextAddr(Int_t index) const { return fNextAddress->Get(0, index); };
+    inline Int_t GetNextAddr(Int_t index) const { return fNext.GetAddr(index); };
     /**
      *
      * @return total number for lower tiers sub-containers in background mode
      */
-    inline Int_t GetPrevNoBackground() const { return fPreviousNo->Get(1); };
+    inline Int_t GetPrevNoBackground() const { return fPrevBckg.GetSize(); };
     /**
      *
      * @return total number for higher tiers sub-containers in background mode
      */
-    inline Int_t GetNextNoBackround() const { return fNextNo->Get(1); };
+    inline Int_t GetNextNoBackround() const { return fNextBckg.GetSize(); };
     /**
      * return value of given link that points to lower sub-containers and are
      * background sub-containers
      * @param index number of link
      * @return number of collection (lower sub-container linked with this)
      */
-    inline Int_t GetPrevAddBackround(Int_t index) const { return fPreviousAddress->Get(1, index); };
+    inline Int_t GetPrevAddBackround(Int_t index) const { return fPrevBckg.GetAddr(index); };
     /**
      * return value of given link that points to higher sub-containers that are
      * also background sub-containers
      * @param index number of link
      * @return number of collection (higher sub-container linked with this)
      */
-    inline Int_t GetNextAddrBackround(Int_t index) const { return fNextAddress->Get(1, index); };
+    inline Int_t GetNextAddrBackround(Int_t index) const { return fNextBckg.GetAddr(index); };
     /**
      *
      * @return report from this

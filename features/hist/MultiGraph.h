@@ -12,6 +12,7 @@
 #include <TObject.h>
 
 class TAxis;
+class TH1;
 class TGraphErrors;
 class TMultiGraph;
 
@@ -159,6 +160,12 @@ namespace Hal {
      * @return number of histograms
      */
     Int_t GetNGraphs() const { return fN; }
+    /**
+     * add histogram to this multigraph
+     * @param h
+     * @param no
+     */
+    void AddHistogram(const TH1& h, Int_t no = -1);
     virtual ~MultiGraph();
     ClassDef(MultiGraph, 1)
   };

@@ -252,6 +252,7 @@ namespace Hal {
       if (Find(Form("%sLabSiz", lab[iAx].Data()), d)) ax->SetLabelSize(d);
       if (Find(Form("%sLabOf", lab[iAx].Data()), d)) ax->SetLabelOffset(d);
       if (Find(Form("%sRangeMin", lab[iAx].Data()), d) && Find(Form("%sRangeMax", lab[iAx].Data()), e)) ax->SetRangeUser(d, e);
+      if (Find(Form("%sCenter", lab[iAx].Data()), d)) { ax->CenterTitle(d); }
     }
   }
 
@@ -300,6 +301,7 @@ namespace Hal {
       if (Find(Form("%sLabSiz", lab[iAx].Data()), d)) ax->SetLabelSize(d);
       if (Find(Form("%sLabOf", lab[iAx].Data()), d)) ax->SetLabelOffset(d);
       if (Find(Form("%sRangeMin", lab[iAx].Data()), d) && Find(Form("%sRangeMax", lab[iAx].Data()), e)) ax->SetRangeUser(d, e);
+      if (Find(Form("%sCenter", lab[iAx].Data()), d)) { ax->CenterTitle(d); }
     }
   }
 
@@ -314,6 +316,23 @@ namespace Hal {
   void HistoStyle::SetLineColor(Color_t c) { Register("lCol", c); }
 
   void HistoStyle::SetLineStyle(Style_t s) { Register("lStyle", s); }
+
+  HistoStyle HistoStyle::GetStyle(TString style) {
+    HistoStyle res;
+    if (Hal::Std::FindParam(style, "05", kTRUE)) {
+      res.SetAxis(0.05, 0.8, 0.05, 0.005, 'x');
+      res.SetAxis(0.05, 0.8, 0.05, 0.005, 'y');
+    }
+    if (Hal::Std::FindParam(style, "colorCircle", kTRUE)) {
+      res.SetColor(kRed);
+      res.SetMarkerStyle(kFullCircle);
+    }
+    if (Hal::Std::FindParam(style, "center", kTRUE)) {
+      res.CenterTitle(kTRUE, 'x');
+      res.CenterTitle(kTRUE, 'y');
+    }
+    return res;
+  }
 
   void HistoStyle::SetAntiColor(Bool_t /*safe*/) {
     Int_t i;
@@ -332,5 +351,7 @@ namespace Hal {
     if (Find(key, dVal)) return kTRUE;
     return kFALSE;
   }
+
+  void HistoStyle::CenterTitle(Bool_t center, Char_t ax) { Register(Form("%cCenter", ax), (int) center); }
 
 } /* namespace Hal */

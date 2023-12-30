@@ -118,6 +118,15 @@ namespace Hal {
   public:
     HistoStyle();
     /**
+     * return predefine style for 1d histogram
+     * @param style options:
+     * 05 - set margins sizes to 0.05 (default optimal)
+     * colorCircle - set line color/width and marker to full circle
+     * center center axes
+     * @return
+     */
+    static HistoStyle GetStyle(TString style);
+    /**
      * set title size, title offset, label size and label offset simultaneously
      * @param val
      * @param x
@@ -212,6 +221,12 @@ namespace Hal {
      */
     void SetAxis(Double_t titleSize, Double_t titleOffset, Double_t labelSize, Double_t labelOffset, Char_t x = 'x');
     /**
+     * center axis title
+     * @param center
+     * @param
+     */
+    void CenterTitle(Bool_t center = kTRUE, Char_t = 'x');
+    /*
      * apply setting to histogram
      * @param h
      * @param no - for multigraph of hall

@@ -14,6 +14,7 @@
 #include <TAttMarker.h>
 #include <TAxis.h>
 #include <TGraphErrors.h>
+#include <TH1D.h>
 #include <TMultiGraph.h>
 #include <TString.h>
 #include <TVirtualPad.h>
@@ -183,4 +184,16 @@ namespace Hal {
     fYaxis = new TAxis();
     return fYaxis;
   }
+
+  void MultiGraph::AddHistogram(const TH1& h, Int_t no) {
+    if (no == -1) {
+      MakeGraph();
+      no = GetNGraphs() - 1;
+    }
+    auto axis = h.GetXaxis();
+    for (int i = 0; i <= axis->GetNbins(); i++) {
+      SetPoint(no, i, axis->GetBinCenter(i), 0, h.GetBinContent(i), h.GetBinError(i));
+    }
+  }
+
 }  // namespace Hal

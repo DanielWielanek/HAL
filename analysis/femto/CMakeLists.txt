@@ -155,9 +155,11 @@ if(DEFINED CIA)
         top_secret/CorrFitSHCF.cxx
         top_secret/CorrFitSHFrom3D.cxx
         top_secret/FemtoSHArray.cxx
+        top_secret/CorrFitSHCFMultiDim.cxx
         top_secret/CorrFitMaskSH.cxx
         top_secret/CorrFitHDFuncSH.cxx
         top_secret/CorrFitDumpedPairAnaVertical.cxx
+        top_secret/BattlestarGalactica.cxx
     )
 endif()
 

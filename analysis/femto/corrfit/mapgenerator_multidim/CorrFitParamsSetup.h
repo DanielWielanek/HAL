@@ -39,6 +39,7 @@ namespace Hal {
     Int_t GetNParams() const { return fSize; }
     Int_t GetNSteps(Int_t par_id) const { return fNpoints.Get(par_id) - 1; };
     Int_t GetNPoints(Int_t par_id) const { return fNpoints.Get(par_id); };
+    Int_t GetParId(TString name) const;
     Double_t GetMin(Int_t par_id) const { return fMin.Get(par_id); };
     Double_t GetMax(Int_t par_id) const { return fMax.Get(par_id); };
     Double_t GetStepSize(Int_t par_id) const;

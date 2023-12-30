@@ -154,4 +154,12 @@ namespace Hal {
     delete f;
     return kTRUE;
   }
+
+  Int_t CorrFitParamsSetup::GetParId(TString name) const {
+    for (int i = 0; i < fSize; i++) {
+      if (fNames[i] == name) return i;
+    }
+    return -1;
+  }
+
 }  // namespace Hal

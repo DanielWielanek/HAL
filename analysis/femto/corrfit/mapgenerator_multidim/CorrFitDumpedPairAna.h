@@ -38,20 +38,22 @@ namespace Hal {
    */
 
   class CorrFitDumpedPairAna : public TObject {
+    std::vector<TString> fUsedBranches;
+    TFile* fFile = {nullptr};
+    TTree* fTree = {nullptr};
+
   protected:
     TString fPairFile;
-    TFile* fFile                           = {nullptr};
-    TTree* fTree                           = {nullptr};
-    Int_t fJobId                           = {-1};
-    Int_t fMultiplyWeight                  = {1};
-    Int_t fMultiplyPreprocess              = {1};
-    Int_t fMultiplyJobs                    = {1};
-    Int_t fTotalNumberOfPoints             = {0};
-    Bool_t fIgnoreSing                     = {kFALSE};
-    Bool_t fImgMom                         = {kFALSE};
-    FemtoCorrFunc* fTempCF                 = {nullptr};
-    FemtoPair* fPair                       = {nullptr};
-    std::vector<FemtoCorrFunc*> fCF        = {nullptr};
+    Int_t fJobId               = {-1};
+    Int_t fMultiplyWeight      = {1};
+    Int_t fMultiplyPreprocess  = {1};
+    Int_t fMultiplyJobs        = {1};
+    Int_t fTotalNumberOfPoints = {0};
+    Bool_t fIgnoreSing         = {kFALSE};
+    Bool_t fImgMom             = {kFALSE};
+    FemtoCorrFunc* fTempCF     = {nullptr};
+    FemtoPair* fPair           = {nullptr};
+    std::vector<FemtoCorrFunc*> fCF;
     FemtoFreezoutGenerator* fTempGenerator = {nullptr};
     std::vector<FemtoFreezoutGenerator*> fGenerator;
     FemtoWeightGenerator* fWeight    = {nullptr};
@@ -62,23 +64,21 @@ namespace Hal {
     eDumpCalcMode fMode;
     /** export CF to root tree, this is used for compression of data, you can set
      * value of bin to -1, then such bin will not be used **/
-    void RootExport1D(Femto1DCF* cf, Int_t step);
-    void RootExport3D(Femto3DCF* cf, Int_t step);
-    void RootExportSH(FemtoSHCF* cf, Int_t step);
+    Bool_t SaveAsRawArray(TObject* cf, Int_t step);
     Bool_t ConfigureInput();
     Bool_t FindTree(TDirectory* dir, TList* list);
     Bool_t ConfigureFromXML();
     Int_t GetSimStepNo() const { return fMultiplyJobs * fJobId; }
-    virtual void RunSignalPairs(Int_t nEvents)           = 0;
-    virtual void RunSignalBackgroundPairs(Int_t nEvents) = 0;
-    virtual void RunBackgroundPairs(Int_t nEvents)       = 0;
+    virtual void RunSignalPair()           = 0;
+    virtual void RunSignalBackgroundPair() = 0;
+    virtual void RunBackgroundPair()       = 0;
     virtual Bool_t IsVertical() const { return kFALSE; }
     /**
      * connects to needed branches
      * @return
      */
     virtual Bool_t ConnectToData() = 0;
-
+    void LockUnusedBranches();
     void ConnectToSignal(const std::vector<TString>& branches);
     void ConnectToBackground(const std::vector<TString>& branches);
     /**
@@ -90,9 +90,6 @@ namespace Hal {
      * init  generators - for vertical init all generators for horizontal init generators x multiplicity
      */
     virtual Bool_t InitGenerators(const std::vector<int>& dims, XMLNode* parameters, const CorrFitParamsSetup& setup) = 0;
-
-
-  protected:
     /**
      * set freezout generator
      * @param gen

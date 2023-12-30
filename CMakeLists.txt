@@ -36,6 +36,10 @@ if (USE_FAIRROOT)
     include(cmake/modules/CMakeListsExternal.cmake)
 endif()
 
+if(DEFINED CIA)
+    add_compile_definitions(__CIA__ GLOBAL)
+endif()
+
 
 PrintConfig()
 SetHeaderVariables(${CMAKE_SOURCE_DIR})

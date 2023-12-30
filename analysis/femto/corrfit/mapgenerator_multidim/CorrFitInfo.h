@@ -34,6 +34,8 @@ namespace Hal {
     void SetSetup(const CorrFitParamsSetup& setup) { fSetup = setup; }
     void SetMacroText(const TString& macroText) { fMacroText = macroText; }
     void Print(Option_t* option = "") const;
+    Int_t GetMainBins() const;
+    Bool_t IsVertical() const { return fVertical; }
     TObject* GetCf() const { return fCF; }
     TString GetMacroText() const { return fMacroText; }
     TString GetPairFile() const { return fPairFile; }

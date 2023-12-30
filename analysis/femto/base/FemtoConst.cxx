@@ -14,8 +14,12 @@
 #include "FemtoDPhiDEta.h"
 #include "FemtoPairKinematics.h"
 #include "FemtoSHCF.h"
+#include "FemtoWeightGenerator.h"
+#include "FemtoWeightGeneratorLednicky.h"
+#include "StdString.h"
 #include "XMLNode.h"
 
+#include <TClass.h>
 #include <TDatabasePDG.h>
 #include <TLorentzVector.h>
 #include <TRandom.h>
@@ -599,6 +603,69 @@ namespace Hal {
       TLorentzVector x1(rgaus(sigmar), rgaus(sigmar), rgaus(sigmar), 0);
       TLorentzVector x2(rgaus(sigmar), rgaus(sigmar), rgaus(sigmar), 0);
       p->SetFreezouts(x1, x2);
+    }
+
+    Array_1<Float_t>* ExportToFlat(TObject* obj) {
+      if (!obj) return nullptr;
+      auto shcf = dynamic_cast<Hal::FemtoSHCF*>(obj);
+      if (shcf) {
+        shcf->RecalculateCF();
+        return shcf->ExportToFlatNum();
+      }
+      auto cf1d = dynamic_cast<Hal::Femto1DCF*>(obj);
+      if (cf1d) return cf1d->ExportToFlatNum();
+      auto cf3d = dynamic_cast<Hal::Femto3DCF*>(obj);
+      if (cf3d) return cf3d->ExportToFlatNum();
+      return nullptr;
+    }
+    /**
+     * return CF type if object can be convereted in CF
+     * @param obj
+     * @return cf type kUnkown if failed to export
+     */
+    ECFType GetCFType(TObject* obj) {
+      if (!obj) return ECFType::kUnkown;
+      if (dynamic_cast<Hal::FemtoSHCF*>(obj)) { return ECFType::kSpherical; }
+      if (dynamic_cast<Hal::Femto1DCF*>(obj)) { return ECFType::kOneDim; }
+      if (dynamic_cast<Hal::Femto3DCF*>(obj)) { return ECFType::kThreeDim; }
+      if (dynamic_cast<Hal::FemtoDPhiDEta*>(obj)) { return ECFType::kPhiEta; }
+      return ECFType::kUnkown;
+    }
+
+    FemtoWeightGenerator* GetWeightGeneratorFromXLM(XMLNode* nod) {
+      XMLNode* weightType = nod->GetChild("Type");
+      if (!weightType) return nullptr;
+      TClass* weightClass     = TClass::GetClass(weightType->GetValue(), 1, 0);
+      FemtoWeightGenerator* w = static_cast<FemtoWeightGenerator*>(weightClass->New());
+      if (!w) return nullptr;
+      XMLNode* pairType        = nod->GetChild("PairType");
+      TString val              = pairType->GetValue();
+      std::vector<TString> str = Hal::Std::ExplodeString(val, ';');
+      if (str.size() == 2) {
+        Int_t pid1 = str[0].Atoi();
+        Int_t pid2 = str[1].Atoi();
+        w->SetPairType(Femto::PidToPairType(pid1, pid2));
+      }
+      FemtoWeightGeneratorLednicky* lednicky = dynamic_cast<FemtoWeightGeneratorLednicky*>(w);
+      if (lednicky) {
+        lednicky->SetStrongOff();
+        lednicky->SetCoulOff();
+        lednicky->SetQuantumOff();
+
+        XMLNode* quantum = nod->GetChild("QuantumOn");
+        XMLNode* strong  = nod->GetChild("StrongOn");
+        XMLNode* coul    = nod->GetChild("CoulombOn");
+        if (quantum) {
+          if (quantum->GetValue() == "kTRUE") lednicky->SetQuantumOn();
+        }
+        if (strong) {
+          if (strong->GetValue() == "kTRUE") lednicky->SetStrongOn();
+        }
+        if (coul) {
+          if (coul->GetValue() == "kTRUE") lednicky->SetCoulOn();
+        }
+      }
+      return w;
     }
   }  // namespace Femto
 }  // namespace Hal

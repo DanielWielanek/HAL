@@ -30,13 +30,16 @@
 #include <iostream>
 
 void compress();
+void compressVertical();
+void compressHorizontal();
 void printjobs();
 void printjobsbad();
 void preparetemplate();
+int getNFiles();
 void rebin(TString opt);
 int main(int argc, char* argv[]) {
   if (argc < 2) {
-    Hal::Cout::PrintInfo("No arguments! run: nica-corrfit --help to get help", Hal::EInfo::kCriticalError);
+    Hal::Cout::PrintInfo("No arguments! run: hal-corrfit --help to get help", Hal::EInfo::kCriticalError);
     return 0;
   }
   TString arg1 = argv[1];
@@ -76,45 +79,26 @@ Bool_t AllJobsCompleted(Int_t jobs) {
 }
 
 inline void compress() {
-  Hal::CorrFitParamsSetup setup("corrfit_conf.xml");
-  Int_t nJobs = setup.GetNJobs();
-
-  if (!AllJobsCompleted(nJobs)) {
-    Hal::Cout::PrintInfo("Not all jobs are completed", Hal::EInfo::kError);
-    Hal::Cout::Text("Do you really want to continue y/n?", "L");
-    TString ans;
-    std::cin >> ans;
-    if (!(ans == "y" || ans == "Y")) { return; }
-  }
-  TFile* info_file      = new TFile("files/config.root");
+  HalCoutDebug();
+  TFile* info_file = new TFile("files/config.root");
+  HalCoutDebug();
   Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
+  HalCoutDebug();
+  bool vert = obj->IsVertical();
+  HalCoutDebug();
   info_file->Close();
-  TFile* file   = new TFile("merged_map.root", "recreate");
-  TChain* chain = new TChain("map", "");
-
-  for (int i = 0; i < nJobs; i++) {
-    chain->AddFile(Form("files/corrfit_map_%i.root", i));
+  HalCoutDebug();
+  vert = true;
+  HalCoutDebug();
+  if (vert) {
+    compressVertical();
+  } else {
+    compressHorizontal();
   }
-
-  TTree* tree                     = new TTree("map", "");
-  Hal::Array_1<Float_t>* Data_out = new Hal::Array_1<Float_t>();
-  Hal::Array_1<Float_t>* Data_in  = nullptr;
-  chain->SetBranchAddress("data", &Data_in);
-  tree->Branch("data", &Data_out);
-  for (int i = 0; i < chain->GetEntries(); i++) {
-    chain->GetEntry(i);
-    if (i == 0) { Data_out->MakeBigger(Data_in->GetSize()); }
-    *Data_out = *Data_in;
-    tree->Fill();
-  }
-  tree->Write();
-  obj->Write();
-  file->Close();
 }
 
 void printjobs() {
-  Hal::CorrFitParamsSetup setup("corrfit_conf.xml");
-  Int_t nJobs     = setup.GetNJobs();
+  Int_t nJobs     = getNFiles();
   Bool_t all_jobs = AllJobsCompleted(nJobs);
 
   Hal::Cout::Text(Form("CorrFitDB %i jobs", nJobs), "M", kWhite);
@@ -230,4 +214,99 @@ void rebin(TString rebin) {
   Hal::CorrFitMapRebin* rebinner = new Hal::CorrFitMapRebin("merged_map.root", Nrebin);
   rebinner->Compress("merged_rebined_map.root");
   delete rebinner;
+}
+int getNFiles() {
+  TFile* info_file      = new TFile("files/config.root");
+  Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
+  Hal::CorrFitParamsSetup setup("corrfit_conf.xml");
+  int nFiles = setup.GetNJobs();
+  if (obj->IsVertical()) { nFiles = obj->GetMainBins(); }
+  return nFiles;
+}
+void compressVertical() {
+  TFile* info_file = new TFile("files/config.root");
+  HalCoutDebug();
+  Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
+  HalCoutDebug();
+  Hal::CorrFitParamsSetup setup("corrfit_conf.xml");
+  HalCoutDebug();
+  int nFiles = obj->GetMainBins();
+  int nJobs  = setup.GetNJobs();
+  HalCoutDebug();
+  std::cout << "VERTICAL" << nFiles << std::endl;
+  if (!AllJobsCompleted(nFiles)) {
+    Hal::Cout::PrintInfo("Not all jobs are completed", Hal::EInfo::kError);
+    Hal::Cout::Text("Do you really want to continue y/n?", "L");
+    TString ans;
+    std::cin >> ans;
+    if (!(ans == "y" || ans == "Y")) { return; }
+  }
+  TFile* file   = new TFile("merged_map.root", "recreate");
+  TChain* chain = new TChain("map", "");
+
+  for (int i = 0; i < nFiles; i++) {
+    chain->AddFile(Form("files/corrfit_map_%i.root", i));
+  }
+
+  TTree* tree                     = new TTree("map", "");
+  Hal::Array_1<Float_t>* Data_out = new Hal::Array_1<Float_t>();
+  Hal::Array_1<Float_t>* Data_in  = nullptr;
+  chain->SetBranchAddress("data", &Data_in);
+  tree->Branch("data", &Data_out);
+  int entries = chain->GetEntries() / nJobs;  // n_files *n_bins /nJobs(nbins) = n_files
+  chain->GetEntry(0);
+  Data_out->MakeBigger(Data_in->GetSize() * nFiles);
+  int single_size = Data_in->GetSize();
+  for (int i = 0; i < nJobs; i++) {     // nsamples
+    for (int j = 0; j < nFiles; j++) {  // hbins
+      chain->GetEntry(j * nJobs + i);
+      for (int k = 0; k < single_size; k++) {
+        Data_out->Set(single_size * j + k, Data_in->Get(k));
+      }
+    }
+    tree->Fill();
+  }
+
+  tree->Write();
+  obj->Write();
+  file->Close();
+  info_file->Close();
+}
+void compressHorizontal() {
+  TFile* info_file      = new TFile("files/config.root");
+  Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
+  bool vert             = obj->IsVertical();
+
+  Hal::CorrFitParamsSetup setup("corrfit_conf.xml");
+  Int_t nJobs = setup.GetNJobs();
+  if (!AllJobsCompleted(nJobs)) {
+    Hal::Cout::PrintInfo("Not all jobs are completed", Hal::EInfo::kError);
+    Hal::Cout::Text("Do you really want to continue y/n?", "L");
+    TString ans;
+    std::cin >> ans;
+    if (!(ans == "y" || ans == "Y")) { return; }
+  }
+
+  TFile* file   = new TFile("merged_map.root", "recreate");
+  TChain* chain = new TChain("map", "");
+
+  for (int i = 0; i < nJobs; i++) {
+    chain->AddFile(Form("files/corrfit_map_%i.root", i));
+  }
+
+  TTree* tree                     = new TTree("map", "");
+  Hal::Array_1<Float_t>* Data_out = new Hal::Array_1<Float_t>();
+  Hal::Array_1<Float_t>* Data_in  = nullptr;
+  chain->SetBranchAddress("data", &Data_in);
+  tree->Branch("data", &Data_out);
+  for (int i = 0; i < chain->GetEntries(); i++) {
+    chain->GetEntry(i);
+    if (i == 0) { Data_out->MakeBigger(Data_in->GetSize()); }
+    *Data_out = *Data_in;
+    tree->Fill();
+  }
+  tree->Write();
+  obj->Write();
+  file->Close();
+  info_file->Close();
 }

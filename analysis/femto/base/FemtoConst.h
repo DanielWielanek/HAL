@@ -10,6 +10,7 @@
 #ifndef HALFEMTOCONST_H_
 #define HALFEMTOCONST_H_
 
+#include "Array.h"
 #include "TString.h"
 /**
  * femtoscopic kinematics mode
@@ -27,6 +28,7 @@ namespace Hal {
       kPHIETA,
       kPRFL
     };
+    enum class ECFType { kOneDim, kThreeDim, kSpherical, kPhiEta, kUnkown };
     enum class EPairType {
       kUnknown           = 100,
       kPionPlusPionPlus  = 101,
@@ -78,6 +80,7 @@ namespace Hal {
   class FemtoPair;
   class DividedHisto1D;
   class XMLNode;
+  class FemtoWeightGenerator;
   namespace Femto {
     /**
      * return true if pair contains identical particles
@@ -131,6 +134,12 @@ namespace Hal {
      */
     DividedHisto1D* GetHistoFromXML(XMLNode* nod);
     /**
+     * create weight algo from xml node
+     * @param nod
+     * @return
+     */
+    FemtoWeightGenerator* GetWeightGeneratorFromXLM(XMLNode* nod);
+    /**
      * convert kinematic type to label used to description of DividedHisto
      * @param kin
      * @return
@@ -153,6 +162,18 @@ namespace Hal {
      * @param sigmar - std of freezout coordinate
      */
     void FillRandomPair(FemtoPair* p, Int_t pid1, Int_t pid2, Double_t sigmaq = 0.1, Double_t sigmar = 1);
+    /**
+     * export obj into flat array if this is a CF
+     * @param obj
+     * @return nullptr if failed to export
+     */
+    Array_1<Float_t>* ExportToFlat(TObject* obj);
+    /**
+     * return CF type if object can be convereted in CF
+     * @param obj
+     * @return cf type kUnkown if failed to export
+     */
+    ECFType GetCFType(TObject* obj);
   }  // namespace Femto
 }  // namespace Hal
 

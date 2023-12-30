@@ -101,10 +101,6 @@ namespace Hal {
       kinem         = Femto::LabelToKinematics(label);
     }
     fPair = Femto::MakePair(kinem, fImgMom);
-    if (!ConnectToData()) {
-      Hal::Cout::PrintInfo("Cant connect to data", EInfo::kError);
-      return kFALSE;
-    }
 
     if (fIgnoreSing) {
       if (dummy->InheritsFrom("Hal::FemtoSHCF")) {
@@ -123,49 +119,46 @@ namespace Hal {
     } else {
       nEvents = fTree->GetEntries();
     }
-
     switch (fMode) {
       case eDumpCalcMode::kSignalBackgroundPairs: {
-        RunSignalBackgroundPairs(nEvents);
+        Int_t step = nEvents / 100;
+        for (int iEvent = 0; iEvent < nEvents; iEvent++) {
+          fTree->GetEntry(iEvent);
+          if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
+          RunSignalBackgroundPair();
+        }
+
       } break;
       case eDumpCalcMode::kSignalPairs: {
-        RunSignalPairs(nEvents);
+        RunSignalPair();
+        Int_t step = nEvents / 100;
+        for (int iEvent = 0; iEvent < nEvents; iEvent++) {
+          fTree->GetEntry(iEvent);
+          // if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
+          RunSignalPair();
+        }
       } break;
       case eDumpCalcMode::kBackgroundPairsOnly: {
-        RunBackgroundPairs(nEvents);
+        Int_t step = nEvents / 100;
+        for (int iEvent = 0; iEvent < nEvents; iEvent++) {
+          fTree->GetEntry(iEvent);
+          if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
+          RunBackgroundPair();
+        }
       } break;
     }
   }
 
-  void CorrFitDumpedPairAna::RootExport1D(Femto1DCF* cf, Int_t step) {
+  Bool_t CorrFitDumpedPairAna::SaveAsRawArray(TObject* cf, Int_t step) {
     TFile* file            = new TFile(Form("files/corrfit_map_%i.root", GetSimStepNo() + step), "recreate");
-    Array_1<Float_t>* Data = cf->ExportToFlatNum();
-    TTree* tree            = new TTree("map", "map");
+    Array_1<Float_t>* Data = Hal::Femto::ExportToFlat(cf);
+    if (!Data) return kFALSE;
+    TTree* tree = new TTree("map", "map");
     tree->Branch("data", &Data);
     tree->Fill();
     tree->Write();
     file->Close();
-  }
-
-  void CorrFitDumpedPairAna::RootExport3D(Femto3DCF* cf, Int_t step) {
-    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", GetSimStepNo() + step), "recreate");
-    Array_1<Float_t>* Data = cf->ExportToFlatNum();
-    TTree* tree            = new TTree("map", "map");
-    tree->Branch("data", &Data);
-    tree->Fill();
-    tree->Write();
-    file->Close();
-  }
-
-  void CorrFitDumpedPairAna::RootExportSH(FemtoSHCF* cf, Int_t step) {
-    cf->RecalculateCF();
-    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", GetSimStepNo() + step), "recreate");
-    Array_1<Float_t>* Data = cf->ExportToFlatNum();
-    TTree* tree            = new TTree("map", "map");
-    tree->Branch("data", &Data);
-    tree->Fill();
-    tree->Write();
-    file->Close();
+    return kTRUE;
   }
 
   Bool_t CorrFitDumpedPairAna::ConfigureInput() {
@@ -178,8 +171,11 @@ namespace Hal {
     TList* list = fFile->GetListOfKeys();
     FindTree(fFile, list);
 
+
     if (fTree == nullptr) return kFALSE;
-    return ConnectToData();
+    Bool_t res = ConnectToData();
+    LockUnusedBranches();
+    return res;
   }
 
   Bool_t CorrFitDumpedPairAna::ConfigureFromXML() {
@@ -254,37 +250,10 @@ namespace Hal {
 
     XMLNode* weight = dumpAna->GetChild("WeightConf");
     if (weight) {
-      XMLNode* weightType = weight->GetChild("Type");
-      if (weightType == nullptr) return kFALSE;
-      TClass* weightClass     = TClass::GetClass(weightType->GetValue(), 1, 0);
-      FemtoWeightGenerator* w = static_cast<FemtoWeightGenerator*>(weightClass->New());
-      if (w == nullptr) return kFALSE;
-      XMLNode* pairType        = weight->GetChild("PairType");
-      TString val              = pairType->GetValue();
-      std::vector<TString> str = Hal::Std::ExplodeString(val, ';');
-      if (str.size() == 2) {
-        Int_t pid1 = str[0].Atoi();
-        Int_t pid2 = str[1].Atoi();
-        w->SetPairType(Femto::PidToPairType(pid1, pid2));
-      }
-      FemtoWeightGeneratorLednicky* lednicky = dynamic_cast<FemtoWeightGeneratorLednicky*>(w);
-      if (lednicky) {
-        lednicky->SetStrongOff();
-        lednicky->SetCoulOff();
-        lednicky->SetQuantumOff();
-
-        XMLNode* quantum = weight->GetChild("QuantumOn");
-        XMLNode* strong  = weight->GetChild("StrongOn");
-        XMLNode* coul    = weight->GetChild("CoulombOn");
-        if (quantum) {
-          if (quantum->GetValue() == "kTRUE") lednicky->SetQuantumOn();
-        }
-        if (strong) {
-          if (strong->GetValue() == "kTRUE") lednicky->SetStrongOn();
-        }
-        if (coul) {
-          if (coul->GetValue() == "kTRUE") lednicky->SetCoulOn();
-        }
+      auto w = Hal::Femto::GetWeightGeneratorFromXLM(weight);
+      if (!w) {
+        Cout::PrintInfo("Problem with weight configuration !", EInfo::kError);
+        return kFALSE;
       }
       this->SetWeightGenerator(*w);
       delete w;
@@ -340,21 +309,10 @@ namespace Hal {
     Cout::Text("Weight Info", "M");
     if (fWeight) fWeight->Print();
   }
-  /*
-    Bool_t CorrFitDumpedPairAna::ConnectToData() {
-      TObjArray* list = fTree->GetListOfBranches();
-      // lock not used branches
-      for (int i = 0; i < list->GetEntries(); i++) {
-        TObjString* str = (TObjString*) list->At(i);
-        fTree->SetBranchStatus(str->String(), 0);
-      }
-      InitBranches();
-      return kTRUE;
-    }
-  */
 
   void CorrFitDumpedPairAna::ConnectToSignal(const std::vector<TString>& branches) {
     for (auto name : branches) {
+      fUsedBranches.push_back(name);
       TClonesArray* array = new TClonesArray("Hal::FemtoMicroPair");
       fTree->SetBranchAddress(name, &array);
       fSignalClones.push_back(array);
@@ -363,6 +321,7 @@ namespace Hal {
 
   void CorrFitDumpedPairAna::ConnectToBackground(const std::vector<TString>& branches) {
     for (auto name : branches) {
+      fUsedBranches.push_back(name);
       TClonesArray* array = new TClonesArray("Hal::FemtoMicroPair");
       fTree->SetBranchAddress(name, &array);
       fBackgroundClones.push_back(array);
@@ -384,6 +343,21 @@ namespace Hal {
       }
     }
     return kFALSE;
+  }
+
+  void CorrFitDumpedPairAna::LockUnusedBranches() {
+    auto list = fTree->GetListOfBranches();
+    for (int i = 0; i < list->GetEntries(); i++) {
+      auto branch    = (TBranch*) list->At(i);
+      Bool_t lock    = kTRUE;
+      TString brName = branch->GetName();
+      for (auto name : fUsedBranches)
+        if (name == brName) {
+          lock = kFALSE;
+          continue;
+        }
+      if (lock) fTree->SetBranchStatus(brName, 0);
+    }
   }
 
 }  // namespace Hal

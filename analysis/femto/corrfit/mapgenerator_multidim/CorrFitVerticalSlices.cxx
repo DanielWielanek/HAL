@@ -8,11 +8,14 @@
  */
 #include "CorrFitVerticalSlices.h"
 
+#include "Cout.h"
 #include "Femto1DCF.h"
 #include "Femto3DCF.h"
 #include "FemtoPair.h"
 #include "FemtoSHCF.h"
 #include "Std.h"
+
+#include <iostream>
 
 namespace Hal {
 
@@ -91,9 +94,13 @@ namespace Hal {
     }
   }
 
+  std::complex<double>* CorrFitVerticalSlicesSH::GetBufferCalc(FemtoPair* pair) {
+    return fLmMath.YlmUpToL(fLmVals.GetMaxL(), pair->GetX(), pair->GetY(), pair->GetZ());
+  }
+
   void CorrFitVerticalSlicesSH::ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const {
     if (first) {
-      unsigned int dim = 2 + fMaxJM * 4 + fMaxJM * fMaxJM;
+      unsigned int dim = 2 + fMaxJM * 4 + fMaxJM * fMaxJM * 4;
       array->MakeBigger(dim);
     }
     int count = 0;
@@ -105,8 +112,8 @@ namespace Hal {
       array->Set(count++, fShNumImag[paramId][i]);
       array->Set(count++, fShDenImag[paramId][i]);
     }
-    for (int i = 0; i < fMaxJM; i++) {
-      for (int j = 0; j < fMaxJM; j++) {
+    for (int i = 0; i < fMaxJM * 2; i++) {
+      for (int j = 0; j < fMaxJM * 2; j++) {
         array->Set(count++, fCovMatrix[paramId][i][j]);
       }
     }
@@ -131,8 +138,12 @@ namespace Hal {
   }
 
   CorrFitVerticalSlices3D::CorrFitVerticalSlices3D(const Hal::Femto3DCF& h, Int_t nSamples) {
-    fOutBins  = h.GetNum()->GetNbinsX();
-    fSideBins = h.GetNum()->GetNbinsY();
+    fOutBins     = h.GetNum()->GetNbinsX();
+    fSideBins    = h.GetNum()->GetNbinsY();
+    fMin[0]      = h.GetNum()->GetXaxis()->GetBinLowEdge(1);
+    fMin[1]      = h.GetNum()->GetYaxis()->GetBinLowEdge(1);
+    fOverStep[0] = 1.0 / h.GetNum()->GetXaxis()->GetBinWidth(1);
+    fOverStep[1] = 1.0 / h.GetNum()->GetYaxis()->GetBinWidth(1);
     Hal::Std::ResizeVector3D(fNum, fOutBins, fSideBins, nSamples);
     Hal::Std::ResizeVector3D(fDen, fOutBins, fSideBins, nSamples);
   }
@@ -146,8 +157,14 @@ namespace Hal {
     Hal::Std::ResizeVector2D(fShDenReal, nSamples, fMaxJM);
     Hal::Std::ResizeVector2D(fShNumImag, nSamples, fMaxJM);
     Hal::Std::ResizeVector2D(fShDenImag, nSamples, fMaxJM);
-    Hal::Std::ResizeVector3D(fCovMatrix, nSamples, fMaxJM, fMaxJM);
+    Hal::Std::ResizeVector3D(fCovMatrix, nSamples, fMaxJM * 2, fMaxJM * 2);
   }
 
+  std::pair<int, int> CorrFitVerticalSlices3D::FindBin(FemtoPair* pair) {
+    std::pair<int, int> res;
+    res.first  = int((pair->GetX() - fMin[0]) * fOverStep[0]);
+    res.second = int((pair->GetY() - fMin[1]) * fOverStep[1]);
+    return res;
+  }
 
 } /* namespace Hal */

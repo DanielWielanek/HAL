@@ -15,9 +15,9 @@ namespace Hal {
   class CorrFitDumpedPairAnaHorizontal : public CorrFitDumpedPairAna {
 
   protected:
-    void RunSignalPairs(Int_t nEvents);
-    void RunSignalBackgroundPairs(Int_t nEvents);
-    void RunBackgroundPairs(Int_t nEvents);
+    void RunSignalPair();
+    void RunSignalBackgroundPair();
+    void RunBackgroundPair();
     Bool_t ConnectToData();
     /**
      * init  generators - for vertical init all generators for horizontal init generators x multiplicity

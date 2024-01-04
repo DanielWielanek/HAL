@@ -22,13 +22,20 @@ namespace Hal {
 
     TString RemoveUnits(TString tString) {
       TString res;
-      Bool_t copy = kTRUE;
-      for (int i = 0; i < tString.Length(); i++) {
-        if (tString[i] == '[') copy = kFALSE;
-        if (copy) res = res + tString[i];
-        if (tString[i] == ']') copy = kTRUE;
+      for (int i = 0; i < tString.First('['); i++) {
+        res = res + tString[i];
       }
       // if (res[res.Length() - 1] == "") { res = res(0, res.Length() - 1); }
+      return res;
+    }
+    TString GetUnits(TString string) {
+      TString res;
+      Int_t first = string.First('[');
+      Int_t last  = string.Last(']');
+      if (first < 0) return "";
+      for (int i = first + 1; i < last; i++) {
+        res = res + string[i];
+      }
       return res;
     }
 

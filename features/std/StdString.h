@@ -20,6 +20,12 @@ namespace Hal {
      */
     TString RemoveUnits(TString string);
     /**
+     * get text in [] brackets
+     * @param string
+     * @return
+     */
+    TString GetUnits(TString string);
+    /**
      * split input string into array of strings delimited by given char
      * @param string string to explode
      * @param delimiter delimiter

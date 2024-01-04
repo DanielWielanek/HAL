@@ -197,21 +197,21 @@ namespace Hal {
 
   TString Track::GetFieldName(Int_t fieldID) const {
     switch (fieldID) {
-      case DataFieldID::Track::EBasic::kPx: return "P_{x} [GeV/c]"; break;
-      case DataFieldID::Track::EBasic::kPy: return "P_{y} [GeV/c]"; break;
-      case DataFieldID::Track::EBasic::kPz: return "P_{z} [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kPx: return "p_{x} [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kPy: return "p_{y} [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kPz: return "p_{z} [GeV/c]"; break;
       case DataFieldID::Track::EBasic::kE: return "E [GeV/c^{2}]"; break;
       case DataFieldID::Track::EBasic::kPhi: return "#phi [rad]"; break;
 
-      case DataFieldID::Track::EBasic::kPt: return "P_{T} [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kPt: return "p_{T} [GeV/c]"; break;
       case DataFieldID::Track::EBasic::kTheta: return "#theta [rad]"; break;
-      case DataFieldID::Track::EBasic::kP: return "P [GeV/c]"; break;
+      case DataFieldID::Track::EBasic::kP: return "p [GeV/c]"; break;
       case DataFieldID::Track::EBasic::kEta: return "#eta [AU]"; break;
       case DataFieldID::Track::EBasic::kRapidity: return "y [AU]"; break;
 
       case DataFieldID::Track::EBasic::kCharge: return "q [e]"; break;
       case DataFieldID::Track::EBasic::kStatus: return "stat [AU]"; break;
-      case DataFieldID::Track::EBasic::kPq: return "Pq [GeV/c*e]"; break;
+      case DataFieldID::Track::EBasic::kPq: return "pq [GeV/c*e]"; break;
 
       case DataFieldID::Track::EV0::kAssumedPdg: return "V0_{pidHypo} [PDG]"; break;
       case DataFieldID::Track::EV0::kAssumedPdgPos: return "V0_{dau pos Hypo} [PDG]"; break;

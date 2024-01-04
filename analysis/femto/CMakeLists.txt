@@ -58,6 +58,7 @@ base/source_models/FemtoSourceModelGauss.cxx
 base/source_models/FemtoSourceModelGausMt.cxx
 base/source_models/FemtoSourceModelNumerical1D.cxx
 base/source_models/FemtoSourceDensity.cxx
+base/source_models/FemtoSourceModelNumericalPseudo3d.cxx
 base/shmath/FemtoSHSlice.cxx
 base/shmath/FemtoYlmIndexes.cxx
 base/shmath/FemtoYlmMath.cxx
@@ -95,7 +96,7 @@ corrfit/mapgenerator_multidim/CorrFitParamsSetup.cxx
 corrfit/mapgenerator_multidim/CorrFitVerticalSlices.cxx
 corrfit/mapgenerator_multidim/CorrFit3DCFMultiDim.cxx
 corrfit/mapgenerator_multidim/FemtoDumpPairAnaMC.cxx
-
+corrfit/CorrFitConst.cxx
 
 corrfit/fittingfunctions/CorrFit1DCFSquare.cxx
 corrfit/fittingfunctions/CorrFit1DCFLorentz.cxx

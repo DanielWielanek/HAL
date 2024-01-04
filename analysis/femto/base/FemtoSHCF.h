@@ -315,14 +315,16 @@ namespace Hal {
     CorrFitMaskSH MakeEmptyMask() const;
 #endif
     Array_1<Float_t>* ExportToFlatNum() const;
+    void ExportIntoToFlatNum(Array_1<Float_t>* output) const;
 #ifdef __CIA__
     /**
      * import into this CF a flat array
      * @param array
      * @param bin
      */
-    virtual void ImportSlice(Array_1<Float_t>* array, Int_t bin);
+
 #endif
+    virtual void ImportSlice(Array_1<Float_t>* array, Int_t bin);
     virtual void Add(const Object* pack);
     virtual Long64_t Merge(TCollection* collection);
     void MakeDummyCov();

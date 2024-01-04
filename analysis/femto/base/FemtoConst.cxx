@@ -631,7 +631,6 @@ namespace Hal {
       if (dynamic_cast<Hal::FemtoDPhiDEta*>(obj)) { return ECFType::kPhiEta; }
       return ECFType::kUnkown;
     }
-
     FemtoWeightGenerator* GetWeightGeneratorFromXLM(XMLNode* nod) {
       XMLNode* weightType = nod->GetChild("Type");
       if (!weightType) return nullptr;

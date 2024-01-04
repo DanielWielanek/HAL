@@ -94,6 +94,8 @@ namespace Hal {
      * @return numerator exported as flat array
      */
     virtual Array_1<Float_t>* ExportToFlatNum() const;
+    virtual void ExportIntoToFlatNum(Array_1<Float_t>* data) const;
+    virtual void ImportSlice(Array_1<Float_t>* array, Int_t toBin);
     virtual void Print(Option_t* opt = "") const;
     virtual ~Femto1DCF();
     ClassDef(Femto1DCF, 3)

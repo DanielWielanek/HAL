@@ -470,18 +470,23 @@ namespace Hal {
   }
 
   Array_1<Float_t>* Femto3DCF::ExportToFlatNum() const {
-    TH3D* h                = (TH3D*) GetHist(kFALSE);
+    auto h                 = (TH3D*) GetNum();
     Array_1<Float_t>* data = new Array_1<Float_t>(h->GetNbinsX() * h->GetNbinsY() * h->GetNbinsZ());
-    int count              = 0;
+    ExportIntoToFlatNum(data);
+    return data;
+  }
+  void Femto3DCF::ExportIntoToFlatNum(Array_1<Float_t>* output) const {
+    TH3D* h = (TH3D*) GetHist(kFALSE);
+    output->MakeBigger(h->GetNbinsX() * h->GetNbinsY() * h->GetNbinsZ());
+    int count = 0;
     for (int i = 1; i <= h->GetNbinsX(); i++) {
       for (int j = 1; j <= h->GetNbinsY(); j++) {
         for (int k = 1; k <= h->GetNbinsZ(); k++) {
-          (*data)[count++] = h->GetBinContent(i, j, k);
+          (*output)[count++] = h->GetBinContent(i, j, k);
         }
       }
     }
     delete h;
-    return data;
   }
 
   void Femto3DCF::Print(Option_t* opt) const {
@@ -573,4 +578,16 @@ namespace Hal {
     }
     return nullptr;
   }
+
+  void Femto3DCF::ImportSlice(Array_1<Float_t>* array, Int_t toBin) {
+    const Int_t sideBins = GetNum()->GetNbinsY();
+    const Int_t outBins  = GetNum()->GetNbinsX();
+    for (unsigned int iO = 0; iO < sideBins; iO++) {
+      for (unsigned int iS = 0; iS < outBins; iS++) {
+        GetNum()->SetBinContent(iO + 1, iS + 1, toBin, array->Get(2 * sideBins * iO + iS));
+        GetDen()->SetBinContent(iO + 1, iS + 1, toBin, array->Get(2 * sideBins * iO + iS + 1));
+      }
+    }
+  }
+
 }  // namespace Hal

@@ -972,19 +972,24 @@ namespace Hal {
 
   Array_1<Float_t>* FemtoSHCF::ExportToFlatNum() const {
     Array_1<Float_t>* data = new Array_1<Float_t>(fNum->GetNbinsX() * fMaxJM * 2);
-    Int_t bin              = 0;
-    Int_t nbins            = GetNum()->GetNbinsX();
+    ExportIntoToFlatNum(data);
+    return data;
+  }
+
+  void FemtoSHCF::ExportIntoToFlatNum(Array_1<Float_t>* output) const {
+    Int_t bin   = 0;
+    Int_t nbins = GetNum()->GetNbinsX();
+    output->MakeBigger(fNum->GetNbinsX() * fMaxJM * 2);
     for (int ibin = 1; ibin <= nbins; ibin++) {
       for (int l = 0; l <= GetLMax(); l++) {
         for (int m = -l; m <= l; m++) {
-          TH1D* h        = GetCFRe(l, m);
-          (*data)[bin++] = h->GetBinContent(ibin);
-          h              = GetCFIm(l, m);
-          (*data)[bin++] = h->GetBinContent(ibin);
+          TH1D* h          = GetCFRe(l, m);
+          (*output)[bin++] = h->GetBinContent(ibin);
+          h                = GetCFIm(l, m);
+          (*output)[bin++] = h->GetBinContent(ibin);
         }
       }
     }
-    return data;
   }
 
 
@@ -1016,7 +1021,7 @@ namespace Hal {
     return mask;
   }
 #endif
-#ifdef __CIA__
+
   void FemtoSHCF::ImportSlice(Array_1<Float_t>* array, Int_t bin) {
     if (bin < 0) {
       return;
@@ -1037,7 +1042,6 @@ namespace Hal {
       }
     }
   }
-#endif
 
   void FemtoSHCF::ApplyStyle(const Hal::HistoStyle& h) {
     Hal::HistoStyle anti = h;

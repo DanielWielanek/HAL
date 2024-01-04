@@ -20,12 +20,20 @@
 #include <iostream>
 namespace Hal {
   HistogramAxisConf::HistogramAxisConf() : fBins(100), fMin(0), fMax(0) { fTitle = ""; }
-  HistogramAxisConf::HistogramAxisConf(Int_t bins, Double_t min, Double_t max) : fBins(bins), fMin(min), fMax(max) {
-    fTitle = "";
-  }
+
+  HistogramAxisConf::HistogramAxisConf(Int_t bins, Double_t min, Double_t max) : fBins(bins), fMin(min), fMax(max) {}
+
   HistogramAxisConf::HistogramAxisConf(TString title, Int_t bins, Double_t min, Double_t max) :
-    fBins(bins), fMin(min), fMax(max) {
-    fTitle = title;
+    TNamed(), fBins(bins), fMin(min), fMax(max) {
+    SetName(title);
+  }
+
+  void HistogramAxisConf::Print(Option_t* /*option*/) const {
+    std::cout << "HistogramAxisConf" << std::endl;
+    std::cout << "Name: " << GetName() << std::endl;
+    std::cout << "Nbins: " << fBins << std::endl;
+    std::cout << "Range: " << fMin << " " << fMax << std::endl;
+    std::cout << "Title: " << fTitle << std::endl;
   }
 
   template<class T>
@@ -1168,4 +1176,5 @@ namespace Hal {
   template class HistogramManager_4_3D<TH3D>;
   template class HistogramManager_4_3D<TH3F>;
   template class HistogramManager_4_3D<TH3I>;
+
 }  // namespace Hal

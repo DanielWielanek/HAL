@@ -63,6 +63,8 @@ namespace Hal {
     Double_t GetMax() const { return fMax; };
     virtual ~HistogramAxisConf() {};
     ClassDef(HistogramAxisConf, 1)
+
+      virtual void Print(Option_t* option = "") const;
   };
 
   /*************************************************************************************************************************************

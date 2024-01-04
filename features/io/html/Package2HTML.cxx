@@ -92,6 +92,10 @@ namespace Hal {
     ExtractRunInfo();
 
     TDirectory* tdir = (TDirectory*) fFile->Get("HalPhysics");
+    if (!tdir) {
+      Hal::Cout::PrintInfo("Cannot find HalPhysics directory", EInfo::kError);
+      return;
+    }
     //---------------------
 
     TList* list = tdir->GetListOfKeys();

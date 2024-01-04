@@ -27,6 +27,9 @@ namespace Hal {
     void SetRadiusDistribution(const TH1D& distribution);
     FemtoSourceModel* MakeCopy() const;
     void GenerateCoordinates(FemtoPair* Pair);
+    TH1D* GetRaw() const { return fRawDistribution; }
+    std::vector<Double_t> GetVectX() const { return fRandomDistributionX; }
+    std::vector<Double_t> GetVectY() const { return fRandomDistributionY; }
     virtual Package* Report() const;
     virtual ~FemtoSourceModelNumerical1D();
     ClassDef(FemtoSourceModelNumerical1D, 1)
@@ -38,6 +41,7 @@ namespace Hal {
   public:
     FemtoSourceDensityNumerical1D() : FemtoSourceDensity(1, kTRUE, kTRUE), fRawDistribution(nullptr) {};
     void SetRadiusDistribution(const TH1D& distribution);
+    TH1D* GetRaw() const { return fRawDistribution; }
     virtual Double_t GetProbDensity1d(const Double_t r, const Double_t* params) const;
     virtual Double_t GetProbDensity3d(const TVector3& r, const Double_t* params) const;
     virtual ~FemtoSourceDensityNumerical1D() {};

@@ -25,32 +25,35 @@ namespace Hal {
   }
 
   void FemtoSourceModelNumerical1D::SetRadiusDistribution(const TH1D& distribution) {
+    if (fRawDistribution) delete fRawDistribution;
+    fRandomDistributionX.clear();
+    fRandomDistributionY.clear();
     fRawDistribution = (TH1D*) distribution.Clone();
     fRawDistribution->SetDirectory(nullptr);
     Double_t scale = 0;
     fRawDistribution->SetBinContent(0, 0);
-    ff = fRawDistribution->GetXaxis()->GetBinWidth(1) * 0.5;
+    ff = fRawDistribution->GetXaxis()->GetBinWidth(1);
     for (int i = 1; i <= fRawDistribution->GetNbinsX(); i++) {
       scale += fRawDistribution->GetBinContent(i);
       fRandomDistributionX.push_back(fRawDistribution->GetXaxis()->GetBinCenter(i));
     }
-    fRawDistribution->Scale(1.0 / scale);
+    fRawDistribution->Scale(1.0 / (scale * ff));
     for (int i = 1; i <= fRawDistribution->GetNbinsX(); i++) {
       Double_t val = fRawDistribution->GetBinContent(i);
       if (i > 1) val += fRandomDistributionY[fRandomDistributionY.size() - 1];
       fRandomDistributionY.push_back(val);
     }
-    ((FemtoSourceDensityNumerical1D*) fDensity)->SetRadiusDistribution(distribution);
+    ((FemtoSourceDensityNumerical1D*) fDensity)->SetRadiusDistribution(*fRawDistribution);
   }
 
   FemtoSourceModel* FemtoSourceModelNumerical1D::MakeCopy() const { return new FemtoSourceModelNumerical1D(*this); }
 
   void FemtoSourceModelNumerical1D::GenerateCoordinates(FemtoPair* /*Pair*/) {
     Double_t randVal = gRandom->Rndm();
-    Int_t i          = 0;
+    Int_t i          = -1;
     while (randVal > fRandomDistributionY[i])
       i++;
-    Double_t R = fRandomDistributionX[i] + 2.0 * gRandom->Rndm() * ff - ff;
+    Double_t R = fRandomDistributionX[i] + ff * (gRandom->Rndm() - 0.5);
     gRandom->Sphere(fRout, fRside, fRlong, R);
   }
 

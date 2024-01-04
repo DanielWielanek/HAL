@@ -27,6 +27,7 @@
  */
 namespace Hal {
   class HistoStyle;
+  class HistogramAxisConf;
   class DividedHisto1D : public Object {
     friend class HistoStyle;
 
@@ -135,6 +136,12 @@ namespace Hal {
      * @param type type - 'D' for TH1D, 'I' for TH1I etc.
      */
     DividedHisto1D(TString name, Int_t nbins, Double_t min, Double_t max, Char_t type = 'D');
+    /**
+     *
+     * @param name
+     * @param conf
+     */
+    DividedHisto1D(TString name, const HistogramAxisConf& conf, Char_t type = 'D');
     /**
      * copy constructor
      * @param other object to copy
@@ -455,6 +462,7 @@ namespace Hal {
                    Double_t minY,
                    Double_t maxY,
                    Char_t type = 'D');
+    DividedHisto2D(TString name, const HistogramAxisConf& axX, const HistogramAxisConf& axY, Char_t type = 'D');
     /**
      * copy constructor
      * @param other
@@ -568,6 +576,19 @@ namespace Hal {
      * @param name name
      */
     DividedHisto3D(TString name) : DividedHisto2D(name, 3) {};
+    /**
+     * constructor
+     * @param name
+     * @param axX
+     * @param axY
+     * @param axZ
+     * @param type
+     */
+    DividedHisto3D(TString name,
+                   const HistogramAxisConf& axX,
+                   const HistogramAxisConf& axY,
+                   const HistogramAxisConf& axZ,
+                   Char_t type = 'D');
     /**
      *
      * @param name

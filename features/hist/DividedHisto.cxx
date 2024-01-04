@@ -10,6 +10,7 @@
 #include "DividedHisto.h"
 
 #include "Cout.h"
+#include "HistogramManager.h"
 #include "HtmlCore.h"
 #include "HtmlFile.h"
 #include "HtmlTable.h"
@@ -785,6 +786,39 @@ namespace Hal {
 
   DividedHisto3D::DividedHisto3D() : DividedHisto2D() {}
 
+  DividedHisto3D::DividedHisto3D(TString name,
+                                 const HistogramAxisConf& axX,
+                                 const HistogramAxisConf& axY,
+                                 const HistogramAxisConf& axZ,
+                                 Char_t type) :
+    DividedHisto3D(name,
+                   axX.GetNBins(),
+                   axX.GetMin(),
+                   axX.GetMax(),
+                   axY.GetNBins(),
+                   axY.GetMin(),
+                   axY.GetMax(),
+                   axZ.GetNBins(),
+                   axZ.GetMin(),
+                   axZ.GetMax(),
+                   type) {
+    TString nameX = axX.GetName();
+    if (nameX.Length()) {
+      GetNum()->GetXaxis()->SetTitle(nameX);
+      GetDen()->GetXaxis()->SetTitle(nameX);
+    }
+    TString nameY = axY.GetName();
+    if (nameY.Length()) {
+      GetNum()->GetYaxis()->SetTitle(nameY);
+      GetDen()->GetYaxis()->SetTitle(nameY);
+    }
+    TString nameZ = axZ.GetName();
+    if (nameZ.Length()) {
+      GetNum()->GetZaxis()->SetTitle(nameZ);
+      GetDen()->GetZaxis()->SetTitle(nameZ);
+    }
+  }
+
   TString DividedHisto3D::HTMLExtract(Int_t counter, TString dir) const {
     TString path = Form("%s/divided_%i", dir.Data(), counter);
     gSystem->MakeDirectory(path);
@@ -1282,6 +1316,15 @@ namespace Hal {
     fNumIsCloned = fDenIsCloned = kTRUE;
   }
 
+  DividedHisto1D::DividedHisto1D(TString name, const HistogramAxisConf& conf, Char_t type) :
+    DividedHisto1D(name, conf.GetNBins(), conf.GetMin(), conf.GetMax(), type) {
+    TString nameX = conf.GetName();
+    if (nameX.Length()) {
+      GetNum()->GetXaxis()->SetTitle(nameX);
+      GetDen()->GetXaxis()->SetTitle(nameX);
+    }
+  }
+
   DividedHisto2D::DividedHisto2D(TString name,
                                  Int_t binsX,
                                  Double_t minX,
@@ -1330,6 +1373,19 @@ namespace Hal {
       fDen->GetZaxis()->SetTitle(z_axis);
     }
     SetOwner(kTRUE);
+  }
+  DividedHisto2D::DividedHisto2D(TString name, const HistogramAxisConf& axX, const HistogramAxisConf& axY, Char_t type) :
+    DividedHisto2D(name, axX.GetNBins(), axX.GetMin(), axX.GetMax(), axY.GetNBins(), axY.GetMin(), axY.GetMax(), type) {
+    TString nameX = axX.GetName();
+    if (nameX.Length()) {
+      GetNum()->GetXaxis()->SetTitle(nameX);
+      GetDen()->GetXaxis()->SetTitle(nameX);
+    }
+    TString nameY = axY.GetName();
+    if (nameY.Length()) {
+      GetNum()->GetYaxis()->SetTitle(nameY);
+      GetDen()->GetYaxis()->SetTitle(nameY);
+    }
   }
 
   DividedHisto3D::DividedHisto3D(TString name,

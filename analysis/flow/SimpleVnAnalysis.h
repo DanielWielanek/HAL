@@ -26,22 +26,19 @@
  */
 
 namespace Hal {
-  class DividedHisto2D;
+  class DividedHisto1D;
   class SimpleVnAnalysis : public TrackAna {
     Int_t fBinsX, fBinsY;
     FlowVariable *fVarX, *fVarY;
     Double_t fMinX, fMinY, fMaxX, fMaxY, fN, fPhi;
-    DividedHisto2D** fHistos = {nullptr};  //[fTrackCollectionsNo]
+    Int_t fNDim;
+    DividedHisto1D** fHistos = {nullptr};  //[fTrackCollectionsNo]
     Double_t GetPhi();
 
   protected:
     virtual void CheckCutContainerCollections();
     virtual void ProcessTrack();
     virtual void LinkCollections();
-    /**
-     * not used now
-     */
-    virtual void FinishAllEvents();
     Package* Report() const;
     virtual Task::EInitFlag Init();
 
@@ -61,12 +58,11 @@ namespace Hal {
      * @param nbins number of bins
      * @param min lower edge of histogram
      * @param max upper edge of histogram
-     * @param axis axis id  - 0 for X axis, 1 for Y axis
+     * @param axis axis id  - x for X axis, y for Y axis
      */
-    void SetAxis(Int_t nbins, Double_t min, Double_t max, Int_t axis);
+    void SetAxis(Int_t nbins, Double_t min, Double_t max, Char_t axis = 'x');
     void SetFlowVariableX(const FlowVariable& var);
     void SetFlowVariableY(const FlowVariable& var);
-    virtual void FinishTask();
     virtual ~SimpleVnAnalysis();
     ClassDef(SimpleVnAnalysis, 1)
   };

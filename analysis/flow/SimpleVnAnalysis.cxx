@@ -20,11 +20,23 @@
 
 #include <TMath.h>
 #include <TString.h>
+#include <iostream>
 
 
 namespace Hal {
   SimpleVnAnalysis::SimpleVnAnalysis(Double_t n) :
-    TrackAna(), fBinsX(1), fBinsY(1), fVarX(NULL), fVarY(NULL), fMinX(0), fMinY(0), fMaxX(1), fMaxY(0), fN(n), fPhi(0.0) {}
+    TrackAna(),
+    fBinsX(1),
+    fBinsY(1),
+    fVarX(NULL),
+    fVarY(NULL),
+    fMinX(0),
+    fMinY(0),
+    fMaxX(1),
+    fMaxY(0),
+    fN(n),
+    fPhi(0.0),
+    fNDim(2) {}
 
   void SimpleVnAnalysis::ProcessTrack() {
     Double_t px     = fCurrentTrack->GetPx();
@@ -33,13 +45,23 @@ namespace Hal {
     Double_t Phi    = GetPhi();
     Double_t v2N    = TMath::Cos(fN * (phi - Phi));
     Double_t valueX = fVarX->GetVariable(fCurrentTrack);
-    Double_t valueY = fVarY->GetVariable(fCurrentTrack);
-    auto div        = fHistos[fCurrentTrackCollectionID];
-    div->FillNum(valueX, valueY, v2N);
-    div->FillDen(valueX, valueY, 1);
+
+    auto div = fHistos[fCurrentTrackCollectionID];
+    switch (fNDim) {
+      case 1: {
+        div->FillNum(valueX, v2N);
+        div->FillDen(valueX, 1);
+      } break;
+      case 2: {
+        Double_t valueY = fVarY->GetVariable(fCurrentTrack);
+        ((DividedHisto2D*) div)->FillNum(valueX, valueY, v2N);
+        ((DividedHisto2D*) div)->FillDen(valueX, valueY, 1);
+      } break;
+      default: break;
+    }
   }
 
-  void SimpleVnAnalysis::SetAxis(Int_t nbins, Double_t min, Double_t max, Int_t axis) {
+  void SimpleVnAnalysis::SetAxis(Int_t nbins, Double_t min, Double_t max, Char_t axis) {
     if (min == max) {
       min = 0;
       max = 1;
@@ -47,12 +69,12 @@ namespace Hal {
     if (nbins < 0) { nbins = 100; }
 
     switch (axis) {
-      case 0: {
+      case 'x': {
         fMinX  = min;
         fMaxX  = max;
         fBinsX = nbins;
       } break;
-      case 1: {
+      case 'y': {
         fMinY  = min;
         fMaxY  = max;
         fBinsY = nbins;
@@ -70,58 +92,57 @@ namespace Hal {
   Task::EInitFlag SimpleVnAnalysis::Init() {
     if (TrackAna::Init() == Task::EInitFlag::kSUCCESS) {
       // checking "fake collections"
-      if (fVarX == NULL) {
+      if (!fVarX) {
         Cout::PrintInfo("No FlowVariable on X", EInfo::kLowWarning);
         return Task::EInitFlag::kFATAL;
       }
-      if (fVarY == NULL) {
+      if (!fVarY) {
         Cout::PrintInfo("No FlowVariable on Y, it will be empty", EInfo::kLowWarning);
         fVarY = new FlowVirtualVariable();
+        fNDim = 1;
         SetAxis(1, 0, 1, 1);
       }
-      HistogramAxisConf** axis = new HistogramAxisConf*[3];
-      axis[0]                  = new HistogramAxisConf(fVarX->GetAxisName(), fBinsX, fMinX, fMaxX);
-      axis[1]                  = new HistogramAxisConf(fVarY->GetAxisName(), fBinsY, fMinY, fMaxY);
-      axis[2] = new HistogramAxisConf(Form("dN/%s%s", fVarX->GetAxisUnit().Data(), fVarY->GetAxisUnit().Data()), 0, 0, 1);
-      fHistos = new DividedHisto2D*[fTrackCollectionsNo];
-      for (int i = 0; i < fTrackCollectionsNo; i++) {
-        Int_t binsX = axis[0]->GetNBins();
-        Int_t binsY = axis[1]->GetNBins();
-        fHistos[i]  = new DividedHisto2D(Form("V_{%i}[%i]", (int) fN, i),
-                                        axis[0]->GetNBins(),
-                                        axis[0]->GetMin(),
-                                        axis[0]->GetMax(),
-                                        axis[1]->GetNBins(),
-                                        axis[1]->GetMin(),
-                                        axis[1]->GetMax(),
-                                        'D');
-        fHistos[i]->GetNum()->GetXaxis()->SetTitle(axis[0]->GetTitle());
-        fHistos[i]->GetNum()->GetYaxis()->SetTitle(axis[1]->GetTitle());
-        fHistos[i]->GetNum()->GetZaxis()->SetTitle(axis[2]->GetTitle());
-
-        fHistos[i]->GetDen()->GetXaxis()->SetTitle(axis[0]->GetTitle());
-        fHistos[i]->GetDen()->GetYaxis()->SetTitle(axis[1]->GetTitle());
-        fHistos[i]->GetDen()->GetZaxis()->SetTitle(axis[2]->GetTitle());
-        fHistos[i]->SetAxisName(Form("v_%i{RP}", (int) fN));
+      if (!fVarX->Init(GetTaskID())) { return Task::EInitFlag::kERROR; }
+      if (!fVarY->Init(GetTaskID()) && fNDim == 2) { return Task::EInitFlag::kERROR; }
+      HistogramAxisConf axX(fVarX->GetAxisName(), fBinsX, fMinX, fMaxX);
+      fHistos = new DividedHisto1D*[fTrackCollectionsNo];
+      switch (fNDim) {
+        case 1: {
+          HistogramAxisConf axY(Form("dN/%s", fVarX->GetAxisUnit().Data()), 0, 0, 1);
+          for (int i = 0; i < fTrackCollectionsNo; i++) {
+            fHistos[i] = new DividedHisto1D(Form("V_{%i}[%i]", (int) fN, i), axX, 'D');
+            fHistos[i]->GetNum()->GetYaxis()->SetTitle(axY.GetTitle());
+            fHistos[i]->GetDen()->GetYaxis()->SetTitle(axY.GetTitle());
+            fHistos[i]->SetAxisName(Form("v_{%i RP}", (int) fN));
+          }
+        } break;
+        case 2: {
+          HistogramAxisConf axY(fVarY->GetAxisName(), fBinsY, fMinY, fMaxY);
+          HistogramAxisConf axZ(Form("dN/%s%s", fVarX->GetAxisUnit().Data(), fVarY->GetAxisUnit().Data()), 0, 0, 1);
+          for (int i = 0; i < fTrackCollectionsNo; i++) {
+            fHistos[i] = new DividedHisto2D(Form("V_{%i}[%i]", (int) fN, i), axX, axY, 'D');
+            fHistos[i]->GetNum()->GetZaxis()->SetTitle(axZ.GetTitle());
+            fHistos[i]->GetDen()->GetZaxis()->SetTitle(axZ.GetTitle());
+            fHistos[i]->SetAxisName(Form("v_{%i RP}", (int) fN));
+          };
+          break;
+        }
+        default: {
+        } break;
       }
-      delete[] axis;
       return Task::EInitFlag::kSUCCESS;
     } else {
       return Task::EInitFlag::kFATAL;
     }
   }
 
-  void SimpleVnAnalysis::FinishTask() { TrackAna::FinishTask(); }
-
   Package* SimpleVnAnalysis::Report() const {
     Package* pack = TrackAna::Report();
     AddToAnaMetadata(pack, new ParameterString("Variable_class on X ", fVarX->ClassName()));
-    AddToAnaMetadata(pack, new ParameterString("Variable_class on Y", fVarY->ClassName()));
-    DividedHisto2D** flows = new DividedHisto2D*[fTrackCollectionsNo];
+    if (fNDim == 2) AddToAnaMetadata(pack, new ParameterString("Variable_class on Y", fVarY->ClassName()));
     for (int i = 0; i < fTrackCollectionsNo; i++) {
-      pack->AddObject(fHistos[i]);
+      pack->AddObject(fHistos[i]->Clone());
     }
-    delete[] flows;
     return pack;
   }
 
@@ -132,8 +153,6 @@ namespace Hal {
   }
 
   Double_t SimpleVnAnalysis::GetPhi() { return fCurrentEvent->GetPhi(); }
-
-  void SimpleVnAnalysis::FinishAllEvents() {}
 
   void SimpleVnAnalysis::CheckCutContainerCollections() {
     TrackAna::CheckCutContainerCollections();
@@ -153,10 +172,11 @@ namespace Hal {
     fMaxY  = ana.fMaxY;
     fN     = ana.fN;
     fPhi   = ana.fPhi;
+    fNDim  = ana.fNDim;
     if (ana.fHistos) {
-      fHistos = new DividedHisto2D*[fTrackCollectionsNo];
+      fHistos = new DividedHisto1D*[fTrackCollectionsNo];
       for (int i = 0; i < ana.fTrackCollectionsNo; i++) {
-        fHistos[i] = (DividedHisto2D*) ana.fHistos[i]->Clone();
+        fHistos[i] = (DividedHisto1D*) ana.fHistos[i]->Clone();
       }
     }
     if (ana.fVarX) fVarX = ana.fVarX->MakeCopy();
@@ -164,7 +184,10 @@ namespace Hal {
   }
 
   SimpleVnAnalysis::~SimpleVnAnalysis() {
-    // TODO Auto-generated destructor stub
+    for (int i = 0; i < fTrackCollectionsNo; i++) {
+      delete fHistos[i];
+    }
+    delete[] fHistos;
   }
 
   void SimpleVnAnalysis::SetFlowVariableX(const FlowVariable& var) { fVarX = var.MakeCopy(); }

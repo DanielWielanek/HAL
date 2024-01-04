@@ -11,5 +11,6 @@
 #pragma link C++ class Hal::FlowPtVariable + ;
 #pragma link C++ class Hal::FlowYVariable + ;
 #pragma link C++ class Hal::SimpleVnAnalysis + ;
+#pragma link C++ class Hal::FlowTrackFieldVariable + ;
 
 #endif

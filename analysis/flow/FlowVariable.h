@@ -23,6 +23,10 @@ namespace Hal {
     TString fName;
     TString fUnit;
 
+  protected:
+    void SetFieldName(TString name) { fName = name; }
+    void SetFieldUnit(TString unit) { fUnit = unit; }
+
   public:
     /**
      * default constructor
@@ -46,6 +50,7 @@ namespace Hal {
      * @return variable with is plotted of flow histogram
      */
     virtual Double_t GetVariable(Track* p);
+    virtual Bool_t Init(Int_t taskId) { return kTRUE; }
     virtual FlowVariable* MakeCopy() const = 0;
     virtual ~FlowVariable();
     ClassDef(FlowVariable, 1)
@@ -61,6 +66,22 @@ namespace Hal {
     FlowVariable* MakeCopy() const { return new FlowVirtualVariable(); };
     virtual ~FlowVirtualVariable();
     ClassDef(FlowVirtualVariable, 1)
+  };
+
+  class FlowTrackFieldVariable : public FlowVariable {
+    Int_t fFieldId;
+
+  public:
+    /**
+     * default constructor
+     * @param fieldId one of fields Hal::DataFieldID::kTrack
+     */
+    FlowTrackFieldVariable(Int_t fieldId = 0);
+    Double_t GetVariable(Track* p);
+    virtual Bool_t Init(Int_t taskId);
+    FlowVariable* MakeCopy() const { return new FlowTrackFieldVariable(*this); };
+    virtual ~FlowTrackFieldVariable() {};
+    ClassDef(FlowTrackFieldVariable, 1)
   };
 }  // namespace Hal
 #endif /* HALFLOWVARIABLE_H_ */

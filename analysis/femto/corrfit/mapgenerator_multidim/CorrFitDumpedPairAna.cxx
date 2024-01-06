@@ -134,7 +134,7 @@ namespace Hal {
         Int_t step = nEvents / 100;
         for (int iEvent = 0; iEvent < nEvents; iEvent++) {
           fTree->GetEntry(iEvent);
-          // if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
+          if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
           RunSignalPair();
         }
       } break;

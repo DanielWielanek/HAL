@@ -10,6 +10,8 @@
 
 #include "Cout.h"
 
+#include <iostream>
+
 namespace Hal {
 
 
@@ -102,5 +104,13 @@ namespace Hal {
     return map[x][y];
   }
 
+  void FemtoYlmIndexes::Print(Option_t* /*option*/) const {
+    std::cout << ClassName() << std::endl;
+    std::cout << Form("   l   m   index") << std::endl;
+    for (int i = 0; i < fMaxJM; i++) {
+      std::cout << Form("%4i%4i%4i", fElsi[i], fEmsi[i], i) << std::endl;
+    }
+    std::cout << "------------" << std::endl;
+  }
 
 } /* namespace Hal */

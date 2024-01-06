@@ -94,6 +94,7 @@ namespace Hal {
      * @return
      */
     Int_t GetPadId(Int_t l, Int_t m) const;
+    virtual void Print(Option_t* option = "") const;
     /**
      * destructor
      */

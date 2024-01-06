@@ -20,11 +20,20 @@ namespace Hal {
     Int_t static PionPlusPID() { return 211; };
     Int_t static PionZeroPID() { return 111; }
     Int_t static ElectronPID() { return 11; };
+    Int_t static ElectronNeutrinoPID() { return 12; }
+    Int_t static PhotonPID() { return 22; }
     Int_t static MuonPID() { return 13; };
     Int_t static KaonPlusPID() { return 321; };
+    Int_t static KaonZeroPID() { return 311; }
+    Int_t static KaonZeroLongPID() { return 130; }
+    Int_t static KaonZeroShortPID() { return 310; }
     Int_t static ProtonPID() { return 2212; };
     Int_t static LambdaPID() { return 3122; };
     Int_t static NeutronPID() { return 2112; };
+    Int_t static DeltaPlusPID() { return 2214; }
+    Int_t static DeltaPlusPlusPID() { return 2224; }
+    Int_t static DeltaZeroPID() { return 2114; }
+    Int_t static DeltaMinusPID() { return 1114; }
     Int_t static SigmaZeroPID() { return 3212; };
     Int_t static SigmaPlusPID() { return 3222; };
     Int_t static SigmaMinusPID() { return 3112; };

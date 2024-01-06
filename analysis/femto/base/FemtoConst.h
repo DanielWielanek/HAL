@@ -19,6 +19,7 @@ namespace Hal {
   namespace Femto {
 
     inline Double_t FmToGeV() { return 5.06842372; }
+    inline Double_t FmToGeV(Double_t fm) { return fm * FmToGeV(); }
 
     enum class EKinematics {
       kPRF,   //!< kPRF
@@ -161,7 +162,7 @@ namespace Hal {
      * @param sigmaq -std of momentum coordinate
      * @param sigmar - std of freezout coordinate
      */
-    void FillRandomPair(FemtoPair* p, Int_t pid1, Int_t pid2, Double_t sigmaq = 0.1, Double_t sigmar = 1);
+    void FillRandomPair(FemtoPair& p, Int_t pid1, Int_t pid2, Double_t sigmaq = 0.1, Double_t sigmar = 1);
     /**
      * export obj into flat array if this is a CF
      * @param obj

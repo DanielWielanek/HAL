@@ -590,7 +590,7 @@ namespace Hal {
       }
       return "";
     }
-    void FillRandomPair(FemtoPair* p, Int_t pid1, Int_t pid2, Double_t sigmaq, Double_t sigmar) {
+    void FillRandomPair(FemtoPair& p, Int_t pid1, Int_t pid2, Double_t sigmaq, Double_t sigmar) {
       auto pdg    = TDatabasePDG::Instance();
       Double_t m1 = pdg->GetParticle(pid1)->Mass();
       Double_t m2 = pdg->GetParticle(pid2)->Mass();
@@ -598,11 +598,11 @@ namespace Hal {
       auto rgaus = [](Double_t s) { return gRandom->Gaus(0, s); };
       p1.SetXYZM(rgaus(sigmaq), rgaus(sigmaq), rgaus(sigmaq), m1);
       p2.SetXYZM(rgaus(sigmaq), rgaus(sigmaq), rgaus(sigmaq), m2);
-      p->SetTrueMomenta(p1, p2);
-      p->SetMomenta(p1, p2);
+      p.SetTrueMomenta(p1, p2);
+      p.SetMomenta(p1, p2);
       TLorentzVector x1(rgaus(sigmar), rgaus(sigmar), rgaus(sigmar), 0);
       TLorentzVector x2(rgaus(sigmar), rgaus(sigmar), rgaus(sigmar), 0);
-      p->SetFreezouts(x1, x2);
+      p.SetFreezouts(x1, x2);
     }
 
     Array_1<Float_t>* ExportToFlat(TObject* obj) {
@@ -631,6 +631,7 @@ namespace Hal {
       if (dynamic_cast<Hal::FemtoDPhiDEta*>(obj)) { return ECFType::kPhiEta; }
       return ECFType::kUnkown;
     }
+
     FemtoWeightGenerator* GetWeightGeneratorFromXLM(XMLNode* nod) {
       XMLNode* weightType = nod->GetChild("Type");
       if (!weightType) return nullptr;

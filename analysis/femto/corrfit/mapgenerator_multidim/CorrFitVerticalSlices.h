@@ -25,7 +25,6 @@ namespace Hal {
   protected:
   public:
     CorrFitVerticalSlices() {};
-    static CorrFitVerticalSlices* MakeSlice(const Hal::DividedHisto1D& h, Int_t nParams);
     virtual void FillNum(Int_t bin, FemtoPair* pair)                                      = 0;
     virtual void FillDen(Int_t bin, FemtoPair* pair)                                      = 0;
     virtual void ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const = 0;
@@ -84,6 +83,7 @@ namespace Hal {
 
   public:
     CorrFitVerticalSlicesSH() : fMaxJM(3) {};  // only for root
+    Int_t GetMaxL() const { return fLmVals.GetMaxL(); }
     CorrFitVerticalSlicesSH(const Hal::FemtoSHCF& h, Int_t nSamples);
     void FillNum(Int_t bin, FemtoPair* pair);
     void FillDen(Int_t bin, FemtoPair* pair);
@@ -95,6 +95,10 @@ namespace Hal {
     const std::vector<Double_t>& GetNumImag(Int_t bin) const { return fShNumImag[bin]; };
     const std::vector<Double_t>& GetDenReal(Int_t bin) const { return fShDenReal[bin]; };
     const std::vector<Double_t>& GetDenImag(Int_t bin) const { return fShDenImag[bin]; };
+    void SetNumReal(Int_t parLoc, Int_t lmbin, Double_t re, Double_t im) {
+      fShNumReal[parLoc][lmbin] = re;
+      fShNumImag[parLoc][lmbin] = im;
+    }
     virtual ~CorrFitVerticalSlicesSH() {};
     ClassDef(CorrFitVerticalSlicesSH, 1)
   };

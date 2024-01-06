@@ -119,19 +119,6 @@ namespace Hal {
     }
   }
 
-  CorrFitVerticalSlices* CorrFitVerticalSlices::MakeSlice(const Hal::DividedHisto1D& h, Int_t nParams) {
-    if (dynamic_cast<const Hal::FemtoSHCF*>(&h)) {
-      return new CorrFitVerticalSlicesSH(dynamic_cast<const Hal::FemtoSHCF&>(h), nParams);
-    }
-    if (dynamic_cast<const Hal::Femto1DCF*>(&h)) {
-      return new CorrFitVerticalSlices1D(dynamic_cast<const Hal::Femto1DCF&>(h), nParams);
-    }
-    if (dynamic_cast<const Hal::Femto3DCF*>(&h)) {
-      return new CorrFitVerticalSlices3D(dynamic_cast<const Hal::Femto3DCF&>(h), nParams);
-    }
-    return nullptr;
-  }
-
   CorrFitVerticalSlices1D::CorrFitVerticalSlices1D(const Hal::Femto1DCF& h, Int_t nSamples) {
     Hal::Std::ResizeVector1D(fNum, nSamples);
     Hal::Std::ResizeVector1D(fDen, nSamples);

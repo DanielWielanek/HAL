@@ -574,6 +574,22 @@ namespace Hal {
       h->ResetStats();
     }
 
+    void CopyAxisProp(TAxis* from, TAxis* to, TString option) {
+      TAxis default_axis = TAxis();
+      if (default_axis.GetCenterTitle() != from->GetCenterTitle()) to->CenterTitle(from->GetCenterTitle());
+      if (default_axis.GetNdivisions() != from->GetNdivisions()) to->SetNdivisions(from->GetNdivisions());
+      if (default_axis.GetTitleColor() != from->GetTitleColor()) to->SetTitleColor(from->GetTitleColor());
+      if (default_axis.GetTitleFont() != from->GetTitleFont()) to->SetTitleFont(from->GetTitleFont());
+      if (default_axis.GetTitleOffset() != from->GetTitleOffset()) to->SetTitleOffset(from->GetTitleOffset());
+      if (0.035 != from->GetTitleSize()) to->SetTitleSize(from->GetTitleSize());  // why 0.35 is not default? don't know
+      to->SetTitle(from->GetTitle());
+      if (default_axis.GetLabelColor() != from->GetLabelColor()) to->SetLabelColor(from->GetLabelColor());
+      if (default_axis.GetLabelFont() != from->GetLabelFont()) to->SetLabelFont(from->GetLabelFont());
+      if (default_axis.GetLabelOffset() != from->GetLabelOffset()) to->SetLabelOffset(from->GetLabelOffset());
+      if (default_axis.GetLabelSize() != from->GetLabelSize()) to->SetLabelSize(from->GetLabelSize());
+      if (Hal::Std::FindParam(option, "!tit", kTRUE)) { to->SetTitle(from->GetTitle()); }
+    }
+
     TH1D* GetDiagonalProjection1D(TH3* h, TString dir, Double_t start, Double_t start2) {
       if (h->GetNbinsX() != h->GetNbinsY() || h->GetNbinsX() != h->GetNbinsZ()) {
         Hal::Cout::PrintInfo("Cannto make projection in nonsymetric histo", Hal::EInfo::kLowWarning);

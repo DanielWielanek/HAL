@@ -18,6 +18,7 @@ class TH2;
 class TH2D;
 class TH3;
 class TH3D;
+class TAxis;
 class TVirtualPad;
 
 namespace Hal {
@@ -30,6 +31,13 @@ namespace Hal {
      */
     void RemoveNan(TH1* h, Double_t fill = 0, Double_t fill_e = 1);
     /**
+     * copy axis properties like title color etc. if they are not default
+     * @param from copy from
+     * @param to copy to
+     * @param addition option if "!tit" do not copy  title
+     */
+    void CopyAxisProp(TAxis* from, TAxis* to, TString opt);
+    /**
      * make diagonal projection
      * @param h
      * @param dir direction projection - e.g. "xy" mean project at const z (start)
@@ -40,7 +48,6 @@ namespace Hal {
      * @param start2 - second constant value (used in x, y, z projections)
      * @return
      */
-
     TH1D* GetDiagonalProjection1D(TH3* h, TString dir, Double_t start, Double_t start2 = 0.);
     /**
      * return projection

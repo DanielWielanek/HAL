@@ -28,7 +28,6 @@ namespace Hal {
     TAxis* fYaxis;
     Double_t fMin[2];
     Double_t fMax[2];
-    void CopyAxis(TAxis* from, TAxis* to);
 
   public:
     MultiGraph();

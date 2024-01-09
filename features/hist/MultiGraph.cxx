@@ -9,6 +9,8 @@
 
 #include "MultiGraph.h"
 
+#include "StdHist.h"
+
 #include <TAttAxis.h>
 #include <TAttLine.h>
 #include <TAttMarker.h>
@@ -61,8 +63,8 @@ namespace Hal {
     TString option = opt;
     if (option.Contains("A") == kFALSE) option = "A" + option;
     fMultiGraph->Draw(option);
-    if (fXaxis) CopyAxis(fXaxis, fMultiGraph->GetXaxis());
-    if (fYaxis) CopyAxis(fYaxis, fMultiGraph->GetYaxis());
+    if (fXaxis) Hal::Std::CopyAxis(fXaxis, fMultiGraph->GetXaxis());
+    if (fYaxis) Hal::Std::CopyAxis(fYaxis, fMultiGraph->GetYaxis());
     if (fMin[0] != fMax[0]) {
       fMultiGraph->GetXaxis()->SetRangeUser(fMin[0], fMax[0]);
       fMultiGraph->GetXaxis()->SetLimits(fMin[0], fMax[0]);  // why?
@@ -162,21 +164,6 @@ namespace Hal {
     if (fXaxis) return fXaxis;
     fXaxis = new TAxis();
     return fXaxis;
-  }
-
-  void MultiGraph::CopyAxis(TAxis* from, TAxis* to) {
-    TAxis default_axis = TAxis();
-    if (default_axis.GetCenterTitle() != from->GetCenterTitle()) to->CenterTitle(from->GetCenterTitle());
-    if (default_axis.GetNdivisions() != from->GetNdivisions()) to->SetNdivisions(from->GetNdivisions());
-    if (default_axis.GetTitleColor() != from->GetTitleColor()) to->SetTitleColor(from->GetTitleColor());
-    if (default_axis.GetTitleFont() != from->GetTitleFont()) to->SetTitleFont(from->GetTitleFont());
-    if (default_axis.GetTitleOffset() != from->GetTitleOffset()) to->SetTitleOffset(from->GetTitleOffset());
-    if (0.035 != from->GetTitleSize()) to->SetTitleSize(from->GetTitleSize());  // why 0.35 is not default? don't know
-    to->SetTitle(from->GetTitle());
-    if (default_axis.GetLabelColor() != from->GetLabelColor()) to->SetLabelColor(from->GetLabelColor());
-    if (default_axis.GetLabelFont() != from->GetLabelFont()) to->SetLabelFont(from->GetLabelFont());
-    if (default_axis.GetLabelOffset() != from->GetLabelOffset()) to->SetLabelOffset(from->GetLabelOffset());
-    if (default_axis.GetLabelSize() != from->GetLabelSize()) to->SetLabelSize(from->GetLabelSize());
   }
 
   TAxis* MultiGraph::GetYaxis() {

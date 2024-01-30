@@ -63,8 +63,8 @@ namespace Hal {
     TString option = opt;
     if (option.Contains("A") == kFALSE) option = "A" + option;
     fMultiGraph->Draw(option);
-    if (fXaxis) Hal::Std::CopyAxis(fXaxis, fMultiGraph->GetXaxis());
-    if (fYaxis) Hal::Std::CopyAxis(fYaxis, fMultiGraph->GetYaxis());
+    if (fXaxis) Hal::Std::CopyAxisProp(fXaxis, fMultiGraph->GetXaxis());
+    if (fYaxis) Hal::Std::CopyAxisProp(fYaxis, fMultiGraph->GetYaxis());
     if (fMin[0] != fMax[0]) {
       fMultiGraph->GetXaxis()->SetRangeUser(fMin[0], fMax[0]);
       fMultiGraph->GetXaxis()->SetLimits(fMin[0], fMax[0]);  // why?

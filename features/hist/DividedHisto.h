@@ -393,6 +393,12 @@ namespace Hal {
      * @return relative address
      */
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
+    /**
+     * returns "special object, not used except cf's
+     * @param opt
+     * @return
+     */
+    virtual TObject* GetSpecial(TString opt) const { return nullptr; }
     virtual ~DividedHisto1D();
     ClassDef(DividedHisto1D, 4)
   };

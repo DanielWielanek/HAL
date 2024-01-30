@@ -36,7 +36,7 @@ namespace Hal {
      * @param to copy to
      * @param addition option if "!tit" do not copy  title
      */
-    void CopyAxisProp(TAxis* from, TAxis* to, TString opt);
+    void CopyAxisProp(TAxis* from, TAxis* to, TString opt = "");
     /**
      * make diagonal projection
      * @param h

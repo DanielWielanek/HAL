@@ -44,7 +44,9 @@ namespace Hal {
     void MakeUsed() { fUsed = kTRUE; }
     Bool_t IsUsed() const { return fUsed; };
     virtual ~CutCollectionLinks() {};
+    ClassDef(CutCollectionLinks, 1)
   };
+
   class CutCollection : public TObject {
   private:
     TObjArray* fCutMonitors;

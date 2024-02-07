@@ -72,14 +72,17 @@ namespace OTF {
   class RecoEvent : public TNamed {
     TClonesArray* fTracks;
     TVector3 fVertex;
+    Double_t fPhi = {0};
 
   public:
     RecoEvent() : fTracks(new TClonesArray("OTF::RecoTrack")) {};
     RecoTrack* GetTrack(Int_t index) const { return (RecoTrack*) fTracks->UncheckedAt(index); };
     const TVector3& GetVertex() const { return fVertex; }
+    void SetPhi(Double_t psi) { fPhi = psi; }
     void SetVertex(const TVector3& vertex) { fVertex = vertex; }
     void AddTrack(const RecoTrack& track);
     void Clear(Option_t* /*option*/ = "") { fTracks->Clear(); };
+    Double_t GetPhi() const { return fPhi; }
     Int_t GetNTracks() const { return fTracks->GetEntriesFast(); };
     virtual ~RecoEvent() { delete fTracks; };
     ClassDef(RecoEvent, 1)
@@ -88,15 +91,18 @@ namespace OTF {
   class McEvent : public TNamed {
     TClonesArray* fTracks;
     Double_t fB;
+    Double_t fPhi = {0};
 
   public:
     McEvent() : fTracks(new TClonesArray("OTF::McTrack")), fB(0) {};
+    void SetPhi(Double_t psi) { fPhi = psi; }
     void SetB(Double_t b) { fB = b; }
     void Clear(Option_t* /*option*/ = "") { fTracks->Clear(); };
     void AddTrack(const McTrack& track);
     TClonesArray* GetArray() const { return fTracks; }
     Int_t GetNTracks() const { return fTracks->GetEntriesFast(); };
     Double_t GetB() const { return fB; };
+    Double_t GetPhi() const { return fPhi; }
     McTrack* GetTrack(Int_t idx) const { return (McTrack*) fTracks->UncheckedAt(idx); };
     virtual ~McEvent() { delete fTracks; };
     ClassDef(McEvent, 1)

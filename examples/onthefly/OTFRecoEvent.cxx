@@ -34,6 +34,7 @@ namespace HalOTF {
     OTF::RecoEvent* ev = s->GetEvent();
     TVector3 v         = ev->GetVertex();
     fVertex->SetXYZT(v.X(), v.Y(), v.Z(), 0);
+    fPhi = ev->GetPhi();
 
     for (int i = 0; i < fTotalTracksNo; i++) {
       RecoTrack* track   = (RecoTrack*) fTracks->UncheckedAt(i);

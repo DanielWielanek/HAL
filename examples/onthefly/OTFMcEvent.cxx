@@ -31,6 +31,7 @@ namespace HalOTF {
     fTracks->ExpandCreateFast(fTotalTracksNo);
     OTF::McEvent* ev = s->GetMcEvent();
     fB               = ev->GetB();
+    fPhi             = ev->GetPhi();
     for (int i = 0; i < fTotalTracksNo; i++) {
       McTrack* track   = (McTrack*) fTracks->UncheckedAt(i);
       OTF::McTrack* mc = (OTF::McTrack*) ev->GetTrack(i);

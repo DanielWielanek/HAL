@@ -26,10 +26,10 @@ namespace HalOTF {
   Hal::EventInterface* RecoEvent::CreateInterface() const { return new RecoEventInterface(); }
 
   void RecoEvent::Update(Hal::EventInterface* interface) {
+    Clear();
     RecoEventInterface* s = (RecoEventInterface*) interface;
     fTotalTracksNo        = s->GetEvent()->GetNTracks();
     fMultiplicity         = fTotalTracksNo;
-    fTracks->Clear();
     fTracks->ExpandCreateFast(fTotalTracksNo);
     OTF::RecoEvent* ev = s->GetEvent();
     TVector3 v         = ev->GetVertex();
@@ -45,7 +45,7 @@ namespace HalOTF {
       track->SetMatch(mc->GetMcIndex());
       Int_t dau1, dau2;
       mc->GetDaughters(dau1, dau2);
-      if (dau1 == -1) {
+      if (dau1 != -1) {
         track->EnableV0(1, 1);
         track->GetV0Info()->SetPosId(dau1);
         track->GetV0Info()->SetNegId(dau2);

@@ -25,9 +25,9 @@ namespace HalOTF {
   Hal::EventInterface* McEvent::CreateInterface() const { return new McEventInterface(); }
 
   void McEvent::Update(Hal::EventInterface* interface) {
+    Clear();
     McEventInterface* s = (McEventInterface*) interface;
     fTotalTracksNo      = s->GetMcEvent()->GetNTracks();
-    fTracks->Clear();
     fTracks->ExpandCreateFast(fTotalTracksNo);
     OTF::McEvent* ev = s->GetMcEvent();
     fB               = ev->GetB();

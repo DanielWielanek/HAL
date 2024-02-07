@@ -25,7 +25,7 @@ namespace HalUni {
   UnigenEvent::UnigenEvent() : Hal::McEvent("HalUni::UnigenTrack") {}
 
   void UnigenEvent::Update(Hal::EventInterface* interface) {
-
+    Clear();
     UEvent* temp   = ((UnigenEventInterface*) interface)->fEvent;
     fB             = temp->GetB();
     fPhi           = temp->GetPhi();

@@ -30,6 +30,7 @@ namespace Hal {
 
   void ComplexEvent::Update(EventInterface* interface) {
     ComplexEventInterface* source = (ComplexEventInterface*) interface;
+    Clear();
     fImgEvent->Update(source->GetReal());
     fRealEvent->Update(source->GetImag());
     Event::ShallowCopyEvent(fRealEvent);

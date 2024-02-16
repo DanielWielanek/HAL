@@ -9,6 +9,7 @@
 
 #include "MultiGraph.h"
 
+#include "Cout.h"
 #include "StdHist.h"
 
 #include <TAttAxis.h>
@@ -20,6 +21,7 @@
 #include <TMultiGraph.h>
 #include <TString.h>
 #include <TVirtualPad.h>
+#include <iostream>
 
 namespace Hal {
 
@@ -27,6 +29,7 @@ namespace Hal {
     fMin[0] = fMin[1] = 0;
     fMax[0] = fMax[1] = 0;
   }
+  MultiGraph::MultiGraph(Int_t graphs) : MultiGraph() { MakeGraphs(graphs); }
 
   void MultiGraph::MakeGraph(Option_t* opt) {
     TGraphErrors** temp = fGraphErrors;
@@ -78,8 +81,10 @@ namespace Hal {
     if (no < 0) {
       for (int i = 0; i < fN; i++)
         fGraphErrors[i]->SetMarkerStyle(marker);
-    } else {
+    } else if (no < fN) {
       fGraphErrors[no]->SetMarkerStyle(marker);
+    } else {
+      std::cout << __FILE__ << " " << __LINE__ << "Cannot SetMarkerStyle to graph " << no << std::endl;
     }
   }
 
@@ -87,8 +92,10 @@ namespace Hal {
     if (no < 0) {
       for (int i = 0; i < fN; i++)
         fGraphErrors[i]->SetMarkerSize(size);
-    } else {
+    } else if (no < fN) {
       fGraphErrors[no]->SetMarkerSize(size);
+    } else {
+      std::cout << __FILE__ << " " << __LINE__ << "Cannot SetMarkerSize to graph " << no << std::endl;
     }
   }
 
@@ -96,8 +103,10 @@ namespace Hal {
     if (no < 0) {
       for (int i = 0; i < fN; i++)
         fGraphErrors[i]->SetMarkerColor(color);
-    } else {
+    } else if (no < fN) {
       fGraphErrors[no]->SetMarkerColor(color);
+    } else {
+      std::cout << __FILE__ << " " << __LINE__ << "Cannot SetMarkerColor to graph " << no << std::endl;
     }
   }
 
@@ -105,8 +114,10 @@ namespace Hal {
     if (no < 0) {
       for (int i = 0; i < fN; i++)
         fGraphErrors[i]->SetLineWidth(width);
-    } else {
+    } else if (no < fN) {
       fGraphErrors[no]->SetLineWidth(width);
+    } else {
+      std::cout << __FILE__ << " " << __LINE__ << "Cannot SetLineWidth to graph " << no << std::endl;
     }
   }
 
@@ -114,8 +125,10 @@ namespace Hal {
     if (no < 0) {
       for (int i = 0; i < fN; i++)
         fGraphErrors[i]->SetLineColor(color);
-    } else {
+    } else if (no < fN) {
       fGraphErrors[no]->SetLineColor(color);
+    } else {
+      std::cout << __FILE__ << " " << __LINE__ << "Cannot SetLineColor to graph " << no << std::endl;
     }
   }
 
@@ -123,7 +136,7 @@ namespace Hal {
     if (no < 0) {
       for (int i = 0; i < fN; i++)
         fGraphErrors[i]->SetLineStyle(style);
-    } else {
+    } else if (no < fN) {
       fGraphErrors[no]->SetLineStyle(style);
     }
   }

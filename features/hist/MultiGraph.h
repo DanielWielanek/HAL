@@ -32,6 +32,11 @@ namespace Hal {
   public:
     MultiGraph();
     /**
+     * make multigraph with many graphs
+     * @param graphs
+     */
+    MultiGraph(Int_t graphs);
+    /**
      * set x axis range
      * @param min
      * @param max

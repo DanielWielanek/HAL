@@ -404,6 +404,30 @@ namespace Hal {
       if (remove) { expression = option; }
       return kTRUE;
     }
-
+    /**
+     * find pair of numbers line *{X,Y}* where X and Y are floats
+     */
+    Bool_t FindExpressionTwoFloats(TString& expression, Double_t& val1, Double_t& val2, Bool_t remove) {
+      TRegexp regexp("{[-+]?[0-9]*\\.?[0-9]*,[-+]?[0-9]*\\.?[0-9]*}");
+      TString expr = expression(regexp);
+      if (expr.Length() > 1) {
+        TRegexp low_expr("{[-+]?[0-9]*\\.?[0-9]*,");
+        TRegexp high_expr(",[-+]?[0-9]*\\.?[0-9]*}");
+        TString first = expr(low_expr);
+        first.ReplaceAll(",", "");
+        first.ReplaceAll("{", "");
+        TString last = expr(high_expr);
+        last.ReplaceAll(",", "");
+        last.ReplaceAll("}", "");
+        val1 = first.Atof();
+        val2 = last.Atof();
+        if (remove) expression.ReplaceAll(expr, "");
+        return kTRUE;
+      } else {
+        val1 = 0;
+        val2 = 0;
+        return kFALSE;
+      }
+    }
   }  // namespace Std
 }  // namespace Hal

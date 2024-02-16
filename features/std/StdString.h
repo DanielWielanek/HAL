@@ -158,6 +158,14 @@ namespace Hal {
      * @return true if expression found
      */
     Bool_t FindExpressionTwoValues(TString& expression, Int_t& val1, Int_t& val2, Bool_t remove);
+    /**
+     * find pair of numbers line *{X,Y}* where X and Y are floats
+     *@param expression
+     *@param val1 - X
+     *@param val2 - Y
+     *@param remove - if true remove pattern
+     */
+    Bool_t FindExpressionTwoFloats(TString& expression, Double_t& val1, Double_t& val2, Bool_t remove);
   }  // namespace Std
 }  // namespace Hal
 #endif /* HALSTDSTRING_H_ */

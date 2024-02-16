@@ -18,7 +18,7 @@
 #include <TString.h>
 
 class TGraph;
-
+class TVirtualPad;
 namespace Hal {
   class MultiGraph;
   /**
@@ -101,9 +101,9 @@ namespace Hal {
       SetGridy(y);
     };
     /**
-     * apply setting to current gpad
+     * apply setting to pad if pad is null apply to gPad
      */
-    void Apply();
+    void Apply(TVirtualPad* pad = nullptr);
     virtual ~PadStyle() {}
     ClassDef(PadStyle, 1);
   };
@@ -118,10 +118,11 @@ namespace Hal {
   public:
     HistoStyle();
     /**
-     * return predefine style for 1d histogram
+     * return predefined style for 1d histogram
      * @param style options:
      * 05 - set margins sizes to 0.05 (default optimal)
-     * colorCircle - set line color/width and marker to full circle
+     * color - set line color/marker color to red
+     * circle - set marker to full circle
      * center center axes
      * @return
      */

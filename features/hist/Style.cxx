@@ -66,18 +66,19 @@ namespace Hal {
 
   PadStyle::PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2) { SetMargins(x1, y1, x2, y2); }
 
-  void PadStyle::Apply() {
+  void PadStyle::Apply(TVirtualPad* pad) {
+    if (pad == nullptr) pad = gPad;
     Double_t d;
     Int_t i;
-    if (Find("bottom", d)) { gPad->SetBottomMargin(d); };
-    if (Find("top", d)) { gPad->SetTopMargin(d); };
-    if (Find("left", d)) { gPad->SetLeftMargin(d); };
-    if (Find("right", d)) { gPad->SetRightMargin(d); };
-    if (Find("logx", i)) { gPad->SetLogx(i); };
-    if (Find("logy", i)) { gPad->SetLogy(i); };
-    if (Find("logz", i)) { gPad->SetLogz(i); };
-    if (Find("gridx", i)) { gPad->SetGridx(i); };
-    if (Find("gridy", i)) { gPad->SetGridy(i); };
+    if (Find("bottom", d)) { pad->SetBottomMargin(d); };
+    if (Find("top", d)) { pad->SetTopMargin(d); };
+    if (Find("left", d)) { pad->SetLeftMargin(d); };
+    if (Find("right", d)) { pad->SetRightMargin(d); };
+    if (Find("logx", i)) { pad->SetLogx(i); };
+    if (Find("logy", i)) { pad->SetLogy(i); };
+    if (Find("logz", i)) { pad->SetLogz(i); };
+    if (Find("gridx", i)) { pad->SetGridx(i); };
+    if (Find("gridy", i)) { pad->SetGridy(i); };
   }
 
   void PadStyle::SetMargins(Double_t x1, Double_t y1, Double_t x2, Double_t y2) {
@@ -323,10 +324,8 @@ namespace Hal {
       res.SetAxis(0.05, 0.8, 0.05, 0.005, 'x');
       res.SetAxis(0.05, 0.8, 0.05, 0.005, 'y');
     }
-    if (Hal::Std::FindParam(style, "colorCircle", kTRUE)) {
-      res.SetColor(kRed);
-      res.SetMarkerStyle(kFullCircle);
-    }
+    if (Hal::Std::FindParam(style, "color", kTRUE)) { res.SetColor(kRed); }
+    if (Hal::Std::FindParam(style, "circle", kTRUE)) { res.SetMarkerStyle(kFullCircle); }
     if (Hal::Std::FindParam(style, "center", kTRUE)) {
       res.CenterTitle(kTRUE, 'x');
       res.CenterTitle(kTRUE, 'y');

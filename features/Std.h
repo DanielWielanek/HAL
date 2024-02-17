@@ -115,7 +115,7 @@ namespace Hal {
      * side)
      * @return arrays of pads
      */
-    TVirtualPad*** GetGridPad(Int_t x_pads, Int_t y_pads, Float_t x_margin, Float_t y_margin);
+    std::vector<std::vector<TVirtualPad*>> GetGridPad(Int_t x_pads, Int_t y_pads, Float_t x_margin, Float_t y_margin);
     /**
      *
      * @param name version name eg. mar2016
@@ -193,7 +193,7 @@ namespace Hal {
      * @return
      */
     template<typename T>
-    unsigned intGetTotalSize(const std::vector<std::vector<T>>& vec) {
+    unsigned int GetTotalSize(const std::vector<std::vector<T>>& vec) {
       unsigned int rowSize = vec.size();
       unsigned int totSize = 0;
       for (auto& i : vec) {

@@ -158,17 +158,15 @@ namespace Hal::Std {
     return listOfFiles;
   }
 
-  TVirtualPad*** GetGridPad(Int_t x_pads, Int_t y_pads, Float_t x_margin, Float_t y_margin) {
+  std::vector<std::vector<TVirtualPad*>> GetGridPad(Int_t x_pads, Int_t y_pads, Float_t x_margin, Float_t y_margin) {
     TPad* padsav = (TPad*) gPad;
     if (gPad == NULL) {
       TCanvas* c = new TCanvas();
       c->cd();
       padsav = (TPad*) gPad;
     }
-    TVirtualPad*** array2d = new TVirtualPad**[x_pads];
-    for (int i = 0; i < x_pads; i++) {
-      array2d[i] = new TVirtualPad*[y_pads];
-    }
+    std::vector<std::vector<TVirtualPad*>> array2d;
+    ResizeVector2D(array2d, x_pads, y_pads);
     Double_t colls   = x_pads;
     Double_t rows    = y_pads;
     Double_t x_shift = 1.0 / (colls - 1 + 1 / (1 - TMath::Abs(x_margin)));

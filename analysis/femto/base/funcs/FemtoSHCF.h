@@ -36,6 +36,7 @@ namespace Hal {
 #endif
   class FemtoSHSlice;
   class FemtoYlmSolver;
+  class FemtoSHCFPainter;
 
   /**
    * class for storing sphercial harmonics correlation functions
@@ -47,6 +48,7 @@ namespace Hal {
     friend class FemtoSerializationInterfaceSH;
     friend class FemtoSHSlice;
     friend class FemtoYlmSolver;
+    friend class FemtoSHCFPainter;
     const Int_t fMaxJM;
     TH1D** fNumReal = {nullptr};  //[fMaxJM] Real parts of Ylm components of the numerator
     TH1D** fNumImag = {nullptr};  // [fMaxJM]Imaginary parts of Ylm components of the numerator

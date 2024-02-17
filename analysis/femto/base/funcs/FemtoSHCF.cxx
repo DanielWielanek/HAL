@@ -714,7 +714,6 @@ namespace Hal {
     Bool_t drawReal = kFALSE;
     Bool_t drawNeg  = kTRUE;
     Bool_t drawGrid = kFALSE;
-    enum class drawType { kNum, kDen, kCF };
 
     if (Hal::Std::FindParam(option, "im", kTRUE)) drawReal = kTRUE;
     if (Hal::Std::FindParam(option, "re", kTRUE)) drawImg = kTRUE;

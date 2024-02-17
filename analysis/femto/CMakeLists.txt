@@ -41,11 +41,6 @@ ana/FemtoFreezoutsAna.cxx
 ana/FemtoDumpPairAna.cxx
 ana/FemtoEventBinsAna.cxx
 
-base/FemtoDPhiDEta.cxx
-base/Femto1DCF.cxx
-base/Femto3DCF.cxx
-base/FemtoDebug2DCF.cxx
-base/Femto3DCFQinv.cxx
 base/FemtoFastCut.cxx
 base/FemtoFreezoutGenerator.cxx
 base/FemtoPairKinematics.cxx
@@ -118,7 +113,10 @@ corrfit/corrfitopt/CorrFitHDFunc3D.cxx
 corrfit/corrfitopt/CorrFitMask1D.cxx
 corrfit/corrfitopt/CorrFitMask3D.cxx
 
-
+corrfit/serialization/FemtoSerializationInterface.cxx
+corrfit/serialization/FemtoSerializationInterface1D.cxx
+corrfit/serialization/FemtoSerializationInterface3D.cxx
+corrfit/serialization/FemtoSerializationInterfaceSH.cxx
 
 
 weights/FemtoFsiParsed.cxx
@@ -129,6 +127,13 @@ weights/FemtoWeightGeneratorLednicky.cxx
 weights/FemtoWeightGeneratorResidual.cxx
 weights/FemtoWeightGeneratorSupressed.cxx
 weights/FemtoWeightGeneratorKisiel.cxx
+
+base/funcs/FemtoSHCF.cxx
+base/funcs/FemtoDPhiDEta.cxx
+base/funcs/Femto1DCF.cxx
+base/funcs/Femto3DCF.cxx
+base/funcs/FemtoDebug2DCF.cxx
+base/funcs/Femto3DCFQinv.cxx
 
 base/FemtoCorrFunc.cxx
 base/corrfunc/FemtoCorrFuncPt.cxx
@@ -142,7 +147,6 @@ base/corrfunc/FemtoCorrFunc2D.cxx
 imaging/FemtoImaging.cxx
 imaging/FemtoImaging1D.cxx
 imaging/FemtoImaging3D.cxx
-base/FemtoSHCF.cxx
 
 
 )
@@ -161,6 +165,7 @@ if(DEFINED CIA)
         top_secret/CorrFitHDFuncSH.cxx
         top_secret/CorrFitDumpedPairAnaVertical.cxx
         top_secret/BattlestarGalactica.cxx
+        top_secret/BattlestarValkyria.cxx
     )
 endif()
 

@@ -44,6 +44,7 @@ namespace Hal {
 #ifdef __CIA__
     friend class CorrFitSCHF;
 #endif
+    friend class FemtoSerializationInterfaceSH;
     friend class FemtoSHSlice;
     friend class FemtoYlmSolver;
     const Int_t fMaxJM;
@@ -316,6 +317,7 @@ namespace Hal {
 #endif
     Array_1<Float_t>* ExportToFlatNum() const;
     void ExportIntoToFlatNum(Array_1<Float_t>* output) const;
+    void ExportIntoToFlatNumValkyria(Array_1<Float_t>* output) const;
 #ifdef __CIA__
     /**
      * import into this CF a flat array
@@ -329,6 +331,7 @@ namespace Hal {
     virtual Long64_t Merge(TCollection* collection);
     void MakeDummyCov();
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
+    virtual TObject* GetSpecial(TString opt) const;
     virtual ~FemtoSHCF();
     ClassDef(FemtoSHCF, 5)
   };

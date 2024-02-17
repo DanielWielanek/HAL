@@ -60,12 +60,14 @@ set(HAL_HBT
 	${HAL_CORE}/analysis/femto/corrfit
 	${HAL_CORE}/analysis/femto/corrfit/mapgenerators
 	${HAL_CORE}/analysis/femto/corrfit/mapgenerator_multidim
+	${HAL_CORE}/analysis/femto/corrfit/serialization
 	${HAL_CORE}/analysis/femto/corrfit/fittingfunctions
 	${HAL_CORE}/analysis/femto/corrfit/corrfitopt
 	${HAL_CORE}/analysis/femto/imaging
 	${HAL_CORE}/analysis/femto/base/source_models
 	${HAL_CORE}/analysis/femto/base/corrfunc
 	${HAL_CORE}/analysis/femto/base/shmath
+	${HAL_CORE}/analysis/femto/base/funcs
 	${HAL_CORE}/analysis/femto
 	
 )

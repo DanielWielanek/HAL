@@ -25,6 +25,7 @@ namespace Hal {
    */
   class Femto1DCF : public DividedHisto1D {
     const Femto::EKinematics fFrame;
+    friend class FemtoSerializationInterface1D;
 
   protected:
     virtual TString GetPic() const;
@@ -89,14 +90,8 @@ namespace Hal {
      * @return url to extracted object
      */
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
-    /**
-     *
-     * @return numerator exported as flat array
-     */
-    virtual Array_1<Float_t>* ExportToFlatNum() const;
-    virtual void ExportIntoToFlatNum(Array_1<Float_t>* data) const;
-    virtual void ImportSlice(Array_1<Float_t>* array, Int_t toBin);
     virtual void Print(Option_t* opt = "") const;
+    virtual TObject* GetSpecial(TString opt) const;
     virtual ~Femto1DCF();
     ClassDef(Femto1DCF, 3)
   };

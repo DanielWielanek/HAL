@@ -12,6 +12,7 @@
 #include "CorrFit1DCF.h"
 #include "Cout.h"
 #include "FemtoPair.h"
+#include "FemtoSerializationInterface1D.h"
 #include "HtmlCore.h"
 #include "Std.h"
 
@@ -150,21 +151,6 @@ namespace Hal {
     b->Add(fDen);
   }
 
-  Array_1<Float_t>* Femto1DCF::ExportToFlatNum() const {
-    TH1D* h                = (TH1D*) GetNum();
-    Array_1<Float_t>* data = new Array_1<Float_t>(h->GetNbinsX());
-
-    return data;
-  }
-  void Femto1DCF::ExportIntoToFlatNum(Array_1<Float_t>* data) const {
-    TH1D* h = (TH1D*) GetHist(kFALSE);
-    data->MakeBigger(h->GetNbinsX());
-    for (int i = 1; i <= h->GetNbinsX(); i++) {
-      (*data)[i - 1] = h->GetBinContent(i);
-    }
-    delete h;
-  }
-
   void Femto1DCF::Print(Option_t* opt) const {
     DividedHisto1D::Print(opt);
     TString text = Form("Frame : %s", Femto::KinematicsToLabel(fFrame).Data());
@@ -175,9 +161,9 @@ namespace Hal {
 
   void Femto1DCF::FitDummy(CorrFit1DCF* fit) { fit->FitDummy(this); }
 
-  void Femto1DCF::ImportSlice(Array_1<Float_t>* array, Int_t toBin) {
-    GetNum()->SetBinContent(toBin, array->Get(0));
-    GetDen()->SetBinContent(toBin, array->Get(1));
+  TObject* Femto1DCF::GetSpecial(TString opt) const {
+    if (opt == "serialization") return new FemtoSerializationInterface1D();
+    return nullptr;
   }
 
 }  // namespace Hal

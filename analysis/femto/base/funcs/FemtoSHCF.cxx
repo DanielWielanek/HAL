@@ -37,6 +37,7 @@
 #include "FemtoPair.h"
 #include "FemtoSHCF.h"
 #include "FemtoSHSlice.h"
+#include "FemtoSerializationInterfaceSH.h"
 #include "FemtoYlmSolver.h"
 #include "HtmlCore.h"
 #include "HtmlFile.h"
@@ -78,19 +79,8 @@ namespace Hal {
     fDenReal = new TH1D*[fMaxJM];
     fDenImag = new TH1D*[fMaxJM];
 
-    TString x_name;
-    TString y_name;
-    switch (fFrame) {
-      case Femto::EKinematics::kPRF: {
-        x_name = "k* [GeV/c]";
-        y_name = "dN/dK*";
-      } break;
-      case Femto::EKinematics::kLCMS: {
-        x_name = "q [GeV/c]";
-        y_name = "dN/dq";
-      } break;
-      default: break;
-    }
+    TString x_name = Hal::Femto::KinematicsToAxisLabel(fFrame, 0, 1);
+    TString y_name = Hal::Femto::KinematicsToAxisLabel(fFrame, 1, 1);
 
     for (int ihist = 0; ihist < fMaxJM; ihist++) {
       TString hname   = Form("NumReYlm%i%i", fLmVals.GetElsi(ihist), fLmVals.GetEmsi(ihist));
@@ -122,11 +112,7 @@ namespace Hal {
 
     // gSystem->Load("libgsl.so");
     // gSystem->Load("libgslcblas.so");
-    switch (fFrame) {
-      case Femto::EKinematics::kPRF: AddLabel("prf"); break;
-      case Femto::EKinematics::kLCMS: AddLabel("lcms"); break;
-      default: break;
-    }
+    AddLabel(Hal::Femto::KinematicsToLabel(fFrame));
     RecalculateCF();
   }
 
@@ -724,12 +710,15 @@ namespace Hal {
     if (gPad == nullptr) { new TCanvas(); }
     TVirtualPad* pad = gPad;
     // gPad->Clear();??
-    Bool_t drawImg  = kTRUE;
-    Bool_t drawReal = kTRUE;
+    Bool_t drawImg  = kFALSE;
+    Bool_t drawReal = kFALSE;
     Bool_t drawNeg  = kTRUE;
     Bool_t drawGrid = kFALSE;
-    if (Hal::Std::FindParam(option, "im", kTRUE)) drawReal = kFALSE;
-    if (Hal::Std::FindParam(option, "re", kTRUE)) drawImg = kFALSE;
+    enum class drawType { kNum, kDen, kCF };
+
+    if (Hal::Std::FindParam(option, "im", kTRUE)) drawReal = kTRUE;
+    if (Hal::Std::FindParam(option, "re", kTRUE)) drawImg = kTRUE;
+    if (!drawReal && !drawImg) { drawReal = drawImg = kTRUE; }
     if (Hal::Std::FindParam(option, "short", kTRUE)) drawNeg = kFALSE;
     if (Hal::Std::FindParam(option, "grid", kTRUE)) drawGrid = kFALSE;
     auto drawSub = [&](Int_t l, Int_t m, const FemtoSHCF* thiz, Bool_t dImg, Bool_t dReal, TString opT) {
@@ -992,6 +981,22 @@ namespace Hal {
     }
   }
 
+  void FemtoSHCF::ExportIntoToFlatNumValkyria(Array_1<Float_t>* output) const {
+    Int_t bin   = 0;
+    Int_t nbins = GetNum()->GetNbinsX();
+    output->MakeBigger(fNum->GetNbinsX() * fMaxJM * 2);
+    for (int ibin = 1; ibin <= nbins; ibin++) {
+      for (int l = 0; l <= GetLMax(); l++) {
+        for (int m = -l; m <= l; m++) {
+          TH1D* h = GetNumRe(l, m);
+          if (l == 0) { std::cout << "HI " << h->GetBinContent(ibin) << " " << ibin << std::endl; }
+          (*output)[bin++] = h->GetBinContent(ibin);
+          h                = GetNumIm(l, m);
+          (*output)[bin++] = h->GetBinContent(ibin);
+        }
+      }
+    }
+  }
 
   void FemtoSHCF::MakeDummyCov() {
     Cout::Text("FemtoSHCF::MakeDummyCov", "M", kRed);
@@ -1009,7 +1014,36 @@ namespace Hal {
     }
   }
 
-  void FemtoSHCF::Rebin(Int_t ngroup, Option_t* opt) { std::cout << "REBIN of SHCF not implented !" << std::endl; }
+  void FemtoSHCF::Rebin(Int_t ngroup, Option_t* opt) {
+
+    int oldBins = fNumReal[0]->GetNbinsX();
+    for (int i = 0; i < fMaxJM; i++) {
+      fNumReal[i]->Rebin(ngroup);
+      fNumImag[i]->Rebin(ngroup);
+      fDenReal[i]->Rebin(ngroup);
+      fDenImag[i]->Rebin(ngroup);
+    }
+    Int_t newBins = oldBins / ngroup;
+    Array_3<Double_t> CovNum, CovDen, CovCf;
+    CovNum.MakeBigger(oldBins, fMaxJM * 2, fMaxJM * 2);
+    CovDen.MakeBigger(oldBins, fMaxJM * 2, fMaxJM * 2);
+    CovCf.MakeBigger(oldBins, fMaxJM * 2, fMaxJM * 2);
+    for (int i = 0; i < newBins; i++) {
+      for (int a = 0; a < fMaxJM * 2; a++) {
+        for (int b = 0; b < fMaxJM * 2; b++) {
+          for (int j = 0; j < ngroup; j++) {
+            CovNum[i][a][b] = CovNum[i][a][b] + fCovNum[i * ngroup + j][a][b];
+            CovDen[i][a][b] = CovDen[i][a][b] + fCovDen[i * ngroup + j][a][b];
+            CovCf[i][a][b]  = CovCf[i][a][b] + fCovCf[i * ngroup + j][a][b];
+          }
+        }
+      }
+    }
+    fCovNum = CovNum;
+    fCovDen = CovDen;
+    fCovCf  = CovCf;
+    if (fCFReal[0]) { RecalculateCF(); }
+  }
 #ifdef __CIA__
   void FemtoSHCF::Fit(CorrFitSHCF* fit) { fit->Fit(this); }
 
@@ -1035,9 +1069,9 @@ namespace Hal {
         fNumImag[i]->SetBinContent(bin, array->Get(count++));
         fDenImag[i]->SetBinContent(bin, array->Get(count++));
       }
-      for (int i = 0; i < fMaxJM; i++) {
-        for (int j = 0; j < fMaxJM; j++) {
-          fCovNum[i][j] = array->Get(count++);
+      for (int i = 0; i < fMaxJM * 2; i++) {
+        for (int j = 0; j < fMaxJM * 2; j++) {
+          fCovNum[bin - 1][i][j] = array->Get(count++);
         }
       }
     }
@@ -1061,6 +1095,11 @@ namespace Hal {
         HalCoutDebug();
       }
     }
+  }
+
+  TObject* FemtoSHCF::GetSpecial(TString opt) const {
+    if (opt == "serialization") return new FemtoSerializationInterfaceSH();
+    return nullptr;
   }
 
 }  // namespace Hal

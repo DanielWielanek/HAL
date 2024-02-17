@@ -11,6 +11,8 @@
 
 #include "Cout.h"
 #include "FemtoPair.h"
+#include "FemtoSerializationInterface3D.h"
+#include "StdString.h"
 
 #include <TAttLine.h>
 #include <TAxis.h>
@@ -57,29 +59,6 @@ namespace Hal {
 
   Femto3DCF::Femto3DCF(const Femto3DCF& other) : DividedHisto3D(other), fFrame(other.fFrame) {}
 
-  Bool_t Femto3DCF::ExtrDraw(TString& pattern, Double_t& min, Double_t& max) const {
-    TRegexp regexp("{[-+]?[0-9]*\\.?[0-9]*,[-+]?[0-9]*\\.?[0-9]*}");
-    TString expr = pattern(regexp);
-    if (expr.Length() > 1) {
-      TRegexp low_expr("{[-+]?[0-9]*\\.?[0-9]*,");
-      TRegexp high_expr(",[-+]?[0-9]*\\.?[0-9]*}");
-      TString first = expr(low_expr);
-      first.ReplaceAll(",", "");
-      first.ReplaceAll("{", "");
-      TString last = expr(high_expr);
-      last.ReplaceAll(",", "");
-      last.ReplaceAll("}", "");
-      min = first.Atof();
-      max = last.Atof();
-      pattern.ReplaceAll(expr, "");
-      return kTRUE;
-    } else {
-      min = 0;
-      max = 0;
-      return kFALSE;
-    }
-  }
-
   Femto3DCF::~Femto3DCF() {}
 
   TString Femto3DCF::HTMLExtract(Int_t counter, TString dir) const {
@@ -87,87 +66,39 @@ namespace Hal {
     gSystem->MakeDirectory(path);
     Bool_t batch = gROOT->IsBatch();
     gROOT->SetBatch(kTRUE);
-    TCanvas* c1    = new TCanvas("canvas", "canvas", 0, 0, 1000, 1500);
-    Int_t middle_x = fNum->GetXaxis()->FindBin(0.0);
-    Int_t middle_y = fNum->GetYaxis()->FindBin(0.0);
-    Int_t middle_z = fNum->GetZaxis()->FindBin(0.0);
+
+    Int_t middle_x   = fNum->GetXaxis()->FindBin(0.0);
+    Int_t middle_y   = fNum->GetYaxis()->FindBin(0.0);
+    Int_t middle_z   = fNum->GetZaxis()->FindBin(0.0);
+    TString names[]  = {"out", "side", "long"};
+    TString dirs[]   = {"x", "y", "z"};
+    TString titles[] = {"cf", "num", "den"};
+    Color_t colz[]   = {kRed, kGreen, kBlue};
+    Int_t mxx[]      = {middle_y, middle_x, middle_x};
+    Int_t myy[]      = {middle_z, middle_z, middle_y};
+    TCanvas* c1      = new TCanvas("canvas", "canvas", 0, 0, 1000, 1500);
     c1->Divide(3, 3);
-    c1->cd(1);
-    TH1D* out_num = GetProjection1D(middle_y, middle_y, middle_z, middle_z, "num+x+scale+bins");
-    out_num->SetName("out_num");
-    out_num->SetLineColor(kRed);
-    out_num->SetTitle("out numerator");
-    out_num->SetMinimum(0);
-    out_num->Draw();
-    c1->cd(2);
-    TH1D* out_den = GetProjection1D(middle_y, middle_y, middle_z, middle_z, "den+x+scale+bins");
-    out_den->SetName("out_den");
-    out_den->SetLineColor(kRed);
-    out_den->SetTitle("out denominator");
-    out_den->SetMinimum(0);
-    out_den->Draw();
-    c1->cd(3);
-    TH1D* out_func = GetProjection1D(middle_y, middle_y, middle_z, middle_z, "x+scale+bins");
-    out_func->SetName("out_func");
-    out_func->SetLineColor(kRed);
-    out_func->SetTitle("out function");
-    out_func->SetMinimum(0);
-    out_func->Draw();
-    c1->cd(4);
-    TH1D* side_num = GetProjection1D(middle_x, middle_x, middle_z, middle_z, "num+y+scale+bins");
-    side_num->SetName("side_num");
-    side_num->SetLineColor(kBlue);
-    side_num->SetTitle("side numerator");
-    side_num->SetMinimum(0);
-    side_num->Draw();
-    c1->cd(5);
-    TH1D* side_den = GetProjection1D(middle_x, middle_x, middle_z, middle_z, "den+y+scale+bins");
-    side_den->SetName("side_den");
-    side_den->SetLineColor(kBlue);
-    side_den->SetTitle("side denominator");
-    side_den->SetMinimum(0);
-    side_den->Draw();
-    c1->cd(6);
-    TH1D* side_func = GetProjection1D(middle_x, middle_x, middle_z, middle_z, "y+scale+bins");
-    side_func->SetName("side_func");
-    side_func->SetLineColor(kBlue);
-    side_func->SetTitle("side function");
-    side_func->SetMinimum(0);
-    side_func->Draw();
-    c1->cd(7);
-    TH1D* long_num = GetProjection1D(middle_x, middle_x, middle_y, middle_y, "num+z+scale+bins");
-    long_num->SetName("long_func");
-    long_num->SetLineColor(kGreen);
-    long_num->SetTitle("long numerator");
-    long_num->SetMinimum(0);
-    long_num->Draw();
-    c1->cd(8);
-    TH1D* long_den = GetProjection1D(middle_x, middle_x, middle_y, middle_y, "den+z+scale+bins");
-    long_den->SetName("long_den");
-    long_den->SetLineColor(kGreen);
-    long_den->SetTitle("long denominator");
-    long_den->SetMinimum(0);
-    long_den->Draw();
-    c1->cd(9);
-    TH1D* long_func = GetProjection1D(middle_x, middle_x, middle_y, middle_y, "z+scale+bins");
-    long_func->SetName("long_func");
-    long_func->SetMinimum(0);
-    long_func->SetLineColor(kGreen);
-    long_func->SetTitle("long function");
-    long_func->Draw();
+    TH1D** histos = new TH1D*[9];
+    for (int padId = 0; padId < 9; padId++) {
+      c1->cd(padId + 1);
+      int optId     = padId % 3;
+      int flagDir   = (padId - optId) / 3;
+      TString opt   = titles[optId] + "+" + dirs[flagDir] + "+scale+bins";
+      histos[padId] = GetProjection1D(mxx[flagDir], mxx[flagDir], myy[flagDir], myy[flagDir], opt);
+      histos[padId]->SetLineColor(colz[flagDir]);
+      histos[padId]->SetTitle(Form("%s %s", names[flagDir].Data(), titles[optId].Data()));
+      histos[padId]->SetMinimum(0);
+      histos[padId]->Draw();
+    }
     c1->Update();
     c1->SaveAs(Form("%s/divided.root", path.Data()));
     gROOT->SetBatch(batch);
-    delete out_num;
-    delete out_den;
-    delete out_func;
-    delete side_num;
-    delete side_den;
-    delete side_func;
-    delete long_num;
-    delete long_den;
-    delete long_func;
+
     delete c1;
+    for (int i = 0; i < 9; i++) {
+      delete histos[i];
+    }
+    delete[] histos;
     TString page = CommonExtract(counter, dir);
     return page;
   }
@@ -232,7 +163,7 @@ namespace Hal {
     if (gPad == nullptr) new TCanvas();
     TString option = opt;
     Double_t draw_min, draw_max;
-    Bool_t set_limits = ExtrDraw(option, draw_min, draw_max);
+    Bool_t set_limits = Hal::Std::FindExpressionTwoFloats(option, draw_min, draw_max, kFALSE);
     if (Hal::Std::FindParam(option, "num", kTRUE)) {
       fNum->Draw(option);
     } else if (Hal::Std::FindParam(option, "den", kTRUE)) {
@@ -469,26 +400,6 @@ namespace Hal {
     SetAxisName(Femto::KinematicsToAxisLabel(fFrame, 3, 3));
   }
 
-  Array_1<Float_t>* Femto3DCF::ExportToFlatNum() const {
-    auto h                 = (TH3D*) GetNum();
-    Array_1<Float_t>* data = new Array_1<Float_t>(h->GetNbinsX() * h->GetNbinsY() * h->GetNbinsZ());
-    ExportIntoToFlatNum(data);
-    return data;
-  }
-  void Femto3DCF::ExportIntoToFlatNum(Array_1<Float_t>* output) const {
-    TH3D* h = (TH3D*) GetHist(kFALSE);
-    output->MakeBigger(h->GetNbinsX() * h->GetNbinsY() * h->GetNbinsZ());
-    int count = 0;
-    for (int i = 1; i <= h->GetNbinsX(); i++) {
-      for (int j = 1; j <= h->GetNbinsY(); j++) {
-        for (int k = 1; k <= h->GetNbinsZ(); k++) {
-          (*output)[count++] = h->GetBinContent(i, j, k);
-        }
-      }
-    }
-    delete h;
-  }
-
   void Femto3DCF::Print(Option_t* opt) const {
     DividedHisto1D::Print(opt);
     TString text = Form("Frame : %s", Femto::KinematicsToLabel(fFrame).Data());
@@ -579,15 +490,9 @@ namespace Hal {
     return nullptr;
   }
 
-  void Femto3DCF::ImportSlice(Array_1<Float_t>* array, Int_t toBin) {
-    const Int_t sideBins = GetNum()->GetNbinsY();
-    const Int_t outBins  = GetNum()->GetNbinsX();
-    for (unsigned int iO = 0; iO < sideBins; iO++) {
-      for (unsigned int iS = 0; iS < outBins; iS++) {
-        GetNum()->SetBinContent(iO + 1, iS + 1, toBin, array->Get(2 * sideBins * iO + iS));
-        GetDen()->SetBinContent(iO + 1, iS + 1, toBin, array->Get(2 * sideBins * iO + iS + 1));
-      }
-    }
+  TObject* Femto3DCF::GetSpecial(TString opt) const {
+    if (opt == "serialization") return new FemtoSerializationInterface3D();
+    return nullptr;
   }
 
 }  // namespace Hal

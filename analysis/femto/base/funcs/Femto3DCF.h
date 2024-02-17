@@ -23,6 +23,7 @@ namespace Hal {
    * basic class for storing 3-dim correlation functions
    */
   class Femto3DCF : public DividedHisto3D {
+    friend class FemtoSerializationInterface3D;
     /**
      * frame of pairs in CF
      */
@@ -32,14 +33,6 @@ namespace Hal {
      * @param h - adress of numerator or denominator
      */
     virtual void SetAxisNames(TH1* h);
-    /**
-     * extract draw range pattern
-     * @param pattern
-     * @param min
-     * @param max
-     * @return
-     */
-    Bool_t ExtrDraw(TString& pattern, Double_t& min, Double_t& max) const;
     virtual TH1D* Projection3DTo1D(Double_t min1, Double_t max1, Double_t min2, Double_t max2, Option_t* opt) const;
 
   public:
@@ -106,15 +99,9 @@ namespace Hal {
      */
     virtual void DrawScaled(Double_t scale, Option_t* opt);
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
-    /**
-     *
-     * @return numerator exported as flat array
-     */
-    virtual Array_1<Float_t>* ExportToFlatNum() const;
-    virtual void ExportIntoToFlatNum(Array_1<Float_t>* output) const;
-    virtual void ImportSlice(Array_1<Float_t>* array, Int_t toBin);
     virtual TH1D** GetDiagProj(Option_t* opt = "diag1", Bool_t normalized = kTRUE) const;
     virtual void Print(Option_t* opt = "") const;
+    virtual TObject* GetSpecial(TString opt) const;
     virtual ~Femto3DCF();
     ClassDef(Femto3DCF, 3)
   };

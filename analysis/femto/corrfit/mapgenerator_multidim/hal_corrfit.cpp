@@ -7,12 +7,15 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "AnaFile.h"
+#include "CorrFitConst.h"
 #include "CorrFitInfo.h"
 #include "CorrFitMapRebin.h"
 #include "CorrFitParamsSetup.h"
 #include "Cout.h"
 #include "Femto1DCF.h"
 #include "Femto3DCF.h"
+#include "FemtoSHCF.h"
+#include "FemtoSerializationInterface.h"
 #include "Package.h"
 #include "PackageSql.h"
 
@@ -29,12 +32,13 @@
 #include <fstream>
 #include <iostream>
 
-void compress();
-void compressVertical();
-void compressHorizontal();
+void merge();
+void mergeVertical();
+void mergeHorizontal();
 void printjobs();
 void printjobsbad();
 void preparetemplate();
+void compress();
 int getNFiles();
 void rebin(TString opt);
 int main(int argc, char* argv[]) {
@@ -48,6 +52,7 @@ int main(int argc, char* argv[]) {
     std::cout << "--help print help" << std::endl;
     std::cout << "0  - prepare template files and database" << std::endl;
     std::cout << "1 - merge maps" << std::endl;
+    std::cout << "2 - compress maps" << std::endl;
     std::cout << "--print - check/print info about executed jobs " << std::endl;
     std::cout << "--print-bad - check/print info about executed jobs list of bad jobs is set to bad_jobs.txt" << std::endl;
     std::cout << "--rebin=n rebin CF new_map.root fille will be created" << std::endl;
@@ -61,6 +66,8 @@ int main(int argc, char* argv[]) {
     printjobsbad();
   } else if (arg1 == "1") {
     printjobs();
+    merge();
+  } else if (arg1 == "2") {
     compress();
   } else if (arg1.BeginsWith("--rebin=")) {
     rebin(arg1);
@@ -78,22 +85,16 @@ Bool_t AllJobsCompleted(Int_t jobs) {
   return kTRUE;
 }
 
-inline void compress() {
-  HalCoutDebug();
-  TFile* info_file = new TFile("files/config.root");
-  HalCoutDebug();
+inline void merge() {
+  TFile* info_file      = new TFile("files/config.root");
   Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
-  HalCoutDebug();
-  bool vert = obj->IsVertical();
-  HalCoutDebug();
+  bool vert             = obj->IsVertical();
   info_file->Close();
-  HalCoutDebug();
   vert = true;
-  HalCoutDebug();
   if (vert) {
-    compressVertical();
+    mergeVertical();
   } else {
-    compressHorizontal();
+    mergeHorizontal();
   }
 }
 
@@ -223,62 +224,12 @@ int getNFiles() {
   if (obj->IsVertical()) { nFiles = obj->GetMainBins(); }
   return nFiles;
 }
-void compressVertical() {
-  TFile* info_file = new TFile("files/config.root");
-  HalCoutDebug();
-  Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
-  HalCoutDebug();
-  Hal::CorrFitParamsSetup setup("corrfit_conf.xml");
-  HalCoutDebug();
-  int nFiles = obj->GetMainBins();
-  int nJobs  = setup.GetNJobs();
-  HalCoutDebug();
-  std::cout << "VERTICAL" << nFiles << std::endl;
-  if (!AllJobsCompleted(nFiles)) {
-    Hal::Cout::PrintInfo("Not all jobs are completed", Hal::EInfo::kError);
-    Hal::Cout::Text("Do you really want to continue y/n?", "L");
-    TString ans;
-    std::cin >> ans;
-    if (!(ans == "y" || ans == "Y")) { return; }
-  }
-  TFile* file   = new TFile("merged_map.root", "recreate");
-  TChain* chain = new TChain("map", "");
-
-  for (int i = 0; i < nFiles; i++) {
-    chain->AddFile(Form("files/corrfit_map_%i.root", i));
-  }
-
-  TTree* tree                     = new TTree("map", "");
-  Hal::Array_1<Float_t>* Data_out = new Hal::Array_1<Float_t>();
-  Hal::Array_1<Float_t>* Data_in  = nullptr;
-  chain->SetBranchAddress("data", &Data_in);
-  tree->Branch("data", &Data_out);
-  int entries = chain->GetEntries() / nJobs;  // n_files *n_bins /nJobs(nbins) = n_files
-  chain->GetEntry(0);
-  Data_out->MakeBigger(Data_in->GetSize() * nFiles);
-  int single_size = Data_in->GetSize();
-  for (int i = 0; i < nJobs; i++) {     // nsamples
-    for (int j = 0; j < nFiles; j++) {  // hbins
-      chain->GetEntry(j * nJobs + i);
-      for (int k = 0; k < single_size; k++) {
-        Data_out->Set(single_size * j + k, Data_in->Get(k));
-      }
-    }
-    tree->Fill();
-  }
-
-  tree->Write();
-  obj->Write();
-  file->Close();
-  info_file->Close();
-}
-void compressHorizontal() {
+void mergeHorizontal() {
   TFile* info_file      = new TFile("files/config.root");
   Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
-  bool vert             = obj->IsVertical();
-
   Hal::CorrFitParamsSetup setup("corrfit_conf.xml");
-  Int_t nJobs = setup.GetNJobs();
+  int nJobs = setup.GetNJobs();
+  std::cout << "Merging vertical CF's" << nJobs << std::endl;
   if (!AllJobsCompleted(nJobs)) {
     Hal::Cout::PrintInfo("Not all jobs are completed", Hal::EInfo::kError);
     Hal::Cout::Text("Do you really want to continue y/n?", "L");
@@ -286,7 +237,6 @@ void compressHorizontal() {
     std::cin >> ans;
     if (!(ans == "y" || ans == "Y")) { return; }
   }
-
   TFile* file   = new TFile("merged_map.root", "recreate");
   TChain* chain = new TChain("map", "");
 
@@ -299,14 +249,131 @@ void compressHorizontal() {
   Hal::Array_1<Float_t>* Data_in  = nullptr;
   chain->SetBranchAddress("data", &Data_in);
   tree->Branch("data", &Data_out);
-  for (int i = 0; i < chain->GetEntries(); i++) {
+  int entries = chain->GetEntries() / nJobs;  // n_files *n_bins /nJobs(nbins) = n_files
+  chain->GetEntry(0);
+  Data_out->MakeBigger(Data_in->GetSize() * nJobs);
+  int single_size = Data_in->GetSize();
+  for (int i = 0; i < nJobs; i++) {  // nsamples
     chain->GetEntry(i);
-    if (i == 0) { Data_out->MakeBigger(Data_in->GetSize()); }
-    *Data_out = *Data_in;
+    for (int k = 0; k < single_size; k++) {
+      Data_out->Set(k, Data_in->Get(k));
+    }
     tree->Fill();
   }
+
   tree->Write();
   obj->Write();
   file->Close();
   info_file->Close();
+}
+void mergeVertical() {
+  TFile* info_file      = new TFile("files/config.root");
+  Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
+  bool vert             = obj->IsVertical();
+  auto CF               = obj->GetCf()->Clone();
+  std::cout << "CF " << CF->ClassName() << std::endl;
+  auto cfType = Hal::Femto::GetCFType(CF);
+  int nSlices = Hal::Femto::GetNSlices(CF);
+
+
+  Hal::CorrFitParamsSetup setup("corrfit_conf.xml");
+  int n_params = setup.GetNJobs();
+  if (!AllJobsCompleted(nSlices)) {
+    Hal::Cout::PrintInfo("Not all nFiles are completed", Hal::EInfo::kError);
+    Hal::Cout::Text("Do you really want to continue y/n?", "L");
+    TString ans;
+    std::cin >> ans;
+    if (!(ans == "y" || ans == "Y")) { return; }
+  }
+
+  TFile* file   = new TFile("merged_map.root", "recreate");
+  TChain* chain = new TChain("map", "");
+
+  for (int i = 0; i < nSlices; i++) {
+    chain->AddFile(Form("files/corrfit_map_%i.root", i));
+  }
+  std::cout << "Merging vertical CF's" << nSlices << " " << n_params << std::endl;
+  auto* tree                     = new TTree("map", "");
+  auto* Data_out                 = new Hal::Array_1<Float_t>();
+  Hal::Array_1<Float_t>* Data_in = nullptr;
+  chain->SetBranchAddress("data", &Data_in);
+  tree->Branch("data", &Data_out);
+  chain->GetEntry(0);
+  const int slice_size = Data_in->GetSize();
+  std::cout << "CHECK SIZE " << nSlices * n_params << " " << chain->GetEntries() << std::endl;
+  std::cout << nSlices << " " << n_params << std::endl;
+  Data_out->MakeBigger(slice_size * nSlices);
+  for (int iPar = 0; iPar < n_params; iPar++) {
+    for (int iBin = 0; iBin < nSlices; iBin++) {
+      chain->GetEntry(iPar + n_params * iBin);
+      for (int iS = 0; iS < slice_size; iS++) {
+        Data_out->Set(iBin * slice_size + iS, Data_in->Get(iS));
+      }
+    }
+    tree->Fill();
+  }
+  delete CF;
+  tree->Write();
+  obj->Write();
+  file->Close();
+  info_file->Close();
+}
+
+void compress() {
+  TFile* info_file      = new TFile("files/config.root");
+  Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
+  auto CF               = (Hal::DividedHisto1D*) obj->GetCf()->Clone();
+  auto cfType           = Hal::Femto::GetCFType(CF);
+  TFile* fileIn         = new TFile("merged_map.root");
+  TTree* treeIn         = (TTree*) fileIn->Get("map");
+
+  TFile* fileOut                  = new TFile("compressed_map.root", "recreate");
+  TTree* treeOut                  = new TTree("map", "");
+  Hal::Array_1<Float_t>* Data_out = new Hal::Array_1<Float_t>();
+  Hal::Array_1<Float_t>* Data_in  = nullptr;
+  treeIn->SetBranchAddress("data", &Data_in);
+  treeOut->Branch("data", &Data_out);
+  auto interfaceFrom = (Hal::FemtoSerializationInterface*) CF->GetSpecial("serialization");
+  HalCoutDebug();
+  std::cout << interfaceFrom << std::endl;
+  std::cout << interfaceFrom->ClassName() << std::endl;
+  interfaceFrom->BindCFs(CF);
+  HalCoutDebug();
+  interfaceFrom->BindArray(Data_in);
+  HalCoutDebug();
+  interfaceFrom->SetOption(Hal::FemtoSerializationInterface::EOption::kFull);
+  HalCoutDebug();
+  interfaceFrom->Init();
+  auto interfaceTo = (Hal::FemtoSerializationInterface*) CF->GetSpecial("serialization");
+  interfaceTo->BindCFs(CF);
+  interfaceTo->BindArray(Data_out);
+  interfaceTo->SetOption(Hal::FemtoSerializationInterface::EOption::kSimple);
+  interfaceTo->Init();
+  const int entries = treeIn->GetEntries();
+  obj->Write();
+  auto sh = dynamic_cast<Hal::FemtoSHCF*>(CF);
+  for (int i = 0; i < entries; i++) {
+    treeIn->GetEntry(i);
+    interfaceFrom->Deserialize();
+    if (i == 0) std::cout << "ARSIZE " << Data_in->GetSize() << " " << Data_out->GetSize() << std::endl;
+    if (sh) {
+      sh->RecalculateCF();
+      /*std::cout << "NUM " << sh->GetNum()->GetBinContent(1) << std::endl;
+      std::cout << "NUM " << sh->GetNum()->GetBinContent(2) << std::endl;
+      std::cout << "NUM " << sh->GetNum()->GetBinContent(3) << std::endl;
+      TFile* f  = new TFile(Form("dump_%i.root", i), "recreate");
+      auto copy = sh->Clone();
+      f->cd();
+      copy->Write();
+
+      f->Close();*/
+    }
+    interfaceTo->Serialize();
+    treeOut->Fill();
+  }
+  treeOut->Write();
+  fileIn->Close();
+  fileOut->Close();
+  delete interfaceFrom;
+  delete interfaceTo;
 }

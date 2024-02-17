@@ -84,11 +84,12 @@ namespace Hal {
 
     fRawDistribution = (TH1D*) distribution.Clone();
     fRawDistribution->SetDirectory(nullptr);
-    Double_t scale = 0;
     fRawDistribution->SetBinContent(0, 0);
-    fDx  = fRawDistribution->GetBinWidth(1);
-    fDx  = 1.0 / fDx;
-    fMin = fRawDistribution->GetBinLowEdge(1);
+    fDx             = fRawDistribution->GetBinWidth(1);
+    fDx             = 1.0 / fDx;
+    fMin            = fRawDistribution->GetBinLowEdge(1);
+    double integral = fRawDistribution->Integral("width");
+    fRawDistribution->Scale(1.0 / integral);
   }
 
   FemtoSourceDensityNumericalPseudo3d::FemtoSourceDensityNumericalPseudo3d(const FemtoSourceDensityNumericalPseudo3d& other) :

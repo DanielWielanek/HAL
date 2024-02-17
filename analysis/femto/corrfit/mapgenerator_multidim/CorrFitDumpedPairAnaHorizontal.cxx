@@ -97,6 +97,7 @@ namespace Hal {
         for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
           PreprocessPair();
           fPair->Compute();
+          fPairsProcessed++;
           for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
             for (int weightMulti = 0; weightMulti < fMultiplyWeight; weightMulti++) {
               fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
@@ -119,6 +120,7 @@ namespace Hal {
         for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
           PreprocessPair();
           fPair->Compute();
+          fPairsProcessed++;
           for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
             for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
               fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
@@ -136,6 +138,7 @@ namespace Hal {
         for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
           PreprocessPair();
           fPair->Compute();
+          fPairsProcessed++;
           for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
             fPair->SetWeight(1 * fMultiplyWeight);
             fCF[nJobs]->FillNum(fPair);
@@ -153,6 +156,7 @@ namespace Hal {
         for (int preMulti = 0; preMulti < fMultiplyPreprocess; preMulti++) {
           PreprocessPair();
           fPair->Compute();
+          fPairsProcessed++;
           for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
             for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
               fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);

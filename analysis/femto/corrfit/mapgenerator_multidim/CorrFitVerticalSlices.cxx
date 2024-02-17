@@ -34,8 +34,12 @@ namespace Hal {
   void CorrFitVerticalSlicesSH::FillNum(Int_t bin, FemtoPair* pair) {
     std::complex<double>* YlmBuffer = fLmMath.YlmUpToL(fLmVals.GetMaxL(), pair->GetX(), pair->GetY(), pair->GetZ());
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
-      fShNumReal[bin][ilm] += real(YlmBuffer[ilm]) * pair->GetWeight();
-      fShNumImag[bin][ilm] -= imag(YlmBuffer[ilm]) * pair->GetWeight();
+      Double_t wRe = real(YlmBuffer[ilm]) * pair->GetWeight();
+      Double_t wIm = imag(YlmBuffer[ilm]) * pair->GetWeight();
+      fShNumReal[bin][ilm] += wRe;
+      fShNumImag[bin][ilm] -= wIm;
+      fShNumRealE[bin][ilm] += wRe * wRe;
+      fShNumImagE[bin][ilm] += wIm * wIm;
       fNum[bin] += pair->GetWeight();
     }
   }
@@ -43,16 +47,24 @@ namespace Hal {
   void CorrFitVerticalSlicesSH::FillDen(Int_t bin, FemtoPair* pair) {
     std::complex<double>* YlmBuffer = fLmMath.YlmUpToL(fLmVals.GetMaxL(), pair->GetX(), pair->GetY(), pair->GetZ());
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
-      fShDenReal[bin][ilm] += real(YlmBuffer[ilm]) * pair->GetWeight();
-      fShDenImag[bin][ilm] -= imag(YlmBuffer[ilm]) * pair->GetWeight();
+      Double_t wRe = real(YlmBuffer[ilm]) * pair->GetWeight();
+      Double_t wIm = imag(YlmBuffer[ilm]) * pair->GetWeight();
+      fShDenReal[bin][ilm] += wRe;
+      fShDenImag[bin][ilm] -= wIm;
+      fShDenRealE[bin][ilm] += wRe * wRe;
+      fShDenImagE[bin][ilm] += wIm * wIm;
       fDen[bin] += pair->GetWeight();
     }
   }
 
   void CorrFitVerticalSlicesSH::FillNumBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin) {
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
-      fShNumReal[paramBin][ilm] += real(shCoord[ilm]) * weight;
-      fShNumImag[paramBin][ilm] -= imag(shCoord[ilm]) * weight;
+      Double_t wRe = real(shCoord[ilm]) * weight;
+      Double_t wIm = imag(shCoord[ilm]) * weight;
+      fShNumReal[paramBin][ilm] += wRe;
+      fShNumImag[paramBin][ilm] -= wIm;
+      fShNumRealE[paramBin][ilm] += wRe * wRe;
+      fShNumImagE[paramBin][ilm] += wIm * wIm;
       fNum[paramBin] += weight;
       for (int ilm2 = 0; ilm2 < fMaxJM; ilm2++) {}
     }
@@ -71,52 +83,19 @@ namespace Hal {
 
   void CorrFitVerticalSlicesSH::FillDenBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin) {
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
-      fShDenReal[paramBin][ilm] += real(shCoord[ilm]) * weight;
-      fShDenImag[paramBin][ilm] -= imag(shCoord[ilm]) * weight;
+      Double_t wRe = real(shCoord[ilm]) * weight;
+      Double_t wIm = imag(shCoord[ilm]) * weight;
+      fShDenReal[paramBin][ilm] += wRe;
+      fShDenImag[paramBin][ilm] -= wIm;
+      fShDenRealE[paramBin][ilm] += wRe * wRe;
+      fShDenImagE[paramBin][ilm] += wIm * wIm;
       fDen[paramBin] += weight;
       for (int ilm2 = 0; ilm2 < fMaxJM; ilm2++) {}
     }
   }
 
-  void CorrFitVerticalSlices1D::ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const {
-    if (first) { array->MakeBigger(2); }
-    array->Set(0, fNum[paramId]);
-    array->Set(1, fDen[paramId]);
-  }
-
-  void CorrFitVerticalSlices3D::ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const {
-    if (first) { array->MakeBigger(fOutBins * fSideBins * 2); }
-    for (unsigned int iO = 0; iO < fOutBins; iO++) {
-      for (unsigned int iS = 0; iS < fSideBins; iS++) {
-        array->Set(2 * (fSideBins * iO + iS), fNum[iO][iS][paramId]);
-        array->Set(2 * (fSideBins * iO + iS) + 1, fDen[iO][iS][paramId]);
-      }
-    }
-  }
-
   std::complex<double>* CorrFitVerticalSlicesSH::GetBufferCalc(FemtoPair* pair) {
     return fLmMath.YlmUpToL(fLmVals.GetMaxL(), pair->GetX(), pair->GetY(), pair->GetZ());
-  }
-
-  void CorrFitVerticalSlicesSH::ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const {
-    if (first) {
-      unsigned int dim = 2 + fMaxJM * 4 + fMaxJM * fMaxJM * 4;
-      array->MakeBigger(dim);
-    }
-    int count = 0;
-    array->Set(count++, fNum[paramId]);
-    array->Set(count++, fDen[paramId]);
-    for (int i = 0; i < fMaxJM; i++) {
-      array->Set(count++, fShNumReal[paramId][i]);
-      array->Set(count++, fShDenReal[paramId][i]);
-      array->Set(count++, fShNumImag[paramId][i]);
-      array->Set(count++, fShDenImag[paramId][i]);
-    }
-    for (int i = 0; i < fMaxJM * 2; i++) {
-      for (int j = 0; j < fMaxJM * 2; j++) {
-        array->Set(count++, fCovMatrix[paramId][i][j]);
-      }
-    }
   }
 
   CorrFitVerticalSlices1D::CorrFitVerticalSlices1D(const Hal::Femto1DCF& h, Int_t nSamples) {
@@ -144,6 +123,10 @@ namespace Hal {
     Hal::Std::ResizeVector2D(fShDenReal, nSamples, fMaxJM);
     Hal::Std::ResizeVector2D(fShNumImag, nSamples, fMaxJM);
     Hal::Std::ResizeVector2D(fShDenImag, nSamples, fMaxJM);
+    Hal::Std::ResizeVector2D(fShNumRealE, nSamples, fMaxJM);
+    Hal::Std::ResizeVector2D(fShDenRealE, nSamples, fMaxJM);
+    Hal::Std::ResizeVector2D(fShNumImagE, nSamples, fMaxJM);
+    Hal::Std::ResizeVector2D(fShDenImagE, nSamples, fMaxJM);
     Hal::Std::ResizeVector3D(fCovMatrix, nSamples, fMaxJM * 2, fMaxJM * 2);
   }
 
@@ -152,6 +135,32 @@ namespace Hal {
     res.first  = int((pair->GetX() - fMin[0]) * fOverStep[0]);
     res.second = int((pair->GetY() - fMin[1]) * fOverStep[1]);
     return res;
+  }
+
+  void CorrFitVerticalSlicesSH::Print(Option_t* option) const {
+    TString opt = option;
+    auto vec    = Hal::Std::ExplodeString(opt, '+');
+    Int_t pos   = vec[0].Atoi();
+    TString secondOpt;
+    if (vec.size() == 2) secondOpt = vec[1];
+    if (secondOpt == "short") {
+      std::cout << "NUM " << fNum[pos] << std::endl;
+      std::cout << "DEN " << fDen[pos] << std::endl;
+    } else {
+      std::cout << "Pos " << pos << std::endl;
+      std::cout << "NUM " << fNum[pos] << std::endl;
+      std::cout << "DEN " << fDen[pos] << std::endl;
+      auto printing = [](const std::vector<Double_t>& arr, TString label) {
+        std::cout << label << std::endl;
+        for (auto val : arr) {
+          std::cout << " " << val << std::endl;
+        }
+      };
+      printing(fShNumReal[pos], "NumRe");
+      printing(fShNumImag[pos], "NumIm");
+      printing(fShDenReal[pos], "DenRe");
+      printing(fShDenImag[pos], "DenIm");
+    }
   }
 
 } /* namespace Hal */

@@ -50,33 +50,33 @@ namespace Hal {
     }
 
     void MergeVertical(Hal::Femto::ECFType cfType, TObject* obj, Array_1<Float_t>* input, Array_1<Float_t>* output, Int_t pos) {
-      switch (cfType) {
-        case ECFType::kOneDim: {
-          auto cf = (Hal::Femto1DCF*) obj;
-          cf->ImportSlice(input, pos);
-          if (pos == cf->GetNum()->GetNbinsX()) { cf->ExportIntoToFlatNum(output); }
-        } break;
-        case ECFType::kThreeDim: {
-          auto cf = (Hal::Femto3DCF*) obj;
-          cf->ImportSlice(input, pos);
-          if (pos == cf->GetNum()->GetNbinsX()) { cf->ExportIntoToFlatNum(output); }
-        } break;
-        case ECFType::kSpherical: {
-          auto cf = (Hal::FemtoSHCF*) obj;
-          // this is only temporary for valyria
-          cf->ImportSlice(input, pos);
-          int maxL  = cf->GetLMax();
-          int maxJM = (maxL + 1) * (maxL + 1);
-          cf->ExportIntoToFlatNumValkyria(output);
-          /*
-          cf->ImportSlice(input, pos);
-          if (pos == cf->GetNum()->GetNbinsX()) {
-            cf->RecalculateCF();
-            cf->ExportIntoToFlatNum(output);
-          }
-          */
-        } break;
-      }
+      /*    switch (cfType) { KURWA
+            case ECFType::kOneDim: {
+              auto cf = (Hal::Femto1DCF*) obj;
+              cf->ImportSlice(input, pos);
+              if (pos == cf->GetNum()->GetNbinsX()) { cf->ExportIntoToFlatNum(output); }
+            } break;
+            case ECFType::kThreeDim: {
+              auto cf = (Hal::Femto3DCF*) obj;
+              cf->ImportSlice(input, pos);
+              if (pos == cf->GetNum()->GetNbinsX()) { cf->ExportIntoToFlatNum(output); }
+            } break;
+            case ECFType::kSpherical: {
+              auto cf = (Hal::FemtoSHCF*) obj;
+              // this is only temporary for valyria
+              cf->ImportSlice(input, pos);
+              int maxL  = cf->GetLMax();
+              int maxJM = (maxL + 1) * (maxL + 1);
+              // cf->ExportIntoToFlatNumValkyria(output);
+
+              // cf->ImportSlice(input, pos);
+              if (pos == cf->GetNum()->GetNbinsX()) {
+                cf->RecalculateCF();
+                cf->ExportIntoToFlatNum(output);
+              }
+
+            } break;
+          }*/
     }
   }  // namespace Femto
 }  // namespace Hal

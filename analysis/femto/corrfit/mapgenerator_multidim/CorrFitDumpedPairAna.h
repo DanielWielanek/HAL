@@ -49,6 +49,8 @@ namespace Hal {
     Int_t fMultiplyPreprocess  = {1};
     Int_t fMultiplyJobs        = {1};
     Int_t fTotalNumberOfPoints = {0};
+    Int_t fPairThreshold       = {0};
+    Int_t fPairsProcessed      = {0};
     Bool_t fIgnoreSing         = {kFALSE};
     Bool_t fImgMom             = {kFALSE};
     FemtoCorrFunc* fTempCF     = {nullptr};

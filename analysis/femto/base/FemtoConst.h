@@ -164,12 +164,6 @@ namespace Hal {
      */
     void FillRandomPair(FemtoPair& p, Int_t pid1, Int_t pid2, Double_t sigmaq = 0.1, Double_t sigmar = 1);
     /**
-     * export obj into flat array if this is a CF
-     * @param obj
-     * @return nullptr if failed to export
-     */
-    Array_1<Float_t>* ExportToFlat(TObject* obj);
-    /**
      * return CF type if object can be convereted in CF
      * @param obj
      * @return cf type kUnkown if failed to export

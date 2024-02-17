@@ -25,21 +25,20 @@ namespace Hal {
   protected:
   public:
     CorrFitVerticalSlices() {};
-    virtual void FillNum(Int_t bin, FemtoPair* pair)                                      = 0;
-    virtual void FillDen(Int_t bin, FemtoPair* pair)                                      = 0;
-    virtual void ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const = 0;
+    virtual void FillNum(Int_t bin, FemtoPair* pair) = 0;
+    virtual void FillDen(Int_t bin, FemtoPair* pair) = 0;
     virtual ~CorrFitVerticalSlices() {};
     ClassDef(CorrFitVerticalSlices, 1)
   };
 
   class CorrFitVerticalSlices1D : public CorrFitVerticalSlices {
+    friend class FemtoSerializationInterface1D;
     std::vector<Double_t> fNum;
     std::vector<Double_t> fDen;
 
   public:
     CorrFitVerticalSlices1D() {};  // only for root
     CorrFitVerticalSlices1D(const Hal::Femto1DCF& h, Int_t nSamples);
-    virtual void ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const;
     void FillNum(Int_t bin, FemtoPair* pair);
     void FillDen(Int_t bin, FemtoPair* pair);
     void FillDirectNum(Int_t bin, Double_t val) { fNum[bin] += val; }
@@ -49,6 +48,7 @@ namespace Hal {
   };
 
   class CorrFitVerticalSlices3D : public CorrFitVerticalSlices {
+    friend class FemtoSerializationInterface3D;
     std::vector<std::vector<std::vector<Double_t>>> fNum;
     std::vector<std::vector<std::vector<Double_t>>> fDen;
     Int_t fOutBins        = {0};
@@ -64,14 +64,16 @@ namespace Hal {
     void FillDen(Int_t bin, FemtoPair* pair);
     void FillNumDirect(Int_t bin, std::pair<int, int> coord, Double_t w) { fNum[bin][coord.first][coord.second] += w; }
     void FillDenDirect(Int_t bin, std::pair<int, int> coord, Double_t w) { fDen[bin][coord.first][coord.second] += w; }
-    virtual void ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const;
     virtual ~CorrFitVerticalSlices3D() {};
     ClassDef(CorrFitVerticalSlices3D, 1)
   };
 
   class CorrFitVerticalSlicesSH : public CorrFitVerticalSlices {
+    friend class FemtoSerializationInterfaceSH;
     FemtoYlmIndexes fLmVals;
     FemtoYlmMath fLmMath;
+
+  public:
     const Int_t fMaxJM;
     std::vector<Double_t> fNum;
     std::vector<Double_t> fDen;
@@ -79,6 +81,10 @@ namespace Hal {
     std::vector<std::vector<Double_t>> fShDenReal;
     std::vector<std::vector<Double_t>> fShNumImag;
     std::vector<std::vector<Double_t>> fShDenImag;
+    std::vector<std::vector<Double_t>> fShNumRealE;
+    std::vector<std::vector<Double_t>> fShDenRealE;
+    std::vector<std::vector<Double_t>> fShNumImagE;
+    std::vector<std::vector<Double_t>> fShDenImagE;
     std::vector<std::vector<std::vector<Double_t>>> fCovMatrix;
 
   public:
@@ -90,7 +96,6 @@ namespace Hal {
     std::complex<double>* GetBufferCalc(FemtoPair* pair);
     void FillNumBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin);
     void FillDenBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin);
-    virtual void ExportToFlat(Array_1<Float_t>* array, Int_t paramId, Bool_t first) const;
     const std::vector<Double_t>& GetNumReal(Int_t bin) const { return fShNumReal[bin]; };
     const std::vector<Double_t>& GetNumImag(Int_t bin) const { return fShNumImag[bin]; };
     const std::vector<Double_t>& GetDenReal(Int_t bin) const { return fShDenReal[bin]; };
@@ -101,6 +106,8 @@ namespace Hal {
     }
     virtual ~CorrFitVerticalSlicesSH() {};
     ClassDef(CorrFitVerticalSlicesSH, 1)
+
+      virtual void Print(Option_t* option) const;
   };
 } /* namespace Hal */
 

@@ -5,6 +5,7 @@ ${HAL_CORE}/analysis/base
 ${HAL_CORE}/data/dataformat
 ${HAL_CORE}/data/io
 ${HAL_CORE}/examples/onthefly
+${HAL_SPECTRA}
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES

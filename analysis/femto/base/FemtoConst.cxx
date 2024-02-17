@@ -605,19 +605,6 @@ namespace Hal {
       p.SetFreezouts(x1, x2);
     }
 
-    Array_1<Float_t>* ExportToFlat(TObject* obj) {
-      if (!obj) return nullptr;
-      auto shcf = dynamic_cast<Hal::FemtoSHCF*>(obj);
-      if (shcf) {
-        shcf->RecalculateCF();
-        return shcf->ExportToFlatNum();
-      }
-      auto cf1d = dynamic_cast<Hal::Femto1DCF*>(obj);
-      if (cf1d) return cf1d->ExportToFlatNum();
-      auto cf3d = dynamic_cast<Hal::Femto3DCF*>(obj);
-      if (cf3d) return cf3d->ExportToFlatNum();
-      return nullptr;
-    }
     /**
      * return CF type if object can be convereted in CF
      * @param obj

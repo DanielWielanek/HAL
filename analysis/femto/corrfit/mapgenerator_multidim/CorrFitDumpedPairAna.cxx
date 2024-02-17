@@ -41,6 +41,7 @@
 #include "FemtoMiniPair.h"
 #include "FemtoPair.h"
 #include "FemtoSHCF.h"
+#include "FemtoSerializationInterface.h"
 #include "FemtoSourceModel.h"
 #include "FemtoWeightGenerator.h"
 #include "FemtoWeightGeneratorLednicky.h"
@@ -126,6 +127,7 @@ namespace Hal {
           fTree->GetEntry(iEvent);
           if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
           RunSignalBackgroundPair();
+          if (fPairThreshold > 0 && fPairThreshold < fPairsProcessed) break;
         }
 
       } break;
@@ -136,6 +138,7 @@ namespace Hal {
           fTree->GetEntry(iEvent);
           if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
           RunSignalPair();
+          if (fPairThreshold > 0 && fPairThreshold < fPairsProcessed) break;
         }
       } break;
       case eDumpCalcMode::kBackgroundPairsOnly: {
@@ -144,20 +147,28 @@ namespace Hal {
           fTree->GetEntry(iEvent);
           if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
           RunBackgroundPair();
+          if (fPairThreshold > 0 && fPairThreshold < fPairsProcessed) break;
         }
       } break;
     }
   }
 
   Bool_t CorrFitDumpedPairAna::SaveAsRawArray(TObject* cf, Int_t step) {
-    TFile* file            = new TFile(Form("files/corrfit_map_%i.root", GetSimStepNo() + step), "recreate");
-    Array_1<Float_t>* Data = Hal::Femto::ExportToFlat(cf);
+    TFile* file        = new TFile(Form("files/corrfit_map_%i.root", GetSimStepNo() + step), "recreate");
+    auto cfx           = (Hal::DividedHisto1D*) cf;
+    auto serialization = (FemtoSerializationInterface*) cfx->GetSpecial("serialization");
+    serialization->BindCFs(cf);
+    Array_1<Float_t>* Data = new Array_1<Float_t>();
+    serialization->BindArray(Data);
+    serialization->Init();
+    serialization->Serialize();
     if (!Data) return kFALSE;
     TTree* tree = new TTree("map", "map");
     tree->Branch("data", &Data);
     tree->Fill();
     tree->Write();
     file->Close();
+    delete serialization;
     return kTRUE;
   }
 
@@ -217,6 +228,8 @@ namespace Hal {
     if (source) delete source;
     if (generator) delete generator;
     XMLNode* calcOpts = dumpAna->GetChild("CalcOptions");
+    XMLNode* pairCut  = dumpAna->GetChild("NoPairCut");
+    if (pairCut) { fPairThreshold = pairCut->GetValue().Atoi(); }
 
     XMLNode* multiJobs = calcOpts->GetChild("JobMultiplyFactor");
     if (multiJobs) {

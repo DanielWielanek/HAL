@@ -1047,5 +1047,72 @@ namespace Hal {
       }
       return list;
     }
+    Bool_t CheckHistogramData(const TH1& h1, const TH1& h2, Double_t thres, Option_t* opt) {
+      TString option  = opt;
+      Bool_t debug    = Hal::Std::FindParam(option, "print", kTRUE);
+      Bool_t skiperr  = Hal::Std::FindParam(option, "skiperr", kTRUE);
+      Bool_t relative = Hal::Std::FindParam(option, "rel", kTRUE);
+      if (!AreSimilar(&h1, &h2, kFALSE)) {
+        if (debug) std::cout << __FILE__ << __LINE__ << " histograms are not similiar" << std::endl;
+        return kFALSE;
+      }
+      auto compare = [&](double x1, double e1, double x2, double e2) {
+        if (relative) {
+          double relval = TMath::Abs((x1 - x2) / x1);
+          if (relval > thres) return kFALSE;
+        } else {
+          if (TMath::Abs(x1 - x2) > thres) return kFALSE;
+        }
+
+        if (skiperr) return kTRUE;
+        if (relative) {
+          double relval = TMath::Abs((e1 - e2) / e1);
+          if (relval > thres) return kFALSE;
+        } else {
+          if (TMath::Abs(e1 - e2) > thres) return kFALSE;
+        }
+        return kTRUE;
+      };
+      if (dynamic_cast<const TH3*>(&h1)) {
+        auto H1 = static_cast<const TH3*>(&h1);
+        auto H2 = static_cast<const TH3*>(&h2);
+        for (int i = 1; i <= H1->GetNbinsX(); i++) {
+          for (int j = 1; j <= H1->GetNbinsY(); j++) {
+            for (int k = 1; k <= H1->GetNbinsZ(); k++) {
+              bool compared = compare(
+                H1->GetBinContent(i, j, k), H1->GetBinError(i, j, k), H2->GetBinContent(i, j, k), H2->GetBinError(i, j, k));
+              if (!compared) {
+                if (debug) { std::cout << "Detected difference at bin " << i << " " << j << " " << k << std::endl; }
+                return kFALSE;
+              }
+            }
+          }
+        }
+      } else if (dynamic_cast<const TH2*>(&h1)) {
+        auto H1 = static_cast<const TH2*>(&h1);
+        auto H2 = static_cast<const TH2*>(&h2);
+        for (int i = 1; i <= H1->GetNbinsX(); i++) {
+          for (int j = 1; j <= H1->GetNbinsY(); j++) {
+            bool compared =
+              compare(H1->GetBinContent(i, j), H1->GetBinError(i, j), H2->GetBinContent(i, j), H2->GetBinError(i, j));
+            if (!compared) {
+              if (debug) { std::cout << "Detected difference at bin " << i << " " << j << " " << std::endl; }
+              return kFALSE;
+            }
+          }
+        }
+      } else {
+        auto H1 = static_cast<const TH1*>(&h1);
+        auto H2 = static_cast<const TH1*>(&h2);
+        for (int i = 1; i <= H1->GetNbinsX(); i++) {
+          bool compared = compare(H1->GetBinContent(i), H1->GetBinError(i), H2->GetBinContent(i), H2->GetBinError(i));
+          if (!compared) {
+            if (debug) { std::cout << "Detected difference at bin " << i << " " << std::endl; }
+            return kFALSE;
+          }
+        }
+      }
+      return kTRUE;
+    }
   }  // namespace Std
 }  // namespace Hal

@@ -281,6 +281,18 @@ namespace Hal {
                  Double_t maxZ,
                  TString opt = "vals");
     std::vector<TObject*> GetPadChildren(TString objName, TString className = "", TVirtualPad* pad = nullptr);
+    /**
+     * check if two histograms contain the same data (check only bin content not range etc.)
+     * @param h1 first histogram to compare
+     * @param h2 second histogram to compare
+     * @param thres different threshold
+     * @param opt checking option:
+     *  print - print different bins
+     *  skiperr - do not check errors
+     *  rel - threshold is relative (if (content_a-content_b)content_a<threshold no error is reported)
+     * @return
+     */
+    Bool_t CheckHistogramData(const TH1& h1, const TH1& h2, Double_t thres = 0, Option_t* opt = "");
   }  // namespace Std
 }  // namespace Hal
 #endif /* HALSTDHIST_H_ */

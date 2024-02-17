@@ -20,6 +20,7 @@ namespace Hal {
   class UniqueOptions : public TObject {
     std::vector<TString> fOpts;
     std::vector<std::vector<TString>> fConflicts;
+    void OverwriteTag(TString newStr, TString oldStr);
 
   public:
     UniqueOptions() {};
@@ -48,6 +49,7 @@ namespace Hal {
      * @return true if tag found
      */
     Bool_t CheckTag(TString tag) const;
+    virtual void Print(Option_t* option = "") const;
     virtual ~UniqueOptions() {};
     ClassDef(UniqueOptions, 1)
   };

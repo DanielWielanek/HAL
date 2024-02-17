@@ -10,7 +10,18 @@
 
 #include "Std.h"
 
+#include <iostream>
+
 namespace Hal {
+  void UniqueOptions::OverwriteTag(TString newStr, TString oldStr) {
+    for (auto& i : fOpts) {
+      if (i == oldStr) {
+        i = newStr;
+        return;
+      }
+    }
+  }
+
   void UniqueOptions::AddConflicts(std::initializer_list<TString> list) {
     auto vec = Hal::Std::GetVector(list);
     for (auto& p : vec)
@@ -20,14 +31,18 @@ namespace Hal {
 
   Bool_t UniqueOptions::AddTag(TString tag, Bool_t overwrite) {
     tag.ToLower();
-    for (unsigned int i = 0; i < fConflicts.size(); i++) {
-      auto conf = fConflicts[i];
-      for (auto j : conf) {
-        if (j == tag) {  // conflict found
-          if (overwrite)
-            RemoveTag(j);
-          else
-            return kFALSE;
+    for (auto conf : fConflicts) {
+      for (auto potConf : conf) {
+        if (potConf == tag) {  // potential conflict found
+          for (auto potConf2 : conf) {
+            if (CheckTag(potConf2)) {
+              if (overwrite) {
+                OverwriteTag(tag, potConf2);
+                return kTRUE;
+              }
+              return kFALSE;
+            }
+          }
         }
       }
     }
@@ -55,5 +70,19 @@ namespace Hal {
     return kFALSE;
   }
 
+  void UniqueOptions::Print(Option_t* /*option*/) const {
+    std::cout << "Conflicts" << std::endl;
+    for (auto i : fConflicts) {
+      std::cout << "\t";
+      for (auto j : i) {
+        std::cout << j << " ";
+      }
+      std::cout << std::endl;
+    }
+    std::cout << "Tags" << std::endl;
+    for (auto i : fOpts) {
+      std::cout << "\t" << i << std::endl;
+    }
+  }
 
 } /* namespace Hal */

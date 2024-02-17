@@ -216,6 +216,18 @@ namespace Hal {
       }
       return totSize;
     }
+    /**
+     * delete one dimensional array of pointer
+     * @tparam T
+     * @param vec
+     */
+    template<typename T>
+    void DeletePointerVector(std::vector<T*>& vec) {
+      for (auto& i : vec) {
+        if (i) delete i;
+        i = nullptr;
+      }
+    }
   }  // namespace Std
 }  // namespace Hal
 

@@ -84,6 +84,7 @@ namespace Hal {
   class PadStyle : public Style {
   public:
     PadStyle();
+    PadStyle(const PadStyle& other) = default;
     PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
     void SetBottomMargin(Double_t x) { Register("bottom", x); };
     void SetTopMargin(Double_t x) { Register("top", x); };
@@ -117,6 +118,7 @@ namespace Hal {
 
   public:
     HistoStyle();
+    HistoStyle(const HistoStyle& other) = default;
     /**
      * return predefined style for 1d histogram
      * @param style options:

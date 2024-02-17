@@ -33,6 +33,7 @@ ObjectMatrix.cxx
 Const.cxx
 XMLNode.cxx
 CompressionMap.cxx
+UniqueOptions.cxx
 
 
 io/Link.cxx

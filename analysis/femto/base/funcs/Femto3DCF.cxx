@@ -186,78 +186,33 @@ namespace Hal {
         if (fNum->GetYaxis()->GetBinLowEdge(middle_y[0]) == 0.0 && middle_y[0] > 1) --middle_y[0];
         if (fNum->GetZaxis()->GetBinLowEdge(middle_z[0]) == 0.0 && middle_z[0] > 1) --middle_z[0];
       }
-      TVirtualPad* c1 = gPad;
+      TString names[]  = {"out", "side", "long"};
+      TString dirs[]   = {"x", "y", "z"};
+      TString titles[] = {"cf", "num", "den"};
+      Color_t colz[]   = {kRed, kGreen, kBlue};
+      Int_t mxxLow[]   = {middle_y[0], middle_x[0], middle_x[0]};
+      Int_t myyLow[]   = {middle_z[0], middle_z[0], middle_y[0]};
+      Int_t mxxHi[]    = {middle_y[1], middle_x[1], middle_x[1]};
+      Int_t myyHi[]    = {middle_z[1], middle_z[1], middle_y[1]};
+      TVirtualPad* c1  = gPad;
       if (c1->GetListOfPrimitives()->GetEntries() < 9) c1->Divide(3, 3);
-      c1->cd(1);
-      TH1D* out_num = GetProjection1D(middle_y[0], middle_y[1], middle_z[0], middle_z[1], "num+x+scale+bins+randname");
-      out_num->SetLineColor(kRed);
-      out_num->SetTitle("out numerator");
-      out_num->SetMinimum(0);
-      out_num->Draw(option);
-      c1->cd(2);
-      TH1D* out_den = GetProjection1D(middle_y[0], middle_y[1], middle_z[0], middle_z[1], "den+x+scale+bins+randname");
-      out_den->SetLineColor(kRed);
-      out_den->SetTitle("out denominator");
-      out_den->SetMinimum(0);
-      out_den->Draw(option);
-      c1->cd(3);
-      TH1D* out_func = GetProjection1D(middle_y[0], middle_y[1], middle_z[0], middle_z[1], "x+scale+bins+randname");
-      out_func->SetLineColor(kRed);
-      out_func->SetTitle("out function");
-      out_func->SetMinimum(0);
-      if (set_limits) {
-        out_func->SetMaximum(draw_max);
-        out_func->SetMinimum(draw_min);
+      TH1D** histos = new TH1D*[9];
+      for (int padId = 0; padId < 9; padId++) {
+        c1->cd(padId + 1);
+        int optId      = padId % 3;
+        int flagDir    = (padId - optId) / 3;
+        TString optLoc = titles[optId] + "+" + dirs[flagDir] + "+scale+bins";
+        histos[padId]  = GetProjection1D(mxxLow[flagDir], mxxHi[flagDir], myyLow[flagDir], myyHi[flagDir], optLoc);
+        histos[padId]->SetLineColor(colz[flagDir]);
+        histos[padId]->SetTitle(Form("%s %s", names[flagDir].Data(), titles[optId].Data()));
+        histos[padId]->SetMinimum(0);
+        if (set_limits && optId == 0) {
+          histos[padId]->SetMaximum(draw_max);
+          histos[padId]->SetMinimum(draw_min);
+        }
+        histos[padId]->Draw();
       }
-      out_func->Draw(option);
-      c1->cd(4);
-      TH1D* side_num = GetProjection1D(middle_x[0], middle_x[1], middle_z[0], middle_z[1], "num+y+scale+bins+randname");
-      side_num->SetLineColor(kBlue);
-      side_num->SetTitle("side numerator");
-      side_num->SetMinimum(0);
-      side_num->Draw(option);
-      c1->cd(5);
-      TH1D* side_den = GetProjection1D(middle_x[0], middle_x[1], middle_z[0], middle_z[1], "den+y+scale+bins+randname");
-      side_den->SetLineColor(kBlue);
-      side_den->SetTitle("side denominator");
-      side_den->SetMinimum(0);
-      side_den->Draw(option);
-      c1->cd(6);
-      TH1D* side_func = GetProjection1D(middle_x[0], middle_x[1], middle_z[0], middle_z[1], "y+scale+bins+randname");
-      side_func->SetTitle("side_func");
-      side_func->SetLineColor(kBlue);
-      side_func->SetTitle("side function");
-      side_func->SetMinimum(0);
-      if (set_limits) {
-        side_func->SetMaximum(draw_max);
-        side_func->SetMinimum(draw_min);
-      }
-      side_func->Draw(option);
-      c1->cd(7);
-      TH1D* long_num = GetProjection1D(middle_x[0], middle_x[1], middle_y[0], middle_y[1], "num+z+scale+bins+autoname");
-      long_num->SetTitle("long_num");
-      long_num->SetLineColor(kGreen);
-      long_num->SetTitle("long numerator");
-      long_num->SetMinimum(0);
-      long_num->Draw(option);
-      c1->cd(8);
-      TH1D* long_den = GetProjection1D(middle_x[0], middle_x[1], middle_y[0], middle_y[1], "den+z+scale+bins+autoname");
-      long_den->SetTitle("long_den");
-      long_den->SetLineColor(kGreen);
-      long_den->SetTitle("long denominator");
-      long_den->SetMinimum(0);
-      long_den->Draw(option);
-      c1->cd(9);
-      TH1D* long_func = GetProjection1D(middle_x[0], middle_x[1], middle_y[0], middle_y[1], "z+scale+bins+autoname");
-      long_func->SetTitle("long_func");
-      long_func->SetMinimum(0);
-      long_func->SetLineColor(kGreen);
-      long_func->SetTitle("long function");
-      if (set_limits) {
-        long_func->SetMaximum(draw_max);
-        long_func->SetMinimum(draw_min);
-      }
-      long_func->Draw(option);
+      delete[] histos;
       gPad = c1;
       gPad->cd();
     } else if (Hal::Std::FindParam(option, "diag2", kTRUE)) {

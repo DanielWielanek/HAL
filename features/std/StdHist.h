@@ -23,6 +23,9 @@ class TVirtualPad;
 
 namespace Hal {
   namespace Std {
+    namespace {
+      int anonymCounter = {0};
+    }
     /**
      * remove nans from histogram
      * @param h histogram to check
@@ -58,10 +61,9 @@ namespace Hal {
      * projection is divided by number of bins in projection range, if "y" is
      * specified the projection is made along y axis, otherwise along x axis.
      * "sumw" call TH1::Sumw before scalling (if used).
-     * ROOT new projection might overwrite old one (if it's on the same pad or in
-     * the same directory). To avoid this add "autoname" option (set name accordig
-     * to number of objects into gDirectory) or "randname" (set name based on random
-     * value).
+     * In ROOT new projection might overwrite old one (if it's on the same
+     * pad or in the same directory), therefore name of the histogram is generated with specjal counter, to disable this fature
+     * use "noautoname" option.
      * .
      * @return projection
      */
@@ -76,10 +78,9 @@ namespace Hal {
      * histogram range between min an max value, if "bins" is used then these value
      * describes range in bins units.. Option "x" "y" "z" can be used for specify
      * axis. If "scale" then histogram is divided by number of bins in projection
-     * range. "sumw" call TH1::Sumw before scalling (if used) In ROOT new projection might overwrite old one (if it's on the same
-     * pad or in the same directory). To avoid this add "autoname" option (set name
-     * accordig to number of objects into gDirectory) or "randname" (set name based
-     * on random value).
+     * range. "sumw" call TH1::Sumw before scalling (if used). In ROOT new projection might overwrite old one (if it's on the same
+     * pad or in the same directory), therefore name of the histogram is generated with specjal counter, to disable this fature
+     * use "noautoname" option. on random value).
      * @return projection
      */
     TH1D* GetProjection1D(const TH3* histo, Double_t min1, Double_t max1, Double_t min2, Double_t max2, Option_t* opt);

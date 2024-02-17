@@ -83,8 +83,7 @@ namespace Hal {
         axisB        = histo->GetYaxis();
         axisC        = histo->GetZaxis();
         TString name = "_pz";
-        if (option.Contains("autoname")) name = Form("%i_pz", gDirectory->GetList()->GetEntries() + 1);
-        if (option.Contains("randname")) name = Form("pz_%i", (int) (gRandom->Rndm() * 1E+6));
+        if (!option.Contains("noautoname")) { name = Form("%i_pz", anonymCounter++); }
         if (option.Contains("bins")) {
           projection = histo->ProjectionZ(name, min1, max1, min2, max2, "e");
         } else {
@@ -96,8 +95,7 @@ namespace Hal {
         axisB        = histo->GetZaxis();
         axisC        = histo->GetYaxis();
         TString name = "_py";
-        if (option.Contains("autoname")) name = Form("%i_py", gDirectory->GetList()->GetEntries() + 1);
-        if (option.Contains("randname")) name = Form("py_%i", (int) (gRandom->Rndm() * 1E+6));
+        if (!option.Contains("noautoname")) { name = Form("%i_py", anonymCounter++); }
         if (option.Contains("bins")) {
           projection = histo->ProjectionY(name, min1, max1, min2, max2, "e");
         } else {
@@ -109,8 +107,7 @@ namespace Hal {
         axisB        = histo->GetZaxis();
         axisC        = histo->GetXaxis();
         TString name = "_px";
-        if (option.Contains("autoname")) name = Form("%i_px", gDirectory->GetList()->GetEntries() + 1);
-        if (option.Contains("randname")) name = Form("px_%i", (int) (gRandom->Rndm() * 1E+6));
+        if (!option.Contains("noautoname")) { name = Form("%i_px", anonymCounter++); }
         if (option.Contains("bins")) {
           projection = histo->ProjectionX(name, min1, max1, min2, max2, "e");
         } else {

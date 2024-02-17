@@ -137,8 +137,7 @@ namespace Hal {
       Double_t nbins = 0;
       if (option.Contains("y")) {
         TString name = "_py";
-        if (option.Contains("autoname")) name = Form("%i_py", gDirectory->GetList()->GetEntries() + 1);
-        if (option.Contains("randname")) name = Form("py_%i", (int) (gRandom->Rndm() * 1E+6));
+        if (!option.Contains("noautoname")) { name = Form("%i_py", anonymCounter++); }
         if (option.Contains("bins")) {
           projection = histo->ProjectionY(name, min, max);
           nbins      = max - min;
@@ -149,8 +148,7 @@ namespace Hal {
         projection->GetXaxis()->SetTitle(histo->GetYaxis()->GetTitle());
       } else {
         TString name = "_px";
-        if (option.Contains("autoname")) name = Form("%i_px", gDirectory->GetList()->GetEntries() + 1);
-        if (option.Contains("randname")) name = Form("px_%i", (int) (gRandom->Rndm() * 1E+6));
+        if (!option.Contains("noautoname")) { name = Form("%i_px", anonymCounter++); }
         if (option.Contains("bins")) {
           projection = histo->ProjectionX(name, min, max);
           nbins      = max - min;

@@ -31,7 +31,8 @@ jobs:
         os: [ubuntu-latest]
         build_type: [Release]
         c_compiler: [gcc, clang]
-
+      env:
+        working_directory: ./soft
     steps:
     - name: Install ROOT
       shell: bash
@@ -46,11 +47,12 @@ jobs:
        echo $ROOTSYS
        export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
        root-config --features
+      working-directory: ${{env.working-directory}}
     - name: Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-
+      working-directory: ${{env.working-directory}}
     - name: Build
       shell: bash
       run: |
@@ -62,7 +64,7 @@ jobs:
         cmake .. -DCMAKE_INSTALL_PREFIX=../inst -DEXAMPLES=ON
         make 
         make install
-
+      working-directory: ${{env.working-directory}}
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).

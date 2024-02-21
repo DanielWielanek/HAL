@@ -33,6 +33,7 @@ DbgReader.cxx
 DbgRecoEvent.cxx
 DbgRecoEventInterface.cxx
 DbgSource.cxx
+DbgTask.cxx
 )
 
 Set(HEADERS )

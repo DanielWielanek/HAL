@@ -16,6 +16,7 @@
 #pragma link C++ class Dbg::McTrack + ;
 #pragma link C++ class Dbg::RecoEvent + ;
 #pragma link C++ class Dbg::McEvent + ;
+#pragma link C++ class HalDbg::Task + ;
 #pragma link C++ class HalDbg::IOManager + ;
 #pragma link C++ class HalDbg::McEvent + ;
 #pragma link C++ class HalDbg::McTrack + ;

@@ -14,6 +14,8 @@ env:
   
 
 jobs:
+  env:
+    working_directory: ./soft
   build:
     runs-on: ${{ matrix.os }}
 
@@ -31,8 +33,7 @@ jobs:
         os: [ubuntu-latest]
         build_type: [Release]
         c_compiler: [gcc, clang]
-      env:
-        working_directory: ./soft
+
     steps:
     - name: Install ROOT
       shell: bash

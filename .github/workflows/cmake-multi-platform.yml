@@ -40,8 +40,8 @@ jobs:
        gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev \
         libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev xvfb xdotool libgsl-dev
        wget --quiet https://root.cern/download/root_v6.26.14.Linux-ubuntu22-x86_64-gcc11.4.tar.gz
-       tar zxf root_v6.26.14.Linux-ubuntu22-x86_64-gcc11.4.tar.gz
-       source root/bin/thisroot.sh
+       tar zxf root_v6.26.14.Linux-ubuntu22-x86_64-gcc11.4.tar.gz --directory /opt
+       source /opt/root/bin/thisroot.sh
        echo $ROOTSYS
        export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
        root-config --features
@@ -53,7 +53,7 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        source /home/runner/work/HAL/HAL/root/bin/thisroot.sh
+        source /opt/root/bin/thisroot.sh
         echo $ROOTSYS
         export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
         mkdir build

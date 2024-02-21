@@ -17,8 +17,8 @@ class TH1;
 namespace Hal {
   class Femto3DCF;
   class Femto3DCFPainter : public FemtoPainter {
-    TH1* fNum = {nullptr};
-    TH1* fDen = {nullptr};
+    std::vector<TH1*> fNum;
+    std::vector<TH1*> fDen;
     std::vector<TH1*> fCFs;
     std::vector<TH1*> fDiag1;
     std::vector<TH1*> fDiag2;
@@ -26,7 +26,7 @@ namespace Hal {
   public:
     Femto3DCFPainter(Femto3DCF& other, FemtoDrawOptions opts);
     Femto3DCFPainter() {};
-    virtual void Paint();
+    virtual void Paint(TString option);
     virtual void Rescale(Double_t newScale);
     virtual ~Femto3DCFPainter();
     ClassDef(Femto3DCFPainter, 1)

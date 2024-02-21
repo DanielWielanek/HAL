@@ -24,8 +24,7 @@ namespace Hal {
 
   public:
     FemtoSHCFPainter() {};
-    virtual void Repaint();
-    virtual void Paint();
+    virtual void Paint(TString option);
     virtual void Rescale(Double_t newScale);
     void SetImStyle(const Hal::HistoStyle& style);
     FemtoSHCFPainter(Hal::FemtoSHCF& cf, FemtoDrawOptions opts);

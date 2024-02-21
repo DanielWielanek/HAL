@@ -40,6 +40,7 @@ namespace Hal {
     fMainPad->cd();
     if (fHistoStyle) { fHistoStyle->Apply(*draw); }
     if (fPadStyle) { fPadStyle->Apply(); }
+    fSubPads.push_back(vpad);
     gPad = vpad;
   }
 

@@ -15,6 +15,7 @@
  */
 class TCanvas;
 class TVirtualPad;
+class TH1;
 namespace Hal {
   class Style;
   class PadStyle;
@@ -27,12 +28,24 @@ namespace Hal {
     Hal::HistoStyle* fHistoStyle = {nullptr};
     Hal::PadStyle* fPadStyle     = {nullptr};
     Bool_t fOwnPad               = {kFALSE};
+    Bool_t fDrawn                = {kFALSE};
+    std::vector<TH1*> GetListHistograms(Int_t subpad) const;
     virtual void SetHistoStyle(const Hal::HistoStyle& style);
     virtual void SetPadStyle(const Hal::PadStyle& style);
 
   public:
     Painter();
     Painter(const Painter& other);
+    virtual void Repaint(TString option);
+    virtual void Paint(TString option) = 0;
+    virtual void Draw(Option_t* opt = "") {
+      if (!fDrawn) {
+        fDrawn = kTRUE;
+        Paint(opt);
+      } else {
+        Repaint(opt);
+      }
+    };
     void SetStyle(const Hal::Style& style);
     Painter& operator=(const Painter& other);
     TCanvas* GetCanvas() const { return fCanvas; }

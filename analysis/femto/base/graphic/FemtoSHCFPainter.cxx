@@ -48,9 +48,7 @@ namespace Hal {
     fPadStyle = new Hal::PadStyle(0.045, 0.045, 0.05, 0.045);
   }
 
-  void FemtoSHCFPainter::Repaint() {}
-
-  void FemtoSHCFPainter::Paint() {
+  void FemtoSHCFPainter::Paint(TString option) {
     TString opT;
     auto tempPad = gPad;
     if (!fImStyle && fHistoStyle) {

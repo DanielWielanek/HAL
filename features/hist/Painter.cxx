@@ -65,4 +65,27 @@ namespace Hal {
 
   void Painter::SetStyle(const Hal::Style& style) {}
 
+  std::vector<TH1*> Painter::GetListHistograms(Int_t subpad) const {
+    std::vector<TH1*> list;
+    auto vPad = fSubPads[subpad];
+    if (vPad == nullptr) return list;
+    TList* children = vPad->GetListOfPrimitives();
+    for (int i = 0; i < children->GetEntries(); i++) {
+      auto obj = dynamic_cast<TH1*>(children->At(i));
+      if (obj) { list.push_back(obj); }
+    }
+    return list;
+  }
+
+  void Painter::Repaint(TString option) {
+    for (int i = 0; i < fSubPads.size(); i++) {
+      auto lista = GetListHistograms(i);
+      if (lista.size() == 0) continue;
+      fSubPads[i]->cd();
+      for (auto i : lista) {
+        i->Draw("SAME");
+      }
+    }
+  }
+
 } /* namespace Hal */

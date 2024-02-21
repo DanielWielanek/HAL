@@ -363,6 +363,14 @@ namespace Hal {
 
   TH1D** Femto3DCF::GetDiagProj(Option_t* opt, Bool_t normalized) const {
     TString option = opt;
+    auto labeling  = [&](TH1* h, TString title) {
+      h->SetTitle(title);
+      h->SetStats(0);
+      TString xTitle = h->GetXaxis()->GetTitle();
+      xTitle         = xTitle.ReplaceAll("[GeV/c]", "");
+      h->SetYTitle(Form("C(%s)", xTitle.Data()));
+      h->SetXTitle(Form("%s [GeV/c]", xTitle.Data()));
+    };
     if (Hal::Std::FindParam(option, "cf", kTRUE)) {
       TH3D* h            = (TH3D*) GetHist(normalized);
       TString options[3] = {"x", "y", "z"};
@@ -373,12 +381,7 @@ namespace Hal {
       if (Hal::Std::FindParam(option, "rgb", kTRUE)) rgb = kTRUE;
       for (int i = 0; i < 3; i++) {
         array[i] = Hal::Std::GetDiagonalProjection1D(h, options[i], 0, 0);
-        array[i]->SetTitle(titles[i]);
-        array[i]->SetStats(0);
-        TString xTitle = array[i]->GetXaxis()->GetTitle();
-        xTitle         = xTitle.ReplaceAll("[GeV/c]", "");
-        array[i]->SetYTitle(Form("C(%s)", xTitle.Data()));
-        array[i]->SetXTitle(Form("%s [GeV/c]", xTitle.Data()));
+        labeling(array[i], titles[i]);
         if (rgb) {
           array[i]->SetMarkerColor(colors[i]);
           array[i]->SetLineColor(colors[i]);
@@ -401,12 +404,7 @@ namespace Hal {
       TH1D** array = new TH1D*[7];
       for (int i = 0; i < 7; i++) {
         array[i] = Hal::Std::GetDiagonalProjection1D(h, options[i], 0, 0);
-        array[i]->SetTitle(titles[i]);
-        array[i]->SetStats(0);
-        TString xTitle = array[i]->GetXaxis()->GetTitle();
-        xTitle         = xTitle.ReplaceAll("[GeV/c]", "");
-        array[i]->SetYTitle(Form("C(%s)", xTitle.Data()));
-        array[i]->SetXTitle(Form("%s [GeV/c]", xTitle.Data()));
+        labeling(array[i], titles[i]);
       }
       delete h;
       return array;
@@ -432,12 +430,7 @@ namespace Hal {
       TH1D** array       = new TH1D*[13];
       for (int i = 0; i < 13; i++) {
         array[i] = Hal::Std::GetDiagonalProjection1D(h, options[i], 0, 0);
-        array[i]->SetTitle(titles[i]);
-        array[i]->SetStats(0);
-        TString xTitle = array[i]->GetXaxis()->GetTitle();
-        xTitle         = xTitle.ReplaceAll("[GeV/c]", "");
-        array[i]->SetYTitle(Form("C(%s)", xTitle.Data()));
-        array[i]->SetXTitle(Form("%s [GeV/c]", xTitle.Data()));
+        labeling(array[i], titles[i]);
       }
       delete h;
       return array;

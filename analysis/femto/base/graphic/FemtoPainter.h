@@ -30,9 +30,6 @@ namespace Hal {
   public:
     FemtoPainter() {};
     virtual void Rescale(Double_t newScale);
-    virtual void Repaint() { Paint(); };
-    virtual void Paint() = 0;
-    virtual void Draw(Option_t* opt = "") { Paint(); };
     virtual ~FemtoPainter() {};
     ClassDef(FemtoPainter, 1)
   };

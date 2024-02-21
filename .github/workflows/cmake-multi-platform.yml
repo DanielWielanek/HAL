@@ -10,7 +10,9 @@ on:
 env:
   ROOT_VERSION: "6.26/06"
   GLS_VERSION: "2.5"
+  GOPROXY: "https://proxy.golang.org"
   
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -44,15 +46,12 @@ jobs:
        echo $ROOTSYS
        export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
        root-config --features
-#       echo "::set-env name=ROOTSYS::$ROOTSYS"
-#       echo "::set-env name=LD_LIBRARY_PATH::$LD_LIBRARY_PATH"
     - name: Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
 
     - name: Build
-      uses: actions/checkout@v4
       shell: bash
       run: |
         source root/bin/thisroot.sh

@@ -33,33 +33,22 @@ jobs:
         c_compiler: [gcc, clang, cl]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Install Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: ${{ matrix.go-version }}
-        cache: true
-    - name: Cache-ROOT
-      uses: actions/cache@v4
-      with:
-        path: ~/root-${{ env.ROOT_VERSION }}
-        key: ${{ runner.os }}-root-${{ env.ROOT_VERSION }}
-        restore-keys: |
-          ${{ runner.os }}-root-${{ env.ROOT_VERSION }}
+    - name: Install ROOT
+      shell: bash
+      run: |
+       sudo apt-get install dpkg-dev cmake g++ gcc binutils libx11-dev libxpm-dev libxft-dev libxext-dev python3 libssl-dev\
+       gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev \
+        libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev xvfb xdotool libgsl-dev
+       wget --quiet https://root.cern/download/root_v6.26.14.Linux-ubuntu22-x86_64-gcc11.4.tar.gz
+       tar zxf root_v6.26.14.Linux-ubuntu22-x86_64-gcc11.4.tar.gz
+       source root/bin/thisroot.sh
+       echo $ROOTSYS
+       export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
+       root-config --features
     - name: Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-
-    - name: Install Linux packages
-      if: matrix.platform == 'ubuntu-20.04'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -qq gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev \
-        libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev xvfb xdotool libgsl-dev
-        go run ./ci/install-cxx-root.go -root-version=${ROOT_VERSION} -o=${HOME}
-        source $HOME/root-${ROOT_VERSION}/bin/thisroot.sh
-        root.exe --version    
 
     - name: Build
       

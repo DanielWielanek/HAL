@@ -52,7 +52,7 @@ jobs:
         fetch-depth: 1
 
     - name: Build
-      
+      shell: bash
       run: |
         source root/bin/thisroot.sh
         echo $ROOTSYS

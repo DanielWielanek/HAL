@@ -10,15 +10,12 @@ on:
 env:
   ROOT_VERSION: "6.26/06"
   GLS_VERSION: "2.5"
-  GOPROXY: "https://proxy.golang.org"
   
 
 jobs:
 
   build:
     runs-on: ${{ matrix.os }}
-    env:
-      working_directory: ./soft
     strategy:
       # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
       fail-fast: false
@@ -48,7 +45,6 @@ jobs:
        echo $ROOTSYS
        export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
        root-config --features
-      working-directory: ${{env.working-directory}}
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -65,9 +61,8 @@ jobs:
         cmake .. -DCMAKE_INSTALL_PREFIX=../inst -DEXAMPLES=ON
         make 
         make install
-      working-directory: ${{env.working-directory}}
     - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+   #   working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |

@@ -10,9 +10,7 @@ on:
 env:
   ROOT_VERSION: "6.26/06"
   GLS_VERSION: "2.5"
-  GOPROXY: "https://proxy.golang.org"
   
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -52,6 +50,7 @@ jobs:
         fetch-depth: 1
 
     - name: Build
+      uses: actions/checkout@v4
       shell: bash
       run: |
         source root/bin/thisroot.sh

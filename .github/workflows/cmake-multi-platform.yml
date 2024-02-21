@@ -57,7 +57,7 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        source root/bin/thisroot.sh
+        source /home/runner/work/HAL/HAL/root/bin/thisroot.sh
         echo $ROOTSYS
         export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
         mkdir build

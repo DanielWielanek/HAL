@@ -44,6 +44,8 @@ jobs:
        echo $ROOTSYS
        export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
        root-config --features
+       echo "::set-env name=ROOTSYS::$ROOTSYS"
+       echo "::set-env name=LD_LIBRARY_PATH::$LD_LIBRARY_PATH"
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -52,7 +54,6 @@ jobs:
     - name: Build
       uses: actions/checkout@v4
       shell: bash
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: |
         source root/bin/thisroot.sh
         echo $ROOTSYS

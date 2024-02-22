@@ -15,7 +15,18 @@ endif()
 Set(USE_FAIRROOT FALSE)
 Set(USE_EXAMPLES FALSE)
 #check if simpath detected
-if(DEFINED ENV{SIMPATH})
+
+if(NOT DEFINED ENV{SIMPATH} AND NOT DEFINED SIMPATH)
+message (FATAL_ERROR "\
+You did not define the environment variable SIMPATH or define SIMPATH when calling cmake. \
+Either of the two is needed to properly find the external packages. \
+Please either set this environment variable or pass -DSIMPATH=<path> and execute cmake again. \
+")
+endif()
+if (NOT DEFINED SIMPATH)
+  set(SIMPATH $ENV{SIMPATH})
+endif()
+if(DEFINED SIMPATH)
     Set(USE_FAIRROOT TRUE)      
 endif()
 #check if fairroot disabled

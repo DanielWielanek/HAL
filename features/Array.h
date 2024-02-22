@@ -343,7 +343,7 @@ namespace Hal {
      * @param D 4th index
      * @param val value
      */
-    inline void Set(Int_t A, Int_t B, Int_t C, Int_t D, Int_t val) { fArray[A].Set(B, C, D, val); };
+    inline void Set(Int_t A, Int_t B, Int_t C, Int_t D, T val) { fArray[A].Set(B, C, D, val); };
     virtual ~Array_4() {
       if (fArray) delete[] fArray;
     }

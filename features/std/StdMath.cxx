@@ -183,7 +183,7 @@ namespace Hal {
       if (size.size() != position.size()) return -1;
       Int_t step = 1;
       Int_t pos  = 0;
-      for (unsigned int i = 0; i < size.size(); i++) {
+      for (int i = size.size() - 1; i >= 0; i--) {
         pos  = pos + position[i] * step;
         step = step * size[i];
       }
@@ -192,7 +192,7 @@ namespace Hal {
 
     std::vector<int> OneToMultiDimIndex(const std::vector<int>& size, Int_t n) {
       std::vector<int> res(size.size());
-      for (unsigned int i = 0; i < size.size(); i++) {
+      for (int i = size.size() - 1; i >= 0; i--) {
         Int_t pos = n % size[i];
         n         = (n - pos) / size[i];
         res[i]    = pos;

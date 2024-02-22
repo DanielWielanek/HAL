@@ -102,6 +102,11 @@ namespace Hal {
     Decay(Int_t motherPdg = -1);
     /**
      *
+     * @return mother pdg
+     */
+    Int_t GetMotherPdg() const { return fMotherPdg; }
+    /**
+     *
      * @param mother
      * @param daughters daugher vector should have at least 3 elements, NOTE: this vector must have allocated tracks
      * this class doesn't own this vector!

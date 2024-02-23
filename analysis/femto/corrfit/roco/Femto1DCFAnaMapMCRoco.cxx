@@ -298,8 +298,9 @@ namespace Hal {
       return kFALSE;
     }
 
-    fPair    = Femto::MakePair(fKinematics, kFALSE);
-    fMap     = new DividedHisto2D("map", fKStarBins, fKStarMin, fKStarMax, fRBins, fRMin, fRMax, 'D');
+    fPair = Femto::MakePair(fKinematics, kFALSE);
+    fMap  = new DividedHisto2D("map", fKStarBins, fKStarMin, fKStarMax, fRBins, fRMin, fRMax, 'D');
+    fMap->SetDirectory(nullptr);
     fRStep   = (fRMax - fRMin) / ((Double_t) fRBins);
     fRMinEff = fRMin + 0.5 * fRStep;
     fRadiiBins.MakeBigger(fRBins);

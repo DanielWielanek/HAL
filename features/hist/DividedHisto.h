@@ -296,6 +296,11 @@ namespace Hal {
     virtual void FillDenObj(TObject* /*obj*/) {};
     virtual void Print(Option_t* opt) const;
     /**
+     * call SetDirectory for TH1 inside of this object
+     * @param dir
+     */
+    virtual void SetDirectory(TDirectory* dir = nullptr);
+    /**
      *
      * @return number of histogram dimensions
      */

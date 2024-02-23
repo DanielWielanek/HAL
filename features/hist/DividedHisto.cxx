@@ -1577,4 +1577,9 @@ namespace Hal {
     h.Apply(*fDen);
   }
 
+  void DividedHisto1D::SetDirectory(TDirectory* dir) {
+    if (fNum && fNumIsCloned) fNum->SetDirectory(dir);
+    if (fDen && fDenIsCloned) fDen->SetDirectory(dir);
+  }
+
 }  // namespace Hal

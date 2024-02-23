@@ -16,6 +16,7 @@ endif()
 Option(USE_FAIRROOT "Build FairRoot connected code" OFF)
 Option(USE_EXAMPLES "Build examples" OFF)
 
+
 if(USE_FAIRROOT) 
     if(NOT DEFINED ENV{SIMPATH} AND NOT DEFINED SIMPATH)
     message (FATAL_ERROR "\

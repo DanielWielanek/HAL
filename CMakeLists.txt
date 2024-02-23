@@ -13,21 +13,8 @@ if(NOT DEFINED CMAKE_CXX_STANDARD)
 endif()
 
 
-#check if simpath detected
-
-Set(USE_FAIRROOT FALSE)
-if(DEFINED FAIRROOT)
-    if(FAIRROOT STREQUAL "OM")
-        Set(USE_FAIRROOT TRUE)
-    endif()
-endif()
-Set(USE_EXAMPLES FALSE)
-if(DEFINED EXAMPLES)
-    if(EXAMPLES STREQUAL "ON")
-        Set(USE_EXAMPLES TRUE)
-    endif()
-endif()
-
+Option(USE_FAIRROOT "Build FairRoot connected code" OFF)
+Option(USE_EXAMPLES "Build examples" OFF)
 
 if(USE_FAIRROOT) 
     if(NOT DEFINED ENV{SIMPATH} AND NOT DEFINED SIMPATH)

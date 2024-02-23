@@ -17,7 +17,7 @@ endif()
 
 Set(USE_FAIRROOT FALSE)
 if(DEFINED FAIRROOT)
-    if(FAIRROOT STREQUAL "OM")
+    if(FAIRROOT STREQUAL "ON")
         Set(USE_FAIRROOT TRUE)
     endif()
 endif()

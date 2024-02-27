@@ -51,6 +51,9 @@
 #pragma link C++ class Hal::FemtoSourceDensityNumerical1D + ;
 #pragma link C++ class Hal::CorrFitMapGroupConfig + ;
 
+#pragma link C++ class Hal::CorrFitPairGenerator + ;
+#pragma link C++ class Hal::CorrFitPairGeneratorSimple + ;
+#pragma link C++ class Hal::CorrFitPairGeneratorYPt + ;
 
 #pragma link C++ class Hal::Femto1DCF + ;
 #pragma link C++ class Hal::Femto3DCF + ;
@@ -82,7 +85,6 @@
 #pragma link C++ class Hal::CorrFit3DCFMultiDim + ;
 #pragma link C++ class Hal::CorrFitFunctor + ;
 #pragma link C++ class Hal::CorrFitInfo + ;
-#pragma link C++ class Hal::CorrFitPairGeneratorYPt + ;
 #pragma link C++ class Hal::CorrFitMapRebin + ;
 #pragma link C++ class Hal::CorrFitGUI + ;
 #pragma link C++ class Hal::CorrFitParButton + ;
@@ -143,7 +145,6 @@
 #pragma link C++ class Hal::CorrFitInfo + ;
 #pragma link C++ class Hal::CorrFitDumpedPairAnaHorizontal + ;
 #pragma link C++ class Hal::CorrFitDumpedPairAna + ;
-#pragma link C++ class Hal::FemtoDumpPairAnaMC + ;
 
 
 #ifndef GSL_DISABLE

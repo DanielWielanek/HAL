@@ -81,16 +81,18 @@ corrfit/mapgenerators/Femto1DMapGenerator.cxx
 corrfit/mapgenerators/Femto1DCFAnaMapMC.cxx
 corrfit/mapgenerators/FemtoWielanekMapGenerator.cxx
 corrfit/mapgenerators/Femto1DCFAnaMapPairsDumped.cxx
+corrfit/pairgenerators/CorrFitMapGroupConfig.cxx
+corrfit/pairgenerators/CorrFitPairGenerator.cxx
+corrfit/pairgenerators/CorrFitPairGeneratorSimple.cxx
+corrfit/pairgenerators/CorrFitPairGeneratorYPt.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
 corrfit/mapgenerator_multidim/CorrFitFunctor.cxx
 corrfit/mapgenerator_multidim/CorrFitInfo.cxx
 corrfit/mapgenerator_multidim/CorrFitMapRebin.cxx
-corrfit/mapgenerator_multidim/CorrFitPairGeneratorYPt.cxx
 corrfit/mapgenerator_multidim/CorrFitParamsSetup.cxx
 corrfit/mapgenerator_multidim/CorrFitVerticalSlices.cxx
 corrfit/mapgenerator_multidim/CorrFit3DCFMultiDim.cxx
-corrfit/mapgenerator_multidim/FemtoDumpPairAnaMC.cxx
 corrfit/CorrFitConst.cxx
 
 corrfit/fittingfunctions/CorrFit1DCFSquare.cxx

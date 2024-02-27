@@ -1,46 +1,58 @@
 /*
- * FemtoDumpPairAnaMC.cxx
+ * CorrFitPairGenerator.cxx
  *
- *  Created on: 15 lut 2023
+ *  Created on: 27 lut 2024
  *      Author: Daniel Wielanek
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
 
-#include "FemtoDumpPairAnaMC.h"
+#include "CorrFitPairGenerator.h"
 
 #include "Cout.h"
 #include "DividedHisto.h"
-#include "FemtoConst.h"
 #include "FemtoCorrFunc.h"
-#include "FemtoMiniPair.h"
 #include "StdHist.h"
 
+#include <vector>
+
+#include <RtypesCore.h>
+#include <TClonesArray.h>
 #include <TDatabasePDG.h>
 #include <TFile.h>
 #include <TH1.h>
-#include <TLorentzVector.h>
-#include <TObjArray.h>
-#include <TRandom.h>
+#include <TList.h>
+#include <TParticlePDG.h>
+#include <TString.h>
 #include <TTree.h>
 
 namespace Hal {
-  Hal::FemtoDumpPairAnaMC::FemtoDumpPairAnaMC() : fM1(0), fM2(0), fFrame(Femto::EKinematics::kLCMS) { fPid1 = fPid2 = 211; }
 
+  CorrFitPairGenerator::CorrFitPairGenerator() {}
 
-  Bool_t FemtoDumpPairAnaMC::Init() {
+  Bool_t CorrFitPairGenerator::Init() {
     if (!fCF) return kFALSE;
     DividedHisto1D* dummy = fCF->GetCF(0);
     Int_t bins;
     Double_t min, max;
+
     if (dummy->GetNum()->InheritsFrom("TH3")) {  // 3d histo group by q-long/ k-long
       fGrouping.SetGroupByKLong();
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "z");
+      fHi       = max;
+      fLow      = min;
+      fOverStep = (max - min) / ((double) bins);
+      if (fDebug) fDebugHisto = new TH1D("debug", "debug", bins, min, max);
 
     } else {  // 1d histo group by k* qinv
       fGrouping.GroupByKStar();
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "x");
+      if (fDebug) fDebugHisto = new TH1D("debug", "debug", bins, min, max);
+      fHi       = max;
+      fLow      = min;
+      fOverStep = (max - min) / ((double) bins);
     }
+    fOverStep = 1.0 / fOverStep;
 
     fFrame = Femto::EKinematics::kLCMS;
     if (dummy->GetLabelsNo() > 0) {
@@ -63,6 +75,7 @@ namespace Hal {
     fOutFile->cd("HalInfo");
     fGrouping.Write();
     fOutFile->cd();
+    fGroupByKstar = fGrouping.GroupByKStar();
 
     auto FillCenters = [&](Array_1<Double_t>& array, Int_t binsx, Double_t minx, Double_t maxx) {
       Double_t step = (maxx - minx) / double(binsx);
@@ -97,12 +110,21 @@ namespace Hal {
     return kTRUE;
   }
 
-  void FemtoDumpPairAnaMC::Run(Int_t entries) {
+  void CorrFitPairGenerator::SetCorrFctn(const FemtoCorrFunc& cf) { fCF = (FemtoCorrFunc*) cf.Clone(); }
+
+  void CorrFitPairGenerator::Run(Int_t entries) {
     if (!fInited || !fOutFile) return;
     int percent = entries / 100;
     if (percent == 0) percent = 1;
     for (int i = 0; i < entries; i++) {
       if (i % percent == 0) { Cout::ProgressBar(i, entries); }
+      if (fDebug) {
+        unsigned int count = 1;
+        for (auto data : fSignalPairs) {
+          fDebugHisto->SetBinContent(count, fDebugHisto->GetBinContent(count) + data->GetEntriesFast());
+          ++count;
+        }
+      }
       for (auto data : fSignalPairs)
         data->Clear();
       GenerateEvent();
@@ -110,77 +132,24 @@ namespace Hal {
     }
     fOutTree->Write();
     fOutFile->Close();
+    if (fDebug) {
+      fDebugHisto->Write();
+      delete fDebugHisto;
+      fDebugHisto = nullptr;
+    }
     delete fOutFile;
     fOutFile = nullptr;
   }
 
-  void FemtoDumpPairAnaMC::SetCorrFctn(const FemtoCorrFunc& cf) { fCF = (FemtoCorrFunc*) cf.Clone(); }
-
-  void FemtoDumpPairAnaMC::GenerateEvent() {
-    if (fLimitsN[0] > fBinLimit) return;
-    fLimitsN[0] += 100;
-    Double_t min   = fGrouping.GetMin();
-    Double_t max   = fGrouping.GetMax();
-    Double_t scale = 1.0;
-    if (fFrame == Femto::EKinematics::kLCMS) { scale = 0.5; }
-    min = min * scale;
-    max = max * scale;
-    TLorentzVector p1, p2;
-    Double_t x, y, z;
-    FemtoMicroPair* pair = nullptr;
-    auto build           = [&]() {
-      p1.SetXYZM(x, y, z, fM1);
-      p2.SetXYZM(-x, -y, -z, fM2);
-      p1.Boost(0.2, 0, 0.0);
-      p2.Boost(0.2, 0, 0.0);
-      pair->SetMomenta1(p1.X(), p1.Y(), p1.Z(), p1.E());
-      pair->SetTrueMomenta1(p1.X(), p1.Y(), p1.Z(), p1.E());
-      pair->SetMomenta2(p2.X(), p2.Y(), p2.Z(), p2.E());
-      pair->SetTrueMomenta2(p2.X(), p2.Y(), p2.Z(), p2.E());
-      pair->SetPdg1(fPid1);
-      pair->SetPdg2(fPid2);
-    };
-
-
-    if (fGrouping.GroupByKStar()) {
-      const Int_t defSize = 100;
-      for (int bin = 0; bin < fGrouping.GetNbins(); bin++) {
-        const Double_t kstar = fCentersX[bin] * scale;
-        fSignalPairs[bin]->ExpandCreateFast(defSize);
-        for (int i = 0; i < defSize; i++) {
-          pair = (FemtoMicroPair*) fSignalPairs[bin]->UncheckedAt(i);
-          gRandom->Sphere(x, y, z, kstar);
-          build();
-        }
-      }
-    } else {
-      const Int_t defSize = 1;
-      const int binY      = fCentersY.GetSize();
-      const int binX      = fCentersX.GetSize();
-      for (int bin = 0; bin < fGrouping.GetNbins(); bin++) {
-        fSignalPairs[bin]->ExpandCreateFast(defSize * binY * binX);
-        int count = 0;
-        for (int biny = 0; biny < binY; biny++) {
-          for (int binx = 0; binx < binX; binx++) {
-            pair = (FemtoMicroPair*) fSignalPairs[bin]->UncheckedAt(count++);
-            z    = fCentersZ[bin] * scale;
-            y    = fCentersY[biny] * scale;
-            x    = fCentersX[binx] * scale;
-            if (gRandom->Uniform() < 0.5) x = -x;
-            if (gRandom->Uniform() < 0.5) y = -y;
-            if (gRandom->Uniform() < 0.5) z = -z;
-            build();
-          }
-        }
-      }
-    } /* finished 3d generating*/
+  Int_t CorrFitPairGenerator::GetBin(Double_t val) const {
+    Int_t bin = (val - fLow) * fOverStep;
+    if (bin >= fLimitsN.GetSize()) return -1;
+    return bin;
   }
 
-
-  FemtoDumpPairAnaMC::~FemtoDumpPairAnaMC() {
+  CorrFitPairGenerator::~CorrFitPairGenerator() {
     if (fOutFile) { fOutFile->Close(); }
     if (fCF) delete fCF;
   }
 
-
-}  // namespace Hal
+} /* namespace Hal */

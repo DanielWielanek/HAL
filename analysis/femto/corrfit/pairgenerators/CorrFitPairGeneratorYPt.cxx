@@ -9,6 +9,7 @@
 
 #include "CorrFitPairGeneratorYPt.h"
 
+#include "FemtoCorrFuncKt.h"
 #include "FemtoMiniPair.h"
 
 #include <RtypesCore.h>
@@ -24,29 +25,8 @@
 #include <TTree.h>
 
 namespace Hal {
-  CorrFitPairGeneratorYPt::CorrFitPairGeneratorYPt() :
-    fBins(100),
-    fNEvents(10000),
-    fPid1(211),
-    fPid2(211),
-    fMultiplicity(1000),
-    fCutOff(10000),
-    fMin(0),
-    fMax(1),
-    fM1(0.),
-    fM2(0.),
-    fKt {0, 1E+9},
-    fRanges(nullptr),
-    fFile(nullptr),
-    fTree(nullptr),
-    fPair(nullptr),
-    fArray(nullptr) {}
+  CorrFitPairGeneratorYPt::CorrFitPairGeneratorYPt() : fKt {0, 1E+9} {}
 
-  void CorrFitPairGeneratorYPt::SetAxis(Int_t bins, Float_t min, Float_t max) {
-    fBins = bins;
-    fMin  = min;
-    fMax  = max;
-  }
 
   void CorrFitPairGeneratorYPt::SetHist(const TH2D& hist1, const TH2D& hist2) {
     hist1.Copy(fHist1);
@@ -58,42 +38,25 @@ namespace Hal {
   }
 
   Bool_t CorrFitPairGeneratorYPt::Init() {
+    bool val = CorrFitPairGenerator::Init();
+    if (!val) return val;
     fHist1.ResetStats();
     fHist2.ResetStats();
+    auto kt = dynamic_cast<Hal::FemtoCorrFuncKt*>(fCF);
+    if (kt) {
+      auto ktArr = kt->GetRange();
+      fKt[0]     = ktArr[0];
+      fKt[1]     = ktArr[ktArr.GetSize() - 1];
+      fKt[0]     = fKt[0] * fKt[0] * 4;
+      fKt[1]     = fKt[1] * fKt[1] * 4;
+    }
     if (fHist1.GetEntries() <= 0) return kFALSE;
-    if (fHist2.GetEntries() <= 0) return kFALSE;
-
-    fFile         = new TFile(fName, "recreate");
-    fTree         = new TTree("pairs", "pairs");
-    fArray        = new TClonesArray("Hal::FemtoMicroPair", fMultiplicity);
-    fRanges       = new Float_t[fBins + 1];
-    fPairsControl = TH1D("cutof", "cutof", fBins, fMin, fMax);
-    Float_t step  = (fMax - fMin) / ((Float_t) fBins);
-    for (float i = 0; i < fBins + 1; i++)
-      fRanges[((int) i)] = fMin + step * i;
-
-    fTree->Branch("FemtoSignal.", &fArray);
-    TDatabasePDG* pid = TDatabasePDG::Instance();
-    TParticlePDG* p1  = pid->GetParticle(fPid1);
-    TParticlePDG* p2  = pid->GetParticle(fPid2);
-    if (p1 == nullptr || p2 == nullptr) return kFALSE;
-    fM1 = p1->Mass();
-    fM2 = p2->Mass();
+    if (fHist2.GetEntries() <= 0) { fHist2 = fHist1; }
     return kTRUE;
   }
 
-  void CorrFitPairGeneratorYPt::Exec() {
-    for (int i = 0; i < fNEvents; i++) {
-      fArray->Clear();
-      for (int j = 0; j < fMultiplicity; j++) {
-        GeneratePair();
-      }
-      fTree->Fill();
-    }
-    fTree->Write();
-  }
+  Int_t CorrFitPairGeneratorYPt::GeneratePair() {
 
-  Bool_t CorrFitPairGeneratorYPt::GeneratePair() {
     Double_t pt1, pt2, y1, y2;
     fHist1.GetRandom2(y1, pt1);
     fHist2.GetRandom2(y2, pt2);
@@ -133,26 +96,32 @@ namespace Hal {
 
     Float_t tT = tX > 0. ? 1. : -1.;
     tT *= TMath::Sqrt(tY * tY + tX * tX + tZ * tZ);
-    Int_t bin = fPairsControl.GetXaxis()->FindBin(tT);
-    if (fPairsControl.GetBinContent(bin) < fCutOff) {
-      fPairsControl.Fill(tT);
-      fPair = (FemtoMicroPair*) fArray->ConstructedAt(fArray->GetEntriesFast());
-      fPair->SetPdg1(fPid1);
-      fPair->SetPdg2(fPid2);
-      fPair->SetTrueMomenta1(px1, py1, pz1, e1);
-      fPair->SetMomenta1(px1, py1, pz1, e1);
-      fPair->SetTrueMomenta2(px2, py2, pz2, e2);
-      fPair->SetMomenta2(px2, py2, pz2, e2);
-      return kTRUE;
-    }
-    return kFALSE;
+
+
+    fPair.SetPdg1(fPid1);
+    fPair.SetPdg2(fPid2);
+    fPair.SetTrueMomenta1(px1, py1, pz1, e1);
+    fPair.SetMomenta1(px1, py1, pz1, e1);
+    fPair.SetTrueMomenta2(px2, py2, pz2, e2);
+    fPair.SetMomenta2(px2, py2, pz2, e2);
+    Double_t scale = 1.0;
+    if (fFrame == Femto::EKinematics::kLCMS) scale = 2.0;  // from k*  to LCMS
+    if (fGroupByKstar) { return GetBin(tT * scale); }
+    return GetBin(tZ * scale);
   }
 
-  CorrFitPairGeneratorYPt::~CorrFitPairGeneratorYPt() {
-    if (fFile) {
-      fFile->Close();
-      delete fFile;
+  CorrFitPairGeneratorYPt::~CorrFitPairGeneratorYPt() {}
+
+  void CorrFitPairGeneratorYPt::GenerateEvent() {
+    for (int i = 0; i < 100; i++) {
+      int bin = GeneratePair();
+      if (bin < 0) continue;
+      if (fLimitsN[bin] > fBinLimit) continue;
+      auto array = fSignalPairs[bin];
+      auto pair  = (FemtoMicroPair*) array->ConstructedAt(array->GetEntriesFast());
+      fLimitsN.IncrementAfter(bin);
+      *pair = fPair;
     }
-    if (fRanges) delete[] fRanges;
   }
+
 }  // namespace Hal

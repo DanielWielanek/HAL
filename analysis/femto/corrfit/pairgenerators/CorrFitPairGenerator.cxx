@@ -39,36 +39,38 @@ namespace Hal {
     if (dummy->GetNum()->InheritsFrom("TH3")) {  // 3d histo group by q-long/ k-long
       fGrouping.SetGroupByKLong();
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "z");
-      fHi       = max;
-      fLow      = min;
-      fOverStep = (max - min) / ((double) bins);
       if (fDebug) fDebugHisto = new TH1D("debug", "debug", bins, min, max);
 
     } else {  // 1d histo group by k* qinv
       fGrouping.GroupByKStar();
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "x");
       if (fDebug) fDebugHisto = new TH1D("debug", "debug", bins, min, max);
-      fHi       = max;
-      fLow      = min;
-      fOverStep = (max - min) / ((double) bins);
     }
+    fHi       = max;
+    fLow      = min;
+    fOverStep = (max - min) / ((double) bins);
     fOverStep = 1.0 / fOverStep;
 
-    fFrame = Femto::EKinematics::kLCMS;
     if (dummy->GetLabelsNo() > 0) {
       TString label = dummy->GetLabel(0);
       fFrame        = Femto::LabelToKinematics(label);
     }
+    fHbtPair = Hal::Femto::MakePair(fFrame, true);
+
     TDatabasePDG* pid  = TDatabasePDG::Instance();
     TParticlePDG* pid1 = pid->GetParticle(fPid1);
     TParticlePDG* pid2 = pid->GetParticle(fPid2);
+    fHbtPair->SetPdg1(fPid1);
+    fHbtPair->SetPdg2(fPid2);
+    fHbtPair->Init(-1);
     if (!pid1) return kFALSE;
     if (!pid2) return kFALSE;
     fM1 = pid1->Mass();
     fM2 = pid2->Mass();
     fGrouping.SetFrame(fFrame);
     fGrouping.SetAxis(bins, min, max);
-    fLimitsN.MakeBigger(bins);
+    fNBins = bins;
+    fLimitsN.MakeBigger(bins + 1);
     fOutFile = new TFile(fFileName, "recreate");
     fOutTree = new TTree("HalTree", "Tree");
     fOutFile->mkdir("HalInfo");
@@ -132,18 +134,28 @@ namespace Hal {
     }
     fOutTree->Write();
     fOutFile->Close();
-    if (fDebug) {
-      fDebugHisto->Write();
-      delete fDebugHisto;
-      fDebugHisto = nullptr;
-    }
+
     delete fOutFile;
     fOutFile = nullptr;
+    if (fDebug) {
+      TFile* f = new TFile(Form("%s_debug.root", ClassName()), "recreate");
+      fDebugHisto->Write();
+      // delete fDebugHisto;
+      fDebugHisto = nullptr;
+      f->Close();
+      delete f;
+    }
   }
 
   Int_t CorrFitPairGenerator::GetBin(Double_t val) const {
-    Int_t bin = (val - fLow) * fOverStep;
-    if (bin >= fLimitsN.GetSize()) return -1;
+    Int_t bin = 0;
+    if (fLow == 0) {  // ignore sign automatically?
+      bin = TMath::Abs(val) * fOverStep;
+    } else {
+      bin = (val - fLow) * fOverStep;
+    }
+
+    if (bin >= fNBins) return -1;
     return bin;
   }
 

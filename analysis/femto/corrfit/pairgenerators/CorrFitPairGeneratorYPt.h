@@ -30,7 +30,7 @@ class TClonesArray;
 namespace Hal {
   class FemtoMicroPair;
   class CorrFitPairGeneratorYPt : public CorrFitPairGenerator {
-    Float_t fKt[2];
+    Float_t f2Kt2[2];
     TH2D fHist1, fHist2;
     FemtoMicroPair fPair;
     Int_t GeneratePair();
@@ -46,8 +46,8 @@ namespace Hal {
      * @param max
      */
     void SetKt(Double_t min, Double_t max) {
-      fKt[0] = min * min * 4.0;
-      fKt[1] = max * max * 4.0;
+      f2Kt2[0] = min * min * 4.0;
+      f2Kt2[1] = max * max * 4.0;
     };
     /**
      * histograms with pt-rapidity distribution, rapidity is on X-axis pt is on Y-axis

@@ -33,6 +33,7 @@ namespace Hal {
     Bool_t fDebug        = {kFALSE};
     Bool_t fGroupByKstar = {kTRUE};
     Int_t fPid1 = {0}, fPid2 = {0};
+    Int_t fNBins = {0};
     Double_t fM1 = {0}, fM2 = {0};
     Double_t fLow = {0}, fHi = {1};
     Double_t fOverStep        = {0};
@@ -42,6 +43,7 @@ namespace Hal {
     FemtoCorrFunc* fCF        = {nullptr};
     TTree* fOutTree           = {nullptr};
     TH1* fDebugHisto          = {nullptr};
+    Hal::FemtoPair* fHbtPair  = {nullptr};
     Femto::EKinematics fFrame = {Femto::EKinematics::kLCMS};
     Array_1<Double_t> fLimitsN;
     Array_1<Double_t> fCentersX;
@@ -56,7 +58,7 @@ namespace Hal {
     /**
      * enables debug histogram
      */
-    void Debug() { fDebug = kTRUE; }
+    void EnableDebug() { fDebug = kTRUE; }
     virtual Bool_t Init();
     /**
      * set PID code for identical particles

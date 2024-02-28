@@ -11,6 +11,7 @@
 #include "CorrFitMapGroupConfig.h"
 
 #include "Array.h"
+#include "Cout.h"
 #include "FemtoMiniPair.h"
 
 #include <RtypesCore.h>
@@ -79,6 +80,13 @@ namespace Hal {
         }
       }
     } /* finished 3d generating*/
+  }
+
+  Bool_t CorrFitPairGeneratorSimple::Init() {
+    auto val = CorrFitPairGenerator::Init();
+    if (fFrame != Hal::Femto::EKinematics::kPRF)
+      Hal::Cout::PrintInfo(Form("CorrFitPairGeneratorSimple works correctly only with PRF frame"), EInfo::kError);
+    return val;
   }
 
 } /* namespace Hal */

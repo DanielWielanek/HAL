@@ -11,7 +11,7 @@
 
 #include "CorrFitPairGenerator.h"
 /**
- * generate "simple" pairs - 100 pairs per bin per event
+ * generate "simple" pairs - 100 pairs per bin per event, NOTE - works correctly only for PRF system
  */
 
 namespace Hal {
@@ -24,7 +24,9 @@ namespace Hal {
     CorrFitPairGeneratorSimple() {};
     virtual ~CorrFitPairGeneratorSimple() {};
     ClassDef(CorrFitPairGeneratorSimple, 1)
-  };
+
+    virtual Bool_t Init();
+};
 
 } /* namespace Hal */
 

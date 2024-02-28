@@ -15,6 +15,7 @@
 /**
  * femtoscopic kinematics mode
  */
+class TVector3;
 namespace Hal {
   namespace Femto {
 
@@ -163,6 +164,14 @@ namespace Hal {
      * @param sigmar - std of freezout coordinate
      */
     void FillRandomPair(FemtoPair& p, Int_t pid1, Int_t pid2, Double_t sigmaq = 0.1, Double_t sigmar = 1);
+    /**
+     * fill pair with random kinematics
+     * @param p pair to fill
+     * @param sum total momentum of pair
+     * @param diff difference in pair (k* out/side/long or q out/side/long)
+     * @param kin rame - supported are LCMS and PRF
+     */
+    void FillRandomKinematics(FemtoPair& p, const TVector3& sum, const TVector3& diff, EKinematics kin);
     /**
      * return CF type if object can be convereted in CF
      * @param obj

@@ -27,7 +27,6 @@
 namespace Hal {
   CorrFitPairGeneratorYPt::CorrFitPairGeneratorYPt() : f2Kt2 {0, 1E+9} {}
 
-
   void CorrFitPairGeneratorYPt::SetHist(const TH2D& hist1, const TH2D& hist2) {
     hist1.Copy(fHist1);
     hist2.Copy(fHist2);

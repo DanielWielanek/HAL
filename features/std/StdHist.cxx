@@ -758,6 +758,30 @@ namespace Hal {
       }
     }
 
+    std::vector<double> GetAxisCenters(const TH1& obj, Option_t* opt) {
+      TString option = opt;
+      auto getAxis   = [](TString& opti, const TH1& hst) {
+        if (Hal::Std::FindParam(opti, "x", kTRUE)) { return hst.GetXaxis(); }
+        if (Hal::Std::FindParam(opti, "y", kTRUE)) { return hst.GetYaxis(); }
+        if (Hal::Std::FindParam(opti, "z", kTRUE)) { return hst.GetZaxis(); }
+        return (const TAxis*) nullptr;
+      };
+      auto axis = (const TAxis*) getAxis(option, obj);
+      if (axis == nullptr) return std::vector<double>();
+
+      int bins = axis->GetNbins();
+      std::vector<double> vec;
+      int startbin = 1;
+      if (Hal::Std::FindParam(option, "o", kTRUE)) {
+        startbin = 0;
+        bins++;
+      }
+      for (int i = startbin; i <= bins; i++) {
+        vec.push_back(axis->GetBinCenter(i));
+      }
+      return vec;
+    }
+
     namespace {  // anonymous namespace this is for computing axes of histogram
 
       std::vector<int> FoldAxis(const TAxis& x, Double_t val) {

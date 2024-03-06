@@ -55,7 +55,8 @@ namespace Hal {
       fMin[i]      = par->GetAttrib("min")->GetValue().Atof();
       fMax[i]      = par->GetAttrib("max")->GetValue().Atof();
       double step  = par->GetAttrib("step")->GetValue().Atof();
-      fNpoints[i]  = (fMax[i] - fMin[i]) / double(step) + 1;
+      fNpoints[i]  = TMath::Ceil((fMax[i] - fMin[i]) / double(step)) + 1;
+      fMax[i]      = double(fNpoints[i]) * step;
       fNames[i]    = par->GetAttrib("name")->GetValue();
     }
   }

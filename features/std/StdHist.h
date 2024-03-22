@@ -148,6 +148,13 @@ namespace Hal {
      */
     void GetAxisPar(const TH1& obj, Int_t& nbins, Double_t& min, Double_t& xmax, Option_t* opt = "x");
     /**
+     *
+     * @param obj
+     * @param opt parameter x y or z for given axis if o - include also overflow/underflow bins
+     * @return array with get bin center valvues for given axis
+     */
+    std::vector<double> GetAxisCenters(const TH1& obj, Option_t* opt = "x");
+    /**
      * create new histogram
      * @param name
      * @param title

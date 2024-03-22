@@ -279,24 +279,21 @@ namespace Hal {
                                            Bool_t scale,
                                            EMinFunc algo) const {
     // TF1 *func = GetFittingFunction("TF");
-    if (IsParDiscrete(par1)) {
-      par1_min = Hal::Std::Discretize(
-        fParameters[par1].GetNPoints(), fParameters[par1].GetMapMin(), fParameters[par1].GetMapMax(), par1_min, '-');
-      par1_max = Hal::Std::Discretize(
-        fParameters[par1].GetNPoints(), fParameters[par1].GetMapMin(), fParameters[par1].GetMapMax(), par1_max, '+');
-      if (par1_min < fParameters[par1].GetMapMin()) { par1_min = fParameters[par1].GetMapMin(); }
-      if (par1_max > fParameters[par1].GetMapMax()) { par1_max = fParameters[par1].GetMapMax(); }
-      par1_steps = (par1_max - par1_min) / fParameters[par1].GetDParam() + 1.;
-    }
-    if (IsParDiscrete(par2)) {
-      par2_min = Hal::Std::Discretize(
-        fParameters[par2].GetNPoints(), fParameters[par2].GetMapMin(), fParameters[par2].GetMapMax(), par2_min, '-');
-      par1_max = Hal::Std::Discretize(
-        fParameters[par2].GetNPoints(), fParameters[par2].GetMapMin(), fParameters[par2].GetMapMax(), par2_max, '+');
-      if (par2_min < fParameters[par2].GetMapMin()) { par2_min = fParameters[par2].GetMapMin(); }
-      if (par2_max > fParameters[par2].GetMapMax()) { par2_max = fParameters[par2].GetMapMax(); }
-      par2_steps = (par2_max - par2_min) / fParameters[par2].GetDParam() + 1.;
-    }
+    auto testParam = [&](Int_t par, Int_t& step, Double_t& min, Double_t& max) {
+      auto& parval = fParameters[par];
+      min          = Std::Discretize(parval.GetNPoints() - 1, parval.GetMapMin(), parval.GetMapMax(), min, '-');
+      max          = Std::Discretize(parval.GetNPoints() - 1, parval.GetMapMin(), parval.GetMapMax(), max, '+');
+      if (min < parval.GetMapMin()) min = parval.GetMapMin();
+      if (max > parval.GetMapMax()) max = parval.GetMapMax();
+      double step_size = parval.GetDParam();
+      min -= step_size * 0.5;
+      max += step_size * 0.5;
+      step = std::round((max - min) / parval.GetDParam());
+    };
+
+
+    if (IsParDiscrete(par1)) { testParam(par1, par1_steps, par1_min, par1_max); }
+    if (IsParDiscrete(par2)) { testParam(par2, par2_steps, par2_min, par2_max); }
 
     Double_t* params = new Double_t[GetParametersNo()];
     TString var;

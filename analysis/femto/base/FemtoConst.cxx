@@ -590,6 +590,7 @@ namespace Hal {
       }
       return "";
     }
+
     void FillRandomPair(FemtoPair& p, Int_t pid1, Int_t pid2, Double_t sigmaq, Double_t sigmar) {
       auto pdg    = TDatabasePDG::Instance();
       Double_t m1 = pdg->GetParticle(pid1)->Mass();
@@ -603,6 +604,46 @@ namespace Hal {
       TLorentzVector x1(rgaus(sigmar), rgaus(sigmar), rgaus(sigmar), 0);
       TLorentzVector x2(rgaus(sigmar), rgaus(sigmar), rgaus(sigmar), 0);
       p.SetFreezouts(x1, x2);
+    }
+
+    void FillRandomKinematics(FemtoPair& p, const TVector3& sum, const TVector3& diff, EKinematics kin) {
+      Double_t m1 = p.GetM1();
+      Double_t m2 = p.GetM2();
+      Double_t ms = m1 + m2;
+      TLorentzVector summ(sum.X(), sum.Y(), sum.Z(), TMath::Sqrt(ms * ms + sum.Mag2()));
+      auto summ2  = summ;
+      Double_t vz = summ.Z() / summ.E();
+      summ.Boost(0, 0, -vz);
+      Double_t phi = summ.Phi();
+      switch (kin) {
+        case EKinematics::kLCMS: {
+          TLorentzVector p1(diff.X() * 0.5, diff.Y() * 0.5, diff.Z() * 0.5, TMath::Sqrt(m1 * m1 + diff.Mag2() * 0.25));
+          TLorentzVector p2(-diff.X() * 0.5, -diff.Y() * 0.5, -diff.Z() * 0.5, TMath::Sqrt(m2 * m2 + diff.Mag2() * 0.25));
+          p1.Boost(0, 0, vz);
+          p2.Boost(0, 0, vz);
+          p1.RotateZ(phi);
+          p2.RotateZ(phi);
+          p.SetTrueMomenta(p1, p2);
+          p.SetMomenta(p1, p2);
+        } break;
+        case EKinematics::kPRF: {
+          TLorentzVector p1(diff.X(), diff.Y(), diff.Z(), TMath::Sqrt(m1 * m1 + diff.Mag2()));
+          TLorentzVector p2(-diff.X(), -diff.Y(), -diff.Z(), TMath::Sqrt(m2 * m2 + diff.Mag2()));
+          Double_t ptboost = summ.BoostVector().Pt();
+          p1.Boost(ptboost, 0, 0);
+          p2.Boost(ptboost, 0, 0);
+          p1.Boost(0, 0, vz);
+          p2.Boost(0, 0, vz);
+          p1.RotateZ(phi);
+          p2.RotateZ(phi);
+          p.SetTrueMomenta(p1, p2);
+          p.SetMomenta(p1, p2);
+        } break;
+        default: {
+          std::cout << __FILE__ << " " << __LINE__ << " unsupported frame" << std::endl;
+          break;
+        }
+      }
     }
 
     /**

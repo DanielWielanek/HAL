@@ -139,6 +139,10 @@ namespace Hal {
         // RadiusFor1D[0]          = Rinv * TMath::Sqrt(3);
         Double_t refWeight = 1;  // 1.0 / sourceModelntegrated->GetProbDensity3d(Radius, nullptr);
         refWeight          = 1.0 / densityIntegratedModel->GetProbDensity1d(Rinv, nullptr);
+        if (TMath::IsNaN(refWeight)) {
+          i--;
+          continue;
+        }
         // std::cout << "\t" << std::endl;
         for (int r_bin = 0; r_bin < fRBins; r_bin++) {
           Double_t R         = fRadiiBins[r_bin];

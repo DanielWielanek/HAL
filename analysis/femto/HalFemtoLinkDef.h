@@ -54,6 +54,7 @@
 #pragma link C++ class Hal::CorrFitPairGenerator + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorSimple + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorYPt + ;
+#pragma link C++ class Hal::CorrFitPairGeneratorYPtStubborn + ;
 
 #pragma link C++ class Hal::Femto1DCF + ;
 #pragma link C++ class Hal::Femto3DCF + ;

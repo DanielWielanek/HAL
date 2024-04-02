@@ -31,7 +31,7 @@ namespace HalOTF {
     fSpectras(nullptr),
     fOwner(kFALSE),
     fRegister(kFALSE),
-    fMultiplicity(1),
+    fMultiplicity(nullptr),
     fPids(211),
     fCharge(1),
     fMass(0),
@@ -54,7 +54,7 @@ namespace HalOTF {
     return Hal::Task::EInitFlag::kSUCCESS;
   }
 
-  void Reader::SetSpiecies(const TH2D& h, Int_t pid, Double_t w) {
+  void Reader::SetSpiecies(const TH2D& h, Int_t pid) {
     TH2D* copy         = (TH2D*) h.Clone();
     TDatabasePDG* pdg  = TDatabasePDG::Instance();
     TParticlePDG* part = pdg->GetParticle(pid);
@@ -63,17 +63,19 @@ namespace HalOTF {
       return;
     }
     copy->SetDirectory(nullptr);
-    fSpectras     = copy;
-    fPids         = pid;
-    fMass         = part->Mass();
-    fMultiplicity = w;
-    fCharge       = part->Charge() * 3;
+    fSpectras = copy;
+    fPids     = pid;
+    fMass     = part->Mass();
+    fCharge   = part->Charge() * 3;
   }
 
   void Reader::Exec(Option_t* /*opt*/) {
     PrepareTables();
-    Int_t shift = fMcEvent->GetNTracks();
-    for (int i = 0; i < fMultiplicity; i++) {
+    Int_t shift   = fMcEvent->GetNTracks();
+    fCurrrentMult = fFixedMultiplicity;
+    if (fMultiplicity) fCurrrentMult = fMultiplicity->GetRandom();
+
+    for (int i = 0; i < fCurrrentMult; i++) {
       Double_t pt, y;
       fSpectras->GetRandom2(y, pt);
       Double_t mt  = TMath::Sqrt(pt * pt + fMass * fMass);
@@ -110,6 +112,7 @@ namespace HalOTF {
       if (fMcEvent) delete fMcEvent;
       if (fRecoEvent) delete fRecoEvent;
     }
+    if (fMultiplicity) delete fMultiplicity;
   }
 
   void Reader::PrepareTables() {
@@ -117,6 +120,18 @@ namespace HalOTF {
       fRecoEvent->Clear();
       fMcEvent->Clear();
     }
+  }
+
+  void Reader::SetMultHisto(TH1D& h) {
+    if (fMultiplicity) delete fMultiplicity;
+    fMultiplicity = (TH1D*) h.Clone();
+    fMultiplicity->SetDirectory(nullptr);
+  }
+
+  void Reader::SetFixMult(Int_t mult) {
+    fFixedMultiplicity = mult;
+    if (fMultiplicity) delete fMultiplicity;
+    fMultiplicity = nullptr;
   }
 
 }  // namespace HalOTF

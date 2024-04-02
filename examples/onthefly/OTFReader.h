@@ -30,12 +30,14 @@ namespace HalOTF {
 namespace HalOTF {
   class Reader : public Hal::Reader {
   protected:
-    TH2D* fSpectras;
+    TH2D* fSpectras     = {nullptr};
+    TH1D* fMultiplicity = {nullptr};
     Bool_t fOwner;
     Bool_t fRegister;
-    Int_t fMultiplicity;
+    Int_t fFixedMultiplicity = {-1};
     Int_t fPids;
     Int_t fCharge;
+    Int_t fCurrrentMult = {0};
     Double_t fMass;
     Double_t fSmear;
     OTF::McEvent* fMcEvent;
@@ -53,7 +55,14 @@ namespace HalOTF {
      * @param pid pid of particle
      * @param m multiplicity
      */
-    void SetSpiecies(const TH2D& h, Int_t pid, Double_t multiplicity);
+    void SetSpiecies(const TH2D& h, Int_t pid);
+    /**
+     * set multiplicity histogram
+     * @param h
+     */
+    void SetMultHisto(TH1D& h);
+    /** fixes multiplicity  */
+    void SetFixMult(Int_t mult);
     void SetSmear(Double_t smear) { fSmear = smear; }
     void Register(Bool_t reg) { fRegister = reg; }
     virtual void Exec(Option_t* opt);

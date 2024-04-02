@@ -116,6 +116,7 @@ twotrackcuts/detector/TwoTrackRadialDistanceCut.cxx
 twotrackcuts/TwoTrackDebugCut.cxx
 twotrackcuts/mc/TwoTrackFemtoPRFCut.cxx
 twotrackcuts/mc/PdgBinPairCut.cxx
+twotrackcuts/mc/SameMotherMcCut.cxx
 twotrackcuts/TwoTrackVirtualCut.cxx
 #CUT MONITORS
 cutmonitors/CutMonitor.cxx

@@ -21,6 +21,7 @@
 #pragma link C++ class HalOTF::McTrack + ;
 #pragma link C++ class HalOTF::McEventInterface + ;
 #pragma link C++ class HalOTF::Reader + ;
+#pragma link C++ class HalOTF::ReaderDecay + ;
 #pragma link C++ class HalOTF::RecoEvent + ;
 #pragma link C++ class HalOTF::RecoTrack + ;
 #pragma link C++ class HalOTF::RecoEventInterface + ;

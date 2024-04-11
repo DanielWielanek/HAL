@@ -82,8 +82,12 @@ namespace Hal {
     if (start > fManager->GetEntries()) { start = fManager->GetEntries(); }
     if (end > fManager->GetEntries()) { end = fManager->GetEntries(); }
     Cout::PrintInfo(Form("Run from %i to %i events", start, end), EInfo::kInfo);
+    Int_t percent = (end - start) / 100;
     for (int i = start; i < end; i++) {
       ++fProcessedEvents;
+      if (fProgressBar) {
+        if (fProcessedEvents % percent == 1) Hal::Cout::ProgressBar(fProcessedEvents, end - start);
+      }
       DoStep(i);
       fManager->FillTree();
     }

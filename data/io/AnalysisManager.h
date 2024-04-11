@@ -26,6 +26,7 @@ namespace Hal {
   class AnalysisManager : public TObject {
     UInt_t fProcessedEvents = {0};
     Bool_t fTriggersEnabled = {kFALSE};
+    Bool_t fProgressBar     = {kFALSE};
     MagField* fField        = {nullptr};
     Source* fSource         = {nullptr};
     TString fOutputFile;
@@ -42,6 +43,10 @@ namespace Hal {
 
   public:
     AnalysisManager();
+    /**
+     * enables progress bar
+     */
+    void EnableProgressBar() { fProgressBar = kTRUE; }
     /**
      * add reader task - it's guaranteed that reader will be set as a first task after the triggers
      * @param reader

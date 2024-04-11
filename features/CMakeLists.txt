@@ -58,6 +58,7 @@ hist/Splines.cxx
 hist/ChiSqMap2D.cxx
 hist/FastHist.cxx
 hist/Style.cxx
+hist/CorrelationHisto.cxx
 
 std/StdHist.cxx
 std/StdString.cxx

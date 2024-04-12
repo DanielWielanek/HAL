@@ -64,6 +64,12 @@ namespace Hal {
      * @return
      */
     Double_t TotalSys(Int_t prec = 4) const;
+    /**
+     * return error by eq = sqrt(err[0]^2+err[1]^2+...)
+     * @param errs
+     * @return
+     */
+    static Double_t SumError(std::initializer_list<Double_t> errs);
     virtual ~ErrorCalc() = default;
     ClassDef(ErrorCalc, 0)
   };

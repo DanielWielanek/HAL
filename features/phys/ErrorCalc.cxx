@@ -109,4 +109,13 @@ namespace Hal {
     return TMath::Sqrt(total);
   }
 
+  Double_t ErrorCalc::SumError(std::initializer_list<Double_t> errs) {
+    auto vec  = Hal::Std::GetVector(errs);
+    double sq = 0;
+    for (auto el : vec) {
+      sq += el * el;
+    }
+    return TMath::Sqrt(sq);
+  }
+
 } /* namespace Hal */

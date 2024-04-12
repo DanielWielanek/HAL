@@ -64,6 +64,7 @@
 
 #pragma link C++ class Hal::CorrFit + ;
 #pragma link C++ class Hal::CorrFitFunc + ;
+#pragma link C++ class Hal::CorrFitFunc3D + ;
 #pragma link C++ class Hal::CorrFitMath1DCF + ;
 #pragma link C++ class Hal::CorrFit1DCF_Sum + ;
 #pragma link C++ class Hal::CorrFit1DCF_SumRsame + ;

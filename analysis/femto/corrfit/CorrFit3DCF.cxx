@@ -37,39 +37,25 @@
 #include "StdString.h"
 
 namespace Hal {
-  const Int_t CorrFit3DCF::fgRout   = 0;
-  const Int_t CorrFit3DCF::fgRside  = 1;
-  const Int_t CorrFit3DCF::fgRlong  = 2;
-  const Int_t CorrFit3DCF::fgLambda = 3;
-  const Int_t CorrFit3DCF::fgNorm   = 4;
-
-  CorrFit3DCF::CorrFit3DCF(Int_t parameters) :
-    CorrFitFunc(parameters, 3),
-    fXbins(NULL),
-    fYbins(NULL),
-    fZbins(NULL),
-    fXBinf(0),
-    fYBinf(0),
-    fZBinf(0),
-    fXAxisf(0),
-    fYAxisf(0),
-    fZAxisf(0) {
+  CorrFit3DCF::CorrFit3DCF(e3DMode mode, Int_t parameters) : CorrFitFunc3D(mode, parameters, 3) {
     for (int i = 0; i < 3; i++) {
       fRange[2 * i]     = 0;
       fRange[2 * i + 1] = 1.0;
     }
-    SetParameterName(Rout(), "R_{out}");
-    SetParameterName(Rside(), "R_{side}");
-    SetParameterName(Rlong(), "R_{long}");
     if (parameters < 3) {
       Cout::PrintInfo(Form("%s must have at least 3 parameters", this->ClassName()), EInfo::kWarning);
       return;
     }
-    if (parameters > 3) fParameters[3].SetParName("#lambda");
-    if (parameters > 4) fParameters[4].SetParName("N");
     fXbins = new Array_1<Double_t>(1);
     fYbins = new Array_1<Double_t>(1);
     fZbins = new Array_1<Double_t>(1);
+    if (parameters > 3) fParameters[3].SetParName("#lambda");
+    if (parameters > 4) fParameters[4].SetParName("N");
+  }
+  CorrFit3DCF::CorrFit3DCF(Int_t parameters) : CorrFit3DCF(e3DMode::kNormal3R, parameters) {
+    SetParameterName(Routidx(), "R_{out}");
+    SetParameterName(Rsideidx(), "R_{side}");
+    SetParameterName(Rlongidx(), "R_{long}");
   }
 
   Double_t CorrFit3DCF::EvalDenominator(Double_t x, Double_t y, Double_t z) const {
@@ -228,7 +214,7 @@ namespace Hal {
         }
         fDrawHistograms[pad - 1]->Draw("same");
       }
-      if (fDrawOptions.AutoNorm()) { f.first->SetParameter(Norm(), 1); }
+      if (fDrawOptions.AutoNorm()) { f.first->SetParameter(Normidx(), 1); }
       f.first->Draw("SAME");
 
       f.second = gPad;

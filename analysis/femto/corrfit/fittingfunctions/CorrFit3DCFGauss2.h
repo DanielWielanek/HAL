@@ -31,42 +31,42 @@ namespace Hal {
      *
      * @return id of parameter R-out-1
      */
-    inline static Int_t Rout1() { return Rout(); };
+    inline Int_t Rout1() const { return Routidx(); };
     /**
      *
      * @return id of parameter R-out-2
      */
-    inline static Int_t Rout2() { return fgRout2; };
+    inline Int_t Rout2() const { return fgRout2; };
     /**
      *
      * @return id of parameter R-side-1
      */
-    inline static Int_t Rside1() { return Rside(); };
+    inline Int_t Rside1() const { return Rsideidx(); };
     /**
      *
      * @return id of parameter R-side2
      */
-    inline static Int_t Rside2() { return fgRside2; };
+    inline Int_t Rside2() const { return fgRside2; };
     /**
      *
      * @return id of parameter R-long1
      */
-    inline static Int_t Rlong1() { return Rlong(); };
+    inline Int_t Rlong1() const { return Rlongidx(); };
     /**
      *
      * @return id of parameter R-long2
      */
-    inline static Int_t Rlong2() { return fgRlong2; };
+    inline Int_t Rlong2() const { return fgRlong2; };
     /**
      *
      * @return id of paramter lambda1
      */
-    inline static Int_t Lambda1() { return Lambda(); };
+    inline Int_t Lambda1() const { return Lambdaidx(); };
     /**
      *
      * @return id of lambda2
      */
-    inline static Int_t Lambda2() { return fgLambda2; }
+    inline Int_t Lambda2() const { return fgLambda2; }
     virtual ~CorrFit3DCF_Gauss2();
     ClassDef(CorrFit3DCF_Gauss2, 1)
   };

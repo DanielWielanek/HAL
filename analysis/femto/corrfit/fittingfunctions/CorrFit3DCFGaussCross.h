@@ -17,9 +17,6 @@
 
 namespace Hal {
   class CorrFit3DCF_GaussCross : public CorrFit3DCF {
-    static const Int_t fgRoutlong;
-    static const Int_t fgRoutside;
-    static const Int_t fgRsidelong;
 
   protected:
     Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
@@ -30,17 +27,17 @@ namespace Hal {
      *
      * @return number of parameter R-out-long
      */
-    inline static Int_t Routlong() { return fgRoutlong; };
+    inline Int_t Routlong() const { return Routlongidx(); };
     /**
      *
      * @return number of parameter R-out-side
      */
-    inline static Int_t Routside() { return fgRoutside; };
+    inline Int_t Routside() const { return Routsideidx(); };
     /**
      *
      * @return number of parameter R-side-long
      */
-    inline static Int_t Rsidelong() { return fgRsidelong; };
+    inline Int_t Rsidelong() const { return Rsidelongidx(); };
     virtual ~CorrFit3DCF_GaussCross();
     ClassDef(CorrFit3DCF_GaussCross, 1)
   };

@@ -17,7 +17,7 @@ namespace Hal {
   const Int_t CorrFit3DCF_Gauss2::fgLambda2 = 8;
 
   CorrFit3DCF_Gauss2::CorrFit3DCF_Gauss2() : CorrFit3DCF(9) {
-    SetParameterName(Norm(), "Norm");
+    SetParameterName(Normidx(), "Norm");
     SetParameterName(Lambda1(), "#Lambda_{1}");
     SetParameterName(Lambda2(), "#Lambda_{2}");
     SetParameterName(Rout1(), "R_{out1}");
@@ -29,16 +29,16 @@ namespace Hal {
   }
 
   Double_t CorrFit3DCF_Gauss2::CalculateCF(const Double_t* x, const Double_t* params) const {
-    return params[Norm()]
+    return params[Normidx()]
            * (1.0
-              + params[Lambda1()]
+              + params[this->Lambda1()]
                   * TMath::Exp(-Femto::FmToGeV() * Femto::FmToGeV()
-                               * (TMath::Power(x[0] * params[Rout1()], 2) + TMath::Power(x[1] * params[Rside1()], 2)
-                                  + TMath::Power(x[2] * params[Rlong1()], 2)))
-              + params[Lambda2()]
+                               * (TMath::Power(x[0] * params[this->Rout1()], 2) + TMath::Power(x[1] * params[this->Rside1()], 2)
+                                  + TMath::Power(x[2] * params[this->Rlong1()], 2)))
+              + params[this->Lambda2()]
                   * TMath::Exp(-Femto::FmToGeV() * Femto::FmToGeV()
-                               * (TMath::Power(x[0] * params[Rout2()], 2) + TMath::Power(x[1] * params[Rside2()], 2)
-                                  + TMath::Power(x[2] * params[Rlong2()], 2))));
+                               * (TMath::Power(x[0] * params[this->Rout2()], 2) + TMath::Power(x[1] * params[this->Rside2()], 2)
+                                  + TMath::Power(x[2] * params[this->Rlong2()], 2))));
   }
 
   CorrFit3DCF_Gauss2::~CorrFit3DCF_Gauss2() {}

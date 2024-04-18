@@ -29,9 +29,9 @@
 namespace Hal {
   void CorrFit3DCFMultiDim::RecalculateFunction() const {
     Double_t pars[3];
-    pars[0] = fTempParamsEval[Routidx()];
-    pars[1] = fTempParamsEval[Rsideidx()];
-    pars[2] = fTempParamsEval[Rlongidx()];
+    pars[0] = fTempParamsEval[Rout()];
+    pars[1] = fTempParamsEval[Rside()];
+    pars[2] = fTempParamsEval[Rlong()];
     fData   = fFunctor->GetData(pars);
   }
 
@@ -39,7 +39,7 @@ namespace Hal {
     /**calcuclate bin in flat array **/
     Double_t bin = (fBinX - 1) * fFunctorXbins * fFunctorYbins + (fBinY - 1) * fFunctorYbins + fBinZ - 1;
     Double_t num = fData->Get(bin) - 1.0;
-    return params[Normidx()] * (1.0 + num * params[Lambdaidx()]);
+    return params[Norm()] * (1.0 + num * params[Lambda()]);
   }
 
   CorrFit3DCFMultiDim::CorrFit3DCFMultiDim(Int_t params) : CorrFit3DCF(params) { fMinAlgo = EMinAlgo::kMinimizerScan; }

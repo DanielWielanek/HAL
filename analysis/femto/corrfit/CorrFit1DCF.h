@@ -28,9 +28,9 @@ namespace Hal {
 
   private:
     Double_t EvalDenominator(Double_t x) const;
-    static const Int_t fgRinv;
-    static const Int_t fgLambda;
-    static const Int_t fgNorm;
+    Int_t fRinvParIndex   = {0};
+    Int_t fLambdaParIndex = {1};
+    Int_t fNormParIndex   = {2};
 
   protected:
     /**
@@ -154,17 +154,17 @@ namespace Hal {
      *
      * @return param number that correspond to radii
      */
-    inline static Int_t Radius() { return fgRinv; };
+    inline Int_t Radius() const { return fRinvParIndex; };
     /**
      *
      * @return param number that correspond to lambda
      */
-    inline static Int_t Lambda() { return fgLambda; };
+    inline Int_t Lambda() const { return fLambdaParIndex; };
     /**
      *
      * @return param number that correspond to norm
      */
-    inline static Int_t Norm() { return fgNorm; };
+    inline Int_t Norm() const { return fNormParIndex; };
     virtual ~CorrFit1DCF();
     ClassDef(CorrFit1DCF, 1)
   };

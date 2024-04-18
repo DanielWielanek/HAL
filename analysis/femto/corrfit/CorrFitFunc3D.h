@@ -28,14 +28,7 @@ namespace Hal {
   protected:
     enum class e3DMode { kNormal3R, kRatio3R, kNormal6R, kRatio6R, kPlus3R, kPlus6R };
     const e3DMode fMode;
-    inline Int_t Routidx() const { return fRoutParIndex; };
-    inline Int_t Rsideidx() const { return fRsideParIndex; }
-    inline Int_t Rlongidx() const { return fRlongParIndex; }
-    inline Int_t Routsideidx() const { return fRoutsideParIndex; }
-    inline Int_t Routlongidx() const { return fRoutlongParIndex; }
-    inline Int_t Rsidelongidx() const { return fRsidelongParIndex; }
-    inline Int_t Lambdaidx() const { return fLambdaParIndex; }
-    inline Int_t Normidx() const { return fNormParIndex; }
+
 
   public:
     CorrFitFunc3D(e3DMode mode = e3DMode::kNormal3R, Int_t par = -1, Int_t dim = 1);
@@ -94,19 +87,19 @@ namespace Hal {
      * @param min
      * @param max
      */
-    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(Normidx(), min, max); }
+    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(Norm(), min, max); }
     /**
      * set lambda limits
      * @param min
      * @param max
      */
-    void SetLambdaLimits(Double_t min, Double_t max) { SetParLimits(Lambdaidx(), min, max); }
+    void SetLambdaLimits(Double_t min, Double_t max) { SetParLimits(Lambda(), min, max); }
     /**
      * set limits of r-out
      * @param min
      * @param max
      */
-    void SetRoutLimits(Double_t min, Double_t max) { SetParLimits(Routidx(), min, max); }
+    void SetRoutLimits(Double_t min, Double_t max) { SetParLimits(Rout(), min, max); }
     /**
      * set limits of r-side
      * @param min
@@ -119,6 +112,46 @@ namespace Hal {
      * @param max
      */
     void SetRlongLimits(Double_t min, Double_t max);
+    /**
+     *
+     * @return id of rout parameter
+     */
+    inline Int_t Rout() const { return fRoutParIndex; };
+    /**
+     *
+     * @return id of rside parameter (or similar parameter)
+     */
+    inline Int_t Rside() const { return fRsideParIndex; }
+    /**
+     *
+     * @return id of rlong parameter (or similar parameter)
+     */
+    inline Int_t Rlong() const { return fRlongParIndex; }
+    /**
+     *
+     * @return id of rout-side parameter (if available)
+     */
+    inline Int_t Routside() const { return fRoutsideParIndex; }
+    /**
+     *
+     * @return id of rout-side parameter (if available)
+     */
+    inline Int_t Routlong() const { return fRoutlongParIndex; }
+    /**
+     *
+     * @return id of rside-long parameter (if available)
+     */
+    inline Int_t Rsidelong() const { return fRsidelongParIndex; }
+    /**
+     *
+     * @return id of lambda parameter (if available)
+     */
+    inline Int_t Lambda() const { return fLambdaParIndex; }
+    /**
+     *
+     * @return id of normalization parameter (if available)
+     */
+    inline Int_t Norm() const { return fNormParIndex; }
     virtual ~CorrFitFunc3D() {};
     ClassDef(CorrFitFunc3D, 1)
   };

@@ -34,6 +34,7 @@
 #include <TMathBase.h>
 #include <TRegexp.h>
 #include <TVirtualPad.h>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -177,6 +178,8 @@ namespace Hal {
       static_cast<Minimizer*>(min)->SetMinimizerType(opt2);
       PrepareMinimizer();
       custom_minimizer = kTRUE;
+      //}else if(fMinAlgo==kTwoStepAlgo){
+      //
     } else {
       min = ROOT::Math::Factory::CreateMinimizer(opt1.Data(), opt2.Data());
     }
@@ -572,6 +575,117 @@ namespace Hal {
         min->SetLimitedVariable(i, Param.GetParName().Data(), Param.GetMin(), step, Param.GetMin(), Param.GetMax());
       }
     }
+  }
+
+  void CorrFitFunc::PreFit(TObject* histo, Double_t bins) {
+    if (histo == fCF) {
+      Prepare();
+    } else {
+      fCF = histo;
+      PrepareRaw();
+    }
+    // checking ranges &other stuff
+    Check();
+    // set par names depending on frame
+    // init params
+    for (unsigned int i = 0; i < fParameters.size(); i++) {
+      fParameters[i].Init();
+    }
+    EstimateActiveBins();
+    if (fMinAlgo == kDefaultAlgo) fMinAlgo = kMinuitScan;
+    NumericalPreMinimization(bins);
+  }
+
+  void CorrFitFunc::NumericalPreMinimization(Double_t bins) {
+    ROOT::Math::Minimizer* min = nullptr;
+    auto setPars               = [&](ROOT::Math::Minimizer* minn) {
+      minn->SetMaxFunctionCalls(fMaxIterations);
+      minn->SetMaxIterations(fMaxIterations);
+      minn->SetTolerance(fTolerance);
+    };
+
+    CheckOrder();
+
+    min = Minimizer::Instance();
+    static_cast<Minimizer*>(min)->SetMinimizerType("scan");
+    PrepareMinimizer();
+
+
+    setPars(min);
+    Double_t free_parameters = 0;
+    for (int i = 0; i < GetParametersNo(); i++) {
+      if (!fParameters[i].IsFixed()) free_parameters++;
+    }
+    fNDF      = fActiveBins - free_parameters;
+    auto minx = static_cast<Minimizer*>(min);
+    minx->SetNDF(fNDF);
+
+    ROOT::Math::Functor f;
+    switch (fMinFunc) {
+      case kChi: f = ROOT::Math::Functor(this, &CorrFitFunc::FunctorChiTFD, GetParametersNo()); break;
+      case kChi2: f = ROOT::Math::Functor(this, &CorrFitFunc::FunctorChiTF, GetParametersNo()); break;
+      case kLog: f = ROOT::Math::Functor(this, &CorrFitFunc::FunctorLogTFD, GetParametersNo()); break;
+      default: f = ROOT::Math::Functor(this, &CorrFitFunc::FunctorChiTFD, GetParametersNo()); break;
+    }
+    min->SetFunction(f);
+
+    min->Minimize();
+    const double* parameters = min->X();
+    if (bins == 0) {
+      for (int i = 0; i < GetParametersNo(); i++) {
+        if (!fParameters[i].IsFixed()) {
+          std::cout << "Estimated minimum of parameter " << fParameters[i].GetName() << " is " << Form("%4.4f", parameters[i]);
+        }
+      }
+    } else if (bins > 0) {
+      double scale = bins;
+      for (int i = 0; i < GetParametersNo(); i++) {
+        if (!fParameters[i].IsFixed()) {
+          FitParam p = minx->GetParConf(i);
+          p.Init();
+          double dx = p.GetDParam();
+          SetParLimits(i, parameters[i] - scale * dx, parameters[i] + scale * dx);
+          std::cout << "PRESCALED " << p.GetParName() << " " << (parameters[i] - scale * dx) << " "
+                    << (parameters[i] + scale * dx) << std::endl;
+        }
+      }
+    } else if (bins < 0) {
+      for (int i = 0; i < GetParametersNo(); i++) {
+        if (!fParameters[i].IsFixed()) {
+          FitParam p = minx->GetParConf(i);
+          p.Init();
+          double dx = p.GetDParam();
+          SetParLimits(i, parameters[i] - dx, parameters[i] + dx);
+          MinimizerStepConf conf;
+          double npoints = dx / bins + 1;
+          conf.ConfigureParameter(p.GetParName(), npoints, parameters[i] - dx, parameters[i] + dx);
+          minx->SetParamConf(conf);
+        }
+      }
+    }
+    //=== COPY FROM NUMERICAL FUNCTION TO "FITTED" FUNCTION
+    for (int i = 0; i < GetParametersNo(); i++) {
+      int to = fFitOrder[i];
+      fParameters[to].SetFittedValue(parameters[i]);
+      // fParameters[to].SetError(errors[i]);
+      fTempParamsEval[to] = parameters[i];
+    }
+
+    ParametersChanged();
+    fChi[0] = GetChiTF(parameters);
+  }
+
+  void CorrFitFunc::SetMinimizerConf(TString xmlFile) { fDiscretteMinimzerConf.LoadFromXML(xmlFile); }
+
+  void CorrFitFunc::MakeDummyXMLConfig(TString xmlFile) {
+    std::ofstream file(xmlFile);
+    file << "<minimizer>" << std::endl;
+    for (int i = 0; i < GetParametersNo(); i++) {
+      file << "<param name=\"" << GetParameterName(i) << "\" min=\"" << GetParMin(i) << "\" max=\"" << GetParMax(i)
+           << "\" step=\"0.01\"></param>" << std::endl;
+    }
+    file << "</minimizer>" << std::endl;
+    file.close();
   }
 
 }  // namespace Hal

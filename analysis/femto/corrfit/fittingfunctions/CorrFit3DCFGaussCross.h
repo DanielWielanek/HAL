@@ -27,17 +27,17 @@ namespace Hal {
      *
      * @return number of parameter R-out-long
      */
-    inline Int_t Routlong() const { return Routlongidx(); };
+    inline Int_t Routlong() const { return Routlong(); };
     /**
      *
      * @return number of parameter R-out-side
      */
-    inline Int_t Routside() const { return Routsideidx(); };
+    inline Int_t Routside() const { return Routside(); };
     /**
      *
      * @return number of parameter R-side-long
      */
-    inline Int_t Rsidelong() const { return Rsidelongidx(); };
+    inline Int_t Rsidelong() const { return Rsidelong(); };
     virtual ~CorrFit3DCF_GaussCross();
     ClassDef(CorrFit3DCF_GaussCross, 1)
   };

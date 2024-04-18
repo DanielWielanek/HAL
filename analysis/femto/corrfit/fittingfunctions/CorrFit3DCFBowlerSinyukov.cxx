@@ -42,18 +42,18 @@ namespace Hal {
         cf_free         = 1.
                   + fQSMode
                       * TMath::Exp(-25.76578
-                                   * (x[0] * x[0] * params[Routidx()] * params[Routidx()]
-                                      + x[1] * x[1] * params[Rsideidx()] * params[Rsideidx()]
-                                      + x[2] * x[2] * params[Rlongidx()] * params[Rlongidx()]));
+                                   * (x[0] * x[0] * params[Rout()] * params[Rout()]
+                                      + x[1] * x[1] * params[Rside()] * params[Rside()]
+                                      + x[2] * x[2] * params[Rlong()] * params[Rlong()]));
       } break;
       case Femto::EKinematics::kPRF: {
         Double_t k_star = TMath::Sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]);
         cf_free         = 1.
                   + fQSMode
                       * TMath::Exp(-25.76578 * 4.0
-                                   * (x[0] * x[0] * params[Routidx()] * params[Routidx()]
-                                      + x[1] * x[1] * params[Rsideidx()] * params[Rsideidx()]
-                                      + x[2] * x[2] * params[Rlongidx()] * params[Rlongidx()]));  // x4 cause PRF
+                                   * (x[0] * x[0] * params[Rout()] * params[Rout()]
+                                      + x[1] * x[1] * params[Rside()] * params[Rside()]
+                                      + x[2] * x[2] * params[Rlong()] * params[Rlong()]));  // x4 cause PRF
         kq = fCFs->Eval(k_star, fRinv);
       } break;
       default:
@@ -61,7 +61,7 @@ namespace Hal {
         break;
     }
     if (kq < 0 || TMath::IsNaN(kq)) kq = 0;
-    return params[Normidx()] * (1.0 - params[Lambdaidx()] + params[Lambdaidx()] * kq * cf_free);
+    return params[Norm()] * (1.0 - params[Lambda()] + params[Lambda()] * kq * cf_free);
   }
 
   CorrFit3DCFBowlerSinyukov::CorrFit3DCFBowlerSinyukov() :
@@ -210,17 +210,17 @@ namespace Hal {
   void CorrFit3DCFBowlerSinyukov::RecalculateFunction() const {
     switch (fFrame) {
       case Femto::EKinematics::kPRF: {
-        fRinv = TMath::Sqrt(fTempParamsEval[Routidx()] * fTempParamsEval[Routidx()]
-                            + fTempParamsEval[Rsideidx()] * fTempParamsEval[Rsideidx()]
-                            + fTempParamsEval[Rlongidx()] * fTempParamsEval[Rlongidx()])
+        fRinv = TMath::Sqrt(fTempParamsEval[Rout()] * fTempParamsEval[Rout()]
+                            + fTempParamsEval[Rside()] * fTempParamsEval[Rside()]
+                            + fTempParamsEval[Rlong()] * fTempParamsEval[Rlong()])
                 * fSqrt3;
       } break;
       case Femto::EKinematics::kLCMS: {
         Double_t t = fTempParamsEval[Tau()];
-        if (fTStarZero) { t = fTempParamsEval[Routidx()] * fAverageBeta; }
-        Double_t r_out = GetRoutPRF(fTempParamsEval[Routidx()], t);
-        fRinv          = TMath::Sqrt(r_out * r_out + fTempParamsEval[Rsideidx()] * fTempParamsEval[Rsideidx()]
-                            + fTempParamsEval[Rlongidx()] * fTempParamsEval[Rlongidx()])
+        if (fTStarZero) { t = fTempParamsEval[Rout()] * fAverageBeta; }
+        Double_t r_out = GetRoutPRF(fTempParamsEval[Rout()], t);
+        fRinv          = TMath::Sqrt(r_out * r_out + fTempParamsEval[Rside()] * fTempParamsEval[Rside()]
+                            + fTempParamsEval[Rlong()] * fTempParamsEval[Rlong()])
                 * fSqrt3;
       } break;
       default: fRinv = 0; break;
@@ -253,7 +253,7 @@ namespace Hal {
     }
     CorrFit3DCF::Fit(histo);
     if (fTStarZero && fFrame == Femto::EKinematics::kLCMS) {
-      Double_t t = GetParameter(Routidx()) * fAverageBeta;
+      Double_t t = GetParameter(Rout()) * fAverageBeta;
       fParameters[Tau()].SetFittedValue(t);
       fTempParamsEval[Tau()] = t;
       FixParameter(Tau(), t);
@@ -286,7 +286,7 @@ namespace Hal {
     for (int i = 0; i < GetParametersNo(); i++) {
       params[i] = GetParameter(i);
     }
-    params[Normidx()] = 1;
+    params[Norm()] = 1;
     TH3* num          = (TH3*) unbowler->GetNum();
     for (fBinX = 1; fBinX <= unbowler->GetNum()->GetXaxis()->GetNbins(); fBinX++) {
       x[0] = num->GetXaxis()->GetBinCenter(fBinX);
@@ -327,7 +327,7 @@ namespace Hal {
     }
     CorrFit3DCF::FitDummy(histo);
     if (fTStarZero && fFrame == Femto::EKinematics::kLCMS) {
-      Double_t t = GetParameter(Routidx()) * fAverageBeta;
+      Double_t t = GetParameter(Rout()) * fAverageBeta;
       fParameters[Tau()].SetFittedValue(t);
       fTempParamsEval[Tau()] = t;
       FixParameter(Tau(), t);

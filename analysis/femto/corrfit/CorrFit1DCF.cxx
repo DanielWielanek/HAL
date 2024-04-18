@@ -37,9 +37,6 @@
 #include "StdString.h"
 
 namespace Hal {
-  const Int_t CorrFit1DCF::fgRinv   = 0;
-  const Int_t CorrFit1DCF::fgLambda = 1;
-  const Int_t CorrFit1DCF::fgNorm   = 2;
 
   CorrFit1DCF::CorrFit1DCF(Int_t parameters) : CorrFitFunc(parameters, 1) {
     if (GetParametersNo() > 1) {  // not only radii fit also lambda

@@ -53,9 +53,9 @@ namespace Hal {
     if (parameters > 4) fParameters[4].SetParName("N");
   }
   CorrFit3DCF::CorrFit3DCF(Int_t parameters) : CorrFit3DCF(e3DMode::kNormal3R, parameters) {
-    SetParameterName(Routidx(), "R_{out}");
-    SetParameterName(Rsideidx(), "R_{side}");
-    SetParameterName(Rlongidx(), "R_{long}");
+    SetParameterName(Rout(), "R_{out}");
+    SetParameterName(Rside(), "R_{side}");
+    SetParameterName(Rlong(), "R_{long}");
   }
 
   Double_t CorrFit3DCF::EvalDenominator(Double_t x, Double_t y, Double_t z) const {
@@ -214,7 +214,7 @@ namespace Hal {
         }
         fDrawHistograms[pad - 1]->Draw("same");
       }
-      if (fDrawOptions.AutoNorm()) { f.first->SetParameter(Normidx(), 1); }
+      if (fDrawOptions.AutoNorm()) { f.first->SetParameter(Norm(), 1); }
       f.first->Draw("SAME");
 
       f.second = gPad;

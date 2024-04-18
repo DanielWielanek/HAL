@@ -43,7 +43,7 @@ namespace Hal {
   }
 
   Double_t CorrFit3DCF_Square::CalculateCF(const Double_t* x, const Double_t* params) const {
-    return params[Normidx()]
+    return params[Norm()]
            * (1.0 + +TMath::Abs(x[0]) * params[Ax()] + x[0] * x[0] * params[Bx()] + TMath::Abs(x[1]) * params[Ay()]
               + x[1] * x[1] * params[By()] + TMath::Abs(x[2]) * params[Az()] + x[2] * x[2] * params[Bz()]);
   }

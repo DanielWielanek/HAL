@@ -17,7 +17,7 @@ namespace Hal {
   const Int_t CorrFit3DCF_Gauss2::fgLambda2 = 8;
 
   CorrFit3DCF_Gauss2::CorrFit3DCF_Gauss2() : CorrFit3DCF(9) {
-    SetParameterName(Normidx(), "Norm");
+    SetParameterName(Norm(), "Norm");
     SetParameterName(Lambda1(), "#Lambda_{1}");
     SetParameterName(Lambda2(), "#Lambda_{2}");
     SetParameterName(Rout1(), "R_{out1}");
@@ -29,7 +29,7 @@ namespace Hal {
   }
 
   Double_t CorrFit3DCF_Gauss2::CalculateCF(const Double_t* x, const Double_t* params) const {
-    return params[Normidx()]
+    return params[Norm()]
            * (1.0
               + params[this->Lambda1()]
                   * TMath::Exp(-Femto::FmToGeV() * Femto::FmToGeV()

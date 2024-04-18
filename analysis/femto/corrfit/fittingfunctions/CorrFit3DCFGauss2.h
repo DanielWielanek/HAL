@@ -31,7 +31,7 @@ namespace Hal {
      *
      * @return id of parameter R-out-1
      */
-    inline Int_t Rout1() const { return Routidx(); };
+    inline Int_t Rout1() const { return Rout(); };
     /**
      *
      * @return id of parameter R-out-2
@@ -41,7 +41,7 @@ namespace Hal {
      *
      * @return id of parameter R-side-1
      */
-    inline Int_t Rside1() const { return Rsideidx(); };
+    inline Int_t Rside1() const { return Rside(); };
     /**
      *
      * @return id of parameter R-side2
@@ -51,7 +51,7 @@ namespace Hal {
      *
      * @return id of parameter R-long1
      */
-    inline Int_t Rlong1() const { return Rlongidx(); };
+    inline Int_t Rlong1() const { return Rlong(); };
     /**
      *
      * @return id of parameter R-long2
@@ -61,7 +61,7 @@ namespace Hal {
      *
      * @return id of paramter lambda1
      */
-    inline Int_t Lambda1() const { return Lambdaidx(); };
+    inline Int_t Lambda1() const { return Lambda(); };
     /**
      *
      * @return id of lambda2

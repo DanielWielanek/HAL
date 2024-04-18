@@ -9,6 +9,8 @@
 #include "MinimizerStepConf.h"
 
 #include "Cout.h"
+#include "XMLNode.h"
+
 #include <TMath.h>
 #include <iostream>
 
@@ -63,6 +65,30 @@ namespace Hal {
     fParams.resize(other.fParams.size());
     for (unsigned int i = 0; i < order.size(); i++) {
       fParams[i] = other.fParams[order[i]];
+    }
+  }
+
+  void MinimizerStepConf::LoadFromXML(TString xmlFile) {
+    XMLFile file(xmlFile);
+    auto root = file.GetRootNode();
+    for (int i = 0; i < root->GetNChildren(); i++) {
+      auto child   = root->GetChild(i);
+      TString name = child->GetName();
+      name.ToLower();
+      if (name == "param") {
+        auto minim     = child->GetAttrib("min");
+        auto maxim     = child->GetAttrib("max");
+        auto step      = child->GetAttrib("step");
+        auto paramname = child->GetAttrib("name");
+        if (minim && maxim && name && step) {
+          double min_val  = minim->GetValue().Atof();
+          double max_val  = maxim->GetValue().Atof();
+          double dx       = step->GetValue().Atof();
+          TString parname = paramname->GetValue();
+          std::cout << "CONFIG " << parname << " " << dx << " " << min_val << " " << max_val << std::endl;
+          ConfigureParameter(parname, dx, min_val, max_val, "");
+        }
+      }
     }
   }
 

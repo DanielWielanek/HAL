@@ -31,9 +31,17 @@ namespace Hal {
      *
      */
     void ConfigureParameter(TString name, Double_t step, Double_t min, Double_t max, TString option = "");
+    /**
+     * set parameter limits
+     */
     void SetParameters(std::vector<FitParam>& input) const;
     virtual ~MinimizerStepConf();
     MinimizerStepConf(const MinimizerStepConf& other) = default;
+    /**
+     * load configuration from XML file
+     * @param xmlFile
+     */
+    void LoadFromXML(TString xmlFile);
     MinimizerStepConf& operator=(const MinimizerStepConf& other) = default;
     ClassDef(MinimizerStepConf, 1)
   };

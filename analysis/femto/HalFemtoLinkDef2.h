@@ -61,6 +61,7 @@
 
 #pragma link C++ class Hal::CorrFit + ;
 #pragma link C++ class Hal::CorrFitFunc + ;
+#pragma link C++ class Hal::CorrFitFunc3D + ;
 #pragma link C++ class Hal::CorrFitMath1DCF + ;
 #pragma link C++ class Hal::CorrFit1DCF_Sum + ;
 #pragma link C++ class Hal::CorrFit1DCF_SumRsame + ;
@@ -177,6 +178,7 @@
 #pragma link C++ class Hal::CorrFitSHCFMultiDim + ;
 #pragma link C++ class Hal::CorrFitHDFuncSH + ;
 #pragma link C++ class Hal::BattlestarGalactica + ;
+#pragma link C++ class Hal::BattlestarPegasus + ;
 #pragma link C++ class Hal::BattlestarValkyria + ;
 //
 

@@ -160,6 +160,7 @@ namespace Hal {
     virtual unsigned int NDim() const { return fParameters.size(); };
     void SetFunction(const ROOT::Math::IMultiGenFunction& func);
     void SetMinimizerType(TString opt);
+    FitParam GetParConf(Int_t idx) const { return fParameters[idx]; }
     virtual ~Minimizer();
     ClassDef(Minimizer, 1)
   };

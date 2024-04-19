@@ -81,7 +81,10 @@ namespace Hal {
       AddToAnaMetadata(pack, new ParameterString("FemtoKinematics", "PRF+SH"));
     } else if (mode == Femto::EKinematics::kPRFL) {
       AddToAnaMetadata(pack, new ParameterString("FemtoKinematics", "PRFL"));
+    } else if (mode == Femto::EKinematics::kPHIETA) {
+      AddToAnaMetadata(pack, new ParameterString("FemtoKinematics", "PHIETA"));
     }
+
     if (fFreezoutGenerator) {
       AddToAnaMetadata(pack, new ParameterString("FreezoutGenerator", "Enabled"));
       AddToAnaMetadata(pack, fFreezoutGenerator->Report());

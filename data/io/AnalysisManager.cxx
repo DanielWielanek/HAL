@@ -83,6 +83,7 @@ namespace Hal {
     if (end > fManager->GetEntries()) { end = fManager->GetEntries(); }
     Cout::PrintInfo(Form("Run from %i to %i events", start, end), EInfo::kInfo);
     Int_t percent = (end - start) / 100;
+    if (percent == 0) percent = 1;
     for (int i = start; i < end; i++) {
       ++fProcessedEvents;
       if (fProgressBar) {

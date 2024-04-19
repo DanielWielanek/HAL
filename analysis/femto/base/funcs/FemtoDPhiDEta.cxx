@@ -17,6 +17,7 @@
 #include <TMath.h>
 #include <TROOT.h>
 #include <TString.h>
+#include <TSystem.h>
 
 #include "StdString.h"
 
@@ -38,17 +39,24 @@ namespace Hal {
   }
 
   TString FemtoDPhiDEta::HTMLExtract(Int_t counter, TString dir) const {
+    TString path = Form("%s/divided_%i", dir.Data(), counter);
+    gSystem->MakeDirectory(path);
     Bool_t batch = gROOT->IsBatch();
     gROOT->SetBatch(kTRUE);
     TCanvas* c1 = new TCanvas("canvas", "canvas", 0, 0, 1000, 1500);
-    c1->Divide(2, 2);
-    c1->cd(1);
+    TPad* pad1  = new TPad("pad1", "pad1", 0, 0.5, 1, 1);
+    TPad* pad2  = new TPad("pad2", "pad2", 0, 0., 0.5, 0.5);
+    TPad* pad3  = new TPad("pad3", "pad3", 0.5, 0., 1.0, 0.5);
+    pad1->Draw();
+    pad2->Draw();
+    pad3->Draw();
+    pad1->cd();
     TH2* cf = (TH2*) GetHist(kTRUE);
     cf->Draw("SURF1");
-    c1->cd(2);
+    pad2->cd();
     TH2* num = (TH2*) GetNum()->Clone("temp_n");
     num->Draw("SURF1");
-    c1->cd(3);
+    pad3->cd();
     TH2* den = (TH2*) GetDen()->Clone("temp_d");
     den->Draw("SURF1");
     c1->SaveAs(Form("%s/divided_%i/divided.root", dir.Data(), counter));

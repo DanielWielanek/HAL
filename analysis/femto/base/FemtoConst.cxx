@@ -420,7 +420,7 @@ namespace Hal {
         case EKinematics::kLCMS: return "lcms"; break;
         case EKinematics::kSH_LCMS: return "sh_lcms"; break;
         case EKinematics::kSH_PRF: return "sh_prf"; break;
-        case EKinematics::kPHIETA: return "dphieta"; break;
+        case EKinematics::kPHIETA: return "dphideta"; break;
         case EKinematics::kPRFL: return "prfl"; break;
         default: return ""; break;
       }

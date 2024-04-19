@@ -406,19 +406,19 @@ namespace Hal {
   void FemtoPairDPhiDEta::Compute_Rotated() {
     fX = GetPhi1() - GetPhi2() + TMath::Pi();
     fY = GetTrack1()->GetMomentum().Eta() - GetTrack2()->GetMomentum().Eta();
-    while (fY < fPhiMin)
-      fY += fPI2;
-    while (fY > fPhiMax)
-      fY -= fPI2;
+    while (fX < fPhiMin)
+      fX += fPI2;
+    while (fX > fPhiMax)
+      fX -= fPI2;
   }
 
   void FemtoPairDPhiDEta::Compute_Hemisphere() {
     fX = GetPhi1() - GetPhi2() + TMath::Pi();
     fY = GetTrack1()->GetMomentum().Eta() + GetTrack2()->GetMomentum().Eta();
-    while (fY < fPhiMin)
-      fY += fPI2;
-    while (fY > fPhiMax)
-      fY -= fPI2;
+    while (fX < fPhiMin)
+      fX += fPI2;
+    while (fX > fPhiMax)
+      fX -= fPI2;
   }
 
   FemtoPairDPhiDEta::FemtoPairDPhiDEta(Bool_t use_mc, Double_t phi_min) : FemtoPair(use_mc) {

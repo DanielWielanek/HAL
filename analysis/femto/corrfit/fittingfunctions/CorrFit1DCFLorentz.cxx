@@ -14,11 +14,11 @@ namespace Hal {
   CorrFit1DCF_Lorentz::CorrFit1DCF_Lorentz() {}
 
   Double_t CorrFit1DCF_Lorentz::CalculateCF(const Double_t* x, const Double_t* params) const {
-    return params[Norm()]
+    return params[NormID()]
            * (1
-              + params[Lambda()]
-                  / TMath::Power(Femto::FmToGeV() * Femto::FmToGeV() * (x[0] * x[0] * params[Radius()] * params[Radius()]) + 1,
-                                 2));
+              + params[LambdaID()]
+                  / TMath::Power(
+                    Femto::FmToGeV() * Femto::FmToGeV() * (x[0] * x[0] * params[RadiusID()] * params[RadiusID()]) + 1, 2));
   }
 
   CorrFit1DCF_Lorentz::~CorrFit1DCF_Lorentz() {}

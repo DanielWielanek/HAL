@@ -10,42 +10,36 @@
 
 
 namespace Hal {
-  const Int_t CorrFit3DCF_Square::fgAx = 0;
-  const Int_t CorrFit3DCF_Square::fgBx = 1;
-  const Int_t CorrFit3DCF_Square::fgAy = 2;
-  const Int_t CorrFit3DCF_Square::fgBy = 3;
-  const Int_t CorrFit3DCF_Square::fgAz = 5;
-  const Int_t CorrFit3DCF_Square::fgBz = 6;
 
   CorrFit3DCF_Square::CorrFit3DCF_Square(Int_t pol) : CorrFit3DCF(7) {
-    SetParameterName(Ax(), "A_{x}");
-    SetParameterName(Ay(), "A_{y}");
-    SetParameterName(Az(), "A_{z}");
-    SetParameterName(Bx(), "B_{x}");
-    SetParameterName(By(), "B_{y}");
-    SetParameterName(Bz(), "B_{z}");
+    SetParameterName(AxID(), "A_{x}");
+    SetParameterName(AyID(), "A_{y}");
+    SetParameterName(AzID(), "A_{z}");
+    SetParameterName(BxID(), "B_{x}");
+    SetParameterName(ByID(), "B_{y}");
+    SetParameterName(BzID(), "B_{z}");
     if (pol < 1) {
-      SetParameterName(Ax(), "A_{x}(not used)");
-      SetParameterName(Ay(), "A_{y}(not used)");
-      SetParameterName(Az(), "A_{z}(not used)");
-      FixParameter(Ax(), 0);
-      FixParameter(Ay(), 0);
-      FixParameter(Az(), 0);
+      SetParameterName(AxID(), "A_{x}(not used)");
+      SetParameterName(AyID(), "A_{y}(not used)");
+      SetParameterName(AzID(), "A_{z}(not used)");
+      FixParameter(AxID(), 0);
+      FixParameter(AyID(), 0);
+      FixParameter(AzID(), 0);
     }
     if (pol < 2) {
-      SetParameterName(Bx(), "B_{x}(not used)");
-      SetParameterName(By(), "B_{y}(not used)");
-      SetParameterName(Bz(), "B_{z}(not used)");
-      FixParameter(Bx(), 0);
-      FixParameter(By(), 0);
-      FixParameter(Bz(), 0);
+      SetParameterName(BxID(), "B_{x}(not used)");
+      SetParameterName(ByID(), "B_{y}(not used)");
+      SetParameterName(BzID(), "B_{z}(not used)");
+      FixParameter(BxID(), 0);
+      FixParameter(ByID(), 0);
+      FixParameter(BzID(), 0);
     }
   }
 
   Double_t CorrFit3DCF_Square::CalculateCF(const Double_t* x, const Double_t* params) const {
     return params[NormID()]
-           * (1.0 + +TMath::Abs(x[0]) * params[Ax()] + x[0] * x[0] * params[Bx()] + TMath::Abs(x[1]) * params[Ay()]
-              + x[1] * x[1] * params[By()] + TMath::Abs(x[2]) * params[Az()] + x[2] * x[2] * params[Bz()]);
+           * (1.0 + +TMath::Abs(x[0]) * params[AxID()] + x[0] * x[0] * params[BxID()] + TMath::Abs(x[1]) * params[AyID()]
+              + x[1] * x[1] * params[ByID()] + TMath::Abs(x[2]) * params[AzID()] + x[2] * x[2] * params[BzID()]);
   }
 
   CorrFit3DCF_Square::~CorrFit3DCF_Square() {}

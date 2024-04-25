@@ -223,14 +223,14 @@ namespace Hal {
       case Femto::EKinematics::kLCMS: ak = x[0] * 0.5; break;
       default: ak = 0.0; break;
     }
-    an    = params[Norm()];
-    al    = params[Lambda()];
-    r0    = params[Radius()];
-    f0    = -params[ScatteringLength()];
-    d0    = params[EffectiveRadius()];
-    pol   = params[LambdaPolarization()];
-    alres = params[ResidualAmplitude()];
-    r0res = params[ResidualGaussWidht()];
+    an    = params[NormID()];
+    al    = params[LambdaID()];
+    r0    = params[RadiusID()];
+    f0    = -params[ScatteringLengthID()];
+    d0    = params[EffectiveRadiusID()];
+    pol   = params[LambdaPolarizationID()];
+    alres = params[ResidualAmplitudeID()];
+    r0res = params[ResidualGaussWidhtID()];
     f0m   = 1E+6;
     r0m   = 1E+6;
     if (f0 != 0.0) { f0m = .1973 / f0 + d0 * .5 * ak * ak / .1973; }
@@ -243,7 +243,7 @@ namespace Hal {
     zs  = fZ * fZ;
     ex  = TMath::Exp(-zs);
     fsi = 0.0;
-    if (params[Radius()] != 0.0) {
+    if (params[RadiusID()] != 0.0) {
       ai = Integr();
       //	integr_(ai, fZ_1);
       fsi = fsq * (r0m * r0m) * (1 - d0 / (r0 * 3.5449077020000002f)) + fre * 4 * r0m * ai / 1.772453851f;
@@ -259,16 +259,16 @@ namespace Hal {
   CorrFIt1DCFCumacLamLam::~CorrFIt1DCFCumacLamLam() {}
   //******************************************************************************
   CorrFit1DCFCumacPLam::CorrFit1DCFCumacPLam() : CorrFit1DCFCumac(8) {
-    SetParameterName(SingletScatteringLength(), "f_{0s}");
-    SetParameterName(SingletEffectiveRadius(), "d_{0s}");
-    SetParameterName(TripletScatteringLenght(), "f_{0t}");
-    SetParameterName(TripletEffectiveRadius(), "d_{0t}");
-    SetParameterName(LambdaPolarization(), "POL");
-    FixParameter(SingletScatteringLength(), 2.31);
-    FixParameter(SingletEffectiveRadius(), 3.04);
-    FixParameter(TripletScatteringLenght(), 1.78);
-    FixParameter(TripletEffectiveRadius(), 3.22);
-    FixParameter(LambdaPolarization(), 0);
+    SetParameterName(SingletScatteringLengthID(), "f_{0s}");
+    SetParameterName(SingletEffectiveRadiusID(), "d_{0s}");
+    SetParameterName(TripletScatteringLenghtID(), "f_{0t}");
+    SetParameterName(TripletEffectiveRadiusID(), "d_{0t}");
+    SetParameterName(LambdaPolarizationID(), "POL");
+    FixParameter(SingletScatteringLengthID(), 2.31);
+    FixParameter(SingletEffectiveRadiusID(), 3.04);
+    FixParameter(TripletScatteringLenghtID(), 1.78);
+    FixParameter(TripletEffectiveRadiusID(), 3.22);
+    FixParameter(LambdaPolarizationID(), 0);
   }
 
   Double_t CorrFit1DCFCumacPLam::Get(Double_t q, Double_t r) {
@@ -278,7 +278,7 @@ namespace Hal {
     Double_t params[8];
     for (int i = 0; i < 8; i++)
       params[i] = GetParameter(i);
-    FixParameter(Radius(), r);
+    FixParameter(RadiusID(), r);
     return CalculateCF(val, params);
   }
 
@@ -292,14 +292,14 @@ namespace Hal {
       default: ak = 0.0; break;
     }
 
-    Double_t al = params[Lambda()];
+    Double_t al = params[LambdaID()];
     // c      r0=p(2)
-    Double_t r0   = params[Radius()];
-    Double_t f0_s = params[SingletScatteringLength()];
-    Double_t d0_s = params[SingletEffectiveRadius()];
-    Double_t f0_t = params[TripletScatteringLenght()];
-    Double_t d0_t = params[TripletEffectiveRadius()];
-    Double_t POL  = params[LambdaPolarization()];
+    Double_t r0   = params[RadiusID()];
+    Double_t f0_s = params[SingletScatteringLengthID()];
+    Double_t d0_s = params[SingletEffectiveRadiusID()];
+    Double_t f0_t = params[TripletScatteringLenghtID()];
+    Double_t d0_t = params[TripletEffectiveRadiusID()];
+    Double_t POL  = params[LambdaPolarizationID()];
 
     Double_t r0m   = fHc / r0;
     Double_t f0m_s = (fHc / f0_s + 0.5 * ak * ak * d0_s / fHc);
@@ -324,7 +324,7 @@ namespace Hal {
     fsi_t          = fsi_t - fim_t * r0m * (1. - ex) / fZ;
     Double_t R_t   = .25 * (3. + TMath::Power(POL, 2)) * (1. + al * fsi_t);
     Double_t R_s   = .25 * (1. - TMath::Power(POL, 2)) * (1. + al * fsi_s);
-    return params[Norm()] * (R_t + R_s);
+    return params[NormID()] * (R_t + R_s);
   }
   /******************************************************************************/
   Double_t CorrFit1DCFCumacK0K0::CalculateCF(const Double_t* x, const Double_t* params) const {
@@ -349,30 +349,30 @@ namespace Hal {
     Double_t k2prim = TMath::Sqrt(mpi2 * mpi2 + meta2 * meta2 + s * s - 2.0 * (mpi2 * meta2 + mpi2 * s + meta2 * s)) / (2.0 * U);
 
     std::cout << k2prim - k3prim << std::endl;
-    TComplex num1(params[Mf0()] * params[Mf0()] - s, -params[Gamma_f0KK()] * ak - params[Gamma_f0pipi()] * k1prim);
-    TComplex num2(params[Ma0()] * params[Ma0()] - s, -params[Gamma_a0KK()] * ak - params[Gamma_a0PiEta()] * k2prim);
+    TComplex num1(params[Mf0ID()] * params[Mf0ID()] - s, -params[Gamma_f0KKID()] * ak - params[Gamma_f0pipiID()] * k1prim);
+    TComplex num2(params[Ma0ID()] * params[Ma0ID()] - s, -params[Gamma_a0KKID()] * ak - params[Gamma_a0PiEtaID()] * k2prim);
 
-    TComplex f_1(params[Gamma_f0KK()], 0);
-    TComplex f_2(params[Gamma_a0KK()], 0);
+    TComplex f_1(params[Gamma_f0KKID()], 0);
+    TComplex f_2(params[Gamma_a0KKID()], 0);
     f_1          = f_1 / num1;
     f_2          = f_2 / num2;
     TComplex fk  = 0.5 * (f_1 + f_2);
-    Double_t r   = params[Radius()] * Femto::FmToGeV();
+    Double_t r   = params[RadiusID()] * Femto::FmToGeV();
     Double_t qr  = ak * r * 2.;
     Double_t fkM = (fk / r).Rho();
 
-    Double_t strong = params[Assymetry()] * (fkM * fkM + 4. * fk.Re() / (fPis * r) * F1(qr) - 2.0 * fk.Im() * F2(qr) / r);
-    return params[Norm()] * (1 + params[Lambda()] * (TMath::Exp(-qr * qr) + strong));
+    Double_t strong = params[AssymetryID()] * (fkM * fkM + 4. * fk.Re() / (fPis * r) * F1(qr) - 2.0 * fk.Im() * F2(qr) / r);
+    return params[NormID()] * (1 + params[LambdaID()] * (TMath::Exp(-qr * qr) + strong));
   }
 
   CorrFit1DCFCumacK0K0::CorrFit1DCFCumacK0K0() : CorrFit1DCFCumac(10) {
-    SetParameterName(Mf0(), "m_{f_0}");
-    SetParameterName(Ma0(), "m_{a_0}");
-    SetParameterName(Gamma_f0KK(), "#gamma_{f_{0K#bar{K}}");
-    SetParameterName(Gamma_a0KK(), "#gamma_{a_{0K#bar{K}}");
-    SetParameterName(Gamma_f0pipi(), "#gamma_{f_{0#pi#pi}");
-    SetParameterName(Gamma_a0PiEta(), "#gamma_{a_{0#pi#eta}}");
-    SetParameterName(Assymetry(), "#alpha");
+    SetParameterName(Mf0ID(), "m_{f_0}");
+    SetParameterName(Ma0ID(), "m_{a_0}");
+    SetParameterName(Gamma_f0KKID(), "#gamma_{f_{0K#bar{K}}");
+    SetParameterName(Gamma_a0KKID(), "#gamma_{a_{0K#bar{K}}");
+    SetParameterName(Gamma_f0pipiID(), "#gamma_{f_{0#pi#pi}");
+    SetParameterName(Gamma_a0PiEtaID(), "#gamma_{a_{0#pi#eta}}");
+    SetParameterName(AssymetryID(), "#alpha");
     SetDefParams(3);
   }
 
@@ -390,12 +390,12 @@ namespace Hal {
     }
 
     if (opt > 4) opt = 4;
-    FixParameter(Mf0(), params[opt][0]);
-    FixParameter(Gamma_f0KK(), params[opt][1]);
-    FixParameter(Gamma_f0pipi(), params[opt][2]);
-    FixParameter(Ma0(), params[opt][3]);
-    FixParameter(Gamma_a0KK(), params[opt][4]);
-    FixParameter(Gamma_a0PiEta(), params[opt][5]);
-    FixParameter(Assymetry(), 0.5);
+    FixParameter(Mf0ID(), params[opt][0]);
+    FixParameter(Gamma_f0KKID(), params[opt][1]);
+    FixParameter(Gamma_f0pipiID(), params[opt][2]);
+    FixParameter(Ma0ID(), params[opt][3]);
+    FixParameter(Gamma_a0KKID(), params[opt][4]);
+    FixParameter(Gamma_a0PiEtaID(), params[opt][5]);
+    FixParameter(AssymetryID(), 0.5);
   }
 }  // namespace Hal

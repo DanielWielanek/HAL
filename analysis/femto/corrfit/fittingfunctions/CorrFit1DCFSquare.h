@@ -17,8 +17,8 @@
  */
 namespace Hal {
   class CorrFit1DCF_Square : public CorrFit1DCF {
-    static const Int_t fgA;
-    static const Int_t fgB;
+    const Int_t fA = {0};
+    const Int_t fB = {1};
 
   protected:
     Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
@@ -33,12 +33,12 @@ namespace Hal {
      *
      * @return id for A parameter
      */
-    inline static Int_t A() { return fgA; };
+    inline Int_t AID() const { return fA; };
     /**
      *
      * @return id for B parameter
      */
-    inline static Int_t B() { return fgB; };
+    inline Int_t BID() const { return fB; };
     virtual ~CorrFit1DCF_Square();
     ClassDef(CorrFit1DCF_Square, 1)
   };

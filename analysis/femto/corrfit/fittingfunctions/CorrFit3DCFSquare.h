@@ -17,12 +17,12 @@
 
 namespace Hal {
   class CorrFit3DCF_Square : public CorrFit3DCF {
-    static const Int_t fgAx;
-    static const Int_t fgBx;
-    static const Int_t fgAy;
-    static const Int_t fgBy;
-    static const Int_t fgAz;
-    static const Int_t fgBz;
+    const Int_t fgAx = {0};
+    const Int_t fgBx = {1};
+    const Int_t fgAy = {2};
+    const Int_t fgBy = {3};
+    const Int_t fgAz = {5};
+    const Int_t fgBz = {6};
 
   protected:
     Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
@@ -37,32 +37,32 @@ namespace Hal {
      *
      * @return id of Ax parameter
      */
-    static inline Int_t Ax() { return fgAx; };
+    inline Int_t AxID() const { return fgAx; };
     /**
      *
      * @return id of Ax parameter
      */
-    static inline Int_t Bx() { return fgBx; };
+    inline Int_t BxID() const { return fgBx; };
     /**
      *
      * @return id of Ay parameter
      */
-    static inline Int_t Ay() { return fgAy; };
+    inline Int_t AyID() const { return fgAy; };
     /**
      *
      * @return id of By parameter
      */
-    static inline Int_t By() { return fgBy; };
+    inline Int_t ByID() const { return fgBy; };
     /**
      *
      * @return id of Az parameter
      */
-    static inline Int_t Az() { return fgAz; };
+    inline Int_t AzID() const { return fgAz; };
     /**
      *
      * @return id of Bz parameter
      */
-    static inline Int_t Bz() { return fgBz; };
+    inline Int_t BzID() const { return fgBz; };
     virtual ~CorrFit3DCF_Square();
     ClassDef(CorrFit3DCF_Square, 1)
   };

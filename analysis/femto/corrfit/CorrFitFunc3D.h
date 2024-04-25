@@ -87,19 +87,19 @@ namespace Hal {
      * @param min
      * @param max
      */
-    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(Norm(), min, max); }
+    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(NormID(), min, max); }
     /**
      * set lambda limits
      * @param min
      * @param max
      */
-    void SetLambdaLimits(Double_t min, Double_t max) { SetParLimits(Lambda(), min, max); }
+    void SetLambdaLimits(Double_t min, Double_t max) { SetParLimits(LambdaID(), min, max); }
     /**
      * set limits of r-out
      * @param min
      * @param max
      */
-    void SetRoutLimits(Double_t min, Double_t max) { SetParLimits(Rout(), min, max); }
+    void SetRoutLimits(Double_t min, Double_t max) { SetParLimits(RoutID(), min, max); }
     /**
      * set limits of r-side
      * @param min
@@ -116,42 +116,42 @@ namespace Hal {
      *
      * @return id of rout parameter
      */
-    inline Int_t Rout() const { return fRoutParIndex; };
+    inline Int_t RoutID() const { return fRoutParIndex; };
     /**
      *
      * @return id of rside parameter (or similar parameter)
      */
-    inline Int_t Rside() const { return fRsideParIndex; }
+    inline Int_t RsideID() const { return fRsideParIndex; }
     /**
      *
      * @return id of rlong parameter (or similar parameter)
      */
-    inline Int_t Rlong() const { return fRlongParIndex; }
+    inline Int_t RlongID() const { return fRlongParIndex; }
     /**
      *
      * @return id of rout-side parameter (if available)
      */
-    inline Int_t Routside() const { return fRoutsideParIndex; }
+    inline Int_t RoutsideID() const { return fRoutsideParIndex; }
     /**
      *
      * @return id of rout-side parameter (if available)
      */
-    inline Int_t Routlong() const { return fRoutlongParIndex; }
+    inline Int_t RoutlongID() const { return fRoutlongParIndex; }
     /**
      *
      * @return id of rside-long parameter (if available)
      */
-    inline Int_t Rsidelong() const { return fRsidelongParIndex; }
+    inline Int_t RsidelongID() const { return fRsidelongParIndex; }
     /**
      *
      * @return id of lambda parameter (if available)
      */
-    inline Int_t Lambda() const { return fLambdaParIndex; }
+    inline Int_t LambdaID() const { return fLambdaParIndex; }
     /**
      *
      * @return id of normalization parameter (if available)
      */
-    inline Int_t Norm() const { return fNormParIndex; }
+    inline Int_t NormID() const { return fNormParIndex; }
     virtual ~CorrFitFunc3D() {};
     ClassDef(CorrFitFunc3D, 1)
   };

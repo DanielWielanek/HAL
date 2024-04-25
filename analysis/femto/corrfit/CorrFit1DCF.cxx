@@ -40,14 +40,14 @@ namespace Hal {
 
   CorrFit1DCF::CorrFit1DCF(Int_t parameters) : CorrFitFunc(parameters, 1) {
     if (GetParametersNo() > 1) {  // not only radii fit also lambda
-      SetParameterName(Lambda(), "#lambda");
-      fParameters[Lambda()].SetRange(0, 1);
+      SetParameterName(LambdaID(), "#lambda");
+      fParameters[LambdaID()].SetRange(0, 1);
     }
     fBinX = 0;
     if (GetParametersNo() > 2) {  // not only radii & lambda - also norm
-      SetParameterName(Norm(), "N");
+      SetParameterName(NormID(), "N");
     }
-    SetParameterName(Radius(), "R");
+    SetParameterName(RadiusID(), "R");
   }
 
   Double_t CorrFit1DCF::EvalDenominator(Double_t x) const {
@@ -85,7 +85,7 @@ namespace Hal {
       fDrawHistograms[0]->Draw("SAME");
     }
     if (fDrawOptions.AutoNorm()) {
-      GetTF1(0)->SetParameter(Norm(), 1);
+      GetTF1(0)->SetParameter(NormID(), 1);
       GetTF1(0)->Draw("SAME");
     } else {
       GetTF1(0)->Draw("SAME");

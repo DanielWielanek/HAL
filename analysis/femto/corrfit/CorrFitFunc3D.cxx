@@ -225,7 +225,7 @@ namespace Hal {
 
   void CorrFitFunc3D::SetRsideLimits(Double_t min, Double_t max) {
     if (fMode == e3DMode::kNormal3R || fMode == e3DMode::kNormal6R) {
-      SetParLimits(Rside(), min, max);
+      SetParLimits(RsideID(), min, max);
     } else {
       Hal::Cout::PrintInfo("Cannot set rside limits wrong 3dmode", EInfo::kWarning);
     }
@@ -233,7 +233,7 @@ namespace Hal {
 
   void CorrFitFunc3D::SetRlongLimits(Double_t min, Double_t max) {
     if (fMode == e3DMode::kNormal3R || fMode == e3DMode::kNormal6R) {
-      SetParLimits(Rlong(), min, max);
+      SetParLimits(RlongID(), min, max);
     } else {
       Hal::Cout::PrintInfo("Cannot set rlong limits wrong 3dmode", EInfo::kWarning);
     }

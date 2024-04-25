@@ -39,10 +39,10 @@ namespace Hal {
   void CorrFitKisiel::Check() {
     CorrFit1DCF::Check();
     if (fMaps.size() == 0) { Cout::PrintInfo("No maps loaded ", EInfo::kCriticalError); }
-    if (IsParFixed(Radius())) {
+    if (IsParFixed(RadiusID())) {
       Cout::Text(Form("Radius fixed at %4.3f", GetRadius()));
     } else {
-      Cout::Text(Form("Radius between %4.3f and %4.3f", fParameters[Radius()].GetMin(), fParameters[Radius()].GetMax()));
+      Cout::Text(Form("Radius between %4.3f and %4.3f", fParameters[RadiusID()].GetMin(), fParameters[RadiusID()].GetMax()));
     }
     for (unsigned int i = 0; i < fMaps.size(); i++) {
       fMaps[i]->Recalc();
@@ -51,8 +51,8 @@ namespace Hal {
     Double_t kstarMin  = fDenominatorHistogram->GetXaxis()->GetBinLowEdge(1);
     Double_t kstarMax  = fDenominatorHistogram->GetXaxis()->GetBinUpEdge(fDenominatorHistogram->GetNbinsX());
     Double_t kstarBins = fDenominatorHistogram->GetNbinsX();
-    Double_t rMin      = fParameters[Radius()].GetMin();
-    Double_t rMax      = fParameters[Radius()].GetMax();
+    Double_t rMin      = fParameters[RadiusID()].GetMin();
+    Double_t rMax      = fParameters[RadiusID()].GetMax();
     if (fKinematics == Femto::EKinematics::kLCMS) {
       kstarMin *= 0.5;
       kstarMax *= 0.5;
@@ -85,8 +85,8 @@ namespace Hal {
       fMaps[i]->SetFrameScale(fKinematics);
       Double_t R_min = fMaps[i]->GetRmin();
       Double_t R_max = fMaps[i]->GetRmax();
-      fParameters[Radius()].SetMapMin(R_min);
-      fParameters[Radius()].SetMapMax(R_max);
+      fParameters[RadiusID()].SetMapMin(R_min);
+      fParameters[RadiusID()].SetMapMax(R_max);
       Int_t R_bins   = fMaps[i]->GetNRbins();
       Double_t Kmin  = fMaps[i]->GetKstarMin();
       Double_t Kmax  = fMaps[i]->GetKstarMax();
@@ -121,9 +121,9 @@ namespace Hal {
   }
 
   Double_t CorrFitKisiel::CalculateCF(const Double_t* x, const Double_t* params) const {
-    Double_t r  = params[Radius()];
-    Double_t l  = params[Lambda()];
-    Double_t n  = params[Norm()];
+    Double_t r  = params[RadiusID()];
+    Double_t l  = params[LambdaID()];
+    Double_t n  = params[NormID()];
     Double_t cf = fMaps[0]->Eval(x[0], r);
     return n * ((cf - 1.0) * l + 1);
   }

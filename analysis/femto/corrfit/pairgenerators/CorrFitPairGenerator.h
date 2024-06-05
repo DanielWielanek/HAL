@@ -36,6 +36,8 @@ namespace Hal {
     Int_t fNBins = {0};
     Double_t fM1 = {0}, fM2 = {0};
     Double_t fLow = {0}, fHi = {1};
+    Double_t fOutCut[2]       = {0, 0};
+    Double_t fSideCut[2]      = {0, 0};
     Double_t fOverStep        = {0};
     Int_t fBinLimit           = {10000};
     TString fFileName         = {"pair.root"};

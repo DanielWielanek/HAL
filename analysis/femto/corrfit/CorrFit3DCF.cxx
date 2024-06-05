@@ -49,8 +49,8 @@ namespace Hal {
     fXbins = new Array_1<Double_t>(1);
     fYbins = new Array_1<Double_t>(1);
     fZbins = new Array_1<Double_t>(1);
-    if (parameters > 3) fParameters[3].SetParName("#lambda");
-    if (parameters > 4) fParameters[4].SetParName("N");
+    //   if (parameters > 3) fParameters[3].SetParName("#lambda");
+    //  if (parameters > 4) fParameters[4].SetParName("N");
   }
   CorrFit3DCF::CorrFit3DCF(Int_t parameters) : CorrFit3DCF(e3DMode::kNormal3R, parameters) {
     SetParameterName(RoutID(), "R_{out}");
@@ -201,7 +201,7 @@ namespace Hal {
       }
     }
 
-    if (!repaint) { fTempPad->Divide(padX, padY); }
+    if (!repaint && !fDrawOptions.Same()) { fTempPad->Divide(padX, padY); }
 
     int pad = 0;
     for (auto f : fDrawFunc) {

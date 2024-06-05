@@ -30,41 +30,54 @@ namespace Hal {
   AnalysisManager::AnalysisManager() {}
 
   Bool_t AnalysisManager::Init() {
+    Cout::PrintInfo("=== AnalysisManager::Init ===", EInfo::kInfo);
     if (fSource == nullptr) exit(0);
     fManager = fSource->GetIOManager();
+    if (!fManager) {
+      Cout::PrintInfo("IO manager not found!", EInfo::kCriticalError);
+      exit(0);
+    }
     if (fField == nullptr) { fField = new MagField(); }
     fManager->SetField(fField);
     fManager->SetOutput(fOutputFile);
     fManager->Init();
     DataManager* mng = DataManager::Instance();
     mng->SetManager(fManager);
+    Cout::PrintInfo("=== Init triggers ===", EInfo::kDebugInfo);
     for (auto task : fTriggers) {
+      Cout::PrintInfo(Form("  Init trigger %s", task->ClassName()), EInfo::kDebugInfo);
       Task::EInitFlag stat = task->Init();
       switch (stat) {
         case Task::EInitFlag::kERROR: {
+          Cout::PrintInfo(Form("  Trigger %s go to passive mode", task->ClassName()), EInfo::kDebugInfo);
           fPassiveTriggers.push_back(task);
         } break;
         case Task::EInitFlag::kSUCCESS: {
           task->MarkAsActive();
+          Cout::PrintInfo(Form("  Trigger %s go to active mode", task->ClassName()), EInfo::kDebugInfo);
           fActiveTriggers.push_back(task);
         } break;
         case Task::EInitFlag::kFATAL: {
-          Cout::PrintInfo(Form("Failed to init %s", task->ClassName()), EInfo::kError);
+          Cout::PrintInfo(Form("  Failed to init %s", task->ClassName()), EInfo::kError);
           exit(0);
         } break;
       }
     }
+    Cout::PrintInfo("=== Init tasks ===", EInfo::kInfo);
     for (auto task : fTasks) {
       Task::EInitFlag stat = task->Init();
+      Cout::PrintInfo(Form("  Init task %s", task->ClassName()), EInfo::kDebugInfo);
       switch (stat) {
         case Task::EInitFlag::kERROR: {
+          Cout::PrintInfo(Form("  Task %s go to passive mode", task->ClassName()), EInfo::kDebugInfo);
           fPassiveTasks.push_back(task);
         } break;
         case Task::EInitFlag::kSUCCESS: {
+          Cout::PrintInfo(Form("  Task %s go to active mode", task->ClassName()), EInfo::kDebugInfo);
           fActiveTasks.push_back(task);
         } break;
         case Task::EInitFlag::kFATAL: {
-          Cout::PrintInfo(Form("Failed to init %s", task->ClassName()), EInfo::kError);
+          Cout::PrintInfo(Form("  Failed to init %s", task->ClassName()), EInfo::kError);
           exit(0);
         } break;
       }

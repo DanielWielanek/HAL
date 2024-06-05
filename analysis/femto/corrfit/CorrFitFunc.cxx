@@ -417,7 +417,10 @@ namespace Hal {
     // calculate NDF
     for (int i = 0; i < GetParametersNo(); i++) {
       fParameters[i].SetError(0);
-      fParameters[i].SetFittedValue(fParameters[i].GetStartVal());
+      if (fParameters[i].IsFixed()) {
+        fParameters[i].SetFittedValue(fParameters[i].GetMin());
+      } else
+        fParameters[i].SetFittedValue(fParameters[i].GetStartVal());
       fTempParamsEval[i] = fParameters[i].GetFittedValue();
     }
   }

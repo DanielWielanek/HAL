@@ -28,14 +28,16 @@ namespace Hal {
     TAxis* fYaxis;
     Double_t fMin[2];
     Double_t fMax[2];
+    Bool_t fDrawn = {kFALSE};
 
   public:
     MultiGraph();
     /**
      * make multigraph with many graphs
      * @param graphs
+     * @param option of adding graph
      */
-    MultiGraph(Int_t graphs);
+    MultiGraph(Int_t graphs, Option_t* opt = "");
     /**
      * set x axis range
      * @param min

@@ -29,7 +29,7 @@ namespace Hal {
     fMin[0] = fMin[1] = 0;
     fMax[0] = fMax[1] = 0;
   }
-  MultiGraph::MultiGraph(Int_t graphs) : MultiGraph() { MakeGraphs(graphs); }
+  MultiGraph::MultiGraph(Int_t graphs, Option_t* opt) : MultiGraph() { MakeGraphs(graphs, opt); }
 
   void MultiGraph::MakeGraph(Option_t* opt) {
     TGraphErrors** temp = fGraphErrors;
@@ -63,6 +63,7 @@ namespace Hal {
   TGraphErrors* MultiGraph::GetGraph(Int_t no) const { return fGraphErrors[no]; }
 
   void MultiGraph::Draw(Option_t* opt) {
+    fDrawn         = kTRUE;
     TString option = opt;
     if (option.Contains("A") == kFALSE) option = "A" + option;
     fMultiGraph->Draw(option);

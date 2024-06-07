@@ -16,7 +16,7 @@
 #include <iostream>
 
 namespace Hal {
-  Jobs::Jobs(TString name) : fArray(kFALSE), fDebugCommands(kFALSE), fFile(name), fStartJob(1), fEndJob(1) {
+  Jobs::Jobs(TString name) : fArray(kFALSE), fDebugCommands(kFALSE), fDir("jobs"), fFile(name), fStartJob(1), fEndJob(1) {
     XMLFile file(fFile);
     XMLNode* root = file.GetRootNode();
 
@@ -24,15 +24,16 @@ namespace Hal {
     fSubmitCommand    = settings->GetAttrib("submit")->GetValue();
 
     TString Shell = settings->GetAttrib("shell")->GetValue();
-    TString array = settings->GetAttrib("array")->GetValue();
+    TString array = "yes";
+    if (settings->GetAttrib("array")) array = settings->GetAttrib("array")->GetValue();
     if (settings->GetAttrib("debug")) {
       if (settings->GetAttrib("debug")->GetValue().EqualTo("yes")) fDebugCommands = kTRUE;
     }
     array.ToLower();
     if (array.EqualTo("yes")) fArray = kTRUE;
-    fStartJob = settings->GetAttrib("start")->GetValue().Atoi();
-    fEndJob   = settings->GetAttrib("end")->GetValue().Atoi();
-    fDir      = settings->GetAttrib("dir")->GetValue();
+    if (settings->GetAttrib("start")) fStartJob = settings->GetAttrib("start")->GetValue().Atoi();
+    if (settings->GetAttrib("end")->GetValue().Atoi()) fEndJob = settings->GetAttrib("end")->GetValue().Atoi();
+    if (settings->GetAttrib("dir")->GetValue()) fDir = settings->GetAttrib("dir")->GetValue();
     gSystem->mkdir(fDir);
 
     XMLNode* parameters = root->GetChild("parameters");

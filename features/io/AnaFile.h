@@ -163,6 +163,11 @@ namespace Hal {
      */
     Int_t GetCuMonitorsNo(Hal::ECutUpdate update, Int_t collection, TString opt = "all") const;
     /**
+     *
+     * @return number of packages in file
+     */
+    Int_t GetPackagesNo() const { return fMaxPackID; }
+    /**
      * print list of packages with physical analysis in current file
      * @param filename name of file
      */

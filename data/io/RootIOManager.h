@@ -31,7 +31,7 @@ namespace Hal {
     TTree* fOutTree;
     std::vector<TFile*> fInFile;
     std::vector<TChain*> fInChain;
-    std::vector<TObject**> fObjects;
+    std::vector<TObject**> fObjects;  // just to call delete?
 
   protected:
     /**

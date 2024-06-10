@@ -41,6 +41,7 @@ io/Jobs.cxx
 io/Object.cxx
 io/Package.cxx
 io/AnaFile.cxx
+io/ObjectVoid.cxx
 
 io/html/PackageSql.cxx
 io/html/Package2HTML.cxx

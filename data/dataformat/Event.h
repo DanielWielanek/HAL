@@ -113,7 +113,14 @@ namespace Hal {
      * @param n number of branches, names of branches
      * @return true if all branches are present in tree
      */
-    Bool_t CheckBranches(Int_t n...) const;
+    [[deprecated("Use CheckBranches({std::initializer_list}) instead.")]] Bool_t CheckBranches(Int_t n...) const;
+    /**
+     *
+     * @param list of branches to check
+     * @return true if all branches are present in tree
+     */
+    Bool_t CheckBranches(std::initializer_list<TString> list) const;
+
     /**
      * constructor used by derived classes
      * @param track_class name of track class, e.g. if you have MagicEvent

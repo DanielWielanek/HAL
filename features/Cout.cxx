@@ -18,7 +18,7 @@
 namespace Hal {
   Int_t Cout::fgLineLength      = 100;
   Cout* Cout::fgInstance        = NULL;
-  Hal::EInfo Cout::fVerboseMode = Hal::EInfo::kDebugInfo;
+  Hal::EInfo Cout::fVerboseMode = Hal::EInfo::kInfo;
   void Cout::Database(Int_t no, ...) {
     va_list ap;
     TString begin;
@@ -366,8 +366,8 @@ namespace Hal {
   void Cout::PrintInfo(TString text, Hal::EInfo status) {
     if (status < fVerboseMode) { return; }
     switch (status) {
-      case Hal::EInfo::kDebugInfo: FailSucced(text, "INFO    ", kCyan); break;
-      case Hal::EInfo::kInfo: FailSucced(text, "INFO!   ", kCyan); break;
+      case Hal::EInfo::kDebugInfo: FailSucced(text, "DEBUG   ", kCyan); break;
+      case Hal::EInfo::kInfo: FailSucced(text, "INFO    ", kCyan); break;
       case Hal::EInfo::kLowWarning: FailSucced(text, "WARNING ", kOrange); break;
       case Hal::EInfo::kWarning: PrintWarning(text); break;
       case Hal::EInfo::kError: FailSucced(text, "ERROR   ", kRed); break;

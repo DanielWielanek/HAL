@@ -52,8 +52,8 @@ namespace Hal {
     std::vector<TString> fBranchNameList;
     std::vector<std::vector<TString>> fInFiles;
     TString fInputName;
-    std::vector<TString> GetSafeFile(UInt_t pos) const;
-    TString GetSafeFile(UInt_t i, UInt_t j) const;
+    std::vector<TString> GetSafeFile(Int_t pos) const;
+    TString GetSafeFile(Int_t i, Int_t j) const;
 
   protected:
     /**
@@ -226,29 +226,24 @@ namespace Hal {
     Int_t GetFriendsLevel() const;
     void AddFile(TString name);
     void AddFriend(TString friendName, Int_t level);
+
     /**
      *
      * @return name of first file with data
      */
-    TString GetFirstDataFileName() const;
+    TString GetFirstDataFileName() const { return GetSafeFile(0, 0); };
     /**
      * name of the first friend file
      * @param level
      * @return
      */
-    TString GetFirstFriendFileName(Int_t level) const;
+    TString GetFirstFriendFileName(Int_t level) const { return GetSafeFile(level + 1, 0); };
     /**
      *
      * @param level level
-     * @return return names of fies at given level if leve==-1 return list of main files
+     * @return return names of files at given level if level==-1 return list of main files
      */
-    std::vector<TString> GetFileNameList(Int_t level) const;
-    /**
-     *
-     * @param level
-     * @return list of friends
-     */
-    std::vector<TString> GetFriends(Int_t level) const;
+    std::vector<TString> GetFileNameList(Int_t level) const { return GetSafeFile(level + 1); };
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

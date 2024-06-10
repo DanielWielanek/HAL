@@ -201,13 +201,15 @@ namespace Hal {
     }
   }
 
-  std::vector<TString> IOManager::GetSafeFile(UInt_t pos) const {
+  std::vector<TString> IOManager::GetSafeFile(Int_t pos) const {
+    if (pos < 0) pos = 0;
     std::vector<TString> res;
     if (fInFiles.size() > pos) { return fInFiles[pos]; }
     return res;
   }
 
-  TString IOManager::GetSafeFile(UInt_t i, UInt_t j) const {
+  TString IOManager::GetSafeFile(Int_t i, Int_t j) const {
+    if (j < 0) j = 0;
     auto vec = GetSafeFile(i);
     if (vec.size() > j) return vec[j];
     return "";
@@ -237,40 +239,8 @@ namespace Hal {
   }
 
   void IOManager::AddFriend(TString friendName, Int_t level) {
-    if (fInFiles.size() <= level) fInFiles.resize(level + 2);
+    if (fInFiles.size() <= level + 1) fInFiles.resize(level + 2);
     fInFiles[level + 1].push_back(friendName);
-  }
-
-  TString IOManager::GetFirstDataFileName() const {
-    if (fInFiles.size() > 0)
-      if (fInFiles[0].size() > 0) return fInFiles[0][0];
-    return "";
-  }
-
-  TString IOManager::GetFirstFriendFileName(Int_t level) const {
-    if (fInFiles.size() > level + 1)
-      if (fInFiles[level + 1].size() > 0) return fInFiles[level + 1][0];
-    return "";
-  }
-
-  std::vector<TString> IOManager::GetFileNameList(Int_t level) const {
-    level++;
-    std::vector<TString> res;
-    if (level < 0) return res;
-    if (fInFiles.size() > level) {
-      for (auto i : fInFiles[level])
-        res.push_back(i);
-    }
-    return res;
-  }
-
-  std::vector<TString> IOManager::GetFriends(Int_t level) const {
-    std::vector<TString> res;
-    if (fInFiles.size() > level + 1) {
-      for (auto i : fInFiles[level + 1])
-        res.push_back(i);
-    }
-    return res;
   }
 
 }  // namespace Hal

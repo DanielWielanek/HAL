@@ -63,7 +63,7 @@ namespace Hal {
     fInChain.push_back(mainChain);
     int friendLevel = GetFriendsLevel();
     for (int i = 0; i < friendLevel; i++) {  // loop over friends
-      auto fileFriend   = GetFriends(i);
+      auto fileFriend   = GetFileNameList(i);
       TFile* ff         = new TFile(fileFriend[0]);
       TString chainName = GetChain(ff);
       chainNames.push_back(chainName);

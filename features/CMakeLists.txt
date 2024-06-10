@@ -41,6 +41,7 @@ io/Jobs.cxx
 io/Object.cxx
 io/Package.cxx
 io/AnaFile.cxx
+io/ObjectVoid.cxx
 
 io/html/PackageSql.cxx
 io/html/Package2HTML.cxx
@@ -58,6 +59,7 @@ hist/Splines.cxx
 hist/ChiSqMap2D.cxx
 hist/FastHist.cxx
 hist/Style.cxx
+hist/CorrelationHisto.cxx
 
 std/StdHist.cxx
 std/StdString.cxx

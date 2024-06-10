@@ -20,9 +20,15 @@
 namespace HalDbg {
 
   IOManager::IOManager(TString name, Int_t entries) :
-    fInFileName(name), fOutTreeName("HalTree"), fEntries(entries), fInFile(nullptr), fOutFile(nullptr), fOutTree(nullptr) {}
+    Hal::IOManager(name),
+    fInFileName(name),
+    fOutTreeName("HalTree"),
+    fEntries(entries),
+    fInFile(nullptr),
+    fOutFile(nullptr),
+    fOutTree(nullptr) {}
 
-  Bool_t IOManager::Init() {
+  Bool_t IOManager::InitInternal() {
     Hal::Cout::PrintInfo(fInFileName, Hal::EInfo::kLowWarning);
     fInFile  = new TFile(fInFileName, "recreate");
     fOutFile = new TFile(fOutFileName, "recreate");

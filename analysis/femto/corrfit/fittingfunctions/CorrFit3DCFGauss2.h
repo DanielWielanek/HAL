@@ -17,10 +17,10 @@
 
 namespace Hal {
   class CorrFit3DCF_Gauss2 : public CorrFit3DCF {
-    static const Int_t fgRout2;
-    static const Int_t fgRside2;
-    static const Int_t fgRlong2;
-    static const Int_t fgLambda2;
+    Int_t fRoutId   = {5};
+    Int_t fRsideId  = {6};
+    Int_t fRlongId  = {7};
+    Int_t fLambdaId = {8};
 
   protected:
     Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
@@ -31,42 +31,42 @@ namespace Hal {
      *
      * @return id of parameter R-out-1
      */
-    inline static Int_t Rout1() { return Rout(); };
+    inline Int_t Rout1ID() const { return RoutID(); };
     /**
      *
      * @return id of parameter R-out-2
      */
-    inline static Int_t Rout2() { return fgRout2; };
+    inline Int_t Rout2ID() const { return fRoutId; };
     /**
      *
      * @return id of parameter R-side-1
      */
-    inline static Int_t Rside1() { return Rside(); };
+    inline Int_t Rside1ID() const { return RsideID(); };
     /**
      *
      * @return id of parameter R-side2
      */
-    inline static Int_t Rside2() { return fgRside2; };
+    inline Int_t Rside2ID() const { return fRsideId; };
     /**
      *
      * @return id of parameter R-long1
      */
-    inline static Int_t Rlong1() { return Rlong(); };
+    inline Int_t Rlong1ID() const { return RlongID(); };
     /**
      *
      * @return id of parameter R-long2
      */
-    inline static Int_t Rlong2() { return fgRlong2; };
+    inline Int_t Rlong2ID() const { return fRlongId; };
     /**
      *
      * @return id of paramter lambda1
      */
-    inline static Int_t Lambda1() { return Lambda(); };
+    inline Int_t Lambda1ID() const { return LambdaID(); };
     /**
      *
      * @return id of lambda2
      */
-    inline static Int_t Lambda2() { return fgLambda2; }
+    inline Int_t Lambda2ID() const { return fLambdaId; }
     virtual ~CorrFit3DCF_Gauss2();
     ClassDef(CorrFit3DCF_Gauss2, 1)
   };

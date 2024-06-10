@@ -30,6 +30,7 @@ UnigenEventInterface.cxx
 UnigenTrack.cxx
 UnigenTrackInterface.cxx
 UParticle.cxx
+UnigenReader.cxx
 )
 
 Set(HEADERS )

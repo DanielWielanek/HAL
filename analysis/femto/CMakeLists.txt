@@ -65,6 +65,7 @@ corrfit/CorrFit.cxx
 corrfit/CorrFitMask.cxx
 
 corrfit/CorrFitFunc.cxx
+corrfit/CorrFitFunc3D.cxx
 corrfit/CorrFitMath1DCF.cxx
 corrfit/CorrFitMath3DCF.cxx
 corrfit/CorrFit1DCF.cxx
@@ -85,6 +86,7 @@ corrfit/pairgenerators/CorrFitMapGroupConfig.cxx
 corrfit/pairgenerators/CorrFitPairGenerator.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorSimple.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorYPt.cxx
+corrfit/pairgenerators/CorrFitPairGeneratorYPtStubborn.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
 corrfit/mapgenerator_multidim/CorrFitFunctor.cxx
@@ -167,6 +169,7 @@ if(DEFINED CIA)
         top_secret/CorrFitHDFuncSH.cxx
         top_secret/CorrFitDumpedPairAnaVertical.cxx
         top_secret/BattlestarGalactica.cxx
+        top_secret/BattlestarPegasus.cxx
         top_secret/BattlestarValkyria.cxx
     )
 endif()

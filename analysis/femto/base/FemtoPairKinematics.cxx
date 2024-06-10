@@ -176,8 +176,7 @@ namespace Hal {
     Double_t particle1lcms_py = (-fpx1 * tPy + fpy1 * tPx) / tPt;
 
     Double_t particle2lcms_px = (-fpx2 * tPx - fpy2 * tPy) / tPt;  // reversed
-    Double_t particle2lcms_py = (+fpx2 * tPy - fpy2 * tPx) / tPt;
-    ;  // reversed
+    Double_t particle2lcms_py = (+fpx2 * tPy - fpy2 * tPx) / tPt;  // reversed
 
     fX = particle1lcms_px - particle2lcms_px;
     fY = particle1lcms_py - particle2lcms_py;
@@ -212,8 +211,8 @@ namespace Hal {
     Double_t particle1lcms_py = (-fpx1 * tPy + fpy1 * tPx) / tPt;
 
     Double_t particle2lcms_px = (-fpx2 * tPx - fpy2 * tPy) / tPt;  // reversed
-    Double_t particle2lcms_py = (+fpx2 * tPy - fpy2 * tPx) / tPt;
-    ;  // reversed
+    Double_t particle2lcms_py = (+fpx2 * tPy - fpy2 * tPx) / tPt;  // reversed
+
 
     fX = particle1lcms_px - particle2lcms_px;
     fY = particle1lcms_py - particle2lcms_py;
@@ -406,19 +405,19 @@ namespace Hal {
   void FemtoPairDPhiDEta::Compute_Rotated() {
     fX = GetPhi1() - GetPhi2() + TMath::Pi();
     fY = GetTrack1()->GetMomentum().Eta() - GetTrack2()->GetMomentum().Eta();
-    while (fY < fPhiMin)
-      fY += fPI2;
-    while (fY > fPhiMax)
-      fY -= fPI2;
+    while (fX < fPhiMin)
+      fX += fPI2;
+    while (fX > fPhiMax)
+      fX -= fPI2;
   }
 
   void FemtoPairDPhiDEta::Compute_Hemisphere() {
     fX = GetPhi1() - GetPhi2() + TMath::Pi();
     fY = GetTrack1()->GetMomentum().Eta() + GetTrack2()->GetMomentum().Eta();
-    while (fY < fPhiMin)
-      fY += fPI2;
-    while (fY > fPhiMax)
-      fY -= fPI2;
+    while (fX < fPhiMin)
+      fX += fPI2;
+    while (fX > fPhiMax)
+      fX -= fPI2;
   }
 
   FemtoPairDPhiDEta::FemtoPairDPhiDEta(Bool_t use_mc, Double_t phi_min) : FemtoPair(use_mc) {

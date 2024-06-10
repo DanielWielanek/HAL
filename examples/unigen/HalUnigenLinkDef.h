@@ -16,4 +16,5 @@
 #pragma link C++ class HalUni::UnigenEventInterface + ;
 #pragma link C++ class HalUni::UnigenTrack + ;
 #pragma link C++ class HalUni::UnigenTrackInterface + ;
+#pragma link C++ class HalUni::UnigenReader + ;
 #endif

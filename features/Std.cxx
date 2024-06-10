@@ -167,39 +167,45 @@ namespace Hal::Std {
     }
     std::vector<std::vector<TVirtualPad*>> array2d;
     ResizeVector2D(array2d, x_pads, y_pads);
-    Double_t colls   = x_pads;
-    Double_t rows    = y_pads;
-    Double_t x_shift = 1.0 / (colls - 1 + 1 / (1 - TMath::Abs(x_margin)));
-    Double_t y_shift = 1.0 / (rows - 1 + 1 / (1 - TMath::Abs(y_margin)));
-    Double_t x_pad   = x_shift / (1.0 - TMath::Abs(x_margin));
-    Double_t y_pad   = y_shift / (1.0 - TMath::Abs(y_margin));
-    int glob         = 0;
+    Double_t colls    = x_pads;
+    Double_t rows     = y_pads;
+    Double_t x_active = 1.0 - TMath::Abs(x_margin);
+    Double_t y_active = 1.0 - TMath::Abs(y_margin);
+    Double_t x_shift  = 1.0 / (colls - 1 + 1. / x_active);
+    Double_t y_shift  = 1.0 / (rows - 1 + 1. / y_active);
+    Double_t x_pad    = x_shift / x_active;
+    Double_t y_pad    = y_shift / y_active;
+    int glob          = 0;
+
+    double x1, x2, y1, y2;
+    auto trimPads = [&](double i, double j, double m1, double m2, double m3, double m4) {
+      x1 = i * x_shift;
+      x2 = x1 + x_pad;
+      y2 = 1. - j * y_shift;
+      y1 = y2 - y_pad;
+      if (x1 < 0) x1 = 0;
+      if (x1 > 1) x1 = 1;
+      if (x2 < 0) x2 = 0;
+      if (x2 > 1) x2 = 1;
+      if (y1 < 0) y1 = 0;
+      if (y1 > 1) y1 = 1;
+      if (y2 < 0) y2 = 0;
+      if (y2 > 1) y2 = 1;
+      auto* pad = new TPad(Form("pad_%i_%i", int(i), int(j)), Form("pad_%i_%i", int(i), int(j)), x1, y1, x2, y2);
+      pad->SetTopMargin(m1);
+      pad->SetRightMargin(m2);
+      pad->SetBottomMargin(m3);
+      pad->SetLeftMargin(m4);
+      pad->Draw();
+      array2d[int(i)][int(j)] = pad;
+      glob++;
+      padsav->cd();
+    };
+
     if (x_margin >= 0 && y_margin >= 0) {  // OK
       for (int i = x_pads - 1; i >= 0; i--) {
         for (int j = 0; j < y_pads; j++) {
-          Double_t x1 = i * x_shift;
-          Double_t x2 = x1 + x_pad;
-          Double_t y1 = 1 - j * y_shift;
-          Double_t y2 = y1 - y_pad;
-          if (x1 < 0) x1 = 0;
-          if (x1 > 1) x1 = 1;
-          if (x2 < 0) x2 = 0;
-          if (x2 > 1) x2 = 1;
-          if (y1 < 0) y1 = 0;
-          if (y1 > 1) y1 = 1;
-          if (y2 < 0) y2 = 0;
-          if (y2 > 1) y2 = 1;
-
-          TPad* pad = new TPad(Form("pad_%i_%i", i, j), Form("pad_%i_%i", i, j), x1, y1, x2, y2);
-          pad->SetTopMargin(0);
-          pad->SetRightMargin(0);
-          pad->SetBottomMargin(y_margin);
-          pad->SetLeftMargin(x_margin);
-          pad->SetNumber(glob);
-          pad->Draw();
-          array2d[i][j] = pad;
-          glob++;
-          padsav->cd();
+          trimPads(i, j, 0, 0.0, y_margin, x_margin);
         }
       }
     }
@@ -207,27 +213,7 @@ namespace Hal::Std {
       y_margin = TMath::Abs(y_margin);
       for (int i = x_pads - 1; i >= 0; i--) {
         for (int j = y_pads - 1; j >= 0; j--) {
-          Double_t x1 = i * x_shift;
-          Double_t x2 = x1 + x_pad;
-          Double_t y1 = 1 - j * y_shift;
-          Double_t y2 = y1 - y_pad;
-          if (x1 < 0) x1 = 0;
-          if (x1 > 1) x1 = 1;
-          if (x2 < 0) x2 = 0;
-          if (x2 > 1) x2 = 1;
-          if (y1 < 0) y1 = 0;
-          if (y1 > 1) y1 = 1;
-          if (y2 < 0) y2 = 0;
-          if (y2 > 1) y2 = 1;
-          TPad* pad = new TPad(Form("pad_%i_%i", i, j), Form("pad_%i_%i", i, j), x1, y1, x2, y2);
-          pad->SetTopMargin(y_margin);
-          pad->SetRightMargin(0);
-          pad->SetBottomMargin(0);
-          pad->SetLeftMargin(x_margin);
-          pad->Draw();
-          array2d[i][j] = pad;
-          glob++;
-          padsav->cd();
+          trimPads(i, j, y_margin, 0, 0, x_margin);
         }
       }
     }
@@ -237,27 +223,7 @@ namespace Hal::Std {
       x_margin = TMath::Abs(x_margin);
       for (int i = 0; i < x_pads; i++) {
         for (int j = y_pads - 1; j >= 0; j--) {
-          Double_t x1 = i * x_shift;
-          Double_t x2 = x1 + x_pad;
-          Double_t y1 = 1 - j * y_shift;
-          Double_t y2 = y1 - y_pad;
-          if (x1 < 0) x1 = 0;
-          if (x1 > 1) x1 = 1;
-          if (x2 < 0) x2 = 0;
-          if (x2 > 1) x2 = 1;
-          if (y1 < 0) y1 = 0;
-          if (y1 > 1) y1 = 1;
-          if (y2 < 0) y2 = 0;
-          if (y2 > 1) y2 = 1;
-          TPad* pad = new TPad(Form("pad_%i_%i", i, j), Form("pad_%i_%i", i, j), x1, y1, x2, y2);
-          pad->SetTopMargin(y_margin);
-          pad->SetRightMargin(x_margin);
-          pad->SetBottomMargin(0);
-          pad->SetLeftMargin(0);
-          pad->Draw();
-          array2d[i][j] = pad;
-          glob++;
-          padsav->cd();
+          trimPads(i, j, y_margin, x_margin, 0, 0);
         }
       }
     }
@@ -266,27 +232,7 @@ namespace Hal::Std {
       x_margin = TMath::Abs(x_margin);
       for (int i = 0; i < x_pads; i++) {
         for (int j = 0; j < y_pads; j++) {
-          Double_t x1 = i * x_shift;
-          Double_t x2 = x1 + x_pad;
-          Double_t y1 = 1 - j * y_shift;
-          Double_t y2 = y1 - y_pad;
-          if (x1 < 0) x1 = 0;
-          if (x1 > 1) x1 = 1;
-          if (x2 < 0) x2 = 0;
-          if (x2 > 1) x2 = 1;
-          if (y1 < 0) y1 = 0;
-          if (y1 > 1) y1 = 1;
-          if (y2 < 0) y2 = 0;
-          if (y2 > 1) y2 = 1;
-          TPad* pad = new TPad(Form("pad_%i_%i", i, j), Form("pad_%i_%i", i, j), x1, y1, x2, y2);
-          pad->SetTopMargin(0);
-          pad->SetRightMargin(x_margin);
-          pad->SetBottomMargin(y_margin);
-          pad->SetLeftMargin(0);
-          pad->Draw();
-          array2d[i][j] = pad;
-          glob++;
-          padsav->cd();
+          trimPads(i, j, 0, x_margin, y_margin, 0);
         }
       }
     }

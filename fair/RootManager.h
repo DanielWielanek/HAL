@@ -31,6 +31,7 @@ namespace Hal {
       virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
       virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
       virtual void RefreshBranchList();
+      virtual Bool_t InitInternal();
 
     public:
       RootManager();
@@ -42,7 +43,6 @@ namespace Hal {
       Int_t CheckBranch(const char* BrName);
       Int_t GetEntries() const { return -1; }
       Int_t GetEntry(Int_t /*i*/, Int_t /*flag*/) { return -1; };
-      virtual Bool_t Init();
       virtual ~RootManager() {};
       ClassDef(RootManager, 1)
     };

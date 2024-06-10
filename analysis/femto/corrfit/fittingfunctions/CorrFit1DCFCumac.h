@@ -55,11 +55,11 @@ namespace Hal {
   public:
     CorrFIt1DCFCumacLamLam();
     Double_t GetValue(Double_t x, Double_t* p) { return CalculateCF(&x, p); };
-    static Int_t ScatteringLength() { return 3; };
-    static Int_t EffectiveRadius() { return 4; };
-    static Int_t LambdaPolarization() { return 5; };
-    static Int_t ResidualAmplitude() { return 6; };
-    static Int_t ResidualGaussWidht() { return 7; };
+    Int_t ScatteringLengthID() const { return 3; };
+    Int_t EffectiveRadiusID() const { return 4; };
+    Int_t LambdaPolarizationID() const { return 5; };
+    Int_t ResidualAmplitudeID() const { return 6; };
+    Int_t ResidualGaussWidhtID() const { return 7; };
     virtual ~CorrFIt1DCFCumacLamLam();
     ClassDef(CorrFIt1DCFCumacLamLam, 1)
   };
@@ -74,11 +74,11 @@ namespace Hal {
   public:
     CorrFit1DCFCumacPLam();
     Double_t Get(Double_t q, Double_t r);
-    static Int_t SingletScatteringLength() { return 3; }
-    static Int_t SingletEffectiveRadius() { return 4; }
-    static Int_t TripletScatteringLenght() { return 5; };
-    static Int_t TripletEffectiveRadius() { return 6; };
-    static Int_t LambdaPolarization() { return 7; };
+    Int_t SingletScatteringLengthID() const { return 3; }
+    Int_t SingletEffectiveRadiusID() const { return 4; }
+    Int_t TripletScatteringLenghtID() const { return 5; };
+    Int_t TripletEffectiveRadiusID() const { return 6; };
+    Int_t LambdaPolarizationID() const { return 7; };
     virtual ~CorrFit1DCFCumacPLam();
     ClassDef(CorrFit1DCFCumacPLam, 1)
   };
@@ -90,17 +90,18 @@ namespace Hal {
   public:
     CorrFit1DCFCumacK0K0();
     Double_t GetValue(Double_t x, Double_t* p) { return CalculateCF(&x, p); };
-    static Int_t Mf0() { return 3; };
-    static Int_t Gamma_f0KK() { return 4; }
-    static Int_t Ma0() { return 5; };
-    static Int_t Gamma_f0pipi() { return 6; };
-    static Int_t Gamma_a0PiEta() { return 7; }
-    static Int_t Gamma_a0KK() { return 8; }
+    Int_t Mf0ID() const { return 3; };
+    Int_t Gamma_f0KKID() const { return 4; }
+    Int_t Ma0ID() const { return 5; };
+    Int_t Gamma_f0pipiID() const { return 6; };
+    Int_t Gamma_a0PiEtaID() const { return 7; }
+    Int_t Gamma_a0KKID() const { return 8; }
     /**
      * assymetry = (1-e^2)/2 where e is the K0-K0-bar abundance assymetry
      * @return
      */
-    static Int_t Assymetry() { return 9; }
+    Int_t AssymetryID() const { return 9; }
+
     /**
      *
      * @param opt 0 - 5

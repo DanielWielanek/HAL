@@ -11,8 +11,8 @@
 #include "CorrFit1DCF.h"
 #include "CorrFitMapKstarRstar.h"
 #include "Cout.h"
-#include "Std.h"
 #include "Splines.h"
+#include "Std.h"
 
 #include <TAxis.h>
 #include <TF1.h>
@@ -41,8 +41,8 @@ namespace Hal {
   void CorrFitWielanek::CreateMap() {
     if (fSource == NULL) { Cout::PrintInfo("No source emission funciont", EInfo::kCriticalError); }
     if (fMaps.size() > 0) return;
-    Double_t r_min = fParameters[Radius()].GetMin();
-    Double_t r_max = fParameters[Radius()].GetMax();
+    Double_t r_min = fParameters[RadiusID()].GetMin();
+    Double_t r_max = fParameters[RadiusID()].GetMax();
     Double_t d_r   = r_max - r_min;
     d_r            = d_r / ((Double_t) fExtrapolationsSteps * 2.0);
     r_min          = r_min - d_r;

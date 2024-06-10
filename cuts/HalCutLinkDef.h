@@ -153,6 +153,7 @@
 #pragma link C++ class Hal::TwoTrackSailorCowboyCut + ;
 #pragma link C++ class Hal::PairDeltaQinvCut + ;
 #pragma link C++ class Hal::PdgBinPairCut + ;
+#pragma link C++ class Hal::SameMotherMcCut + ;
 // Virtual cut
 #pragma link C++ class Hal::EventVirtualCut + ;
 #pragma link C++ class Hal::TrackVirtualCut + ;

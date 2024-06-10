@@ -107,8 +107,9 @@ namespace HalUni {
         names.push_back("UEvent.");
         names.push_back("UEvent");
         names.push_back("event");
+        names.push_back("events");
         for (auto i : names) {
-          fEvent = (UEvent*) manager->GetObject(i);
+          fEvent = dynamic_cast<UEvent*>(manager->GetObject(i));
           if (fEvent != nullptr) { return; }
         }
       } break;

@@ -212,7 +212,17 @@ namespace Hal {
     for (int i = 0; i < n; i++) {
       const char* name = va_arg(args, char*);
       if (!mngr->CheckBranch(name)) {
-        Cout::PrintInfo(Form("Check branch: %s, branch not found", name), EInfo::kLowWarning);
+        Cout::PrintInfo(Form("Check branch: %s, branch not found", name), EInfo::kDebugInfo);
+        return kFALSE;
+      }
+    }
+    return kTRUE;
+  }
+  Bool_t Event::CheckBranches(std::initializer_list<TString> list) const {
+    DataManager* mngr = DataManager::Instance();
+    for (auto name : list) {
+      if (!mngr->CheckBranch(name)) {
+        Cout::PrintInfo(Form("Check branch: %s, branch not found", name.Data()), EInfo::kDebugInfo);
         return kFALSE;
       }
     }

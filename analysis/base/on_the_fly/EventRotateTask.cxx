@@ -35,8 +35,7 @@ namespace Hal {
     fPhiMax = other.fPhiMax;
   }
 
-  void Hal::EventRotateTask::ProcessEvent() {  // fCurrentEvent->RotateZ(gRandom->Uniform(fPhiMin, fPhiMax));
-  }
+  void Hal::EventRotateTask::ProcessEvent() { fCurrentEvent->RotateZ(gRandom->Uniform(fPhiMin, fPhiMax)); }
 
   Hal::Package* EventRotateTask::Report() const {
     auto report = EventAna::Report();

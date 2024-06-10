@@ -163,6 +163,16 @@ namespace Hal {
      */
     void NumericalMinimization();
     /**
+     * function that estimates parameters by using simple scan minimizer, the scan
+     * is performed by Hal::Minimizer
+     * @param bins
+     * if bin = 0 - just display minimas
+     * if bin > 0 - set par limits as value +/- bin_width*bin
+     * if bin < 0 - set par limits as value +/- bin_widht also configure Hal::Minimizer to value +/- bin width with step
+     * bin_width/bin
+     */
+    void NumericalPreMinimization(Double_t bins);
+    /**
      * main function that performs some estitamtions for numerical calculations
      * but doesn't perform minimalization itself
      */
@@ -303,9 +313,19 @@ namespace Hal {
     virtual void SetFittingMask(const CorrFitMask& map) = 0;
     /**
      * set minimizer configuration (used only for fit with discrette parametrization and Hal::Minimizer
-     * @param conf
+     * @param conf configuration
      */
     void SetMinimizerConf(const MinimizerStepConf& conf) { fDiscretteMinimzerConf = conf; };
+    /**
+     * set minimizer configuration (used only for fit with discrette parametrization and Hal::Minimizer
+     * @param xmlFile xml file with configuration
+     */
+    void SetMinimizerConf(TString xmlFile);
+    /**
+     * makes dummy config for Hal::Minimizer configuration
+     * @param name of xml file
+     */
+    void MakeDummyXMLConfig(TString xmlFile);
     /**
      *
      * @return numbers of free parameters
@@ -375,6 +395,13 @@ namespace Hal {
                                 EMinFunc     = kChi2) const;
     TF1* GetFittedFunction() const;
     CorrFitHDFunc* GetHD() const { return fHDMaps; };
+    /**
+     * make an estimation of fited parameters by using full scan
+     * @param histo
+     * @param bins - the new parameters range if one fit inside the minimal bin, if 2 fit inside two neighbours bins in <1 do not
+     * change fit parameters - just print estimated values
+     */
+    virtual void PreFit(TObject* histo, Double_t bins = 1);
     virtual void Repaint() { Paint(kTRUE, kTRUE); };
     void UpdateLegend();
     virtual ~CorrFitFunc();

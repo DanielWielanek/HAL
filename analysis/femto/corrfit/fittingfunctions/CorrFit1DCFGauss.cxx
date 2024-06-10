@@ -17,10 +17,10 @@ namespace Hal {
   Double_t CorrFit1DCF_Gauss::CalculateCF(const Double_t* x, const Double_t* params) const {
     Double_t q = x[0];
     if (fKinematics == Femto::EKinematics::kPRF) q = q * 2.0;
-    return params[Norm()]
+    return params[NormID()]
            * (1
-              + params[Lambda()]
-                  * TMath::Exp(-Femto::FmToGeV() * Femto::FmToGeV() * (q * q * params[Radius()] * params[Radius()])));
+              + params[LambdaID()]
+                  * TMath::Exp(-Femto::FmToGeV() * Femto::FmToGeV() * (q * q * params[RadiusID()] * params[RadiusID()])));
   }
 
   CorrFit1DCF_Gauss::~CorrFit1DCF_Gauss() {

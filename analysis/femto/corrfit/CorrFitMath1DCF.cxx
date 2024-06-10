@@ -91,12 +91,12 @@ namespace Hal {
       } else {
         SetParLimits(i, f1->GetParMin(i), f1->GetParMax(i));
       }
-      if (i == Radius()) { fFirstRadius = i; }
+      if (i == RadiusID()) { fFirstRadius = i; }
     }
     for (int i = 0; i < f2->GetParametersNo(); i++) {
-      if (i == Radius()) { fSecondRadius = i; }
+      if (i == RadiusID()) { fSecondRadius = i; }
       SetParameterName(i + par1, f2->GetParameterName(i));
-      if (i == Radius()) {
+      if (i == RadiusID()) {
         if (f2->IsParFixed(i)) {
           FixParameter(i + par1, f1->GetParMin(i));
         } else {
@@ -111,9 +111,9 @@ namespace Hal {
       }
     }
     for (int i = 0; i < f1->GetParametersNo(); i++) {
-      if (i == Radius()) continue;
+      if (i == RadiusID()) continue;
       for (int j = 0; j < f2->GetParametersNo(); j++) {
-        if (j == Radius()) continue;
+        if (j == RadiusID()) continue;
         if ((f1->GetParameterName(i) == f2->GetParameterName(j))) {
           SetParameterName(i, GetParameterName(i) + "_{1}");
           SetParameterName(par1 + j, GetParameterName(j + par1) + "_{2}");

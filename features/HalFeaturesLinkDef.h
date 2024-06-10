@@ -105,6 +105,7 @@
 #pragma link C++ class Hal::Style + ;
 #pragma link C++ class Hal::PadStyle + ;
 #pragma link C++ class Hal::HistoStyle + ;
+#pragma link C++ class Hal::CorrelationHisto + ;
 
 #pragma link C++ class Hal::ErrorCalc + ;
 

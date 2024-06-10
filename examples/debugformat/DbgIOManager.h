@@ -30,6 +30,7 @@ namespace HalDbg {
   protected:
     void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
     void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
+    Bool_t InitInternal();
 
   public:
     IOManager(TString name = "root_virtual.root", Int_t entries = 1);
@@ -37,7 +38,6 @@ namespace HalDbg {
     void SetOutTreeName(TString name) { fOutTreeName = name; }
     Int_t GetEntries() const;
     Int_t GetEntry(Int_t i, Int_t flag);
-    Bool_t Init();
     TFile* GetInFile();
     void AddFriend(TString /*name*/) {};
     void SetInChain(TChain* tempChain, Int_t ident = -1);

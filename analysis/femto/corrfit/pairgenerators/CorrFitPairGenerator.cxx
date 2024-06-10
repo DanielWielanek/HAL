@@ -40,6 +40,11 @@ namespace Hal {
       fGrouping.SetGroupByKLong();
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "z");
       if (fDebug) fDebugHisto = new TH1D("debug", "debug", bins, min, max);
+      auto d3     = (TH3*) dummy->GetNum();
+      fOutCut[0]  = d3->GetXaxis()->GetBinLowEdge(1);
+      fOutCut[1]  = d3->GetXaxis()->GetBinUpEdge(d3->GetNbinsX());
+      fSideCut[0] = d3->GetYaxis()->GetBinLowEdge(1);
+      fSideCut[1] = d3->GetYaxis()->GetBinUpEdge(d3->GetNbinsY());
 
     } else {  // 1d histo group by k* qinv
       fGrouping.GroupByKStar();
@@ -50,7 +55,6 @@ namespace Hal {
     fLow      = min;
     fOverStep = (max - min) / ((double) bins);
     fOverStep = 1.0 / fOverStep;
-
     if (dummy->GetLabelsNo() > 0) {
       TString label = dummy->GetLabel(0);
       fFrame        = Femto::LabelToKinematics(label);

@@ -18,7 +18,7 @@
 
 namespace Hal {
   namespace Fair {
-    RootManager::RootManager() {
+    RootManager::RootManager() : Hal::IOManager(FairRootManager::Instance()->GetInFile()->GetName()) {
       fFairManager = FairRootManager::Instance();
       if (fFairManager->GetInFile()) { SetInputName(fFairManager->GetInFile()->GetName()); }
     }
@@ -59,7 +59,7 @@ namespace Hal {
       }
     }
 
-    Bool_t RootManager::Init() {
+    Bool_t RootManager::InitInternal() {
       if (fFairManager == nullptr) {
         fFairManager = FairRootManager::Instance();
         if (fFairManager->GetInFile()) { SetInputName(fFairManager->GetInFile()->GetName()); }

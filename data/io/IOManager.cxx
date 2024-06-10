@@ -11,7 +11,9 @@
 
 #include "Cout.h"
 #include "Std.h"
+#include "XMLNode.h"
 
+#include <fstream>
 #include <utility>
 #include <vector>
 
@@ -154,6 +156,121 @@ namespace Hal {
     }
     list->Add(new Hal::ParameterString("IOManager", this->ClassName()));
     return list;
+  }
+  Bool_t IOManager::Init() {
+    if (fInFiles.size() == 0) {
+      Hal::Cout::PrintInfo("IO manager cannot file any files !", EInfo::kCriticalError);
+      return kFALSE;
+    }
+    int list1 = fInFiles[0].size();
+    for (auto ent : fInFiles) {
+      if (ent.size() != list1) {
+        Hal::Cout::PrintInfo("IO manager incompatible number of friends", EInfo::kCriticalError);
+        return kFALSE;
+      }
+    }
+    return InitInternal();
+  }
+  IOManager::IOManager(TString list) : IOManager() {
+    fInputName = list;
+    if (list.EndsWith(".list")) {
+      std::ifstream plik(list);
+      std::string line;
+      while (std::getline(plik, line)) {
+        auto vec = Hal::Std::ExplodeString(line, ' ');
+        fInFiles.resize(vec.size());
+        for (unsigned int i = 0; i < vec.size(); i++) {
+          fInFiles[i].push_back(vec[i]);
+        }
+      }
+    } else if (list.EndsWith(".xml")) {
+      Hal::XMLFile file(list);
+      auto root = file.GetRootNode();
+      int dau   = root->GetNChildren();
+      for (int i = 0; i < dau; i++) {
+        auto str = root->GetChild(i)->GetValue();
+        auto vec = Hal::Std::ExplodeString(str, ' ');
+        fInFiles.resize(vec.size());
+        for (unsigned int j = 0; j < vec.size(); j++) {
+          fInFiles[i].push_back(vec[j]);
+        }
+      }
+    } else {
+      fInFiles.resize(1);
+      fInFiles[0].push_back(list);
+    }
+  }
+
+  std::vector<TString> IOManager::GetSafeFile(UInt_t pos) const {
+    std::vector<TString> res;
+    if (fInFiles.size() > pos) { return fInFiles[pos]; }
+    return res;
+  }
+
+  TString IOManager::GetSafeFile(UInt_t i, UInt_t j) const {
+    auto vec = GetSafeFile(i);
+    if (vec.size() > j) return vec[j];
+    return "";
+  }
+
+  Int_t IOManager::GetNFiles() const {
+    if (fInFiles.size() == 0) return -1;
+    return fInFiles[0].size();
+  }
+
+  std::vector<TString> IOManager::GetFilesNames(Int_t entry) const {
+    std::vector<TString> res;
+    for (auto i : fInFiles) {
+      if (i.size() > entry) res.push_back(i[entry]);
+    }
+    return res;
+  }
+
+  Int_t IOManager::GetFriendsLevel() const {
+    if (fInFiles.size() == 0) return -1;
+    return fInFiles.size() - 1;
+  }
+
+  void IOManager::AddFile(TString name) {
+    if (fInFiles.size() == 0) fInFiles.resize(1);
+    fInFiles[0].push_back(name);
+  }
+
+  void IOManager::AddFriend(TString friendName, Int_t level) {
+    if (fInFiles.size() <= level) fInFiles.resize(level + 2);
+    fInFiles[level + 1].push_back(friendName);
+  }
+
+  TString IOManager::GetFirstDataFileName() const {
+    if (fInFiles.size() > 0)
+      if (fInFiles[0].size() > 0) return fInFiles[0][0];
+    return "";
+  }
+
+  TString IOManager::GetFirstFriendFileName(Int_t level) const {
+    if (fInFiles.size() > level + 1)
+      if (fInFiles[level + 1].size() > 0) return fInFiles[level + 1][0];
+    return "";
+  }
+
+  std::vector<TString> IOManager::GetFileNameList(Int_t level) const {
+    level++;
+    std::vector<TString> res;
+    if (level < 0) return res;
+    if (fInFiles.size() > level) {
+      for (auto i : fInFiles[level])
+        res.push_back(i);
+    }
+    return res;
+  }
+
+  std::vector<TString> IOManager::GetFriends(Int_t level) const {
+    std::vector<TString> res;
+    if (fInFiles.size() > level + 1) {
+      for (auto i : fInFiles[level + 1])
+        res.push_back(i);
+    }
+    return res;
   }
 
 }  // namespace Hal

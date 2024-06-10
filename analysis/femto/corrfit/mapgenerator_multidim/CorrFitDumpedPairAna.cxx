@@ -69,6 +69,7 @@ namespace Hal {
     Bool_t fileOk = CorrFitParamsSetup::TestMapFile(fJobId * fMultiplyJobs);
     if (fileOk) {
       Hal::Cout::PrintInfo("Test file found no need to calculate map", EInfo::kError);
+      exit(0);  // force exit to prevent crash
       return kFALSE;
     }
     if (!ConfigureInput()) {

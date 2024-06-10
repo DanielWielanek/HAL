@@ -931,11 +931,12 @@ namespace Hal {
                                    Int_t tier_jump) const {
     // UInt_t passedF =
     // ((ParameterULong64*)cutCont->GetObjectByName("PassedFast"))->GetValue();
-    Double_t failedF           = GetULong(pack, "FailedFast");
-    Double_t passedS           = GetULong(pack, "PassedSlow");
-    Double_t failedS           = GetULong(pack, "FailedSlow");
-    Double_t passed            = passedS;
-    Double_t failed            = failedF + failedS;
+    Double_t failedF = GetULong(pack, "FailedFast");
+    Double_t passedS = GetULong(pack, "PassedSlow");
+    Double_t failedS = GetULong(pack, "FailedSlow");
+    Double_t passed  = passedS;
+    Double_t failed  = failedF + failedS;
+
     Double_t passRatio         = ((Double_t) passed) / ((Double_t(failed + passed)));
     ParameterInt* collectionno = (ParameterInt*) pack->GetObjectByName("CollectionID");
     Int_t collection_no        = collectionno->GetValue();
@@ -1217,7 +1218,7 @@ namespace Hal {
     if (pass_ratio > 1E-3) {
       TArc* b1 = new TArc(X_coor, Y_coor, radii, 90, 90 - angle_pass);
       b1->SetFillColor(passed_col);
-      b1->Draw();
+      b1->Draw("SAME");
     }
     if (label.EqualTo(" ") == kFALSE) {
       TLatex t;

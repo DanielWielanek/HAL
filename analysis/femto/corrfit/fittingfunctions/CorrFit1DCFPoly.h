@@ -25,9 +25,9 @@ namespace Hal {
      * @param degree - polynomial degree (max is 3)
      */
     CorrFit1DCF_Poly(Int_t degree = 2);
-    static Int_t A() { return 0; };
-    static Int_t B() { return 1; };
-    static Int_t C() { return 3; };
+    Int_t AID() const { return 0; };
+    Int_t BID() const { return 1; };
+    Int_t CID() const { return 3; };
     virtual ~CorrFit1DCF_Poly();
     ClassDef(CorrFit1DCF_Poly, 1)
   };

@@ -293,7 +293,6 @@ namespace Hal {
      * CF by information from histogram edges
      */
     void SetCalculationOption(ECalcOption f) { fBinCalc = f; }
-
     virtual ~CorrFit();
     ClassDef(CorrFit, 2)
   };

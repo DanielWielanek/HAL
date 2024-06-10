@@ -10,7 +10,7 @@
 #ifndef HALCORRFIT3DCF_H_
 #define HALCORRFIT3DCF_H_
 
-#include "CorrFitFunc.h"
+#include "CorrFitFunc3D.h"
 
 #include "CorrFitMask.h"
 class TH3;
@@ -22,27 +22,22 @@ namespace Hal {
   class CorrFitMask3D;
   class CorrFitMath3DCF;
   class CorrFitSHCF;
-  class CorrFit3DCF : public CorrFitFunc {
+  class CorrFit3DCF : public CorrFitFunc3D {
 
   public:
   private:
     enum class EDrawMode { kNormal, kDiagonal1, kDiagonal2 };
     friend class CorrFitMath3DCF;
     friend class CorrFitSHCF;
-    static const Int_t fgRout;
-    static const Int_t fgRside;
-    static const Int_t fgRlong;
-    static const Int_t fgLambda;
-    static const Int_t fgNorm;
-    Array_1<Double_t>* fXbins;
-    Array_1<Double_t>* fYbins;
-    Array_1<Double_t>* fZbins;
-    Double_t fXBinf;
-    Double_t fYBinf;
-    Double_t fZBinf;
-    Double_t fXAxisf;
-    Double_t fYAxisf;
-    Double_t fZAxisf;
+    Array_1<Double_t>* fXbins = {nullptr};
+    Array_1<Double_t>* fYbins = {nullptr};
+    Array_1<Double_t>* fZbins = {nullptr};
+    Double_t fXBinf           = {0};
+    Double_t fYBinf           = {0};
+    Double_t fZBinf           = {0};
+    Double_t fXAxisf          = {0};
+    Double_t fYAxisf          = {0};
+    Double_t fZAxisf          = {0};
     Double_t GetFunX(Double_t* x, Double_t* params) const;
     Double_t GetFunY(Double_t* x, Double_t* params) const;
     Double_t GetFunZ(Double_t* x, Double_t* params) const;
@@ -64,7 +59,7 @@ namespace Hal {
     /**
      * processed currednly binX, binY and binZ;
      */
-    mutable Int_t fBinX, fBinY, fBinZ;
+    mutable Int_t fBinX = {0}, fBinY = {0}, fBinZ = {0};
     CorrFitMask3D* GetMask() const { return (CorrFitMask3D*) fMask; };
     virtual void GetTF1s(Bool_t makeNew, EDrawMode drawMode);
     virtual void GetTH1s(EDrawMode drawMode);
@@ -123,6 +118,7 @@ namespace Hal {
      */
     virtual Double_t GetNumericalError(Int_t /*x*/, Int_t /*y*/, Int_t /*z*/) const { return 0; };
     virtual void Paint(Bool_t repaint, Bool_t refresh);
+    CorrFit3DCF(e3DMode mode, Int_t parameters = 3);
 
   public:
     /**
@@ -146,87 +142,8 @@ namespace Hal {
      * @param max
      */
     void SetRadiusLimits(Double_t min, Double_t max);
-    /**
-     * set norm limits
-     * @param min
-     * @param max
-     */
-    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(Norm(), min, max); }
-    /**
-     * set lambda limits
-     * @param min
-     * @param max
-     */
-    void SetLambdaLimits(Double_t min, Double_t max) { SetParLimits(Lambda(), min, max); }
-    /**
-     * set limits of r-out
-     * @param min
-     * @param max
-     */
-    void SetRoutLimits(Double_t min, Double_t max) { SetParLimits(Rout(), min, max); }
-    /**
-     * set limits of r-side
-     * @param min
-     * @param max
-     */
-    void SetRsideLimits(Double_t min, Double_t max) { SetParLimits(Rside(), min, max); }
-    /**
-     * set limits of r-long
-     * @param min
-     * @param max
-     */
-    void SetRlongLimits(Double_t min, Double_t max) { SetParLimits(Rlong(), min, max); }
+
     void SetFittingMask(const CorrFitMask& map);
-    /**
-     *
-     * @return Rout
-     */
-    Double_t GetRout() const { return GetParameter(Rout()); };
-    /**
-     *
-     * @return Rout error
-     */
-    Double_t GetRoutError() const { return GetParError(Rout()); };
-    /**
-     *
-     * @return Rside
-     */
-    Double_t GetRside() const { return GetParameter(Rside()); };
-    /**
-     *
-     * @return Rside error
-     */
-    Double_t GetRsideError() const { return GetParError(Rside()); };
-    /**
-     *
-     * @return Rlong
-     */
-    Double_t GetRlong() const { return GetParameter(Rlong()); };
-    /**
-     *
-     * @return Rlong error
-     */
-    Double_t GetRlongError() const { return GetParError(Rlong()); };
-    /**
-     *
-     * @return labmda value (can be negative for fermions)
-     */
-    Double_t GetLambda() const { return GetParameter(Lambda()); };
-    /**
-     *
-     * @return lambda error
-     */
-    Double_t GetLambdaError() const { return GetParError(Lambda()); };
-    /**
-     *
-     * @return normalization
-     */
-    Double_t GetNorm() const { return GetParameter(Norm()); };
-    /**
-     *
-     * @return normalization error
-     */
-    Double_t GetNormError() const { return GetParError(Norm()); };
     /**
      * return function at given point
      * @param x
@@ -235,31 +152,6 @@ namespace Hal {
      * @return
      */
     Double_t Eval(Double_t x, Double_t y, Double_t z);
-    /**
-     *
-     * @return param number that correspond to Rout
-     */
-    inline static Int_t Rout() { return fgRout; };
-    /**
-     *
-     * @return param number that correspond to Rside
-     */
-    inline static Int_t Rside() { return fgRside; };
-    /**
-     *
-     * @return param number that correspond to Rlong
-     */
-    inline static Int_t Rlong() { return fgRlong; };
-    /**
-     *
-     * @return param number that correspond to lambda
-     */
-    inline static Int_t Lambda() { return fgLambda; };
-    /**
-     *
-     * @return param number that correspond to norm
-     */
-    inline static Int_t Norm() { return fgNorm; };
     virtual ~CorrFit3DCF();
     ClassDef(CorrFit3DCF, 1)
   };

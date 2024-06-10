@@ -34,6 +34,7 @@ OTFReader.cxx
 OTFRecoEvent.cxx
 OTFRecoEventInterface.cxx
 OTFSource.cxx
+OTFReaderDecay.cxx
 )
 
 Set(HEADERS )

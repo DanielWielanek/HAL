@@ -28,9 +28,9 @@ namespace Hal {
 
   private:
     Double_t EvalDenominator(Double_t x) const;
-    static const Int_t fgRinv;
-    static const Int_t fgLambda;
-    static const Int_t fgNorm;
+    Int_t fRinvParIndex   = {0};
+    Int_t fLambdaParIndex = {1};
+    Int_t fNormParIndex   = {2};
 
   protected:
     /**
@@ -107,64 +107,64 @@ namespace Hal {
      * @param min minimal value
      * @param max maximal value
      */
-    void SetRLimits(Double_t min, Double_t max) { SetParLimits(Radius(), min, max); };
+    void SetRLimits(Double_t min, Double_t max) { SetParLimits(RadiusID(), min, max); };
     /**
      * set limits of fitted lambda
      * @param min minimal value
      * @param max maximal value
      */
-    void SetLambdaLimits(Double_t min, Double_t max) { SetParLimits(Lambda(), min, max); }
+    void SetLambdaLimits(Double_t min, Double_t max) { SetParLimits(LambdaID(), min, max); }
     /**
      * set limits of fitted norm
      * @param min minimal value
      * @param max maximal value
      */
-    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(Norm(), min, max); };
+    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(NormID(), min, max); };
     /**
      *
      * @return return radius value
      */
-    Double_t GetRadius() const { return GetParameter(Radius()); };
+    Double_t GetRadius() const { return GetParameter(RadiusID()); };
     /**
      *
      * @return radius error
      */
-    Double_t GetRadiusError() const { return GetParError(Radius()); };
+    Double_t GetRadiusError() const { return GetParError(RadiusID()); };
     /**
      *
      * @return lambda value (for fermions can be negative)
      */
-    Double_t GetLambda() const { return GetParameter(Lambda()); };
+    Double_t GetLambda() const { return GetParameter(LambdaID()); };
     /**
      *
      * @return lambda error
      */
-    Double_t GetLambdaError() const { return GetParError(Lambda()); };
+    Double_t GetLambdaError() const { return GetParError(LambdaID()); };
     /**
      *
      * @return normalization parameter
      */
-    Double_t GetNorm() const { return GetParameter(Norm()); };
+    Double_t GetNorm() const { return GetParameter(NormID()); };
     /**
      *
      * @return normalization error
      */
-    Double_t GetNormError() const { return GetParError(Norm()); };
+    Double_t GetNormError() const { return GetParError(NormID()); };
     /**
      *
      * @return param number that correspond to radii
      */
-    inline static Int_t Radius() { return fgRinv; };
+    inline Int_t RadiusID() const { return fRinvParIndex; };
     /**
      *
      * @return param number that correspond to lambda
      */
-    inline static Int_t Lambda() { return fgLambda; };
+    inline Int_t LambdaID() const { return fLambdaParIndex; };
     /**
      *
      * @return param number that correspond to norm
      */
-    inline static Int_t Norm() { return fgNorm; };
+    inline Int_t NormID() const { return fNormParIndex; };
     virtual ~CorrFit1DCF();
     ClassDef(CorrFit1DCF, 1)
   };

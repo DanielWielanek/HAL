@@ -50,7 +50,10 @@ namespace Hal {
   private:
     MagField* fField;
     std::vector<TString> fBranchNameList;
+    std::vector<std::vector<TString>> fInFiles;
     TString fInputName;
+    std::vector<TString> GetSafeFile(UInt_t pos) const;
+    TString GetSafeFile(UInt_t i, UInt_t j) const;
 
   protected:
     /**
@@ -90,9 +93,11 @@ namespace Hal {
      * @param toFile
      */
     virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) = 0;
+    virtual Bool_t InitInternal()                                                                            = 0;
 
   public:
     IOManager() : fField(nullptr), fBranchNameList(), fInputName("unknown") {};
+    IOManager(TString list);
     /**
      *
      * @return number of entries in data
@@ -109,7 +114,7 @@ namespace Hal {
      * initialize this task
      * @return
      */
-    virtual Bool_t Init() = 0;
+    Bool_t Init();
     /**
      *
      * @return name of main input file name if avaiable
@@ -203,6 +208,47 @@ namespace Hal {
      * @return report
      */
     virtual TList* GetBranchesList() const;
+    /**
+     *
+     * @return number of main files
+     */
+    Int_t GetNFiles() const;
+    /**
+     *
+     * @param entry
+     * @return names of files at given entry (entry is number of file in chain), returns main_tree, friend_1, friend_2 etc.
+     */
+    std::vector<TString> GetFilesNames(Int_t entry = 0) const;
+    /**
+     *
+     * @return number of friens of first file, return -1 if no friens added
+     */
+    Int_t GetFriendsLevel() const;
+    void AddFile(TString name);
+    void AddFriend(TString friendName, Int_t level);
+    /**
+     *
+     * @return name of first file with data
+     */
+    TString GetFirstDataFileName() const;
+    /**
+     * name of the first friend file
+     * @param level
+     * @return
+     */
+    TString GetFirstFriendFileName(Int_t level) const;
+    /**
+     *
+     * @param level level
+     * @return return names of fies at given level if leve==-1 return list of main files
+     */
+    std::vector<TString> GetFileNameList(Int_t level) const;
+    /**
+     *
+     * @param level
+     * @return list of friends
+     */
+    std::vector<TString> GetFriends(Int_t level) const;
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

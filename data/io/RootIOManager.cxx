@@ -10,7 +10,9 @@
 #include "RootIOManager.h"
 
 #include "Cout.h"
+#include "XMLNode.h"
 
+#include <fstream>
 #include <iostream>
 #include <utility>
 
@@ -27,8 +29,8 @@
 #include <TTree.h>
 
 namespace Hal {
-  RootIOManager::RootIOManager(TString name) : fEntries(0), fOutTreeName("HalTree"), fOutFile(nullptr), fOutTree(nullptr) {
-    fInFileName.push_back(name);
+  RootIOManager::RootIOManager(TString name) :
+    IOManager(name), fEntries(0), fOutTreeName("HalTree"), fOutFile(nullptr), fOutTree(nullptr) {
     SetInputName(name);
   }
 
@@ -47,20 +49,21 @@ namespace Hal {
     return chainName;
   }
 
-  Bool_t RootIOManager::Init() {
-    SetInputName(fInFileName[0]);
+  Bool_t RootIOManager::InitInternal() {
     std::vector<TString> chainNames;
-    TFile* f = new TFile(fInFileName[0]);
+    TFile* f = new TFile(GetFirstDataFileName());
     chainNames.push_back(GetChain(f));  // get chain name from main files
     f->Close();
     if (chainNames[0].Length() == 0) return kFALSE;
     TChain* mainChain = new TChain(chainNames[0]);
-    for (auto file : fInFileName) {
+    for (auto file : GetFileNameList(-1)) {
       mainChain->AddFile(file);  // add files to chain
     }
 
     fInChain.push_back(mainChain);
-    for (auto& fileFriend : fFriendName) {  // loop over friends
+    int friendLevel = GetFriendsLevel();
+    for (int i = 0; i < friendLevel; i++) {  // loop over friends
+      auto fileFriend   = GetFriends(i);
       TFile* ff         = new TFile(fileFriend[0]);
       TString chainName = GetChain(ff);
       chainNames.push_back(chainName);
@@ -104,12 +107,6 @@ namespace Hal {
       return fInFile[0];
     else
       return nullptr;
-  }
-
-  void RootIOManager::AddFriend(TString friendName, Int_t level) {
-    if (level < 0) return;
-    if (int(fFriendName.size()) <= level) fFriendName.resize(level + 1);
-    fFriendName[level].push_back(friendName);
   }
 
   void RootIOManager::UpdateBranches() {}

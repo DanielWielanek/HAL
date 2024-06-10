@@ -32,8 +32,6 @@ namespace Hal {
     std::vector<TFile*> fInFile;
     std::vector<TChain*> fInChain;
     std::vector<TObject**> fObjects;
-    std::vector<TString> fInFileName;
-    std::vector<std::vector<TString>> fFriendName;
 
   protected:
     /**
@@ -45,6 +43,7 @@ namespace Hal {
     virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
     virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
     std::vector<TChain*>& GetInChain() { return fInChain; }
+    virtual Bool_t InitInternal();
 
   public:
     /**
@@ -79,8 +78,6 @@ namespace Hal {
      * @return
      */
     TFile* GetInFile();
-    void AddFile(TString name) { fInFileName.push_back(name); };
-    void AddFriend(TString friendName, Int_t level);
     virtual void UpdateBranches();
     void SetInChain(TChain* tempChain, Int_t ident = -1);
     void FillTree();

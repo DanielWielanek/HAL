@@ -16,9 +16,9 @@ namespace Hal {
     auto v0 = track->GetV0Info();
     if (!v0) {
       for (int i = 0; i < GetCutSize(); i++) {
-        SetValue(i, -1E+9);
-        return ForcedUpdate(kFALSE);
+        SetValue(-1E+9, i);
       }
+      return ForcedUpdate(kFALSE);
     }
     return PassV0(v0);
   }

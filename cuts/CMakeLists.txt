@@ -93,6 +93,12 @@ trackcuts/TrackComplexCut.cxx
 trackcuts/TrackVirtualCut.cxx
 trackcuts/TrackFlagCuts.cxx
 trackcuts/TrackNullCut.cxx
+
+trackcuts/v0/TrackV0ArmengerosCut.cxx
+trackcuts/v0/TrackV0Cut.cxx
+trackcuts/v0/TrackV0MinvCut.cxx
+trackcuts/v0/TrackV0TopoCuts.cxx
+trackcuts/v0/TrackBasicV0Cuts.cxx
 #PAIR CUT
 twotrackcuts/kinematics/TwoTrackEtaCut.cxx
 twotrackcuts/kinematics/TwoTrackKtCut.cxx

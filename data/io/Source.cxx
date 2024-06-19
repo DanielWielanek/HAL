@@ -9,30 +9,25 @@
 
 #include "Source.h"
 
+#include "InputDataInfo.h"
 #include "RootIOManager.h"
 
 #include <TString.h>
 
 namespace Hal {
-  Source::Source(TString name) { fFileName.push_back(name); }
 
-  Source::~Source() {}
-
-  RootSource::RootSource(TString name) : Source(name), fManager(nullptr) {
-    if (fFileName[0].Length() != 0) { fManager = new RootIOManager(fFileName[0]); }
-  }
-
-  void RootSource::AddFile(TString friendName) {
-    if (fManager != nullptr) { fManager->AddFile(friendName); }
-  }
-  void RootSource::AddFriend(TString friendName, Int_t level) {
-    if (fManager != nullptr) { fManager->AddFriend(friendName, level); }
-  }
-  RootSource::~RootSource() {
+  Source::~Source() {
     if (fManager) delete fManager;
   }
 
-  IOManager* RootSource::GetIOManager() const {
-    { return fManager; };
-  }
+  void Source::AddFile(TString file) { fManager->AddFile(file); };
+
+  void Source::AddFriend(TString friendName, Int_t level) { fManager->AddFriend(friendName, level); };
+
+  TString Source::GetSourceName() const { return fManager->GetSourceName(); };
+
+  IOManager* Source::GetIOManager() const { return fManager; };
+
+  RootSource::RootSource(TString name) { fManager = new RootIOManager(name); }
+
 }  // namespace Hal

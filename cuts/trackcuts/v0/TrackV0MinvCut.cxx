@@ -22,7 +22,10 @@ namespace Hal {
 
   TrackV0MinvCut::TrackV0MinvCut() : TrackV0Cut(1) { SetUnitName("M_{inv} [GeV/c]", 0); }
 
-  void TrackV0MinvCut::SetDaughersPid(Int_t pos, Int_t neg) {}
+  void TrackV0MinvCut::SetDaughersPid(Int_t pos, Int_t neg) {
+    fPid1 = pos;
+    fPid2 = neg;
+  }
 
   Bool_t TrackV0MinvCut::Init(Int_t taskid) {
     TDatabasePDG* pid = TDatabasePDG::Instance();

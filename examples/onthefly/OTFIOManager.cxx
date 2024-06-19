@@ -9,6 +9,7 @@
 #include "OTFIOManager.h"
 
 #include "Cout.h"
+#include "InputDataInfo.h"
 
 #include <TBranch.h>
 #include <TFile.h>
@@ -20,7 +21,7 @@
 namespace HalOTF {
 
   IOManager::IOManager(TString name, Int_t entries) :
-    Hal::IOManager(name),
+    Hal::IOManager(new Hal::InputDataInfo(name)),
     fInFileName(name),
     fOutTreeName("HalTree"),
     fEntries(entries),

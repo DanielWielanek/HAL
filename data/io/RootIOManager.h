@@ -24,13 +24,12 @@ class TBranch;
 namespace Hal {
 
   class RootIOManager : public IOManager {
-    Int_t fEntries;
+    Int_t fEntries = {0};
     TString fOutFileName;
     TString fOutTreeName;
-    TFile* fOutFile;
-    TTree* fOutTree;
-    std::vector<TFile*> fInFile;
-    std::vector<TChain*> fInChain;
+    TFile* fOutFile  = {nullptr};
+    TTree* fOutTree  = {nullptr};
+    TChain* fInChain = {nullptr};
     std::vector<TObject**> fObjects;  // just to call delete?
 
   protected:
@@ -38,19 +37,23 @@ namespace Hal {
      * add object to branches
      */
     void PushTObject(TObject** obj);
-    TString GetChain(TFile* file) const;
     virtual void FillBranches();
     virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
     virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
-    std::vector<TChain*>& GetInChain() { return fInChain; }
+    TChain* GetInChain() { return fInChain; }
     virtual Bool_t InitInternal();
 
   public:
     /**
      *
-     * @param name file with data
+     * @param name file with data do not use this constructor
      */
-    RootIOManager(TString name = "");
+    RootIOManager(TString name);
+    /**
+     * main constructor
+     * @param info
+     */
+    RootIOManager(InputDataInfo* info);
     /**
      * set name of the output file
      * @param name
@@ -73,11 +76,6 @@ namespace Hal {
      */
     Int_t GetEntry(Int_t i, Int_t flag = 1);
     Bool_t Init();
-    /**
-     * return pointer to the inputfile
-     * @return
-     */
-    TFile* GetInFile();
     virtual void UpdateBranches();
     void SetInChain(TChain* tempChain, Int_t ident = -1);
     void FillTree();

@@ -23,6 +23,7 @@ class TChain;
 class TList;
 class FairRootManager;
 namespace Hal {
+  class InputRootDataInfo;
   namespace Fair {
     class RootManager : public IOManager {
       FairRootManager* fFairManager;
@@ -36,7 +37,6 @@ namespace Hal {
     public:
       RootManager();
       TObject* GetObject(const char* BrName);
-      TFile* GetInFile();
       void UpdateBranches();
       void FillTree() {};
       void SetInChain(TChain* tempChain, Int_t ident = -1);

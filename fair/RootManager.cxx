@@ -9,6 +9,7 @@
 
 #include "RootManager.h"
 
+#include "InputDataInfo.h"
 #include <FairRootManager.h>
 #include <RtypesCore.h>
 #include <TCollection.h>
@@ -18,14 +19,9 @@
 
 namespace Hal {
   namespace Fair {
-    RootManager::RootManager() : Hal::IOManager(FairRootManager::Instance()->GetInFile()->GetName()) {
-      fFairManager = FairRootManager::Instance();
-      if (fFairManager->GetInFile()) { SetInputName(fFairManager->GetInFile()->GetName()); }
-    }
+    RootManager::RootManager() : Hal::IOManager(new Hal::InputRootDataInfo("")) { fFairManager = FairRootManager::Instance(); }
 
     TObject* RootManager::GetObject(const char* BrName) { return fFairManager->GetObject(BrName); }
-
-    TFile* RootManager::GetInFile() { return fFairManager->GetInFile(); }
 
     void RootManager::UpdateBranches() { fFairManager->UpdateBranches(); }
 
@@ -62,7 +58,7 @@ namespace Hal {
     Bool_t RootManager::InitInternal() {
       if (fFairManager == nullptr) {
         fFairManager = FairRootManager::Instance();
-        if (fFairManager->GetInFile()) { SetInputName(fFairManager->GetInFile()->GetName()); }
+        if (fFairManager->GetInFile()) { fDataInfo->OverwriteSourceName(fFairManager->GetInFile()->GetName()); }
       }
       RefreshBranchList();
       return kTRUE;

@@ -20,11 +20,14 @@
 #include "Package.h"
 #include "PackageTable.h"
 #include "Parameter.h"
+
+#include "InputDataInfo.h"
 #include <RtypesCore.h>
 #include <TFile.h>
 #include <TList.h>
 #include <TNamed.h>
 #include <TObjString.h>
+
 
 namespace Hal {
 
@@ -94,17 +97,7 @@ namespace Hal {
   void IOManager::PrintInfo() {
     Cout::PrintInfo(Form("IO Manager %s", ClassName()), EInfo::kInfo);
     TString inFile = "";
-    if (GetInFile()) {
-      inFile = GetInFile()->GetName();
-      Cout::PrintInfo(Form("Input file %s", GetInFile()->GetName()), EInfo::kInfo);
-    } else {
-      Cout::PrintInfo("Cannot get name of input file from file", EInfo::kInfo);
-    }
-    if (!inFile.EqualTo(GetInputFileName()) && inFile.Length() > 0) {
-      TString label = Form("IOManager input file %s, TFile input name %s", GetInputFileName().Data(), inFile.Data());
-      Cout::PrintInfo(label, EInfo::kInfo);
-    }
-
+    Cout::PrintInfo(Form("Input file %s", fDataInfo->GetSourceName().Data()), EInfo::kInfo);
     UpdateBranches();
     RefreshBranchList();
     Cout::Database({"Branch Name", "Type"});
@@ -118,7 +111,9 @@ namespace Hal {
     }
   }
 
-  IOManager::~IOManager() {}
+  IOManager::~IOManager() {
+    if (fDataInfo) delete fDataInfo;
+  }
 
   TList* IOManager::GetBranchesList() const {
     TList* list = new TList();
@@ -158,90 +153,36 @@ namespace Hal {
     return list;
   }
   Bool_t IOManager::Init() {
-    if (fInFiles.size() == 0) {
-      Hal::Cout::PrintInfo("IO manager cannot file any files !", EInfo::kCriticalError);
+    if (!fDataInfo) {
+      Hal::Cout::PrintInfo("IO manager cannot InputDataInfo !", EInfo::kCriticalError);
       return kFALSE;
     }
-    int list1 = fInFiles[0].size();
-    for (auto ent : fInFiles) {
-      if (ent.size() != list1) {
-        Hal::Cout::PrintInfo("IO manager incompatible number of friends", EInfo::kCriticalError);
-        return kFALSE;
-      }
+    if (fDataInfo->GetSafeFiles(-1).size() == 0) {
+      Hal::Cout::PrintInfo("IO manager cannot find any files !", EInfo::kCriticalError);
+      return kFALSE;
     }
     return InitInternal();
   }
-  IOManager::IOManager(TString list) : IOManager() {
-    fInputName = list;
-    if (list.EndsWith(".list")) {
-      std::ifstream plik(list);
-      std::string line;
-      while (std::getline(plik, line)) {
-        auto vec = Hal::Std::ExplodeString(line, ' ');
-        fInFiles.resize(vec.size());
-        for (unsigned int i = 0; i < vec.size(); i++) {
-          fInFiles[i].push_back(vec[i]);
-        }
-      }
-    } else if (list.EndsWith(".xml")) {
-      Hal::XMLFile file(list);
-      auto root = file.GetRootNode();
-      int dau   = root->GetNChildren();
-      for (int i = 0; i < dau; i++) {
-        auto str = root->GetChild(i)->GetValue();
-        auto vec = Hal::Std::ExplodeString(str, ' ');
-        fInFiles.resize(vec.size());
-        for (unsigned int j = 0; j < vec.size(); j++) {
-          fInFiles[i].push_back(vec[j]);
-        }
-      }
-    } else {
-      fInFiles.resize(1);
-      fInFiles[0].push_back(list);
-    }
-  }
 
-  std::vector<TString> IOManager::GetSafeFile(Int_t pos) const {
-    if (pos < 0) pos = 0;
-    std::vector<TString> res;
-    if (fInFiles.size() > pos) { return fInFiles[pos]; }
-    return res;
-  }
+  IOManager::IOManager(InputDataInfo* info) { fDataInfo = info; }
 
-  TString IOManager::GetSafeFile(Int_t i, Int_t j) const {
-    if (j < 0) j = 0;
-    auto vec = GetSafeFile(i);
-    if (vec.size() > j) return vec[j];
-    return "";
-  }
+  TString IOManager::GetSourceName() const { return fDataInfo->GetSourceName(); };
 
-  Int_t IOManager::GetNFiles() const {
-    if (fInFiles.size() == 0) return -1;
-    return fInFiles[0].size();
-  }
+  Int_t IOManager::GetNFiles() const { return fDataInfo->GetNFiles(); }
 
-  std::vector<TString> IOManager::GetFilesNames(Int_t entry) const {
-    std::vector<TString> res;
-    for (auto i : fInFiles) {
-      if (i.size() > entry) res.push_back(i[entry]);
-    }
-    return res;
-  }
+  std::vector<TString> IOManager::GetFilesNames(Int_t entry) const { return fDataInfo->GetSafeFiles(entry); }
 
-  Int_t IOManager::GetFriendsLevel() const {
-    if (fInFiles.size() == 0) return -1;
-    return fInFiles.size() - 1;
-  }
+  Int_t IOManager::GetFriendsLevel() const { return fDataInfo->GetFriendsLevel(); }
 
-  void IOManager::AddFile(TString name) {
-    if (fInFiles.size() == 0) fInFiles.resize(1);
-    fInFiles[0].push_back(name);
-  }
+  void IOManager::AddFile(TString name) { fDataInfo->AddFile(name); }
 
-  void IOManager::AddFriend(TString friendName, Int_t level) {
-    if (fInFiles.size() <= level + 1) fInFiles.resize(level + 2);
-    fInFiles[level + 1].push_back(friendName);
-  }
+  void IOManager::AddFriend(TString friendName, Int_t level) { fDataInfo->AddFriend(friendName, level); }
+
+  TString IOManager::GetFirstDataFileName() const { return fDataInfo->GetSafeFile(-1, 0); }
+
+  TString IOManager::GetFirstFriendFileName(Int_t level) const { return fDataInfo->GetSafeFile(level, 0); }
+
+  std::vector<TString> IOManager::GetFileNameList(Int_t level) const { return fDataInfo->GetSafeFiles(level); }
 
 }  // namespace Hal
 

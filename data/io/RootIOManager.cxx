@@ -16,6 +16,7 @@
 #include <iostream>
 #include <utility>
 
+#include "InputDataInfo.h"
 #include <TBranch.h>
 #include <TChain.h>
 #include <TCollection.h>
@@ -29,61 +30,15 @@
 #include <TTree.h>
 
 namespace Hal {
-  RootIOManager::RootIOManager(TString name) :
-    IOManager(name), fEntries(0), fOutTreeName("HalTree"), fOutFile(nullptr), fOutTree(nullptr) {
-    SetInputName(name);
-  }
+  RootIOManager::RootIOManager(TString name) : IOManager(new InputRootDataInfo(name)) {};
 
-  TString RootIOManager::GetChain(TFile* file) const {
-    TList* list       = file->GetListOfKeys();
-    TString chainName = "";
-    for (int i = 0; i < list->GetEntries(); i++) {
-      TKey* key    = (TKey*) list->At(i);
-      TString name = key->GetName();
-      TObject* obj = file->Get(name);
-      if (dynamic_cast<TTree*>(obj)) {
-        chainName = name;
-        break;
-      }
-    }
-    return chainName;
-  }
+  RootIOManager::RootIOManager(InputDataInfo* info) : IOManager(info) {}
 
   Bool_t RootIOManager::InitInternal() {
     std::vector<TString> chainNames;
-    TFile* f = new TFile(GetFirstDataFileName());
-    chainNames.push_back(GetChain(f));  // get chain name from main files
-    f->Close();
-    if (chainNames[0].Length() == 0) return kFALSE;
-    TChain* mainChain = new TChain(chainNames[0]);
-    for (auto file : GetFileNameList(-1)) {
-      mainChain->AddFile(file);  // add files to chain
-    }
-
-    fInChain.push_back(mainChain);
-    int friendLevel = GetFriendsLevel();
-    for (int i = 0; i < friendLevel; i++) {  // loop over friends
-      auto fileFriend   = GetFileNameList(i);
-      TFile* ff         = new TFile(fileFriend[0]);
-      TString chainName = GetChain(ff);
-      chainNames.push_back(chainName);
-      TChain* friendChain = new TChain(chainName);
-      fInChain.push_back(friendChain);
-      for (auto singleFileFriend : fileFriend) {
-        friendChain->AddFile(singleFileFriend);
-      }
-      ff->Close();
-    }
-
-    Long64_t ent1 = fInChain[0]->GetEntries();
-    for (auto friendChain : fInChain) {
-      if (ent1 != friendChain->GetEntries()) { Cout::PrintInfo("Different number of entries in chains", EInfo::kWarning); }
-    }
-
+    fInChain = ((Hal::InputRootDataInfo*) fDataInfo)->GetChain();
     FillBranches();
-
-    fEntries = fInChain[0]->GetEntries();
-
+    fEntries = fInChain->GetEntries();
     fOutFile = new TFile(fOutFileName, "recreate");
     fOutTree = new TTree(fOutTreeName, fOutTreeName);
     return kTRUE;
@@ -92,21 +47,10 @@ namespace Hal {
   Int_t RootIOManager::GetEntries() const { return fEntries; }
 
   RootIOManager::~RootIOManager() {
-    for (auto file : fInChain) {
-      if (file) delete file;
-    }
-    for (auto file : fInFile)
-      if (file) delete file;
+    if (fInChain) delete fInChain;
     for (auto obj : fObjects)
       delete obj;
     if (fOutFile) delete fOutFile;
-  }
-
-  TFile* RootIOManager::GetInFile() {
-    if (fInFile.size() > 0)
-      return fInFile[0];
-    else
-      return nullptr;
   }
 
   void RootIOManager::UpdateBranches() {}
@@ -129,26 +73,21 @@ namespace Hal {
   }
 
   Int_t Hal::RootIOManager::GetEntry(Int_t i, Int_t flag) {
-    for (auto chain : fInChain) {
-      chain->GetEntry(i, flag);
-    }
+    fInChain->GetEntry(i, flag);
     return 1;
   }
 
   void RootIOManager::PushTObject(TObject** obj) { fObjects.push_back(obj); }
 
   void RootIOManager::FillBranches() {
-    auto inchain = GetInChain();
-    for (auto chain : inchain) {
-      TObjArray* list_branch = chain->GetListOfBranches();
-      for (int i = 0; i < list_branch->GetEntries(); i++) {
-        TBranch* branch = (TBranch*) list_branch->At(i);
-        TString name    = branch->GetName();
-        TObject** obj   = new TObject*();
-        PushTObject(obj);
-        chain->SetBranchAddress(name, obj);
-        AddBranch(branch->GetName(), obj[0], BranchInfo::EFlag::kInPassive);
-      }
+    TObjArray* list_branch = fInChain->GetListOfBranches();
+    for (int i = 0; i < list_branch->GetEntries(); i++) {
+      TBranch* branch = (TBranch*) list_branch->At(i);
+      TString name    = branch->GetName();
+      TObject** obj   = new TObject*();
+      PushTObject(obj);
+      fInChain->SetBranchAddress(name, obj);
+      AddBranch(branch->GetName(), obj[0], BranchInfo::EFlag::kInPassive);
     }
   }
 

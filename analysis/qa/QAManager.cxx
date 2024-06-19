@@ -69,7 +69,7 @@ namespace Hal {
     run->SetOutput(outFile);
     RootSource* source = new RootSource(simFile);
     run->SetSource(source);
-    if (!recoFile.EqualTo(simFile)) { source->AddFriend(simFile); }
+    if (!recoFile.EqualTo(simFile)) { source->AddFriend(simFile, 0); }
     return run;
   }
 

@@ -52,38 +52,6 @@ namespace HalOTF {
     return Hal::Task::EInitFlag::kSUCCESS;
   }
 
-  void ReaderDecay::Exec(Option_t* /*opt*/) {
-    PrepareTables();
-    HalOTF::Reader::Exec("");  // generate mother particles
-    Decay();
-    if (fDebug) {
-      std::cout << "MC Tracks" << std::endl;
-      Hal::Cout::Database({"Idx", "Px", "Pid", "MomId"});
-      for (int i = 0; i < fMcEvent->GetNTracks(); i++) {
-        auto mcTrack = fMcEvent->GetTrack(i);
-        Hal::Cout::Database({Form("%i", i),
-                             Form("%4.2f", mcTrack->GetMomentum().Px()),
-                             Form("%i", mcTrack->GetPdgCode()),
-                             Form("%i", mcTrack->GetMotherId())});
-      }
-      std::cout << "Reco Tracks" << std::endl;
-      Hal::Cout::Database({"Idx", "Px(reco)", "Px(sim)", "Pid", "McId"});
-      for (int i = 0; i < fRecoEvent->GetNTracks(); i++) {
-        auto recoTrack = fRecoEvent->GetTrack(i);
-        //  std::cout << recoTrack->GetMcIndex() << std::endl;
-        auto simTrack = fMcEvent->GetTrack(recoTrack->GetMcIndex());
-
-        Hal::Cout::Database({Form("%i", i),
-                             Form("%4.2f", recoTrack->GetMom().Px()),
-                             Form("%4.2f", simTrack->GetMomentum().Px()),
-                             Form("%i", simTrack->GetPdgCode()),
-                             Form("%i", recoTrack->GetMcIndex())});
-      }
-      std::cout << "-----" << std::endl;
-    }
-    //#endif
-  }
-
   void ReaderDecay::SetDecay(Hal::Decay decay) {
     if (fDecayer) delete fDecayer;
     fDecayer = new Hal::Decay(decay);
@@ -150,6 +118,36 @@ namespace HalOTF {
     for (auto i : fDaughters)
       delete i;
     if (fDecayer) delete fDecayer;
+  }
+
+  void ReaderDecay::GenerateEvent() {
+    HalOTF::Reader::GenerateEvent();
+    Decay();
+    if (fDebug) {
+      std::cout << "MC Tracks" << std::endl;
+      Hal::Cout::Database({"Idx", "Px", "Pid", "MomId"});
+      for (int i = 0; i < fMcEvent->GetNTracks(); i++) {
+        auto mcTrack = fMcEvent->GetTrack(i);
+        Hal::Cout::Database({Form("%i", i),
+                             Form("%4.2f", mcTrack->GetMomentum().Px()),
+                             Form("%i", mcTrack->GetPdgCode()),
+                             Form("%i", mcTrack->GetMotherId())});
+      }
+      std::cout << "Reco Tracks" << std::endl;
+      Hal::Cout::Database({"Idx", "Px(reco)", "Px(sim)", "Pid", "McId"});
+      for (int i = 0; i < fRecoEvent->GetNTracks(); i++) {
+        auto recoTrack = fRecoEvent->GetTrack(i);
+        //  std::cout << recoTrack->GetMcIndex() << std::endl;
+        auto simTrack = fMcEvent->GetTrack(recoTrack->GetMcIndex());
+
+        Hal::Cout::Database({Form("%i", i),
+                             Form("%4.2f", recoTrack->GetMom().Px()),
+                             Form("%4.2f", simTrack->GetMomentum().Px()),
+                             Form("%i", simTrack->GetPdgCode()),
+                             Form("%i", recoTrack->GetMcIndex())});
+      }
+      std::cout << "-----" << std::endl;
+    }
   }
 
 }  // namespace HalOTF

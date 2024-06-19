@@ -22,6 +22,7 @@
 namespace HalOTF {
   class McEvent;
   class RecoEvent;
+  class ComplexEvent;
 } /* namespace HalOTF */
 
 /**
@@ -30,8 +31,10 @@ namespace HalOTF {
 namespace HalOTF {
   class Reader : public Hal::Reader {
   protected:
-    TH2D* fSpectras     = {nullptr};
-    TH1D* fMultiplicity = {nullptr};
+    enum class ETranslate { kNone, kMc, kReco, kComplex };
+    ETranslate fTranslate = {ETranslate::kNone};
+    TH2D* fSpectras       = {nullptr};
+    TH1D* fMultiplicity   = {nullptr};
     Bool_t fOwner;
     Bool_t fRegister;
     Int_t fFixedMultiplicity = {-1};
@@ -42,10 +45,16 @@ namespace HalOTF {
     Double_t fSmear;
     OTF::McEvent* fMcEvent;
     OTF::RecoEvent* fRecoEvent;
+    HalOTF::ComplexEvent* fHalComplexEvent   = {nullptr};
+    HalOTF::RecoEvent* fHalRecoEvent         = {nullptr};
+    HalOTF::McEvent* fHalMcEvent             = {nullptr};
+    Hal::EventInterface* fTranslateInterface = {nullptr};
     /**
      * cleans up events if neccessary
      */
     void PrepareTables();
+    void TranslateEvent();
+    virtual void GenerateEvent();
 
   public:
     Reader();
@@ -65,6 +74,12 @@ namespace HalOTF {
     void SetFixMult(Int_t mult);
     void SetSmear(Double_t smear) { fSmear = smear; }
     void Register(Bool_t reg) { fRegister = reg; }
+    /**
+     * specify how to translate events (if want to use a direct acces to data
+     * @param opt reco - for reco translation, mc - for sim translatation, complex or mc+reco - for complex translation
+     * note, last Reader task should translate events
+     */
+    void Translate(TString opt);
     virtual void Exec(Option_t* opt);
     virtual Hal::Task::EInitFlag Init();
     virtual ~Reader();

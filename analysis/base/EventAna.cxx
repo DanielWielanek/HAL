@@ -371,7 +371,7 @@ namespace Hal {
   Task::EInitFlag EventAna::CheckFormat() {
     DataFormatManager* formatManager = DataFormatManager::Instance();
     DataManager* datamanager         = DataManager::Instance();
-    SetInputFileName(DataManager::Instance()->GetInputFileName());
+    SetInputFileName(DataManager::Instance()->GetSourceName());
     if (formatManager->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered) == nullptr) {
       Cout::PrintInfo("Format is not set, switching to reader", EInfo::kError);
       SetFormatOption(EFormatOption::kReaderAccess);

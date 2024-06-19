@@ -8,6 +8,7 @@
  */
 
 #include "OTFReader.h"
+#include "OTFComplexEvent.h"
 #include "OTFMcEvent.h"
 #include "OTFRecoEvent.h"
 
@@ -51,6 +52,38 @@ namespace HalOTF {
       mng->Register("OTF::McEvent.", "HalEvents", fMcEvent, fRegister);
       mng->Register("OTF::RecoEvent.", "HalEvents", fRecoEvent, fRegister);
     }
+
+    switch (fTranslate) {
+      case ETranslate::kMc: {
+        if (mng->GetObject("HalOTF::McEvent.")) {
+          fTranslate = ETranslate::kNone;
+        } else {
+          fHalMcEvent = new HalOTF::McEvent();
+          mng->Register("HalOTF::McEvent.", "HalEvents", fHalMcEvent, kFALSE);
+          fTranslateInterface = fHalMcEvent->CreateInterface();
+        }
+      } break;
+      case ETranslate::kReco: {
+        if (mng->GetObject("HalOTF::RecoEvent.")) {
+          fTranslate = ETranslate::kNone;
+        } else {
+          fHalRecoEvent = new HalOTF::RecoEvent();
+          mng->Register("HalOTF::RecoEvent.", "HalEvents", fHalRecoEvent, kFALSE);
+          fTranslateInterface = fHalRecoEvent->CreateInterface();
+        }
+      } break;
+      case ETranslate::kComplex: {
+        if (mng->GetObject("HalOTF::ComplexEvent.")) {
+          fTranslate = ETranslate::kNone;
+        } else {
+          fHalComplexEvent = new HalOTF::ComplexEvent();
+          mng->Register("HalOTF::ComplexEvent.", "HalEvents", fHalComplexEvent, kFALSE);
+          fTranslateInterface = fHalComplexEvent->CreateInterface();
+        }
+      } break;
+      default: break;
+    }
+    if (fTranslateInterface) fTranslateInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     return Hal::Task::EInitFlag::kSUCCESS;
   }
 
@@ -69,8 +102,7 @@ namespace HalOTF {
     fCharge   = part->Charge() * 3;
   }
 
-  void Reader::Exec(Option_t* /*opt*/) {
-    PrepareTables();
+  void Reader::GenerateEvent() {
     Int_t shift   = fMcEvent->GetNTracks();
     fCurrrentMult = fFixedMultiplicity;
     if (fMultiplicity) fCurrrentMult = fMultiplicity->GetRandom();
@@ -105,6 +137,11 @@ namespace HalOTF {
       fRecoEvent->AddTrack(rtr);
     }
   }
+  void Reader::Exec(Option_t* /*opt*/) {
+    PrepareTables();
+    GenerateEvent();
+    if (fTranslate != ETranslate::kNone) TranslateEvent();
+  }
 
   Reader::~Reader() {
     if (fSpectras) delete fSpectras;
@@ -132,6 +169,32 @@ namespace HalOTF {
     fFixedMultiplicity = mult;
     if (fMultiplicity) delete fMultiplicity;
     fMultiplicity = nullptr;
+  }
+
+  void Reader::Translate(TString opt) {
+    Int_t flag = 0;
+    if (Hal::Std::FindParam(opt, "sim")) { flag = 1; }
+    if (Hal::Std::FindParam(opt, "reco")) { flag += 2; }
+    switch (flag) {
+      case 1: fTranslate = ETranslate::kMc; break;
+      case 2: fTranslate = ETranslate::kReco; break;
+      case 3: fTranslate = ETranslate::kComplex; break;
+    }
+  }
+
+  void Reader::TranslateEvent() {
+    switch (fTranslate) {
+      case ETranslate::kMc: {
+        fHalMcEvent->Update(fTranslateInterface);
+      } break;
+      case ETranslate::kReco: {
+        fHalRecoEvent->Update(fTranslateInterface);
+      } break;
+      case ETranslate::kComplex: {
+        fHalComplexEvent->Update(fTranslateInterface);
+      } break;
+      default: break;
+    }
   }
 
 }  // namespace HalOTF

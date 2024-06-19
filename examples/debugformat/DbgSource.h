@@ -21,7 +21,6 @@ namespace HalDbg {
 
   public:
     Source(Int_t entries = 0);
-    TString GetSourceName() const { return fFileName[0]; };
     virtual Hal::IOManager* GetIOManager() const;
     virtual ~Source();
     ClassDef(Source, 1)

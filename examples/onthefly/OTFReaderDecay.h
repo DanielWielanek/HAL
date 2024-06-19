@@ -31,12 +31,12 @@ namespace HalOTF {
     std::vector<Hal::McTrack*> fDaughters;
     virtual void Decay();
     Bool_t fDebug = {kFALSE};
+    virtual void GenerateEvent();
 
   public:
     ReaderDecay();
     void EnableDebug() { fDebug = kTRUE; }
     void SetDecay(Hal::Decay decay);
-    virtual void Exec(Option_t* opt);
     virtual Hal::Task::EInitFlag Init();
     virtual ~ReaderDecay();
     ClassDef(ReaderDecay, 1)

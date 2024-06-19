@@ -63,7 +63,7 @@ namespace Hal {
   protected:
   public:
     RootSource(TString name = "");
-    virtual ~RootSource();
+    virtual ~RootSource() {};
     ClassDef(RootSource, 1)
   };
 }  // namespace Hal

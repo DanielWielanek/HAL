@@ -16,6 +16,8 @@
 #include <TNamed.h>
 #include <TTree.h>
 #include <initializer_list>
+#include <iostream>
+
 
 #include "Cout.h"
 #include "Std.h"
@@ -59,14 +61,14 @@ namespace Hal {
   }
 
   TString InputDataInfo::GetSafeFile(Int_t level, Int_t entry) const {
-    if (level + 1 > fFileNames.size()) {
+    if (level + 1 < fFileNames.size()) {
       if (fFileNames[level + 1].size() > entry) return fFileNames[level + 1][entry];
     }
     return "";
   }
 
   std::vector<TString> InputDataInfo::GetSafeFiles(Int_t level) const {
-    if (level + 1 > fFileNames.size()) { return fFileNames[level + 1]; }
+    if (level + 1 < fFileNames.size()) { return fFileNames[level + 1]; }
     return std::vector<TString>();
   }
 
@@ -134,6 +136,7 @@ namespace Hal {
   InputRootDataInfo::InputRootDataInfo(std::vector<std::vector<TString>> files) : InputDataInfo(files) {}
 
   TChain* InputRootDataInfo::GetChain() {
+    if (fTreeNames.size() == 0) { GuessTrees(); }
     TChain* chain = new TChain(fTreeNames[0]);
     for (auto name : fFileNames[0])
       chain->AddFile(name);

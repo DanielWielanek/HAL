@@ -280,6 +280,19 @@ namespace Hal {
         return TString(str(0, lenght - n));
     }
 
+    std::vector<TString> GetLinesFromFile(TString file, Bool_t skip) {
+      std::ifstream txtfile(file);
+      std::string instr;
+      std::vector<TString> res;
+      while (std::getline(txtfile, instr)) {
+        TString line = instr;
+        if (line.Length() == 0 && skip) continue;
+        res.push_back(instr);
+      }
+      txtfile.close();
+      return res;
+    }
+
     void ReplaceInFile(TString path, TString newPath, TString oldPattern, TString newPattern) {
       if (!FileExists(path)) return;
       if (path.EqualTo(".temp.txt")) {

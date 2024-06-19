@@ -130,6 +130,13 @@ namespace Hal {
      */
     TString RemoveNChars(TString str, Int_t n, Char_t opt = 'b');
     /**
+     * return vector of lines from file
+     * @param file name of file to read
+     * @param skipEmpty - skip empty lines
+     * @return
+     */
+    std::vector<TString> GetLinesFromFile(TString file, Bool_t skipEmpty = kTRUE);
+    /**
      * find given pattern and ignore upper/lowercase letter
      * patter must be separate world or word separated by '+' signs
      * e.g. FindParam("someapple+orange", "oragne" returns true

@@ -50,6 +50,7 @@
 #pragma link C++ class Hal::VirtualEvent + ;
 #pragma link C++ class Hal::TrackClones + ;
 #pragma link C++ class Hal::V0Track + ;
+#pragma link C++ class Hal::XiTrack + ;
 #pragma link C++ class Hal::HiddenInfo + ;
 #pragma link C++ namespace Hal::DetectorID;
 #pragma link C++ namespace Hal::DataFieldID;
@@ -65,6 +66,8 @@
 #pragma link C++ class Hal::RootSource + ;
 #pragma link C++ class Hal::Reader + ;
 #pragma link C++ class Hal::BranchInfo + ;
+#pragma link C++ class Hal::InputDataInfo + ;
+#pragma link C++ class Hal::InputRootDataInfo + ;
 #pragma link C++ class std::vector < Hal::BranchInfo> + ;
 #pragma link C++ class std::vector < Hal::TriggerTask> + ;
 #endif

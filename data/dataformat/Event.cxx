@@ -32,6 +32,7 @@ namespace Hal {
   Event::Event() :
     TNamed(),
     fTotalV0s(0),
+    fTotalXis(0),
     fTracks(nullptr),
     fVertex(nullptr),
     fPhi(0),
@@ -42,14 +43,16 @@ namespace Hal {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
     fV0sHiddenInfo = new TClonesArray("Hal::V0Track");
+    fXisHiddenInfo = new TClonesArray("Hal::XiTrack");
   }
 
-  Event::Event(TString track_class, TString v0_class) :
-    fTotalV0s(0), fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fMultiplicity(0) {
+  Event::Event(TString track_class, TString v0_class, TString xi_class) :
+    fTotalV0s(0), fTotalXis(0), fPhi(0), fPhiError(0), fEventId(0), fTotalTracksNo(0), fMultiplicity(0) {
     fPDG           = TDatabasePDG::Instance();
     fVertex        = new TLorentzVector();
     fTracks        = new TClonesArray(track_class);
     fV0sHiddenInfo = new TClonesArray(v0_class);
+    fXisHiddenInfo = new TClonesArray(xi_class);
   }
 
   Event::Event(const Event& other) : TNamed(other) {
@@ -60,9 +63,11 @@ namespace Hal {
     fPhiError      = other.fPhiError;
     fTotalTracksNo = other.fTotalTracksNo;
     fTotalV0s      = other.fTotalV0s;
+    fTotalXis      = other.fTotalXis;
     fEventId       = other.fEventId;
     fMultiplicity  = other.fMultiplicity;
     fV0sHiddenInfo = new TClonesArray(*other.fV0sHiddenInfo);
+    fXisHiddenInfo = new TClonesArray(*other.fXisHiddenInfo);
   }
 
   Event::~Event() {
@@ -70,14 +75,17 @@ namespace Hal {
       delete fTracks;
       delete fVertex;
       delete fV0sHiddenInfo;
+      delete fXisHiddenInfo;
     }
   }
 
   void Event::Clear(Option_t* opt) {
     fTracks->Clear(opt);
     fV0sHiddenInfo->Clear(opt);
+    fXisHiddenInfo->Clear(opt);
     fTotalTracksNo = 0;
     fTotalV0s      = 0;
+    fTotalXis      = 0;
   }
 
   void Event::Print(Option_t* /*opt*/) const {
@@ -97,11 +105,13 @@ namespace Hal {
     fEventId       = event->GetEventID();
     fTotalV0s      = 0;  // this need to be set by user!
     fTotalTracksNo = 0;  // this also should be set by the user
+    fTotalXis      = 0;
   }
 
   void Event::ShallowCopyTracks(Event* event) {
     fTotalTracksNo = event->fTracks->GetEntriesFast();
     fV0sHiddenInfo->ExpandCreateFast(event->fTotalV0s);
+    fXisHiddenInfo->ExpandCreateFast(event->fTotalXis);
     fTracks->ExpandCreateFast(fTotalTracksNo);
     for (int i = 0; i < fTotalTracksNo; i++) {
       Track* to   = (Track*) fTracks->UncheckedAt(i);
@@ -147,7 +157,9 @@ namespace Hal {
   void Event::Update(EventInterface* interface) {
     fTracks->Clear();
     fV0sHiddenInfo->Clear();
+    fXisHiddenInfo->Clear();
     fTotalV0s                      = 0;
+    fTotalXis                      = 0;
     EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(interface);
     if (source) {
       fPhi                = source->GetPhi();
@@ -177,6 +189,7 @@ namespace Hal {
 
   void Event::ShallowCopyCompressTracks(Event* event, const CompressionMap& map) {
     fV0sHiddenInfo->Clear();
+    fXisHiddenInfo->Clear();
     fTotalTracksNo = map.GetNewSize();
     fTracks->ExpandCreateFast(fTotalTracksNo);
     for (int i = 0; i < fTotalTracksNo; i++) {
@@ -283,6 +296,11 @@ namespace Hal {
     const Int_t nVos = fV0sHiddenInfo->GetEntriesFast();
     for (int i = 0; i < nVos; i++) {
       auto vo = (V0Track*) fV0sHiddenInfo->UncheckedAt(i);
+      vo->RotateZ(phi);
+    }
+    const Int_t nXis = fXisHiddenInfo->GetEntriesFast();
+    for (int i = 0; i < nXis; i++) {
+      auto vo = (XiTrack*) fXisHiddenInfo->UncheckedAt(i);
       vo->RotateZ(phi);
     }
   }

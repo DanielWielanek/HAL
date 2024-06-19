@@ -14,7 +14,8 @@
 namespace Hal {
   McEvent::McEvent() : Event(), fB(0) {}
 
-  McEvent::McEvent(TString track_classname, TString v0_classname) : Event(track_classname, v0_classname), fB(0) {}
+  McEvent::McEvent(TString track_classname, TString v0_classname, TString xi_classname) :
+    Event(track_classname, v0_classname, xi_classname), fB(0) {}
 
   void McEvent::ShallowCopyEvent(Event* event) {
     Event::ShallowCopyEvent(event);
@@ -27,6 +28,7 @@ namespace Hal {
 
   void McEvent::ShallowCopyTracks(Event* event) {
     fV0sHiddenInfo->Clear();
+    fXisHiddenInfo->Clear();
     McEvent* mc_event = (McEvent*) event;
     fTotalTracksNo    = mc_event->fTracks->GetEntriesFast();
     fTracks->ExpandCreateFast(fTotalTracksNo);

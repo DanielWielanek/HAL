@@ -26,7 +26,7 @@ namespace Hal {
     TVector3* fMagField;
     TLorentzVector* fVertexError;
     virtual void ShallowCopyEvent(Event* event);
-    ExpEvent(TString track_class, TString v0_class = "Hal::V0Track");
+    ExpEvent(TString track_class, TString v0_class = "Hal::V0Track", TString xi_class = "Hal::XiTrack");
 
   public:
     ExpEvent();

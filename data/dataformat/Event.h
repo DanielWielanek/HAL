@@ -53,11 +53,13 @@ namespace Hal {
     friend class ComplexEvent;
     friend class Track;
     Int_t fTotalV0s;
+    Int_t fTotalXis;
 
   protected:
     TDatabasePDG* fPDG;  //!
     TClonesArray* fTracks;
     TClonesArray* fV0sHiddenInfo;
+    TClonesArray* fXisHiddenInfo;
     TLorentzVector* fVertex;
     Double_t fPhi, fPhiError;
     Int_t fEventId;
@@ -126,8 +128,10 @@ namespace Hal {
      * @param track_class name of track class, e.g. if you have MagicEvent
      * class with MagicTrack  your constructor should look like
      * MagicEvent():Event("MagicTrack"){... .
+     * @param v0_class - name of class with V0 data
+     * @param xi_class - name of class with Xi data
      */
-    Event(TString track_class, TString v0_class = "Hal::V0Track");
+    Event(TString track_class, TString v0_class = "Hal::V0Track", TString xi_class = "Hal::XiTrack");
 
   public:
     /**

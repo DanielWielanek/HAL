@@ -11,6 +11,7 @@
 #define HALTRACK_H_
 
 #include "V0Track.h"
+#include "XiTrack.h"
 
 #include "Link.h"
 
@@ -155,6 +156,13 @@ namespace Hal {
      * @param daughters  - true if daughters ID's are known
      */
     void EnableV0(Bool_t v0, Bool_t daughters = kTRUE);
+
+    /**
+     *
+     * @param xi if true mark particle as Xi, otherwise mark as normal particle
+     * @param daughters  - true if daughters ID's are known
+     */
+    void EnableXi(Bool_t xi, Bool_t daughters = kTRUE);
     /**
      * set particle mother index
      * @param index
@@ -211,6 +219,12 @@ namespace Hal {
     inline Bool_t IsGoodV0() const { return TESTBIT(fType, kV0Daughters); };
     /**
      *
+     * @returntrue if particle is Xi and daughters ID's are known
+     */
+
+    inline Bool_t IsGoodXi() const { return TESTBIT(fType, kXiDaughters); }
+    /**
+     *
      * @return true if track is global
      */
     inline Bool_t IsGlobal() const { return TESTBIT(fType, kGlobal); };
@@ -219,6 +233,11 @@ namespace Hal {
      * @return pointer to standard hidden info
      */
     V0Track* GetV0Info() const;
+    /**
+     *
+     * @returnpointer to standard hidden info
+     */
+    XiTrack* GetXiInfo() const;
     /**
      * mark tras as global if global is true
      * @param global
@@ -257,6 +276,11 @@ namespace Hal {
      * @return true if particle has 3 dependencies (probably V0)
      */
     inline Bool_t IsV0() const { return TESTBIT(fType, kV0); };
+    /**
+     *
+     * @return true if particle has 4 dependencies (probably Xi)
+     */
+    inline Bool_t IsXi() const { return TESTBIT(fType, kXi); };
     /**
      * copy basic data from other track
      * does not copy event or "thisID"

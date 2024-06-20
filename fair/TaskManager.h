@@ -42,11 +42,12 @@ namespace Hal {
       virtual InitStatus Init();
 
     public:
+      TaskManager() : TaskManager(nullptr) {};
       /**
        * custom constructor for non-standard files
        * @param manager - set only if you have non-TObject files in data
        */
-      TaskManager(::Hal::IOManager* manager = nullptr);
+      TaskManager(::Hal::IOManager* manager);
       virtual void AddTrigger(::Hal::TriggerTask* trigger) { fTriggers.push_back(trigger); }
       virtual void AddTask(::Hal::Task* task) { fTasks.push_back(task); };
       virtual void Exec(Option_t* option);

@@ -35,7 +35,7 @@ TaskManager.cxx
 Set(HEADERS )
 Set(LINKDEF HalFairLinkDef.h)
 Set(LIBRARY_NAME HalFair)
-Set(DEPENDENCIES HalQA Base ParBase)
+Set(DEPENDENCIES HalQA HalData Base ParBase)
 
 GENERATE_LIBRARY_HAL()
 

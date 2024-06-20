@@ -38,7 +38,7 @@ namespace Hal {
   public:
     BranchInfo(TString name = "", TObject* pointer = nullptr, EFlag used = EFlag::kNull) :
       fBrName(name), fPointer(pointer), fFlag(used) {}
-    BranchInfo(const BranchInfo& other) : fBrName(other.fBrName), fPointer(other.fPointer), fFlag(other.fFlag) {}
+    BranchInfo(const BranchInfo& other) : TObject(other), fBrName(other.fBrName), fPointer(other.fPointer), fFlag(other.fFlag) {}
     EFlag GetFlag() const { return fFlag; }
     TString GetBranchName() const { return fBrName; }
     void SetFlag(EFlag Flag = EFlag::kNull) { fFlag = Flag; }

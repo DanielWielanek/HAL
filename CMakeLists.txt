@@ -15,12 +15,6 @@ endif()
 
 #check if simpath detected
 
-Set(USE_FAIRROOT FALSE)
-if(DEFINED FAIRROOT)
-    if(FAIRROOT STREQUAL "ON")
-        Set(USE_FAIRROOT TRUE)
-    endif()
-endif()
 Set(USE_EXAMPLES FALSE)
 if(DEFINED EXAMPLES)
     if(EXAMPLES STREQUAL "ON")
@@ -28,29 +22,8 @@ if(DEFINED EXAMPLES)
     endif()
 endif()
 
+include(cmake/modules/CMakeListsExternal.cmake)
 
-if(USE_FAIRROOT) 
-    if(NOT DEFINED ENV{SIMPATH} AND NOT DEFINED SIMPATH)
-    message (FATAL_ERROR "\
-    You did not define the environment variable SIMPATH or define SIMPATH when calling cmake. \
-    Either of the two is needed to properly find the external packages. \
-    Please either set this environment variable or pass -DSIMPATH=<path> and execute cmake again. \
-    ")
-    endif()
-    if (NOT DEFINED SIMPATH)
-        set(SIMPATH $ENV{SIMPATH})
-    endif()
-endif()
-
-#check if fairroot disabled
-
-
-
-if (USE_FAIRROOT)
-    include(cmake/modules/CMakeFairRoot.cmake)
-  else()
-    include(cmake/modules/CMakeListsExternal.cmake)
-endif()
 
 if(DEFINED CIA)
     add_compile_definitions(__CIA__ GLOBAL)

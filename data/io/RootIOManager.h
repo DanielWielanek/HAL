@@ -37,7 +37,6 @@ namespace Hal {
      * add object to branches
      */
     void PushTObject(TObject** obj);
-    virtual void FillBranches();
     virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
     virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
     TChain* GetInChain() { return fInChain; }

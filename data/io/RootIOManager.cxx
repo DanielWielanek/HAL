@@ -37,7 +37,7 @@ namespace Hal {
   Bool_t RootIOManager::InitInternal() {
     std::vector<TString> chainNames;
     fInChain = ((Hal::InputRootDataInfo*) fDataInfo)->GetChain();
-    FillBranches();
+    UpdateBranches();
     fEntries = fInChain->GetEntries();
     fOutFile = new TFile(fOutFileName, "recreate");
     fOutTree = new TTree(fOutTreeName, fOutTreeName);
@@ -54,7 +54,28 @@ namespace Hal {
     if (fOutFile) delete fOutFile;
   }
 
-  void RootIOManager::UpdateBranches() {}
+  void RootIOManager::UpdateBranches() {
+    TObjArray* list_branch = fInChain->GetListOfBranches();
+    for (int i = 0; i < list_branch->GetEntries(); i++) {
+      TBranch* branch = (TBranch*) list_branch->At(i);
+      TString name    = branch->GetName();
+      if (FindBranch(name).GetFlag() != BranchInfo::EFlag::kNull) continue;  // branch with given name already exist
+      TString className = branch->GetClassName();
+      auto classInfo    = TClass::GetClass(className, 1);
+      bool object       = false;
+      if (classInfo) {
+        if (classInfo->InheritsFrom("TObject")) { object = true; }
+      }
+      if (object) {
+        TObject** obj = new TObject*();
+        PushTObject(obj);
+        fInChain->SetBranchAddress(name, obj);
+        AddBranch(branch->GetName(), obj[0], BranchInfo::EFlag::kInPassive);
+      } else {
+        AddBranch(branch->GetName(), nullptr, BranchInfo::EFlag::kInPassive);
+      }
+    }
+  }
 
   void RootIOManager::RegisterInternal(const char* name, const char* /*folderName*/, TNamed* obj, Bool_t toFile) {
     if (toFile) { fOutTree->Branch(name, obj); }
@@ -79,28 +100,6 @@ namespace Hal {
   }
 
   void RootIOManager::PushTObject(TObject** obj) { fObjects.push_back(obj); }
-
-  void RootIOManager::FillBranches() {
-    TObjArray* list_branch = fInChain->GetListOfBranches();
-    for (int i = 0; i < list_branch->GetEntries(); i++) {
-      TBranch* branch   = (TBranch*) list_branch->At(i);
-      TString name      = branch->GetName();
-      TString className = branch->GetClassName();
-      auto classInfo    = TClass::GetClass(className, 1);
-      bool object       = false;
-      if (classInfo) {
-        if (classInfo->InheritsFrom("TObject")) { object = true; }
-      }
-      if (object) {
-        TObject** obj = new TObject*();
-        PushTObject(obj);
-        fInChain->SetBranchAddress(name, obj);
-        AddBranch(branch->GetName(), obj[0], BranchInfo::EFlag::kInPassive);
-      } else {
-        AddBranch(branch->GetName(), nullptr, BranchInfo::EFlag::kInPassive);
-      }
-    }
-  }
 
   void RootIOManager::LockUnusedBranches() {
     for (auto branch : fBranches) {

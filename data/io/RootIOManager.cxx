@@ -48,8 +48,9 @@ namespace Hal {
 
   RootIOManager::~RootIOManager() {
     if (fInChain) delete fInChain;
-    for (auto obj : fObjects)
-      delete obj;
+    for (auto obj : fObjects) {
+      if (obj) delete obj;
+    }
     if (fOutFile) delete fOutFile;
   }
 
@@ -82,12 +83,22 @@ namespace Hal {
   void RootIOManager::FillBranches() {
     TObjArray* list_branch = fInChain->GetListOfBranches();
     for (int i = 0; i < list_branch->GetEntries(); i++) {
-      TBranch* branch = (TBranch*) list_branch->At(i);
-      TString name    = branch->GetName();
-      TObject** obj   = new TObject*();
-      PushTObject(obj);
-      fInChain->SetBranchAddress(name, obj);
-      AddBranch(branch->GetName(), obj[0], BranchInfo::EFlag::kInPassive);
+      TBranch* branch   = (TBranch*) list_branch->At(i);
+      TString name      = branch->GetName();
+      TString className = branch->GetClassName();
+      auto classInfo    = TClass::GetClass(className, 1);
+      bool object       = false;
+      if (classInfo) {
+        if (classInfo->InheritsFrom("TObject")) { object = true; }
+      }
+      if (object) {
+        TObject** obj = new TObject*();
+        PushTObject(obj);
+        fInChain->SetBranchAddress(name, obj);
+        AddBranch(branch->GetName(), obj[0], BranchInfo::EFlag::kInPassive);
+      } else {
+        AddBranch(branch->GetName(), nullptr, BranchInfo::EFlag::kInPassive);
+      }
     }
   }
 

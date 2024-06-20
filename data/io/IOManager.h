@@ -173,6 +173,11 @@ namespace Hal {
      */
     virtual TObject* GetObject(const char* BrName);
     /**
+     * set branch mode to active without returing object
+     * @param brName
+     */
+    void ActivateBranch(TString brName);
+    /**
      * return pointer to input root file
      * @return
      */

@@ -10,6 +10,10 @@
 #include "IOManager.h"
 
 #include "Cout.h"
+#include "InputDataInfo.h"
+#include "Package.h"
+#include "PackageTable.h"
+#include "Parameter.h"
 #include "Std.h"
 #include "XMLNode.h"
 
@@ -17,11 +21,6 @@
 #include <utility>
 #include <vector>
 
-#include "Package.h"
-#include "PackageTable.h"
-#include "Parameter.h"
-
-#include "InputDataInfo.h"
 #include <RtypesCore.h>
 #include <TFile.h>
 #include <TList.h>
@@ -75,12 +74,14 @@ namespace Hal {
     return BranchInfo::EFlag::kNull;
   }
 
-  TObject* Hal::IOManager::GetObject(const char* BrName) {
+  TObject* IOManager::GetObject(const char* BrName) {
     TString name = BrName;
     for (auto& branch : fBranches) {
       if (branch.GetBranchName().EqualTo(name)) {
         if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) { branch.SetFlag(BranchInfo::EFlag::kInActive); }
-        return branch.GetPointer();
+        auto pointer = branch.GetPointer();
+        if (!pointer) { Hal::Cout::PrintInfo(Form("Branch %s exists, but contains non-TObject", name.Data()), EInfo::kError); }
+        return pointer;
       }
     }
     // refresh and try again
@@ -88,10 +89,33 @@ namespace Hal {
     for (auto& branch : fBranches) {
       if (branch.GetBranchName().EqualTo(name)) {
         if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) { branch.SetFlag(BranchInfo::EFlag::kInActive); }
-        return branch.GetPointer();
+        auto pointer = branch.GetPointer();
+        if (!pointer) { Hal::Cout::PrintInfo(Form("Branch %s exists, but contains non-TObject", name.Data()), EInfo::kError); }
+        return pointer;
       }
     }
     return nullptr;
+  }
+
+  void IOManager::ActivateBranch(TString brName) {
+    for (auto& branch : fBranches) {
+      if (branch.GetBranchName().EqualTo(brName)) {
+        if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) {
+          branch.SetFlag(BranchInfo::EFlag::kInActive);
+          return;
+        }
+      }
+    }
+    // refresh and try again
+    RefreshBranchList();
+    for (auto& branch : fBranches) {
+      if (branch.GetBranchName().EqualTo(brName)) {
+        if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) {
+          branch.SetFlag(BranchInfo::EFlag::kInActive);
+          return;
+        }
+      }
+    }
   }
 
   void IOManager::PrintInfo() {

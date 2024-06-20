@@ -31,7 +31,6 @@ namespace Hal {
     protected:
       virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
       virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
-      virtual void RefreshBranchList();
       virtual Bool_t InitInternal();
 
     public:

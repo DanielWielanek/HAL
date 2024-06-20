@@ -38,6 +38,7 @@ namespace Hal {
   public:
     BranchInfo(TString name = "", TObject* pointer = nullptr, EFlag used = EFlag::kNull) :
       fBrName(name), fPointer(pointer), fFlag(used) {}
+    BranchInfo(const BranchInfo& other) : fBrName(other.fBrName), fPointer(other.fPointer), fFlag(other.fFlag) {}
     EFlag GetFlag() const { return fFlag; }
     TString GetBranchName() const { return fBrName; }
     void SetFlag(EFlag Flag = EFlag::kNull) { fFlag = Flag; }
@@ -73,10 +74,6 @@ namespace Hal {
      * @return
      */
     BranchInfo FindBranch(TString name) const;
-    /**
-     * update the branch list
-     */
-    virtual void RefreshBranchList() {};
     /**
      * Internal function for data registering
      * @param name
@@ -187,7 +184,7 @@ namespace Hal {
      * @return list to branches with data
      */
     std::vector<TString> GetBranchNameList() {
-      RefreshBranchList();
+      UpdateBranches();
       return fBranchNameList;
     };
     /**

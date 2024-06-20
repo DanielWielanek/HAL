@@ -66,7 +66,7 @@ namespace Hal {
   }
 
   BranchInfo::EFlag IOManager::GetBranchStatus(const char* BrName) {
-    RefreshBranchList();
+    UpdateBranches();
     TString name = BrName;
     for (auto branch : fBranches) {
       if (branch.GetBranchName().EqualTo(name)) return branch.GetFlag();
@@ -85,7 +85,7 @@ namespace Hal {
       }
     }
     // refresh and try again
-    RefreshBranchList();
+    UpdateBranches();
     for (auto& branch : fBranches) {
       if (branch.GetBranchName().EqualTo(name)) {
         if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) { branch.SetFlag(BranchInfo::EFlag::kInActive); }
@@ -107,7 +107,7 @@ namespace Hal {
       }
     }
     // refresh and try again
-    RefreshBranchList();
+    UpdateBranches();
     for (auto& branch : fBranches) {
       if (branch.GetBranchName().EqualTo(brName)) {
         if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) {
@@ -123,7 +123,6 @@ namespace Hal {
     TString inFile = "";
     Cout::PrintInfo(Form("Input file %s", fDataInfo->GetSourceName().Data()), EInfo::kInfo);
     UpdateBranches();
-    RefreshBranchList();
     Cout::Database({"Branch Name", "Type"});
     TString types[]           = {"Input (Active)", "Input (Passive)", "Output", "Virtual"};
     BranchInfo::EFlag flags[] = {

@@ -24,7 +24,9 @@
 #include <TFile.h>
 namespace Hal {
   namespace Fair {
-    TaskManager::TaskManager() : fManager(nullptr), fProcessedEvents(0) { fManager = new RootManager(); }
+    TaskManager::TaskManager(IOManager* manager) : fManager(manager), fProcessedEvents(0) {
+      if (!fManager) fManager = new RootManager();
+    }
 
     InitStatus TaskManager::Init() {
       fManager->Init();

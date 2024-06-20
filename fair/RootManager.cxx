@@ -23,21 +23,10 @@ namespace Hal {
 
     TObject* RootManager::GetObject(const char* BrName) { return fFairManager->GetObject(BrName); }
 
-    void RootManager::UpdateBranches() { fFairManager->UpdateBranches(); }
-
-    void RootManager::SetInChain(TChain* tempChain, Int_t ident) { fFairManager->SetInChain(tempChain, ident); }
-
-    void RootManager::RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
-      fFairManager->Register(name, folderName, obj, toFile);
-    }
-
-    void RootManager::RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
-      fFairManager->Register(name, Foldername, obj, toFile);
-    }
-
-    void RootManager::RefreshBranchList() {
+    void RootManager::UpdateBranches() {
       fFairManager = FairRootManager::Instance();
-      TList* l     = fFairManager->GetBranchNameList();
+      fFairManager->UpdateBranches();
+      TList* l = fFairManager->GetBranchNameList();
       for (int i = 0; i < l->GetEntries(); i++) {
         TString name = ((TObjString*) l->At(i))->GetString();
         Int_t stat   = fFairManager->CheckBranch(name);
@@ -55,12 +44,22 @@ namespace Hal {
       }
     }
 
+    void RootManager::SetInChain(TChain* tempChain, Int_t ident) { fFairManager->SetInChain(tempChain, ident); }
+
+    void RootManager::RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
+      fFairManager->Register(name, folderName, obj, toFile);
+    }
+
+    void RootManager::RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
+      fFairManager->Register(name, Foldername, obj, toFile);
+    }
+
     Bool_t RootManager::InitInternal() {
       if (fFairManager == nullptr) {
         fFairManager = FairRootManager::Instance();
         if (fFairManager->GetInFile()) { fDataInfo->OverwriteSourceName(fFairManager->GetInFile()->GetName()); }
       }
-      RefreshBranchList();
+      UpdateBranches();
       return kTRUE;
     }
   }  // namespace Fair

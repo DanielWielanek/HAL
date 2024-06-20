@@ -53,6 +53,11 @@ namespace Hal {
      * @return IO Manager that is used to acces the data
      */
     virtual IOManager* GetIOManager() const;
+    /**
+     * init source
+     * @return
+     */
+    virtual Bool_t Init() = 0;
     virtual ~Source();
     ClassDef(Source, 1)
   };
@@ -63,6 +68,7 @@ namespace Hal {
   protected:
   public:
     RootSource(TString name = "");
+    virtual Bool_t Init();
     virtual ~RootSource() {};
     ClassDef(RootSource, 1)
   };

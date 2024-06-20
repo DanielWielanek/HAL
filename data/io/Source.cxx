@@ -30,4 +30,6 @@ namespace Hal {
 
   RootSource::RootSource(TString name) { fManager = new RootIOManager(name); }
 
+  Bool_t RootSource::Init() { return kTRUE; }
+
 }  // namespace Hal

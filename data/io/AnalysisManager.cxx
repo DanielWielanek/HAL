@@ -32,6 +32,8 @@ namespace Hal {
   Bool_t AnalysisManager::Init() {
     Cout::PrintInfo("=== AnalysisManager::Init ===", EInfo::kInfo);
     if (fSource == nullptr) exit(0);
+    Bool_t initSource = fSource->Init();
+    if (!initSource) { Cout::PrintInfo("Cant' init source!", EInfo::kCriticalError); }
     fManager = fSource->GetIOManager();
     if (!fManager) {
       Cout::PrintInfo("IO manager not found!", EInfo::kCriticalError);

@@ -75,8 +75,8 @@ namespace Hal {
      * @return
      */
     Int_t GetEntry(Int_t i, Int_t flag = 1);
-    Bool_t Init();
     virtual void UpdateBranches();
+    void LockUnusedBranches();
     void SetInChain(TChain* tempChain, Int_t ident = -1);
     void FillTree();
     virtual void CloseManager();

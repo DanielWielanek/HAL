@@ -229,7 +229,10 @@ namespace Hal {
      * @param level
      */
     void AddFriend(TString friendName, Int_t level);
-
+    /**
+     * set to 0 status of unused branches
+     */
+    virtual void LockUnusedBranches() {};
     /**
      *
      * @return name of first file with data

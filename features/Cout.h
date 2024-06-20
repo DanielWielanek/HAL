@@ -66,9 +66,14 @@ namespace Hal {
     [[deprecated]] static void Database(Int_t no...);
     /**
      * print strings in database format
-     * @param no number of columns
+     * @param list of strings to print
      */
     static void Database(std::initializer_list<TString> list);
+    /**
+     * print strings in database format
+     * @param list
+     */
+    static void Database(const std::vector<TString>& list);
     /**
      * print shifted database
      * @param shift number of empty places

@@ -58,6 +58,7 @@ namespace Hal {
     void AddFile(TString file);
     void AddFriend(TString file, Int_t level);
     void OverwriteSourceName(TString name) { fListName = name; }
+    virtual void Print(Option_t* option = "") const;
     Int_t GetNFiles() const;
     Int_t GetFriendsLevel() const;
     TString GetSourceName() const { return fListName; }
@@ -97,6 +98,7 @@ namespace Hal {
      * @return TChain with data, works only with root files
      */
     TChain* GetChain();
+    virtual void Print(Option_t* option = "") const;
     ClassDef(InputRootDataInfo, 1)
   };
 

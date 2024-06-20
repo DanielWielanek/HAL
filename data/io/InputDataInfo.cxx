@@ -153,4 +153,70 @@ namespace Hal {
     return chain;
   }
 
+  void InputDataInfo::Print(Option_t* option) const {
+    std::vector<TString> header;
+    header.push_back("No");
+    header.push_back("Main file");
+    for (int i = 1; i < fFileNames.size(); i++) {
+      header.push_back(Form("Friend_%i", i - 1));
+    }
+    Hal::Cout::SetLineLenght(26 * header.size());
+    Hal::Cout::Database(header);
+    for (unsigned int pos = 0; pos < fFileNames[0].size(); pos++) {
+      std::vector<TString> str;
+      str.push_back(Form("%i", pos));
+      for (unsigned int level = 0; level < fFileNames.size(); level++) {
+        if (fFileNames[level].size() > pos) {
+          TString path = fFileNames[level][pos];
+          if (path.Length() > 25) {
+            int crop = path.Length() - 25;
+            path     = TString(path(crop, path.Length()));
+            path     = Form("..%s", path.Data());
+          }
+          str.push_back(path);
+        } else {
+          str.push_back(" ");
+        }
+      }
+      Hal::Cout::Database(str);
+    }
+    Hal::Cout::SetLineLenght(100);
+  }
+
+  void InputRootDataInfo::Print(Option_t* option) const {
+    std::vector<TString> header;
+    header.push_back("No");
+    header.push_back("Main file");
+    for (unsigned int i = 1; i < fFileNames.size(); i++) {
+      header.push_back(Form("Friend_%i", i - 1));
+    }
+    Hal::Cout::SetLineLenght(26 * header.size());
+    Hal::Cout::Database(header);
+    std::vector<TString> line;
+    line.push_back("Tree names:");
+    for (auto tree : fTreeNames) {
+      line.push_back(tree);
+    }
+    Hal::Cout::Database(line);
+    for (unsigned int pos = 0; pos < fFileNames[0].size(); pos++) {
+      std::vector<TString> str;
+      str.push_back(Form("%i", pos));
+      for (unsigned int level = 0; level < fFileNames.size(); level++) {
+        if (fFileNames[level].size() > pos) {
+          TString path = fFileNames[level][pos];
+          if (path.Length() > 25) {
+            int crop = path.Length() - 25;
+            path     = TString(path(crop, path.Length()));
+            path     = Form("..%s", path.Data());
+          }
+          str.push_back(path);
+        } else {
+          str.push_back(" ");
+        }
+      }
+      Hal::Cout::Database(str);
+    }
+    Hal::Cout::SetLineLenght(100);
+  }
+
 } /* namespace Hal */

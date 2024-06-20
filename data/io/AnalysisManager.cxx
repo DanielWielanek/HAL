@@ -83,6 +83,7 @@ namespace Hal {
       }
     }
     if (fActiveTriggers.size() > 0) { fTriggersEnabled = kTRUE; }
+    fManager->LockUnusedBranches();  // lock unused branches by setting status to zero
     return kTRUE;
   }
 

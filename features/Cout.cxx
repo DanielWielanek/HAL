@@ -48,15 +48,19 @@ namespace Hal {
 
   void Cout::Database(std::initializer_list<TString> list) {
     auto strings = Hal::Std::GetVector(list);
+    Database(strings);
+  }
+
+  void Cout::Database(const std::vector<TString>& list) {
     TString begin;
     TString capt;
     TString line;
-    Int_t no   = strings.size();
+    Int_t no   = list.size();
     Int_t wide = (fgLineLength - 2 - no) / no;
     Int_t act_wide;
     Int_t total = 0;
-    for (unsigned int i = 0; i < strings.size(); i++) {
-      capt     = strings[i];
+    for (unsigned int i = 0; i < list.size(); i++) {
+      capt     = list.at(i);
       line     = " ";
       line     = line + capt;
       act_wide = wide - line.Length();

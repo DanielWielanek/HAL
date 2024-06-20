@@ -91,4 +91,13 @@ namespace Hal {
     }
   }
 
+  void RootIOManager::LockUnusedBranches() {
+    for (auto branch : fBranches) {
+      if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) {
+        std::cout << "LOCK Branch " << branch.GetBranchName() << std::endl;
+        fInChain->SetBranchStatus(branch.GetBranchName(), 0);
+      }
+    }
+  }
+
 } /* namespace Hal */

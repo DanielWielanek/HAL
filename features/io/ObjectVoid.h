@@ -17,9 +17,11 @@ namespace Hal {
 
   public:
     ObjectVoid() {};
-    ObjectVoid(T* obj, Bool_t owner = kFALSE);
+    ObjectVoid(T* obj, Bool_t owner) : fPointer(obj), fOwner(owner) {}
     T* GetCore() const { return fPointer; }
-    virtual ~ObjectVoid();
+    virtual ~ObjectVoid() {
+      if (fOwner && fPointer) delete fPointer;
+    }
     ClassDef(ObjectVoid, 0)
   };
 }  // namespace Hal

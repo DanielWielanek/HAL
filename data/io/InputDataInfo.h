@@ -74,6 +74,7 @@ namespace Hal {
     TString GetChainName(TString file) const;
     void GuessTrees();
     std::vector<TString> fTreeNames;
+    TChain* fChain = {nullptr};  //!
 
   public:
     /**

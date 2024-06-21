@@ -22,6 +22,7 @@ namespace HalDbg {
   public:
     Source(Int_t entries = 0);
     virtual Hal::IOManager* GetIOManager() const;
+    Bool_t Init() { return kTRUE; }
     virtual ~Source();
     ClassDef(Source, 1)
   };

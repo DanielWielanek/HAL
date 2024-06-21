@@ -98,6 +98,8 @@ namespace Hal {
         return keyName;
       }
     }
+    ftemp->Close();
+    delete ftemp;
     return "";
   }
 
@@ -136,21 +138,22 @@ namespace Hal {
   InputRootDataInfo::InputRootDataInfo(std::vector<std::vector<TString>> files) : InputDataInfo(files) {}
 
   TChain* InputRootDataInfo::GetChain() {
+    if (fChain) return fChain;
     if (fTreeNames.size() == 0) { GuessTrees(); }
-    TChain* chain = new TChain(fTreeNames[0]);
+    fChain = new TChain(fTreeNames[0]);
     for (auto name : fFileNames[0])
-      chain->AddFile(name);
-    int entries = chain->GetEntries();
+      fChain->AddFile(name);
+    int entries = fChain->GetEntries();
     for (unsigned int i = 1; i < fFileNames.size(); i++) {
       TChain* minichain = new TChain(fTreeNames[i]);
       for (auto friendName : fFileNames[i])
         minichain->AddFile(friendName);
-      chain->AddFriend(minichain);
+      fChain->AddFriend(minichain);
       if (minichain->GetEntries() != entries) {
         Hal::Cout::PrintInfo("Warning different number of entries detected in ChainBuilder", Hal::EInfo::kError);
       }
     }
-    return chain;
+    return fChain;
   }
 
   void InputDataInfo::Print(Option_t* option) const {

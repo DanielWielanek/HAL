@@ -35,7 +35,6 @@ namespace Hal {
   RootIOManager::RootIOManager(InputDataInfo* info) : IOManager(info) {}
 
   Bool_t RootIOManager::InitInternal() {
-    std::vector<TString> chainNames;
     fInChain = ((Hal::InputRootDataInfo*) fDataInfo)->GetChain();
     UpdateBranches();
     fEntries = fInChain->GetEntries();

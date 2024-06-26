@@ -35,6 +35,8 @@
 #pragma link C++ class Hal::Object + ;
 #pragma link C++ class Hal::MultiGraph + ;
 #pragma link C++ class Hal::Cout + ;
+#pragma link C++ class Hal::Pointer < TObject> + ;
+#pragma link C++ class Hal::DoublePointer < TObject> + ;
 
 #pragma link C++ class Hal::Link + ;
 #pragma link C++ class Hal::Const + ;

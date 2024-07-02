@@ -27,16 +27,14 @@
 #include <TString.h>
 
 namespace HalUni {
-  UnigenEventInterface::UnigenEventInterface() : Hal::EventInterfaceAdvanced(new UnigenTrackInterface()), fEvent(nullptr) {
-    fEvent = new UEvent();
-  }
+  UnigenEventInterface::UnigenEventInterface() : Hal::EventInterfaceAdvanced(new UnigenTrackInterface()) {}
 
   void UnigenEventInterface::Compress(Int_t* map, Int_t map_size) {
     Int_t track_pos = 0;
     for (int i = 0; i < map_size; i++) {
       Int_t good_track = map[i];
       for (int j = track_pos; j < good_track; j++) {
-        fEvent->RemoveAt(j);
+        GetUEvent()->RemoveAt(j);
       }
       track_pos = good_track + 1;
     }
@@ -44,35 +42,35 @@ namespace HalUni {
 
   void UnigenEventInterface::CopyData(Hal::EventInterface* s) {
 #ifdef UNIGEN_OLD
-    CopyUnigen(((HalCbmUnigenEventInterface*) s)->fEvent, fEvent);
+    CopyUnigen(((HalCbmUnigenEventInterface*) s)->GetUEvent(), GetUEvent());
 #else
-    *fEvent = *((UnigenEventInterface*) s)->fEvent;
+    *GetUEvent() = *((UnigenEventInterface*) s)->GetUEvent();
 #endif
   }
 
   void UnigenEventInterface::CopyAndCompress(Hal::EventInterface* s, Int_t* map, Int_t map_size) {
     UnigenEventInterface* ev = (UnigenEventInterface*) s;
-    fEvent->SetB(ev->fEvent->GetB());
-    fEvent->SetPhi(ev->fEvent->GetPhi());
-    fEvent->SetNes(ev->fEvent->GetNes());
-    fEvent->SetStepNr(ev->fEvent->GetStepNr());
-    fEvent->SetStepT(ev->fEvent->GetStepT());
+    GetUEvent()->SetB(ev->GetUEvent()->GetB());
+    GetUEvent()->SetPhi(ev->GetUEvent()->GetPhi());
+    GetUEvent()->SetNes(ev->GetUEvent()->GetNes());
+    GetUEvent()->SetStepNr(ev->GetUEvent()->GetStepNr());
+    GetUEvent()->SetStepT(ev->GetUEvent()->GetStepT());
 #ifdef UNIGEN_OLD
-    fEvent->GetParticleList()->Clear();
+    GetUEvent()->GetParticleList()->Clear();
 #else
     TString comment;
-    ev->fEvent->GetComment(comment);
-    fEvent->SetComment(comment);
-    fEvent->Clear();
+    ev->GetUEvent()->GetComment(comment);
+    GetUEvent()->SetComment(comment);
+    GetUEvent()->Clear();
 #endif
     for (int i = 0; i < map_size; i++) {
-      fEvent->AddParticle(*ev->fEvent->GetParticle(map[i]));
+      GetUEvent()->AddParticle(*ev->GetUEvent()->GetParticle(map[i]));
     }
   }
 
   void UnigenEventInterface::Boost(Double_t vx, Double_t vy, Double_t vz) {
-    for (int i = 0; i < fEvent->GetNpa(); i++) {
-      UParticle* p       = fEvent->GetParticle(i);
+    for (int i = 0; i < GetUEvent()->GetNpa(); i++) {
+      UParticle* p       = GetUEvent()->GetParticle(i);
       TLorentzVector mom = p->GetMomentum();
       TLorentzVector pos = p->GetPosition();
       mom.Boost(vx, vy, vz);
@@ -83,19 +81,20 @@ namespace HalUni {
   }
 
   UnigenEventInterface::~UnigenEventInterface() {
-    if (fCanDeleteEvent && fEvent) {
-      if (fEvent) delete fEvent;
+    if (fCanDeleteEvent && fEventPointer->GetPointer()) {
+      if (fEventPointer->GetPointer()) delete fEventPointer->GetPointer();
     }
+    if (fEventPointer) delete fEventPointer;
   }
 
   void UnigenEventInterface::Register(Bool_t write) {
-    if (fEvent == nullptr) fEvent = new UEvent();
+    fEventPointer             = new Hal::ObjectDoublePointer(new UEvent(), false);
     Hal::DataManager* manager = Hal::DataManager::Instance();
-    manager->Register("UEvent.", "", (TNamed*) fEvent, write);
+    manager->Register("UEvent.", "", (TNamed*) fEventPointer->GetDoublePointer(), write);
   }
 
   void UnigenEventInterface::FillTrackInterface(Hal::TrackInterface* track, Int_t index) {
-    track->SetRawTrack(fEvent->GetParticle(index));
+    track->SetRawTrack(GetUEvent()->GetParticle(index));
   }
 
   void UnigenEventInterface::ConnectToTreeInternal(eMode mode) {
@@ -109,17 +108,22 @@ namespace HalUni {
         names.push_back("event");
         names.push_back("events");
         for (auto i : names) {
-          fEvent = dynamic_cast<UEvent*>(manager->GetObject(i));
-          if (fEvent != nullptr) { return; }
+          auto Event = dynamic_cast<UEvent*>(manager->GetTObject(i)->GetPointer());
+          if (Event != nullptr) {
+            fEventPointer = manager->GetTObject(i);
+            return;
+          }
         }
       } break;
       case Hal::EventInterface::eMode::kWrite: {
-        fEvent = new UEvent();
-        manager->Register("UEvent.", "unigen", (TNamed*) fEvent, kTRUE);
+
+        fEventPointer = new Hal::ObjectDoublePointer(new UEvent(), false);
+        // fEvent        = new UEvent();
+        manager->Register("UEvent.", "unigen", (TNamed*) fEventPointer->GetDoublePointer(), kTRUE);
       } break;
       case Hal::EventInterface::eMode::kWriteVirtual: {
-        fEvent = new UEvent();
-        manager->Register("UEvent.", "unigen", (TNamed*) fEvent, kFALSE);
+        fEventPointer = new Hal::ObjectDoublePointer(new UEvent(), false);
+        manager->Register("UEvent.", "unigen", (TNamed*) fEventPointer->GetDoublePointer(), kFALSE);
         fCanDeleteEvent = kTRUE;
 
       } break;

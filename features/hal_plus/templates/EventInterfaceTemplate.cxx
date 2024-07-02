@@ -14,15 +14,18 @@ namespace MyHal {
 
     switch (mode) {
       case Hal::EventInterface::eMode::kRead: {
-        fEvent = (TObject*) manager->GetObject("ObjectName");
+        fEvent = manager->GetObject("ObjectName");
       } break;
       case Hal::EventInterface::eMode::kWrite: {
-        fEvent = new TObject();
-        manager->Register("ObjectName.", "obj", (TNamed*) fEvent, kTRUE);
+        auto event = new TObject();
+        fEvent     = new ObjectDoublePointer(event, false);
+
+        manager->Register("ObjectName.", "obj", (TNamed*) fEvent->GetDoublePointer(), kTRUE);
       } break;
       case Hal::EventInterface::eMode::kWriteVirtual: {
-        fEvent = new TObject();
-        manager->Register("ObjectName.", "obj", (TNamed*) fEvent, kTRUE);
+        auto event = new TObject();
+        fEvent     = new ObjectDoublePointer(event, false);
+        manager->Register("ObjectName.", "obj", (TNamed*) fEvent->GetDoublePointer(), kTRUE);
         fCanDelete = kTRUE;
       } break;
     }

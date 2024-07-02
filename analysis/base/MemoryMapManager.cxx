@@ -60,6 +60,7 @@ namespace Hal {
   }
 
   void MemoryMapManager::BufferEvent(Int_t collection) {
+    if (fDirectAcces) fCurrentEvent = (Hal::Event*) fPointerCurrentEvent->GetPointer();
     if (fUseCompression) {
       CalculateCompressedMap(collection);
       Event* uevent = fEvents[collection]->At(fCounter[collection]);
@@ -111,7 +112,11 @@ namespace Hal {
   void MemoryMapManager::ManualUpdate(Event* event) { event->Update(fInterface); }
 
   Event* MemoryMapManager::GetTemporaryEvent() {
-    if (!fDirectAcces) fCurrentEvent->Update(fInterface);
+    if (!fDirectAcces) {
+      fCurrentEvent->Update(fInterface);
+    } else {
+      fCurrentEvent = (Hal::Event*) fPointerCurrentEvent->GetPointer();
+    }
     if (fCurrentEvent->GetTotalTrackNo() > fTrackMapSize) {
       for (int i = 0; i < fEventCollectionsNo; i++) {
         ReloadMap(fCurrentEvent->GetTotalTrackNo() * 1.2);
@@ -154,10 +159,10 @@ namespace Hal {
       fInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     } else {
       for (auto brName : direct) {
-        Event* ev = dynamic_cast<Event*>(DataManager::Instance()->GetObject(brName));
-        if (ev) {
-          fCurrentEvent = ev;
-          break;
+        fPointerCurrentEvent = dynamic_cast<ObjectDoublePointer*>(DataManager::Instance()->GetDoublePointer(brName));
+        if (fPointerCurrentEvent) {
+          fCurrentEvent = dynamic_cast<Hal::Event*>(fPointerCurrentEvent->GetPointer());
+          if (fCurrentEvent) break;
         }
       }
     }

@@ -13,6 +13,10 @@
 #include <TObject.h>
 #include <TString.h>
 
+#include <type_traits>
+
+#include "Pointer.h"
+
 class TList;
 class TChain;
 class TFile;
@@ -26,26 +30,36 @@ namespace Hal {
 namespace Hal {
   class Package;
   class MagField;
+  class AbstractDoublePointer;
   class BranchInfo : public TObject {
   public:
     enum class EFlag { kInActive, kInPassive, kOut, kVirtual, kNull };
 
   private:
-    TString fBrName   = {""};
-    TObject* fPointer = {nullptr};  //!
-    EFlag fFlag       = {EFlag::kNull};
+    TString fBrName                 = {""};
+    AbstractDoublePointer* fPointer = {nullptr};  //!
+    EFlag fFlag                     = {EFlag::kNull};
+    TString fStoredClassname        = {""};
 
   public:
-    BranchInfo(TString name = "", TObject* pointer = nullptr, EFlag used = EFlag::kNull) :
-      fBrName(name), fPointer(pointer), fFlag(used) {}
-    BranchInfo(const BranchInfo& other) : TObject(other), fBrName(other.fBrName), fPointer(other.fPointer), fFlag(other.fFlag) {}
+    BranchInfo() {};
+    BranchInfo(TString name) : fBrName(name) {}
+    BranchInfo(TString name, const AbstractDoublePointer& pointer, EFlag used = EFlag::kNull);
+    BranchInfo(const BranchInfo& other) :
+      TObject(other),
+      fBrName(other.fBrName),
+      fPointer(other.fPointer),
+      fFlag(other.fFlag),
+      fStoredClassname(other.fStoredClassname) {}
     EFlag GetFlag() const { return fFlag; }
     TString GetBranchName() const { return fBrName; }
     void SetFlag(EFlag Flag = EFlag::kNull) { fFlag = Flag; }
     void SetBranchName(const TString name) { fBrName = name; }
-    TObject* GetPointer() const { return fPointer; }
-    void SetPointer(TObject* pointer = nullptr) { fPointer = pointer; }
-    virtual ~BranchInfo() {};
+    void SetClassName(TString className) { fStoredClassname = className; };
+    TString GetStoredClassName() const { return fStoredClassname; }
+    AbstractDoublePointer* GetDoublePointer() const { return fPointer; }
+    // void SetPointer(TObject* pointer = nullptr) { fPointer = pointer; }
+    virtual ~BranchInfo();
     ClassDef(BranchInfo, 1)
   };
 
@@ -67,7 +81,7 @@ namespace Hal {
      * @param object pointer to object
      * @param flag
      */
-    void AddBranch(TString name, TObject* object, BranchInfo::EFlag flag);
+    void AddBranch(TString name, AbstractDoublePointer& object, BranchInfo::EFlag flag);
     /**
      * look for branch with given name
      * @param name
@@ -81,16 +95,20 @@ namespace Hal {
      * @param obj
      * @param toFile
      */
-    virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) = 0;
+    virtual void RegisterInternal(TString branchName, void** p, Bool_t toFile) = 0;
+    virtual Bool_t InitInternal()                                              = 0;
+
+  protected:
     /**
-     * internal function for data registering
-     * @param name
-     * @param Foldername
-     * @param obj
-     * @param toFile
+     *
+     * @return true if we write to tree
      */
-    virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) = 0;
-    virtual Bool_t InitInternal()                                                                            = 0;
+    virtual Bool_t IsRootOutput() const = 0;
+    /**
+     *
+     * @return output chain
+     */
+    virtual TChain* GetOutChain() const { return nullptr; }
 
   public:
     IOManager() : fField(nullptr), fBranchNameList() {};
@@ -132,21 +150,14 @@ namespace Hal {
      */
     virtual MagField* GetField() const { return fField; };
     /**
-     * register data in output file
-     * @param name name of the branch
-     * @param folderName name of the directory with branch
-     * @param obj pointer to written object
-     * @param toFile if true then data will be written to the output
+     * new method for registration of non-tobjects
+     * @tparam T
+     * @param branchName
+     * @param toFile
+     * @return
      */
-    void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
-    /**
-     * register data in output file
-     * @param name name of the branch
-     * @param folderName name of the directory with branch
-     * @param obj pointer to written object
-     * @param toFile if true then data will be written to the output
-     */
-    void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
+    template<typename T>
+    DoublePointer<T> Register(T* object, TString branchName, Bool_t toFile);
     /**
      * not used
      * @param tempChain
@@ -168,7 +179,8 @@ namespace Hal {
      * @param BrName
      * @return
      */
-    virtual TObject* GetObject(const char* BrName);
+    template<class T>
+    DoublePointer<T> GetObject(TString BrName);
     /**
      * set branch mode to active without returing object
      * @param brName

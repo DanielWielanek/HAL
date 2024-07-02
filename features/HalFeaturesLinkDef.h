@@ -37,6 +37,8 @@
 #pragma link C++ class Hal::Cout + ;
 #pragma link C++ class Hal::Pointer < TObject> + ;
 #pragma link C++ class Hal::DoublePointer < TObject> + ;
+#pragma link C++ class Hal::AbstractPointer + ;
+#pragma link C++ class Hal::AbstractDoublePointer + ;
 
 #pragma link C++ class Hal::Link + ;
 #pragma link C++ class Hal::Const + ;
@@ -157,7 +159,6 @@
 #pragma link C++ class Hal::MinimizerStepConf + ;
 #pragma link C++ class Hal::CompressionMap + ;
 
-// STD STUFF
 #pragma link C++ class std::vector < Hal::FitParam> + ;
 #pragma link C++ class std::vector < TString> + ;
 #pragma link C++ class std::vector < std::vector < TString>> + ;

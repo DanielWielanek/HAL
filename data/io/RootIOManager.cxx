@@ -66,22 +66,21 @@ namespace Hal {
         if (classInfo->InheritsFrom("TObject")) { object = true; }
       }
       if (object) {
-        TObject** obj = new TObject*();
+        ObjectDoublePointer* obj = new ObjectDoublePointer();
         PushTObject(obj);
-        fInChain->SetBranchAddress(name, obj);
-        AddBranch(branch->GetName(), obj[0], BranchInfo::EFlag::kInPassive);
-      } else {
-        AddBranch(branch->GetName(), nullptr, BranchInfo::EFlag::kInPassive);
+        fInChain->SetBranchAddress(name, obj->GetDoublePointer());
+        AddBranch(branch->GetName(), *obj, BranchInfo::EFlag::kInPassive);
+      } else {  // do nothing
+        AbstractDoublePointer* abs = MakeSpecializedDoublePointer(className);
+        PushTObject(abs);
+        AddBranch(branch->GetName(), *abs, BranchInfo::EFlag::kInPassive);
       }
     }
   }
 
-  void RootIOManager::RegisterInternal(const char* name, const char* /*folderName*/, TNamed* obj, Bool_t toFile) {
-    if (toFile) { fOutTree->Branch(name, obj); }
-  }
-
-  void RootIOManager::RegisterInternal(const char* name, const char* /*Foldername*/, TCollection* obj, Bool_t toFile) {
-    if (toFile) { fOutTree->Branch(name, obj); }
+  void RootIOManager::RegisterInternal(TString branchName, void** p, Bool_t toFile) {
+    if (!toFile) return;
+    fOutTree->Branch(branchName, p);
   }
 
   void RootIOManager::SetInChain(TChain* /*tempChain*/, Int_t /*ident*/) {}
@@ -98,7 +97,7 @@ namespace Hal {
     return 1;
   }
 
-  void RootIOManager::PushTObject(TObject** obj) { fObjects.push_back(obj); }
+  void RootIOManager::PushTObject(Hal::AbstractDoublePointer* obj) { fObjects.push_back(obj); }
 
   void RootIOManager::LockUnusedBranches() {
     for (auto branch : fBranches) {

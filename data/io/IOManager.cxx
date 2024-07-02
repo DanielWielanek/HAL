@@ -14,6 +14,7 @@
 #include "Package.h"
 #include "PackageTable.h"
 #include "Parameter.h"
+#include "Pointer.h"
 #include "Std.h"
 #include "XMLNode.h"
 
@@ -22,6 +23,7 @@
 #include <vector>
 
 #include <RtypesCore.h>
+#include <TChain.h>
 #include <TFile.h>
 #include <TList.h>
 #include <TNamed.h>
@@ -29,8 +31,14 @@
 
 
 namespace Hal {
+  BranchInfo::BranchInfo(TString name, const AbstractDoublePointer& pointer, EFlag used) :
+    fBrName(name), fPointer(pointer.MakeCopy()), fFlag(used) {}
 
-  void IOManager::AddBranch(TString name, TObject* object, BranchInfo::EFlag flag) {
+  BranchInfo::~BranchInfo() {
+    if (fPointer) delete fPointer;
+  }
+
+  void IOManager::AddBranch(TString name, AbstractDoublePointer& object, BranchInfo::EFlag flag) {
     for (auto str : fBranches) {
       if (str.GetBranchName().EqualTo(name)) return;
     }
@@ -42,27 +50,21 @@ namespace Hal {
     for (auto branch : fBranches) {
       if (branch.GetBranchName().EqualTo(name)) return branch;
     }
-    BranchInfo br(name, nullptr, BranchInfo::EFlag::kNull);
-    br.GetBranchName() = name;
-    return br;
+    return BranchInfo(name);
   }
 
-  void IOManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
-    if (toFile) {
-      AddBranch(name, obj, BranchInfo::EFlag::kOut);
-    } else {
-      AddBranch(name, obj, BranchInfo::EFlag::kVirtual);
-    }
-    RegisterInternal(name, folderName, obj, toFile);
-  }
+  template<class T>
+  Hal::DoublePointer<T> IOManager::Register(T* obj, TString branchName, Bool_t toFile) {
+    BranchInfo::EFlag flag = BranchInfo::EFlag::kVirtual;
+    if (toFile) flag = BranchInfo::EFlag::kOut;
+    Hal::DoublePointer<T> pointer;
+    pointer.Initialize(obj);
 
-  void IOManager::Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
-    if (toFile) {
-      AddBranch(name, obj, BranchInfo::EFlag::kOut);
-    } else {
-      AddBranch(name, obj, BranchInfo::EFlag::kVirtual);
-    }
-    RegisterInternal(name, Foldername, obj, toFile);
+    if (IsRootOutput() && toFile) { GetOutChain()->SetBranchAddress(branchName, pointer.GetDoublePointer()); }
+    RegisterInternal(branchName, pointer.GetDoublePointer(), toFile);
+    AddBranch(branchName, pointer, flag);
+    delete obj;
+    return pointer;
   }
 
   BranchInfo::EFlag IOManager::GetBranchStatus(const char* BrName) {
@@ -73,28 +75,29 @@ namespace Hal {
     }
     return BranchInfo::EFlag::kNull;
   }
-
-  TObject* IOManager::GetObject(const char* BrName) {
-    TString name = BrName;
-    for (auto& branch : fBranches) {
-      if (branch.GetBranchName().EqualTo(name)) {
-        if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) { branch.SetFlag(BranchInfo::EFlag::kInActive); }
-        auto pointer = branch.GetPointer();
-        if (!pointer) { Hal::Cout::PrintInfo(Form("Branch %s exists, but contains non-TObject", name.Data()), EInfo::kError); }
-        return pointer;
-      }
+  template<class T>
+  DoublePointer<T> IOManager::GetObject(TString branchName) {
+    auto& branch = FindBranch(branchName);
+    if (branch.GetFlag() == Hal::BranchInfo::EFlag::kNull) UpdateBranches();
+    branch = FindBranch(branchName);
+    if (branch.GetFlag() == Hal::BranchInfo::EFlag::kNull) { return DoublePointer<T>(nullptr); }
+    auto pointer = branch.GetDoublePointer();
+    if (!pointer->IsTObject()) {                               // good it's not tobject
+      auto copied = dynamic_cast<DoublePointer<T>*>(pointer);  // must be
+      if (!copied) { return DoublePointer<T>(nullptr); }
+      return *copied;
     }
-    // refresh and try again
-    UpdateBranches();
-    for (auto& branch : fBranches) {
-      if (branch.GetBranchName().EqualTo(name)) {
-        if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) { branch.SetFlag(BranchInfo::EFlag::kInActive); }
-        auto pointer = branch.GetPointer();
-        if (!pointer) { Hal::Cout::PrintInfo(Form("Branch %s exists, but contains non-TObject", name.Data()), EInfo::kError); }
-        return pointer;
-      }
+    // it's t object, it;s problem becase we store rather DoubleObjectPointers, so we have to make specialized interface
+    auto copied = dynamic_cast<ObjectDoublePointer*>(pointer);
+    if (!copied) {
+      // ok its not template<TObject>, maybe it specialized template? e.g. tempate<TClonesArray> ?
+      auto realTobject = dynamic_cast<DoublePointer<T>*>(pointer);
+      if (realTobject) return realTobject;
+      return DoublePointer<T>(nullptr);
     }
-    return nullptr;
+    // ok we know it's some tobject class, lets make a copy
+    auto specializedcopy = copied->MakeSpecializedCopy<T>();
+    return specializedcopy;
   }
 
   void IOManager::ActivateBranch(TString brName) {
@@ -167,9 +170,7 @@ namespace Hal {
     for (auto branch : fBranches) {
       TString flagStr   = getStr(branch.GetFlag());
       TString name      = branch.GetBranchName();
-      TObject* obj      = branch.GetPointer();
-      TString className = "unknown";
-      if (obj) { className = obj->ClassName(); }
+      TString className = branch.GetStoredClassName();
       list->Add(new ParameterString(Form("Branch: %s", name.Data()), Form("%s [%s]", className.Data(), flagStr.Data())));
     }
     list->Add(new Hal::ParameterString("IOManager", this->ClassName()));
@@ -206,6 +207,7 @@ namespace Hal {
   TString IOManager::GetFirstFriendFileName(Int_t level) const { return fDataInfo->GetSafeFile(level, 0); }
 
   std::vector<TString> IOManager::GetFileNameList(Int_t level) const { return fDataInfo->GetSafeFiles(level); }
+
 
 }  // namespace Hal
 

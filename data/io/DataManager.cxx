@@ -32,14 +32,6 @@ namespace Hal {
 
   Bool_t DataManager::Init() { return fManager->Init(); }
 
-  void DataManager::Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile) {
-    fManager->Register(name, folderName, obj, toFile);
-  }
-
-  void DataManager::Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile) {
-    fManager->Register(name, Foldername, obj, toFile);
-  }
-
   void DataManager::SetInChain(TChain* tempChain, Int_t ident) { fManager->SetInChain(tempChain, ident); }
 
   void DataManager::UpdateBranches() { fManager->UpdateBranches(); }
@@ -49,7 +41,11 @@ namespace Hal {
     return kFALSE;
   }
 
-  TObject* DataManager::GetObject(const char* BrName) { return fManager->GetObject(BrName); }
+  AbstractDoublePointer* DataManager::GetDoublePointer(const char* BrName) { return fManager->GetObject(BrName); }
+
+  TObject* DataManager::GetTObject(const char* BrName) {
+    return ((ObjectDoublePointer*) fManager->GetObject(BrName))->GetPointer();
+  }
 
   const std::vector<TString> DataManager::GetBranchNameList() { return fManager->GetBranchNameList(); }
 

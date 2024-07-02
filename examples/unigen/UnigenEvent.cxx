@@ -26,7 +26,7 @@ namespace HalUni {
 
   void UnigenEvent::Update(Hal::EventInterface* interface) {
     Clear();
-    UEvent* temp   = ((UnigenEventInterface*) interface)->fEvent;
+    UEvent* temp   = ((UnigenEventInterface*) interface)->GetUEvent();
     fB             = temp->GetB();
     fPhi           = temp->GetPhi();
     fTotalTracksNo = temp->GetNpa();

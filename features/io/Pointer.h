@@ -15,8 +15,32 @@
  * NOTE - those classes manage a single pointers not arrays
  */
 namespace Hal {
+  class AbstractPointer : public Object {
+  public:
+    AbstractPointer() {};
+    virtual AbstractPointer* MakeCopy() const = 0;
+    virtual Bool_t IsTObject() const { return kFALSE; };
+    virtual TString GetStoredClassName() const { return ""; }
+    virtual ~AbstractPointer() {};
+    ClassDef(AbstractPointer, 1)
+  };
+  class AbstractDoublePointer : public Object {
+    std::type_info& fType = {nullptr};
+
+  protected:
+    AbstractDoublePointer(std::type_info info) : fType(info) {};
+
+  public:
+    AbstractDoublePointer() {};
+    const std::type_info& GetTypeInfo()             = 0;
+    virtual AbstractDoublePointer* MakeCopy() const = 0;
+    virtual Bool_t IsTObject() const { return kFALSE; };
+    virtual TString GetStoredClassName() const { return ""; }
+    virtual ~AbstractDoublePointer() {};
+    ClassDef(AbstractDoublePointer, 1)
+  };
   template<class T>
-  class Pointer : public Object {
+  class Pointer : public AbstractPointer {
     T* fPointer   = {nullptr};
     Bool_t fOwner = {kFALSE};
 
@@ -24,6 +48,14 @@ namespace Hal {
     Pointer() {};
     Pointer(T* obj, Bool_t owner) : fPointer(obj), fOwner(owner) {}
     T* GetPointer() const { return fPointer; }
+    Bool_t IsTObject() const {
+      if (dynamic_cast<TObject*>(fPointer)) return kTRUE;
+      return kFALSE;
+    };
+    AbstractPointer* MakeCopy() const {
+      auto pointer = new Pointer<T>(fPointer, fOwner);
+      return pointer;
+    }
     virtual ~Pointer() {
       if (fOwner && fPointer) delete fPointer;
     }
@@ -35,13 +67,13 @@ namespace Hal {
    * @tparam T
    */
   template<class T>
-  class DoublePointer : public Object {
+  class DoublePointer : public AbstractDoublePointer {
     T** fPointer  = {nullptr};
     Bool_t fOwner = {kFALSE};
 
   public:
     DoublePointer() {};
-    DoublePointer(T** obj, Bool_t owner) : fPointer(obj), fOwner(owner) {};
+    DoublePointer(T** obj, Bool_t owner) : AbstractDoublePointer(typeid(obj)), fPointer(obj), fOwner(owner) {};
     /**
      *
      * @return pointer from double pointer
@@ -52,18 +84,41 @@ namespace Hal {
      * @return double pointer
      */
     T** GetDoublePointer() const { return fPointer; }
+    Bool_t IsTObject() const {
+      if (dynamic_cast<TObject*>(*fPointer)) return kTRUE;
+      return kFALSE;
+    };
+    Bool_t IsNull() const { return (fPointer == nullptr); }
+    void Initialize(T* obj) {
+      fPointer  = new T*();
+      *fPointer = new T(*obj);
+    }
+    AbstractDoublePointer* MakeCopy() const {
+      auto pointer = new DoublePointer<T>(fPointer, false);
+      return pointer;
+    }
+    template<class T2>
+    T2 MakeSpecializedCopy() const {
+      if (dynamic_cast<T2*>(*fPointer)) {
+        DoublePointer<T2> x;
+        x->*fPointer = (T*) fPointer;
+        return x;
+      }
+      DoublePointer<T2> y;
+      return y;
+    }
     /**
-     * deletes double pointer but not the pointer linked to double pointer
+     * deletes pointer if possible, does not delete double pointer
      */
-    void DeleteDoublePointer() {
-      delete fPointer;
-      fPointer = nullptr;
+    virtual void DeletePointer() {
+      if (fPointer)
+        if (*fPointer) {
+          delete *fPointer;
+          *fPointer = nullptr;
+        }
     }
     virtual ~DoublePointer() {
-      if (fPointer && fOwner) {
-        delete *fPointer;
-        delete fPointer;
-      }
+      if (fOwner) DeletePointer();
     }
     ClassDef(DoublePointer, 0)
   };

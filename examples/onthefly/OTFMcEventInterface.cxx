@@ -17,28 +17,29 @@
 #include <iostream>
 
 namespace HalOTF {
-  McEventInterface::McEventInterface() : fEvent(nullptr), fCanDelete(kFALSE) {}
+  McEventInterface::McEventInterface() : fEventPointer(nullptr), fCanDelete(kFALSE) {}
 
   void McEventInterface::ConnectToTreeInternal(Hal::EventInterface::eMode mode) {
     Hal::DataManager* manager = Hal::DataManager::Instance();
     switch (mode) {
       case Hal::EventInterface::eMode::kRead: {
-        fEvent = (OTF::McEvent*) manager->GetObject("OTF::McEvent.");
+        fEventPointer = (OTF::McEvent*) manager->GetDoublePointer("OTF::McEvent.");
       } break;
       case Hal::EventInterface::eMode::kWrite: {
-        fEvent = new OTF::McEvent();
-        manager->Register("OTF::McEvent.", "OTF", fEvent, kTRUE);
+        manager->Register("OTF::McEvent.", "OTF", new OTF::McEvent(), kTRUE);
+        fEventPointer = manager->GetTObject("OTF::McEvent.");
       } break;
       case Hal::EventInterface::eMode::kWriteVirtual: {
-        fEvent = new OTF::McEvent();
-        manager->Register("OTF::McEvent.", "OTF", fEvent, kFALSE);
-        fCanDelete = kTRUE;
+        manager->Register("OTF::McEvent.", "OTF", new OTF::McEvent(), kFALSE);
+        fEventPointer = manager->GetTObject("OTF::McEvent.");
+        fCanDelete    = kTRUE;
       } break;
     }
   }
 
   McEventInterface::~McEventInterface() {
-    if (fCanDelete && fEvent) delete fEvent;
+    if (fCanDelete && fEventPointer && fEventPointer->GetPointer()) fEventPointer->DeletePointer();
+    if (fEventPointer) delete fEventPointer;
   }
 
 }  // namespace HalOTF

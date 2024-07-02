@@ -87,15 +87,15 @@ namespace Hal {
     return fDataFormatNonBuffered[task_id]->GetFormatName();
   }
 
-  Event* DataFormatManager::FindReaderFormat() {
-    DataManager* datamanager = DataManager::Instance();
-    Event* event             = nullptr;
-    event                    = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent."));
+  Hal::DoublePointer<Hal::Event>* DataFormatManager::FindReaderFormat() {
+    DataManager* datamanager              = DataManager::Instance();
+    Hal::DoublePointer<Hal::Event>* event = nullptr;
+    event = dynamic_cast<Hal::DoublePointer<Hal::Event>*>(datamanager->GetDoublePointer("HalEvent."));
     if (event != nullptr) return event;
     auto branchList = datamanager->GetBranchNameList();
     for (auto branch : branchList) {
-      TObject* temp = datamanager->GetObject(branch);
-      if (dynamic_cast<Hal::Event*>(temp)) { event = (Hal::Event*) temp; }
+      TObject* temp = datamanager->GetDoublePointer(branch);
+      if (dynamic_cast<Hal::DoublePointer<Hal::Event>*>(temp)) { event = (Hal::DoublePointer<Hal::Event>*) temp; }
     }
     return event;
   }

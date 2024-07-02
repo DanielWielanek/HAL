@@ -12,11 +12,16 @@
 #include <TClonesArray.h>
 #include <TObjArray.h>
 #include <TString.h>
+
+#include "Pointer.h"
+
 namespace Hal {
   class TrackClones : public TObject {
     TString fBranchName;
     TString fDirName;
-    TClonesArray* fClones;
+    TString fClassName;
+    ObjectDoublePointer fPointer;
+    inline TClonesArray* GetClones() const { return (TClonesArray*) fPointer.GetPointer(); }
 
   public:
     TrackClones(TString ClassName = "", TString branchname = "", TString dirname = "");
@@ -26,41 +31,44 @@ namespace Hal {
     void DeleteClones();
     template<class T>
     void CopyFrom(const TClonesArray* from) {
-      fClones->Clear();
+      auto clones = GetClones();
+      clones->Clear();
       Int_t size = from->GetEntriesFast();
-      fClones->ExpandCreateFast(size);
+      clones->ExpandCreateFast(size);
       for (int i = 0; i < size; i++) {
         const T* obj_from = (T*) from->UncheckedAt(i);
-        T* obj_to         = (T*) fClones->UncheckedAt(i);
+        T* obj_to         = (T*) clones->UncheckedAt(i);
         *obj_to           = *obj_from;
       }
     }
     template<class T>
     void CopyTo(TClonesArray* to) {
-      fClones->Clear();
+      auto clones = GetClones();
+      clones->Clear();
       Int_t size = to->GetEntriesFast();
       to->ExpandCreateFast(size);
       for (int i = 0; i < size; i++) {
-        T* obj_from = (T*) fClones->UncheckedAt(i);
+        T* obj_from = (T*) clones->UncheckedAt(i);
         T* obj_to   = (T*) to->UncheckedAt(i);
         *obj_to     = *obj_from;
       }
     }
     template<class T>
     void CopyCompress(TClonesArray* from, Int_t* map, Int_t map_size) {
-      fClones->Clear();
-      fClones->ExpandCreateFast(map_size);
+      auto clones = GetClones();
+      clones->Clear();
+      clones->ExpandCreateFast(map_size);
       for (int i = 0; i < map_size; i++) {
         T* obj_from = (T*) from->UncheckedAt(map[i]);
-        T* obj_to   = (T*) fClones->UncheckedAt(i);
+        T* obj_to   = (T*) clones->UncheckedAt(i);
         *obj_to     = *obj_from;
       }
     }
-    Int_t GetEntriesFast() const { return fClones->GetEntriesFast(); };
+    Int_t GetEntriesFast() const { return GetClones()->GetEntriesFast(); };
     Bool_t ExistInTree() const;
     TString GetBranchName() const { return fBranchName; }
-    TObject* UncheckedAt(Int_t i) const { return fClones->UncheckedAt(i); }
-    TClonesArray* GetArray() const { return fClones; };
+    TObject* UncheckedAt(Int_t i) const { return GetClones()->UncheckedAt(i); }
+    TClonesArray* GetArray() const { return GetClones(); };
     virtual ~TrackClones();
     ClassDef(TrackClones, 1)
   };

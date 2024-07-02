@@ -14,6 +14,7 @@
 #include "Array.h"
 #include "CompressionMap.h"
 #include "Event.h"
+#include "Pointer.h"
 
 namespace Hal {
   class IOManager;
@@ -73,6 +74,7 @@ namespace Hal {
     CompressionMap fCompression;
     Int_t fMaxTrackCollectionNo;
     Event* fCurrentEvent;  // pointer to processed event
+    ObjectDoublePointer* fPointerCurrentEvent = {nullptr};
     Array_4<Int_t>* fTrackMap;
     Array_3<Int_t>* fTrackCounter;
     void ReloadMap(Int_t size);

@@ -378,7 +378,7 @@ namespace Hal {
     }
     if (TESTBIT(fFormatOption, eBitFormat::kReader)) {  // use reader data
       Event* event = nullptr;
-      event        = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent."));
+      event        = dynamic_cast<Hal::Event*>(datamanager->GetTObject("HalEvent."));
       if (event) {
         Cout::PrintInfo("L1 format from reader has been found", EInfo::kInfo);
         formatManager->SetFormat(event->GetNewEvent(), GetTaskID(), EFormatDepth::kNonBuffered, kTRUE);
@@ -395,7 +395,7 @@ namespace Hal {
         patterns.push_back(branchName + ".");
         Bool_t foundFormat = kFALSE;
         for (auto name : patterns) {
-          Hal::Event* event = dynamic_cast<Hal::Event*>(DataManager::Instance()->GetObject(name));
+          Hal::Event* event = dynamic_cast<Hal::Event*>(DataManager::Instance()->GetTObject(name));
           if (event) {
             foundFormat = kTRUE;
             formatManager->SetFormat(event->GetNewEvent(), GetTaskID(), EFormatDepth::kNonBuffered, kTRUE);

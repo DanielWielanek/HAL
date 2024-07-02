@@ -15,25 +15,20 @@
 
 namespace Hal {
   TrackClones::TrackClones(TString className, TString branchname, TString dirname) :
-    fBranchName(branchname), fDirName(dirname), fClones(NULL) {
-    if (className != "") { fClones = new TClonesArray(className); }
-  }
+    fBranchName(branchname), fDirName(dirname), fClassName(className) {}
 
   void TrackClones::Register(Bool_t write) {
     DataManager* mngr = DataManager::Instance();
-    mngr->Register(fBranchName, fDirName, fClones, write);
+    auto clones       = new TClonesArray(fClassName);
+    fPointer          = mngr->Register(clones, fBranchName, write);
   }
 
   void TrackClones::GetFromTree() {
-    if (fClones) { delete fClones; }
-    fClones = NULL;
-    fClones = (TClonesArray*) DataManager::Instance()->GetObject(fBranchName);
-    if (fClones == NULL) { Cout::PrintInfo(Form("Branch %s not found!", fBranchName.Data()), EInfo::kError); }
+    fPointer = (ObjectDoublePointer*) DataManager::Instance()->GetDoublePointer(fBranchName);
+    if (fPointer == nullptr) { Cout::PrintInfo(Form("Branch %s not found!", fBranchName.Data()), EInfo::kError); }
   }
 
-  TrackClones::~TrackClones() {
-    if (fClones) delete fClones;
-  }
+  TrackClones::~TrackClones() {}
 
   Bool_t TrackClones::ExistInTree() const {
     DataManager* mngr = DataManager::Instance();
@@ -42,18 +37,16 @@ namespace Hal {
 
   void TrackClones::Compress(Int_t* map, Int_t /*map_size*/) {
     Int_t good_pos = 0;
-    for (int i = 0; i < fClones->GetEntriesFast(); i++) {
+    auto clones    = GetClones();
+    for (int i = 0; i < clones->GetEntriesFast(); i++) {
       if (i == map[good_pos]) {
         good_pos++;
         continue;
       }
-      fClones->RemoveAt(i);
+      clones->RemoveAt(i);
     }
-    fClones->Compress();
+    clones->Compress();
   }
 
-  void TrackClones::DeleteClones() {
-    if (fClones) delete fClones;
-    fClones = NULL;
-  }
+  void TrackClones::DeleteClones() { fPointer.DeletePointer(); }
 }  // namespace Hal

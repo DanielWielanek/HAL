@@ -11,9 +11,13 @@
 
 #include "EventInterface.h"
 #include "OTFData.h"
+#include "Pointer.h"
+
 namespace HalOTF {
   class McEventInterface : public Hal::EventInterface {
-    OTF::McEvent* fEvent;
+
+    Hal::DoublePointer<OTF::McEvent>* fEventPointer;
+    OTF::McEvent* GetEvent() const { return fEventPointer->GetPointer(); };
     Bool_t fCanDelete;
 
   protected:
@@ -21,7 +25,7 @@ namespace HalOTF {
 
   public:
     McEventInterface();
-    OTF::McEvent* GetMcEvent() const { return fEvent; }
+    OTF::McEvent* GetMcEvent() const { return GetEvent(); }
     virtual ~McEventInterface();
     ClassDef(McEventInterface, 1)
   };

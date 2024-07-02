@@ -9,6 +9,8 @@
 #ifndef HAL_FEATURES_IO_DATAMANAGER_H_
 #define HAL_FEATURES_IO_DATAMANAGER_H_
 
+#include "IOManager.h"
+#include "Pointer.h"
 #include <TObject.h>
 #include <TString.h>
 
@@ -39,22 +41,15 @@ namespace Hal {
     Int_t GetEntry(Int_t i, Int_t flag);
     Int_t GetEntries() const;
     Bool_t Init();
-    /**
-     * register data
-     * @param name
-     * @param folderName
-     * @param obj
-     * @param toFile write in output file
-     */
-    void Register(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
-    /**
-     * register data
-     * @param name
-     * @param Foldername
-     * @param obj
-     * @param toFile write to output file
-     */
-    void Register(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
+    template<typename T>
+    EnableIfNotBaseOfTObject<T, DoublePointer<T>> RegisterAny(T* object, TString branchName, Bool_t toFile) {
+      return fManager->RegisterAny<T>(object, branchName, toFile);
+    }
+    template<typename T>
+    EnableIfBaseOfTObject<T, DoublePointer<T>> RegisterAny(T* object, TString branchName, Bool_t toFile) = delete;
+    Hal::ObjectDoublePointer Register(TObject* obj, TString branchName, Bool_t toFile) {
+      return fManager->Register(obj, branchName, toFile);
+    }
     void SetInChain(TChain* tempChain, Int_t ident = -1);
     void UpdateBranches();
     void GetIOManagerInfo();
@@ -63,7 +58,13 @@ namespace Hal {
      * @param mngr
      */
     void SetManager(IOManager* mngr) { fManager = mngr; }
-    TObject* GetObject(const char* BrName);
+    AbstractDoublePointer* GetDoublePointer(const char* BrName);
+    /**
+     * directly return pointer to object should not be used
+     * @param BrName
+     * @return
+     */
+    TObject* GetTObject(const char* BrName);
     TString GetSourceName() const;
     const std::vector<TString> GetBranchNameList();
     virtual MagField* GetField() const;

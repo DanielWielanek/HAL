@@ -12,6 +12,7 @@
 
 #include <TObject.h>
 
+#include "Pointer.h"
 #include "Std.h"
 
 /**
@@ -47,7 +48,7 @@ namespace Hal {
      * try to find anty kind of supported events in tree
      * @return pointer to supported format
      */
-    Event* FindReaderFormat();
+    Hal::DoublePointer<Hal::Event>* FindReaderFormat();
     /**
      * force overwrite format at given position
      * @param format event that represent new format

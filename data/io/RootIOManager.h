@@ -30,17 +30,25 @@ namespace Hal {
     TFile* fOutFile  = {nullptr};
     TTree* fOutTree  = {nullptr};
     TChain* fInChain = {nullptr};
-    std::vector<TObject**> fObjects;  // just to call delete?
+    std::vector<Hal::AbstractDoublePointer*> fObjects;  // just to call delete?
 
   protected:
     /**
      * add object to branches
      */
-    void PushTObject(TObject** obj);
-    virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
-    virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
+    void PushTObject(Hal::AbstractDoublePointer* obj);
     TChain* GetInChain() { return fInChain; }
+    void RegisterInternal(TString branchName, void** p, Bool_t toFile);
     virtual Bool_t InitInternal();
+    /**
+     * we have interface only to TObject, you should create double pointer with your specialization + connect double pointer to
+     * fInChain e.g.:
+     *         DoublePointer<MyClass>* obj = new DoublePointer<MyClass>();
+     *
+     * @param classname
+     * @return
+     */
+    virtual Hal::AbstractDoublePointer* MakeSpecializedDoublePointer(TString classname) { return nullptr; }
 
   public:
     /**

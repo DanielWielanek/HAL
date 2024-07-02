@@ -5,6 +5,7 @@
 #define HAL_CMAKE_TEMPLATES_EVENTINTERFACETEMPLATE_H_
 
 #include <Hal/EventInterface.h>
+#include <Hal/Pointer.h>
 
 namespace MyHal {
   class EventTemplate;
@@ -14,7 +15,7 @@ namespace MyHal {
      */
     friend class EventTemplate;
 
-    TObject* fEvent;
+    AbstractDoublePointer* fEvent;
     Bool_t fCanDelete;
 
   protected:

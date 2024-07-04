@@ -356,7 +356,11 @@ namespace Hal {
   Bool_t FemtoBasicAna::InitArray() {
     fCFs              = new ObjectMatrix_2();
     DividedHisto1D* h = ((FemtoCorrFunc*) fCFTemp)->GetCF(0);
-    TString name      = h->GetName();
+    if (h->GetNum() == nullptr) {
+      Hal::Cout::PrintInfo(Form("%s %i histogram not found in temp func, number of bin not specified?"), Hal::EInfo::kError);
+      return kFALSE;
+    }
+    TString name = h->GetName();
     name.ReplaceAll("[0]", "");
     h->SetName(name);
     fCFs->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fCFTemp);

@@ -9,19 +9,47 @@
 #ifndef HAL_EXAMPLES_ONTHEFLY_OTFSOURCE_H_
 #define HAL_EXAMPLES_ONTHEFLY_OTFSOURCE_H_
 
+#include <Rtypes.h>
+#include <RtypesCore.h>
+#include <vector>
+
 #include "Source.h"
+
 namespace Hal {
   class IOManager;
 }
+namespace HalOTF {
+  class EventGenerator;
+  class IOManager;
+}  // namespace HalOTF
+namespace OTF {
+  class McEvent;
+  class RecoEvent;
+}  // namespace OTF
 
 namespace HalOTF {
   class Source : public Hal::Source {
-    Int_t fEvents;
+    friend class HalOTF::IOManager;
+    Int_t fEvents    = {0};
+    Bool_t fRegister = {kFALSE};
+    std::vector<HalOTF::EventGenerator*> fGenerators;
+    OTF::McEvent* fMcEvent     = {nullptr};
+    OTF::RecoEvent* fRecoEvent = {nullptr};
+
+  protected:
+    /**
+     * register output data and sent pointers to generators, this cannot be done ini Init method
+     * because data manager does not exist yet
+     */
+    void RegisterOutputs(HalOTF::IOManager* mngr);
 
   public:
     Source(Int_t entries = 0);
     virtual Hal::IOManager* GetIOManager() const;
-    Bool_t Init() { return kTRUE; }
+    void AddEventGenerator(HalOTF::EventGenerator* evgen) { fGenerators.push_back(evgen); }
+    Bool_t Init();
+    void Register() { fRegister = kTRUE; }
+    void GetEvent();
     virtual ~Source();
     ClassDef(Source, 1)
   };

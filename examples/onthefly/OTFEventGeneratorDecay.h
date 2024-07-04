@@ -5,8 +5,8 @@
  *      Author: daniel
  */
 
-#ifndef HAL_EXAMPLES_ONTHEFLY_READERDECAY_H_
-#define HAL_EXAMPLES_ONTHEFLY_READERDECAY_H_
+#ifndef HAL_EXAMPLES_ONTHEFLY_GENERATORDECAY_H_
+#define HAL_EXAMPLES_ONTHEFLY_GENERATORDECAY_H_
 #include "Decay.h"
 #include "OTFReader.h"
 
@@ -18,6 +18,8 @@
 #include <RtypesCore.h>
 #include <TH2.h>
 
+#include "OTFEventGenerator.h"
+
 namespace HalOTF {
   class McEvent;
   class RecoEvent;
@@ -25,7 +27,7 @@ namespace HalOTF {
 
 namespace HalOTF {
 
-  class ReaderDecay : public HalOTF::Reader {
+  class EventGeneratorDecay : public HalOTF::EventGenerator {
   protected:
     Hal::Decay* fDecayer = {nullptr};
     std::vector<Hal::McTrack*> fDaughters;
@@ -34,12 +36,12 @@ namespace HalOTF {
     virtual void GenerateEvent();
 
   public:
-    ReaderDecay();
+    EventGeneratorDecay();
     void EnableDebug() { fDebug = kTRUE; }
     void SetDecay(Hal::Decay decay);
-    virtual Hal::Task::EInitFlag Init();
-    virtual ~ReaderDecay();
-    ClassDef(ReaderDecay, 1)
+    virtual Bool_t Init();
+    virtual ~EventGeneratorDecay();
+    ClassDef(EventGeneratorDecay, 1)
   };
 }  // namespace HalOTF
 

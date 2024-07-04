@@ -18,6 +18,7 @@
 class TTree;
 class TBranch;
 namespace HalOTF {
+  class Source;
   class IOManager : public Hal::IOManager {
     TString fInFileName;
     TString fOutFileName;
@@ -26,6 +27,7 @@ namespace HalOTF {
     TFile* fInFile;
     TFile* fOutFile;
     TTree* fOutTree;
+    HalOTF::Source* fSource;
 
   protected:
     void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
@@ -33,7 +35,7 @@ namespace HalOTF {
     Bool_t InitInternal();
 
   public:
-    IOManager(TString name = "root_virtual.root", Int_t entries = 1);
+    IOManager(TString name = "root_virtual.root", HalOTF::Source* source = nullptr, Int_t entries = 1);
     void SetOutput(TString name) { fOutFileName = name; }
     void SetOutTreeName(TString name) { fOutTreeName = name; }
     Int_t GetEntries() const;

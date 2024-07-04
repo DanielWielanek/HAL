@@ -11,6 +11,8 @@
 #include "Cout.h"
 #include "InputDataInfo.h"
 
+#include "OTFSource.h"
+
 #include <TBranch.h>
 #include <TFile.h>
 #include <TList.h>
@@ -18,16 +20,19 @@
 #include <TSystem.h>
 #include <TTree.h>
 
+#include <iostream>
+
 namespace HalOTF {
 
-  IOManager::IOManager(TString name, Int_t entries) :
+  IOManager::IOManager(TString name, HalOTF::Source* source, Int_t entries) :
     Hal::IOManager(new Hal::InputDataInfo(name)),
     fInFileName(name),
     fOutTreeName("HalTree"),
     fEntries(entries),
     fInFile(nullptr),
     fOutFile(nullptr),
-    fOutTree(nullptr) {}
+    fOutTree(nullptr),
+    fSource(source) {}
 
   Bool_t IOManager::InitInternal() {
     Hal::Cout::PrintInfo(fInFileName, Hal::EInfo::kLowWarning);
@@ -35,6 +40,7 @@ namespace HalOTF {
     fOutFile = new TFile(fOutFileName, "recreate");
     fOutTree = new TTree(fOutTreeName, fOutTreeName);
     Hal::Cout::PrintInfo(Form("CREATING TREE %s", fOutTreeName.Data()), Hal::EInfo::kError);
+    fSource->RegisterOutputs(this);
     return kTRUE;
   }
 
@@ -59,7 +65,10 @@ namespace HalOTF {
   void IOManager::SetInChain(TChain* /*tempChain*/, Int_t /*ident*/) {}
 
   Int_t IOManager::GetEntry(Int_t i, Int_t /*flag*/) {
-    if (i < fEntries) return 1;
+    if (i < fEntries) {
+      if (fSource) fSource->GetEvent();
+      return 1;
+    }
     return -1;
   }
 

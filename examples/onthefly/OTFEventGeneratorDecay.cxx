@@ -5,59 +5,54 @@
  *      Author: daniel
  */
 
-#include "OTFReaderDecay.h"
-
-#include "OTFMcEvent.h"
-#include "OTFRecoEvent.h"
-
-#include "Cout.h"
-#include "DataManager.h"
-#include "Decay.h"
-#include "Event.h"
-#include "McTrack.h"
-#include "OTFData.h"
-#include "Std.h"
+#include "OTFEventGeneratorDecay.h"
 
 #include <TDatabasePDG.h>
 #include <TLorentzVector.h>
 #include <TMath.h>
-#include <TMathBase.h>
 #include <TParticlePDG.h>
 #include <TRandom.h>
 #include <TString.h>
+#include <iostream>
+
+#include "Cout.h"
+#include "McTrack.h"
+#include "OTFEventGenerator.h"
+#include "Std.h"
+#include "Track.h"
 
 
 namespace HalOTF {
-  ReaderDecay::ReaderDecay() {}
+  EventGeneratorDecay::EventGeneratorDecay() {}
 
-  Hal::Task::EInitFlag ReaderDecay::Init() {
-    auto init = HalOTF::Reader::Init();
-    if (init != Hal::Task::EInitFlag::kSUCCESS) return init;
+  Bool_t EventGeneratorDecay::Init() {
+    auto init = HalOTF::EventGenerator::Init();
+    if (!init) return init;
     if (!fDecayer) {
       Hal::Cout::PrintInfo("Lack of decayer", Hal::EInfo::kError);
-      return Hal::Task::EInitFlag::kERROR;
+      return kFALSE;
     }
     auto stat = fDecayer->Init();
     if (fDecayer->GetMotherPdg() != fPids) {
       Hal::Cout::PrintInfo(Form("Wrong decayer, expected PID=%i got %i", fPids, fDecayer->GetMotherPdg()), Hal::EInfo::kError);
-      return Hal::Task::EInitFlag::kERROR;
+      return kFALSE;
     }
     if (!stat) {
       Hal::Cout::PrintInfo("Cannot initialize decayer", Hal::EInfo::kError);
-      return Hal::Task::EInitFlag::kERROR;
+      return kFALSE;
     }
     for (int i = 0; i < 3; i++) {
       fDaughters.push_back(new Hal::McTrack());
     }
-    return Hal::Task::EInitFlag::kSUCCESS;
+    return init;
   }
 
-  void ReaderDecay::SetDecay(Hal::Decay decay) {
+  void EventGeneratorDecay::SetDecay(Hal::Decay decay) {
     if (fDecayer) delete fDecayer;
     fDecayer = new Hal::Decay(decay);
   }
 
-  void ReaderDecay::Decay() {
+  void EventGeneratorDecay::Decay() {
     Int_t shift      = fMcEvent->GetNTracks();
     Int_t start      = shift - fCurrrentMult;
     TDatabasePDG* db = TDatabasePDG::Instance();
@@ -114,14 +109,14 @@ namespace HalOTF {
     }
   }
 
-  ReaderDecay::~ReaderDecay() {
+  EventGeneratorDecay::~EventGeneratorDecay() {
     for (auto i : fDaughters)
       delete i;
     if (fDecayer) delete fDecayer;
   }
 
-  void ReaderDecay::GenerateEvent() {
-    HalOTF::Reader::GenerateEvent();
+  void EventGeneratorDecay::GenerateEvent() {
+    HalOTF::EventGenerator::GenerateEvent();
     Decay();
     if (fDebug) {
       std::cout << "MC Tracks" << std::endl;

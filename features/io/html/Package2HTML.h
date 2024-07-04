@@ -34,9 +34,14 @@ namespace Hal {
   class HtmlObject;
   class Package;
   class HtmlCell;
-
+  class PicTree;
   class Package2HTML : public TObject {
     friend class AnaFile;
+    struct containerInfo {
+      std::vector<int> sLinks;
+      int sColId;
+      double sFraction;
+    };
 
   protected:
     enum class eTableStyle { kStandard, kMetaData };
@@ -67,33 +72,7 @@ namespace Hal {
     void CreateCutMonitorLink(HtmlObject& table, Hal::ECutUpdate update, Package* obj, Int_t no, Int_t counter, TString path);
     void CreateCutMonitorHTML(HtmlObject& table, Hal::ECutUpdate cut_upd, Int_t collection_no, Int_t& counter, TString path);
     void CreateListTable(HtmlObject& table, TList* list, Int_t no, TString path_data, TString path_url, TString drawClass);
-    void DrawContainer(Package* pack,
-                       Int_t tier_no,
-                       Int_t tier,
-                       Int_t collections_from_no,
-                       Int_t collections_to_no,
-                       Int_t layer      = 0,
-                       Int_t line_style = 0,
-                       Int_t tier_jump  = 1) const;
-    void DrawCircle(Double_t tiers_no,
-                    Double_t tier,
-                    Double_t collections_no,
-                    Double_t collection,
-                    Double_t pass_ratio,
-                    Double_t radii,
-                    Color_t passed_col,
-                    Color_t failed_col,
-                    TString label) const;
-    void DrawLine(Double_t tiers_no,
-                  Double_t tier_from,
-                  Double_t tier_to,
-                  Double_t collections_from_no,
-                  Double_t collections_to_no,
-                  Double_t collection_from,
-                  Double_t collection_to,
-                  Double_t width,
-                  Int_t style,
-                  Color_t color) const;
+    containerInfo GetContainerInfo(Package* Pack, Bool_t rev = kFALSE) const;
     TString GetGroupListName(Hal::ECutUpdate update) const;
     HtmlFile* fHTML;
     TFile* fFile;
@@ -103,7 +82,6 @@ namespace Hal {
 
     Int_t fCutContainerPosition, fPackageID;
     Int_t fCollectionsNo[4];
-    Double_t fBasicRadius, fWindowWidth, fWIndowHeight;
     Package* fCurrentCutContainer;
     Int_t fListDeep;
     Int_t fSoftVer;

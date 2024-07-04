@@ -23,6 +23,7 @@
 #pragma link C++ class Hal::ParameterULong64 + ;
 #pragma link C++ class Hal::ParameterBool + ;
 #pragma link C++ class Hal::Package2HTML + ;
+#pragma link C++ class Hal::PicTree + ;
 #pragma link C++ enum Hal::EInfo;
 #pragma link C++ enum Hal::ECutUpdate;
 #pragma link C++ enum Hal::EFormatDepth;

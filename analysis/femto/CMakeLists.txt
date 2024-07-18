@@ -131,6 +131,7 @@ weights/FemtoWeightGeneratorLednicky.cxx
 weights/FemtoWeightGeneratorResidual.cxx
 weights/FemtoWeightGeneratorSupressed.cxx
 weights/FemtoWeightGeneratorKisiel.cxx
+weights/FemtoWeightGeneratorDummy.cxx
 
 base/funcs/FemtoSHCF.cxx
 base/funcs/FemtoDPhiDEta.cxx
@@ -169,6 +170,7 @@ if(DEFINED CIA)
         top_secret/CorrFitHDFuncSH.cxx
         top_secret/CorrFitDumpedPairAnaVertical.cxx
         top_secret/BattlestarGalactica.cxx
+        top_secret/BattlestarGalactica10.cxx
         top_secret/BattlestarPegasus.cxx
         top_secret/BattlestarValkyria.cxx
     )

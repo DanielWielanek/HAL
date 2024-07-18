@@ -8,6 +8,7 @@
 #pragma link C++ enum Hal::EFemtoPairType;
 #pragma link C++ enum Hal::EFitExtraMask;
 #pragma link C++ enum Hal::Femto::EKinematics;
+#pragma link C++ class Hal::Femto::CorrFitGammaCalc + ;
 
 #pragma link C++ class Hal::FemtoPair + ;
 #pragma link C++ class Hal::FemtoMiniPair + ;
@@ -78,6 +79,8 @@
 #pragma link C++ class Hal::CorrFIt1DCFCumacLamLam + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacPLam + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacK0K0 + ;
+#pragma link C++ class Hal::CorrFit1DCFCumacK0Kch + ;
+#pragma link C++ class Hal::CorrFit1DCFCumacDLam + ;
 #pragma link C++ class Hal::CorrFitDrawOptions + ;
 
 #pragma link C++ class Hal::CorrFitParamsSetup + ;
@@ -140,6 +143,7 @@
 #pragma link C++ class Hal::FemtoWeightGeneratorResidual + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorSupressed + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorKisiel + ;
+#pragma link C++ class Hal::FemtoWeightGeneratorK0K0 + ;
 
 #pragma link C++ class Hal::CorrFitVerticalSlices + ;
 #pragma link C++ class Hal::CorrFitVerticalSlices1D + ;
@@ -178,6 +182,7 @@
 #pragma link C++ class Hal::CorrFitSHCFMultiDim + ;
 #pragma link C++ class Hal::CorrFitHDFuncSH + ;
 #pragma link C++ class Hal::BattlestarGalactica + ;
+#pragma link C++ class Hal::BattlestarGalactica10 + ;
 #pragma link C++ class Hal::BattlestarPegasus + ;
 #pragma link C++ class Hal::BattlestarValkyria + ;
 //

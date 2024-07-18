@@ -125,12 +125,12 @@ namespace Hal {
           pair.second = Const::LambdaPID();
         } break;
         case EPairType::kKaonZeroKaonZero: {
-          pair.first  = 310;
-          pair.second = 310;
+          pair.first  = Const::KaonZeroShortPID();
+          pair.second = Const::KaonZeroShortPID();
         } break;
         case EPairType::kKaonZeroKaonZeroBar: {
-          pair.first  = 310;
-          pair.second = -310;
+          pair.first  = Const::KaonZeroShortPID();
+          pair.second = -Const::KaonZeroShortPID();
         } break;
 
 
@@ -694,6 +694,25 @@ namespace Hal {
         }
       }
       return w;
+    }
+
+    void CorrFitGammaCalc::ReInit(Double_t a, Double_t b, Double_t c, Double_t d) {
+      fA2         = a * a;
+      fB2         = b * b;
+      Double_t c2 = c * c;
+      Double_t d2 = d * d;
+      fConsA      = (c2 - d2) * (c2 - d2);
+      fConsB      = -2.0 * (c2 + d2);
+    }
+
+
+    Double_t CorrFitGammaCalc::Calculate(Double_t kstar) const {
+      const Double_t kstar2 = kstar * kstar;
+      const Double_t E1     = TMath::Sqrt(kstar2 + fA2);
+      const Double_t E2     = TMath::Sqrt(kstar2 + fB2);
+      const Double_t E      = E1 + E2;
+      const Double_t E_2    = E * E;
+      return TMath::Sqrt(fConsA + fConsB * E_2 + E_2 * E_2) / (2.0 * E);
     }
   }  // namespace Femto
 }  // namespace Hal

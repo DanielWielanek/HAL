@@ -46,6 +46,7 @@ namespace Hal {
     virtual void Fill(Double_t /*x*/, Double_t /*y*/, Double_t /*w*/) {};
     virtual void Fill(Double_t /*x*/, Double_t /*y*/, Double_t /*z*/, Double_t /*w*/) {};
     inline void SetRawBinContent(Int_t bin, Double_t w) { fValues[bin] = w; };
+    inline Double_t GetRawBinContent(Int_t bin) const { return fValues[bin]; }
     inline void IncrementRawBinContent(Int_t bin, Double_t w) { fValues[bin] += w; };
     virtual TH1* GetTH1() const { return nullptr; };
     virtual ~FastHist();

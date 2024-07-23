@@ -444,6 +444,7 @@ namespace Hal {
     } else {
       min->SetMinimizerType("ant");
     }
+
     for (int i = 0; i < GetParametersNo(); i++) {
       auto Param       = fParameters[fFitOrder[i]];
       std::string name = Param.GetParName().Data();
@@ -456,7 +457,7 @@ namespace Hal {
       }
     }
     MinimizerStepConf conf(fDiscretteMinimzerConf, fFitOrder);
-    min->SetParamConf(conf);
+    min->SetParamConf(conf, false);
   }
 
   void CorrFitFunc::Fit(TObject* histo) {
@@ -662,7 +663,7 @@ namespace Hal {
           MinimizerStepConf conf;
           double npoints = dx / bins + 1;
           conf.ConfigureParameter(p.GetParName(), npoints, parameters[i] - dx, parameters[i] + dx);
-          minx->SetParamConf(conf);
+          minx->SetParamConf(conf, false);
         }
       }
     }

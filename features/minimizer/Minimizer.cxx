@@ -188,7 +188,7 @@ namespace Hal {
     fFunc = const_cast<ROOT::Math::IMultiGenFunction*>(&func);
   }
 
-  void Minimizer::SetParamConf(const MinimizerStepConf& conf) { conf.SetParameters(fParameters); }
+  void Minimizer::SetParamConf(const MinimizerStepConf& conf, Bool_t overwrite) { conf.SetParameters(fParameters, overwrite); }
 
   Minimizer::~Minimizer() {
     if (fQuantumFits) {

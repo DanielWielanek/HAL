@@ -46,7 +46,18 @@ namespace Hal {
     }
   }
 
-  void MinimizerStepConf::SetParameters(std::vector<FitParam>& input) const {
+  void MinimizerStepConf::SetParameters(std::vector<FitParam>& input, Bool_t overwrite) const {
+    if (overwrite) {
+      input.clear();
+      for (auto iPar : fParams) {
+        FitParam par;
+        par.SetParName(iPar.GetParName());
+        par.SetMapRange(iPar.GetMapMin(), iPar.GetMapMax(), iPar.GetNPoints());
+        par.SetIsDiscrete(kTRUE);
+        input.push_back(par);
+      }
+      return;
+    }
     for (auto iPar : fParams) {
       for (auto& oPar : input) {
         if (iPar.GetParName().EqualTo(oPar.GetParName())) {
@@ -58,8 +69,12 @@ namespace Hal {
   }
 
   MinimizerStepConf::MinimizerStepConf(const MinimizerStepConf& other, std::vector<int> order) {
+    std::cout << "  > " << other.fParams.size() << " " << other.GetNParams() << std::endl;
     if (order.size() != other.fParams.size()) {
-      Hal::Cout::PrintInfo("Cannot configure MinimizerStepConf::MinimizerStepConf", EInfo::kError);
+      Hal::Cout::PrintInfo(Form("Cannot configure MinimizerStepConf::MinimizerStepConf conf pars no: %i !=%i (order no)",
+                                (int) other.fParams.size(),
+                                (int) order.size()),
+                           EInfo::kError);
       return;
     }
     fParams.resize(other.fParams.size());

@@ -34,7 +34,7 @@ namespace Hal {
     /**
      * set parameter limits
      */
-    void SetParameters(std::vector<FitParam>& input) const;
+    void SetParameters(std::vector<FitParam>& input, Bool_t overwrite) const;
     virtual ~MinimizerStepConf();
     MinimizerStepConf(const MinimizerStepConf& other) = default;
     /**

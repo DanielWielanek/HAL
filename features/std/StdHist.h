@@ -39,7 +39,14 @@ namespace Hal {
      * @param to copy to
      * @param addition option if "!tit" do not copy  title
      */
-    void CopyAxisProp(TAxis* from, TAxis* to, TString opt = "");
+    void CopyAxisProp(const TAxis* from, TAxis* to, TString opt = "");
+    /**
+     * copy histogram properties (maker size, line width etc.)
+     * @param from
+     * @param to
+     * @param opt
+     */
+    void CopyHistProp(const TH1& from, TH1& to, TString opt = "");
     /**
      * make diagonal projection
      * @param h

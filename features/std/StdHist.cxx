@@ -38,8 +38,9 @@
 #include "Splines.h"
 #include "Std.h"
 
-NamespaceImp(Hal::Std);
-namespace Hal {
+NamespaceImp(Hal::Std)
+
+  namespace Hal {
   namespace Std {
     void RemoveNan(TH1* h, Double_t fill, Double_t fill_e) {
       if (h->InheritsFrom("TH3")) {
@@ -569,7 +570,7 @@ namespace Hal {
       h->ResetStats();
     }
 
-    void CopyAxisProp(TAxis* from, TAxis* to, TString option) {
+    void CopyAxisProp(const TAxis* from, TAxis* to, TString option) {
       TAxis default_axis = TAxis();
       if (default_axis.GetCenterTitle() != from->GetCenterTitle()) to->CenterTitle(from->GetCenterTitle());
       if (default_axis.GetNdivisions() != from->GetNdivisions()) to->SetNdivisions(from->GetNdivisions());
@@ -1137,6 +1138,21 @@ namespace Hal {
         }
       }
       return kTRUE;
+    }
+    void CopyHistProp(const TH1& from, TH1& to, TString opt) {
+      auto d3 = static_cast<const TH3*>(&from);
+
+      CopyAxisProp(from.GetXaxis(), to.GetXaxis());
+      CopyAxisProp(from.GetYaxis(), to.GetYaxis());
+      if (d3) CopyAxisProp(from.GetZaxis(), to.GetZaxis());
+      to.SetMarkerSize(from.GetMarkerSize());
+      to.SetMarkerStyle(from.GetMarkerStyle());
+      to.SetMarkerColor(from.GetMarkerColor());
+      to.SetLineStyle(from.GetLineStyle());
+      to.SetLineWidth(from.GetLineWidth());
+      to.SetLineColor(from.GetLineColor());
+      to.SetFillColor(from.GetFillColor());
+      to.SetFillStyle(from.GetFillStyle());
     }
   }  // namespace Std
 }  // namespace Hal

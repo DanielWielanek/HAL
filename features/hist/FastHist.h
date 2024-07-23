@@ -60,6 +60,8 @@ namespace Hal {
   public:
     FastHist1D(TString name = "", TString title = "", Int_t nbins = 0, Double_t min = 0, Double_t max = 0);
     Int_t FindBin(Double_t x) const;
+    Double_t GetBinCenterX(Int_t bin) const { return fMinX + (-0.5 + bin) * fStepX; }
+    Double_t GetBinWidthX() const { return 1.0 / fStepX; }
     void Fill(Double_t x, Double_t w);
     Double_t GetBinContent(Int_t i) const { return fValues[i]; }
     virtual TH1* GetTH1() const;
@@ -86,6 +88,10 @@ namespace Hal {
                Double_t ymax = 0);
     Double_t GetBinContent(Int_t i, Int_t j) const;
     Int_t FindBin(Double_t x, Double_t y) const;
+    Double_t GetBinCenterX(Int_t bin) const { return fMinX + (-0.5 + bin) * fStepX; }
+    Double_t GetBinWidthX() const { return 1.0 / fStepX; }
+    Double_t GetBinCenterY(Int_t bin) const { return fMinY + (-0.5 + bin) * fStepY; }
+    Double_t GetBinWidthY() const { return 1.0 / fStepY; }
     void Fill(Double_t x, Double_t y, Double_t w);
     virtual TH1* GetTH1() const;
     virtual ~FastHist2D() {};
@@ -119,6 +125,12 @@ namespace Hal {
     void Fill(Double_t x, Double_t y, Double_t z, Double_t w);
     Int_t FindBin(Double_t x, Double_t y, Double_t z) const;
     Double_t GetBinContent(Int_t i, Int_t j, Int_t k) const;
+    Double_t GetBinCenterX(Int_t bin) const { return fMinX + (-0.5 + bin) * fStepX; }
+    Double_t GetBinWidthX() const { return 1.0 / fStepX; }
+    Double_t GetBinCenterY(Int_t bin) const { return fMinY + (-0.5 + bin) * fStepY; }
+    Double_t GetBinWidthY() const { return 1.0 / fStepY; }
+    Double_t GetBinCenterZ(Int_t bin) const { return fMinZ + (-0.5 + bin) * fStepZ; }
+    Double_t GetBinWidthZ() const { return 1.0 / fStepZ; }
     virtual TH1* GetTH1() const;
     virtual ~FastHist3D() {};
     ClassDef(FastHist3D, 1)

@@ -5,6 +5,7 @@
 #include "StdMath.h"
 #include "StdString.h"
 
+#include <complex>
 #include <vector>
 //#define HAL_DEBUG
 class TVirtualPad;
@@ -33,6 +34,7 @@ namespace Hal {
     struct ITriplet {
       int x, y, z;
     };
+    typedef std::complex<double> DComplex;
     /**
      * conver enum to "human readable" update ratio description
      * @param upd

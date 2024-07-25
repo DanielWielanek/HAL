@@ -408,6 +408,16 @@ namespace Hal {
       return kFALSE;
     }
 
+    Int_t FindParam2(TString& option, TString pattern, Bool_t remove) {
+      TString negPar = Form("!%spattern", pattern.Data());
+      if (FindParam(option, negPar, remove)) {
+        return -1;
+      } else if (FindParam(option, pattern, remove)) {
+        return 1;
+      }
+      return 0;
+    }
+
     Bool_t FindExpressionSingleValue(TString& expression, Int_t& val, Bool_t remove) {
       TString option = expression;
       TRegexp regexp("{[0-9]+}");

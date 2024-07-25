@@ -262,10 +262,7 @@ namespace Hal {
     if (h.InheritsFrom("Hal::MultiGraph")) { ApplyMGraph(dynamic_cast<Hal::MultiGraph&>(h), no); }
     if (h.InheritsFrom("TGraph")) { ApplyTGraph(dynamic_cast<TGraph&>(h)); }
     Hal::DividedHisto1D* hx = dynamic_cast<Hal::DividedHisto1D*>(&h);
-    if (hx) {
-      HalCoutDebug();
-      hx->ApplyStyle(*this);
-    }
+    if (hx) { hx->ApplyStyle(*this); }
   }
 
   void HistoStyle::ApplyTH(TH1& h) const {

@@ -158,6 +158,14 @@ namespace Hal {
      */
     Bool_t FindParam(TString& option, TString pattern, Bool_t remove = kFALSE);
     /**
+     * works like FindParam
+     * @param option
+     * @param pattern
+     * @param remove
+     * @return 0 if param not found -1 if negation found e.g., "!pattern" return 1 if pattern found
+     */
+    Int_t FindParam2(TString& option, TString pattern, Bool_t remove = kFALSE);
+    /**
      * find number in exression like *{A}*
      * @param expression
      * @param val value found

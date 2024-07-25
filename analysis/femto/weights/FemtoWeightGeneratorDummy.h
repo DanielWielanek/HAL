@@ -35,7 +35,7 @@ namespace Hal {
     Double_t GetGammaF0pipi() const { return fGamma_f0pipi; }
     Double_t GetMa0() const { return fMa0; }
 
-    void SetAssymetry(Double_t fAssymetry) { this->fAssymetry = fAssymetry; }
+    void SetAssymetry(Double_t Assymetry) { this->fAssymetry = Assymetry; }
     void SetMf0(Double_t f0) { this->fMf0 = f0; }
     void SetGammaA0Kk(Double_t GammaA0Kk) { fGamma_a0KK = GammaA0Kk; }
     void SetGammaA0pieta(Double_t GammaA0pieta) { fGamma_a0pieta = GammaA0pieta; }

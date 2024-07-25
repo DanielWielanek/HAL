@@ -587,7 +587,7 @@ NamespaceImp(Hal::Std)
 
     TH1D* GetDiagonalProjection1D(TH3* h, TString dir, Double_t start, Double_t start2) {
       if (h->GetNbinsX() != h->GetNbinsY() || h->GetNbinsX() != h->GetNbinsZ()) {
-        Hal::Cout::PrintInfo("Cannto make projection in nonsymetric histo", Hal::EInfo::kLowWarning);
+        Hal::Cout::PrintInfo("Cannot make projection in nonsymetric histo", Hal::EInfo::kLowWarning);
         return nullptr;
       }
       TString temp     = dir;

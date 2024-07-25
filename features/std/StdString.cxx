@@ -293,6 +293,32 @@ namespace Hal {
       return res;
     }
 
+    std::vector<TString> FindBrackets(TString& option, Bool_t remove, Bool_t skipEmpty) {
+      TString expr = "";
+      TString copy = option;
+      TRegexp regexp("\\{[^}]*\\}");
+      std::vector<TString> res;
+      std::vector<TString> resRaw;
+      do {
+        expr = copy(regexp);
+        if (expr.Length()) {  // we have something!
+          resRaw.push_back(expr);
+          expr = expr(1, expr.Length() - 2);
+          if (skipEmpty) {
+            if (expr.Length() > 1) res.push_back(expr);
+          } else
+            res.push_back(expr);
+          copy.Remove(copy.First('{'), 1);
+        }
+
+      } while (expr.Length());
+      if (remove) {
+        for (auto i : resRaw)
+          option.ReplaceAll(i, "");
+      }
+      return res;
+    }
+
     void ReplaceInFile(TString path, TString newPath, TString oldPattern, TString newPattern) {
       if (!FileExists(path)) return;
       if (path.EqualTo(".temp.txt")) {

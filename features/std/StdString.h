@@ -137,6 +137,15 @@ namespace Hal {
      */
     std::vector<TString> GetLinesFromFile(TString file, Bool_t skipEmpty = kTRUE);
     /**
+     * finds patterns like {something}
+     * NOTE - might work incorrectly when brackets are not closed
+     * @param option string to check
+     * @param remove if true remove found patterns
+     * @param skipEmpty if true skip empty brackets in output
+     * @return
+     */
+    std::vector<TString> FindBrackets(TString& option, Bool_t remove = kFALSE, Bool_t skipEmpty = kTRUE);
+    /**
      * find given pattern and ignore upper/lowercase letter
      * patter must be separate world or word separated by '+' signs
      * e.g. FindParam("someapple+orange", "oragne" returns true

@@ -96,6 +96,8 @@ namespace Hal {
     std::complex<double>* GetBufferCalc(FemtoPair* pair);
     void FillNumBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin);
     void FillDenBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin);
+    void FillNumBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin);
+    void FillDenBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin);
     const std::vector<Double_t>& GetNumReal(Int_t bin) const { return fShNumReal[bin]; };
     const std::vector<Double_t>& GetNumImag(Int_t bin) const { return fShNumImag[bin]; };
     const std::vector<Double_t>& GetDenReal(Int_t bin) const { return fShDenReal[bin]; };

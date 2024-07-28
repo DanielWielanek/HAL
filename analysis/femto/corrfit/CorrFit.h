@@ -27,9 +27,9 @@ class TVirtualPad;
  * base class for fitting all correlation functions and groups of correlation
  * functions
  */
-
 namespace Hal {
   class CorrFitGUI;
+  class CorrFitPainter;
   class CorrFit : public TObject {
     friend class CorrFitGUI;
 
@@ -68,8 +68,10 @@ namespace Hal {
       kGLSMultiFit,
       kGLSSimAn,
       kDefaultAlgo,
-      kMinimizerScan,
-      kMinimizerSmartScan
+      kHalScan,
+      kHalAnt,
+      kHalScanMigrad,
+      kHalScanScan
     };
     /**specify the way how the CF is calculated **/
     enum ECalcOption {
@@ -85,7 +87,8 @@ namespace Hal {
     ECalcOption fBinCalc;
     EMinFunc fMinFunc;
     EMinAlgo fMinAlgo;
-    void AlgoToOptions(EMinAlgo algo, TString& opt1, TString& opt2) const;
+    CorrFitPainter* fPainter = {nullptr};
+    std::vector<TString> AlgoToOptions(EMinAlgo algo) const;
     /**
      * number of degrees of freedom
      */
@@ -293,6 +296,11 @@ namespace Hal {
      * CF by information from histogram edges
      */
     void SetCalculationOption(ECalcOption f) { fBinCalc = f; }
+    /**
+     *
+     * @return painter for this class (if exists)
+     */
+    CorrFitPainter* GetPainter() const { return fPainter; }
     virtual ~CorrFit();
     ClassDef(CorrFit, 2)
   };

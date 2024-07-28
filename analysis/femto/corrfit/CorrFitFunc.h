@@ -13,7 +13,6 @@
 #include "CorrFit.h"
 
 #include "Array.h"
-#include "CorrFitDrawOptions.h"
 #include "FemtoConst.h"
 #include "MinimizerStepConf.h"
 
@@ -37,14 +36,22 @@ namespace ROOT {
   }
 }  // namespace ROOT
 namespace Hal {
+  class CorrFitGUI;
   class CorrFitMask;
   class ChiSqMap2D;
   class CorrFitHDFunc;
+  class CorrFitPainter;
   class CorrFitFunc : public CorrFit {
     friend class Femto1DCF;
     friend class Femto3DCF;
     friend class FemtoSHCF;
-    Bool_t fDrawOptionSet = {kFALSE};
+    friend class CorrFitPainter;
+
+    void PrepareSecondMiminizer(ROOT::Math::Minimizer* min, const double* pars, const double* errors) const;
+    void SetParsOfMinimizer(ROOT::Math::Minimizer* min) const;
+    Int_t CountNDF() const;
+    ROOT::Math::Minimizer* GetMinimizer1(EMinAlgo algo) const;
+    ROOT::Math::Minimizer* GetMinimizer2(EMinAlgo algo) const;
 
   protected:
     /**
@@ -73,6 +80,10 @@ namespace Hal {
      */
     Int_t fMaxIterations;
     /**
+     * norm index
+     */
+    Int_t fNormParIndex = {0};
+    /**
      * desired precission
      */
     Double_t fTolerance;
@@ -93,26 +104,6 @@ namespace Hal {
      */
     Bool_t fOwnRangeMap;
     /**
-     * pointers to legend entries
-     */
-    std::vector<TLegendEntry*> fLegendEntries;
-    /**
-     * pointer to legend if exists
-     */
-    TLegend* fLegend = {nullptr};
-    /**
-     * pointer to pad with function
-     */
-    TVirtualPad* fTempPad = {nullptr};
-    /**
-     * draw options
-     */
-    CorrFitDrawOptions fDrawOptions;
-    /**
-     * array of TH1 used for drawing
-     */
-    std::vector<TH1*> fDrawHistograms;
-    /**
      * pointer to correlation function
      */
     TObject* fCF;
@@ -132,7 +123,10 @@ namespace Hal {
      * fitting mask
      */
     CorrFitMask* fMask;
-
+    /**
+     * for drawing CF
+     */
+    CorrFitPainter* fPainter = {nullptr};
     MinimizerStepConf fDiscretteMinimzerConf;
     /**
      * extrapolated function
@@ -144,11 +138,11 @@ namespace Hal {
      * should be done manualy before each fit, by default the calculation matrix
      * check 10 points for each non-fixed parameter from min to max
      */
-    virtual void PrepareMinimizer();
+    virtual void PrepareHalMinimizer() const;
     /**
      * prepares root minimizer
      */
-    virtual void PrepareRootMinimizer(ROOT::Math::Minimizer* minizer);
+    virtual void PrepareRootMinimizer(ROOT::Math::Minimizer* minizer) const;
     /**
      * estimate number of active bins, NDF, also calculate mask in needed
      */
@@ -209,6 +203,10 @@ namespace Hal {
      */
     virtual void PrepareRaw() = 0;
     /**
+     * makes parent for this objec
+     */
+    virtual void MakePainter(TString options) = 0;
+    /**
      * fit funcion by steps, usefull only for 1D fits
      * @param step - step of fitting
      */
@@ -246,12 +244,6 @@ namespace Hal {
      */
     virtual void SetErrors(TH1* num, const TH1* den) const = 0;
     /**
-     * draw this function but use corrfit draw options instead of string
-     * @param repaint - if true repaint instead of paint new objects
-     * @param refresh - set true if this is the last Paint method this method refresh pads
-     */
-    virtual void Paint(Bool_t repaint, Bool_t refresh) = 0;
-    /**
      * calculate error of correlation function
      * @param Num numerator value
      * @param NumErr numeratora error
@@ -284,18 +276,6 @@ namespace Hal {
      * @param max
      */
     void SetMaxIteration(Int_t max) { fMaxIterations = max; };
-    /**
-     * set draw options
-     * @param options
-     */
-    void SetDrawOption(const CorrFitDrawOptions& options);
-    /**
-     * draw this function
-     * @param draw_option like for TF1 + optional "leg" to draw with legend, or
-     * "full" to draw optimized you can also specify range of drawed function by
-     * {min,max} eg. {1,2.0} /TODO implement in 3D also
-     */
-    void Draw(Option_t* draw_option = "full");
     /**
      * set range of CF's
      * @param min lower range limit
@@ -402,8 +382,36 @@ namespace Hal {
      * change fit parameters - just print estimated values
      */
     virtual void PreFit(TObject* histo, Double_t bins = 1);
-    virtual void Repaint() { Paint(kTRUE, kTRUE); };
-    void UpdateLegend();
+    /**
+     *
+     * @return normalization parameter
+     */
+    Double_t GetNorm() const { return GetParameter(NormID()); };
+    /**
+     *
+     * @return param number that correspond to norm
+     */
+    inline Int_t NormID() const { return fNormParIndex; };
+    /**
+     *
+     * @return normalization error
+     */
+    Double_t GetNormError() const { return GetParError(fNormParIndex); };
+    /**
+     * set norm limits
+     * @param min
+     * @param max
+     */
+    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(NormID(), min, max); }
+    virtual void Draw(Option_t* option = "");
+    virtual void Repaint();
+    /**
+     * start GUI
+     * @param prec precission of sliders for parameter manipulation
+     * @return
+     */
+    Hal::CorrFitGUI* StartGui(Int_t prec = -1);
+    CorrFitPainter* GetPainter() const { return fPainter; }
     virtual ~CorrFitFunc();
     ClassDef(CorrFitFunc, 1)
   };

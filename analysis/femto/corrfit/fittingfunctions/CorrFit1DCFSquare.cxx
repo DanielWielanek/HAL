@@ -10,7 +10,7 @@
 
 namespace Hal {
 
-  CorrFit1DCF_Square::CorrFit1DCF_Square(Int_t pol) : CorrFit1DCF(3) {
+  CorrFit1DCF_Square::CorrFit1DCF_Square(Int_t pol) : CorrFit1DCF(pol + 1) {
     SetParameterName(AID(), "A");
     SetParameterName(BID(), "B");
     if (pol < 1) {

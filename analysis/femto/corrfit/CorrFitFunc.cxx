@@ -10,12 +10,15 @@
 #include "CorrFitFunc.h"
 
 #include "ChiSqMap2D.h"
+#include "CorrFitGUI.h"
 #include "CorrFitHDFunc.h"
+#include "CorrFitPainter.h"
 #include "Cout.h"
 #include "Femto1DCF.h"
 #include "Femto3DCF.h"
 #include "FemtoSHCF.h"
 #include "Minimizer.h"
+#include "Painter.h"
 #include "Splines.h"
 #include "Std.h"
 #include "StdString.h"
@@ -89,27 +92,6 @@ namespace Hal {
     }
   }
 
-  void CorrFitFunc::Draw(Option_t* draw_option) {
-    TString drawOpts = draw_option;
-    if (fDrawFunc.size() > 0) {
-      std::cout << "CorrFitFunc::Draw Cannot set CorrFitDrawOptions when function was drawn and options were set" << std::endl;
-    }
-    if (!fDrawOptionSet && drawOpts.Length() > 0) {
-      fDrawOptions   = CorrFitDrawOptions(draw_option);
-      fDrawOptionSet = kTRUE;
-    }
-    Paint(kFALSE, kTRUE);
-  }
-
-  void CorrFitFunc::SetDrawOption(const CorrFitDrawOptions& options) {
-    if (fDrawOptionSet || fDrawFunc.size() > 0) {
-      std::cout << "Canot set CorrFitDrawOptions when function was set or draw options were set" << std::endl;
-      return;
-    }
-    fDrawOptions   = options;
-    fDrawOptionSet = kTRUE;
-  }
-
   void CorrFitFunc::SetupFunction(TF1* f) const {
     for (int i = 0; i < GetParametersNo(); i++) {
       f->SetParName(i, fParameters[i].GetName());
@@ -161,38 +143,11 @@ namespace Hal {
   }
 
   void CorrFitFunc::NumericalMinimization() {
-    TString opt1, opt2;
-    AlgoToOptions(fMinAlgo, opt1, opt2);
     ROOT::Math::Minimizer *min, *min2 = nullptr;
-    auto setPars = [&](ROOT::Math::Minimizer* minn) {
-      minn->SetMaxFunctionCalls(fMaxIterations);
-      minn->SetMaxIterations(fMaxIterations);
-      minn->SetTolerance(fTolerance);
-    };
-    Bool_t custom_minimizer = kFALSE;
     CheckOrder();
-    if (fMinAlgo == kDefaultAlgo) {
-      min = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Scan");
-    } else if (fMinAlgo == kMinimizerScan || fMinAlgo == kMinimizerSmartScan) {
-      min = Minimizer::Instance();
-      static_cast<Minimizer*>(min)->SetMinimizerType(opt2);
-      PrepareMinimizer();
-      custom_minimizer = kTRUE;
-      //}else if(fMinAlgo==kTwoStepAlgo){
-      //
-    } else {
-      min = ROOT::Math::Factory::CreateMinimizer(opt1.Data(), opt2.Data());
-    }
-    setPars(min);
-    Double_t free_parameters = 0;
-    for (int i = 0; i < GetParametersNo(); i++) {
-      if (!fParameters[i].IsFixed()) free_parameters++;
-    }
-    fNDF = fActiveBins - free_parameters;
-    if (custom_minimizer) {
-      static_cast<Minimizer*>(min)->SetNDF(fNDF);
-    } else
-      PrepareRootMinimizer(min);
+    fNDF = CountNDF();
+    min  = GetMinimizer1(fMinAlgo);
+    min2 = GetMinimizer2(fMinAlgo);
     ROOT::Math::Functor f;
     switch (fMinFunc) {
       case kChi: f = ROOT::Math::Functor(this, &CorrFitFunc::FunctorChiTFD, GetParametersNo()); break;
@@ -201,32 +156,15 @@ namespace Hal {
       default: f = ROOT::Math::Functor(this, &CorrFitFunc::FunctorChiTFD, GetParametersNo()); break;
     }
     min->SetFunction(f);
-
+    if (min2) min2->SetFunction(f);
     min->Minimize();
-    if (fMinAlgo == kDefaultAlgo) {  // now call midgrad
-      if (fTrace) std::cout << "Switching to migrad" << std::endl;
-      min2 = ROOT::Math::Factory::CreateMinimizer("Minuit2", "Migrad");
-      min2->SetFunction(f);
+
+    if (min2) {
+      if (Hal::Cout::GetVerboseMode() <= Hal::EInfo::kInfo || fTrace) std::cout << "Switching to second minimizer " << std::endl;
       const double* parameters_guess = min->X();
       const double* errors_guess     = min->Errors();
-      for (int i = 0; i < GetParametersNo(); i++) {
-        auto Param = fParameters[fFitOrder[i]];
-        if (Param.IsFixed()) {
-          min2->SetFixedVariable(i, Param.GetParName().Data(), Param.GetStartVal());
-        } else {
-          Double_t param  = parameters_guess[i];
-          Double_t minpar = param - 3.0 * errors_guess[i];
-          Double_t maxpar = param + 3.0 * errors_guess[i];
-          minpar          = TMath::Max(Param.GetMin(), minpar);
-          maxpar          = TMath::Min(Param.GetMax(), maxpar);
-          Double_t step   = (maxpar - minpar) * 0.1;
-          min2->SetLimitedVariable(i, Param.GetParName().Data(), parameters_guess[i], step, minpar, maxpar);
-          if (fTrace)
-            std::cout << "Set limits " << Param.GetParName() << "\t"
-                      << Form(" %4.4f+/-%4.4f", parameters_guess[i], 3.0 * errors_guess[i]) << std::endl;
-        }
-      }
-      setPars(min2);
+      PrepareSecondMiminizer(min, parameters_guess, errors_guess);
+      SetParsOfMinimizer(min2);
       min2->Minimize();
     }
 
@@ -358,9 +296,7 @@ namespace Hal {
     fDenominatorHistogram = nullptr;
     if (fCorrelationFunctionHistogram) delete fCorrelationFunctionHistogram;
     fCorrelationFunctionHistogram = nullptr;
-    if (fLegend) delete fLegend;
-    for (auto& i : fDrawHistograms)
-      delete i;
+    if (fPainter) delete fPainter;
   }
 
   Int_t CorrFitFunc::GetFreeParamsNo() const {
@@ -435,16 +371,16 @@ namespace Hal {
     return 0;
   }
 
-  void CorrFitFunc::PrepareMinimizer() {
+  void CorrFitFunc::PrepareHalMinimizer() const {
     Minimizer* min = Minimizer::Instance();
     min->SetTrace(fTrace);
     min->Reset();
-    if (fMinAlgo == EMinAlgo::kMinimizerScan) {
-      min->SetMinimizerType("scan");
-    } else {
+    min->SetNDF(fNDF);
+    if (fMinAlgo == EMinAlgo::kHalAnt) {
       min->SetMinimizerType("ant");
+    } else {
+      min->SetMinimizerType("scan");
     }
-
     for (int i = 0; i < GetParametersNo(); i++) {
       auto Param       = fParameters[fFitOrder[i]];
       std::string name = Param.GetParName().Data();
@@ -498,74 +434,7 @@ namespace Hal {
     DummyNumericalFunction();
   }
 
-  void CorrFitFunc::UpdateLegend() {
-    if (fDrawOptions.DrawLegend() == kFALSE) return;
-    TString chi_label = "";
-    if (fDrawOptions.Chi2()) {
-      if (fLegend) fChi[0] = GetChiTF(fTempParamsEval);  // legend present, we have to recalcuate chi2
-      TString chi_s, chindf_s, ndf_s;
-      Double_t chi    = GetChiSquare();
-      Double_t chindf = GetChiNDF();
-      Double_t ndf    = GetNDF();
-      if (chi <= 1000)
-        chi_s = Form("%4.3f", chi);
-      else
-        chi_s = Hal::Std::RoundToString(chi, 2, "prefix");
-      if (chindf <= 1000) {
-        chindf_s = Form("%4.3f", chindf);
-      } else {
-        chindf_s = Hal::Std::RoundToString(chindf, 2, "prefix");
-      }
-      if (ndf <= 1000) {
-        ndf_s = Form("%i", (int) ndf);
-      } else {
-        ndf_s = Hal::Std::RoundToString(ndf, 2, "prefix");
-      }
-      chi_label = Form("#chi^{2}/NDF %s (%s/%s)", chindf_s.Data(), chi_s.Data(), ndf_s.Data());
-    }
-    std::vector<TString> label;
-    for (int i = 0; i < GetParametersNo(); i++) {
-      if (IsParFixed(i)) {
-        label.push_back(Form("%s %4.3f (fixed)", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue()));
-      } else {
-        if (TMath::IsNaN(fParameters[i].GetError())) {
-          label.push_back(Form("%s %4.3f#color[2]{#pm%4.3f}",
-                               fParameters[i].GetParName().Data(),
-                               fParameters[i].GetFittedValue(),
-                               fParameters[i].GetError()));
-        } else if (fParameters[i].GetError() < 0) {
-          label.push_back(Form("%s %4.3f#color[16]{#pm%4.3f}",
-                               fParameters[i].GetParName().Data(),
-                               fParameters[i].GetFittedValue(),
-                               fParameters[i].GetError()));
-        } else {
-          label.push_back(Form(
-            "%s %4.3f#pm%4.3f", fParameters[i].GetParName().Data(), fParameters[i].GetFittedValue(), fParameters[i].GetError()));
-        }
-      }
-    }
-    if (chi_label.Length() > 0) label.push_back(chi_label);
-    if (fLegend == nullptr) {
-      if (fDrawOptions.LegendPos()) {
-        fLegend = new TLegend(
-          fDrawOptions.GetLegendPos(0), fDrawOptions.GetLegendPos(1), fDrawOptions.GetLegendPos(2), fDrawOptions.GetLegendPos(3));
-      } else {
-        fLegend = new TLegend(0.7, 0.7, 0.95, 0.95);
-      }
-      fLegend->SetHeader(GetName());
-      for (auto str : label) {
-        fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, str, ""));
-      }
-    } else {
-      for (unsigned int i = 0; i < label.size(); i++) {
-        TLegendEntry* ent = fLegendEntries[i];
-        ent->SetLabel(label[i]);
-        ent->SetTextColor(kGreen);
-      }
-    }
-  }
-
-  void CorrFitFunc::PrepareRootMinimizer(ROOT::Math::Minimizer* min) {
+  void CorrFitFunc::PrepareRootMinimizer(ROOT::Math::Minimizer* min) const {
     for (int i = 0; i < GetParametersNo(); i++) {
       auto Param = fParameters[fFitOrder[i]];
       if (Param.IsFixed()) {
@@ -602,25 +471,12 @@ namespace Hal {
 
   void CorrFitFunc::NumericalPreMinimization(Double_t bins) {
     ROOT::Math::Minimizer* min = nullptr;
-    auto setPars               = [&](ROOT::Math::Minimizer* minn) {
-      minn->SetMaxFunctionCalls(fMaxIterations);
-      minn->SetMaxIterations(fMaxIterations);
-      minn->SetTolerance(fTolerance);
-    };
-
     CheckOrder();
-
     min = Minimizer::Instance();
     static_cast<Minimizer*>(min)->SetMinimizerType("scan");
-    PrepareMinimizer();
-
-
-    setPars(min);
-    Double_t free_parameters = 0;
-    for (int i = 0; i < GetParametersNo(); i++) {
-      if (!fParameters[i].IsFixed()) free_parameters++;
-    }
-    fNDF      = fActiveBins - free_parameters;
+    fNDF = CountNDF();
+    PrepareHalMinimizer();
+    SetParsOfMinimizer(min);
     auto minx = static_cast<Minimizer*>(min);
     minx->SetNDF(fNDF);
 
@@ -635,6 +491,7 @@ namespace Hal {
 
     min->Minimize();
     const double* parameters = min->X();
+
     if (bins == 0) {
       for (int i = 0; i < GetParametersNo(); i++) {
         if (!fParameters[i].IsFixed()) {
@@ -691,5 +548,118 @@ namespace Hal {
     file << "</minimizer>" << std::endl;
     file.close();
   }
+
+  void CorrFitFunc::Draw(Option_t* option) {
+    bool painter_set = true;
+    if (!fPainter) {
+      MakePainter(option);
+      painter_set = false;
+      if (fCF) {  // we have our CF, and it was painted, let's link painter
+                  /* HalCoutDebug("LINKING TO CF");
+                   auto div     = (Hal::DividedHisto1D*) fCF;
+                   auto painter = (Hal::Painter*) div->GetSpecial("painter");
+                   if (painter) {
+                     painter->AddPainter(fPainter);
+                     HalCoutDebug("LINKING TO CF");
+                   } else
+                     Hal::Cout::PrintInfo(
+                       Form("%s %i, CF is present but there is not painter, call cf->Draw() before func->Draw()", __FILE__, __LINE__),
+                       EInfo::kWarning);*/
+      }
+    }
+    fPainter->SetOption(option);
+    fPainter->Paint();
+  }
+
+  void CorrFitFunc::Repaint() {
+    if (!fPainter) {
+      Draw("skip");
+      return;
+    }
+    fPainter->Paint();
+
+#ifdef __APPLE__
+    for (int ispe = 0; ispe < 2; ispe++) {
+      if (gSystem->ProcessEvents()) break;
+    }
+#endif
+  }
+
+  void CorrFitFunc::SetParsOfMinimizer(ROOT::Math::Minimizer* min) const {
+    min->SetMaxFunctionCalls(fMaxIterations);
+    min->SetMaxIterations(fMaxIterations);
+    min->SetTolerance(fTolerance);
+  }
+
+  Int_t CorrFitFunc::CountNDF() const {
+    Int_t freeParameters = 0;
+    for (int i = 0; i < GetParametersNo(); i++) {
+      if (!fParameters[i].IsFixed()) freeParameters++;
+    }
+    return fActiveBins - freeParameters;
+  }
+
+  ROOT::Math::Minimizer* CorrFitFunc::GetMinimizer1(EMinAlgo algo) const {
+    auto algos = AlgoToOptions(fMinAlgo);
+    if (algos.size() < 2) algos.push_back("");
+    TString pat1               = algos[0];
+    TString pat2               = algos[1];
+    ROOT::Math::Minimizer* min = nullptr;
+    if (pat1.EqualTo("HalMinimizer")) {
+      min = Minimizer::Instance();
+      static_cast<Minimizer*>(min)->SetMinimizerType(pat2);
+      static_cast<Minimizer*>(min)->SetNDF(fNDF);
+      PrepareHalMinimizer();
+    } else {
+      min = ROOT::Math::Factory::CreateMinimizer(pat1.Data(), pat2.Data());
+      PrepareRootMinimizer(min);
+    }
+    SetParsOfMinimizer(min);
+    return min;
+  }
+
+  ROOT::Math::Minimizer* CorrFitFunc::GetMinimizer2(EMinAlgo algo) const {
+    auto algos = AlgoToOptions(fMinAlgo);
+    if (algos.size() <= 3) return nullptr;
+    TString pat1 = algos[2];
+    TString pat2 = algos[3];
+    ROOT::Math::Minimizer* min = nullptr;
+    if (pat1.EqualTo("HalMinimizer")) {
+      Hal::Cout::PrintInfo("You should not use hal minimizer as second minimizer", EInfo::kWarning);
+      min = Minimizer::Instance();
+      static_cast<Minimizer*>(min)->SetMinimizerType(pat2);
+      static_cast<Minimizer*>(min)->SetNDF(fNDF);
+      PrepareHalMinimizer();
+    } else {
+      min = ROOT::Math::Factory::CreateMinimizer(pat1.Data(), pat2.Data());
+      PrepareRootMinimizer(min);
+    }
+    SetParsOfMinimizer(min);
+    return min;
+  }
+
+  void CorrFitFunc::PrepareSecondMiminizer(ROOT::Math::Minimizer* min,
+                                           const double* parameters_guess,
+                                           const double* errors_guess) const {
+    for (int i = 0; i < GetParametersNo(); i++) {
+      auto Param = fParameters[fFitOrder[i]];
+      if (Param.IsFixed()) {
+        min->SetFixedVariable(i, Param.GetParName().Data(), Param.GetStartVal());
+      } else {
+        Double_t param  = parameters_guess[i];
+        Double_t minpar = param - 3.0 * errors_guess[i];
+        Double_t maxpar = param + 3.0 * errors_guess[i];
+        minpar          = TMath::Max(Param.GetMin(), minpar);
+        maxpar          = TMath::Min(Param.GetMax(), maxpar);
+        Double_t step   = (maxpar - minpar) * 0.1;
+        min->SetLimitedVariable(i, Param.GetParName().Data(), parameters_guess[i], step, minpar, maxpar);
+        if (Hal::Cout::GetVerboseMode() >= Hal::EInfo::kInfo)
+          std::cout << "Set limits " << Param.GetParName() << "\t"
+                    << Form(" %4.4f+/-%4.4f", parameters_guess[i], 3.0 * errors_guess[i]) << std::endl;
+      }
+    }
+  }
+
+  Hal::CorrFitGUI* CorrFitFunc::StartGui(Int_t prec) { return new CorrFitGUI(this, prec); }
 
 }  // namespace Hal

@@ -9,7 +9,7 @@
 #include "CorrFit1DCFPoly.h"
 
 namespace Hal {
-  CorrFit1DCF_Poly::CorrFit1DCF_Poly(Int_t degree) {
+  CorrFit1DCF_Poly::CorrFit1DCF_Poly(Int_t degree) : CorrFit1DCF(degree + 1) {
     switch (degree) {
       case 1: {
         FixParameter(BID(), 0);

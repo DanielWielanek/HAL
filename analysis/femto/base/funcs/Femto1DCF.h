@@ -20,6 +20,7 @@
 
 namespace Hal {
   class CorrFit1DCF;
+  class FemtoCFPainter;
   /**
    * basic class for storing 1-dim correlation functions
    */
@@ -28,6 +29,7 @@ namespace Hal {
     friend class FemtoSerializationInterface1D;
 
   protected:
+    FemtoCFPainter* fPainter = {nullptr};  //!
     virtual TString GetPic() const;
     /**
      * set assumed names of axes
@@ -92,8 +94,10 @@ namespace Hal {
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual void Print(Option_t* opt = "") const;
     virtual TObject* GetSpecial(TString opt) const;
+    virtual void Draw(Option_t* option = "");
+    virtual FemtoCFPainter* GetPainter() const { return fPainter; }
     virtual ~Femto1DCF();
-    ClassDef(Femto1DCF, 3)
+    ClassDef(Femto1DCF, 4)
   };
 }  // namespace Hal
 #endif /* HALFEMTO1DCF_H_ */

@@ -11,6 +11,7 @@
 
 #include "CorrFit1DCF.h"
 #include "Cout.h"
+#include "Femto1DCFPainter.h"
 #include "FemtoPair.h"
 #include "FemtoSerializationInterface1D.h"
 #include "HtmlCore.h"
@@ -83,6 +84,7 @@ namespace Hal {
   Femto1DCF::Femto1DCF(const Femto1DCF& other) : DividedHisto1D(other), fFrame(other.fFrame) {}
 
   Femto1DCF::~Femto1DCF() {
+    if (fPainter) delete fPainter;
     // TODO Auto-generated destructor stub
   }
 
@@ -163,7 +165,20 @@ namespace Hal {
 
   TObject* Femto1DCF::GetSpecial(TString opt) const {
     if (opt == "serialization") return new FemtoSerializationInterface1D();
+    if (opt == "painter") return fPainter;
     return nullptr;
+  }
+
+  void Femto1DCF::Draw(Option_t* option) {
+    TString options = option;
+    if (fPainter) {
+      fPainter->SetOption(option);
+      fPainter->Paint();
+    } else {
+      fPainter = new Hal::Femto1DCFPainter(this);
+      fPainter->SetOption(option);
+      fPainter->Paint();
+    }
   }
 
 }  // namespace Hal

@@ -25,6 +25,7 @@
 
 #include "Array.h"
 #include "CorrFit3DCF.h"
+#include "CorrFit3DCFPainter.h"
 #include "CorrFitHDFunc3D.h"
 #include "CorrFitMask.h"
 #include "CorrFitMask3D.h"
@@ -42,16 +43,16 @@ namespace Hal {
       fRange[2 * i]     = 0;
       fRange[2 * i + 1] = 1.0;
     }
-    if (parameters < 3) {
+    if (parameters < 4) {
       Cout::PrintInfo(Form("%s must have at least 3 parameters", this->ClassName()), EInfo::kWarning);
       return;
     }
     fXbins = new Array_1<Double_t>(1);
     fYbins = new Array_1<Double_t>(1);
     fZbins = new Array_1<Double_t>(1);
-    //   if (parameters > 3) fParameters[3].SetParName("#lambda");
-    //  if (parameters > 4) fParameters[4].SetParName("N");
+    SetParameterName(NormID(), "N");
   }
+
   CorrFit3DCF::CorrFit3DCF(Int_t parameters) : CorrFit3DCF(e3DMode::kNormal3R, parameters) {
     SetParameterName(RoutID(), "R_{out}");
     SetParameterName(RsideID(), "R_{side}");
@@ -76,7 +77,7 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
@@ -92,7 +93,7 @@ namespace Hal {
       Double_t tempX[3] = {x[0], (*fYbins)[binY], (*fZbins)[j]};
       sum += CalculateCF(tempX, params);
     }
-    return sum / ctn;
+    return GetScaledValue(sum, params) / ctn;
   }
 
   Double_t CorrFit3DCF::GetFunY(Double_t* x, Double_t* params) const {
@@ -105,7 +106,7 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
     Double_t sum = 0;
     Double_t ctn = fXbins->GetSize() + fZbins->GetSize();
@@ -113,11 +114,11 @@ namespace Hal {
     Int_t binX   = (fXbins->GetSize() - 1) / 2;
     for (int i = 0; i < fXbins->GetSize(); i++) {
       Double_t tempX[3] = {(*fXbins)[i], x[0], (*fZbins)[binZ]};
-      sum += CalculateCF(tempX, params);
+      sum += GetScaledValue(CalculateCF(tempX, params), params);
     }
     for (int j = 0; j < fZbins->GetSize(); j++) {
       Double_t tempX[3] = {(*fXbins)[binX], x[0], (*fZbins)[j]};
-      sum += CalculateCF(tempX, params);
+      sum += GetScaledValue(CalculateCF(tempX, params), params);
     }
     return sum / ctn;
   }
@@ -132,7 +133,7 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
     Double_t sum = 0;
     Double_t ctn = fXbins->GetSize() + fYbins->GetSize();
@@ -140,11 +141,11 @@ namespace Hal {
     Int_t binY   = (fYbins->GetSize() - 1) / 2;
     for (int i = 0; i < fXbins->GetSize(); i++) {
       Double_t tempX[3] = {(*fXbins)[i], (*fYbins)[binY], x[0]};
-      sum += CalculateCF(tempX, params);
+      sum += GetScaledValue(CalculateCF(tempX, params), params);
     }
     for (int j = 0; j < fYbins->GetSize(); j++) {
       Double_t tempX[3] = {(*fXbins)[binX], (*fYbins)[j], x[0]};
-      sum += CalculateCF(tempX, params);
+      sum += GetScaledValue(CalculateCF(tempX, params), params);
     }
     return sum / ctn;
   }
@@ -156,89 +157,6 @@ namespace Hal {
     fRange[3] = y_max;
     fRange[4] = z_min;
     fRange[5] = z_max;
-  }
-
-  void CorrFit3DCF::Paint(Bool_t repaint, Bool_t refresh) {
-    for (int i = 0; i < GetParametersNo(); i++) {
-      fTempParamsEval[i] = GetParameter(i);
-    }
-    // TODO fFittedFunction->SetParameter(par,val);
-    ParametersChanged();
-    if (!repaint) Calculatef(0);
-    if (gPad == nullptr) {
-      new TCanvas();
-      fTempPad = gPad;
-    }
-    if (fTempPad == nullptr) fTempPad = gPad;
-    EDrawMode dm = EDrawMode::kNormal;
-    Int_t padX = 0, padY = 0;
-    Int_t legendPad = 0;
-    if (fDrawOptions.Diag1()) {
-      dm        = EDrawMode::kDiagonal1;
-      padX      = 3;
-      padY      = 3;
-      legendPad = 9;
-    } else if (fDrawOptions.Diag2()) {
-      dm        = EDrawMode::kDiagonal2;
-      padX      = 4;
-      padY      = 4;
-      legendPad = 15;
-    } else {
-      dm        = EDrawMode::kNormal;
-      padX      = 2;
-      padY      = 2;
-      legendPad = 4;
-    }
-    GetTF1s(!repaint, dm);
-    if (fDrawOptions.DrawCf()) { GetTH1s(dm); }
-
-
-    Color_t colz[13] = {kRed, kBlue, kGreen, kViolet, kOrange, kCyan, kBlack, kGray, kMagenta, kYellow + 1, kPink, kAzure, kTeal};
-    if (fDrawOptions.Rgb()) {
-      int count = 0;
-      for (auto f : fDrawFunc) {
-        if (count < 13) { f.first->SetLineColor(colz[count++]); }
-      }
-    }
-
-    if (!repaint && !fDrawOptions.Same()) { fTempPad->Divide(padX, padY); }
-
-    int pad = 0;
-    for (auto f : fDrawFunc) {
-      fTempPad->cd(++pad);
-      if (fDrawOptions.DrawCf()) {
-        if (fDrawOptions.AutoNorm() && fOldNorm != 0) { fDrawHistograms[pad - 1]->Scale(fOldNorm / GetNorm()); }
-        if (fDrawOptions.DrawMinMax()) {
-          fDrawHistograms[pad - 1]->SetMinimum(fDrawOptions.GetMin());
-          fDrawHistograms[pad - 1]->SetMaximum(fDrawOptions.GetMax());
-        }
-        fDrawHistograms[pad - 1]->Draw("same");
-      }
-      if (fDrawOptions.AutoNorm()) { f.first->SetParameter(NormID(), 1); }
-      f.first->Draw("SAME");
-
-      f.second = gPad;
-    }
-    UpdateLegend();
-    fTempPad->cd(legendPad);
-    if (fDrawOptions.DrawLegend()) {
-      fLegend->SetX1(0.05);
-      fLegend->SetX2(0.95);
-      fLegend->SetY1(0.05);
-      fLegend->SetY2(0.95);
-      fLegend->Draw();
-    }
-
-
-    if (refresh) {  //?
-      for (unsigned int i = 0; i < fDrawFunc.size(); i++) {
-        fTempPad->cd(i + 1);
-        gPad->Modified();
-        gPad->Update();
-      }
-    }
-    gPad     = fTempPad;
-    fOldNorm = GetNorm();
   }
 
   void CorrFit3DCF::SetParametersToTF1(TF1* f) const {
@@ -456,97 +374,6 @@ namespace Hal {
     return CalculateCF(xx, params);
   }
 
-  void CorrFit3DCF::GetTF1s(Bool_t makeNew, EDrawMode drawMode) {
-    const Int_t nPar  = GetParametersNo();
-    TString className = this->ClassName();
-    if (makeNew) {
-      switch (drawMode) {
-        case EDrawMode::kNormal: {
-          fDrawFunc.resize(3);
-          fDrawFunc[0].first = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
-          fDrawFunc[1].first = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
-          fDrawFunc[2].first = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
-        } break;
-        case EDrawMode::kDiagonal1: {
-          fDrawFunc.resize(7);
-          fDrawFunc[0].first = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
-          fDrawFunc[1].first = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
-          fDrawFunc[2].first = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
-          fDrawFunc[3].first =
-            new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
-          fDrawFunc[4].first =
-            new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunXZpp");
-          fDrawFunc[5].first =
-            new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunYZpp");
-          fDrawFunc[6].first =
-            new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
-
-        } break;
-        case EDrawMode::kDiagonal2: {
-          fDrawFunc.resize(13);
-          fDrawFunc[0].first = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
-          fDrawFunc[1].first = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
-          fDrawFunc[2].first = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
-          fDrawFunc[3].first =
-            new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
-          fDrawFunc[4].first =
-            new TF1("funcXY+-", this, &CorrFit3DCF::GetFunXYpm, fRange[0], fRange[1], nPar, className, "GetFunXYpm");
-          fDrawFunc[5].first =
-            new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunYZpp");
-          fDrawFunc[6].first =
-            new TF1("funcYZ+-", this, &CorrFit3DCF::GetFunYZpm, fRange[2], fRange[3], nPar, className, "GetFunYZpm");
-          fDrawFunc[7].first =
-            new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunXZpp");
-          fDrawFunc[8].first =
-            new TF1("funcXZ+-", this, &CorrFit3DCF::GetFunXZpm, fRange[4], fRange[5], nPar, className, "GetFunXZpm");
-          fDrawFunc[9].first =
-            new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
-          fDrawFunc[10].first =
-            new TF1("funcXYZ+-+", this, &CorrFit3DCF::GetFunXYZpmp, fRange[0], fRange[1], nPar, className, "GetFunXYZpmp");
-          fDrawFunc[11].first =
-            new TF1("funcXYZ+--", this, &CorrFit3DCF::GetFunXYZpmm, fRange[0], fRange[1], nPar, className, "GetFunXYZpmm");
-          fDrawFunc[12].first =
-            new TF1("funcXYZ++-", this, &CorrFit3DCF::GetFunXYZppm, fRange[0], fRange[1], nPar, className, "GetFunXYZppm");
-
-        } break;
-      }
-      if (fDrawOptions.DrawCf()) {}
-    }
-    for (auto func_pad : fDrawFunc) {
-      SetParametersToTF1(func_pad.first);
-      func_pad.first->SetLineColor(GetLineColor());
-      func_pad.first->SetLineStyle(GetLineStyle());
-      func_pad.first->SetLineWidth(GetLineWidth());
-    }
-  }
-
-  void CorrFit3DCF::GetTH1s(EDrawMode drawMode) {
-    if (fDrawHistograms.size() > 0) return;
-    switch (drawMode) {
-      case EDrawMode::kNormal: {
-        fDrawHistograms.resize(3);
-        TH1D** arr = ((Femto3DCF*) fCF)->GetDiagProj("cf", kFALSE);
-        for (int i = 0; i < 3; i++)
-          fDrawHistograms[i] = arr[i];
-        delete[] arr;
-      } break;
-      case EDrawMode::kDiagonal1: {
-        fDrawHistograms.resize(7);
-        TH1D** arr = ((Femto3DCF*) fCF)->GetDiagProj("diag1", kFALSE);
-        for (int i = 0; i < 7; i++)
-          fDrawHistograms[i] = arr[i];
-        delete[] arr;
-      } break;
-      case EDrawMode::kDiagonal2: {
-        fDrawHistograms.resize(13);
-        TH1D** arr = ((Femto3DCF*) fCF)->GetDiagProj("diag2", kFALSE);
-        for (int i = 0; i < 13; i++)
-          fDrawHistograms[i] = arr[i];
-        delete[] arr;
-      } break;
-    }
-  }
-
   Double_t CorrFit3DCF::GetFunXYpp(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
     fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[0]);
@@ -557,13 +384,13 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
     // TODO take width into account
     Double_t tempX[3] = {x[0], x[0], (*fZbins)[0]};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXYpm(Double_t* x, Double_t* params) const {
@@ -577,14 +404,14 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
     // TODO take width into account
     Double_t sY       = 2.0 * fYAxisf - x[0];
     Double_t tempX[3] = {x[0], sY, (*fZbins)[0]};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXZpp(Double_t* x, Double_t* params) const {
@@ -597,13 +424,13 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
     // TODO take width into account
     Double_t tempX[3] = {x[0], (*fYbins)[0], x[0]};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXZpm(Double_t* x, Double_t* params) const {
@@ -617,14 +444,14 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
     // TODO take width into account
     Double_t sZ       = 2.0 * fZAxisf - x[0];
     Double_t tempX[3] = {x[0], (*fYbins)[0], sZ};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunYZpp(Double_t* x, Double_t* params) const {
@@ -637,13 +464,13 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
     // TODO take width into account
     Double_t tempX[3] = {(*fXbins)[0], x[0], x[0]};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunYZpm(Double_t* x, Double_t* params) const {
@@ -657,14 +484,14 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
     // TODO take width into account
     Double_t sZ       = 2.0 * fZAxisf - x[0];
     Double_t tempX[3] = {(*fXbins)[0], x[0], sZ};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXYZppp(Double_t* x, Double_t* params) const {
@@ -677,13 +504,13 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
     // TODO take width into account
     Double_t tempX[3] = {x[0], x[0], x[0]};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXYZpmp(Double_t* x, Double_t* params) const {
@@ -697,14 +524,14 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
     // TODO take width into account
     Double_t sY       = 2.0 * fYAxisf - x[0];
     Double_t tempX[3] = {x[0], sY, x[0]};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXYZpmm(Double_t* x, Double_t* params) const {
@@ -719,7 +546,7 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
@@ -727,7 +554,7 @@ namespace Hal {
     Double_t sY       = 2.0 * fYAxisf - x[0];
     Double_t sZ       = 2.0 * fZAxisf - x[0];
     Double_t tempX[3] = {x[0], sY, sZ};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXYZppm(Double_t* x, Double_t* params) const {
@@ -741,14 +568,20 @@ namespace Hal {
         fDenominatorHistogram->GetYaxis()->GetBinCenter(fBinY),
         fDenominatorHistogram->GetZaxis()->GetBinCenter(fBinZ),
       };
-      return EvalCF(X, params);
+      return GetScaledValue(EvalCF(X, params), params);
     }
 
     // simple make simple average operation
     // TODO take width into account
     Double_t sZ       = 2.0 * fZAxisf - x[0];
     Double_t tempX[3] = {x[0], x[0], sZ};
-    return CalculateCF(tempX, params);
+    return GetScaledValue(CalculateCF(tempX, params), params);
+  }
+
+  Double_t CorrFit3DCF::GetScaledValue(Double_t x, Double_t* params) const {
+    double y = x;
+    if (params[GetParametersNo()]) return x / params[fNormParIndex];
+    return x;
   }
 
   void CorrFit3DCF::Calculatef(Double_t width) {
@@ -823,6 +656,53 @@ namespace Hal {
     if (fMask) delete fMask;
     fMask        = (CorrFitMask*) mask->Clone();
     fOwnRangeMap = kTRUE;
+  }
+
+  TF1* CorrFit3DCF::GetDrawableFunc(TString option) {
+    const Int_t nPar  = GetParametersNo() + 1;
+    TString className = this->ClassName();
+    TF1* func         = nullptr;
+    if (option.EqualTo("x"))
+      func = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
+    if (option.EqualTo("y"))
+      func = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
+    if (option.EqualTo("z"))
+      func = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
+
+    if (option.EqualTo("xy++"))
+      func = new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
+    if (option.EqualTo("xy+-"))
+      func = new TF1("funcXY+-", this, &CorrFit3DCF::GetFunXYpm, fRange[0], fRange[1], nPar, className, "GetFunXYpm");
+    if (option.EqualTo("yz++"))
+      func = new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunXZpp");
+    if (option.EqualTo("yz+-"))
+      func = new TF1("funcYZ+-", this, &CorrFit3DCF::GetFunYZpm, fRange[2], fRange[3], nPar, className, "GetFunYZpm");
+    if (option.EqualTo("xz++"))
+      func = new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunYZpp");
+    if (option.EqualTo("xz+-"))
+      func = new TF1("funcXZ+-", this, &CorrFit3DCF::GetFunXZpm, fRange[2], fRange[3], nPar, className, "GetFunXZpm");
+
+
+    if (option.EqualTo("xyz+++"))
+      func = new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
+    if (option.EqualTo("xyz+-+"))
+      func = new TF1("funcXYZ+-+", this, &CorrFit3DCF::GetFunXYZpmp, fRange[0], fRange[1], nPar, className, "GetFunXYZpmp");
+    if (option.EqualTo("xyz+--"))
+      func = new TF1("funcXYZ+--", this, &CorrFit3DCF::GetFunXYZpmm, fRange[0], fRange[1], nPar, className, "GetFunXYZpmm");
+    if (option.EqualTo("xyz++-"))
+      func = new TF1("funcXYZ++-", this, &CorrFit3DCF::GetFunXYZppm, fRange[0], fRange[1], nPar, className, "GetFunXYZppm");
+    if (!func) { std::cout << __LINE__ << __FILE__ << " wrong option " << option << std::endl; }
+    SetParametersToTF1(func);
+    func->FixParameter(GetParametersNo(), 0);
+    func->SetLineColor(GetLineColor());
+    func->SetLineStyle(GetLineStyle());
+    func->SetLineWidth(GetLineWidth());
+    return func;
+  }
+
+  void CorrFit3DCF::MakePainter(TString options) {
+    fPainter = new Hal::CorrFit3DCFPainter(this, (Femto3DCF*) fCF);
+    fPainter->SetOption(options);
   }
 
 }  // namespace Hal

@@ -19,11 +19,13 @@
 
 namespace Hal {
   class CorrFit3DCF;
+  class FemtoCFPainter;
   /**
    * basic class for storing 3-dim correlation functions
    */
   class Femto3DCF : public DividedHisto3D {
     friend class FemtoSerializationInterface3D;
+    FemtoCFPainter* fPainter = {nullptr};  //!
     /**
      * frame of pairs in CF
      */
@@ -33,7 +35,6 @@ namespace Hal {
      * @param h - adress of numerator or denominator
      */
     virtual void SetAxisNames(TH1* h);
-    virtual TH1D* Projection3DTo1D(Double_t min1, Double_t max1, Double_t min2, Double_t max2, Option_t* opt) const;
 
   public:
     /**
@@ -57,6 +58,7 @@ namespace Hal {
               Double_t minZ,
               Double_t maxZ,
               Femto::EKinematics frame = Femto::EKinematics::kLCMS);
+    Femto3DCF(TString name, Int_t binsX, Double_t minX, Double_t maxX, Femto::EKinematics frame = Femto::EKinematics::kLCMS);
     Femto3DCF(const Femto3DCF& other);
     /**
      *
@@ -82,14 +84,14 @@ namespace Hal {
      * draw this object
      * @param opt if "num" then only numerator is drawn, if "den" only denominator
      * is drawn,  , if "all"  then draw everything (numerator, denominator, cf)
-     * current pad is divided and numertor, if "cf" or not speciified
-     * theon only projections of cf's are drawn, user can also specify additional
+     * current pad is divided and numerator, if "cf" or not specified
+     * then only projections of cf's are drawn, user can also specify additional
      * option for TH1->Draw like "num+same" denominator and CF are drawn,
      * otherwise only divided histogram is drawn
      *
      * Standard option of draw is "cf" this option works also with option "norm" (draw normalized) "rgb" (each projection have
      * different color
-     * Option "diag1" lub "diag2" draw diagonal cf's,  option "norm" is also available for such type of drawing
+     * Option "diag1" or "diag2" draw diagonal cf's,  option "norm" is also available for such type of drawing
      */
     virtual void Draw(Option_t* opt = "cf+rgb+norm");
     /**
@@ -101,9 +103,10 @@ namespace Hal {
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual TH1D** GetDiagProj(Option_t* opt = "diag1", Bool_t normalized = kTRUE) const;
     virtual void Print(Option_t* opt = "") const;
+    virtual FemtoCFPainter* GetPainter() const { return fPainter; }
     virtual TObject* GetSpecial(TString opt) const;
     virtual ~Femto3DCF();
-    ClassDef(Femto3DCF, 3)
+    ClassDef(Femto3DCF, 4)
   };
 }  // namespace Hal
 #endif /* HALFEMTO3DCF_H_ */

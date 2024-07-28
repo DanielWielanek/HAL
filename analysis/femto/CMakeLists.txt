@@ -59,8 +59,6 @@ base/shmath/FemtoYlmIndexes.cxx
 base/shmath/FemtoYlmMath.cxx
 base/shmath/FemtoYlmSolver.cxx
 
-
-corrfit/CorrFitDrawOptions.cxx
 corrfit/CorrFit.cxx
 corrfit/CorrFitMask.cxx
 
@@ -153,6 +151,13 @@ imaging/FemtoImaging.cxx
 imaging/FemtoImaging1D.cxx
 imaging/FemtoImaging3D.cxx
 
+painters/FemtoCFPainter.cxx
+painters/Femto1DCFPainter.cxx
+painters/Femto3DCFPainter.cxx
+painters/FemtoSHCFPainter.cxx
+painters/CorrFitPainter.cxx
+painters/CorrFit1DCFPainter.cxx
+painters/CorrFit3DCFPainter.cxx
 
 )
 
@@ -173,6 +178,7 @@ if(DEFINED CIA)
         top_secret/BattlestarGalactica10.cxx
         top_secret/BattlestarPegasus.cxx
         top_secret/BattlestarValkyria.cxx
+        top_secret/CorrFitSHCFPainter.cxx
     )
 endif()
 

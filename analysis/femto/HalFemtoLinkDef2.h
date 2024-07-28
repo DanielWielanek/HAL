@@ -81,7 +81,6 @@
 #pragma link C++ class Hal::CorrFit1DCFCumacK0K0 + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacK0Kch + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacDLam + ;
-#pragma link C++ class Hal::CorrFitDrawOptions + ;
 
 #pragma link C++ class Hal::CorrFitParamsSetup + ;
 #pragma link C++ class Hal::CorrFit3DCFMultiDim + ;
@@ -153,6 +152,15 @@
 #pragma link C++ class Hal::CorrFitDumpedPairAnaVertical + ;
 #pragma link C++ class Hal::CorrFitDumpedPairAnaHorizontal + ;
 #pragma link C++ class Hal::CorrFitDumpedPairAna + ;
+
+#pragma link C++ class Hal::FemtoCFPainter + ;
+#pragma link C++ class Hal::Femto1DCFPainter + ;
+#pragma link C++ class Hal::Femto3DCFPainter + ;
+#pragma link C++ class Hal::FemtoSHCFPainter + ;
+#pragma link C++ class Hal::CorrFitPainter + ;
+#pragma link C++ class Hal::CorrFitSHCFPainter + ;
+#pragma link C++ class Hal::CorrFit3DCFPainter + ;
+#pragma link C++ class Hal::CorrFit1DCFPainter + ;
 
 
 #ifndef GSL_DISABLE

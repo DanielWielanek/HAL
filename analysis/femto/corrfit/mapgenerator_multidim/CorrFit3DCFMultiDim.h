@@ -25,7 +25,7 @@ namespace Hal {
     mutable Array_1<Float_t>* fData = {nullptr};
     virtual void Check();
     virtual void RecalculateFunction() const;
-    virtual void PrepareMinimizer();
+    virtual void PrepareHalMinimizer() const;
     virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
 
   public:

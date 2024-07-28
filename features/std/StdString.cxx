@@ -39,7 +39,7 @@ namespace Hal {
       return res;
     }
 
-    std::vector<TString> ExplodeString(TString string, Char_t delimiter) {
+    std::vector<TString> ExplodeString(TString string, Char_t delimiter, Bool_t keepEmpty) {
       std::vector<TString> array;
       if (string.Length() == 0) return array;
       if (string[0] == delimiter) string = string(1, string.Length() - 1);
@@ -49,7 +49,11 @@ namespace Hal {
       for (int count = 0; count < no; count++) {
         Size_t pos      = string.First(delimiter);
         TString element = string(0, pos);
-        if (element.Length() != 0) array.push_back(element);
+        if (keepEmpty) {
+          if (element.Length() != 0) array.push_back(element);
+        } else {
+          array.push_back(element);
+        }
         string = string(pos + 1, string.Length() - pos - 1);
       }
       return array;
@@ -409,7 +413,7 @@ namespace Hal {
     }
 
     Int_t FindParam2(TString& option, TString pattern, Bool_t remove) {
-      TString negPar = Form("!%spattern", pattern.Data());
+      TString negPar = Form("!%s", pattern.Data());
       if (FindParam(option, negPar, remove)) {
         return -1;
       } else if (FindParam(option, pattern, remove)) {

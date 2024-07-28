@@ -29,9 +29,10 @@ namespace Hal {
      * split input string into array of strings delimited by given char
      * @param string string to explode
      * @param delimiter delimiter
+     * @param keepEmpty keep emtpy strings
      * @return vector of strings
      */
-    std::vector<TString> ExplodeString(TString string, Char_t delimiter);
+    std::vector<TString> ExplodeString(TString string, Char_t delimiter, Bool_t keepEmpty = kFALSE);
     /**
      * extract parameters
      * @param argc first argument of main - number of strings

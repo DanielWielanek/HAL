@@ -1142,9 +1142,9 @@ NamespaceImp(Hal::Std)
     void CopyHistProp(const TH1& from, TH1& to, TString opt) {
       auto d3 = static_cast<const TH3*>(&from);
 
-      CopyAxisProp(from.GetXaxis(), to.GetXaxis());
-      CopyAxisProp(from.GetYaxis(), to.GetYaxis());
-      if (d3) CopyAxisProp(from.GetZaxis(), to.GetZaxis());
+      CopyAxisProp(from.GetXaxis(), to.GetXaxis(), opt);
+      CopyAxisProp(from.GetYaxis(), to.GetYaxis(), opt);
+      if (d3) CopyAxisProp(from.GetZaxis(), to.GetZaxis(), opt);
       to.SetMarkerSize(from.GetMarkerSize());
       to.SetMarkerStyle(from.GetMarkerStyle());
       to.SetMarkerColor(from.GetMarkerColor());

@@ -16,9 +16,9 @@
 
 #endif
 namespace Hal {
-  Int_t Cout::fgLineLength      = 100;
-  Cout* Cout::fgInstance        = NULL;
-  Hal::EInfo Cout::fVerboseMode = Hal::EInfo::kInfo;
+  Int_t Cout::fgLineLength       = 100;
+  Cout* Cout::fgInstance         = NULL;
+  Hal::EInfo Cout::fgVerboseMode = Hal::EInfo::kInfo;
   void Cout::Database(Int_t no, ...) {
     va_list ap;
     TString begin;
@@ -298,7 +298,7 @@ namespace Hal {
       default: break;
     }
 #endif
-    return " ";
+    return "";
   }
 
   TString Cout::MergeStrings(Int_t no, ...) {
@@ -365,10 +365,10 @@ namespace Hal {
     return val;
   }
 
-  void Cout::SetVerboseMode(Hal::EInfo verbose) { fVerboseMode = verbose; }
+  void Cout::SetVerboseMode(Hal::EInfo verbose) { fgVerboseMode = verbose; }
 
   void Cout::PrintInfo(TString text, Hal::EInfo status) {
-    if (status < fVerboseMode) { return; }
+    if (status < fgVerboseMode) { return; }
     switch (status) {
       case Hal::EInfo::kDebugInfo: FailSucced(text, "DEBUG   ", kCyan); break;
       case Hal::EInfo::kInfo: FailSucced(text, "INFO    ", kCyan); break;
@@ -403,5 +403,66 @@ namespace Hal {
   }
 
   Cout::~Cout() {}
+
+  void Cout::PrintLineFileInfo(TString file, Int_t line, TString text, Hal::EInfo flag) {
+    auto Colored = [](TString str, Color_t col) {
+      TString res = Hal::Cout::GetColor(kWhite) + "[" + Hal::Cout::GetDisableColor();
+      res         = res + Hal::Cout::GetColor(col);
+      res         = res + str;
+      res         = res + Hal::Cout::GetColor(kWhite);
+      res         = res + "] ";
+      res         = res + Hal::Cout::GetDisableColor();
+      return res;
+    };
+    if (flag < fgVerboseMode) return;
+    auto vec         = Hal::Std::ExplodeString(file, '/');
+    TString filename = vec[vec.size() - 1];
+    TString dDot     = "../";
+    if (vec.size() > 2) { filename = dDot + vec[vec.size() - 2] + "/" + filename; }
+    TString helpText = "";
+    Color_t helpCol  = kWhite;
+    switch (flag) {
+      case Hal::EInfo::kDebugInfo: {
+        helpText = "DEBUG   ";
+        helpCol  = kBlue;
+      } break;
+      case Hal::EInfo::kInfo: {
+        helpText = "INFO    ";
+        helpCol  = kCyan;
+      } break;
+      case Hal::EInfo::kLowWarning: {
+        helpText = "LOW WARN";
+        helpCol  = kOrange;
+      } break;
+      case Hal::EInfo::kWarning: {
+        helpText = "WARNING ";
+        helpCol  = kOrange;
+      } break;
+      case Hal::EInfo::kError: {
+        helpText = "ERROR   ";
+        helpCol  = kRed;
+      } break;
+      case Hal::EInfo::kCriticalError: {
+        helpText = "CRIT ERR";
+        helpCol  = kRed;
+      } break;
+    }
+    TString colEn  = Hal::Cout::GetColor(kWhite);
+    TString colRed = Hal::Cout::GetColor(kWhite);
+    TString colDis = Hal::Cout::GetDisableColor();
+    TString open   = colEn + "[" + colDis;
+    TString close  = colEn + "]" + colDis;
+
+    while (filename.Length() < 78) {
+      filename = filename + " ";
+    }
+
+
+    TString fileinfo = Form("[%8i][%s]", line, filename.Data());
+    fileinfo.ReplaceAll("[", open);
+    fileinfo.ReplaceAll("]", close);
+    std::cout << fileinfo << std::endl;
+    std::cout << Colored(helpText, helpCol) << text << std::endl;
+  }
 
 }  // namespace Hal

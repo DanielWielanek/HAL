@@ -61,6 +61,7 @@ hist/ChiSqMap2D.cxx
 hist/FastHist.cxx
 hist/Style.cxx
 hist/CorrelationHisto.cxx
+hist/Painter.cxx
 
 std/StdHist.cxx
 std/StdString.cxx

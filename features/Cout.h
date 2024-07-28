@@ -13,8 +13,7 @@
 #include <TObject.h>
 #include <TString.h>
 
-
-#define HalCoutDebug() Hal::Cout::DebugInfo(__FILE__, __LINE__)
+#define HalCoutDebug(text) Hal::Cout::PrintLineFileInfo(__FILE__, __LINE__, text)
 /**
  * class for "friendly printing"
  */
@@ -23,7 +22,7 @@ namespace Hal {
   private:
     static Int_t fgLineLength;
     static Cout* fgInstance;
-    static Hal::EInfo fVerboseMode;
+    static Hal::EInfo fgVerboseMode;
     static TString GetShift(Int_t i);
     static TString MergeStrings(Int_t no, ...);
     static void InStars(Int_t shift, TString text, Color_t color);
@@ -163,8 +162,19 @@ namespace Hal {
      *
      * @return verbolse mode
      */
-    static Hal::EInfo GetVerboseMode() { return fVerboseMode; }
+    static Hal::EInfo GetVerboseMode() { return fgVerboseMode; }
+    /**
+     * used by macro HalCoutDebug2
+     * @param file
+     * @param line
+     * @param text
+     * @param flag
+     */
+    static void PrintLineFileInfo(TString file, Int_t line, TString text, Hal::EInfo flag = Hal::EInfo::kDebugInfo);
     ClassDef(Cout, 1)
   };
+  /*
+   */
+
 }  // namespace Hal
 #endif /* HALCOUT_H_ */

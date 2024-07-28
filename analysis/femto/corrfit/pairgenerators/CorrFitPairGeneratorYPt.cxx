@@ -55,40 +55,47 @@ namespace Hal {
   }
 
   Int_t CorrFitPairGeneratorYPt::GeneratePair() {
+    Bool_t bad_pair = kTRUE;
+    while (bad_pair) {
+      Double_t pt1, pt2, y1, y2;
+      fHist1.GetRandom2(y1, pt1);
+      fHist2.GetRandom2(y2, pt2);
+      Double_t phi1 = gRandom->Uniform(-TMath::Pi(), TMath::Pi());
+      Double_t phi2 = gRandom->Uniform(-TMath::Pi(), TMath::Pi());
+      Double_t px1  = pt1 * TMath::Cos(phi1);
+      Double_t px2  = pt2 * TMath::Cos(phi2);
+      Double_t py1  = pt1 * TMath::Sin(phi1);
+      Double_t py2  = pt2 * TMath::Sin(phi2);
+      Double_t et1  = TMath::Sqrt(pt1 * pt1 + fM1 * fM1);
+      Double_t et2  = TMath::Sqrt(pt2 * pt2 + fM2 * fM2);
+      Double_t pz1  = TMath::Sign(et1 * 0.5, y1) * TMath::Exp(-y1) * (TMath::Exp(2.0 * y1) - 1.0);
+      Double_t pz2  = TMath::Sign(et2 * 0.5, y2) * TMath::Exp(-y2) * (TMath::Exp(2.0 * y2) - 1.0);
+      Double_t e1   = TMath::Sqrt(et1 * et1 + pz1 * pz1);
+      Double_t e2   = TMath::Sqrt(et2 * et2 + pz2 * pz2);
+      Double_t Px   = px1 + px2;
+      Double_t Py   = py1 + py2;
+      Double_t Pz   = pz1 + pz2;
+      Double_t tE   = e1 + e2;
+      Double_t tPt  = Px * Px + Py * Py;
+      if (tPt < f2Kt2[0]) return -1;
+      if (tPt > f2Kt2[1]) return -1;
 
-    Double_t pt1, pt2, y1, y2;
-    fHist1.GetRandom2(y1, pt1);
-    fHist2.GetRandom2(y2, pt2);
-    Double_t phi1 = gRandom->Uniform(-TMath::Pi(), TMath::Pi());
-    Double_t phi2 = gRandom->Uniform(-TMath::Pi(), TMath::Pi());
-    Double_t px1  = pt1 * TMath::Cos(phi1);
-    Double_t px2  = pt2 * TMath::Cos(phi2);
-    Double_t py1  = pt1 * TMath::Sin(phi1);
-    Double_t py2  = pt2 * TMath::Sin(phi2);
-    Double_t et1  = TMath::Sqrt(pt1 * pt1 + fM1 * fM1);
-    Double_t et2  = TMath::Sqrt(pt2 * pt2 + fM2 * fM2);
-    Double_t pz1  = TMath::Sign(et1 * 0.5, y1) * TMath::Exp(-y1) * (TMath::Exp(2.0 * y1) - 1.0);
-    Double_t pz2  = TMath::Sign(et2 * 0.5, y2) * TMath::Exp(-y2) * (TMath::Exp(2.0 * y2) - 1.0);
-    Double_t e1   = TMath::Sqrt(et1 * et1 + pz1 * pz1);
-    Double_t e2   = TMath::Sqrt(et2 * et2 + pz2 * pz2);
-    Double_t Px   = px1 + px2;
-    Double_t Py   = py1 + py2;
-    Double_t Pz   = pz1 + pz2;
-    Double_t tE   = e1 + e2;
-    Double_t tPt  = Px * Px + Py * Py;
-    if (tPt < f2Kt2[0]) return -1;
-    if (tPt > f2Kt2[1]) return -1;
 
-
-    fPair.SetPdg1(fPid1);
-    fPair.SetPdg2(fPid2);
-    fPair.SetTrueMomenta1(px1, py1, pz1, e1);
-    fPair.SetMomenta1(px1, py1, pz1, e1);
-    fPair.SetTrueMomenta2(px2, py2, pz2, e2);
-    fPair.SetMomenta2(px2, py2, pz2, e2);
-    *fHbtPair = fPair;
-    fHbtPair->Compute();
-    if (fGroupByKstar) { return GetBin(fHbtPair->GetT()); }
+      fPair.SetPdg1(fPid1);
+      fPair.SetPdg2(fPid2);
+      fPair.SetTrueMomenta1(px1, py1, pz1, e1);
+      fPair.SetMomenta1(px1, py1, pz1, e1);
+      fPair.SetTrueMomenta2(px2, py2, pz2, e2);
+      fPair.SetMomenta2(px2, py2, pz2, e2);
+      *fHbtPair = fPair;
+      fHbtPair->Compute();
+      if (fGroupByKstar) { return GetBin(fHbtPair->GetT()); }
+      if (fHbtPair->GetX() < fOutCut[0]) continue;  // try again
+      if (fHbtPair->GetX() > fOutCut[1]) continue;
+      if (fHbtPair->GetY() < fSideCut[0]) continue;
+      if (fHbtPair->GetY() > fSideCut[1]) continue;
+      break;
+    }
     return GetBin(fHbtPair->GetZ());
   }
 
@@ -105,5 +112,6 @@ namespace Hal {
       *pair = fPair;
     }
   }
+
 
 }  // namespace Hal

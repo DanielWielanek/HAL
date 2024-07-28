@@ -107,7 +107,10 @@ namespace Hal {
     fPair.SetMomenta1(px1, py1, pz1, e1);
     fPair.SetTrueMomenta2(px2, py2, pz2, e2);
     fPair.SetMomenta2(px2, py2, pz2, e2);
-    return kTRUE;
+    *fHbtPair = fPair;
+    fHbtPair->Compute();
+    if (fGroupByKstar) { return GetBin(fHbtPair->GetT()); }
+    return GetBin(fHbtPair->GetZ());
   }
 
   CorrFitPairGeneratorYPtStubborn::~CorrFitPairGeneratorYPtStubborn() {}

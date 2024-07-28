@@ -34,6 +34,7 @@ namespace Hal {
     TH2D fHist1, fHist2;
     FemtoMicroPair fPair;
     Int_t GeneratePair();
+    Bool_t TryGeneratePair();
     virtual void GenerateEvent();
 
   public:

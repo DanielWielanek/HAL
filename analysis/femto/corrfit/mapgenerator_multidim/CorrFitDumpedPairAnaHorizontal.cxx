@@ -80,7 +80,6 @@ namespace Hal {
       info->SetPairFile(fPairFile);
       info->SetCf(obj);
       auto source = fGenerator[0]->GetSourceModel();
-      HalCoutDebug();
       source->Print();
       CorrFitParamsSetup* setup = new CorrFitParamsSetup("corrfit_conf.xml");
       info->SetSetup(*setup);

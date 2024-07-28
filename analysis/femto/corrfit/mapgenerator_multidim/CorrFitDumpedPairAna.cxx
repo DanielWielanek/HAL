@@ -229,9 +229,11 @@ namespace Hal {
     if (source) delete source;
     if (generator) delete generator;
     XMLNode* calcOpts = dumpAna->GetChild("CalcOptions");
-    XMLNode* pairCut  = dumpAna->GetChild("NoPairCut");
-    if (pairCut) { fPairThreshold = pairCut->GetValue().Atoi(); }
-
+    if (calcOpts) {
+      XMLNode* pairCut = calcOpts->GetChild("NoPairCut");
+      if (pairCut) { fPairThreshold = pairCut->GetValue().Atoi(); }
+      Hal::Cout::PrintInfo("Pair threshold detected", EInfo::kInfo);
+    }
     XMLNode* multiJobs = calcOpts->GetChild("JobMultiplyFactor");
     if (multiJobs) {
       if (multiJobs->GetValue().Length() > 0 && fMultiplyJobs <= 0) { fMultiplyJobs = multiJobs->GetValue().Atoi(); }

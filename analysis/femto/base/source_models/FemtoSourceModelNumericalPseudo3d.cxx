@@ -85,8 +85,7 @@ namespace Hal {
     fRawDistribution = (TH1D*) distribution.Clone();
     fRawDistribution->SetDirectory(nullptr);
     fRawDistribution->SetBinContent(0, 0);
-    fDx             = fRawDistribution->GetBinWidth(1);
-    fDx             = 1.0 / fDx;
+    fDx             = 1.0 / fRawDistribution->GetBinWidth(1);
     fMin            = fRawDistribution->GetBinLowEdge(1);
     double integral = fRawDistribution->Integral("width");
     fRawDistribution->Scale(1.0 / integral);

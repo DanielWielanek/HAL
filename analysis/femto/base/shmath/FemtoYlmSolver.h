@@ -26,6 +26,7 @@ namespace Hal {
     Int_t fFactorialsSize = {0};
     Int_t fMaxL           = {0};
     Bool_t fDebug         = {kFALSE};
+    Bool_t fSumw          = {kFALSE};
     Int_t fDebugBin       = {-1};
     Double_t fNumEnt      = {0};
     Double_t fDenEnt      = {0};
@@ -65,7 +66,7 @@ namespace Hal {
 
   public:
     FemtoYlmSolver();
-    FemtoYlmSolver(Int_t maxL, FemtoSHCF* cf);
+    FemtoYlmSolver(Int_t maxL, FemtoSHCF* cf, Bool_t sumw = kFALSE);
     void SetNormalizationArea(Double_t min, Double_t max);
     void Solve(Bool_t recalc);
     void SetDebugBin(Int_t dbg) { fDebugBin = dbg; }

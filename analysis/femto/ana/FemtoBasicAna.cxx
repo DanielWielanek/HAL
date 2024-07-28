@@ -357,7 +357,7 @@ namespace Hal {
     fCFs              = new ObjectMatrix_2();
     DividedHisto1D* h = ((FemtoCorrFunc*) fCFTemp)->GetCF(0);
     if (h->GetNum() == nullptr) {
-      Hal::Cout::PrintInfo(Form("%s %i histogram not found in temp func, number of bin not specified?"), Hal::EInfo::kError);
+      Hal::Cout::PrintInfo("Histogram not found in temp func, number of bin not specified?", Hal::EInfo::kError);
       return kFALSE;
     }
     TString name = h->GetName();

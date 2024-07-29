@@ -130,7 +130,7 @@ namespace Hal {
     // if (fRangesX[0[] == 2) { hist->GetXaxis()->SetRangeUser(fRangesX[0], fRangesX[1]); }
   }
 
-  void FemtoSHCFPainter::FillHistograms() {
+  void FemtoSHCFPainter::MakeHistograms() {
     fColorIm = fSHCF->fColIm;
     fColorRe = fSHCF->fColRe;
     int lx   = fSHCF->GetLMax();
@@ -178,16 +178,11 @@ namespace Hal {
     fHistograms.push_back(pairHist);
   }
 
-  Bool_t FemtoSHCFPainter::CheckSubPads() const {
-    Int_t padsNo = GetSubPadsNo();
+  Bool_t FemtoSHCFPainter::CheckPads() const {
+    Int_t padsNo = GetPadsNo();
     Int_t req    = (fSHCF->GetLMax() + 1) * (fSHCF->GetLMax() + 1);
     if (padsNo != req) return kFALSE;
     return kTRUE;
-  }
-
-  void FemtoSHCFPainter::MakeSubPads() {
-    Int_t req = (fSHCF->GetLMax() + 1) * (fSHCF->GetLMax() + 1);
-    GenerateSubPads(TMath::Sqrt(req), TMath::Sqrt(req));
   }
 
   TString FemtoSHCFPainter::GetOptionForCorrFit() const {
@@ -210,6 +205,11 @@ namespace Hal {
         count++;
       }
     }
+  }
+
+  void FemtoSHCFPainter::MakePadsAndCanvases() {
+    Int_t req = (fSHCF->GetLMax() + 1) * (fSHCF->GetLMax() + 1);
+    MakeCanvasPads(TMath::Sqrt(req), TMath::Sqrt(req));
   }
 
 }  // namespace Hal

@@ -10,6 +10,7 @@
 #define HAL_FEATURES_HIST_PAINTER_H_
 
 #include <TObject.h>
+#include <vector>
 /**
  * representation of painted objects
  */
@@ -21,13 +22,18 @@ namespace Hal {
   class Style;
   class PadStyle;
   class HistoStyle;
+  /**
+   * class for drawing objects, contains pads, and copies of drawn objects
+   */
   class Painter : public TObject {
   private:
-    TCanvas* fCanvas                    = {nullptr};
-    Painter* fParent                    = {nullptr};
-    std::vector<TVirtualPad*>* fSubPads = {nullptr};
-    TVirtualPad* fMainPad               = {nullptr};
-    TVirtualPad* fTempPad               = {nullptr};
+    struct commonPointers {
+      std::vector<TCanvas*>* fCanvases              = {nullptr};
+      std::vector<std::vector<TVirtualPad*>>* fPads = {nullptr};
+    };
+    commonPointers fCommonData;
+    Painter* fParent      = {nullptr};
+    TVirtualPad* fTempPad = {nullptr};
     std::vector<Painter*> fSubPainters;
     Hal::PadStyle* fPadStyle = {nullptr};
     Bool_t fOwnPad           = {kTRUE};
@@ -57,7 +63,7 @@ namespace Hal {
      * true if this painter owns main pad
      * @return
      */
-    Bool_t OwnPad() const { return fOwnPad; }
+    Bool_t OwnGraphic() const { return fOwnPad; }
     /**
      *
      * @param opt
@@ -72,6 +78,12 @@ namespace Hal {
     /**
      * used internally
      * @param opt option of drawing
+     *  - "html" - for drawing in HTML mode NOTE - might not be implemented for all objects
+     *  - "default" - reset flags to default and add additional flags from option
+     *  - "default!" -reset flags to default and ignore rest of the option
+     *  - "keep" - keeps old flags, add only new flags
+     *  - "skip" - ignore this method
+     *  - "grid" - draw grid on all pads
      * @param prev the staring draw flag
      * @return new draw flag
      */
@@ -85,27 +97,16 @@ namespace Hal {
      */
     virtual void SetDefaultFlag() { fDrawFlags = 0; }
     /**
-     * make a pad for this painter
-     */
-    void MakePad();
-    /**
-     * make subpads for drawing objects
-     */
-    virtual void MakeSubPads() = 0;
-    /**
      *
      * @return true if number of subpads is proper for drawing, if return false
      * this painter will not be drawn
      */
-    virtual Bool_t CheckSubPads() const { return kTRUE; };
+    virtual Bool_t CheckPads() const { return kTRUE; };
     /**
      *
      * @return true if main pad exist
      */
-    Bool_t MainPadExist() const {
-      if (fMainPad) return kTRUE;
-      return kFALSE;
-    }
+    Bool_t CanvasExist(Int_t canvasNo = 0) const;
     /**
      * looks for patterns like {flag=val[0],val[1]..} where val[n] is a float, returns true if found
      * @param opt
@@ -126,11 +127,6 @@ namespace Hal {
      */
     void ContitionalPattern(TString& option, TString pattern, ULong64_t& drawOpt, Int_t bit, Bool_t remove = kTRUE) const;
     /**
-     * constructor with main pad comes from external place
-     * @param mainPad
-     */
-    Painter(TVirtualPad* mainPad);
-    /**
      * keep a current gPad
      */
     void LockPad();
@@ -139,34 +135,30 @@ namespace Hal {
      */
     void UnlockPad();
     /**
-     * add subpad to this painter
-     * @param pad
-     */
-    void AddSubPad(TVirtualPad* pad) { fSubPads->push_back(pad); }
-    /**
      *
      * @return number of subpads
      */
-    Int_t GetSubPadsNo() const { return fSubPads->size(); }
+    Int_t GetPadsNo(Int_t canvasNo = 0) const { return (*fCommonData.fPads)[canvasNo].size(); }
     /**
      * enter subpad
      * @param no
+     * @param canvasNo
      */
-    void GotoSubPad(Int_t no);
+    void GotoPad(Int_t no, Int_t canvasNo = 0);
     /**
-     * makes subpads
+     * construct a TCanvas with pads
      * @param x
      * @param y
      */
-    void GenerateSubPads(Int_t x, Int_t y);
+    void MakeCanvasPads(Int_t x = 1, Int_t y = 1, Int_t canvasNo = 0);
     /**
      *
      */
-    void UpdateAllSubPads();
+    void UpdateAllPads();
     /**
      * clears main pad
      */
-    void ClearMainPad();
+    void ClearCanvas(Int_t canvas);
     /**
      * inner method for repaint - without checking ownership
      */
@@ -175,6 +167,14 @@ namespace Hal {
      * inner method for pain - without checking ownership
      */
     virtual void InnerPaint() {};
+    /**
+     * creates pads and canvases, should call generate subpads
+     */
+    virtual void MakePadsAndCanvases() = 0;
+    /**
+     * clean canvases if own them
+     */
+    void CleanCommonData();
 
     Painter* GetAncestor() const;
 
@@ -217,13 +217,13 @@ namespace Hal {
      *
      * @return TCanvas assigned to this object (if present)
      */
-    TCanvas* GetCanvas() const { return fCanvas; }
+    TCanvas* GetCanvas(Int_t canvasNo = 0) const { return (*fCommonData.fCanvases)[canvasNo]; }
     /**
      * add subpad
      * @param index (staring with 1) if 0 returns pointer to main pad
      * @return
      */
-    TVirtualPad* GetPad(Int_t index) const;
+    TVirtualPad* GetPad(Int_t index, Int_t canvasNo = 0) const;
     void SetGlobalPadStyle(Hal::PadStyle& pad);
     virtual ~Painter();
     ClassDef(Painter, 0)

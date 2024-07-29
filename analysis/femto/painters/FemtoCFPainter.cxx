@@ -46,7 +46,7 @@ namespace Hal {
     LockPad();
     int count = 0;
     for (auto i : fHistograms) {
-      GotoSubPad(++count);
+      GotoPad(++count);
       for (auto j : i) {
         if (j) {
           if (CheckOpt(kHideTitles)) j->SetTitle("");
@@ -63,7 +63,7 @@ namespace Hal {
   void FemtoCFPainter::InnerPaint() {
     LockPad();
     DeleteHistograms();
-    FillHistograms();
+    MakeHistograms();
     ScaleHistograms();
     DrawHistograms();
     Painter::InnerPaint();
@@ -75,7 +75,7 @@ namespace Hal {
     LockPad();
     if (fOptionsChanged) {
       DeleteHistograms();
-      FillHistograms();
+      MakeHistograms();
       ScaleHistograms();
     } else if (fScale != 1)
       ScaleHistograms();
@@ -106,6 +106,7 @@ namespace Hal {
   ULong64_t FemtoCFPainter::SetOptionInternal(TString opt, ULong64_t newOpts) {
     if (Hal::Std::FindParam(opt, "num", kTRUE)) { SETBIT(newOpts, kNumBit); }
     if (Hal::Std::FindParam(opt, "den", kTRUE)) { SETBIT(newOpts, kDenBit); }
+    if (Hal::Std::FindParam(opt, "tit", kTRUE)) { SETBIT(newOpts, kHideTitles); }
     if (Hal::Std::FindParam(opt, "fit", kTRUE)) {
       CLRBIT(newOpts, kDenBit);
       CLRBIT(newOpts, kNumBit);

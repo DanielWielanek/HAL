@@ -32,7 +32,7 @@ namespace Hal {
     return newFlags;
   }
 
-  void Femto3DCFPainter::FillHistograms() {
+  void Femto3DCFPainter::MakeHistograms() {
     TH3* h     = nullptr;
     bool clean = false;
     if (CheckOpt(kNumBit)) {
@@ -59,14 +59,9 @@ namespace Hal {
     if (clean) delete h;
   }
 
-  void Femto3DCFPainter::MakeSubPads() {
-    Int_t req = GetPadsRequired();
-    GenerateSubPads(TMath::Sqrt(req), TMath::Sqrt(req));
-  }
-
-  Bool_t Femto3DCFPainter::CheckSubPads() const {
+  Bool_t Femto3DCFPainter::CheckPads() const {
     Int_t req    = GetPadsRequired();
-    Int_t padsNo = GetSubPadsNo();
+    Int_t padsNo = GetPadsNo();
     if (padsNo < req) return kFALSE;
     return kTRUE;
   };
@@ -338,5 +333,10 @@ namespace Hal {
   }
 
   Femto3DCFPainter::~Femto3DCFPainter() {}
+
+  void Femto3DCFPainter::MakePadsAndCanvases() {
+    Int_t req = TMath::Sqrt(GetPadsRequired());
+    MakeCanvasPads(req, req, 0);
+  }
 
 } /* namespace Hal */

@@ -36,7 +36,7 @@ namespace Hal {
     virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0);
     TH1* CloneHist(TH1*) const;
     void DeleteHistograms();
-    virtual void FillHistograms() = 0;
+    virtual void MakeHistograms() = 0;
     virtual void ScaleHistograms();
     virtual void DrawHistograms();
     ULong64_t PrepBitTemplate(std::initializer_list<int> temps) const;

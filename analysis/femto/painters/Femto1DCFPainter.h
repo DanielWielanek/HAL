@@ -15,9 +15,10 @@ namespace Hal {
   class Femto1DCFPainter : public FemtoCFPainter {
   protected:
     Femto1DCF* fCF = {nullptr};
-    virtual void FillHistograms();
+
+    virtual void MakePadsAndCanvases();
+    virtual void MakeHistograms();
     virtual void ScaleHistograms();
-    virtual void MakeSubPads() { GenerateSubPads(1, 1); };
 
   public:
     Femto1DCFPainter(Hal::Femto1DCF* cf = nullptr);

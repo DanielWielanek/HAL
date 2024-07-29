@@ -22,6 +22,12 @@
 class TLegend;
 class TVirtualPad;
 namespace Hal {
+  /**
+   * class for drawing CF's, when you call CF->Draw a painter is created
+   * later you can get this painter and modify current pads etc.
+   * the property of drawn object depends on used flags
+   *
+   */
   class CorrFitFunc;
   class CorrFitPainter : public Painter {
   protected:
@@ -31,17 +37,27 @@ namespace Hal {
     std::array<Double_t, 4> fLegendPos = {0.7, 0.95, 0.7, 0.95};
     std::vector<TLegendEntry*> fLegendEntries;
     static const int kAutoNormBit, kLegendBit, kChi2, kChi2Short;
+    /**
+     *
+     * @param opt, for this class additional options are avaiable:
+     * - "chi2" - draw chi2 on legend (includint total value of chi2 and NDF)
+     * - "chi2s " - draw chi2 on legend
+     * - "legend" - draw legend
+     * @param prev
+     * @return
+     */
     virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0);
     std::vector<std::vector<TF1*>> fFunctions;
-    CorrFitFunc* fFittedFunc        = {nullptr};  //!
+    CorrFitFunc* fFittedFunc = {nullptr};  //!
+
+    virtual void MakePadsAndCanvases() {};
     virtual void UpdateParameters() = 0;
-    virtual void FillFunctions()    = 0;
+    virtual void MakeFunctions()    = 0;
     virtual void ScaleFunctions();
     virtual void ScaleHistograms() = 0;
     virtual void DrawFunctions();
     virtual void MakeLegend();
     virtual void UpdateLegend();
-    virtual void MakeSubPads() {};
     void DeleteFunctions();
     std::vector<TString> GetLegendLabels() const;
     ULong64_t PrepBitTemplate(std::initializer_list<int> temps) const;

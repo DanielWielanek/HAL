@@ -23,7 +23,7 @@
 
 namespace Hal {
 
-  void CorrFit1DCFPainter::FillFunctions() {
+  void CorrFit1DCFPainter::MakeFunctions() {
     std::vector<TF1*> vec;
     vec.push_back(GetDrawableFunc(""));
     fFunctions.push_back(vec);

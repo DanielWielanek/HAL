@@ -19,7 +19,7 @@ namespace Hal {
 
   Femto1DCFPainter::Femto1DCFPainter(Hal::Femto1DCF* cf) { fCF = cf; }
 
-  void Femto1DCFPainter::FillHistograms() {
+  void Femto1DCFPainter::MakeHistograms() {
     std::vector<TH1*> hist;
     if (CheckOpt(kDenBit)) { hist.push_back(CloneHist(fCF->GetDen())); }
     if (CheckOpt(kNumBit)) { hist.push_back(CloneHist(fCF->GetNum())); }
@@ -55,5 +55,6 @@ namespace Hal {
 
   Femto1DCFPainter::~Femto1DCFPainter() {}
 
+  void Femto1DCFPainter::MakePadsAndCanvases() { MakeCanvasPads(1, 1, 0); }
 
 }  // namespace Hal

@@ -21,7 +21,7 @@ namespace Hal {
   const int CorrFitPainter::kLegendBit   = 9;
   const int CorrFitPainter::kChi2        = 10;
   const int CorrFitPainter::kChi2Short   = 11;
-  CorrFitPainter::CorrFitPainter(CorrFitFunc* func) : Painter(nullptr), fFittedFunc(func) {
+  CorrFitPainter::CorrFitPainter(CorrFitFunc* func) : Painter(), fFittedFunc(func) {
     fNormIndex = fFittedFunc->GetParameterIndex("N");
   }
 
@@ -69,7 +69,7 @@ namespace Hal {
 
   void CorrFitPainter::InnerPaint() {
     DeleteFunctions();
-    FillFunctions();
+    MakeFunctions();
     UpdateParameters();
     ScaleFunctions();
     ScaleHistograms();
@@ -97,7 +97,7 @@ namespace Hal {
     LockPad();
     int count = 1;
     for (auto padfunc : fFunctions) {
-      GotoSubPad(count++);
+      GotoPad(count++);
       for (auto func : padfunc) {
         if (func) func->Draw("SAME");
       }

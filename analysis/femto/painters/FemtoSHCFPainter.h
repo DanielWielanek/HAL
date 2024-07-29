@@ -33,9 +33,8 @@ namespace Hal {
     TH1* GetIm(Int_t no) const { return fHistograms[no][1]; };
     void AddHistograms(TH1* re, TH1* im);
     std::pair<TH1*, TH1*> GetNewHistPair(Int_t l, Int_t m);
-    void FillHistograms();
-    Bool_t CheckSubPads() const;
-    void MakeSubPads();
+    void MakeHistograms();
+    Bool_t CheckPads() const;
     void SetHistRanges(TH1* hist, Int_t l);
     /**
      * set draw options
@@ -45,6 +44,7 @@ namespace Hal {
      */
     virtual ULong64_t SetOptionInternal(TString opts, ULong64_t prev = 0);
     virtual void ScaleHistograms();
+    virtual void MakePadsAndCanvases();
 
   public:
     FemtoSHCFPainter(Hal::FemtoSHCF* cf = nullptr);

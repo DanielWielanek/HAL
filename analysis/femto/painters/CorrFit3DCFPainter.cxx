@@ -42,7 +42,7 @@ namespace Hal {
     return ((CorrFit3DCF*) fFittedFunc)->GetDrawableFunc(opt);
   }
 
-  void CorrFit3DCFPainter::FillFunctions() {
+  void CorrFit3DCFPainter::MakeFunctions() {
     auto addSingle = [&](TString opt) {
       std::vector<TF1*> vec;
       if (opt == "") {

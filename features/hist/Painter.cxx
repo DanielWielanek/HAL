@@ -18,42 +18,44 @@
 namespace Hal {
   const int Painter::kHtmlBit = 0;
   const int Painter::kGridBit = 1;
-  Painter::Painter() : fSubPads(new std::vector<TVirtualPad*>()) {}
+
+  Painter::Painter() {
+    fCommonData.fCanvases = new std::vector<TCanvas*>();
+    fCommonData.fPads  = new std::vector<std::vector<TVirtualPad*>>();
+  }
+
   Painter::~Painter() {
-    if (fOwnPad) {
-      if (fCanvas) delete fCanvas;
-      if (fSubPads) delete fSubPads;
-    }
+    CleanCommonData();
     for (auto x : fSubPainters)
       delete x;
   }
 
   void Painter::AddPainter(Painter* painter) {
-    if (painter->fSubPads && painter->fOwnPad) {
-      delete painter->fSubPads;
-      painter->fSubPads = nullptr;
-    }
-    painter->fOwnPad  = kFALSE;
-    painter->fParent  = this;
-    painter->fMainPad = fMainPad;
-    painter->fSubPads = fSubPads;
+    painter->CleanCommonData();
+    painter->fOwnPad     = kFALSE;
+    painter->fParent     = this;
+    painter->fCommonData = fCommonData;
     fSubPainters.push_back(painter);
   }
 
   void Painter::Paint() {
     if (!HasParent()) {
       if (!fPainted) {
-        MakePad();
-        MakeSubPads();
+        MakePadsAndCanvases();
+        fOwnPad = kTRUE;
       }
       LockPad();
-      for (auto x : fSubPainters)
-        x->fMainPad = fMainPad;
       TryPaint();
-      UpdateAllSubPads();
+      UpdateAllPads();
       UnlockPad();
     } else {
-      GetAncestor()->Paint();
+      auto grand = GetAncestor();
+      if (grand->fPainted) {
+        grand->TryPaint();
+        grand->UpdateAllPads();
+      } else {
+        grand->Paint();
+      }
     }
   }
 
@@ -64,32 +66,42 @@ namespace Hal {
       CLRBIT(fDrawFlags, bit);
   }
 
-  void Painter::GenerateSubPads(Int_t x, Int_t y) {
-    LockPad();
-    if (fMainPad) {
-      fMainPad->Divide(x, y);
+  void Painter::MakeCanvasPads(Int_t x, Int_t y, Int_t canvasNo) {
+    auto dividePads = [&]() {
+      auto canva = GetCanvas(canvasNo);
+      canva->Divide(x, y);
       int count = 0;
       for (int i = 0; i < x; i++) {
         for (int j = 0; j < y; j++) {
-          AddSubPad(fMainPad->cd(++count));
+          (*fCommonData.fPads)[canvasNo].push_back(canva->cd(++count));
         }
       }
+    };
+    LockPad();
+    if (fCommonData.fCanvases->size() > canvasNo) {
+      dividePads();
+    } else {
+      for (int i = fCommonData.fCanvases->size(); i <= canvasNo; i++) {
+        auto newCanv = new TCanvas();
+        fCommonData.fCanvases->push_back(newCanv);
+        std::vector<TVirtualPad*> pads;
+        pads.push_back(newCanv);
+        fCommonData.fPads->push_back(pads);
+      }
+      dividePads();
     }
     UnlockPad();
   }
 
-  void Painter::UpdateAllSubPads() {
-    if (fSubPads->size() == 0) {
-      if (fMainPad) {
-        fMainPad->Modified(true);
-        fMainPad->Update();
+  void Painter::UpdateAllPads() {
+    if (!fOwnPad) return;
+    for (auto pads : *fCommonData.fPads) {
+      for (unsigned int i = 1; i < pads.size(); i++) {
+        auto pad = pads[i];
+        if (fPadStyle) { fPadStyle->Apply(pad); }
+        pad->Modified(kTRUE);
+        pad->Update();
       }
-      return;
-    }
-    for (auto x : *fSubPads) {
-      if (fPadStyle && fOwnPad) { fPadStyle->Apply(x); }
-      x->Modified(1);
-      x->Update();
     }
   }
 
@@ -97,14 +109,16 @@ namespace Hal {
     if (fPainted) {
       InnerRepaint();
     } else {
+      if (!CheckPads() && HasParent()) {
+        HalCoutDebug("Cannot paint this object due to failing pads dependencies");
+        return;
+      }
       fPainted = kTRUE;
       InnerPaint();
     }
     for (auto x : fSubPainters)
       x->TryPaint();
   }
-
-  Painter::Painter(TVirtualPad* mainPad) { fMainPad = mainPad; }
 
   void Painter::SetOption(TString option) {
     if (Hal::Std::FindParam(option, "skip")) return;
@@ -138,15 +152,6 @@ namespace Hal {
     }
   }
 
-  void Painter::MakePad() {
-    if (gPad == nullptr) {
-      fCanvas = new TCanvas();
-      fOwnPad = kTRUE;
-    }
-    fMainPad = gPad;
-    if (fMainPad->InheritsFrom("TCanvas")) { fCanvas = (TCanvas*) fMainPad; }
-  }
-
   Bool_t Painter::HasParent() const {
     if (fParent) return kTRUE;
     return kFALSE;
@@ -178,22 +183,18 @@ namespace Hal {
     if (gPad) gPad->cd();
   }
 
-  void Painter::GotoSubPad(Int_t no) {
-    if (no <= 0) {
-      fMainPad->cd();
-    } else {
-      (*fSubPads)[no - 1]->cd();
+  void Painter::GotoPad(Int_t no, Int_t canvasNo) { (*fCommonData.fPads)[canvasNo][no]->cd(); }
+
+  void Painter::ClearCanvas(Int_t canvasNo) {
+    for (auto canv : (*fCommonData.fCanvases)) {
+      canv->Clear();
+      (*fCommonData.fPads)[canvasNo].clear();
     }
   }
 
-  void Painter::ClearMainPad() {
-    if (fMainPad) fMainPad->Clear();
-    fSubPads->clear();
-  }
-
-  TVirtualPad* Painter::GetPad(Int_t index) const {
-    if (index <= 0) return fMainPad;
-    return (*fSubPads)[index - 1];
+  TVirtualPad* Painter::GetPad(Int_t index, Int_t canvasNo) const {
+    if (index < 0) index = 0;
+    return (*fCommonData.fPads)[canvasNo][index];
   }
 
   Painter* Painter::GetAncestor() const {
@@ -203,5 +204,23 @@ namespace Hal {
 
   void Painter::SetGlobalPadStyle(Hal::PadStyle& pad) { fPadStyle = new Hal::PadStyle(pad); }
 
+  Bool_t Painter::CanvasExist(Int_t canvasNo) const {
+    if (fCommonData.fCanvases->size() > canvasNo) return kTRUE;
+    return kFALSE;
+  }
+
+  void Painter::CleanCommonData() {
+    if (!fOwnPad) return;
+    if (fCommonData.fCanvases) {
+      for (auto canv : *fCommonData.fCanvases)
+        delete canv;
+      delete fCommonData.fCanvases;
+      fCommonData.fCanvases = nullptr;
+    }
+    if (fCommonData.fPads) {
+      delete fCommonData.fPads;
+      fCommonData.fPads = nullptr;
+    }
+  }
 
 } /* namespace Hal */

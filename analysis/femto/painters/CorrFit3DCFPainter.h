@@ -19,9 +19,10 @@ namespace Hal {
     Femto3DCFPainter* fCFPainter = {nullptr};
     Femto3DCF* fCF;
     Int_t fDrawOpt = {0};
+
     virtual void UpdateParameters();
     TF1* GetDrawableFunc(TString opt = "");
-    virtual void FillFunctions();
+    virtual void MakeFunctions();
     virtual void ScaleHistograms();
     virtual void InnerPaint();
 

@@ -19,9 +19,10 @@ namespace Hal {
   protected:
     Femto1DCFPainter* fCFPainter = {nullptr};
     Femto1DCF* fCF;
+
     virtual void UpdateParameters();
     TF1* GetDrawableFunc(TString opt = "");
-    virtual void FillFunctions();
+    virtual void MakeFunctions();
     virtual void ScaleHistograms();
     virtual void MakeLegend();
 

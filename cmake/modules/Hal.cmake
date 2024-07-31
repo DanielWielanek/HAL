@@ -6,6 +6,7 @@ set(HAL_CORE "${HAL_CORE_DIR}")
 set(HAL_FEATURES
 	${HAL_CORE}/features
 	${HAL_CORE}/features/hist
+	${HAL_CORE}/features/hist/styles
 	${HAL_CORE}/features/io
 	${HAL_CORE}/features/io/html
 	${HAL_CORE}/features/std

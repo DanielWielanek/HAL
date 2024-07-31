@@ -40,10 +40,14 @@
 #include "FemtoSHSlice.h"
 #include "FemtoSerializationInterfaceSH.h"
 #include "FemtoYlmSolver.h"
+#include "HistoStyle.h"
 #include "HtmlCore.h"
 #include "HtmlFile.h"
 #include "HtmlObject.h"
 #include "HtmlTable.h"
+#include "LineStyle.h"
+#include "MarkerStyle.h"
+#include "PadStyle.h"
 #include "Std.h"
 #include "StdHist.h"
 #include "StdString.h"
@@ -1042,6 +1046,7 @@ namespace Hal {
     Hal::HistoStyle anti = h;
     anti.SetAntiColor();
     Hal::DividedHisto1D::ApplyStyle(h);
+    Hal::HistoStyle copy = h;  // because of const
     for (int i = 0; i < fMaxJM; i++) {
       h.Apply(*fNumReal[i]);
       h.Apply(*fDenReal[i]);
@@ -1049,7 +1054,9 @@ namespace Hal {
       anti.Apply(*fDenImag[i]);
       if (fCFReal[i]) h.Apply(*fCFReal[i]);
       if (fCFImag[i]) anti.Apply(*fCFImag[i]);
-      if (i == 0 && (h.FindKey("mCol") || h.FindKey("lCol"))) {  // cols set by style, overwrite colz that are use by draw
+      if (i == 0
+          && (copy.GetMarkerStyle().Find(Hal::MarkerStyle::kColor)
+              || copy.GetLineStyle().Find(Hal::LineStyle::kColor))) {  // cols set by style, overwrite colz that are use by draw
         fColzSet = kTRUE;
         fColRe   = fCFReal[i]->GetMarkerColor();
         fColIm   = fCFImag[i]->GetMarkerColor();

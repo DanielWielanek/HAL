@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "Cout.h"  //KURWA
+#include "PadStyle.h"
 #include "StdString.h"
 #include "Style.h"
 
@@ -21,7 +22,7 @@ namespace Hal {
 
   Painter::Painter() {
     fCommonData.fCanvases = new std::vector<TCanvas*>();
-    fCommonData.fPads  = new std::vector<std::vector<TVirtualPad*>>();
+    fCommonData.fPads     = new std::vector<std::vector<TVirtualPad*>>();
   }
 
   Painter::~Painter() {
@@ -128,8 +129,8 @@ namespace Hal {
     }
     if (Hal::Std::FindParam(option, "grid")) {
       Hal::PadStyle style;
-      style.SetGridx();
-      style.SetGridy();
+      style.SetGridx(1);
+      style.SetGridy(1);
       SetGlobalPadStyle(style);
     }
     if (Hal::Std::FindParam(option, "default")) { SetDefaultFlag(); }

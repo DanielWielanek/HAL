@@ -10,6 +10,7 @@
 #include "DividedHisto.h"
 
 #include "Cout.h"
+#include "HistoStyle.h"
 #include "HistogramManager.h"
 #include "HtmlCore.h"
 #include "HtmlFile.h"

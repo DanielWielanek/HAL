@@ -59,9 +59,15 @@ hist/MultiGraph.cxx
 hist/Splines.cxx
 hist/ChiSqMap2D.cxx
 hist/FastHist.cxx
-hist/Style.cxx
 hist/CorrelationHisto.cxx
 hist/Painter.cxx
+hist/styles/AxisStyle.cxx
+hist/styles/FillStyle.cxx
+hist/styles/HistoStyle.cxx
+hist/styles/LineStyle.cxx
+hist/styles/MarkerStyle.cxx
+hist/styles/PadStyle.cxx
+hist/styles/Style.cxx
 
 std/StdHist.cxx
 std/StdString.cxx

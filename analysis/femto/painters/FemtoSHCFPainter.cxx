@@ -18,6 +18,8 @@
 
 #include "Cout.h"
 #include "FemtoSHCF.h"
+#include "HistoStyle.h"
+#include "PadStyle.h"
 #include "Std.h"
 #include "StdHist.h"
 #include "StdString.h"

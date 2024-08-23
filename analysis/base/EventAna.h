@@ -207,17 +207,29 @@ namespace Hal {
     EventAna(ECutUpdate tiers);
 
   public:
+    /**
+     * flags for setting format options NOTE: some of these flags might disable other
+     */
     enum class EFormatOption {
       kCompress,
+      /*!< compress data (when buffer) */
       kNoCompress,
+      /*!< do not compress data (default) */
       kKeepSource,
+      /*!< keep source format in buffer */
       kNoKeepSource,
+      /*!< do not keep source in buffer (default) */
       kDirectAccess,
+      /*!< read direct data (look for branch ClassName.) */
       kNoDirectAccess,
+      /*!< do not use direct data */
       kReaderAccess,
+      /*!< use reader acces (look for branch HalEvent.) */
       kNoReaderAcces,
+      /*!< */
       kDisableChecking,
-      kStandardAcess
+      /*!< dusable format checking*/
+      kStandardAcess /**!< standard acces */
     };
     /**
      * basic constructor

@@ -137,3 +137,8 @@ Macro(InstallMimes HAL_CORE)
 	file(WRITE $ENV{HOME}/.root.mimes ${CONTENT_A})
 	file(APPEND $ENV{HOME}/.root.mimes ${CONTENT_B})
 EndMacro(InstallMimes)
+
+if(NOT DEFINED INCLUDE_HAL_SUBDIR)
+  set(INCLUDE_HAL_SUBDIR FALSE)
+endif()
+

@@ -64,7 +64,7 @@ namespace Hal {
       int maxLev   = fPoints[i].size();
       double depth = (double) i;
       double maxNo = (double) maxLev;
-      for (int j = 0; j < maxLev; j++) {
+      for (int j = 0; j < fPoints[i].size(); j++) {
         double collection    = j;
         Double_t Y_step      = fWindowHeight / maxNo;
         Double_t X_step      = fWindowWidth / (double) fDepthMax;

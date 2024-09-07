@@ -349,7 +349,7 @@ namespace Hal {
           coulombweight = GetCoulomb();
       } else {
         coulombweight = GetStrong();
-        if (isnan(coulombweight) == 1) return 1;
+        if (std::isnan(coulombweight) == 1) return 1;
       }
     } else {
       if (fPairType == Femto::EPairType::kPionZeroPionZero) { return GetQuantum(); }

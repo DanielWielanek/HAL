@@ -18,10 +18,12 @@
 
 #include "InputDataInfo.h"
 #include <TBranch.h>
+#include <TBranchElement.h>
 #include <TChain.h>
 #include <TCollection.h>
 #include <TDirectoryFile.h>
 #include <TFile.h>
+#include <TFriendElement.h>
 #include <TKey.h>
 #include <TList.h>
 #include <TNamed.h>
@@ -103,10 +105,33 @@ namespace Hal {
   void RootIOManager::LockUnusedBranches() {
     for (auto branch : fBranches) {
       if (branch.GetFlag() == BranchInfo::EFlag::kInPassive) {
-        std::cout << "LOCK Branch " << branch.GetBranchName() << std::endl;
         fInChain->SetBranchStatus(branch.GetBranchName(), 0);
+        HalCoutDebug(Form("Locking branch %s", branch.GetBranchName().Data()));
       }
     }
+  }
+
+  std::vector<TString> RootIOManager::GetListOfBranches(TChain* chain, Bool_t friends) {
+
+    auto convert = [](std::vector<TString>& res, TObjArray* objar) {
+      for (int i = 0; i < objar->GetEntriesFast(); i++) {
+        TBranchElement* branch = (TBranchElement*) objar->At(i);
+        TString name           = branch->GetName();
+        res.push_back(name);
+      }
+    };
+    std::vector<TString> list;
+    TObjArray* list_branch = chain->GetListOfBranches();
+    convert(list, list_branch);
+    if (friends) {
+      auto friends_trees = chain->GetListOfFriends();
+      for (int i = 0; i < friends_trees->GetEntries(); i++) {  // why ROOT doesnt do this?
+        auto tree  = ((TFriendElement*) friends_trees->At(i))->GetTree();
+        auto lista = tree->GetListOfBranches();
+        convert(list, lista);
+      }
+    }
+    return list;
   }
 
 } /* namespace Hal */

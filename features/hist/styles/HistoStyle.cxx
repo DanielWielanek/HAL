@@ -138,15 +138,15 @@ namespace Hal {
       auto zax = static_cast<TH1&>(h).GetZaxis();
       if (zax) fZAxis.Apply(*zax);
     } else if (h.InheritsFrom("Hal::MultiGraph")) {
-      auto gr = dynamic_cast<Hal::MultiGraph&>(h);
+      auto gr = dynamic_cast<Hal::MultiGraph*>(&h);
       if (no < 0) {
-        for (int i = 0; i < gr.GetNGraphs(); i++) {
-          ApplyInternal(*gr.GetGraph(i));
+        for (int i = 0; i < gr->GetNGraphs(); i++) {
+          ApplyInternal(*gr->GetGraph(i));
         }
-        fXAxis.Apply(*gr.GetXaxis());
-        fYAxis.Apply(*gr.GetYaxis());
+        fXAxis.Apply(*gr->GetXaxis());
+        fYAxis.Apply(*gr->GetYaxis());
       } else {
-        ApplyInternal(*gr.GetGraph(no));
+        ApplyInternal(*gr->GetGraph(no));
       }
     } else if (h.InheritsFrom("Hal::DividedHisto1D")) {
       dynamic_cast<Hal::DividedHisto1D*>(&h)->ApplyStyle(*this);

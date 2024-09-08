@@ -78,6 +78,13 @@ namespace Hal {
     void LockUnusedBranches();
     void SetInChain(TChain* tempChain, Int_t ident = -1);
     void FillTree();
+    /**
+     * return list of branches in chain (for some reason root doesn't check the friend chains
+     * @param chain
+     * @param friends if true return friend's branches
+     * @return
+     */
+    static std::vector<TString> GetListOfBranches(TChain* chain, Bool_t friends);
     virtual void CloseManager();
     virtual ~RootIOManager();
     ClassDef(RootIOManager, 1)

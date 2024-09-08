@@ -57,10 +57,11 @@ namespace Hal {
 
   void RootIOManager::UpdateBranches() {
     TObjArray* list_branch = fInChain->GetListOfBranches();
-    for (int i = 0; i < list_branch->GetEntries(); i++) {
-      TBranch* branch = (TBranch*) list_branch->At(i);
-      TString name    = branch->GetName();
+    auto branches          = GetListOfBranches(fInChain, kTRUE);
+    for (auto name : branches) {
+      TBranch* branch = fInChain->GetBranch(name);
       if (FindBranch(name).GetFlag() != BranchInfo::EFlag::kNull) continue;  // branch with given name already exist
+      if (!branch) { Hal::Cout::PrintInfo(Form("Branch %s not found!"), EInfo::kError); }
       TString className = branch->GetClassName();
       auto classInfo    = TClass::GetClass(className, 1);
       bool object       = false;

@@ -204,14 +204,21 @@ NamespaceImp(Hal::Std)
         axis->SetRange(min, max);
         nbins = 1 + max - min;
       } else {
+        if (min == max) {  // same values, this makes problem
+          max = min + axis->GetBinWidth(1) * 0.1;
+        }
         axis->SetRangeUser(min, max);
         nbins = 1 + axis->FindBin(max) - axis->FindBin(min);
       }
       projection = (TH2D*) histo_cloned->Project3D(projection_option);
       delete histo_cloned;
-      axis->SetRange(0, 0);
+      //   axis->SetRange(0, 0);
       if (sumw) projection->Sumw2();
       if (option.Contains("scale")) { projection->Scale(1.0 / nbins); }
+      if (!option.Contains("noautoname")) {
+        TString name = Form("%i_2dproj", anonymCounter++);
+        projection->SetName(name);
+      }
       projection->SetDirectory(0);
       return projection;
     }

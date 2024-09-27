@@ -224,4 +224,11 @@ namespace Hal {
     }
   }
 
+
+  void Painter::ResetFewBits(ULong64_t& flag, std::initializer_list<Int_t> bits, Int_t set) const {
+    for (auto ibit : bits)
+      CLRBIT(flag, ibit);
+    if (set >= 0) SETBIT(flag, set);
+  }
+
 } /* namespace Hal */

@@ -56,6 +56,13 @@ namespace Hal {
      */
     void SetFlagForced(ULong64_t flag) { fDrawFlags = flag; };
     /**
+     *
+     *@param flag flag to set
+     * @param bits clear listed bits
+     * @param set set this bit if set >0
+     */
+    void ResetFewBits(ULong64_t& flag, std::initializer_list<Int_t> bits, Int_t set = -1) const;
+    /**
      * this should be true if draw flags were changed
      */
     Bool_t fOptionsChanged = {kFALSE};

@@ -61,10 +61,10 @@ namespace Hal {
     Array_3<Double_t> fCovNum;
     Array_3<Double_t> fCovDen;
     Array_3<Double_t> fCovCf;
-    Double_t fNormPurity;                    //
-    Double_t fNormRadius;                    //
-    Double_t fNormBohr;                      //
-    TH3D* fCfcov               = {nullptr};  //
+    Double_t fNormPurity;                  //
+    Double_t fNormRadius;                  //
+    Double_t fNormBohr;                    //
+    TH3D* fCfcov             = {nullptr};  //
     FemtoCFPainter* fPainter = {nullptr};  //!
     FemtoYlmIndexes fLmVals;
     FemtoYlmMath fLmMath;
@@ -199,8 +199,8 @@ namespace Hal {
      */
     void SetDenIm(TH1D** histograms, Bool_t clone = kTRUE);
     /**
-     * draw this histograms with default setup
-     * @param opt
+     * see @see #Hal::FemtoSHCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
+     * @param option
      */
     void Draw(Option_t* opt = "");
     /**

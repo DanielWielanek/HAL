@@ -81,17 +81,8 @@ namespace Hal {
     void FitDummy(CorrFit3DCF* fit);
     virtual void Browse(TBrowser* b);
     /**
-     * draw this object
-     * @param opt if "num" then only numerator is drawn, if "den" only denominator
-     * is drawn,  , if "all"  then draw everything (numerator, denominator, cf)
-     * current pad is divided and numerator, if "cf" or not specified
-     * then only projections of cf's are drawn, user can also specify additional
-     * option for TH1->Draw like "num+same" denominator and CF are drawn,
-     * otherwise only divided histogram is drawn
-     *
-     * Standard option of draw is "cf" this option works also with option "norm" (draw normalized) "rgb" (each projection have
-     * different color
-     * Option "diag1" or "diag2" draw diagonal cf's,  option "norm" is also available for such type of drawing
+     * see @see #Hal::Femto3DCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
+     * @param option
      */
     virtual void Draw(Option_t* opt = "cf+rgb+norm");
     /**

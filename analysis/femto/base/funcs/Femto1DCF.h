@@ -94,6 +94,10 @@ namespace Hal {
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual void Print(Option_t* opt = "") const;
     virtual TObject* GetSpecial(TString opt) const;
+    /**
+     * see @see #Hal::Femto1DCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
+     * @param option
+     */
     virtual void Draw(Option_t* option = "");
     virtual FemtoCFPainter* GetPainter() const { return fPainter; }
     virtual ~Femto1DCF();

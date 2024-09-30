@@ -28,6 +28,9 @@ include(cmake/modules/CMakeListsExternal.cmake)
 if(DEFINED CIA)
     add_compile_definitions(__CIA__ GLOBAL)
 endif()
+if(NOT DEFINED INCLUDE_HAL_SUBIDIR)
+  Set(INCLUDE_HAL_SUBIDIR FALSE)
+endif()
 
 
 PrintConfig()

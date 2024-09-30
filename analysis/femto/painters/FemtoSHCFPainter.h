@@ -38,9 +38,11 @@ namespace Hal {
     void SetHistRanges(TH1* hist, Int_t l);
     /**
      * set draw options
-     * @param opts im - draw imaginary part, re - draw real part if none of this (or both) are set - draw imaginary and real part
-     * short - draw only chosen components of cf
-     * neg - skip drawing the negative components of CF
+     * @param opts
+     * - im - draw imaginary part
+     * - re - draw real part if none of this (or both) are set - draw imaginary and real part
+     * - short - draw only chosen components of cf
+     * - neg - skip drawing the negative components of CF
      */
     virtual ULong64_t SetOptionInternal(TString opts, ULong64_t prev = 0);
     virtual void ScaleHistograms();

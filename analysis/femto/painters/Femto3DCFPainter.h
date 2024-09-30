@@ -16,12 +16,21 @@ namespace Hal {
 
   class Femto3DCFPainter : public FemtoCFPainter {
     static const int kRgbBit, kDiag1Bit, kDiag2Bit, kRawBit;
+    static const int kTwoDimBit, kTwoDimPlusBit;
 
   protected:
     Femto3DCF* fCF;
-
     virtual void MakePadsAndCanvases();
     Int_t GetPadsRequired() const;
+    /**
+     *  see @see #Hal::FemtoCFPainter#SetOptionInternal
+     * @param opt
+     * - diag1 - diagonal one projections
+     * - diag2 - diagonal two projections (not working correctly) TODO -fix this
+     * - hidetitles - hide titles of projections
+     * @param prev
+     * @return
+     */
     virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0);
     virtual void MakeHistograms();
     virtual void ScaleHistograms();
@@ -30,6 +39,7 @@ namespace Hal {
     virtual void Prepare3D(TH1* h);
     virtual void PrepareDiagonal1(TH1* h);
     virtual void PrepareDiagonal2(TH1* h);
+    virtual void PrepareTwoDim(TH1* h);
     virtual Bool_t CheckPads() const;
     TH1D* GetProjection1D(TH1* h, Double_t min1, Double_t max1, Double_t min2, Double_t max2, Option_t* opt) const;
 

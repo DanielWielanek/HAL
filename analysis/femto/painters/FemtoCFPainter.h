@@ -29,8 +29,9 @@ namespace Hal {
     Double_t fRangeX[2] = {0, 0};
     Double_t fRangeY[2] = {0, 0};
     static const int kNumBit, kDenBit, kCFBit, kHideTitles;
-    Double_t fScale     = {1.0};
-    Double_t fDrawScale = {1.0};
+    Double_t fScale      = {1.0};
+    Double_t fDrawScale  = {1.0};
+    TString fDefDrawFlag = "SAME+P";
     std::vector<std::vector<TH1*>> fHistograms;
 
     virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0);
@@ -52,6 +53,13 @@ namespace Hal {
 
   public:
     FemtoCFPainter() {}
+    /**
+     *
+     * @param x
+     * @param y
+     * @return min and max value of draw histogram x, y, if no histogram was drawn or x/y are too big returns 0,0
+     */
+    std::pair<Double_t, Double_t> GetMinMax(Int_t x = 0, Int_t y = 0) const;
     virtual void Rescale(Double_t newScale);
 
     /**

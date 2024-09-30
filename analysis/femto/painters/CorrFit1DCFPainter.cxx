@@ -29,11 +29,6 @@ namespace Hal {
     fFunctions.push_back(vec);
   }
 
-  void CorrFit1DCFPainter::ScaleHistograms() {
-    auto func = (CorrFit1DCF*) fFittedFunc;
-    if (!CheckOpt(kAutoNormBit)) fCFPainter->Rescale(1.0 / func->GetNorm());
-  }
-
   CorrFit1DCFPainter::CorrFit1DCFPainter(CorrFit1DCF* fit, Femto1DCF* cf) : CorrFitPainter(fit), fCF(cf) {
     fCFPainter = (Femto1DCFPainter*) fCF->GetPainter();
     if (fCFPainter) fCFPainter->AddPainter(this);

@@ -17,13 +17,11 @@ namespace Hal {
 
   class CorrFit1DCFPainter : public CorrFitPainter {
   protected:
-    Femto1DCFPainter* fCFPainter = {nullptr};
     Femto1DCF* fCF;
 
     virtual void UpdateParameters();
     TF1* GetDrawableFunc(TString opt = "");
     virtual void MakeFunctions();
-    virtual void ScaleHistograms();
     virtual void MakeLegend();
 
   public:

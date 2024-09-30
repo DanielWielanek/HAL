@@ -16,14 +16,12 @@ namespace Hal {
   class Femto3DCFPainter;
   class CorrFit3DCFPainter : public CorrFitPainter {
   protected:
-    Femto3DCFPainter* fCFPainter = {nullptr};
     Femto3DCF* fCF;
     Int_t fDrawOpt = {0};
-
     virtual void UpdateParameters();
+    virtual void DrawFunctions();
     TF1* GetDrawableFunc(TString opt = "");
     virtual void MakeFunctions();
-    virtual void ScaleHistograms();
     virtual void InnerPaint();
 
   public:

@@ -51,7 +51,7 @@ namespace Hal {
         if (j) {
           if (CheckOpt(kHideTitles)) j->SetTitle("");
           j->SetStats(0);
-          j->Draw("SAME+P");
+          j->Draw(fDefDrawFlag);
         }
       }
     }
@@ -127,6 +127,17 @@ namespace Hal {
     }
     if (!TESTBIT(newOpts, kNumBit) && !TESTBIT(newOpts, kDenBit)) { SETBIT(newOpts, kCFBit); }
     return newOpts;
+  }
+
+  std::pair<Double_t, Double_t> FemtoCFPainter::GetMinMax(Int_t x, Int_t y) const {
+    std::pair<Double_t, Double_t> res;
+    if (fHistograms.size() < x + 1) return res;
+    if (fHistograms[x].size() < y + 1) return res;
+    auto h = fHistograms[x][y];
+    if (!h) return res;
+    res.first  = h->GetMinimum();
+    res.second = h->GetMaximum();
+    return res;
   }
 
 }  // namespace Hal

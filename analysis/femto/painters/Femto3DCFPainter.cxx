@@ -7,6 +7,7 @@
 
 #include "Femto3DCFPainter.h"
 
+#include "Cout.h"
 #include "Femto3DCF.h"
 #include "Std.h"
 #include "StdHist.h"
@@ -16,18 +17,32 @@
 #include <TVirtualPad.h>
 
 namespace Hal {
-  const int Femto3DCFPainter::kRgbBit   = 16;
-  const int Femto3DCFPainter::kRawBit   = 17;
-  const int Femto3DCFPainter::kDiag1Bit = 18;
-  const int Femto3DCFPainter::kDiag2Bit = 19;
-
+  const int Femto3DCFPainter::kRgbBit        = 16;
+  const int Femto3DCFPainter::kRawBit        = 17;
+  const int Femto3DCFPainter::kDiag1Bit      = 18;
+  const int Femto3DCFPainter::kDiag2Bit      = 19;
+  const int Femto3DCFPainter::kTwoDimBit     = 20;
+  const int Femto3DCFPainter::kTwoDimPlusBit = 21;
   ULong64_t Femto3DCFPainter::SetOptionInternal(TString opt, ULong64_t newFlags) {
-    newFlags = FemtoCFPainter::SetOptionInternal(opt, newFlags);
-    if (Hal::Std::FindParam(opt, "diag1")) { SETBIT(newFlags, kDiag1Bit); }
+    newFlags        = FemtoCFPainter::SetOptionInternal(opt, newFlags);
+    auto cleanFlags = [&](int setbit) { ResetFewBits(newFlags, {kDiag1Bit, kDiag2Bit, kTwoDimBit, kTwoDimPlusBit}, setbit); };
+    if (Hal::Std::FindParam(opt, "diag1")) {
+      cleanFlags(kDiag1Bit);
+      fDefDrawFlag = "SAME+P";
+    };
     if (Hal::Std::FindParam(opt, "diag2")) {
-      SETBIT(newFlags, kDiag2Bit);
-      CLRBIT(newFlags, kDiag1Bit);
-    }
+      cleanFlags(kDiag2Bit);
+      fDefDrawFlag = "SAME+P";
+    };
+    if (Hal::Std::FindParam(opt, "2d")) {
+      cleanFlags(kTwoDimBit);
+      fDefDrawFlag = "SAME+colz";
+    };
+    if (Hal::Std::FindParam(opt, "3d")) {
+      cleanFlags(kTwoDimPlusBit);
+      fDefDrawFlag = "SAME+surf1";
+    };
+
     ContitionalPattern(opt, "hidetitles", newFlags, kHideTitles);
     return newFlags;
   }
@@ -49,6 +64,8 @@ namespace Hal {
       PrepareDiagonal2(h);
     } else if (CheckOpt(kHtmlBit)) {
       PrepareHtml(h);
+    } else if (CheckOpt(kTwoDimBit) || CheckOpt(kTwoDimPlusBit)) {
+      PrepareTwoDim(h);
     } else {  // standard
       if (AreSimiliar(GetDrawFlags(), PrepBitTemplate({kNumBit, kDenBit, kCFBit}))) {
         Prepare3DFull(h);
@@ -246,6 +263,21 @@ namespace Hal {
     }
   }
 
+  void Femto3DCFPainter::PrepareTwoDim(TH1* h) {
+
+    TString opts[] = {"xy", "xz", "yz"};
+    for (int i = 0; i < 3; i++) {
+      auto out_side = Hal::Std::GetProjection2D((TH3*) h, 0, 0, opts[i]);
+      if (fRangeY[0] != fRangeY[1]) {
+        out_side->SetMaximum(fRangeY[1]);
+        out_side->SetMinimum(fRangeY[0]);
+      }
+      std::vector<TH1*> histVec;
+      histVec.push_back(out_side);
+      fHistograms.push_back(histVec);
+    }
+  }
+
   Int_t Femto3DCFPainter::GetPadsRequired() const {
     if (CheckOpt(kDiag1Bit)) {
       return 9;
@@ -253,6 +285,8 @@ namespace Hal {
       return 16;
     } else if (CheckOpt(kHtmlBit)) {
       return 9;
+    } else if (CheckOpt(kTwoDimBit) || CheckOpt(kTwoDimPlusBit)) {
+      return 4;
     } else {  // standard
       if (AreSimiliar(GetDrawFlags(), PrepBitTemplate({kNumBit, kDenBit, kCFBit}))) {
         return 9;
@@ -314,8 +348,16 @@ namespace Hal {
   }
 
   TString Femto3DCFPainter::GetOptionForCorrFit() const {
-    if (CheckOpt(kDiag1Bit)) return "fit2";
-    if (CheckOpt(kDiag2Bit)) return "fit3";
+    if (CheckOpt(kDiag1Bit)) {
+      HalCoutDebug("Diag1");
+      return "fit2";
+    }
+    if (CheckOpt(kDiag2Bit)) {
+      HalCoutDebug("Diag2");
+      return "fit3";
+    }
+    if (CheckOpt(kTwoDimBit)) return "fit4";
+    if (CheckOpt(kTwoDimPlusBit)) return "fit5";
     return "fit1";
   }
 

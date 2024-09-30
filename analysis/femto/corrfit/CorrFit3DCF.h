@@ -53,6 +53,9 @@ namespace Hal {
     Double_t GetFunXYZpmp(Double_t* x, Double_t* params) const;
     Double_t GetFunXYZppm(Double_t* x, Double_t* params) const;
     Double_t GetFunXYZpmm(Double_t* x, Double_t* params) const;
+    Double_t GetFunXY2d(Double_t* x, Double_t* params) const;
+    Double_t GetFunXZ2d(Double_t* x, Double_t* params) const;
+    Double_t GetFunYZ2d(Double_t* x, Double_t* params) const;
     Double_t GetScaledValue(Double_t x, Double_t* params) const;
     void SetParametersToTF1(TF1* f) const;
     void Calculatef(Double_t width);

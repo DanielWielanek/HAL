@@ -13,6 +13,7 @@
 #include "CorrFit.h"
 #include "CorrFitFunc.h"
 #include "Cout.h"
+#include "FemtoCFPainter.h"
 #include "Std.h"
 #include "StdString.h"
 
@@ -47,6 +48,7 @@ namespace Hal {
     fLegendPad->cd();
     fLegend = new TLegend(fLegendPos[0], fLegendPos[1], fLegendPos[2], fLegendPos[3]);
     fLegend->SetHeader(GetName());
+    if (fFittedFunc) { fLegend->SetHeader(fFittedFunc->GetName()); }
     auto label = GetLegendLabels();
     for (auto str : label) {
       fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, str, ""));
@@ -99,7 +101,7 @@ namespace Hal {
     for (auto padfunc : fFunctions) {
       GotoPad(count++);
       for (auto func : padfunc) {
-        if (func) func->Draw("SAME");
+        if (func) { func->Draw(fDefFuncDrawOpt); }
       }
     }
     UnlockPad();
@@ -195,6 +197,16 @@ namespace Hal {
     }
     if (chi_label.Length() > 0) label.push_back(chi_label);
     return label;
+  }
+
+
+  void CorrFitPainter::ScaleHistograms() {
+    auto func     = (CorrFitFunc*) fFittedFunc;
+    Double_t norm = func->GetNorm();
+    if (CheckOpt(kAutoNormBit)) {
+      fCFPainter->Rescale(1.0 / func->GetNorm());
+      fCFPainter->ScaleHistograms();
+    }
   }
 
 } /* namespace Hal */

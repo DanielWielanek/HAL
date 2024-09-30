@@ -23,7 +23,7 @@ namespace Hal {
    * #Hal::Femto3DCFPainter#SetOptionInternal
    */
   class FemtoCFPainter : public Painter {
-
+    friend class CorrFitPainter;
 
   protected:
     Double_t fRangeX[2] = {0, 0};

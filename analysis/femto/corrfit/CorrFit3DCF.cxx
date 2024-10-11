@@ -594,10 +594,6 @@ namespace Hal {
     // simple make simple average operation
     // TODO take width into account
     Double_t tempX[3] = {x[1], x[0], (*fZbins)[0]};
-    auto check        = [](double x) {
-      if (TMath::Abs(x - 0.05) < 0.01) { return true; }
-      return false;
-    };
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 

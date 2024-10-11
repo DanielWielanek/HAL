@@ -108,7 +108,7 @@ namespace Hal {
       if (Hal::Std::FileExists(list[0]))
         fTreeNames.push_back(GetChainName(list[0]));
       else {
-        Hal::Cout::PrintInfo(Form("Can't find tree in %s", list[0]), EInfo::kDebugInfo);
+        Hal::Cout::PrintInfo(Form("Can't find tree in %s", list[0].Data()), EInfo::kDebugInfo);
         fTreeNames.push_back(" ");
       }
     }

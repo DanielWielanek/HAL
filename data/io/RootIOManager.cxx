@@ -61,7 +61,7 @@ namespace Hal {
     for (auto name : branches) {
       TBranch* branch = fInChain->GetBranch(name);
       if (FindBranch(name).GetFlag() != BranchInfo::EFlag::kNull) continue;  // branch with given name already exist
-      if (!branch) { Hal::Cout::PrintInfo(Form("Branch %s not found!"), EInfo::kError); }
+      if (!branch) { Hal::Cout::PrintInfo(Form("Branch %s not found!", name.Data()), EInfo::kError); }
       TString className = branch->GetClassName();
       auto classInfo    = TClass::GetClass(className, 1);
       bool object       = false;

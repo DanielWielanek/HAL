@@ -4,7 +4,7 @@ name: CMake on multiple platforms
 
 on:
   push:
-    branches: [ "main" ,"DanielWielanek-patch-1"]
+    branches: [ "main" ,"dev"]
   pull_request:
     branches: [ "main" ]
 env:

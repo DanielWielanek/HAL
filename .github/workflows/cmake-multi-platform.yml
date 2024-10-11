@@ -1,6 +1,6 @@
 # This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: CMake on multiple platforms
+name: Cmake test
 
 on:
   push:
@@ -56,9 +56,11 @@ jobs:
         source /opt/root/bin/thisroot.sh
         echo $ROOTSYS
         export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
+        CXXFLAGS=$(root-config --cflags)
+        CPP_STANDARD=$(echo $CXXFLAGS | grep -o -E '\-std=c\+\+[^ ]+' | sed 's/-std=c++//')
         mkdir build
         cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=../inst -DEXAMPLES=ON
+        cmake .. -DCMAKE_INSTALL_PREFIX=../inst -DEXAMPLES=ON -DCMAKE_CXX_STANDARD="$CPP_STANDARD"
         make 
         make install
     - name: Test

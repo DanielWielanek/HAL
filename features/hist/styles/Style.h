@@ -9,6 +9,7 @@
 #ifndef HAL_FEATURES_HIST_STYLE2_H_
 #define HAL_FEATURES_HIST_STYLE2_H_
 
+#include <array>
 #include <map>
 #include <utility>
 #include <vector>
@@ -35,7 +36,7 @@ namespace Hal {
       Float_t sFval;
       Int_t sIval;
     };
-    std::array<value, 64> fValues;
+    std::array<Hal::Style::value, 64> fValues;
     ULong64_t fFlags = {0};
 
   protected:

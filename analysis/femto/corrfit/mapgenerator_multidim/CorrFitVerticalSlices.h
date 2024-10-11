@@ -62,6 +62,12 @@ namespace Hal {
     std::pair<int, int> FindBin(FemtoPair* pair);
     void FillNum(Int_t bin, FemtoPair* pair);
     void FillDen(Int_t bin, FemtoPair* pair);
+    /**
+     *
+     * @param bin - slice bit (depends on rout/ride currently calculated
+     * @param coord - coordinates - q-out and q-side bins
+     * @param w weight
+     */
     void FillNumDirect(Int_t bin, std::pair<int, int> coord, Double_t w) { fNum[bin][coord.first][coord.second] += w; }
     void FillDenDirect(Int_t bin, std::pair<int, int> coord, Double_t w) { fDen[bin][coord.first][coord.second] += w; }
     virtual ~CorrFitVerticalSlices3D() {};

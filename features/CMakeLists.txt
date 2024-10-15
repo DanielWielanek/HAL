@@ -76,6 +76,7 @@ std/StdMath.cxx
 phys/ErrorCalc.cxx
 phys/Helix.cxx
 phys/HelixBase.cxx
+phys/FastAxisCalc.cxx
 
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx

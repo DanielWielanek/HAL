@@ -116,6 +116,7 @@
 #pragma link C++ class Hal::Painter + ;
 
 #pragma link C++ class Hal::ErrorCalc + ;
+#pragma link C++ class Hal::FastAxisCalc + ;
 
 //=============================
 #pragma link C++ class Hal::ObjectMatrix_1 + ;

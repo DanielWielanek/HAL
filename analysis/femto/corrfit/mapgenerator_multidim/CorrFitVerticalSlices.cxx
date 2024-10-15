@@ -170,8 +170,13 @@ namespace Hal {
 
   std::pair<int, int> CorrFitVerticalSlices3D::FindBin(FemtoPair* pair) {
     std::pair<int, int> res;
-    res.first  = int((pair->GetX() - fMin[0]) * fOverStep[0]);
-    res.second = int((pair->GetY() - fMin[1]) * fOverStep[1]);
+    if (pair->IsAbs()) {
+      res.first  = int((TMath::Abs(pair->GetX()) - fMin[0]) * fOverStep[0]);
+      res.second = int((TMath::Abs(pair->GetY()) - fMin[1]) * fOverStep[1]);
+    } else {
+      res.first  = int((pair->GetX() - fMin[0]) * fOverStep[0]);
+      res.second = int((pair->GetY() - fMin[1]) * fOverStep[1]);
+    }
     return res;
   }
 

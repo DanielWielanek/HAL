@@ -51,9 +51,9 @@ namespace Hal {
     TH3* h     = nullptr;
     bool clean = false;
     if (CheckOpt(kNumBit)) {
-      h = (TH3*) fCF->GetNum();
+      h = (TH3*) fCF->GetNum()->Clone();
     } else if (CheckOpt(kDenBit)) {
-      h = (TH3*) fCF->GetDen();
+      h = (TH3*) fCF->GetDen()->Clone();
     } else {  // cf
       h     = (TH3*) fCF->GetHist(kFALSE);
       clean = true;

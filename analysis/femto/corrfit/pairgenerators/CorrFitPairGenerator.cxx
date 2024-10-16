@@ -39,22 +39,38 @@ namespace Hal {
     if (dummy->GetNum()->InheritsFrom("TH3")) {  // 3d histo group by q-long/ k-long
       fGrouping.SetGroupByKLong();
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "z");
+      fXaxis.Recalc(*dummy->GetNum()->GetXaxis());
+      fYaxis.Recalc(*dummy->GetNum()->GetYaxis());
+      fZaxis.Recalc(*dummy->GetNum()->GetZaxis());
       if (fDebug) fDebugHisto = new TH1D("debug", "debug", bins, min, max);
-      auto d3     = (TH3*) dummy->GetNum();
-      fOutCut[0]  = d3->GetXaxis()->GetBinLowEdge(1);
-      fOutCut[1]  = d3->GetXaxis()->GetBinUpEdge(d3->GetNbinsX());
-      fSideCut[0] = d3->GetYaxis()->GetBinLowEdge(1);
-      fSideCut[1] = d3->GetYaxis()->GetBinUpEdge(d3->GetNbinsY());
+      auto d3       = (TH3*) dummy->GetNum();
+      fOutCut[0]    = d3->GetXaxis()->GetBinLowEdge(1);
+      fOutCut[1]    = d3->GetXaxis()->GetBinUpEdge(d3->GetNbinsX());
+      fSideCut[0]   = d3->GetYaxis()->GetBinLowEdge(1);
+      fSideCut[1]   = d3->GetYaxis()->GetBinUpEdge(d3->GetNbinsY());
+      fGroupingFlag = EGrouping::kThreeDim;
+      Int_t bins1, bins2, bins3;
+      Std::GetAxisPar(*dummy->GetNum(), bins2, min, max, "y");
+      Std::GetAxisPar(*dummy->GetNum(), bins1, min, max, "x");
+      Std::GetAxisPar(*dummy->GetNum(), bins3, min, max, "z");
+      fLimits3D.MakeBigger(bins1 + 1, bins2 + 1, bins3 + 1);
 
     } else {  // 1d histo group by k* qinv
-      fGrouping.GroupByKStar();
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "x");
+      fLimitsN.MakeBigger(bins + 1);
+      fXaxis.Recalc(*dummy->GetNum()->GetXaxis());
+      fGrouping.GroupByKStar();
+      fGroupingFlag = EGrouping::kOneDim;
       if (fDebug) fDebugHisto = new TH1D("debug", "debug", bins, min, max);
     }
+    fXaxis.RoundToMinusOne();
+    fYaxis.RoundToMinusOne();
+    fZaxis.RoundToMinusOne();
     fHi       = max;
     fLow      = min;
     fOverStep = (max - min) / ((double) bins);
     fOverStep = 1.0 / fOverStep;
+    if (fLow == 0) fAbs = kTRUE;  // enable abs, because function starts with zero
     if (dummy->GetLabelsNo() > 0) {
       TString label = dummy->GetLabel(0);
       fFrame        = Femto::LabelToKinematics(label);
@@ -74,14 +90,13 @@ namespace Hal {
     fGrouping.SetFrame(fFrame);
     fGrouping.SetAxis(bins, min, max);
     fNBins = bins;
-    fLimitsN.MakeBigger(bins + 1);
+
     fOutFile = new TFile(fFileName, "recreate");
     fOutTree = new TTree("HalTree", "Tree");
     fOutFile->mkdir("HalInfo");
     fOutFile->cd("HalInfo");
     fGrouping.Write();
     fOutFile->cd();
-    fGroupByKstar = fGrouping.GroupByKStar();
 
     auto FillCenters = [&](Array_1<Double_t>& array, Int_t binsx, Double_t minx, Double_t maxx) {
       Double_t step = (maxx - minx) / double(binsx);

@@ -12,6 +12,7 @@
 
 #include "Array.h"
 #include "CorrFitMapGroupConfig.h"
+#include "FastAxisCalc.h"
 #include "FemtoConst.h"
 
 #include <TObject.h>
@@ -29,9 +30,9 @@ namespace Hal {
   class FemtoCorrFunc;
   class CorrFitPairGenerator : public TObject {
   protected:
-    Bool_t fInited       = {kFALSE};
-    Bool_t fDebug        = {kFALSE};
-    Bool_t fGroupByKstar = {kTRUE};
+    Bool_t fInited = {kFALSE};
+    Bool_t fDebug  = {kFALSE};
+    Bool_t fAbs    = {kFALSE};
     Int_t fPid1 = {0}, fPid2 = {0};
     Int_t fNBins = {0};
     Double_t fM1 = {0}, fM2 = {0};
@@ -47,9 +48,13 @@ namespace Hal {
     TH1* fDebugHisto          = {nullptr};
     Hal::FemtoPair* fHbtPair  = {nullptr};
     Femto::EKinematics fFrame = {Femto::EKinematics::kLCMS};
-    Array_1<Double_t> fLimitsN;
+    Array_1<Int_t> fLimitsN;
+    Array_3<Int_t> fLimits3D;
+    FastAxisCalc fXaxis, fYaxis, fZaxis;
     Array_1<Double_t> fCentersX;
     Array_1<Double_t> fCentersY, fCentersZ;
+    enum class EGrouping { kOneDim, kThreeDim };
+    EGrouping fGroupingFlag = {EGrouping::kOneDim};
     CorrFitMapGroupConfig fGrouping;
     std::vector<TClonesArray*> fSignalPairs;
     virtual void GenerateEvent() = 0;

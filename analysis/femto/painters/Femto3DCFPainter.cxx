@@ -23,6 +23,7 @@ namespace Hal {
   const int Femto3DCFPainter::kDiag2Bit      = 19;
   const int Femto3DCFPainter::kTwoDimBit     = 20;
   const int Femto3DCFPainter::kTwoDimPlusBit = 21;
+  const int Femto3DCFPainter::kAngles        = 22;
   ULong64_t Femto3DCFPainter::SetOptionInternal(TString opt, ULong64_t newFlags) {
     newFlags        = FemtoCFPainter::SetOptionInternal(opt, newFlags);
     auto cleanFlags = [&](int setbit) { ResetFewBits(newFlags, {kDiag1Bit, kDiag2Bit, kTwoDimBit, kTwoDimPlusBit}, setbit); };
@@ -41,6 +42,17 @@ namespace Hal {
     if (Hal::Std::FindParam(opt, "3d")) {
       cleanFlags(kTwoDimPlusBit);
       fDefDrawFlag = "SAME+surf1";
+      auto bra     = Hal::Std::FindBrackets(opt, kTRUE, kTRUE);
+      for (auto pat : bra) {
+        std::vector<Double_t> vals;
+        if (GetPatterns(pat, "ang", vals)) {
+          SETBIT(newFlags, kAngles);
+          if (vals.size() == 2) {
+            fThetaPad = vals[0];
+            fPhiPad   = vals[0];
+          }
+        }
+      }
     };
 
     ContitionalPattern(opt, "hidetitles", newFlags, kHideTitles);
@@ -379,6 +391,19 @@ namespace Hal {
   void Femto3DCFPainter::MakePadsAndCanvases() {
     Int_t req = TMath::Sqrt(GetPadsRequired());
     MakeCanvasPads(req, req, 0);
+  }
+
+  void Femto3DCFPainter::DrawHistograms() {
+    FemtoCFPainter::DrawHistograms();
+    if (!CheckOpt(kAngles)) return;
+    LockPad();
+    int count = 0;
+    for (auto i : fHistograms) {
+      GotoPad(++count);
+      gPad->SetTheta(fThetaPad);
+      gPad->SetPhi(fPhiPad);
+    }
+    UnlockPad();
   }
 
 } /* namespace Hal */

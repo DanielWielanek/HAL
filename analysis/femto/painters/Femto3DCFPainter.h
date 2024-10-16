@@ -16,10 +16,12 @@ namespace Hal {
 
   class Femto3DCFPainter : public FemtoCFPainter {
     static const int kRgbBit, kDiag1Bit, kDiag2Bit, kRawBit;
-    static const int kTwoDimBit, kTwoDimPlusBit;
+    static const int kTwoDimBit, kTwoDimPlusBit, kAngles;
 
   protected:
     Femto3DCF* fCF;
+    Double_t fThetaPad = {30.};
+    Double_t fPhiPad   = {30.};
     virtual void MakePadsAndCanvases();
     Int_t GetPadsRequired() const;
     /**
@@ -28,6 +30,7 @@ namespace Hal {
      * - diag1 - diagonal one projections
      * - diag2 - diagonal two projections (not working correctly) TODO -fix this
      * - hidetitles - hide titles of projections
+     * - {ang=theta,phi} set theta phi angles of pad
      * @param prev
      * @return
      */
@@ -40,6 +43,7 @@ namespace Hal {
     virtual void PrepareDiagonal1(TH1* h);
     virtual void PrepareDiagonal2(TH1* h);
     virtual void PrepareTwoDim(TH1* h);
+    virtual void DrawHistograms();
     virtual Bool_t CheckPads() const;
     TH1D* GetProjection1D(TH1* h, Double_t min1, Double_t max1, Double_t min2, Double_t max2, Option_t* opt) const;
 

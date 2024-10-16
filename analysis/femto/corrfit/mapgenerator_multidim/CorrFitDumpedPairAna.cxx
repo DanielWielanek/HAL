@@ -12,6 +12,7 @@
 
 #include <TApplication.h>
 #include <TBranch.h>
+#include <TChain.h>
 #include <TClonesArray.h>
 #include <TCollection.h>
 #include <TDirectory.h>
@@ -174,20 +175,12 @@ namespace Hal {
   }
 
   Bool_t CorrFitDumpedPairAna::ConfigureInput() {
-    fFile     = new TFile(fPairFile);
-    fGrouping = dynamic_cast<CorrFitMapGroupConfig*>(fFile->Get("HalInfo/CorrFitMapGroup"));
-    if (!fGrouping) {
-      Hal::Cout::PrintInfo("Cannot find grouping config", EInfo::kError);
+    if (fPairFile.EndsWith(".root")) {
+      return ConfigureRootInput();
+    } else {
+      ConfigureListInput();
       return kFALSE;
     }
-    TList* list = fFile->GetListOfKeys();
-    FindTree(fFile, list);
-
-
-    if (fTree == nullptr) return kFALSE;
-    Bool_t res = ConnectToData();
-    LockUnusedBranches();
-    return res;
   }
 
   Bool_t CorrFitDumpedPairAna::ConfigureFromXML() {
@@ -344,23 +337,6 @@ namespace Hal {
     }
   }
 
-  Bool_t CorrFitDumpedPairAna::FindTree(TDirectory* dir, TList* list) {
-    if (fTree) return kTRUE;
-    for (int i = 0; i < list->GetEntries(); i++) {
-      TKey* key    = (TKey*) list->At(i);
-      TObject* obj = dir->Get(key->GetName());
-      if (obj->InheritsFrom("TDirectory")) {
-        TDirectory* dirl = (TDirectory*) obj;
-        FindTree(dirl, dirl->GetListOfKeys());
-      }
-      if (obj->InheritsFrom("TTree")) {
-        fTree = (TTree*) obj;
-        break;
-      }
-    }
-    return kFALSE;
-  }
-
   void CorrFitDumpedPairAna::LockUnusedBranches() {
     auto list = fTree->GetListOfBranches();
     for (int i = 0; i < list->GetEntries(); i++) {
@@ -374,6 +350,62 @@ namespace Hal {
         }
       if (lock) fTree->SetBranchStatus(brName, 0);
     }
+  }
+
+  Bool_t CorrFitDumpedPairAna::ConfigureRootInput() {
+    fFile     = new TFile(fPairFile);
+    fGrouping = dynamic_cast<CorrFitMapGroupConfig*>(fFile->Get("HalInfo/CorrFitMapGroup"));
+    if (!fGrouping) {
+      Hal::Cout::PrintInfo("Cannot find grouping config", EInfo::kError);
+      return kFALSE;
+    }
+    TString treeName = FindTreeName(fPairFile);
+    fTree            = new TChain(treeName);
+    fTree->AddFile(fPairFile);
+
+    if (treeName.Length() == 0) return kFALSE;
+    Bool_t res = ConnectToData();
+    LockUnusedBranches();
+    return res;
+  }
+
+  Bool_t CorrFitDumpedPairAna::ConfigureListInput() {
+    std::vector<TString> filelist;
+    if (fPairFile.EndsWith("/")) {
+      filelist = Hal::Std::GetListOfFiles(fPairFile, "root", kTRUE, kFALSE);
+    } else {
+      filelist = Hal::Std::GetLinesFromFile(fPairFile, kTRUE);
+    }
+    if (filelist.size() < 1) return kFALSE;
+    fFile     = new TFile(filelist[0]);
+    fGrouping = dynamic_cast<CorrFitMapGroupConfig*>(fFile->Get("HalInfo/CorrFitMapGroup"));
+    if (!fGrouping) {
+      Hal::Cout::PrintInfo("Cannot find grouping config", EInfo::kError);
+      return kFALSE;
+    }
+    TString treeName = FindTreeName(filelist[0]);
+    fTree            = new TChain(treeName);
+    for (auto file : filelist) {
+      fTree->AddFile(file);
+    }
+    return kTRUE;
+  }
+
+  TString CorrFitDumpedPairAna::FindTreeName(TString name) const {
+    TFile* f    = new TFile(name);
+    TList* keys = f->GetListOfKeys();
+    TString treeName;
+    for (int i = 0; i < keys->GetEntries(); i++) {
+      TKey* key    = (TKey*) keys->At(i);
+      TObject* obj = f->Get(key->GetName());
+      if (obj->InheritsFrom("TTree")) {
+        treeName = key->GetName();
+        break;
+      }
+    }
+    f->Close();
+    delete f;
+    return treeName;
   }
 
 }  // namespace Hal

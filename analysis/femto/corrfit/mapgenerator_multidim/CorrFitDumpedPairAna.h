@@ -20,7 +20,7 @@
  * basic class for generation of multidim maps
  */
 class TFile;
-class TTree;
+class TChain;
 class TClonesArray;
 namespace Hal {
   class CorrFitParamsSetup;
@@ -39,8 +39,8 @@ namespace Hal {
 
   class CorrFitDumpedPairAna : public TObject {
     std::vector<TString> fUsedBranches;
-    TFile* fFile = {nullptr};
-    TTree* fTree = {nullptr};
+    TFile* fFile  = {nullptr};
+    TChain* fTree = {nullptr};
 
   protected:
     TString fPairFile;
@@ -68,7 +68,9 @@ namespace Hal {
      * value of bin to -1, then such bin will not be used **/
     Bool_t SaveAsRawArray(TObject* cf, Int_t step);
     Bool_t ConfigureInput();
-    Bool_t FindTree(TDirectory* dir, TList* list);
+    Bool_t ConfigureRootInput();
+    Bool_t ConfigureListInput();
+    TString FindTreeName(TString name) const;
     Bool_t ConfigureFromXML();
     Int_t GetSimStepNo() const { return fMultiplyJobs * fJobId; }
     virtual void RunSignalPair()           = 0;

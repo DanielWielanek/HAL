@@ -47,9 +47,9 @@ namespace Hal {
       Cout::PrintInfo(Form("%s must have at least 3 parameters", this->ClassName()), EInfo::kWarning);
       return;
     }
-    fXbins = new Array_1<Double_t>(1);
-    fYbins = new Array_1<Double_t>(1);
-    fZbins = new Array_1<Double_t>(1);
+    fXbins.Resize(1);
+    fYbins.Resize(1);
+    fZbins.Resize(1);
     SetParameterName(NormID(), "N");
   }
 
@@ -69,8 +69,8 @@ namespace Hal {
   Double_t CorrFit3DCF::GetFunX(Double_t* x, Double_t* params) const {
     // co z mapowanymcorrfitem?
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
-    fBinY = fDenominatorHistogram->GetYaxis()->FindBin((*fYbins)[0]);
-    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin((*fZbins)[0]);
+    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(fYbins.Get(0));
+    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(fZbins.Get(0));
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
         fDenominatorHistogram->GetXaxis()->GetBinCenter(fBinX),
@@ -82,15 +82,15 @@ namespace Hal {
 
     // simple make simple average operation
     Double_t sum = 0;
-    Double_t ctn = fYbins->GetSize() + fZbins->GetSize();
-    Int_t binY   = (fYbins->GetSize() - 1) / 2;
-    Int_t binZ   = (fZbins->GetSize() - 1) / 2;
-    for (int i = 0; i < fYbins->GetSize(); i++) {
-      Double_t tempX[3] = {x[0], (*fYbins)[i], (*fZbins)[binZ]};
+    Double_t ctn = fYbins.GetSize() + fZbins.GetSize();
+    Int_t binY   = (fYbins.GetSize() - 1) / 2;
+    Int_t binZ   = (fZbins.GetSize() - 1) / 2;
+    for (int i = 0; i < fYbins.GetSize(); i++) {
+      Double_t tempX[3] = {x[0], fYbins.Get(i), fZbins.Get(binZ)};
       sum += CalculateCF(tempX, params);
     }
-    for (int j = 0; j < fZbins->GetSize(); j++) {
-      Double_t tempX[3] = {x[0], (*fYbins)[binY], (*fZbins)[j]};
+    for (int j = 0; j < fZbins.GetSize(); j++) {
+      Double_t tempX[3] = {x[0], fYbins.Get(binY), fZbins.Get(j)};
       sum += CalculateCF(tempX, params);
     }
     return GetScaledValue(sum, params) / ctn;
@@ -98,8 +98,8 @@ namespace Hal {
 
   Double_t CorrFit3DCF::GetFunY(Double_t* x, Double_t* params) const {
     fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[0]);
-    fBinX = fDenominatorHistogram->GetXaxis()->FindBin((*fXbins)[0]);
-    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin((*fZbins)[0]);
+    fBinX = fDenominatorHistogram->GetXaxis()->FindBin(fXbins.Get(0));
+    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(fZbins.Get(0));
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
         fDenominatorHistogram->GetXaxis()->GetBinCenter(fBinX),
@@ -109,15 +109,15 @@ namespace Hal {
       return GetScaledValue(EvalCF(X, params), params);
     }
     Double_t sum = 0;
-    Double_t ctn = fXbins->GetSize() + fZbins->GetSize();
-    Int_t binZ   = (fZbins->GetSize() - 1) / 2;
-    Int_t binX   = (fXbins->GetSize() - 1) / 2;
-    for (int i = 0; i < fXbins->GetSize(); i++) {
-      Double_t tempX[3] = {(*fXbins)[i], x[0], (*fZbins)[binZ]};
+    Double_t ctn = fXbins.GetSize() + fZbins.GetSize();
+    Int_t binZ   = (fZbins.GetSize() - 1) / 2;
+    Int_t binX   = (fXbins.GetSize() - 1) / 2;
+    for (int i = 0; i < fXbins.GetSize(); i++) {
+      Double_t tempX[3] = {fXbins.Get(i), x[0], fZbins.Get(binZ)};
       sum += GetScaledValue(CalculateCF(tempX, params), params);
     }
-    for (int j = 0; j < fZbins->GetSize(); j++) {
-      Double_t tempX[3] = {(*fXbins)[binX], x[0], (*fZbins)[j]};
+    for (int j = 0; j < fZbins.GetSize(); j++) {
+      Double_t tempX[3] = {fXbins.Get(binX), x[0], fZbins.Get(j)};
       sum += GetScaledValue(CalculateCF(tempX, params), params);
     }
     return sum / ctn;
@@ -125,8 +125,8 @@ namespace Hal {
 
   Double_t CorrFit3DCF::GetFunZ(Double_t* x, Double_t* params) const {
     fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x[0]);
-    fBinX = fDenominatorHistogram->GetXaxis()->FindBin((*fXbins)[0]);
-    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(((*fYbins)[0]));
+    fBinX = fDenominatorHistogram->GetXaxis()->FindBin(fXbins.Get(0));
+    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(fYbins.Get(0));
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
         fDenominatorHistogram->GetXaxis()->GetBinCenter(fBinX),
@@ -136,15 +136,15 @@ namespace Hal {
       return GetScaledValue(EvalCF(X, params), params);
     }
     Double_t sum = 0;
-    Double_t ctn = fXbins->GetSize() + fYbins->GetSize();
-    Int_t binX   = (fXbins->GetSize() - 1) / 2;
-    Int_t binY   = (fYbins->GetSize() - 1) / 2;
-    for (int i = 0; i < fXbins->GetSize(); i++) {
-      Double_t tempX[3] = {(*fXbins)[i], (*fYbins)[binY], x[0]};
+    Double_t ctn = fXbins.GetSize() + fYbins.GetSize();
+    Int_t binX   = (fXbins.GetSize() - 1) / 2;
+    Int_t binY   = (fYbins.GetSize() - 1) / 2;
+    for (int i = 0; i < fXbins.GetSize(); i++) {
+      Double_t tempX[3] = {fXbins.Get(i), fYbins.Get(binY), x[0]};
       sum += GetScaledValue(CalculateCF(tempX, params), params);
     }
-    for (int j = 0; j < fYbins->GetSize(); j++) {
-      Double_t tempX[3] = {(*fXbins)[binX], (*fYbins)[j], x[0]};
+    for (int j = 0; j < fYbins.GetSize(); j++) {
+      Double_t tempX[3] = {fXbins.Get(binX), fYbins.Get(j), x[0]};
       sum += GetScaledValue(CalculateCF(tempX, params), params);
     }
     return sum / ctn;
@@ -322,11 +322,7 @@ namespace Hal {
     SetRlongLimits(min, max);
   }
 
-  CorrFit3DCF::~CorrFit3DCF() {
-    delete fXbins;
-    delete fYbins;
-    delete fZbins;
-  }
+  CorrFit3DCF::~CorrFit3DCF() {}
 
   Double_t CorrFit3DCF::Eval(Double_t x, Double_t y, Double_t z) {
     Double_t q[3] = {x, y, z};
@@ -377,7 +373,7 @@ namespace Hal {
   Double_t CorrFit3DCF::GetFunXYpp(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
     fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[0]);
-    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin((*fZbins)[0]);
+    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(fZbins.Get(0));
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
         fDenominatorHistogram->GetXaxis()->GetBinCenter(fBinX),
@@ -389,14 +385,14 @@ namespace Hal {
 
     // simple make simple average operation
     // TODO take width into account
-    Double_t tempX[3] = {x[0], x[0], (*fZbins)[0]};
+    Double_t tempX[3] = {x[0], x[0], fZbins.Get(0)};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXYpm(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
     fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[0]);
-    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin((*fZbins)[0]);
+    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(fZbins.Get(0));
     fBinY = fDenominatorHistogram->GetNbinsY() - fBinY + 1;
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
@@ -410,13 +406,13 @@ namespace Hal {
     // simple make simple average operation
     // TODO take width into account
     Double_t sY       = 2.0 * fYAxisf - x[0];
-    Double_t tempX[3] = {x[0], sY, (*fZbins)[0]};
+    Double_t tempX[3] = {x[0], sY, fZbins.Get(0)};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXZpp(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
-    fBinY = fDenominatorHistogram->GetYaxis()->FindBin((*fYbins)[0]);
+    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(fYbins.Get(0));
     fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x[0]);
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
@@ -429,13 +425,13 @@ namespace Hal {
 
     // simple make simple average operation
     // TODO take width into account
-    Double_t tempX[3] = {x[0], (*fYbins)[0], x[0]};
+    Double_t tempX[3] = {x[0], fYbins.Get(0), x[0]};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXZpm(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
-    fBinY = fDenominatorHistogram->GetYaxis()->FindBin((*fYbins)[0]);
+    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(fYbins.Get(0));
     fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x[0]);
     fBinZ = fDenominatorHistogram->GetNbinsZ() - fBinZ + 1;
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
@@ -450,12 +446,12 @@ namespace Hal {
     // simple make simple average operation
     // TODO take width into account
     Double_t sZ       = 2.0 * fZAxisf - x[0];
-    Double_t tempX[3] = {x[0], (*fYbins)[0], sZ};
+    Double_t tempX[3] = {x[0], fYbins.Get(0), sZ};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunYZpp(Double_t* x, Double_t* params) const {
-    fBinX = fDenominatorHistogram->GetXaxis()->FindBin((*fXbins)[0]);
+    fBinX = fDenominatorHistogram->GetXaxis()->FindBin(fXbins.Get(0));
     fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[0]);
     fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x[0]);
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
@@ -469,12 +465,12 @@ namespace Hal {
 
     // simple make simple average operation
     // TODO take width into account
-    Double_t tempX[3] = {(*fXbins)[0], x[0], x[0]};
+    Double_t tempX[3] = {fXbins.Get(0), x[0], x[0]};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunYZpm(Double_t* x, Double_t* params) const {
-    fBinX = fDenominatorHistogram->GetXaxis()->FindBin((*fXbins)[0]);
+    fBinX = fDenominatorHistogram->GetXaxis()->FindBin(fXbins.Get(0));
     fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[0]);
     fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x[0]);
     fBinZ = fDenominatorHistogram->GetNbinsZ() - fBinZ + 1;
@@ -490,7 +486,7 @@ namespace Hal {
     // simple make simple average operation
     // TODO take width into account
     Double_t sZ       = 2.0 * fZAxisf - x[0];
-    Double_t tempX[3] = {(*fXbins)[0], x[0], sZ};
+    Double_t tempX[3] = {fXbins.Get(0), x[0], sZ};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
@@ -581,7 +577,7 @@ namespace Hal {
   Double_t CorrFit3DCF::GetFunXY2d(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
     fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[1]);
-    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin((*fZbins)[0]);
+    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(fZbins.Get(0));
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
         fDenominatorHistogram->GetXaxis()->GetBinCenter(fBinX),
@@ -593,13 +589,13 @@ namespace Hal {
 
     // simple make simple average operation
     // TODO take width into account
-    Double_t tempX[3] = {x[1], x[0], (*fZbins)[0]};
+    Double_t tempX[3] = {x[1], x[0], fZbins.Get(0)};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXZ2d(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
-    fBinY = fDenominatorHistogram->GetYaxis()->FindBin((*fYbins)[0]);
+    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(fYbins.Get(0));
     fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x[1]);
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
@@ -612,12 +608,12 @@ namespace Hal {
 
     // simple make simple average operation
     // TODO take width into account
-    Double_t tempX[3] = {x[1], (*fYbins)[0], x[0]};
+    Double_t tempX[3] = {x[1], fYbins.Get(0), x[0]};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunYZ2d(Double_t* x, Double_t* params) const {
-    fBinX = fDenominatorHistogram->GetXaxis()->FindBin((*fXbins)[0]);
+    fBinX = fDenominatorHistogram->GetXaxis()->FindBin(fXbins.Get(0));
     fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[0]);
     fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x[1]);
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
@@ -631,7 +627,7 @@ namespace Hal {
 
     // simple make simple average operation
     // TODO take width into account
-    Double_t tempX[3] = {(*fXbins)[0], x[1], x[0]};
+    Double_t tempX[3] = {fXbins.Get(0), x[1], x[0]};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
@@ -656,34 +652,34 @@ namespace Hal {
     Int_t middle_x      = CF->GetNum()->GetXaxis()->FindBin(0.0);
     Int_t middle_y      = CF->GetNum()->GetYaxis()->FindBin(0.0);
     Int_t middle_z      = CF->GetNum()->GetZaxis()->FindBin(0.0);
-    fXbins->Resize(1);
-    fYbins->Resize(1);
-    fZbins->Resize(1);
-    (*fXbins)[0] = CF->GetNum()->GetXaxis()->GetBinCenter(middle_x);
-    (*fYbins)[0] = CF->GetNum()->GetYaxis()->GetBinCenter(middle_y);
-    (*fZbins)[0] = CF->GetNum()->GetZaxis()->GetBinCenter(middle_z);
+    fXbins.Resize(1);
+    fYbins.Resize(1);
+    fZbins.Resize(1);
+    fXbins[0] = CF->GetNum()->GetXaxis()->GetBinCenter(middle_x);
+    fYbins[0] = CF->GetNum()->GetYaxis()->GetBinCenter(middle_y);
+    fZbins[0] = CF->GetNum()->GetZaxis()->GetBinCenter(middle_z);
     if (width == -1) {  // center+edges
-      fXbins->Resize(3);
-      fYbins->Resize(3);
-      fZbins->Resize(3);
-      (*fXbins)[0] = CF->GetNum()->GetXaxis()->GetBinLowEdge(middle_x);
-      (*fYbins)[0] = CF->GetNum()->GetYaxis()->GetBinLowEdge(middle_y);
-      (*fZbins)[0] = CF->GetNum()->GetZaxis()->GetBinLowEdge(middle_z);
-      (*fXbins)[1] = CF->GetNum()->GetXaxis()->GetBinCenter(middle_x);
-      (*fYbins)[1] = CF->GetNum()->GetYaxis()->GetBinCenter(middle_y);
-      (*fZbins)[1] = CF->GetNum()->GetZaxis()->GetBinCenter(middle_z);
-      (*fXbins)[2] = CF->GetNum()->GetXaxis()->GetBinUpEdge(middle_x);
-      (*fYbins)[2] = CF->GetNum()->GetYaxis()->GetBinUpEdge(middle_y);
-      (*fZbins)[2] = CF->GetNum()->GetZaxis()->GetBinUpEdge(middle_z);
-      width        = 0;
+      fXbins.Resize(3);
+      fYbins.Resize(3);
+      fZbins.Resize(3);
+      fXbins[0] = CF->GetNum()->GetXaxis()->GetBinLowEdge(middle_x);
+      fYbins[0] = CF->GetNum()->GetYaxis()->GetBinLowEdge(middle_y);
+      fZbins[0] = CF->GetNum()->GetZaxis()->GetBinLowEdge(middle_z);
+      fXbins[1] = CF->GetNum()->GetXaxis()->GetBinCenter(middle_x);
+      fYbins[1] = CF->GetNum()->GetYaxis()->GetBinCenter(middle_y);
+      fZbins[1] = CF->GetNum()->GetZaxis()->GetBinCenter(middle_z);
+      fXbins[2] = CF->GetNum()->GetXaxis()->GetBinUpEdge(middle_x);
+      fYbins[2] = CF->GetNum()->GetYaxis()->GetBinUpEdge(middle_y);
+      fZbins[2] = CF->GetNum()->GetZaxis()->GetBinUpEdge(middle_z);
+      width     = 0;
     } else if (width != 0) {
-      fXbins->Resize(2 * width + 1);
-      fYbins->Resize(2 * width + 1);
-      fZbins->Resize(2 * width + 1);
+      fXbins.Resize(2 * width + 1);
+      fYbins.Resize(2 * width + 1);
+      fZbins.Resize(2 * width + 1);
       for (int i = 0; i <= width * 2; i++) {
-        (*fXbins)[i] = CF->GetNum()->GetXaxis()->GetBinCenter(middle_x - width + i);
-        (*fYbins)[i] = CF->GetNum()->GetYaxis()->GetBinCenter(middle_y - width + i);
-        (*fZbins)[i] = CF->GetNum()->GetZaxis()->GetBinCenter(middle_z - width + i);
+        fXbins[i] = CF->GetNum()->GetXaxis()->GetBinCenter(middle_x - width + i);
+        fYbins[i] = CF->GetNum()->GetYaxis()->GetBinCenter(middle_y - width + i);
+        fZbins[i] = CF->GetNum()->GetZaxis()->GetBinCenter(middle_z - width + i);
       }
     }
   }

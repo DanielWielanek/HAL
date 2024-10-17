@@ -83,8 +83,8 @@ corrfit/mapgenerators/Femto1DCFAnaMapPairsDumped.cxx
 corrfit/pairgenerators/CorrFitMapGroupConfig.cxx
 corrfit/pairgenerators/CorrFitPairGenerator.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorSimple.cxx
-corrfit/pairgenerators/CorrFitPairGeneratorYPt.cxx
-corrfit/pairgenerators/CorrFitPairGeneratorYPtStubborn.cxx
+corrfit/pairgenerators/CorrFitPairGeneratorYPtKt.cxx
+corrfit/pairgenerators/CorrFitPairGeneratorYPtKtStubborn.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
 corrfit/mapgenerator_multidim/CorrFitFunctor.cxx

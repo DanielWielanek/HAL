@@ -126,11 +126,12 @@ namespace Hal {
     convert(list, list_branch);
     if (friends) {
       auto friends_trees = chain->GetListOfFriends();
-      for (int i = 0; i < friends_trees->GetEntries(); i++) {  // why ROOT doesnt do this?
-        auto tree  = ((TFriendElement*) friends_trees->At(i))->GetTree();
-        auto lista = tree->GetListOfBranches();
-        convert(list, lista);
-      }
+      if (friends_trees)
+        for (int i = 0; i < friends_trees->GetEntries(); i++) {  // why ROOT doesnt do this?
+          auto tree  = ((TFriendElement*) friends_trees->At(i))->GetTree();
+          auto lista = tree->GetListOfBranches();
+          convert(list, lista);
+        }
     }
     return list;
   }

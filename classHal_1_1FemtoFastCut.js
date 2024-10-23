@@ -1,0 +1,25 @@
+var classHal_1_1FemtoFastCut =
+[
+    [ "FemtoFastCut", "classHal_1_1FemtoFastCut.html#afb03b15206cb682f0cea3754249233d7", null ],
+    [ "FemtoFastCut", "classHal_1_1FemtoFastCut.html#ad8e56e852b635ef996cf0bee10e0b36e", null ],
+    [ "AddCutBin", "classHal_1_1FemtoFastCut.html#a9e0654cb0887b6785b82bae2cd595f3c", null ],
+    [ "Allocate", "classHal_1_1FemtoFastCut.html#ae98e5f0039b3cc0bbdafb019c8aa52bf", null ],
+    [ "GetBin", "classHal_1_1FemtoFastCut.html#a2be5515e8462803ca7c3e199fca487aa", null ],
+    [ "GetBinCharged", "classHal_1_1FemtoFastCut.html#a2e50db99747e0d6fef354d9af1a3d774", null ],
+    [ "GetBinHemisphere", "classHal_1_1FemtoFastCut.html#a018db7e61f7ef8e29057186635f33d57", null ],
+    [ "GetBinMixed", "classHal_1_1FemtoFastCut.html#a96fc502d0a29685ebcde2a689744cb00", null ],
+    [ "GetBinPerfect", "classHal_1_1FemtoFastCut.html#a51e299d1e0f5c8b2416ab5807ee4f8ec", null ],
+    [ "GetBinRotated", "classHal_1_1FemtoFastCut.html#a02cc1cec372eb04bd2dfa234922cf737", null ],
+    [ "GetMax", "classHal_1_1FemtoFastCut.html#a9e952e02194f636d4f26b53e64c84adc", null ],
+    [ "GetMin", "classHal_1_1FemtoFastCut.html#ad0975e84f79abbb13df61095634d4a96", null ],
+    [ "GetNBins", "classHal_1_1FemtoFastCut.html#a036230f4ffd73622efac26ad6960085c", null ],
+    [ "Init", "classHal_1_1FemtoFastCut.html#a7f63209697e7480f6cacadc9879ead69", null ],
+    [ "MakeCopy", "classHal_1_1FemtoFastCut.html#ac4b10b72c59d98048f0c7b8036d25bc8", null ],
+    [ "Report", "classHal_1_1FemtoFastCut.html#aa70f5cd8044aa52086667e4c8048d27c", null ],
+    [ "fBins", "classHal_1_1FemtoFastCut.html#a75e5b4f9c33f30231b726a62c97dbfab", null ],
+    [ "fMax", "classHal_1_1FemtoFastCut.html#ac2c0d40cf157f0f4c4ea4b71ce54c155", null ],
+    [ "fMaxTrue", "classHal_1_1FemtoFastCut.html#a7d3321fe94886d0566d9e548ba9771cd", null ],
+    [ "fMin", "classHal_1_1FemtoFastCut.html#af527af1ead2325f3f3d9d8d85465cb25", null ],
+    [ "fMinTrue", "classHal_1_1FemtoFastCut.html#ae5b2241ff32cb56ff5314fb12e6c5678", null ],
+    [ "fPair", "classHal_1_1FemtoFastCut.html#a15ab5838625b7cc5509a956c1fcf2e40", null ]
+];

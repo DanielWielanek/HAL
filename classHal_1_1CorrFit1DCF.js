@@ -1,0 +1,28 @@
+var classHal_1_1CorrFit1DCF =
+[
+    [ "CorrFit1DCF", "classHal_1_1CorrFit1DCF.html#a906e5b4ffac46207c5e0e61a08a536d8", null ],
+    [ "CalculateCF", "classHal_1_1CorrFit1DCF.html#a8af792f7f68373b510203d06f96745bc", null ],
+    [ "CalculateNumErrors", "classHal_1_1CorrFit1DCF.html#afc376904678fe4a33493d6947b2998f6", null ],
+    [ "EstimateActiveBins", "classHal_1_1CorrFit1DCF.html#a36b7b606841f515baf8958533f2507f4", null ],
+    [ "Eval", "classHal_1_1CorrFit1DCF.html#a10f3052abebac1b5e443ed2b416d3d1a", null ],
+    [ "EvalCF", "classHal_1_1CorrFit1DCF.html#abb6bcfc3bbb620a25483ac8cf1712029", null ],
+    [ "EvalCFNormalized", "classHal_1_1CorrFit1DCF.html#ab0de366180fea31a3239829fb99d176d", null ],
+    [ "Fit", "classHal_1_1CorrFit1DCF.html#a290c5ad9cc4e14013d6bc61b94e556f2", null ],
+    [ "GetFunctionForDrawing", "classHal_1_1CorrFit1DCF.html#ae40479f2dc9514c11fdcff2234b571a9", null ],
+    [ "GetFunDrawable", "classHal_1_1CorrFit1DCF.html#a926de4a81c7b19315077a09b4c9ab5d2", null ],
+    [ "GetLambda", "classHal_1_1CorrFit1DCF.html#ae72024f34ca1b1dac46f30bfbb1d3847", null ],
+    [ "GetLambdaError", "classHal_1_1CorrFit1DCF.html#a2abf92db100fd1a1b00a571a37db36dd", null ],
+    [ "GetLogTFD", "classHal_1_1CorrFit1DCF.html#aee524b497677ac6434986b99195310d7", null ],
+    [ "GetRadius", "classHal_1_1CorrFit1DCF.html#a8d7b78ba581a229bb3a9a32ebef98bb1", null ],
+    [ "GetRadiusError", "classHal_1_1CorrFit1DCF.html#a35c35c90a63f9670a3145a5222cf853b", null ],
+    [ "LambdaID", "classHal_1_1CorrFit1DCF.html#a0c3197d994dc2f97d328a624bcf420d2", null ],
+    [ "MakePainter", "classHal_1_1CorrFit1DCF.html#ade70692f89d942883bd9974e79148824", null ],
+    [ "PrepareRaw", "classHal_1_1CorrFit1DCF.html#a4030a3ca14251638fb1cf97d47219465", null ],
+    [ "RadiusID", "classHal_1_1CorrFit1DCF.html#a31547c87e34c6c39cfdf74dc2f433577", null ],
+    [ "RecalculateSmoothFunction", "classHal_1_1CorrFit1DCF.html#add2c89bde75dbb73fd1b370827f4cb0a", null ],
+    [ "SetErrors", "classHal_1_1CorrFit1DCF.html#ae966672b7342717c33df115fd617758a", null ],
+    [ "SetFittingMask", "classHal_1_1CorrFit1DCF.html#ab3e3a174ba2422ac044d2bf383195ddf", null ],
+    [ "SetLambdaLimits", "classHal_1_1CorrFit1DCF.html#a4b9e95dda0a612edb7177255ca0f7820", null ],
+    [ "SetRLimits", "classHal_1_1CorrFit1DCF.html#a4f34ed0fea7ff3fda61cb85cce7b3b72", null ],
+    [ "fBinX", "classHal_1_1CorrFit1DCF.html#a0ae61265ccd2ecfdc761fbbe84307d42", null ]
+];

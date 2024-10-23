@@ -1,0 +1,25 @@
+var classHal_1_1ChiSqMap2D =
+[
+    [ "ChiSqMap2D", "classHal_1_1ChiSqMap2D.html#a09dc35211f0f1e5ef986a9a5e2de2415", null ],
+    [ "ChiLabel", "classHal_1_1ChiSqMap2D.html#a554243895ce087cd4edf7768cf7223b6", null ],
+    [ "ChiNDFLabel", "classHal_1_1ChiSqMap2D.html#ae7c06e7b9e70f367d73cc3d779118fbf", null ],
+    [ "Draw", "classHal_1_1ChiSqMap2D.html#a3bea18818aa60a7ac96d8e05305cbcb1", null ],
+    [ "GetEstErrorX", "classHal_1_1ChiSqMap2D.html#ad97c8eff8bf0c976504be773fb02bf2c", null ],
+    [ "GetEstErrorY", "classHal_1_1ChiSqMap2D.html#ad5c9f213ea169f791fa94c1823dcc1c8", null ],
+    [ "GetEstX", "classHal_1_1ChiSqMap2D.html#aa6c53b714a8042a68f5f2b2452a3a7c6", null ],
+    [ "GetEstY", "classHal_1_1ChiSqMap2D.html#abd89ecf0b4a709d52d6048fdae2561da", null ],
+    [ "GetFitX", "classHal_1_1ChiSqMap2D.html#a175d45497be7151dddddda6ee0f0d293", null ],
+    [ "GetFitXErrorLow", "classHal_1_1ChiSqMap2D.html#a840fef85df48d431127b8f2572c0ac62", null ],
+    [ "GetFitXErrorUp", "classHal_1_1ChiSqMap2D.html#ac3b54718170d98f345fe5383490f0197", null ],
+    [ "GetFitY", "classHal_1_1ChiSqMap2D.html#a08bce93adbaea64b9388c9bb86db71ad", null ],
+    [ "GetFitYErrorLow", "classHal_1_1ChiSqMap2D.html#a203c0f82cecd2b7890cfc4c21cc2e170", null ],
+    [ "GetFitYErrorUp", "classHal_1_1ChiSqMap2D.html#a632527497e5f6fa831a2e9cdd58ebcc7", null ],
+    [ "GetHist", "classHal_1_1ChiSqMap2D.html#ab6748d7575724d8c309a7bae9e64bddf", null ],
+    [ "GetLabel", "classHal_1_1ChiSqMap2D.html#a0ba8a5e0aa09237e8152d1f60c01a73f", null ],
+    [ "GetMin", "classHal_1_1ChiSqMap2D.html#a0548afe6bf7b3eedb1b55157ac882617", null ],
+    [ "GetXYE", "classHal_1_1ChiSqMap2D.html#aa213c0164c8d632b0543d3725fa4f660", null ],
+    [ "SetLabel", "classHal_1_1ChiSqMap2D.html#a6d31da5843ddb98a16c3106e579a32a0", null ],
+    [ "SetParNames", "classHal_1_1ChiSqMap2D.html#a5cf114e858d47047b339405a55c554cc", null ],
+    [ "SetXFit", "classHal_1_1ChiSqMap2D.html#ab63a755729c011dfa73538764ded5dfd", null ],
+    [ "SetYFit", "classHal_1_1ChiSqMap2D.html#ac34f33fd972ecd16f106463d67206502", null ]
+];

@@ -1,3 +1,0 @@
-add_subdirectory(onthefly)
-add_subdirectory(debugformat)
-add_subdirectory(unigen)

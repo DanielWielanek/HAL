@@ -1,0 +1,25 @@
+var classHal_1_1MultiGraph =
+[
+    [ "MultiGraph", "classHal_1_1MultiGraph.html#aaead1ef6ac56acb49f127cfc565c94c8", null ],
+    [ "AddHistogram", "classHal_1_1MultiGraph.html#ae46e12523811625bee86d0f2eee1ed34", null ],
+    [ "Draw", "classHal_1_1MultiGraph.html#a8b92ae024f02ed58428071121329741a", null ],
+    [ "GetGraph", "classHal_1_1MultiGraph.html#a251ded5331f5f093ac9f576141bf4d25", null ],
+    [ "GetMutliGraph", "classHal_1_1MultiGraph.html#a46377b69b391f0e3bf2b804503c60d1f", null ],
+    [ "GetNGraphs", "classHal_1_1MultiGraph.html#a9a3bab6d0b2da1a8ce8655140bb2753d", null ],
+    [ "GetXaxis", "classHal_1_1MultiGraph.html#a5a860474d71460e1b2bd99ae1a860d51", null ],
+    [ "GetYaxis", "classHal_1_1MultiGraph.html#a46a48eaaed0a840550cb2ad48d6a73e5", null ],
+    [ "MakeGraph", "classHal_1_1MultiGraph.html#a066538f28435fb9d3d6c7bac0979afad", null ],
+    [ "MakeGraphs", "classHal_1_1MultiGraph.html#a043323d32a72e8c04eb5b3eb1fef4202", null ],
+    [ "SetLineAttributes", "classHal_1_1MultiGraph.html#a5136d0b08507e0b3ee7106421017ef9c", null ],
+    [ "SetLineColor", "classHal_1_1MultiGraph.html#a234cc3d98eddbaa74cc01f182db48f99", null ],
+    [ "SetLineStyle", "classHal_1_1MultiGraph.html#a9a1687c344ecd052385ae9ea15de8084", null ],
+    [ "SetLineWidth", "classHal_1_1MultiGraph.html#ac22d646a3cc09defa446b8369cfa3582", null ],
+    [ "SetMarkerAttributes", "classHal_1_1MultiGraph.html#ab27f04b7091e1cdebbfcd7147ce913f0", null ],
+    [ "SetMarkerColor", "classHal_1_1MultiGraph.html#a862afeba5d9e4cafe131c44c8afbd66a", null ],
+    [ "SetMarkerSize", "classHal_1_1MultiGraph.html#ab18836d1b42e1d085102aa795c975187", null ],
+    [ "SetMarkerStyle", "classHal_1_1MultiGraph.html#a8d9d220a9c4664373ffccfaaba589f51", null ],
+    [ "SetPoint", "classHal_1_1MultiGraph.html#aa6ed036b78bf81d7fb36b0ad30998421", null ],
+    [ "SetPoint", "classHal_1_1MultiGraph.html#af24d5636212b58ad01f81dfe2ca9b9db", null ],
+    [ "SetXRange", "classHal_1_1MultiGraph.html#a56d6740ccc0fbe1e79ef4fd56cbe9b7f", null ],
+    [ "SetYRange", "classHal_1_1MultiGraph.html#a1f56f4575c67e4c400569d6ff7ea5099", null ]
+];

@@ -28,10 +28,10 @@ namespace Hal {
 
 
   InputDataInfo::InputDataInfo(TString file) : fListName(file) {
-    if (file.EndsWith(".list")) {
+    if (file.EndsWith(".list")) {  // list file
       auto vec = Hal::Std::GetLinesFromFile(file, kTRUE);
       fFileNames.push_back(vec);
-    } else if (file.EndsWith(".xml")) {
+    } else if (file.EndsWith(".xml")) {  // xml file
       XMLFile xmlFile(file);
       auto root  = xmlFile.GetRootNode();
       auto files = root->GetChild("files");
@@ -41,6 +41,12 @@ namespace Hal {
         for (int j = 0; j < list->GetNChildren(); i++) {
           fFileNames[i].push_back(list->GetChild(j)->GetValue());
         }
+      }
+    } else if (file.EndsWith("/")) {  // directory
+      auto vec = Hal::Std::GetListOfFiles(file, "root", kTRUE, kTRUE);
+      for (auto singleFile : vec) {
+        std::vector<TString> row {singleFile};
+        fFileNames.push_back(row);
       }
     } else {
       fFileNames.resize(1);

@@ -406,4 +406,31 @@ namespace Hal {
     UnlockPad();
   }
 
+  std::pair<Double_t, Double_t> Femto3DCFPainter::GetXaxisRange() const {
+    std::pair<Double_t, Double_t> res(0, 1);
+    auto h = (TH3*) fCF->GetNum();
+    if (!h) return res;
+    res.first  = h->GetXaxis()->GetBinLowEdge(1);
+    res.second = h->GetXaxis()->GetBinUpEdge(h->GetNbinsX());
+    return res;
+  }
+
+  std::pair<Double_t, Double_t> Femto3DCFPainter::GetYaxisRange() const {
+    std::pair<Double_t, Double_t> res(0, 1);
+    auto h = (TH3*) fCF->GetNum();
+    if (!h) return res;
+    res.first  = h->GetYaxis()->GetBinLowEdge(1);
+    res.second = h->GetYaxis()->GetBinUpEdge(h->GetNbinsY());
+    return res;
+  }
+
+  std::pair<Double_t, Double_t> Femto3DCFPainter::GetZaxisRange() const {
+    std::pair<Double_t, Double_t> res(0, 1);
+    auto h = (TH3*) fCF->GetNum();
+    if (!h) return res;
+    res.first  = h->GetZaxis()->GetBinLowEdge(1);
+    res.second = h->GetZaxis()->GetBinUpEdge(h->GetNbinsZ());
+    return res;
+  }
+
 } /* namespace Hal */

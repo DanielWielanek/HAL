@@ -49,6 +49,9 @@ namespace Hal {
 
   public:
     Femto3DCFPainter(Femto3DCF* cf = nullptr);
+    std::pair<Double_t, Double_t> GetXaxisRange() const;
+    std::pair<Double_t, Double_t> GetYaxisRange() const;
+    std::pair<Double_t, Double_t> GetZaxisRange() const;
     virtual TString GetOptionForCorrFit() const;
     virtual ~Femto3DCFPainter();
     ClassDef(Femto3DCFPainter, 0)

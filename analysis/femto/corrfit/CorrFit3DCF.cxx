@@ -575,9 +575,12 @@ namespace Hal {
   }
 
   Double_t CorrFit3DCF::GetFunXY2d(Double_t* x, Double_t* params) const {
-    fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
-    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[1]);
-    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(fZbins.Get(0));
+    double x_out  = x[1];
+    double x_side = x[0];
+    double x_long = fZbins.Get(0);
+    fBinX         = fDenominatorHistogram->GetXaxis()->FindBin(x_out);
+    fBinY         = fDenominatorHistogram->GetYaxis()->FindBin(x_side);
+    fBinZ         = fDenominatorHistogram->GetZaxis()->FindBin(x_long);
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
         fDenominatorHistogram->GetXaxis()->GetBinCenter(fBinX),
@@ -589,14 +592,18 @@ namespace Hal {
 
     // simple make simple average operation
     // TODO take width into account
-    Double_t tempX[3] = {x[1], x[0], fZbins.Get(0)};
+    Double_t tempX[3] = {x_out, x_side, x_long};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunXZ2d(Double_t* x, Double_t* params) const {
-    fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
-    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(fYbins.Get(0));
-    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x[1]);
+    double x_out  = x[1];
+    double x_side = fYbins.Get(0);
+    double x_long = x[0];
+
+    fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x_out);
+    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x_side);
+    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x_long);
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
         fDenominatorHistogram->GetXaxis()->GetBinCenter(fBinX),
@@ -608,14 +615,17 @@ namespace Hal {
 
     // simple make simple average operation
     // TODO take width into account
-    Double_t tempX[3] = {x[1], fYbins.Get(0), x[0]};
+    Double_t tempX[3] = {x_out, x_side, x_long};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
   Double_t CorrFit3DCF::GetFunYZ2d(Double_t* x, Double_t* params) const {
-    fBinX = fDenominatorHistogram->GetXaxis()->FindBin(fXbins.Get(0));
-    fBinY = fDenominatorHistogram->GetYaxis()->FindBin(x[0]);
-    fBinZ = fDenominatorHistogram->GetZaxis()->FindBin(x[1]);
+    double x_out  = fXbins.Get(0);
+    double x_side = x[1];
+    double x_long = x[0];
+    fBinX         = fDenominatorHistogram->GetXaxis()->FindBin(x_out);
+    fBinY         = fDenominatorHistogram->GetYaxis()->FindBin(x_side);
+    fBinZ         = fDenominatorHistogram->GetZaxis()->FindBin(x_long);
     if (fBinCalc == kExtrapolated) {  // calculate "step function"
       Double_t X[3] = {
         fDenominatorHistogram->GetXaxis()->GetBinCenter(fBinX),
@@ -627,7 +637,7 @@ namespace Hal {
 
     // simple make simple average operation
     // TODO take width into account
-    Double_t tempX[3] = {fXbins.Get(0), x[1], x[0]};
+    Double_t tempX[3] = {x_out, x_side, x_long};
     return GetScaledValue(CalculateCF(tempX, params), params);
   }
 
@@ -745,15 +755,29 @@ namespace Hal {
     if (option.EqualTo("xyz++-"))
       func = new TF1("funcXYZ++-", this, &CorrFit3DCF::GetFunXYZppm, fRange[0], fRange[1], nPar, className, "GetFunXYZppm");
 
+    /**
+     * because root have problems with 3D axes we have to take them from th3d
+     */
+    const Femto3DCF* CF = static_cast<Femto3DCF*>(fCF);
+    std::vector<Double_t> Range(6, 0);
+    if (CF) {
+      auto numtemp = CF->GetNum();
+      Range[0]     = numtemp->GetXaxis()->GetBinLowEdge(1);
+      Range[1]     = numtemp->GetXaxis()->GetBinUpEdge(numtemp->GetNbinsX());
+      Range[2]     = numtemp->GetYaxis()->GetBinLowEdge(1);
+      Range[3]     = numtemp->GetYaxis()->GetBinUpEdge(numtemp->GetNbinsY());
+      Range[4]     = numtemp->GetZaxis()->GetBinLowEdge(1);
+      Range[5]     = numtemp->GetZaxis()->GetBinUpEdge(numtemp->GetNbinsZ());
+    }
     if (option.EqualTo("xy"))
-      func = new TF2(
-        "fun2dxy", this, &CorrFit3DCF::GetFunXY2d, fRange[0], fRange[1], fRange[2], fRange[3], nPar, className, "GetFunXY2d");
+      func =
+        new TF2("fun2dxy", this, &CorrFit3DCF::GetFunXY2d, Range[0], Range[1], Range[2], Range[3], nPar, className, "GetFunXY2d");
     if (option.EqualTo("xz"))
-      func = new TF2(
-        "fun2dxz", this, &CorrFit3DCF::GetFunXZ2d, fRange[0], fRange[1], fRange[4], fRange[5], nPar, className, "GetFunXZ2d");
+      func =
+        new TF2("fun2dxz", this, &CorrFit3DCF::GetFunXZ2d, Range[0], Range[1], Range[4], Range[5], nPar, className, "GetFunXZ2d");
     if (option.EqualTo("yz"))
-      func = new TF2(
-        "fun2dyz", this, &CorrFit3DCF::GetFunYZ2d, fRange[2], fRange[3], fRange[4], fRange[5], nPar, className, "GetFunYZ2d");
+      func =
+        new TF2("fun2dyz", this, &CorrFit3DCF::GetFunYZ2d, Range[2], Range[3], Range[4], Range[5], nPar, className, "GetFunYZ2d");
 
     if (!func) { std::cout << __LINE__ << __FILE__ << " wrong option " << option << std::endl; }
     SetParametersToTF1(func);

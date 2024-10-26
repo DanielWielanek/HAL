@@ -49,7 +49,9 @@ namespace Hal {
       kGlobal      = 3,
       kMother      = 4,  // set if mother is known (and its secondary)
       kV0Daughters = 5,  // set if v0 and daughters are known
-      kXiDaughters = 6   // set if xi and daughters are known
+      kXiDaughters = 6,  // set if xi and daughters are known
+      kBackground  = 7,  // set if background particle
+      kEmbedded    = 8   // set if embedded particle
     };
     /**
      * returns v0 value if vo is not null
@@ -228,6 +230,16 @@ namespace Hal {
      * @return true if track is global
      */
     inline Bool_t IsGlobal() const { return TESTBIT(fType, kGlobal); };
+    /**
+     *
+     * @return true if track is background track
+     */
+    inline Bool_t IsBackground() const { return TESTBIT(fType, kBackground); }
+    /**
+     *
+     * @return true if track is embedded
+     */
+    inline Bool_t IsEmbedded() const { return TESTBIT(fType, kEmbedded); }
     /**
      *
      * @return pointer to standard hidden info

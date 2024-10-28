@@ -16,13 +16,14 @@
 #include <TColor.h>
 #include <TF1.h>
 
+#include <RVersion.h>
 #include <TROOT.h>
 #include <TSystem.h>
 #include <TVirtualPad.h>
 
-#include "Cout.h"  //KURWA
+#include "Cout.h"
 
-#include "../painters/FemtoCFPainter.h"
+#include "FemtoCFPainter.h"
 #include <utility>
 
 namespace Hal {
@@ -222,7 +223,11 @@ namespace Hal {
   }
 
   void CorrFitParButton::SetValue(Double_t val) {
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 26, 00)
     if (!fDiscrete) { fNumberEntry->SetNumber(val, kFALSE); }
+#else
+    if (!fDiscrete) { fNumberEntry->SetNumber(val); }
+#endif
   }
   void CorrFitParButton::SetPrecission(Int_t prec) {
     TGNumberFormat::EStyle style = TGNumberFormat::EStyle::kNESReal;

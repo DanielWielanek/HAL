@@ -16,6 +16,7 @@
 #include <RtypesCore.h>
 
 namespace Hal {
+  class Femto1DCF;
   class CorrFitMask1D : public CorrFitMask {
     Int_t fBins;
     Double_t fMin, fMax;
@@ -23,6 +24,7 @@ namespace Hal {
 
   public:
     CorrFitMask1D(Int_t bins = 100, Double_t min = 0, Double_t max = 1);
+    CorrFitMask1D(const Hal::Femto1DCF& cf);
     void ApplyRange(Double_t min, Double_t max, Bool_t additive = kTRUE);
     void SetBin(Int_t bin, Bool_t state = true);
     void Reset(Bool_t state = kTRUE);

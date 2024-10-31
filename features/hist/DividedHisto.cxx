@@ -371,7 +371,7 @@ namespace Hal {
     TString file_name = Form("%s/divided.root", path.Data());
     std::ifstream f(file_name.Data());
     if (f.good()) {
-      file.AddStringContent(HtmlCore::GetJsDiv("divided.root", "canvas;1"));
+      file.AddStringContent(HtmlCore::GetJsDiv(path, "divided.root", "canvas;1"));
     } else {
       file.AddStringContent(GetPic());
     }

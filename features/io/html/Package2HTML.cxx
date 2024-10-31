@@ -1042,7 +1042,7 @@ namespace Hal {
     c1->SaveAs(Form("%s/cutmon.root", path.Data()));
 
     HtmlFile file(filename, kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv("cutmon.root", "cutmon;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(path + "/", "cutmon.root", "cutmon;1"));
     file.Save();
     return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
   }
@@ -1064,7 +1064,7 @@ namespace Hal {
     c1->SaveAs(Form("%s/cutmon.root", path.Data()));
     delete c1;
     HtmlFile file(filename, kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv("cutmon.root", "cutmon;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(path, "cutmon.root", "cutmon;1"));
     file.Save();
     return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
   }
@@ -1086,7 +1086,7 @@ namespace Hal {
     c1->SaveAs(Form("%s/cutmon.root", path.Data()));
     delete c1;
     HtmlFile file(filename, kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv("cutmon.root", "cutmon;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(path, "cutmon.root", "cutmon;1"));
     file.Save();
     return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
 

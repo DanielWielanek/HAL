@@ -177,7 +177,7 @@ namespace Hal {
     c1->SaveAs(Form("%s//fluct.root", path.Data()));
     delete c1;
     TString file_name = Form("%s/fluct.root", path.Data());
-    file.AddStringContent(HtmlCore::GetJsDiv("fluct.root", "canvas;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(path, "fluct.root", "canvas;1"));
     file.Save();
     return HtmlCore::GetUrl(Form("fluct_%i/fluct.html", no), this->ClassName());
   }

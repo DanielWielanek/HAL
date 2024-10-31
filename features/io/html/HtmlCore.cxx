@@ -48,23 +48,25 @@ namespace Hal {
     }
 
     if (fgOnline) return;
-    filetocopy = Hal::Std::GetJsRoot();
+    filetocopy                 = Hal::Std::GetJsRoot();
+    std::vector<TString> paths = {"img", "scripts", "style"};
+    auto filetcopystr          = filetocopy.Data();
+    if (Hal::Std::GetJsRootVer() >= 7) paths.push_back("modules");
     if (path.Length() != 0) {
-      gSystem->mkdir(Form("%s/hal_js", path.Data()));
-      gSystem->mkdir(Form("%s/hal_js/img", path.Data()));
-      gSystem->mkdir(Form("%s/hal_js/scripts", path.Data()));
-      gSystem->mkdir(Form("%s/hal_js/style", path.Data()));
-      Hal::Std::CopyFiles(Form("%s/img", filetocopy.Data()), Form("%s/hal_js/img", path.Data()), kFALSE);
-      Hal::Std::CopyFiles(Form("%s/scripts", filetocopy.Data()), Form("%s/hal_js/scripts", path.Data()), kFALSE);
-      Hal::Std::CopyFiles(Form("%s/style", filetocopy.Data()), Form("%s/hal_js/style", path.Data()), kFALSE);
+      auto pathstr = path.Data();
+      gSystem->mkdir(Form("%s/hal_js", pathstr));
+      for (auto subdir : paths) {
+        auto substr = subdir.Data();
+        gSystem->mkdir(Form("%s/hal_js/%s", pathstr, substr));
+        Hal::Std::CopyFiles(Form("%s/%s", filetcopystr, substr), Form("%s/hal_js/%s", pathstr, substr), kFALSE);
+      }
     } else {
       gSystem->mkdir("hal_js");
-      gSystem->mkdir("hal_js/img");
-      gSystem->mkdir("hal_js/scripts");
-      gSystem->mkdir("hal_js/style");
-      Hal::Std::CopyFiles(Form("%s/img", filetocopy.Data()), "hal_js/img", kFALSE);
-      Hal::Std::CopyFiles(Form("%s/scripts", filetocopy.Data()), "hal_js/scripts", kFALSE);
-      Hal::Std::CopyFiles(Form("%s/style", filetocopy.Data()), "hal_js/style", kFALSE);
+      for (auto subdir : paths) {
+        auto substr = subdir.Data();
+        gSystem->mkdir(Form("hal_js/%s", substr));
+        Hal::Std::CopyFiles(Form("%s/%s", filetcopystr, substr), Form("hal_js/%s", substr), kFALSE);
+      }
     }
   }
 
@@ -223,7 +225,7 @@ namespace Hal {
     return name;
   }
 
-  TString HtmlCore::GetJsDiv(TString root_file, TString object_name, TString draw_opt, TString draw_div_name) {
+  TString HtmlCore::GetJsDiv(TString path, TString root_file, TString object_name, TString draw_opt, TString draw_div_name) {
     TString res;
     if (Hal::Std::GetJsRootVer() == 5) {
       res = "<script type='text/javascript'>\n";
@@ -234,13 +236,25 @@ namespace Hal {
       res = res + Form("JSROOT.draw(\"%s\", obj, \"%s\");\n;", draw_div_name.Data(), draw_opt.Data());
       res = res + "});\n;});\n";
       res = res + "</script>\n<div id=\"" + draw_div_name + "\" style=\"width:90%;height:900px\"></div>\n";
-    } else {  // JSROOT ver 6
+    } else if (Hal::Std::GetJsRootVer() == 6) {  // JSROOT ver 6
       res = "<script type='module'>\n";
       res = res + Form("var filename = \"%s\";\n", root_file.Data());
       res = res + "JSROOT.settings.Palette= 50;\n";
       res = res + "JSROOT.openFile(filename)\n";
       res = res + "\t.then(file=> file.readObject(\"" + object_name + "\"))\n";
       res = res + "\t.then(obj=> JSROOT.draw(\"" + draw_div_name.Data() + "\",obj,\"" + draw_opt.Data() + "\"));\n";
+      res = res + "</script>\n<div id=\"" + draw_div_name + "\" style=\"width:90%;height:900px\"></div>\n";
+    } else {
+
+      res            = "<script type='module'>\n";
+      res            = res + Form("var filename = \"%s\";\n", root_file.Data());
+      TString pathJs = Form("%s/hal_js/modules/main.mjs", GetRelativePath(path).Data());
+      pathJs.ReplaceAll("//", "/");
+      res = res + Form("import {openFile, draw, settings} from '%s';\n", pathJs.Data());
+      res = res + "settings.Palette= 50;\n";
+      res = res + "let file = await openFile(filename)\n";
+      res = res + Form("let obj = await file.readObject('%s');\n", object_name.Data());
+      res = res + Form("draw('%s', obj,'colz');\n", draw_div_name.Data());
       res = res + "</script>\n<div id=\"" + draw_div_name + "\" style=\"width:90%;height:900px\"></div>\n";
     }
     return res;
@@ -263,7 +277,8 @@ namespace Hal {
     }
     Bool_t batch = gROOT->IsBatch();
     gROOT->SetBatch(kTRUE);
-    path = Form("%s/th_%i", path.Data(), no);
+    TString mainPath = path;
+    path             = Form("%s/th_%i", path.Data(), no);
     gSystem->mkdir(path);
     TCanvas* c1 = new TCanvas("canvas", "canvas", 0, 0, 800, 600);
     TH1* histo  = (TH1*) h;
@@ -272,7 +287,7 @@ namespace Hal {
     delete c1;
     gROOT->SetBatch(batch);
     HtmlFile file(Form("%s/histo.html", path.Data()), kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv("histo.root", "canvas;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(mainPath, "histo.root", "canvas;1"));
     file.Save();
     TString filename = Form("%s/histo.html", path.Data());
     gROOT->SetBatch(batch);
@@ -330,7 +345,7 @@ namespace Hal {
     delete c1;
     gROOT->SetBatch(batch);
     HtmlFile file(Form("%s/histo.html", path.Data()), kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv(rootFileName, "canvas;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(path, rootFileName, "canvas;1"));
     file.Save();
     TString filename = Form("%s/histo.html", path.Data());
     gROOT->SetBatch(batch);
@@ -348,7 +363,7 @@ namespace Hal {
     c1->SaveAs(Form("%s/graph.root", path.Data()));
     delete c1;
     HtmlFile F(Form("%s/graph.html", path.Data()), kFALSE);
-    F.AddStringContent(HtmlCore::GetJsDiv("graph.root", "canvas;1", "EP"));
+    F.AddStringContent(HtmlCore::GetJsDiv(path, "graph.root", "canvas;1", "EP"));
     F.Save();
     gROOT->SetBatch(batch);
     return HtmlCore::GetUrl(Form("graph_%i/graph.html", no), h->ClassName());

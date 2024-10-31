@@ -715,7 +715,11 @@ namespace Hal {
   void CorrFit3DCF::SetFittingMask(const CorrFitMask& map) {
     const CorrFitMask3D* mask = dynamic_cast<const CorrFitMask3D*>(&map);
     if (mask == nullptr) return;
-    if (!mask->AreCompatible(fCF)) return;
+    if (!fCF) { Hal::Cout::PrintInfo("Cannot check map because fit->FitDummy was not called", EInfo::kLowWarning); }
+    if (!mask->AreCompatible(fCF)) {
+      Hal::Cout::PrintInfo("Maps not compatible", EInfo::kLowWarning);
+      return;
+    }
     if (fMask) delete fMask;
     fMask        = (CorrFitMask*) mask->Clone();
     fOwnRangeMap = kTRUE;

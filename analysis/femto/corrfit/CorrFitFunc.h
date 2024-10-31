@@ -126,7 +126,7 @@ namespace Hal {
     /**
      * for drawing CF
      */
-    CorrFitPainter* fPainter = {nullptr};
+    CorrFitPainter* fPainter = {nullptr};  //!
     MinimizerStepConf fDiscretteMinimzerConf;
     /**
      * extrapolated function

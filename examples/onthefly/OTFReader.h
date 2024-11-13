@@ -43,7 +43,7 @@ namespace HalOTF {
   public:
     Reader();
     /**
-     * specify how to translate events (if want to use a direct acces to data
+     * specify how to translate events (if want to use a direct access to data
      * @param opt reco - for reco translation, mc - for sim translatation, complex or mc+reco - for complex translation
      * note, last Reader task should translate events
      */

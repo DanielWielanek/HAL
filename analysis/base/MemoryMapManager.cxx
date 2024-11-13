@@ -160,6 +160,7 @@ namespace Hal {
           break;
         }
       }
+      if (!fCurrentEvent) { Hal::Cout::PrintInfo("Cannot find a event in provided branch list", EInfo::kCriticalError); }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];
     fTrackMap     = new Array_4<Int_t>();

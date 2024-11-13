@@ -75,7 +75,7 @@ namespace HalOTF {
           fTranslateInterface = fHalComplexEvent->CreateInterface();
         }
       } break;
-      default: break;
+      default: Hal::Cout::PrintInfo(Form("Translation not set for %s", ClassName()), Hal::EInfo::kWarning); break;
     }
     if (fTranslateInterface) fTranslateInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     return Hal::Task::EInitFlag::kSUCCESS;

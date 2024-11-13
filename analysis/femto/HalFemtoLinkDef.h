@@ -84,6 +84,7 @@
 #pragma link C++ class Hal::CorrFit1DCFCumacK0K0 + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacK0Kch + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacDLam + ;
+#pragma link C++ class Hal::CorrFit1DCFCumacStrong + ;
 
 
 #pragma link C++ class Hal::CorrFitParamsSetup + ;

@@ -25,6 +25,9 @@ namespace Hal {
     fZ = z;
     return Integr();
   }
+
+  Double_t CorrFit1DCFCumac::F(Double_t d, Double_t r0) const { return 1.0 - d / (2.0 * fPis * r0); }
+
   Double_t CorrFit1DCFCumac::F2(Double_t z) const { return (1.0 - TMath::Exp(-z * z)) / z; }
 
   Double_t CorrFit1DCFCumac::Ff1(Double_t x) const { return TMath::Exp(x * x - fZ * fZ) / fZ; }
@@ -495,8 +498,6 @@ namespace Hal {
     FixParameter(QuartetEffectiveRadiusID(), 3.22);
   }
 
-  Double_t CorrFit1DCFCumacDLam::F(Double_t d, Double_t r0) const { return 1.0 - d / (2.0 * fPis * r0); }
-
 
   Double_t CorrFit1DCFCumac::Get(Double_t q, Double_t r) {
     Double_t val[1];
@@ -507,5 +508,51 @@ namespace Hal {
     FixParameter(RadiusID(), r);
     return CalculateCF(val, params);
   }
+
+  Double_t CorrFit1DCFCumacStrong::CalculateCF(const Double_t* x, const Double_t* params) const {
+    Double_t ak = 0;
+    switch (fKinematics) {
+      case Femto::EKinematics::kPRF: ak = x[0]; break;
+      case Femto::EKinematics::kLCMS: ak = x[0] * 0.5; break;
+      default: ak = 0.0; break;
+    }
+    Double_t r0    = Femto::FmToGeV(params[RadiusID()]);
+    Double_t q     = 2.0 * ak;
+    auto component = [&](double f0, double d0) {
+      f0 = Femto::FmToGeV(f0);
+      d0 = Femto::FmToGeV(d0);
+      // TComplex tmp = TComplex(d0 * ak * ak * 0.5, -ak) - 1.0 / f0;  // https://arxiv.org/pdf/2005.05012
+      TComplex tmp = TComplex(d0 * ak * ak * 0.5, -ak) + 1.0 / f0;  // Yu Hu
+      auto fk      = TComplex(1.0, 0) / tmp;
+      return (fk * fk).Rho() * F(d0, r0) / (2.0 * r0 * r0) + 2.0 * fk.Re() / (fPis * r0) * F1(q * r0) - fk.Im() / r0 * F2(q * r0);
+    };
+    double cf = 0;
+    for (int iSpin = 0; iSpin < fSpinStates; iSpin++) {
+      cf += params[SpinWeightID(iSpin)] * component(params[F0ID(iSpin)], params[D0ID(iSpin)]);
+    }
+    return params[NormID()] * (1.0 + params[LambdaID()] * cf);
+  }
+
+  CorrFit1DCFCumacStrong::CorrFit1DCFCumacStrong(Int_t spinStates) :
+    CorrFit1DCFCumac(3 + spinStates * 3), fSpinStates(spinStates) {
+    fNormParIndex   = 0;
+    fLambdaParIndex = 1;
+    fRinvParIndex   = 2;
+    SetParameterName(LambdaID(), "#lambda");
+    SetParameterName(NormID(), "N");
+    SetParameterName(RadiusID(), "R");
+    int start_par = 3;
+    for (int i = 0; i < fSpinStates; i++) {
+      SetParameterName(start_par++, Form("f0_%i", i));
+      SetParameterName(start_par++, Form("d0_%i", i));
+      SetParameterName(start_par++, Form("frac_%i", i));
+    }
+  }
+
+  Int_t CorrFit1DCFCumacStrong::SpinWeightID(Int_t spin) const { return 3 + spin * 3 + 2; }
+
+  Int_t CorrFit1DCFCumacStrong::D0ID(Int_t spin) const { return 3 + spin * 3 + 1; }
+
+  Int_t CorrFit1DCFCumacStrong::F0ID(Int_t spin) const { return 3 + spin * 3; }
 
 }  // namespace Hal

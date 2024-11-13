@@ -30,11 +30,10 @@ namespace Hal {
 
   private:
     Double_t EvalDenominator(Double_t x) const;
-    Int_t fRinvParIndex   = {1};
-    Int_t fLambdaParIndex = {2};
-
 
   protected:
+    Int_t fRinvParIndex   = {1};
+    Int_t fLambdaParIndex = {2};
     /**
      * pointer of acutally calculated bin during chi-square computation
      */

@@ -32,7 +32,7 @@ namespace HalOTF {
   class Reader : public Hal::Reader {
   protected:
     enum class ETranslate { kNone, kMc, kReco, kComplex };
-    ETranslate fTranslate = {ETranslate::kNone};
+    ETranslate fTranslate = {ETranslate::kComplex};
     OTF::McEvent* fMcEvent;
     OTF::RecoEvent* fRecoEvent;
     HalOTF::ComplexEvent* fHalComplexEvent   = {nullptr};

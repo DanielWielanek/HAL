@@ -392,8 +392,12 @@ namespace Hal {
         min->SetLimitedVariable(i, name, 0.5 * (lower + upper), (upper - lower), lower, upper);
       }
     }
-    MinimizerStepConf conf(fDiscretteMinimzerConf, fFitOrder);
-    min->SetParamConf(conf, false);
+    if (fDiscretteMinimzerConf.GetNParams() != 0) {
+      MinimizerStepConf conf(fDiscretteMinimzerConf, fFitOrder);
+      min->SetParamConf(conf, false);
+    } else {
+      HalCoutDebug("Wrong discrete conf ,using default");
+    }
   }
 
   void CorrFitFunc::Fit(TObject* histo) {
@@ -621,8 +625,8 @@ namespace Hal {
   ROOT::Math::Minimizer* CorrFitFunc::GetMinimizer2(EMinAlgo algo) const {
     auto algos = AlgoToOptions(fMinAlgo);
     if (algos.size() <= 3) return nullptr;
-    TString pat1 = algos[2];
-    TString pat2 = algos[3];
+    TString pat1               = algos[2];
+    TString pat2               = algos[3];
     ROOT::Math::Minimizer* min = nullptr;
     if (pat1.EqualTo("HalMinimizer")) {
       Hal::Cout::PrintInfo("You should not use hal minimizer as second minimizer", EInfo::kWarning);

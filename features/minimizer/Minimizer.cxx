@@ -28,6 +28,7 @@ namespace Hal {
     fNCalls(0),
     fDiscreteFit(kFALSE),
     fTrace(kFALSE),
+    fMapSet(kFALSE),
     fGlobMin(1.),
     fNDF(0),
     fQuantumFits(nullptr),
@@ -64,6 +65,7 @@ namespace Hal {
     fParameters[ivar].SetRange(lower, upper);
     fParameters[ivar].SetStartVal(val);
     fParameters[ivar].SetMapRange(lower, upper, TMath::Nint((upper - lower) / step + 1));
+    if (!IsMapSet()) fParameters[ivar].SetMapRange(lower, upper, TMath::Nint((upper - lower) / step + 1));
     fParameters[ivar].SetIsFixed(kFALSE);
     return false;
   }
@@ -96,6 +98,7 @@ namespace Hal {
     std::cout << Cout::GetDisableColor();
     for (unsigned int i = 0; i < fParameters.size(); i++) {
       if (fParameters[i].IsFixed()) { std::cout << Cout::GetColor(kOrange); }
+      fParameters[i].Print();
       Cout::Database({fParameters[i].GetParName().Data(),
                       Form("%4.4f", fParameters[i].GetMapMin()),
                       Form("%4.4f", fParameters[i].GetMapMax()),
@@ -147,7 +150,13 @@ namespace Hal {
     }
   }
 
-  void Minimizer::Reset() { fParameters.clear(); }
+  void Minimizer::Reset() {
+    fParameters.clear();
+    if (fMapSet) {
+      Hal::Cout::PrintInfo("Hal::Minimizer Reset", EInfo::kLowWarning);
+      fMapSet = kFALSE;
+    }
+  }
 
 
   // minimize methods
@@ -188,7 +197,10 @@ namespace Hal {
     fFunc = const_cast<ROOT::Math::IMultiGenFunction*>(&func);
   }
 
-  void Minimizer::SetParamConf(const MinimizerStepConf& conf, Bool_t overwrite) { conf.SetParameters(fParameters, overwrite); }
+  void Minimizer::SetParamConf(const MinimizerStepConf& conf, Bool_t overwrite) {
+    conf.SetParameters(fParameters, overwrite);
+    fMapSet = kTRUE;
+  }
 
   Minimizer::~Minimizer() {
     if (fQuantumFits) {

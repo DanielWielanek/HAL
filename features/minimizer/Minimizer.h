@@ -75,6 +75,7 @@ namespace Hal {
     Int_t fFreePars = {0};
     Bool_t fDiscreteFit;
     Bool_t fTrace;
+    Bool_t fMapSet;
     Double_t fGlobMin;
     Double_t fNDF;
     double* fQuantumFits;  //[fNo]
@@ -99,6 +100,7 @@ namespace Hal {
 
   public:
     Minimizer();
+    Bool_t IsMapSet() const { return fMapSet; }
     void SetNDF(Double_t ndf) { fNDF = ndf; }
     void SetTrace(Bool_t trace) { fTrace = trace; };
     /**
@@ -135,6 +137,7 @@ namespace Hal {
      * @param points - number of points on map
      * @param lower lower limite of value
      * @param upper upper limit of variable
+     * note this field is ignored is map was set
      * @return
      */
     virtual bool

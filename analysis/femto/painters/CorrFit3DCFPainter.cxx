@@ -162,17 +162,27 @@ namespace Hal {
       return;
     }
     LockPad();
-    int count      = 1;
-    auto painter3d = (Femto3DCFPainter*) fCF->GetPainter();
-    std::pair<Double_t, Double_t> range;
-    if (painter3d) { range = painter3d->GetMinMax(); }
-    for (auto padfunc : fFunctions) {
-      GotoPad(count++);
-      for (auto func : padfunc) {
-        if (func) {
-          func->SetMinimum(range.first);
-          func->SetMaximum(range.second);
-          func->Draw(fDefFuncDrawOpt);
+    int count = 1;
+    if (CheckOpt(kTH1Draw)) {
+      for (auto padfunc : fPSeudoFunctions) {
+        GotoPad(count++);
+        for (auto func : padfunc) {
+          if (func) { func->Draw(fDefFuncDrawOpt); }
+        }
+      }
+
+    } else {
+      auto painter3d = (Femto3DCFPainter*) fCF->GetPainter();
+      std::pair<Double_t, Double_t> range;
+      if (painter3d) { range = painter3d->GetMinMax(); }
+      for (auto padfunc : fFunctions) {
+        GotoPad(count++);
+        for (auto func : padfunc) {
+          if (func) {
+            func->SetMinimum(range.first);
+            func->SetMaximum(range.second);
+            func->Draw(fDefFuncDrawOpt);
+          }
         }
       }
     }

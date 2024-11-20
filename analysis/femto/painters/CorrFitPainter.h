@@ -19,6 +19,7 @@
 
 #include "Painter.h"
 
+class TH1D;
 class TLegend;
 class TVirtualPad;
 namespace Hal {
@@ -38,18 +39,21 @@ namespace Hal {
     TString fDefFuncDrawOpt            = "SAME";
     std::array<Double_t, 4> fLegendPos = {0.7, 0.95, 0.7, 0.95};
     std::vector<TLegendEntry*> fLegendEntries;
-    static const int kAutoNormBit, kLegendBit, kChi2, kChi2Short;
+    static const int kAutoNormBit, kLegendBit, kChi2, kChi2Short, kTH1Draw, kTH1DrawSmooth;
     /**
      *
      * @param opt, for this class additional options are available:
      * - "chi2" - draw chi2 on legend (including total value of chi2 and NDF)
      * - "chi2s " - draw chi2 on legend
      * - "legend" - draw legend
+     * - "th1" - use TH1 instead of TF1 for drawing
+     * - "th1c" - same as th1 but uses "same+c" for drawing CF's
      * @param prev
      * @return
      */
     virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0);
     std::vector<std::vector<TF1*>> fFunctions;
+    std::vector<std::vector<TH1*>> fPSeudoFunctions;
     CorrFitFunc* fFittedFunc   = {nullptr};  //!
     FemtoCFPainter* fCFPainter = {nullptr};
 
@@ -62,6 +66,7 @@ namespace Hal {
     virtual void MakeLegend();
     virtual void UpdateLegend();
     void DeleteFunctions();
+    void MakeFakeFuncs();
     std::vector<TString> GetLegendLabels() const;
     ULong64_t PrepBitTemplate(std::initializer_list<int> temps) const;
     /**

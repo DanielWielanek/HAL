@@ -17,6 +17,7 @@
 #include "CorrFit.h"
 #include "CorrFit1DCF.h"
 #include "CorrFitFunc.h"
+#include "Cout.h"
 #include "Femto1DCF.h"
 #include "Femto1DCFPainter.h"
 #include "Painter.h"

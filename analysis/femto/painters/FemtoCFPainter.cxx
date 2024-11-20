@@ -7,12 +7,14 @@
 
 #include "FemtoCFPainter.h"
 
+#include "Cout.h"
 #include "Std.h"
 
 #include <iostream>
 
 #include <TCanvas.h>
 #include <TH1.h>
+#include <TH2.h>
 
 namespace Hal {
   const int FemtoCFPainter::kNumBit     = 8;
@@ -137,6 +139,28 @@ namespace Hal {
     if (!h) return res;
     res.first  = h->GetMinimum();
     res.second = h->GetMaximum();
+    return res;
+  }
+
+  std::vector<std::vector<TH1*>> FemtoCFPainter::GetFakeDrawFuncs() const {
+    std::vector<std::vector<TH1*>> res;
+    int counter = 0;
+    for (auto i : fHistograms) {
+      std::vector<TH1*> row;
+      for (auto h : i) {
+        Int_t binx, biny;
+        Double_t minx, miny, maxx, maxy;
+        if (h->InheritsFrom("TH2")) {
+          Hal::Std::GetAxisPar(*h, binx, minx, maxx, "x");
+          Hal::Std::GetAxisPar(*h, biny, miny, maxy, "y");
+          row.push_back(new TH2D(Form("func_%i", counter++), "", binx, minx, maxx, biny, miny, maxy));
+        } else {
+          Hal::Std::GetAxisPar(*h, binx, minx, maxx, "x");
+          row.push_back(new TH1D(Form("func_%i", counter++), "", binx, minx, maxx));
+        }
+      }
+      res.push_back(row);
+    }
     return res;
   }
 

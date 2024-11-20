@@ -50,6 +50,11 @@ namespace Hal {
     Bool_t AreSimiliar(ULong64_t current, ULong64_t pattern) const;
     virtual void InnerPaint();
     virtual void InnerRepaint();
+    /**
+     *
+     * @return fake histograms used instead of TF1 if "th1" options is called
+     */
+    virtual std::vector<std::vector<TH1*>> GetFakeDrawFuncs() const;
 
   public:
     FemtoCFPainter() {}

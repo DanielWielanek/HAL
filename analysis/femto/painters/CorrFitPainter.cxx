@@ -7,6 +7,7 @@
 
 #include "CorrFitPainter.h"
 
+#include <TH2D.h>
 #include <TLegend.h>
 #include <TVirtualPad.h>
 
@@ -18,10 +19,12 @@
 #include "StdString.h"
 
 namespace Hal {
-  const int CorrFitPainter::kAutoNormBit = 8;
-  const int CorrFitPainter::kLegendBit   = 9;
-  const int CorrFitPainter::kChi2        = 10;
-  const int CorrFitPainter::kChi2Short   = 11;
+  const int CorrFitPainter::kAutoNormBit   = 8;
+  const int CorrFitPainter::kLegendBit     = 9;
+  const int CorrFitPainter::kChi2          = 10;
+  const int CorrFitPainter::kChi2Short     = 11;
+  const int CorrFitPainter::kTH1Draw       = 12;
+  const int CorrFitPainter::kTH1DrawSmooth = 13;
   CorrFitPainter::CorrFitPainter(CorrFitFunc* func) : Painter(), fFittedFunc(func) {
     fNormIndex = fFittedFunc->GetParameterIndex("N");
   }
@@ -33,6 +36,48 @@ namespace Hal {
         if (y) { y->FixParameter(y->GetNpar() - 1, flag); }
       }
     }
+    if (fPSeudoFunctions.size()) {
+      Int_t dim = 1;
+      if (fPSeudoFunctions[0].size())
+        if (fPSeudoFunctions[0][0]->InheritsFrom("TF2")) dim = 2;
+
+      for (unsigned int i = 0; i < fPSeudoFunctions.size(); i++) {
+        for (unsigned int j = 0; j < fPSeudoFunctions[i].size(); j++) {
+          auto histo = fPSeudoFunctions[i][j];
+          TF1* func  = nullptr;
+          if (fFunctions.size() > i) {
+            if (fFunctions[i].size() > j) func = fFunctions[i][j];
+          }
+          if (!func) {  // this might happen for sh opition
+            if (dim == 1)
+              for (int k = 1; k <= histo->GetNbinsX(); k++) {
+                histo->SetBinContent(k, -1E+9);
+              }
+            continue;
+          }
+          histo->SetLineColor(func->GetLineColor());
+          histo->SetLineStyle(func->GetLineStyle());
+          histo->SetLineWidth(func->GetLineWidth());
+          if (dim == 2) {  // oops it's  2d func
+            auto th2d = (TH2D*) histo;
+            for (int k = 1; k <= th2d->GetNbinsX(); k++) {
+              double x = histo->GetXaxis()->GetBinCenter(k);
+              for (int l = 1; l <= th2d->GetNbinsY(); l++) {
+                double y = histo->GetYaxis()->GetBinCenter(l);
+                double z = func->Eval(x, y);
+                histo->SetBinContent(k, l, z);
+              }
+            }
+          } else {
+            for (int k = 1; k <= histo->GetNbinsX(); k++) {
+              double x = histo->GetXaxis()->GetBinCenter(k);
+              double y = func->Eval(x);
+              histo->SetBinContent(k, y);
+            }
+          }
+        }
+      }
+    }
   }
 
   void CorrFitPainter::DeleteFunctions() {
@@ -40,7 +85,12 @@ namespace Hal {
       for (auto y : x)
         if (y) delete y;
     }
+    for (auto x : fPSeudoFunctions) {
+      for (auto y : x)
+        if (y) delete y;
+    }
     fFunctions.clear();
+    fPSeudoFunctions.clear();
   }
 
   void CorrFitPainter::MakeLegend() {
@@ -67,11 +117,17 @@ namespace Hal {
     fLegendPad->Update();
   }
 
+  void CorrFitPainter::MakeFakeFuncs() {
+    if (!CheckOpt(kTH1Draw)) return;
+    if (fCFPainter) { fPSeudoFunctions = fCFPainter->GetFakeDrawFuncs(); }
+  }
+
   CorrFitPainter::~CorrFitPainter() { DeleteFunctions(); }
 
   void CorrFitPainter::InnerPaint() {
     DeleteFunctions();
     MakeFunctions();
+    MakeFakeFuncs();
     UpdateParameters();
     ScaleFunctions();
     ScaleHistograms();
@@ -98,10 +154,19 @@ namespace Hal {
   void CorrFitPainter::DrawFunctions() {
     LockPad();
     int count = 1;
-    for (auto padfunc : fFunctions) {
-      GotoPad(count++);
-      for (auto func : padfunc) {
-        if (func) { func->Draw(fDefFuncDrawOpt); }
+    if (CheckOpt(kTH1Draw)) {
+      for (auto padfunc : fPSeudoFunctions) {
+        GotoPad(count++);
+        for (auto func : padfunc) {
+          if (func) { func->Draw(fDefFuncDrawOpt); }
+        }
+      }
+    } else {
+      for (auto padfunc : fFunctions) {
+        GotoPad(count++);
+        for (auto func : padfunc) {
+          if (func) { func->Draw(fDefFuncDrawOpt); }
+        }
       }
     }
     UnlockPad();
@@ -127,6 +192,12 @@ namespace Hal {
       SETBIT(newFlag, kChi2);
       SETBIT(newFlag, kChi2Short);
     }
+    if (Hal::Std::FindParam(opt, "th1c", kTRUE)) {
+      SETBIT(newFlag, kTH1DrawSmooth);
+      SETBIT(newFlag, kTH1Draw);
+      fDefFuncDrawOpt = "SAME+C";
+    }
+    if (Hal::Std::FindParam(opt, "th1", kTRUE)) SETBIT(newFlag, kTH1Draw);
     if (Hal::Std::FindParam(opt, "legend", kTRUE)) {
       SETBIT(newFlag, kLegendBit);
       auto bra = Hal::Std::FindBrackets(opt, kTRUE, kTRUE);

@@ -98,7 +98,6 @@ namespace Hal {
     std::cout << Cout::GetDisableColor();
     for (unsigned int i = 0; i < fParameters.size(); i++) {
       if (fParameters[i].IsFixed()) { std::cout << Cout::GetColor(kOrange); }
-      fParameters[i].Print();
       Cout::Database({fParameters[i].GetParName().Data(),
                       Form("%4.4f", fParameters[i].GetMapMin()),
                       Form("%4.4f", fParameters[i].GetMapMax()),

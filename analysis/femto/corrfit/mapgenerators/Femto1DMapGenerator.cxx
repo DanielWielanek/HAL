@@ -88,6 +88,13 @@ namespace Hal {
       }
     }
   }
+  void Femto1DMapGenerator::SetRBinsStep(Int_t steps, Double_t min, Double_t step) {
+    fRBins = steps;
+    fRadiiBins.MakeBigger(steps);
+    for (int i = 0; i < steps; i++) {
+      fRadiiBins[i] + step*(double(i));
+    }
+  }
 
   void Femto1DMapGenerator::SetGenerator(FemtoFreezoutGenerator& gen) {
     if (fGenerator) delete fGenerator;
@@ -133,4 +140,6 @@ namespace Hal {
     if (fWeight) delete fWeight;
     if (fMap) delete fMap;
   }
+
+
 }  // namespace Hal

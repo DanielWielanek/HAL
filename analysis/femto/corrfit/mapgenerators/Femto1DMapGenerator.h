@@ -63,6 +63,13 @@ namespace Hal {
      */
     void SetRBins(Int_t bins, Double_t rmin, Double_t rmax, Bool_t center = kFALSE);
     /**
+     * another method for set Rbins
+     * @param steps number of steps
+     * @param min step number
+     * @param step step
+     */
+    void SetRBinsStep(Int_t steps, Double_t min, Double_t step);
+    /**
      * set source generator algorithm
      * @param gen
      */

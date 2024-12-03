@@ -24,6 +24,8 @@ namespace Hal {
   const unsigned short int PadStyle::kGridx        = 7;
   const unsigned short int PadStyle::kGridy        = 8;
   const unsigned short int PadStyle::kGridz        = 9;
+  const unsigned short int PadStyle::kTickX        = 10;
+  const unsigned short int PadStyle::kTickY        = 11;
 
   PadStyle::PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2) {
     SetLeftMargin(x1);
@@ -52,6 +54,10 @@ namespace Hal {
 
   void PadStyle::SetGridz(Int_t val) { SetI(kGridz, val); }
 
+  void PadStyle::SetTickx(Int_t val) { SetI(kTickX, val); }
+
+  void PadStyle::SetTicky(Int_t val) { SetI(kTickY, val); }
+
   Float_t PadStyle::GetBottomMargin() const { return GetF(kBottomMargin); }
 
   Float_t PadStyle::GetLeftMargin() const { return GetF(kLeftMargin); }
@@ -72,6 +78,10 @@ namespace Hal {
 
   Int_t PadStyle::GetGridz(Int_t val) const { return GetI(kGridz); }
 
+  Int_t PadStyle::GetTickx(Int_t val) const { return GetI(kTickX); }
+
+  Int_t PadStyle::GetTicky(Int_t val) const { return GetI(kTickY); }
+
   PadStyle::PadStyle() {}
 
   void PadStyle::Apply(TVirtualPad* obj) {
@@ -85,6 +95,8 @@ namespace Hal {
     if (Find(kLogz)) obj->SetLogz(GetI(kLogz));
     if (Find(kGridx)) obj->SetGridx(GetI(kGridx));
     if (Find(kGridy)) obj->SetGridy(GetI(kGridy));
+    if (Find(kTickX)) obj->SetTickx(GetI(kGridx));
+    if (Find(kTickY)) obj->SetTicky(GetI(kGridy));
   }
 
   void PadStyle::ExportToXML(XMLNode* node) const {
@@ -99,6 +111,8 @@ namespace Hal {
     if (Find(kGridx)) node->AddAttrib(new Hal::XMLAttrib("Gridx", Form("%i", GetI(kGridx))));
     if (Find(kGridy)) node->AddAttrib(new Hal::XMLAttrib("Gridy", Form("%i", GetI(kGridy))));
     if (Find(kGridz)) node->AddAttrib(new Hal::XMLAttrib("Gridz", Form("%i", GetI(kGridz))));
+    if (Find(kTickX)) node->AddAttrib(new Hal::XMLAttrib("Tickx", Form("%i", GetI(kTickX))));
+    if (Find(kTickY)) node->AddAttrib(new Hal::XMLAttrib("Ticky", Form("%i", GetI(kTickY))));
   }
 
   void PadStyle::ImportFromXML(XMLNode* node) {
@@ -143,5 +157,28 @@ namespace Hal {
       int x = atr->GetValue().Atoi();
       SetGridz(x);
     }
+    if (auto atr = node->GetAttrib("Tickx")) {
+      int x = atr->GetValue().Atoi();
+      SetTickx(x);
+    }
+    if (auto atr = node->GetAttrib("Ticky")) {
+      int x = atr->GetValue().Atoi();
+      SetTicky(x);
+    }
   }
+
+  void PadStyle::Import(TVirtualPad& pad) {
+    SetLeftMargin(pad.GetLeftMargin());
+    SetRightMargin(pad.GetRightMargin());
+    SetBottomMargin(pad.GetBottomMargin());
+    SetTopMargin(pad.GetTopMargin());
+    SetGridx(pad.GetGridx());
+    SetGridy(pad.GetGridy());
+    SetLogx(pad.GetLogx());
+    SetLogy(pad.GetLogy());
+    SetLogz(pad.GetLogz());
+    SetTickx(pad.GetTickx());
+    SetTicky(pad.GetTicky());
+  }
+
 } /* namespace Hal */

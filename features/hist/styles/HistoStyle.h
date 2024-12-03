@@ -138,6 +138,7 @@ namespace Hal {
     TString GetTitle() const { return fTitle; };
     void ExportToXML(XMLNode* node) const;
     void ImportFromXML(XMLNode* node);
+    void Import(const TObject& obj);
     virtual ~HistoStyle() {};
     ClassDef(HistoStyle, 1);
   };

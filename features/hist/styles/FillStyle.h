@@ -37,6 +37,9 @@ namespace Hal {
     template<class T>
     void Apply(T& x) const;
 
+    template<class T>
+    void Import(const T& x);
+
     virtual ~FillStyle() {};
     ClassDef(FillStyle, 1);
   };
@@ -47,6 +50,12 @@ template<class T>
 inline void Hal::FillStyle::Apply(T& x) const {
   if (Find(kColor)) x.SetFillColor(GetI(kColor));
   if (Find(kStyle)) x.SetFillStyle(GetI(kStyle));
+}
+
+template<class T>
+inline void Hal::FillStyle::Import(const T& x) {
+  SetColor(x.GetFillColor());
+  SetStyle(x.GetFillStyle());
 }
 
 #endif /* HAL_FEATURES_HIST_STYLES_FILLSTYLE_H_ */

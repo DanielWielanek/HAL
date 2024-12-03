@@ -33,6 +33,14 @@ namespace Hal {
     static const unsigned short int kTitle;
     static const unsigned short int kRangeMin;
     static const unsigned short int kRangeMax;
+    static const unsigned short int kTicksOpt;
+    static const unsigned short int kMoreLog;
+
+    static const unsigned short int kRotatedTitle;
+    static const unsigned short int kFontStyleLabel;
+    static const unsigned short int kDecimal;
+    static const unsigned short int kNoExp;
+
     AxisStyle();
 
     AxisStyle(Double_t titleSize, Double_t labelSize, Double_t titleOffset, Double_t labelOffset);
@@ -47,7 +55,7 @@ namespace Hal {
 
     void SetTickLength(Float_t val);
 
-    void SetNdivisions(Int_t val);
+    void SetNdivisions(Int_t val, Bool_t optim);
 
     void SetAxisColor(Int_t val);
 
@@ -62,6 +70,18 @@ namespace Hal {
     void SetTitle(TString val);
 
     void SetRangeUser(Float_t min, Float_t max);
+
+    void SetTicks(TString opt);
+
+    void SetMoreLogLabels(Bool_t val = kTRUE);
+
+    void SetLabelFont(Int_t font);
+
+    void SetRotateTitle(Bool_t rot);
+
+    void SetNoExponent(Bool_t rot);
+
+    void SetDecimals(Bool_t opt);
 
     Float_t GetTitleOffset() const;
 
@@ -85,6 +105,20 @@ namespace Hal {
 
     Int_t GetCenterTitle() const;
 
+    Int_t GetLabelFont() const;
+
+    Bool_t GetRotatedTitle() const;
+
+    Bool_t GetDecimal() const;
+
+    Bool_t GetMoreLogLabels() const;
+
+    Bool_t GetNoExponent() const;
+
+    Bool_t NDivisionsOptimized() const;
+
+    TString GetTicks() const;
+
     TString GetTitle() const { return fTitle; };
 
     void ExportToXML(XMLNode* node) const;
@@ -92,6 +126,8 @@ namespace Hal {
     void ImportFromXML(XMLNode* node);
 
     void Apply(TAxis& x) const;
+
+    void Import(const TAxis& x);
 
     virtual ~AxisStyle() {};
     ClassDef(AxisStyle, 1);

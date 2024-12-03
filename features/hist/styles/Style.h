@@ -35,6 +35,7 @@ namespace Hal {
     union value {
       Float_t sFval;
       Int_t sIval;
+      value() : sIval(0) {};
     };
     std::array<Hal::Style::value, 64> fValues;
     ULong64_t fFlags = {0};

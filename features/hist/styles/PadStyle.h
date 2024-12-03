@@ -29,6 +29,8 @@ namespace Hal {
     static const unsigned short int kGridx;
     static const unsigned short int kGridy;
     static const unsigned short int kGridz;
+    static const unsigned short int kTickX;
+    static const unsigned short int kTickY;
 
     PadStyle();
     PadStyle(const PadStyle& other) = default;
@@ -56,6 +58,10 @@ namespace Hal {
 
     void SetGridz(Int_t val);
 
+    void SetTickx(Int_t val);
+
+    void SetTicky(Int_t val);
+
     Float_t GetBottomMargin() const;
 
     Float_t GetLeftMargin() const;
@@ -76,8 +82,13 @@ namespace Hal {
 
     Int_t GetGridz(Int_t val) const;
 
+    Int_t GetTickx(Int_t val) const;
+
+    Int_t GetTicky(Int_t val) const;
+
     void ExportToXML(XMLNode* node) const;
     void ImportFromXML(XMLNode* node);
+    void Import(TVirtualPad& pad);
     void Apply(TVirtualPad* pad = nullptr);
     virtual ~PadStyle() {}
     ClassDef(PadStyle, 1);

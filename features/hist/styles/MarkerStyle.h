@@ -48,6 +48,9 @@ namespace Hal {
     template<class T>
     void Apply(T& obj) const;
 
+    template<class T>
+    void Import(const T& obj);
+
     virtual ~MarkerStyle() {};
     ClassDef(MarkerStyle, 1)
   };
@@ -60,6 +63,13 @@ inline void Hal::MarkerStyle::Apply(T& obj) const {
   if (Find(kSize)) obj.SetMarkerSize(GetI(kSize));
   // if (Find(kLineWidth)) obj.SetMarkerLineWidth(GetI(kLineWidth));
   if (Find(kStyle)) obj.SetMarkerStyle(GetI(kStyle));
+}
+
+template<class T>
+inline void Hal::MarkerStyle::Import(const T& obj) {
+  SetColor(obj.GetMarkerColor());
+  SetSize(obj.GetMarkerSize());
+  SetStyle(obj.GetMarkerStyle());
 }
 
 #endif /* HAL_FEATURES_HIST_STYLES_MARKERSTYLE_H_ */

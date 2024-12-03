@@ -200,4 +200,17 @@ namespace Hal {
     if (auto line = node->GetChild("Line")) { fLine.ImportFromXML(line); }
   }
 
+  void HistoStyle::Import(const TObject& obj) {
+    if (obj.InheritsFrom("TH1")) {
+      auto histo = static_cast<const TH1D&>(obj);
+      fTitle     = histo.GetTitle();
+      fXAxis.Import(*histo.GetXaxis());
+      fYAxis.Import(*histo.GetYaxis());
+      if (histo.GetZaxis()) { fZAxis.Import(*histo.GetZaxis()); }
+      fMarker.Import(histo);
+      fLine.Import(histo);
+      fFill.Import(histo);
+    }
+  }
+
 } /* namespace Hal */

@@ -25,11 +25,13 @@
 
 namespace Hal {
   void Style::SetF(Int_t bit, Float_t val) {
+    if (bit < 0 || bit > 63) return;
     fValues[bit].sFval = val;
     SETBIT(fFlags, bit);
   }
 
   void Style::SetI(Int_t bit, Int_t val) {
+    if (bit < 0 || bit > 63) return;
     fValues[bit].sIval = val;
     SETBIT(fFlags, bit);
   }

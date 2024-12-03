@@ -39,9 +39,12 @@ namespace Hal {
 
     void ImportFromXML(XMLNode* node);
 
+
     template<class T>
     void Apply(T& obj) const;
 
+    template<class T>
+    void Import(const T& obj);
     virtual ~LineStyle() {};
     ClassDef(LineStyle, 1);
   };
@@ -53,6 +56,12 @@ inline void Hal::LineStyle::Apply(T& obj) const {
   if (Find(kWidth)) obj.SetLineWidth(GetI(kWidth));
   if (Find(kColor)) obj.SetLineColor(GetI(kColor));
   if (Find(kStyle)) obj.SetLineStyle(GetI(kStyle));
+}
+template<class T>
+inline void Hal::LineStyle::Import(const T& obj) {
+  SetWidth(obj.GetLineWidth());
+  SetColor(obj.GetLineColor());
+  SetStyle(obj.GetLineStyle());
 }
 
 #endif /* HAL_FEATURES_HIST_STYLES_LINESTYLE_H_ */

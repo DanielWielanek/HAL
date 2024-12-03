@@ -54,6 +54,7 @@
 // EventCut
 #pragma link C++ class Hal::EventMultiplicityCut + ;
 #pragma link C++ class Hal::EventMultiChargedCut + ;
+#pragma link C++ class Hal::EventTotalTrackNoCut + ;
 #pragma link C++ class Hal::EventMultiplicityZVertexCut + ;
 #pragma link C++ class Hal::EventModuloCut + ;
 #pragma link C++ class Hal::EventPtMaxCut + ;

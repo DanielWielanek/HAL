@@ -26,6 +26,7 @@ namespace Hal {
   HistogramAxisConf::HistogramAxisConf(TString title, Int_t bins, Double_t min, Double_t max) :
     TNamed(), fBins(bins), fMin(min), fMax(max) {
     SetName(title);
+    SetTitle(title);
   }
 
   void HistogramAxisConf::Print(Option_t* /*option*/) const {
@@ -75,16 +76,16 @@ namespace Hal {
   }
 
   template<class T>
-  void HistogramManager_1_1D<T>::Init(Int_t size, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
+  void HistogramManager_1_1D<T>::Init(Int_t size, const std::vector<HistogramAxisConf>& axisconf, TString title, Bool_t Sumw) {
     fSize     = size;
     fAxisNo   = 1;
     fArray    = new T*[size];
     fComments = new TString[size];
     title     = title + "[%i]";
     for (int i = 0; i < fSize; i++) {
-      fArray[i] = new T(Form(title, i), Form(title, i), axisconf[0]->GetNBins(), axisconf[0]->GetMin(), axisconf[0]->GetMax());
-      fArray[i]->GetXaxis()->SetTitle(axisconf[0]->GetTitle());
-      fArray[i]->GetYaxis()->SetTitle(axisconf[1]->GetTitle());
+      fArray[i] = new T(Form(title, i), Form(title, i), axisconf[0].GetNBins(), axisconf[0].GetMin(), axisconf[0].GetMax());
+      fArray[i]->GetXaxis()->SetTitle(axisconf[0].GetTitle());
+      fArray[i]->GetYaxis()->SetTitle(axisconf[1].GetTitle());
       fComments[i] = " ";
       if (Sumw) { fArray[i]->Sumw2(); }
     }
@@ -172,7 +173,7 @@ namespace Hal {
     return *this;
   }
   template<class T>
-  void HistogramManager_1_2D<T>::Init(Int_t size, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
+  void HistogramManager_1_2D<T>::Init(Int_t size, const std::vector<HistogramAxisConf>& axisconf, TString title, Bool_t Sumw) {
     fSize     = size;
     fAxisNo   = 2;
     fArray    = new T*[size];
@@ -181,15 +182,15 @@ namespace Hal {
     for (int i = 0; i < fSize; i++) {
       fArray[i] = new T(Form(title, i),
                         Form(title, i),
-                        axisconf[0]->GetNBins(),
-                        axisconf[0]->GetMin(),
-                        axisconf[0]->GetMax(),
-                        axisconf[1]->GetNBins(),
-                        axisconf[1]->GetMin(),
-                        axisconf[1]->GetMax());
-      fArray[i]->GetXaxis()->SetTitle(axisconf[0]->GetTitle());
-      fArray[i]->GetYaxis()->SetTitle(axisconf[1]->GetTitle());
-      fArray[i]->GetZaxis()->SetTitle(axisconf[2]->GetTitle());
+                        axisconf[0].GetNBins(),
+                        axisconf[0].GetMin(),
+                        axisconf[0].GetMax(),
+                        axisconf[1].GetNBins(),
+                        axisconf[1].GetMin(),
+                        axisconf[1].GetMax());
+      fArray[i]->GetXaxis()->SetTitle(axisconf[0].GetTitle());
+      fArray[i]->GetYaxis()->SetTitle(axisconf[1].GetTitle());
+      fArray[i]->GetZaxis()->SetTitle(axisconf[2].GetTitle());
       if (Sumw) { fArray[i]->Sumw2(); }
       fComments[i] = " ";
     }
@@ -285,7 +286,7 @@ namespace Hal {
   }
 
   template<class T>
-  void HistogramManager_1_3D<T>::Init(Int_t size, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
+  void HistogramManager_1_3D<T>::Init(Int_t size, const std::vector<HistogramAxisConf>& axisconf, TString title, Bool_t Sumw) {
     fSize     = size;
     fAxisNo   = 3;
     fArray    = new T*[size];
@@ -294,18 +295,18 @@ namespace Hal {
     for (int i = 0; i < fSize; i++) {
       fArray[i] = new T(Form(title, i),
                         Form(title, i),
-                        axisconf[0]->GetNBins(),
-                        axisconf[0]->GetMin(),
-                        axisconf[0]->GetMax(),
-                        axisconf[1]->GetNBins(),
-                        axisconf[1]->GetMin(),
-                        axisconf[1]->GetMax(),
-                        axisconf[2]->GetNBins(),
-                        axisconf[2]->GetMin(),
-                        axisconf[2]->GetMax());
-      fArray[i]->GetXaxis()->SetTitle(axisconf[0]->GetTitle());
-      fArray[i]->GetYaxis()->SetTitle(axisconf[1]->GetTitle());
-      fArray[i]->GetZaxis()->SetTitle(axisconf[2]->GetTitle());
+                        axisconf[0].GetNBins(),
+                        axisconf[0].GetMin(),
+                        axisconf[0].GetMax(),
+                        axisconf[1].GetNBins(),
+                        axisconf[1].GetMin(),
+                        axisconf[1].GetMax(),
+                        axisconf[2].GetNBins(),
+                        axisconf[2].GetMin(),
+                        axisconf[2].GetMax());
+      fArray[i]->GetXaxis()->SetTitle(axisconf[0].GetTitle());
+      fArray[i]->GetYaxis()->SetTitle(axisconf[1].GetTitle());
+      fArray[i]->GetZaxis()->SetTitle(axisconf[2].GetTitle());
       fComments[i] = " ";
       if (Sumw) { fArray[i]->Sumw2(); }
     }
@@ -395,7 +396,11 @@ namespace Hal {
   }
 
   template<class T>
-  void HistogramManager_2_1D<T>::Init(Int_t sizeX, Int_t sizeY, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
+  void HistogramManager_2_1D<T>::Init(Int_t sizeX,
+                                      Int_t sizeY,
+                                      const std::vector<HistogramAxisConf>& axisconf,
+                                      TString title,
+                                      Bool_t Sumw) {
     fSize   = sizeX;
     fAxisNo = 2;
     fArray  = new HistogramManager_1_1D<T>[fSize];
@@ -467,7 +472,11 @@ namespace Hal {
   }
 
   template<class T>
-  void HistogramManager_2_2D<T>::Init(Int_t sizeX, Int_t sizeY, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
+  void HistogramManager_2_2D<T>::Init(Int_t sizeX,
+                                      Int_t sizeY,
+                                      const std::vector<HistogramAxisConf>& axisconf,
+                                      TString title,
+                                      Bool_t Sumw) {
     fSize   = sizeX;
     fAxisNo = 2;
     fArray  = new HistogramManager_1_2D<T>[fSize];
@@ -547,7 +556,11 @@ namespace Hal {
   }
 
   template<class T>
-  void HistogramManager_2_3D<T>::Init(Int_t sizeX, Int_t sizeY, HistogramAxisConf** axisconf, TString title, Bool_t Sumw) {
+  void HistogramManager_2_3D<T>::Init(Int_t sizeX,
+                                      Int_t sizeY,
+                                      const std::vector<HistogramAxisConf>& axisconf,
+                                      TString title,
+                                      Bool_t Sumw) {
     fSize   = sizeX;
     fAxisNo = 3;
     fArray  = new HistogramManager_1_3D<T>[fSize];
@@ -633,7 +646,7 @@ namespace Hal {
   void HistogramManager_3_1D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
                                       Int_t sizeZ,
-                                      HistogramAxisConf** axisconf,
+                                      const std::vector<HistogramAxisConf>& axisconf,
                                       TString title,
                                       Bool_t Sumw) {
     fSize   = sizeX;
@@ -713,7 +726,7 @@ namespace Hal {
   void HistogramManager_3_2D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
                                       Int_t sizeZ,
-                                      HistogramAxisConf** axisconf,
+                                      const std::vector<HistogramAxisConf>& axisconf,
                                       TString title,
                                       Bool_t Sumw) {
     fSize   = sizeX;
@@ -801,7 +814,7 @@ namespace Hal {
   void HistogramManager_3_3D<T>::Init(Int_t sizeX,
                                       Int_t sizeY,
                                       Int_t sizeZ,
-                                      HistogramAxisConf** axisconf,
+                                      const std::vector<HistogramAxisConf>& axisconf,
                                       TString title,
                                       Bool_t Sumw) {
     fSize   = sizeX;
@@ -893,7 +906,7 @@ namespace Hal {
                                       Int_t sizeY,
                                       Int_t sizeZ,
                                       Int_t sizeD,
-                                      HistogramAxisConf** axisconf,
+                                      const std::vector<HistogramAxisConf>& axisconf,
                                       TString title,
                                       Bool_t Sumw) {
     fSize   = sizeX;
@@ -982,7 +995,7 @@ namespace Hal {
                                       Int_t sizeY,
                                       Int_t sizeZ,
                                       Int_t sizeD,
-                                      HistogramAxisConf** axisconf,
+                                      const std::vector<HistogramAxisConf>& axisconf,
                                       TString title,
                                       Bool_t Sumw) {
     fSize   = sizeX;
@@ -1074,7 +1087,7 @@ namespace Hal {
                                       Int_t sizeY,
                                       Int_t sizeZ,
                                       Int_t sizeD,
-                                      HistogramAxisConf** axisconf,
+                                      const std::vector<HistogramAxisConf>& axisconf,
                                       TString title,
                                       Bool_t Sumw) {
     fSize   = sizeX;

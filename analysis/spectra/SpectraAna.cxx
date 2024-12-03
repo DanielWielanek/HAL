@@ -13,9 +13,9 @@
 #include "Cut.h"
 #include "CutCollection.h"
 #include "CutContainer.h"
-#include "Std.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Std.h"
 #include "Track.h"
 #include "TrackPdgCut.h"
 
@@ -111,39 +111,33 @@ namespace Hal {
   Task::EInitFlag SpectraAna::Init() {
     Task::EInitFlag stat = TrackAna::Init();
     // initialization of histograms
-    fPtEta                       = new HistogramManager_1_2D<TH2D>();
-    fPtY                         = new HistogramManager_1_2D<TH2D>();
-    fMtEta                       = new HistogramManager_1_2D<TH2D>();
-    fMtY                         = new HistogramManager_1_2D<TH2D>();
-    HistogramAxisConf** axisConf = new HistogramAxisConf*[3];
-    HistogramAxisConf* pt_axis   = new HistogramAxisConf("p_{T} [GeV/c]", fPtBins, fPtMin, fPtMax);
-    HistogramAxisConf* mt_axis   = new HistogramAxisConf("m_{T} [GeV/c]", fMtBins, fMtMin, fMtMax);
-    HistogramAxisConf* eta_axis  = new HistogramAxisConf("#eta", fEtaBins, fEtaMin, fEtaMax);
-    HistogramAxisConf* y_axis    = new HistogramAxisConf("y", fYBins, fYMin, fYMax);
-    HistogramAxisConf* z_axis    = new HistogramAxisConf("dummy", 0, 0, 0);
-    axisConf[2]                  = z_axis;
-    z_axis->SetTitle("dN/dP_{T}d#eta");
+    fPtEta = new HistogramManager_1_2D<TH2D>();
+    fPtY   = new HistogramManager_1_2D<TH2D>();
+    fMtEta = new HistogramManager_1_2D<TH2D>();
+    fMtY   = new HistogramManager_1_2D<TH2D>();
+    std::vector<HistogramAxisConf> axisConf(3);
+    HistogramAxisConf pt_axis("p_{T} [GeV/c]", fPtBins, fPtMin, fPtMax);
+    HistogramAxisConf mt_axis("m_{T} [GeV/c]", fMtBins, fMtMin, fMtMax);
+    HistogramAxisConf eta_axis("#eta", fEtaBins, fEtaMin, fEtaMax);
+    HistogramAxisConf y_axis("y", fYBins, fYMin, fYMax);
+    HistogramAxisConf z_axis("dummy", 0, 0, 0);
+    axisConf[2] = z_axis;
+    z_axis.SetTitle("dN/dP_{T}d#eta");
     axisConf[1] = pt_axis;
     axisConf[0] = eta_axis;
     fPtEta->Init(fTrackCollectionsNo, axisConf, "", kFALSE);
-    z_axis->SetTitle("dN/dP_{T}dy");
+    z_axis.SetTitle("dN/dP_{T}dy");
     axisConf[1] = pt_axis;
     axisConf[0] = y_axis;
     fPtY->Init(fTrackCollectionsNo, axisConf, "", kFALSE);
-    z_axis->SetTitle("dN/dm_{T}d#eta");
+    z_axis.SetTitle("dN/dm_{T}d#eta");
     axisConf[1] = mt_axis;
     axisConf[0] = eta_axis;
     fMtEta->Init(fTrackCollectionsNo, axisConf, "", kFALSE);
-    z_axis->SetTitle("dN/dm_{T}dy");
+    z_axis.SetTitle("dN/dm_{T}dy");
     axisConf[1] = mt_axis;
     axisConf[0] = y_axis;
     fMtY->Init(fTrackCollectionsNo, axisConf, "", kFALSE);
-    delete pt_axis;
-    delete mt_axis;
-    delete y_axis;
-    delete eta_axis;
-    delete z_axis;
-    delete[] axisConf;
     CheckNames();
     for (int i = 0; i < fTrackCollectionsNo; i++) {
       Int_t event_collection_no = fCutContainer->GetTrackCollection(i)->GetPrevAddr(0);
@@ -167,9 +161,6 @@ namespace Hal {
         if ((unsigned int) (fTrackCollectionsNo) < fMass.size()) {
           Cout::PrintInfo("Mass used, but some masses are not set", EInfo::kError);
           fMass.resize(fTrackCollectionsNo);
-        }
-        for (int i = 0; i < fTrackCollectionsNo; i++) {
-          Cout::PrintInfo(Form("Mass at collection %i (%4.2f) is not valid", i, fMass.at(i)), EInfo::kError);
         }
       }
     }
@@ -201,19 +192,19 @@ namespace Hal {
   }
 
   void SpectraAna::SetEventCollectionName(TString name, Int_t event_collection) {
-    if (fEventCollectionsNames == NULL) { fEventCollectionsNames = new TClonesArray("TObjString"); }
+    if (!fEventCollectionsNames) fEventCollectionsNames = new TClonesArray("TObjString");
     TObjString* obj_string = (TObjString*) fEventCollectionsNames->ConstructedAt(event_collection);
     obj_string->SetString(name);
   }
 
   void SpectraAna::SetTrackCollectionName(TString name, Int_t track_collection) {
-    if (fTrackCollectionsNames == NULL) { fTrackCollectionsNames = new TClonesArray("TObjString"); }
+    if (!fTrackCollectionsNames) fTrackCollectionsNames = new TClonesArray("TObjString");
     TObjString* obj_string = (TObjString*) fTrackCollectionsNames->ConstructedAt(track_collection);
     obj_string->SetString(name);
   }
 
   void SpectraAna::CheckNames() {
-    if (fTrackCollectionsNames == NULL) { fTrackCollectionsNames = new TClonesArray("TObjString"); }
+    if (!fTrackCollectionsNames) fTrackCollectionsNames = new TClonesArray("TObjString");
     for (int i = 0; i < fTrackCollectionsNo; i++) {
       TObjString* obj = (TObjString*) fTrackCollectionsNames->UncheckedAt(i);
       if (obj == NULL) {
@@ -222,7 +213,7 @@ namespace Hal {
       }
     }
 
-    if (fEventCollectionsNames == NULL) { fEventCollectionsNames = new TClonesArray("TObjString"); }
+    if (!fEventCollectionsNames) fEventCollectionsNames = new TClonesArray("TObjString");
     for (int i = 0; i < fEventCollectionsNo; i++) {
       TObjString* obj = (TObjString*) fEventCollectionsNames->UncheckedAt(i);
       if (obj == NULL) {
@@ -234,7 +225,7 @@ namespace Hal {
 
   void SpectraAna::SetMass(Double_t mass, Int_t track_collection) {
     fUseMass = kTRUE;
-    if (fMass.size() < (UInt_t) track_collection) { fMass.resize(track_collection + 1); }
+    if (fMass.size() <= (UInt_t) track_collection) { fMass.resize(track_collection + 1); }
     fMass[track_collection] = mass;
   }
 
@@ -251,7 +242,6 @@ namespace Hal {
         event_collections = fCutContainer->GetEventCollectionsNo();
       }
       TrackPdgCut pion_p;
-      ;
       pion_p.SetMinAndMax(211);
       TrackPdgCut pion_n;
       pion_n.SetMinAndMax(-211);

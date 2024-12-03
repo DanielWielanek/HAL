@@ -347,9 +347,9 @@ namespace Hal {
   Task::EInitFlag FemtoFreezoutsAna::Init() {
     Task::EInitFlag prev = TwoTrackAna::Init();
     if (prev == Task::EInitFlag::kFATAL) return prev;
-    fHistograms1d            = new HistogramManager_3_1D<TH1D>();
-    fHistograms3d            = new HistogramManager_3_3D<TH3D>();
-    HistogramAxisConf** axis = new HistogramAxisConf*[5];
+    fHistograms1d = new HistogramManager_3_1D<TH1D>();
+    fHistograms3d = new HistogramManager_3_3D<TH3D>();
+    std::vector<HistogramAxisConf> axis(3);
     if (fFastCut == NULL) { fFastCut = new FemtoFastCutVirtual(); }
     switch (fKinematicsMode) {
       case EMode::kPRF: {
@@ -394,16 +394,14 @@ namespace Hal {
     }
     titles[4] = "N_{pairs}";
     for (int i = 0; i < 3; i++)
-      axis[i] = new HistogramAxisConf(titles[i], fBins[i], fHistoMin[i], fHistoMax[i]);
-    axis[3] = new HistogramAxisConf(titles[3], fBins[0], fHistoMin[0], fHistoMax[0]);
-    axis[4] = new HistogramAxisConf(titles[4], fBins[0], fHistoMin[0], fHistoMax[0]);
+      axis[i] = HistogramAxisConf(titles[i], fBins[i], fHistoMin[i], fHistoMax[i]);
+    std::vector<HistogramAxisConf> axis2(2);
+    axis2[0] = HistogramAxisConf(titles[3], fBins[0], fHistoMin[0], fHistoMax[0]);
+    axis2[1] = HistogramAxisConf(titles[4]);
 
-    fHistograms1d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis + 3, "Freezouts1d", kFALSE);
+
+    fHistograms1d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis2, "Freezouts1d", kFALSE);
     fHistograms3d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis, "Freezouts3d", kFALSE);
-    for (int i = -0; i < 5; i++) {
-      delete axis[i];
-    }
-    delete[] axis;
     return Task::EInitFlag::kSUCCESS;
   }
 

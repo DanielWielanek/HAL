@@ -104,7 +104,7 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histograms
      */
-    void Init(Int_t size, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t size, const std::vector<HistogramAxisConf>& axisconf, TString title, Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param size size of array
@@ -212,7 +212,7 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histograms
      */
-    void Init(Int_t size, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t size, const std::vector<HistogramAxisConf>& axisconf, TString title, Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array
@@ -328,7 +328,7 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histograms
      */
-    void Init(Int_t size, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t size, const std::vector<HistogramAxisConf>& axisconf, TString title, Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array
@@ -456,7 +456,7 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histograms
      */
-    void Init(Int_t sizeX, Int_t sizeY, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t sizeX, Int_t sizeY, const std::vector<HistogramAxisConf>& axisconf, TString title, Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array
@@ -539,7 +539,7 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histograms
      */
-    void Init(Int_t sizeX, Int_t sizeY, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t sizeX, Int_t sizeY, const std::vector<HistogramAxisConf>& axisconf, TString title, Bool_t Sumw = kFALSE);
     /**
      * initialize histograms\
      * @param sizeX size of array
@@ -633,7 +633,7 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histograms
      */
-    void Init(Int_t sizeX, Int_t sizeY, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t sizeX, Int_t sizeY, const std::vector<HistogramAxisConf>& axisconf, TString title, Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array
@@ -741,7 +741,12 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histograms
      */
-    void Init(Int_t sizeX, Int_t sizeY, Int_t sizeZ, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t sizeX,
+              Int_t sizeY,
+              Int_t sizeZ,
+              const std::vector<HistogramAxisConf>& axisconf,
+              TString title,
+              Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array
@@ -827,7 +832,12 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histograms
      */
-    void Init(Int_t sizeX, Int_t sizeY, Int_t sizeZ, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t sizeX,
+              Int_t sizeY,
+              Int_t sizeZ,
+              const std::vector<HistogramAxisConf>& axisconf,
+              TString title,
+              Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array
@@ -929,7 +939,12 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histogtrams
      */
-    void Init(Int_t sizeX, Int_t sizeY, Int_t sizeZ, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t sizeX,
+              Int_t sizeY,
+              Int_t sizeZ,
+              const std::vector<HistogramAxisConf>& axisconf,
+              TString title,
+              Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array
@@ -1044,8 +1059,13 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histogtrams
      */
-    void
-    Init(Int_t sizeX, Int_t sizeY, Int_t sizeZ, Int_t sizeD, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t sizeX,
+              Int_t sizeY,
+              Int_t sizeZ,
+              Int_t sizeD,
+              const std::vector<HistogramAxisConf>& axisconf,
+              TString title,
+              Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array
@@ -1139,8 +1159,13 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histogtrams
      */
-    void
-    Init(Int_t sizeX, Int_t sizeY, Int_t sizeZ, Int_t sizeD, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t sizeX,
+              Int_t sizeY,
+              Int_t sizeZ,
+              Int_t sizeD,
+              const std::vector<HistogramAxisConf>& axisconf,
+              TString title,
+              Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array
@@ -1251,8 +1276,13 @@ namespace Hal {
      * @param title title of histograms
      * @param Sumw if true Suwm is called for histograms
      */
-    void
-    Init(Int_t sizeX, Int_t sizeY, Int_t sizeZ, Int_t sizeD, HistogramAxisConf** axisconf, TString title, Bool_t Sumw = kFALSE);
+    void Init(Int_t sizeX,
+              Int_t sizeY,
+              Int_t sizeZ,
+              Int_t sizeD,
+              const std::vector<HistogramAxisConf>& axisconf,
+              TString title,
+              Bool_t Sumw = kFALSE);
     /**
      * initialize histograms
      * @param sizeX size of array

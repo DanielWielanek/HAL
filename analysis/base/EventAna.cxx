@@ -387,6 +387,9 @@ namespace Hal {
           formatManager->SetFormat(event->GetNewEvent(), GetTaskID(), EFormatDepth::kBuffered, kTRUE);
         }
         return Task::EInitFlag::kSUCCESS;
+      } else {
+        Cout::PrintInfo("L1 format from reader has not been found", EInfo::kError);
+        return Task::EInitFlag::kFATAL;
       }
     } else {
       if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {  // direct access to data by classname.

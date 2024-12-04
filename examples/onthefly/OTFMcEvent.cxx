@@ -28,6 +28,7 @@ namespace HalOTF {
     Clear();
     McEventInterface* s = (McEventInterface*) interface;
     fTotalTracksNo      = s->GetMcEvent()->GetNTracks();
+    fMultiplicity       = fTotalTracksNo;
     fTracks->ExpandCreateFast(fTotalTracksNo);
     OTF::McEvent* ev = s->GetMcEvent();
     fB               = ev->GetB();

@@ -30,6 +30,7 @@ namespace HalUni {
     fB             = temp->GetB();
     fPhi           = temp->GetPhi();
     fTotalTracksNo = temp->GetNpa();
+    fMultiplicity  = fTotalTracksNo;
     fTracks->Clear();
     for (int i = 0; i < fTotalTracksNo; i++) {
       UParticle* particle    = temp->GetParticle(i);

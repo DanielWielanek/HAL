@@ -77,6 +77,7 @@ phys/ErrorCalc.cxx
 phys/Helix.cxx
 phys/HelixBase.cxx
 phys/FastAxisCalc.cxx
+phys/ProfileAna2D.cxx
 
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx

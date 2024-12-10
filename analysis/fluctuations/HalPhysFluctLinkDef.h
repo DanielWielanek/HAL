@@ -9,5 +9,5 @@
 #pragma link C++ class Hal::ChargedFluctuationsAna + ;
 #pragma link C++ class Hal::FluctuationsAna++;
 #pragma link C++ class Hal::Fluctuation1D + ;
-
+#pragma link C++ class Hal::MultiplicityAna + ;
 #endif

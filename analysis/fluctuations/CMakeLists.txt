@@ -32,6 +32,7 @@ set(SRCS
    ChargedFluctuationsAna.cxx
    Fluctuation1D.cxx
    FluctuationsAna.cxx
+   MultiplicityAna.cxx
 )
 
 Set(HEADERS )

@@ -45,8 +45,9 @@ namespace Hal {
 
   void AxisStyle::SetTickLength(Float_t val) { SetF(kTickLength, val); }
 
-  void AxisStyle::SetNdivisions(Int_t val, Bool_t force) {
-    if (force) val = -val;
+  void AxisStyle::SetNdivisions(Int_t val, Bool_t optim) {
+    val = TMath::Abs(val);
+    if (!optim) val = -val;
     SetI(kNdivisions, val);
   }
 
@@ -124,13 +125,14 @@ namespace Hal {
     if (Find(kTitleColor)) obj.SetTitleColor(GetI(kTitleColor));
     if (Find(kTitleFont)) obj.SetTitleFont(GetI(kTitleFont));
     if (Find(kCenterTitle)) obj.CenterTitle(GetI(kCenterTitle));
-    if (Find(kTitle)) obj.SetTitle(fTitle);
+    if (!fSkipTitle)
+      if (Find(kTitle)) obj.SetTitle(fTitle);
     if (Find(kRangeMin) && Find(kRangeMin)) obj.SetRangeUser(GetF(kRangeMin), GetF(kRangeMax));
     if (Find(kTicksOpt)) obj.SetTicks(GetTicks());
     if (Find(kMoreLog)) obj.SetMoreLogLabels(GetI(kMoreLog));
     if (Find(kFontStyleLabel)) obj.SetLabelFont(GetI(kFontStyleLabel));
     if (Find(kRotatedTitle)) { obj.RotateTitle(GetI(kRotatedTitle)); }
-    if (Find(kDecimal)) obj.SetDecimals(GetI(kLabelColor));
+    if (Find(kDecimal)) obj.SetDecimals(GetI(kDecimal));
     if (Find(kNoExp)) obj.SetNoExponent(GetI(kNoExp));
   };
 
@@ -151,12 +153,13 @@ namespace Hal {
     if (Find(kTitleColor)) node->AddAttrib(new Hal::XMLAttrib("TitleColor", Form("%i", GetI(kTitleColor))));
     if (Find(kTitleFont)) node->AddAttrib(new Hal::XMLAttrib("TitleFont", Form("%i", GetI(kTitleFont))));
     if (Find(kCenterTitle)) node->AddAttrib(new Hal::XMLAttrib("CenterTitle", Form("%i", GetI(kCenterTitle))));
-    if (Find(kTitle)) node->AddAttrib(new Hal::XMLAttrib("Title", fTitle));
+    if (!fSkipTitle)
+      if (Find(kTitle)) node->AddAttrib(new Hal::XMLAttrib("Title", fTitle));
     if (Find(kRangeMin)) node->AddAttrib(new Hal::XMLAttrib("RangeMin", Form("%4.4f", GetF(kRangeMin))));
     if (Find(kRangeMax)) node->AddAttrib(new Hal::XMLAttrib("RangeMax", Form("%4.4f", GetF(kRangeMax))));
     if (Find(kTicksOpt)) node->AddAttrib(new Hal::XMLAttrib("TicksOpt", GetTicks()));
     if (Find(kMoreLog)) node->AddAttrib(new Hal::XMLAttrib("MoreLog", Form("%i", (int) GetI(kMoreLog))));
-    if (Find(kRotatedTitle)) node->AddAttrib(new Hal::XMLAttrib("RoateTitle", Form("%i", (int) GetI(kRotatedTitle))));
+    if (Find(kRotatedTitle)) node->AddAttrib(new Hal::XMLAttrib("RotatedTitle", Form("%i", (int) GetI(kRotatedTitle))));
     if (Find(kFontStyleLabel)) node->AddAttrib(new Hal::XMLAttrib("LabelFont", Form("%i", (int) GetI(kFontStyleLabel))));
     if (Find(kDecimal)) node->AddAttrib(new Hal::XMLAttrib("Decimal", Form("%i", (int) GetI(kDecimal))));
     if (Find(kNoExp)) node->AddAttrib(new Hal::XMLAttrib("NoExp", Form("%i", (int) GetI(kNoExp))));
@@ -191,7 +194,7 @@ namespace Hal {
     }
     if (auto atr = node->GetAttrib("Ndivisions")) {
       int x = atr->GetValue().Atoi();
-      if (x < 0)
+      if (x >= 0)
         SetNdivisions(x, true);
       else
         SetNdivisions(x, false);
@@ -231,7 +234,7 @@ namespace Hal {
     }
     if (auto atr = node->GetAttrib("Title")) {
       TString x = atr->GetValue();
-      SetTitle(x);
+      if (!fSkipTitle) SetTitle(x);
     }
     if (auto atr = node->GetAttrib("TicksOpt")) {
       TString x = atr->GetValue();
@@ -243,7 +246,7 @@ namespace Hal {
       SetMoreLogLabels(x);
     }
 
-    if (auto atr = node->GetAttrib("RoateTitle")) {
+    if (auto atr = node->GetAttrib("RotatedTitle")) {
       int x = atr->GetValue().Atoi();
       SetRotateTitle(x);
     }
@@ -264,7 +267,7 @@ namespace Hal {
     }
   }
 
-  AxisStyle::AxisStyle() {}
+  AxisStyle::AxisStyle(Bool_t skipTitle) : fSkipTitle(skipTitle) {}
 
   AxisStyle::AxisStyle(Double_t titleSize, Double_t labelSize, Double_t titleOffset, Double_t labelOffset) {
     SetTitleSize(titleSize);
@@ -281,7 +284,8 @@ namespace Hal {
     Apply(dummy);
     if (dummy.GetTitleOffset() != x.GetTitleOffset()) SetTitleOffset(x.GetTitleOffset());
     if (dummy.GetLabelOffset() != x.GetLabelOffset()) SetLabelOffset(x.GetLabelOffset());
-    if (dummy.GetTitleSize() != x.GetTitleSize()) SetTitleSize(x.GetTitleSize());
+    if (!fSkipTitle)
+      if (dummy.GetTitleSize() != x.GetTitleSize()) SetTitleSize(x.GetTitleSize());
     if (dummy.GetLabelSize() != x.GetLabelSize()) SetLabelSize(x.GetLabelSize());
     if (dummy.GetTickLength() != x.GetTickLength()) SetTickLength(x.GetTickLength());
     if (dummy.GetNdivisions() != x.GetNdivisions()) SetNdivisions(x.GetNdivisions(), false);
@@ -302,10 +306,10 @@ namespace Hal {
   }
 
   void AxisStyle::SetTicks(TString opt) {
-    if (opt == "+") SetI(1, kTicksOpt);
-    if (opt == "-") SetI(2, kTicksOpt);
-    if (opt == "") SetI(0, kTicksOpt);
-    if (opt == "+-") SetI(3, kTicksOpt);
+    if (opt == "+") SetI(kTicksOpt, 1);
+    if (opt == "-") SetI(kTicksOpt, 2);
+    if (opt == "") SetI(kTicksOpt, 0);
+    if (opt == "+-") SetI(kTicksOpt, 3);
   }
 
   TString AxisStyle::GetTicks() const {

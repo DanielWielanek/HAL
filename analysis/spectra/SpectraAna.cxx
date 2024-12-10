@@ -96,7 +96,7 @@ namespace Hal {
       pack->AddObject(new ParameterString("EventCollectionName", title_event));
       pack->AddObject(new ParameterString("TrackCollectionname", title_track));
       ULong64_t processed_events = fCutContainer->GetEventCollection(event_collection_no)->GetPassed();
-      pack->AddObject(new ParameterULong64("Events Passed", processed_events));
+      pack->AddObject(new ParameterULong64("Events Passed", processed_events, '+'));
       pack->AddObject(new ParameterBool("UseMass", fUseMass));
       if (fUseMass) pack->AddObject(new ParameterDouble("Mass", fMass.at(i)));
       pack->AddObject(fPtY->At(i));

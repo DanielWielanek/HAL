@@ -19,9 +19,7 @@ class TFile;
 namespace Hal {
   class InputDataInfo;
 }
-/**
- * abstract class that represents almost all I/O operations (except writing histograms after completion of analysis
- */
+
 
 namespace Hal {
   class Package;
@@ -48,7 +46,9 @@ namespace Hal {
     virtual ~BranchInfo() {};
     ClassDef(BranchInfo, 1)
   };
-
+  /**
+   * abstract class that represents almost all I/O operations (except writing histograms after completion of analysis
+   */
   class IOManager : public TObject {
   public:
   private:

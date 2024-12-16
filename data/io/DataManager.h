@@ -16,7 +16,7 @@
 
 /**
  * wrapper around FairRootManager, represents almost all I/O operations
- * by uisnt IOManager
+ * by using IOManager
  */
 class TFile;
 class TList;

@@ -17,7 +17,7 @@ namespace Hal {
   class AxisStyle : public Style {
 
     TString fTitle;
-    Bool_t fSkipTitle = {kFALSE};
+    Bool_t fSkipTitle;
 
   public:
     static const unsigned short int kTitleOffset;

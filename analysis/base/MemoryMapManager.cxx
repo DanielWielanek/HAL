@@ -113,9 +113,8 @@ namespace Hal {
   Event* MemoryMapManager::GetTemporaryEvent() {
     if (!fDirectAcces) fCurrentEvent->Update(fInterface);
     if (fCurrentEvent->GetTotalTrackNo() > fTrackMapSize) {
-      for (int i = 0; i < fEventCollectionsNo; i++) {
+      for (int i = 0; i < fEventCollectionsNo; i++)
         ReloadMap(fCurrentEvent->GetTotalTrackNo() * 1.2);
-      }
     }
     return fCurrentEvent;
   }
@@ -134,18 +133,16 @@ namespace Hal {
       fEventCollectionsNo = fEventCollectionsNo * event_factor;
       fEventToTrackNo     = new Int_t[fEventCollectionsNo];
       for (int i = 0; i < realEventCol; i++) {
-        for (int j = 0; j < event_factor; j++) {
+        for (int j = 0; j < event_factor; j++)
           fEventToTrackNo[j + i * event_factor] = old_map[i];
-        }
         fMaxTrackCollectionNo = TMath::Max(fEventToTrackNo[i], fMaxTrackCollectionNo);
       }
       delete[] old_map;
     }
 
     fEvents = new EventArray*[fEventCollectionsNo];
-    for (Int_t i = 0; i < fEventCollectionsNo; i++) {
+    for (Int_t i = 0; i < fEventCollectionsNo; i++)
       fEvents[i] = new EventArray(fFormatID, fMixSize);
-    }
 
     DataFormatManager* dataManager = DataFormatManager::Instance();
     if (fDirectAcces == kFALSE) {
@@ -168,13 +165,11 @@ namespace Hal {
     fTrackCounter->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize);  // TODO swap order
     fTrackMap->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize, fTrackMapSize);
     fReadyToMix = new Bool_t[fEventCollectionsNo];
-    for (int i = 0; i < fEventCollectionsNo; i++) {
+    for (int i = 0; i < fEventCollectionsNo; i++)
       fReadyToMix[i] = kFALSE;
-    }
     fCounter = new Int_t[fEventCollectionsNo];
-    for (int i = 0; i < fEventCollectionsNo; i++) {
+    for (int i = 0; i < fEventCollectionsNo; i++)
       fCounter[i] = -1;
-    }
   }
 
   Int_t MemoryMapManager::GetTracksNo(Int_t eventCol, Int_t trackCol) const {
@@ -190,9 +185,8 @@ namespace Hal {
   void MemoryMapManager::ResetEventCollection(Int_t collection) {
     fCounter[collection] = -1;
     for (int i = 0; i < fEventToTrackNo[collection]; i++) {
-      for (int j = 0; j < fMixSize; j++) {
+      for (int j = 0; j < fMixSize; j++)
         fTrackCounter->Set(collection, i, j, 0);
-      }
     }
     for (Int_t i = 0; i < fMixSize; i++)
       fEvents[collection]->At(i)->Clear("C");
@@ -302,9 +296,8 @@ namespace Hal {
         Int_t index  = fTrackMap->Get(eventCol, iTrackCollection, counter, j);
         Track* track = fCurrentEvent->GetTrack(index);
         Int_t size   = track->GetLinksFast(links, kTRUE);
-        for (int iLink = 0; iLink < size; iLink++) {
+        for (int iLink = 0; iLink < size; iLink++)
           fCompression.MarkAsGood(links[iLink]);
-        }
       }
     }
     fCompression.Recalculate();
@@ -370,9 +363,8 @@ namespace Hal {
   EventArray::EventArray(Int_t task_id, Int_t size) : fSize(size) {
     DataFormatManager* dataManager = DataFormatManager::Instance();
     fArray                         = new Event*[fSize];
-    for (int i = 0; i < fSize; i++) {
+    for (int i = 0; i < fSize; i++)
       fArray[i] = dataManager->GetNewEvent(task_id, EFormatDepth::kBuffered);
-    }
   }
 
   Track* MemoryMapManager::GetTemporaryTrack(Int_t eventCol, Int_t trackCol, Int_t index) const {

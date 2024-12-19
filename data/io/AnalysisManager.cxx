@@ -32,6 +32,7 @@ namespace Hal {
   Bool_t AnalysisManager::Init() {
     Cout::PrintInfo("=== AnalysisManager::Init ===", EInfo::kInfo);
     if (fSource == nullptr) exit(0);
+    Cout::PrintInfo("=== Source::Init ===", EInfo::kInfo);
     Bool_t initSource = fSource->Init();
     if (!initSource) { Cout::PrintInfo("Can't init source!", EInfo::kCriticalError); }
     fManager = fSource->GetIOManager();
@@ -40,6 +41,7 @@ namespace Hal {
       exit(0);
     }
     if (fField == nullptr) { fField = new MagField(); }
+    Cout::PrintInfo("=== Setting up the manager ===", EInfo::kInfo);
     fManager->SetField(fField);
     fManager->SetOutput(fOutputFile);
     fManager->Init();
@@ -67,8 +69,8 @@ namespace Hal {
     }
     Cout::PrintInfo("=== Init tasks ===", EInfo::kInfo);
     for (auto task : fTasks) {
+      Cout::PrintInfo(Form("==> Init task %s", task->ClassName()), EInfo::kDebugInfo);
       Task::EInitFlag stat = task->Init();
-      Cout::PrintInfo(Form("  Init task %s", task->ClassName()), EInfo::kDebugInfo);
       switch (stat) {
         case Task::EInitFlag::kERROR: {
           Cout::PrintInfo(Form("  Task %s go to passive mode", task->ClassName()), EInfo::kDebugInfo);
@@ -85,7 +87,12 @@ namespace Hal {
       }
     }
     if (fActiveTriggers.size() > 0) { fTriggersEnabled = kTRUE; }
+    Cout::PrintInfo("=== Locking unused branches ===", EInfo::kDebugInfo);
     fManager->LockUnusedBranches();  // lock unused branches by setting status to zero
+    if (Hal::Cout::GetVerboseMode() <= EInfo::kDebugInfo) {
+      Cout::PrintInfo("=== Manager status ===", EInfo::kDebugInfo);
+      fManager->PrintInfo();
+    }
     return kTRUE;
   }
 

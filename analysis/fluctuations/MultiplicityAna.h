@@ -23,7 +23,7 @@ namespace Hal {
 
 namespace Hal {
   /**
-   * plots number of tracks that passed event and trank cuts
+   * plots number of tracks that passed event and track cuts
    * can be used e.g. to define the distribution of given particles as a function of centrality
    */
 

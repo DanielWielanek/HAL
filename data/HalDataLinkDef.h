@@ -68,6 +68,8 @@
 #pragma link C++ class Hal::BranchInfo + ;
 #pragma link C++ class Hal::InputDataInfo + ;
 #pragma link C++ class Hal::InputRootDataInfo + ;
+#pragma link C++ class Hal::VirtualSource + ;
+#pragma link C++ class Hal::VirtualIOManager + ;
 #pragma link C++ class std::vector < Hal::BranchInfo> + ;
 #pragma link C++ class std::vector < Hal::TriggerTask> + ;
 #endif

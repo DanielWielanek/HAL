@@ -9,20 +9,18 @@
 
 #include "OTFSource.h"
 
+#include "Cout.h"
 #include "DataManager.h"
 #include "OTFData.h"
 #include "OTFEventGenerator.h"
 #include "OTFIOManager.h"
+#include "VirtualIOManager.h"
+#include "VirtualSource.h"
 
 namespace HalOTF {
-  Source::Source(Int_t events) : Hal::Source("root_virtual.root"), fEvents(events) {
-    fManager = new HalOTF::IOManager("root_virtual.root", this, fEvents);
-  }
-
-  Hal::IOManager* Source::GetIOManager() const { return fManager; }
+  Source::Source(Int_t events) : Hal::VirtualSource(new HalOTF::IOManager(this, events), events) {}
 
   Source::~Source() {
-    if (fManager) delete fManager;
     if (fMcEvent) delete fMcEvent;
     if (fRecoEvent) delete fRecoEvent;
   }
@@ -34,7 +32,8 @@ namespace HalOTF {
     }
     return kTRUE;
   }
-  void Source::GetEvent() {
+
+  void Source::GetEvent(Int_t /*i*/, Int_t /*flag*/) {
     fRecoEvent->Clear();
     fMcEvent->Clear();
     for (auto& gen : fGenerators)
@@ -42,11 +41,11 @@ namespace HalOTF {
     ++fEvents;
   }
 
-  void Source::RegisterOutputs(HalOTF::IOManager* mngr) {
+  void Source::RegisterInputs() {
     fMcEvent   = new OTF::McEvent();
     fRecoEvent = new OTF::RecoEvent();
-    mngr->Register("OTF::McEvent.", "HalEvents", fMcEvent, fRegister);
-    mngr->Register("OTF::RecoEvent.", "HalEvents", fRecoEvent, fRegister);
+    fManager->Register("OTF::McEvent.", "HalEvents", fMcEvent, fRegister);
+    fManager->Register("OTF::RecoEvent.", "HalEvents", fRecoEvent, fRegister);
     for (auto& gen : fGenerators)
       gen->SetEvents(fMcEvent, fRecoEvent);
   }

@@ -64,6 +64,8 @@ io/IOManager.cxx
 io/Reader.cxx
 io/TriggerTask.cxx
 io/InputDataInfo.cxx
+io/VirtualSource.cxx
+io/VirtualIOManager.cxx
 
 )
 

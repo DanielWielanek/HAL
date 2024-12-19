@@ -14,10 +14,12 @@
 #include <vector>
 
 #include "Source.h"
+#include "VirtualSource.h"
 
 namespace Hal {
   class IOManager;
-}
+  class VirtualIOManager;
+}  // namespace Hal
 namespace HalOTF {
   class EventGenerator;
   class IOManager;
@@ -28,10 +30,9 @@ namespace OTF {
 }  // namespace OTF
 
 namespace HalOTF {
-  class Source : public Hal::Source {
+  class Source : public Hal::VirtualSource {
     friend class HalOTF::IOManager;
-    Int_t fEvents    = {0};
-    Bool_t fRegister = {kFALSE};
+    friend class Hal::VirtualIOManager;
     std::vector<HalOTF::EventGenerator*> fGenerators;
     OTF::McEvent* fMcEvent     = {nullptr};
     OTF::RecoEvent* fRecoEvent = {nullptr};
@@ -41,15 +42,13 @@ namespace HalOTF {
      * register output data and sent pointers to generators, this cannot be done ini Init method
      * because data manager does not exist yet
      */
-    void RegisterOutputs(HalOTF::IOManager* mngr);
+    virtual void RegisterInputs();
 
   public:
     Source(Int_t entries = 0);
-    virtual Hal::IOManager* GetIOManager() const;
     void AddEventGenerator(HalOTF::EventGenerator* evgen) { fGenerators.push_back(evgen); }
     Bool_t Init();
-    void Register() { fRegister = kTRUE; }
-    void GetEvent();
+    void GetEvent(Int_t i, Int_t flag);
     virtual ~Source();
     ClassDef(Source, 1)
   };

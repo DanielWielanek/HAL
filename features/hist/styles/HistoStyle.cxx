@@ -72,6 +72,16 @@ namespace Hal {
       res.CenterTitle(kTRUE, 'x');
       res.CenterTitle(kTRUE, 'y');
     }
+    if (Hal::Std::FindParam(style, "60s", kTRUE)) {
+      res.GetAxisStyle('x').SetLabelSize(0.04);
+      res.GetAxisStyle('y').SetLabelSize(0.04);
+      res.GetAxisStyle('x').SetCenterTitle(kTRUE);
+      res.GetAxisStyle('y').SetCenterTitle(kTRUE);
+      res.GetAxisStyle('x').SetTitleFont(82);
+      res.GetAxisStyle('x').SetLabelFont(82);
+      res.GetAxisStyle('y').SetTitleFont(82);
+      res.GetAxisStyle('y').SetLabelFont(82);
+    }
     return res;
   }
 

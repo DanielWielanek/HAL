@@ -48,7 +48,7 @@ namespace Hal {
     ClassDef(OptionArray, 1)
   };
   /**
-   * convert ooption to int
+   * convert option to int
    */
   class OptionConverter : public TObject {
     std::vector<TString> fNames;

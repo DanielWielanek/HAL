@@ -65,6 +65,7 @@ hist/styles/AxisStyle.cxx
 hist/styles/FillStyle.cxx
 hist/styles/HistoStyle.cxx
 hist/styles/LineStyle.cxx
+hist/styles/LegendStyle.cxx
 hist/styles/MarkerStyle.cxx
 hist/styles/PadStyle.cxx
 hist/styles/Style.cxx

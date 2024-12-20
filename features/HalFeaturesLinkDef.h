@@ -112,6 +112,7 @@
 #pragma link C++ class Hal::FillStyle + ;
 #pragma link C++ class Hal::AxisStyle + ;
 #pragma link C++ class Hal::HistoStyle + ;
+#pragma link C++ class Hal::LegendStyle + ;
 #pragma link C++ class Hal::CorrelationHisto + ;
 #pragma link C++ class Hal::Painter + ;
 

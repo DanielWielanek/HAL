@@ -43,9 +43,11 @@ namespace Hal {
      * return predefined style for 1d histogram
      * @param style options:
      * 05 - set margins sizes to 0.05 (default optimal)
+     * 05 like above but sets margin sizes to 0.06
      * color - set line color/marker color to red
      * circle - set marker to full circle
      * center center axes
+     * apollo - use tt fods
      * @return
      */
     static HistoStyle GetStyle(TString style);

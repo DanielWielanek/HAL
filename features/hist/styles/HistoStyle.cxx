@@ -62,26 +62,32 @@ namespace Hal {
 
   HistoStyle HistoStyle::GetStyle(TString style) {
     HistoStyle res;
-    if (Hal::Std::FindParam(style, "05", kTRUE)) {
-      res.SetAxis(0.05, 0.8, 0.05, 0.005, 'x');
-      res.SetAxis(0.05, 0.8, 0.05, 0.005, 'y');
-    }
-    if (Hal::Std::FindParam(style, "color", kTRUE)) res.SetColor(kRed);
     if (Hal::Std::FindParam(style, "circle", kTRUE)) res.GetMarkerStyle().SetStyle(kFullCircle);
     if (Hal::Std::FindParam(style, "center", kTRUE)) {
       res.CenterTitle(kTRUE, 'x');
       res.CenterTitle(kTRUE, 'y');
     }
-    if (Hal::Std::FindParam(style, "60s", kTRUE)) {
-      res.GetAxisStyle('x').SetLabelSize(0.04);
-      res.GetAxisStyle('y').SetLabelSize(0.04);
-      res.GetAxisStyle('x').SetCenterTitle(kTRUE);
-      res.GetAxisStyle('y').SetCenterTitle(kTRUE);
-      res.GetAxisStyle('x').SetTitleFont(82);
-      res.GetAxisStyle('x').SetLabelFont(82);
-      res.GetAxisStyle('y').SetTitleFont(82);
-      res.GetAxisStyle('y').SetLabelFont(82);
+    if (Hal::Std::FindParam(style, "apollo", kTRUE)) {
+      char opt[] = {'x', 'y', 'z'};
+      for (int i = 0; i < 3; i++) {
+        res.GetAxisStyle(opt[i]).SetLabelSize(0.04);
+        res.GetAxisStyle(opt[i]).SetCenterTitle(kTRUE);
+        res.GetAxisStyle(opt[i]).SetTitleFont(82);
+        res.GetAxisStyle(opt[i]).SetLabelFont(82);
+      }
+      res.SetColor(kBlack);
     }
+    if (Hal::Std::FindParam(style, "05", kTRUE)) {
+      res.SetAxis(0.05, 0.8, 0.05, 0.005, 'x');
+      res.SetAxis(0.05, 0.8, 0.05, 0.005, 'y');
+      res.SetAxis(0.05, 0.8, 0.05, 0.005, 'z');
+    }
+    if (Hal::Std::FindParam(style, "06", kTRUE)) {
+      res.SetAxis(0.06, 0.86, 0.06, 0.005, 'x');
+      res.SetAxis(0.06, 0.8, 0.06, 0.005, 'y');
+      res.SetAxis(0.06, 0.8, 0.06, 0.005, 'z');
+    }
+    if (Hal::Std::FindParam(style, "color", kTRUE)) res.SetColor(kRed);
     return res;
   }
 
@@ -176,6 +182,7 @@ namespace Hal {
 
   template<class T>
   void Hal::HistoStyle::ApplyInternal(T& object) const {
+
     if (Find(kTitle)) object.SetTitle(fTitle);
     if (Find(kMin)) object.SetMinimum(GetF(kMin));
     if (Find(kMax)) object.SetMaximum(GetF(kMax));

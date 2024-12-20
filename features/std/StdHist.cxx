@@ -40,6 +40,7 @@
 
 NamespaceImp(Hal::Std)
 
+
   namespace Hal {
   namespace Std {
     void RemoveNan(TH1* h, Double_t fill, Double_t fill_e) {
@@ -929,10 +930,26 @@ NamespaceImp(Hal::Std)
       h.SetMarkerSize(s);
     }
 
-    void MakeBeautiful() {
-      gStyle->SetPalette(kRainBow);
-      TGaxis::SetMaxDigits(3);
-      gStyle->SetCanvasPreferGL(kTRUE);
+    void MakeBeautiful(TString opt) {
+      if (FindParam(opt, "apollo", kTRUE)) {
+        gStyle->SetTitleFont(82, "");
+        gStyle->SetStatFont(82);
+        gStyle->SetLabelFont(82);
+        gStyle->SetPalette(kGreyScale);
+      }
+      if (FindParam(opt, "bold", kTRUE)) {
+        gStyle->SetLineWidth(2);
+        gStyle->SetFrameLineWidth(2);
+      }
+      if (opt == "beauty") {
+        gStyle->SetPalette(kRainBow);
+        TGaxis::SetMaxDigits(3);
+        gStyle->SetCanvasPreferGL(kTRUE);
+      }
+      if (opt == "") {
+        gStyle->SetPalette(kRainBow);
+        TGaxis::SetMaxDigits(3);
+      }
     }
 
     void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2) {
@@ -1161,5 +1178,36 @@ NamespaceImp(Hal::Std)
       to.SetFillColor(from.GetFillColor());
       to.SetFillStyle(from.GetFillStyle());
     }
+
+    Double_t GetMaximum(const std::vector<TH1*> histos) {
+      Double_t maxig = -1E+10;
+      auto findMax   = [](TH1* x) {
+        Double_t maxi = -1E+10;
+        TH1* h1       = dynamic_cast<TH1*>(x);
+        TH1* h2       = dynamic_cast<TH2*>(x);
+        TH1* h3       = dynamic_cast<TH3*>(x);
+        if (h3) {
+          for (int i = 1; i <= h3->GetNbinsX() + 1; i++)
+            for (int j = 1; j <= h3->GetNbinsY() + 1; j++)
+              for (int k = 1; k <= h3->GetNbinsZ() + 1; k++)
+                maxi = TMath::Max(h3->GetBinContent(i, j, k), maxi);
+        } else if (h2) {
+          for (int i = 1; i <= h2->GetNbinsX() + 1; i++)
+            for (int j = 1; j <= h2->GetNbinsY() + 1; j++)
+              maxi = TMath::Max(h2->GetBinContent(i, j), maxi);
+        } else {
+          for (int i = 1; i <= h1->GetNbinsX() + 1; i++)
+            maxi = TMath::Max(h1->GetBinContent(i), maxi);
+        }
+        return maxi;
+      };
+
+      for (auto x : histos) {
+        maxig = TMath::Max(maxig, findMax(x));
+      }
+      return maxig;
+    }
+
+
   }  // namespace Std
 }  // namespace Hal

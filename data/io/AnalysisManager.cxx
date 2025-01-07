@@ -16,6 +16,7 @@
 #include "Cout.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Reader.h"
 #include "Source.h"
 #include "Std.h"
 #include "Task.h"
@@ -179,6 +180,19 @@ namespace Hal {
     fManager->CloseManager();
   }
 
+  void AnalysisManager::AddTask(Task* ana) {
+    if (auto trig = dynamic_cast<TriggerTask*>(ana)) {
+      fTriggers.push_back(trig);
+    } else if (auto reader = dynamic_cast<Reader*>(ana)) {
+      if (fTasks.size() != 0)
+        Hal::Cout::PrintInfo("You are adding reader as not a first task,  this might lead to undefined behaviour",
+                             EInfo::kWarning);
+      fTasks.push_back(ana);
+    } else {
+      fTasks.push_back(ana);
+    }
+  }
+
   AnalysisManager::~AnalysisManager() {
     delete fSource;
     delete fManager;
@@ -190,10 +204,6 @@ namespace Hal {
     }
     if (fField) delete fField;
   }
-
-  void AnalysisManager::AddReader(Reader* /*reader*/) {}
-
-  void AnalysisManager::AddTrigger(TriggerTask* /*trigger*/) {}
 
   void AnalysisManager::DoStep(Int_t entry) {
     if (fTriggersEnabled) {

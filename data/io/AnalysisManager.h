@@ -48,20 +48,10 @@ namespace Hal {
      */
     void EnableProgressBar() { fProgressBar = kTRUE; }
     /**
-     * add reader task - it's guaranteed that reader will be set as a first task after the triggers
-     * @param reader
-     */
-    void AddReader(Reader* reader);
-    /**
-     * add trigger task, it's guaranteed that will be set before other tasks
-     * @param trigger
-     */
-    void AddTrigger(TriggerTask* trigger);
-    /**
      * add task to analysis
      * @param ana
      */
-    void AddTask(Task* ana) { fTasks.push_back(ana); };
+    void AddTask(Task* ana);
     /**
      * initalize run
      */

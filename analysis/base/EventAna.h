@@ -234,7 +234,7 @@ namespace Hal {
     /**
      * basic constructor
      */
-    EventAna() : EventAna(ECutUpdate::kEvent) {};
+    EventAna() : EventAna(ECutUpdate::kEvent) { SetFormatOption(EFormatOption::kReaderAccess); };
     /**
      * copy constructor
      * @param ana

@@ -11,7 +11,7 @@ namespace MyHal {
   class EventCutTemplate : public Hal::EventCut {
   public:
     EventCutTemplate();
-    Int_t Init(Int_t taskID);
+    Bool_t Init(Int_t taskID);
     Bool_t Pass(Hal::Event* pair);
     Hal::Package* Report() const;
     virtual ~EventCutTemplate();

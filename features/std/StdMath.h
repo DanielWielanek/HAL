@@ -133,7 +133,7 @@ namespace Hal {
      * NOTE: sometimes this algo fails to invert matrices, in such case prints warnings
      * @param x
      * @param y
-     * @return polynomial fitted to n-points p[0] is linear term
+     * @return polynomial fitted to n-points p[0] is const term
      */
     std::vector<Double_t> LagrangeInterpol(const std::vector<Double_t>& x, const std::vector<Double_t>& y);
   }  // namespace Std

@@ -11,7 +11,7 @@ namespace MyHal {
   class TrackCutTemplate : public Hal::TrackCut {
   public:
     TrackCutTemplate();
-    Int_t Init(Int_t taskID);
+    Bool_t Init(Int_t taskID);
     Bool_t Pass(Hal::Track* pair);
     Hal::Package* Report() const;
     virtual ~TrackCutTemplate();

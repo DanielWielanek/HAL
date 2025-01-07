@@ -23,7 +23,7 @@ namespace MyHal {
    * @param taskID
    * @return
    */
-  Int_t TrackCutTemplate::Init(Int_t taskID) {
+  Bool_t TrackCutTemplate::Init(Int_t taskID) {
     Hal::DataFormatManager* mngr = Hal::DataFormatManager::Instance();
     const Hal::Event* event      = mngr->GetFormat(taskID, Hal::EFormatDepth::kNonBuffered);
     if (dynamic_cast<Hal::Event*>(event)) return kTRUE;

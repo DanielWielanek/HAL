@@ -8,6 +8,7 @@
  */
 
 #include "Package2HTML.h"
+#include "AnaFile.h"
 #include "Cout.h"
 #include "HtmlCore.h"
 #include "HtmlDiv.h"
@@ -542,7 +543,7 @@ namespace Hal {
 
   void Package2HTML::CreateCutHTML(HtmlObject& table, Hal::ECutUpdate cut_update, Int_t collection_no) {
     TString group_name, desc, names;
-    group_name = GetGroupListName(cut_update);
+    group_name = Hal::AnaFile::GetCollectionListName(cut_update);
     switch (cut_update) {
       case Hal::ECutUpdate::kEvent:
         desc  = "EventCollection";
@@ -866,7 +867,7 @@ namespace Hal {
                                           Int_t& counter,
                                           TString path) {
     TString group_name, desc, names;
-    group_name = GetGroupListName(cut_upd);
+    group_name = Hal::AnaFile::GetCollectionListName(cut_upd);
     switch (cut_upd) {
       case Hal::ECutUpdate::kEvent:
         desc  = "EventCollection";
@@ -958,10 +959,11 @@ namespace Hal {
   void Package2HTML::ExportCollections(HtmlObject& object, TString path) {
     if (fCurrentCutContainer == NULL) return;
 
-    TList* listE        = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kEvent));
-    TList* listT        = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTrack));
-    TList* listT2       = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrack));
-    TList* listT2B      = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrackBackground));
+    TList* listE  = (TList*) fCurrentCutContainer->GetObjectByName(AnaFile::GetCollectionListName(ECutUpdate::kEvent));
+    TList* listT  = (TList*) fCurrentCutContainer->GetObjectByName(AnaFile::GetCollectionListName(ECutUpdate::kTrack));
+    TList* listT2 = (TList*) fCurrentCutContainer->GetObjectByName(AnaFile::GetCollectionListName(ECutUpdate::kTwoTrack));
+    TList* listT2B =
+      (TList*) fCurrentCutContainer->GetObjectByName(AnaFile::GetCollectionListName(ECutUpdate::kTwoTrackBackground));
     Int_t eventCol      = 0;
     Int_t trackCol      = 0;
     Int_t ttrackCol     = 0;
@@ -1109,7 +1111,7 @@ namespace Hal {
   }
 
   TString Package2HTML::GetLinkToCut(Hal::ECutUpdate update, Int_t collection_no, Int_t cut_no, Bool_t fast) const {
-    TString list_name          = GetGroupListName(update);
+    TString list_name          = Hal::AnaFile::GetCollectionListName(update);
     TList* list                = (TList*) fCurrentCutContainer->GetObjectByName(list_name);
     Package* cut_sub_container = (Package*) list->At(collection_no);
     Int_t list_pos             = 0;
@@ -1130,7 +1132,7 @@ namespace Hal {
   }
 
   TString Package2HTML::GetLinkToCutMonitor(Hal::ECutUpdate update, Int_t collection_no, Int_t no) const {
-    TString list_name          = GetGroupListName(update);
+    TString list_name          = Hal::AnaFile::GetCollectionListName(update);
     TList* list                = (TList*) fCurrentCutContainer->GetObjectByName(list_name);
     Package* cut_sub_container = (Package*) list->At(collection_no);
     Int_t list_pos             = 0;
@@ -1149,16 +1151,6 @@ namespace Hal {
                 no);
   }
 
-  TString Package2HTML::GetGroupListName(Hal::ECutUpdate update) const {
-    switch (update) {
-      case Hal::ECutUpdate::kEvent: return "EventCutCollectionList"; break;
-      case Hal::ECutUpdate::kTrack: return "TrackCutCollectionList"; break;
-      case Hal::ECutUpdate::kTwoTrack: return "TwoTrackCutCollectionList"; break;
-      case Hal::ECutUpdate::kTwoTrackBackground: return "TwoTrackBackgroundCutCollectionList"; break;
-      default: return ""; break;
-    }
-  }
-
   Package2HTML::~Package2HTML() {
     if (fHTML) delete fHTML;
     if (fFile) {
@@ -1168,8 +1160,11 @@ namespace Hal {
   }
 
   void Package2HTML::GetCollectionsNumbers() {
-    TString collection_name[4] = {
-      "Event_collections_No", "Track_collections_No", "TwoTrack_collections_No", "TwoTrack_collections_background_No"};
+    TString collection_name[4] = {AnaFile::GetCollectionCountName(ECutUpdate::kEvent),
+                                  AnaFile::GetCollectionCountName(ECutUpdate::kTrack),
+                                  AnaFile::GetCollectionCountName(ECutUpdate::kTwoTrack),
+                                  AnaFile::GetCollectionCountName(ECutUpdate::kTwoTrackBackground)};
+
     ParameterInt* event_collections_no    = (ParameterInt*) fCurrentCutContainer->GetObjectByName(collection_name[0], 0);
     ParameterInt* track_collections_no    = (ParameterInt*) fCurrentCutContainer->GetObjectByName(collection_name[1], 0);
     ParameterInt* twotrack_collections_no = (ParameterInt*) fCurrentCutContainer->GetObjectByName(collection_name[2], 0);

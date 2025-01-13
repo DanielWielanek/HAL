@@ -444,4 +444,26 @@ namespace Hal {
   Package* AnaFile::GetMainPackage() const { return static_cast<Package*>(fMainPackageArray->UncheckedAt(fCurrentPackID)); }
 
   Package* AnaFile::GetCutContainer() const { return static_cast<Package*>(fCutContainerArray->UncheckedAt(fCurrentPackID)); }
+
+  TString AnaFile::GetCollectionListName(Hal::ECutUpdate update) {
+    switch (update) {
+      case Hal::ECutUpdate::kEvent: return "EventCutCollectionList"; break;
+      case Hal::ECutUpdate::kTrack: return "TrackCutCollectionList"; break;
+      case Hal::ECutUpdate::kTwoTrack: return "TwoTrackCutCollectionList"; break;
+      case Hal::ECutUpdate::kTwoTrackBackground: return "TwoTrackBackgroundCutCollectionList"; break;
+      default: return ""; break;
+    }
+  }
+
+  TString AnaFile::GetCollectionCountName(Hal::ECutUpdate upd) {
+    switch (upd) {
+      case ECutUpdate::kEvent: return "Event_collections_No"; break;
+      case ECutUpdate::kTrack: return "Track_collections_No"; break;
+      case ECutUpdate::kTwoTrack: return "TwoTrack_collections_No"; break;
+      case ECutUpdate::kTwoTrackBackground: "TwoTrack_collections_background_No"; break;
+      default: Cout::PrintInfo("Unknown update ratio", EInfo::kLowWarning); break;
+    }
+    return "";
+  }
+
 }  // namespace Hal

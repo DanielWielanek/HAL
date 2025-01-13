@@ -40,14 +40,6 @@ namespace Hal {
      * @return
      */
     TString GetCutUpdateRatioName(Hal::ECutUpdate upd);
-
-    TString GetCollectionListName(Hal::ECutUpdate upd);
-    /**
-     *
-     * @param upd
-     * @return eg. Event_collections_No
-     */
-    TString GetCollectionCountName(Hal::ECutUpdate upd);
   }  // namespace Cuts
 
 } /* namespace Hal */

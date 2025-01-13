@@ -104,28 +104,5 @@ namespace Hal {
       }
       return update_ratio_name;
     }
-
-    TString GetCollectionListName(Hal::ECutUpdate upd) {
-      switch (upd) {
-        case ECutUpdate::kEvent: return "EventCutCollectionList"; break;
-        case ECutUpdate::kTrack: return "TrackCutCollectionList"; break;
-        case ECutUpdate::kTwoTrack: return "TwoTrackCutCollectionList"; break;
-        case ECutUpdate::kTwoTrackBackground: return "TwoTrackBackgroundCutCollectionList"; break;
-        default: Cout::PrintInfo("Unknown update ratio", EInfo::kLowWarning); break;
-      }
-      return "";
-    }
-
-    TString GetCollectionCountName(Hal::ECutUpdate upd) {
-      switch (upd) {
-        case ECutUpdate::kEvent: return "Event_collections_No"; break;
-        case ECutUpdate::kTrack: return "Track_collections_No"; break;
-        case ECutUpdate::kTwoTrack: return "TwoTrack_collections_No"; break;
-        case ECutUpdate::kTwoTrackBackground: "TwoTrack_collections_background_No"; break;
-        default: Cout::PrintInfo("Unknown update ratio", EInfo::kLowWarning); break;
-      }
-      return "";
-    }
-
   }  // namespace Cuts
 } /* namespace Hal */

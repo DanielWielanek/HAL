@@ -73,7 +73,6 @@ namespace Hal {
     void CreateCutMonitorHTML(HtmlObject& table, Hal::ECutUpdate cut_upd, Int_t collection_no, Int_t& counter, TString path);
     void CreateListTable(HtmlObject& table, TList* list, Int_t no, TString path_data, TString path_url, TString drawClass);
     containerInfo GetContainerInfo(Package* Pack, Bool_t rev = kFALSE) const;
-    TString GetGroupListName(Hal::ECutUpdate update) const;
     HtmlFile* fHTML;
     TFile* fFile;
     TString fDir;

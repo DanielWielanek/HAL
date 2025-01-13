@@ -15,6 +15,7 @@
 #include <TRegexp.h>
 #include <iostream>
 
+#include "AnaFile.h"
 #include "Cout.h"
 #include "CutFuncs.h"
 #include "EventBinningCut.h"
@@ -278,11 +279,11 @@ namespace Hal {
   Package* CutContainer::Report() const {
     Package* pack = new Package(this, kTRUE);
     auto getList  = [&](ECutUpdate upd) {
-      TString collectionNo = Hal::Cuts::GetCollectionCountName(upd);
+      TString collectionNo = Hal::AnaFile::GetCollectionCountName(upd);
       pack->AddObject(new ParameterInt(collectionNo, GetCutContainer(upd)->GetEntriesFast()));
       TList* list1 = new TList();
       list1->SetOwner(kTRUE);
-      list1->SetName(Hal::Cuts::GetCollectionListName(upd));
+      list1->SetName(Hal::AnaFile::GetCollectionListName(upd));
       for (int i = 0; i < GetCutContainer(upd)->GetEntriesFast(); i++) {
         list1->Add(((CutCollection*) GetCutContainer(upd)->UncheckedAt(i))->Report());
       }

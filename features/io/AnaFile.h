@@ -210,6 +210,19 @@ namespace Hal {
      * @return package with report from given cut
      */
     Package* GetCutPackage(Hal::ECutUpdate update, Int_t collection, Int_t cutNo, Option_t* type = "all") const;
+
+    /**
+     * return name of group list name in file e.g., EventCutCollectionList
+     * @param update
+     * @return
+     */
+    static TString GetCollectionListName(Hal::ECutUpdate update);
+    /**
+     * return name of collection count name in file e.g.f  Event_collections_No
+     * @param upd
+     * @return
+     */
+    static TString GetCollectionCountName(Hal::ECutUpdate upd);
     virtual ~AnaFile();
     ClassDef(AnaFile, 1)
   };

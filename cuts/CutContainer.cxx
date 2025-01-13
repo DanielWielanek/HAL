@@ -76,8 +76,7 @@ namespace Hal {
         Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with im flag", __FILE__, __LINE__), EInfo::kError);
         return;
       }
-      Bool_t nulls = Hal::Std::FindParam(option, "null", kTRUE);
-      tempcut      = Hal::Cuts::MakeCutCopy(cut, "im", nulls);
+      tempcut = Hal::Cuts::MakeCutCopy(cut, "im", Hal::Std::FindParam(option, "null", kTRUE));
       if (tempcut == nullptr) return;
       AddCut(*tempcut, option);
       delete tempcut;
@@ -461,23 +460,9 @@ namespace Hal {
       opt.ReplaceAll("+re", "");
       opt.ReplaceAll("im", "");
       opt.ReplaceAll("re", "");
-      Int_t size = 1;
-      if (mon->InheritsFrom("Hal::CutMonitorXY")) size = 2;
-      if (mon->InheritsFrom("Hal::CutMonitorXYZ")) size = 3;
-      switch (size) {
-        case 1: {
-          MakeComplexAxis(mon, 0, flag);
-        } break;
-        case 2: {
-          MakeComplexAxis(mon, 0, flag);
-          MakeComplexAxis(mon, 1, flag);
-        } break;
-        case 3: {
-          MakeComplexAxis(mon, 0, flag);
-          MakeComplexAxis(mon, 1, flag);
-          MakeComplexAxis(mon, 2, flag);
-        } break;
-      }
+      Int_t size = mon->GetAxisNo();
+      for (int i = 0; i < size; i++)
+        MakeComplexAxis(mon, i, flag);
     }
   }
 

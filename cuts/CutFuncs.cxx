@@ -20,19 +20,30 @@ namespace Hal {
   namespace Cuts {
     std::vector<Int_t> GetCollectionsFlags(Int_t startCol, TString option) {
       std::vector<Int_t> res;
-      Int_t single = -2;
-      if (!Hal::Std::FindExpressionSingleValue(option, single, kTRUE)) { single = startCol; }
+      Int_t single      = -2;
+      Bool_t single_exp = Hal::Std::FindExpressionSingleValue(option, single, kTRUE);
       Int_t n, jump;
-      if (Hal::Std::FindExpressionTwoValues(option, n, jump, kTRUE)) {
+      Bool_t two_exp = Hal::Std::FindExpressionTwoValues(option, n, jump, kTRUE);
+      if (single_exp && two_exp) {  // found {}+{x}
         for (int i = 0; i < n; i++) {
           res.push_back(single);
           single += jump;
         }
         return res;
-      } else {
-        res.push_back(single);
+      }
+      if (two_exp) {  //{x}
+        single = startCol;
+        for (int i = 0; i < n; i++) {
+          res.push_back(single);
+          single += jump;
+        }
         return res;
       }
+      if (single_exp) res.push_back(single);
+      while (Hal::Std::FindExpressionSingleValue(option, single, kTRUE)) {
+        res.push_back(single);
+      }
+      if (res.size() == 0) res.push_back(startCol);
       return res;
     }
 
@@ -41,16 +52,24 @@ namespace Hal {
         auto upd = cut.GetUpdateRatio();
         switch (upd) {
           case ECutUpdate::kEvent: {
-            return new EventRealCut(static_cast<const EventCut&>(cut));
+            auto res = new EventRealCut(static_cast<const EventCut&>(cut));
+            res->SetCollectionID(cut.GetCollectionID());
+            return res;
           } break;
           case ECutUpdate::kTrack: {
-            return new TrackRealCut(static_cast<const TrackCut&>(cut));
+            auto res = new TrackRealCut(static_cast<const TrackCut&>(cut));
+            res->SetCollectionID(cut.GetCollectionID());
+            return res;
           } break;
           case ECutUpdate::kTwoTrack: {
-            return new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
+            auto res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
+            res->SetCollectionID(cut.GetCollectionID());
+            return res;
           } break;
           case ECutUpdate::kTwoTrackBackground: {
-            return new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
+            auto res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
+            res->SetCollectionID(cut.GetCollectionID());
+            return res;
           } break;
           default: return nullptr; break;
         }
@@ -60,21 +79,25 @@ namespace Hal {
           case ECutUpdate::kEvent: {
             auto tempcut = new EventImaginaryCut(static_cast<const EventCut&>(cut));
             if (acceptNulls) static_cast<EventImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
+            tempcut->SetCollectionID(cut.GetCollectionID());
             return tempcut;
           } break;
           case ECutUpdate::kTrack: {
             auto tempcut = new TrackImaginaryCut(static_cast<const TrackCut&>(cut));
             if (acceptNulls) static_cast<TrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
+            tempcut->SetCollectionID(cut.GetCollectionID());
             return tempcut;
           } break;
           case ECutUpdate::kTwoTrack: {
             auto tempcut = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
             if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
+            tempcut->SetCollectionID(cut.GetCollectionID());
             return tempcut;
           } break;
           case ECutUpdate::kTwoTrackBackground: {
             auto tempcut = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
             if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
+            tempcut->SetCollectionID(cut.GetCollectionID());
             return tempcut;
           } break;
           default: return nullptr; break;

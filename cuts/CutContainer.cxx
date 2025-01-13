@@ -79,7 +79,6 @@ namespace Hal {
       Bool_t nulls = Hal::Std::FindParam(option, "null", kTRUE);
       tempcut      = Hal::Cuts::MakeCutCopy(cut, "im", nulls);
       if (tempcut == nullptr) return;
-      tempcut->SetCollectionID(cut.GetCollectionID());
       AddCut(*tempcut, option);
       delete tempcut;
       return;
@@ -91,7 +90,6 @@ namespace Hal {
       }
       tempcut = Hal::Cuts::MakeCutCopy(cut, "re", kFALSE);
       if (tempcut == nullptr) return;
-      tempcut->SetCollectionID(cut.GetCollectionID());
       AddCut(*tempcut, option);
       delete tempcut;
       return;

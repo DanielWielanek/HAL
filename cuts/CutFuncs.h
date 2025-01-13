@@ -11,12 +11,14 @@
 
 #include <vector>
 
+#include "Object.h"
 #include "Std.h"
 #include <RtypesCore.h>
 #include <TString.h>
 
 namespace Hal {
   class Cut;
+
   namespace Cuts {
     /**
      * calculate collection Id's from expression
@@ -38,6 +40,14 @@ namespace Hal {
      * @return
      */
     TString GetCutUpdateRatioName(Hal::ECutUpdate upd);
+
+    TString GetCollectionListName(Hal::ECutUpdate upd);
+    /**
+     *
+     * @param upd
+     * @return eg. Event_collections_No
+     */
+    TString GetCollectionCountName(Hal::ECutUpdate upd);
   }  // namespace Cuts
 
 } /* namespace Hal */

@@ -71,24 +71,22 @@ namespace Hal {
   void CutContainer::AddCut(const Cut& cut, Option_t* opt) {
     TString option = opt;
     if (Hal::Std::FindParam(option, "im", kTRUE)) {
-      Cut* tempcut = NULL;
       if (dynamic_cast<const Hal::EventBinningCut*>(&cut)) {
         Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with im flag", __FILE__, __LINE__), EInfo::kError);
         return;
       }
-      tempcut = Hal::Cuts::MakeCutCopy(cut, "im", Hal::Std::FindParam(option, "null", kTRUE));
-      if (tempcut == nullptr) return;
+      Cut* tempcut = Hal::Cuts::MakeCutCopy(cut, "im", Hal::Std::FindParam(option, "null", kTRUE));
+      if (!tempcut) return;
       AddCut(*tempcut, option);
       delete tempcut;
       return;
     } else if (Hal::Std::FindParam(option, "re", kTRUE)) {
-      Cut* tempcut = NULL;
       if (dynamic_cast<const Hal::EventBinningCut*>(&cut)) {
         Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with re flag", __FILE__, __LINE__), EInfo::kError);
         return;
       }
-      tempcut = Hal::Cuts::MakeCutCopy(cut, "re", kFALSE);
-      if (tempcut == nullptr) return;
+      Cut* tempcut = Hal::Cuts::MakeCutCopy(cut, "re", kFALSE);
+      if (!tempcut) return;
       AddCut(*tempcut, option);
       delete tempcut;
       return;
@@ -279,47 +277,21 @@ namespace Hal {
 
   Package* CutContainer::Report() const {
     Package* pack = new Package(this, kTRUE);
-    if (fSize > 0) {
-      pack->AddObject(new ParameterInt("Event_collections_No", GetCutContainer(ECutUpdate::kEvent)->GetEntriesFast()));
+    auto getList  = [&](ECutUpdate upd) {
+      TString collectionNo = Hal::Cuts::GetCollectionCountName(upd);
+      pack->AddObject(new ParameterInt(collectionNo, GetCutContainer(upd)->GetEntriesFast()));
       TList* list1 = new TList();
       list1->SetOwner(kTRUE);
-      list1->SetName("EventCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kEvent)->GetEntriesFast(); i++) {
-        list1->Add(((CutCollection*) GetCutContainer(ECutUpdate::kEvent)->UncheckedAt(i))->Report());
+      list1->SetName(Hal::Cuts::GetCollectionListName(upd));
+      for (int i = 0; i < GetCutContainer(upd)->GetEntriesFast(); i++) {
+        list1->Add(((CutCollection*) GetCutContainer(upd)->UncheckedAt(i))->Report());
       }
       pack->AddObject(list1);
-    }
-    if (fSize > 1) {
-      pack->AddObject(new ParameterInt("Track_collections_No", GetCutContainer(ECutUpdate::kTrack)->GetEntriesFast()));
-      TList* list2 = new TList();
-      list2->SetOwner(kTRUE);
-      list2->SetName("TrackCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kTrack)->GetEntriesFast(); i++) {
-        list2->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTrack)->UncheckedAt(i))->Report());
-      }
-      pack->AddObject(list2);
-    }
-    if (fSize > 2) {
-      pack->AddObject(new ParameterInt("TwoTrack_collections_No", GetCutContainer(ECutUpdate::kTwoTrack)->GetEntriesFast()));
-      TList* list3 = new TList();
-      list3->SetOwner(kTRUE);
-      list3->SetName("TwoTrackCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kTwoTrack)->GetEntriesFast(); i++) {
-        list3->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTwoTrack)->UncheckedAt(i))->Report());
-      }
-      pack->AddObject(list3);
-    }
-    if (fSize > 3) {
-      pack->AddObject(new ParameterInt("TwoTrack_collections_background_No",
-                                       GetCutContainer(ECutUpdate::kTwoTrackBackground)->GetEntriesFast()));
-      TList* list4 = new TList();
-      list4->SetOwner(kTRUE);
-      list4->SetName("TwoTrackBackgroundCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kTwoTrackBackground)->GetEntriesFast(); i++) {
-        list4->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTwoTrackBackground)->UncheckedAt(i))->Report());
-      }
-      pack->AddObject(list4);
-    }
+    };
+    if (fSize > 0) getList(ECutUpdate::kEvent);
+    if (fSize > 1) getList(ECutUpdate::kTrack);
+    if (fSize > 2) getList(ECutUpdate::kTwoTrack);
+    if (fSize > 3) getList(ECutUpdate::kTwoTrackBackground);
     pack->SetComment(this->ClassName());
     return pack;
   }

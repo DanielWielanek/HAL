@@ -48,62 +48,47 @@ namespace Hal {
     }
 
     Hal::Cut* MakeCutCopy(const Hal::Cut& cut, TString flag, Bool_t acceptNulls) {
+      Hal::Cut* res = nullptr;
+      auto upd      = cut.GetUpdateRatio();
       if (flag == "re") {  // real stuff
-        auto upd = cut.GetUpdateRatio();
         switch (upd) {
           case ECutUpdate::kEvent: {
-            auto res = new EventRealCut(static_cast<const EventCut&>(cut));
-            res->SetCollectionID(cut.GetCollectionID());
-            return res;
+            res = new EventRealCut(static_cast<const EventCut&>(cut));
           } break;
           case ECutUpdate::kTrack: {
-            auto res = new TrackRealCut(static_cast<const TrackCut&>(cut));
-            res->SetCollectionID(cut.GetCollectionID());
-            return res;
+            res = new TrackRealCut(static_cast<const TrackCut&>(cut));
           } break;
           case ECutUpdate::kTwoTrack: {
-            auto res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
-            res->SetCollectionID(cut.GetCollectionID());
-            return res;
+            res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
           } break;
           case ECutUpdate::kTwoTrackBackground: {
-            auto res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
-            res->SetCollectionID(cut.GetCollectionID());
-            return res;
+            res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
           } break;
           default: return nullptr; break;
         }
       } else {  // imaginary stuff
-        auto upd = cut.GetUpdateRatio();
         switch (upd) {
           case ECutUpdate::kEvent: {
-            auto tempcut = new EventImaginaryCut(static_cast<const EventCut&>(cut));
-            if (acceptNulls) static_cast<EventImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
-            tempcut->SetCollectionID(cut.GetCollectionID());
-            return tempcut;
+            res = new EventImaginaryCut(static_cast<const EventCut&>(cut));
+            if (acceptNulls) static_cast<EventImaginaryCut*>(res)->AcceptNulls(kTRUE);
           } break;
           case ECutUpdate::kTrack: {
-            auto tempcut = new TrackImaginaryCut(static_cast<const TrackCut&>(cut));
-            if (acceptNulls) static_cast<TrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
-            tempcut->SetCollectionID(cut.GetCollectionID());
-            return tempcut;
+            res = new TrackImaginaryCut(static_cast<const TrackCut&>(cut));
+            if (acceptNulls) static_cast<TrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
           } break;
           case ECutUpdate::kTwoTrack: {
-            auto tempcut = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
-            if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
-            tempcut->SetCollectionID(cut.GetCollectionID());
-            return tempcut;
+            res = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
+            if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
           } break;
           case ECutUpdate::kTwoTrackBackground: {
-            auto tempcut = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
-            if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(tempcut)->AcceptNulls(kTRUE);
-            tempcut->SetCollectionID(cut.GetCollectionID());
-            return tempcut;
+            res = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
+            if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
           } break;
           default: return nullptr; break;
         }
       }
-      return nullptr;
+      if (res) res->SetCollectionID(cut.GetCollectionID());
+      return res;
     }
     TString GetCutUpdateRatioName(ECutUpdate upd) {
       TString update_ratio_name;
@@ -119,5 +104,28 @@ namespace Hal {
       }
       return update_ratio_name;
     }
+
+    TString GetCollectionListName(Hal::ECutUpdate upd) {
+      switch (upd) {
+        case ECutUpdate::kEvent: return "EventCutCollectionList"; break;
+        case ECutUpdate::kTrack: return "TrackCutCollectionList"; break;
+        case ECutUpdate::kTwoTrack: return "TwoTrackCutCollectionList"; break;
+        case ECutUpdate::kTwoTrackBackground: return "TwoTrackBackgroundCutCollectionList"; break;
+        default: Cout::PrintInfo("Unknown update ratio", EInfo::kLowWarning); break;
+      }
+      return "";
+    }
+
+    TString GetCollectionCountName(Hal::ECutUpdate upd) {
+      switch (upd) {
+        case ECutUpdate::kEvent: return "Event_collections_No"; break;
+        case ECutUpdate::kTrack: return "Track_collections_No"; break;
+        case ECutUpdate::kTwoTrack: return "TwoTrack_collections_No"; break;
+        case ECutUpdate::kTwoTrackBackground: "TwoTrack_collections_background_No"; break;
+        default: Cout::PrintInfo("Unknown update ratio", EInfo::kLowWarning); break;
+      }
+      return "";
+    }
+
   }  // namespace Cuts
 } /* namespace Hal */

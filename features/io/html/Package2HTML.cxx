@@ -701,7 +701,6 @@ namespace Hal {
     TString min, max, unit;
 
     for (int i = 1; i < cut_size; i++) {
-      std::cout << "SIZED" << address << std::endl;
       min    = Form("MinCut_%i", i);
       max    = Form("MaxCut_%i", i);
       unit   = Form("UnitName_%i", i);

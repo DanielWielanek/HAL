@@ -24,7 +24,7 @@ namespace Hal {
   class CutMonitorXYZ;
 
   /**
-   * class that stores collection of hits and cut monitors
+   * class that stores collection of cuts and cut monitors
    * after adding to task cuts/cut monitors are extracted and added with "local"
    * and "global" option. E.g. CutsAndMonitors::AddCut(some_cut,"{0}) and
    * CutsAndMonitors::SetOptionForAllCuts("re") is equivalent of

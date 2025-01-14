@@ -153,9 +153,8 @@ namespace Hal {
   Int_t AnaFile::GetMerged() const { return GetMainPackage()->GetMerged(); }
 
   Package* AnaFile::GetCutCollection(Hal::ECutUpdate update, Int_t no) const {
-    TList* list      = NULL;
-    TString listName = Form("%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data());
-    list             = ((TList*) GetCutContainer()->GetObjectByName(listName));
+    TString listName = GetCollectionListName(update);
+    auto list        = ((TList*) GetCutContainer()->GetObjectByName(listName));
     return (Package*) list->At(no);
   }
 
@@ -170,14 +169,8 @@ namespace Hal {
   }
 
   Int_t AnaFile::GetCollectionsNo(Hal::ECutUpdate update) const {
-    TString label = "";
-    switch (update) {
-      case Hal::ECutUpdate::kEvent: label = "Event_collections_No"; break;
-      case Hal::ECutUpdate::kTrack: label = "Track_collections_No"; break;
-      case Hal::ECutUpdate::kTwoTrack: label = "TwoTrack_collections_No"; break;
-      case Hal::ECutUpdate::kTwoTrackBackground: label = "TwoTrack_collections_background_No"; break;
-      default: return 0; break;
-    }
+    TString label = GetCollectionCountName(update);
+    if (label.Length() == 0) return 0;
     if (GetCutContainer()->Exist(label, 0)) { return ((ParameterInt*) GetCutContainer()->GetObjectByName(label))->GetValue(); }
     return 0;
   }

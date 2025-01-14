@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "Object.h"
+#include "Std.h"
 
 namespace Hal {
   class Cut;
@@ -29,6 +30,28 @@ namespace Hal {
     Bool_t fAcceptNull   = {kFALSE};
     Bool_t fAcceptDouble = {kFALSE};
     Int_t fDefCol        = {-1};
+
+  protected:
+    /**
+     * calculate collection Id's from expression
+     * @param option
+     * @return
+     */
+    std::vector<Int_t> GetCollectionsFlags(Int_t startCol, TString option) const;
+    /**
+     * make copy of cut
+     * @param cu cut to copy
+     * @param flag re for real, other create img flag
+     * @param acceptNulls for img if true than accept nulls
+     * @return
+     */
+    Hal::Cut* MakeCutCopy(const Hal::Cut& cut, TString flag, Bool_t acceptNulls = kTRUE) const;
+    /**
+     * return cut update ratio name
+     * @param upd
+     * @return
+     */
+    TString GetCutUpdateRatioName(Hal::ECutUpdate upd) const;
 
   public:
     CutOptions(TString opt = "", Int_t defCol = -1);

@@ -17,7 +17,6 @@
 
 #include "AnaFile.h"
 #include "Cout.h"
-#include "CutFuncs.h"
 #include "CutOptions.h"
 #include "EventBinningCut.h"
 #include "EventComplexCut.h"
@@ -78,7 +77,7 @@ namespace Hal {
     // add to cut containers
     auto addCutRaw = [&](ECutUpdate upd, Int_t colNo) {
       if (fSize <= static_cast<Int_t>(upd)) {
-        TString update_ratio_name = Hal::Cuts::GetCutUpdateRatioName(upd);
+        TString update_ratio_name = Hal::Std::UpdateEnumToString(upd);
         Cout::PrintInfo(Form("CutContainer can't hold %s cut because it's update ratio (%s) is "
                              "too big, check fTries or call SetOption(backround) before adding cuts "
                              "or cut monitors",

@@ -58,15 +58,15 @@ namespace Hal {
     fCollectionID    = collectionNo;
   }
 
-  void CutCollection::AddCut(Cut* cut, Option_t* opt) {
+  void CutCollection::AddCut(Cut* cut, Hal::CutOptions opts) {
+    Bool_t fast       = opts.Fast();
+    Bool_t keepDouble = opts.KeepDouble();
     if (fDummy) return;
     if (cut == NULL) {
       Cout::PrintInfo("Empty cut", EInfo::kLowWarning);
       return;
     }
-    TString option    = opt;
-    Bool_t keepDouble = Hal::Std::FindParam(option, "double");
-    if (!Hal::Std::FindParam(option, "fast")) {  // add normal cut
+    if (!fast) {  // add normal cut
       for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
         if (cut->CutName() == ((Cut*) fCuts->UncheckedAt(i))->CutName()) {
           Cout::PrintInfo(
@@ -270,9 +270,10 @@ namespace Hal {
     CutCollection* clone = new CutCollection(fCutContainerArr, fContainerSize, fMode, new_collection);
     clone->fStep         = this->fStep;
     for (int i = 0; i < this->fCuts->GetEntriesFast(); i++) {
+      Hal::CutOptions opts("double");
       Cut* cut = ((Cut*) fCuts->UncheckedAt(i))->MakeCopy();
       cut->SetCollectionID(new_collection);
-      clone->AddCut(cut);
+      clone->AddCut(cut, opts);
     }
     for (int i = 0; i < fFastCuts->GetEntriesFast(); i++) {
       Cut* cut = ((Cut*) fFastCuts->UncheckedAt(i))->MakeCopy();

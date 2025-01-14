@@ -30,12 +30,6 @@ namespace Hal {
     TObjArray** fTempCutMonitors;  //[fSize]
     TObjArray** fCutContainers;    //[fSize]
     void VerifyOrder(TObjArray* obj);
-    void ExtractComplexMonitor(CutMonitor* mon, TString& opt);
-    void MakeComplexAxis(CutMonitor* mon, Int_t axis, Int_t opt);
-    Bool_t ExtractRegExp(const CutMonitor& cut, Option_t* opt);
-    Bool_t ExtractRegExp2(const CutMonitor& cut, Option_t* opt);
-    Bool_t CheckTwoTracksOptions(const CutMonitor& cutmon, Option_t* opt);
-    Bool_t CheckTwoTracksOptions(const Cut& cutmon, Option_t* opt);
 
   protected:
     inline TObjArray* GetCutContainer(ECutUpdate upd) const { return (TObjArray*) fCutContainers[static_cast<Int_t>(upd)]; };

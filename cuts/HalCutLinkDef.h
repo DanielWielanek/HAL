@@ -24,6 +24,7 @@
 #pragma link C++ class Hal::CutMonitorRequest + ;
 #pragma link C++ class std::vector < Hal::CutMonitorRequest> + ;
 #pragma link C++ class Hal::CutMonAxisConf + ;
+#pragma link C++ class Hal::CutOptions + ;
 
 #pragma link C++ class Hal::TrackV0Cut + ;
 #pragma link C++ class Hal::TrackV0MinvCut + ;

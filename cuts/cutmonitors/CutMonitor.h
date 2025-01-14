@@ -23,6 +23,7 @@ namespace Hal {
   class CutContainer;
   class CutMonitor : public TObject {
     friend class CutContainer;
+    friend class CutOptions;
 
   protected:
     /**

@@ -13,6 +13,7 @@
 #include "Cut.h"
 
 #include "Array.h"
+#include "CutOptions.h"
 
 #include <TObjArray.h>
 #include <TString.h>
@@ -151,9 +152,9 @@ namespace Hal {
     /**
      * add cut to this collection
      * @param cut cut
-     * @param opt option of adding (at this level only "fast" option can be used
+     * @param opt adding options of cuts
      */
-    void AddCut(Cut* cut, Option_t* opt = " ");
+    void AddCut(Cut* cut, Hal::CutOptions opt = Hal::CutOptions());
     /**
      * mark this cut container as dummy (all cuts ad cuts monitor are removed and
      * will not be used anymore

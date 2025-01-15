@@ -51,6 +51,8 @@
 #pragma link C++ class Hal::TrackFieldMonitorX + ;
 #pragma link C++ class Hal::TrackFieldMonitorXY + ;
 #pragma link C++ class Hal::TrackFieldMonitorXYZ + ;
+#pragma link C++ class Hal::CutMonitorYPt + ;
+#pragma link C++ class Hal::CutMonitorEtaPt + ;
 // EventCut
 #pragma link C++ class Hal::EventMultiplicityCut + ;
 #pragma link C++ class Hal::EventMultiChargedCut + ;

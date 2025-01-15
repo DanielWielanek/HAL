@@ -26,7 +26,6 @@
 #include <iostream>
 #include <vector>
 
-
 NamespaceImp(Hal::Std);
 
 namespace {  // interal functions
@@ -376,10 +375,10 @@ namespace Hal::Std {
     array->Compress();
   }
 
+  Int_t GetJsRootVer() {
+    Int_t ver = ::ROOT::GetROOT()->GetVersionInt();
+    if (ver < 62400) return 5;
+    if (ver < 62812) return 6;
+    return 7;
+  }
 }  // namespace Hal::Std
-Int_t Hal::Std::GetJsRootVer() {
-  Int_t ver = ::ROOT::GetROOT()->GetVersionInt();
-  if (ver < 62400) return 5;
-  if (ver < 62812) return 6;
-  return 7;
-}

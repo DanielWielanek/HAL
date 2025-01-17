@@ -90,6 +90,40 @@ namespace Hal {
     }
   }
 
+  void CorrelationHisto::Fill(std::vector<Double_t> params, Double_t weight) {
+    if (params.size() != fNParams) return;
+    //    HalCoutDebug();
+    if (fAutoFill) {
+      //      HalCoutDebug();
+      if (fTestValues.size() < fNTest) {
+
+        fTestValues.push_back(params);
+        return;
+      } else {
+        fAutoFill = kFALSE;
+        AutoInitialize();
+      }
+    } else {
+      if (fNTest == -1) {
+        Initialize();
+        fNTest = 0;
+      }
+    }
+    //    HalCoutDebug();
+    int count = 0;
+    for (int i = 0; i < fNParams; i++) {
+      double x = params[i];
+      for (int j = i; j < fNParams; j++) {
+        double y = params[j];
+        if (i == j) {
+          fHistograms[count++]->Fill(x, weight);
+        } else {
+          ((TH2*) fHistograms[count++])->Fill(x, y, weight);
+        }
+      }
+    }
+  }
+
   void CorrelationHisto::Initialize() {
     fNHistograms = (fNParams + 1) * fNParams / 2;
     fHistograms.resize(fNHistograms);
@@ -157,9 +191,23 @@ namespace Hal {
       for (int j = i; j < fNParams; j++) {
         double y = params[j];
         if (i != j)
-          fHistograms[count++]->Fill(x, y);
+          ((TH2*) fHistograms[count++])->Fill(x, y);
         else
           fHistograms[count++]->Fill(x);
+      }
+    }
+  }
+
+  void CorrelationHisto::FillUnchecked(std::vector<Double_t> params, Double_t weight) {
+    int count = 0;
+    for (int i = 0; i < fNParams; i++) {
+      double x = params[i];
+      for (int j = i; j < fNParams; j++) {
+        double y = params[j];
+        if (i != j)
+          ((TH2*) fHistograms[count++])->Fill(x, y, weight);
+        else
+          fHistograms[count++]->Fill(x, weight);
       }
     }
   }

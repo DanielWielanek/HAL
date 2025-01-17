@@ -63,10 +63,22 @@ namespace Hal {
      */
     void Fill(std::vector<Double_t> params);
     /**
+     * fill histograms and automatically set the optimized limits of histograms, after fill -nsamples times
+     * memeory of histogram is allocated and FillUnchecked can be used
+     * @param params
+     * @param weight
+     */
+    void Fill(std::vector<Double_t> params, Double_t weight);
+    /**
      * fill histograms without set optimized limites
      * @param params
      */
     void FillUnchecked(std::vector<Double_t> params);
+    /**
+     * fill histograms without set optimized limites
+     * @param params
+     */
+    void FillUnchecked(std::vector<Double_t> params, Double_t weight);
     /**
      *
      * @param opt additional draw options avaiable logz logx and logy

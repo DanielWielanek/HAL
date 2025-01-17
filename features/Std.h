@@ -31,8 +31,9 @@ class TClonesArray;
 namespace Hal {
   class CompressionMap;
   namespace Std {
-    struct ITriplet {
-      int x, y, z;
+    template<typename T>
+    struct Triplet {
+      T x, y, z;
     };
     typedef std::complex<double> DComplex;
     /**

@@ -12,6 +12,7 @@
 #include <TGraphErrors.h>
 #include <TH1.h>
 
+#include "CorrelationHisto.h"
 #include "Cout.h"
 #include "MultiGraph.h"
 #include "StdHist.h"
@@ -66,6 +67,7 @@ namespace Hal {
     if (Hal::Std::FindParam(style, "center", kTRUE)) {
       res.CenterTitle(kTRUE, 'x');
       res.CenterTitle(kTRUE, 'y');
+      res.CenterTitle(kTRUE, 'z');
     }
     if (Hal::Std::FindParam(style, "apollo", kTRUE)) {
       char opt[] = {'x', 'y', 'z'};
@@ -74,6 +76,7 @@ namespace Hal {
         res.GetAxisStyle(opt[i]).SetCenterTitle(kTRUE);
         res.GetAxisStyle(opt[i]).SetTitleFont(82);
         res.GetAxisStyle(opt[i]).SetLabelFont(82);
+        res.GetAxisStyle(opt[i]).SetNdivisions(505, kTRUE);
       }
       res.SetColor(kBlack);
     }
@@ -166,6 +169,12 @@ namespace Hal {
       }
     } else if (h.InheritsFrom("Hal::DividedHisto1D")) {
       dynamic_cast<Hal::DividedHisto1D*>(&h)->ApplyStyle(*this);
+    } else if (h.InheritsFrom("Hal::CorrelationHisto")) {
+      auto corrH = dynamic_cast<Hal::CorrelationHisto*>(&h);
+      auto hList = corrH->GetHistograms();
+      for (auto sH : hList) {
+        Apply(*sH);
+      }
     }
     if (h.InheritsFrom("TGraph")) { ApplyInternal(dynamic_cast<TGraph&>(h)); }
   }

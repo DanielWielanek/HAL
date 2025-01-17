@@ -165,13 +165,17 @@
 #pragma link C++ class Hal::FitParam + ;
 #pragma link C++ class Hal::MinimizerStepConf + ;
 #pragma link C++ class Hal::CompressionMap + ;
-
+#pragma link C++ class Hal::MultiDimExtrapolator + ;
+#pragma link C++ class Hal::MultiDimDataManager + ;
 // STD STUFF
 #pragma link C++ class std::vector < Hal::FitParam> + ;
 #pragma link C++ class std::vector < TString> + ;
 #pragma link C++ class std::vector < std::vector < TString>> + ;
 #pragma link C++ class std::map < TString, Double_t> + ;
 #pragma link C++ class std::map < TString, Int_t> + ;
+#pragma link C++ class Hal::Std::Triplet < Double_t> + ;
+#pragma link C++ class Hal::Std::Triplet < Int_t> + ;
+#pragma link C++ class Hal::Std::Triplet < Float_t> + ;
 #pragma link C++ class Hal::PackageTable + ;
 //#pragma link C++ class HalParameter+;
 

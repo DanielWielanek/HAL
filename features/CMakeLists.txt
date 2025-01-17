@@ -83,6 +83,8 @@ phys/ProfileAna2D.cxx
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx
 minimizer/MinimizerStepConf.cxx
+minimizer/MultiDimDataManager.cxx
+minimizer/MultiDimExtrapolator.cxx
 )
 install(FILES ${EXT_HEADERS}
         DESTINATION include

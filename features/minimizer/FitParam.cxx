@@ -30,6 +30,7 @@ namespace Hal {
     }
     fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
     if (fNPoint == 1) fDParam = 0;
+    if (fDParam) fOverDParam = 1.0 / fDParam;
     fMin   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMin, '-');  // npoint -1 because we have n-1 areas than points
     fMax   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMax, '+');
     fStart = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fStart, '=');
@@ -99,6 +100,11 @@ namespace Hal {
       }
     }
     return values;
+  }
+
+  void FitParam::SetMapRangeByStep(Double_t min, Double_t max, Double_t step) {
+    Int_t nPoints = (max - min) / step + 1;
+    SetMapRange(min, max, nPoints);
   }
 
 }  // namespace Hal

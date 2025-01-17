@@ -24,6 +24,7 @@ namespace Hal {
     Double_t fMapMax {0};
     Double_t fNPoint {0};
     Double_t fDParam {0};
+    Double_t fOverDParam {0};
     Double_t fStart {0};
     Double_t fFitted {0};
     Double_t fError {0};
@@ -37,6 +38,7 @@ namespace Hal {
     Bool_t IsMapSet() const { return fIsMapSet; }
     void Init();
     void SetMapRange(Double_t min, Double_t max, Int_t points);
+    void SetMapRangeByStep(Double_t min, Double_t max, Double_t step);
     void SetRange(Double_t min, Double_t max);
     void SetStartVal(Double_t val) { fStart = val; };
     void SetIsDiscrete(Bool_t isDiscrete) { fIsDiscrete = isDiscrete; }
@@ -57,6 +59,7 @@ namespace Hal {
     Double_t GetStartVal() const { return fStart; };
     Double_t GetFittedValue() const { return fFitted; };
     Double_t GetError() const { return fError; };
+    Double_t GetOverDParam() const { return fOverDParam; }
     FitParam& operator=(const FitParam& other) = default;
     TString GetParName() const { return fName; }
     const std::vector<Double_t> GetValuesArray() const;

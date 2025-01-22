@@ -9,6 +9,7 @@
 
 #include "CorrFitPairGeneratorYPtKt.h"
 
+#include "CorrFitPairFile.h"
 #include "FemtoCorrFuncKt.h"
 #include "FemtoMiniPair.h"
 
@@ -64,7 +65,7 @@ namespace Hal {
           int bin = GeneratePairOneDim();
           if (bin < 1) continue;
           if (fLimitsN[bin] > fBinLimit) continue;
-          auto array = fSignalPairs[bin - 1];
+          auto array = fPairFile->GetSignal(bin - 1);
           auto pair  = (FemtoMicroPair*) array->ConstructedAt(array->GetEntriesFast());
           fLimitsN.IncrementAfter(bin);
           *pair = fPair;
@@ -77,7 +78,7 @@ namespace Hal {
           if (bin.y < 1) continue;
           if (bin.z < 1) continue;
           if (fLimits3D[bin.x][bin.y][bin.z] > fBinLimit) continue;
-          auto array = fSignalPairs[bin.z - 1];
+          auto array = fPairFile->GetSignal(bin.z - 1);
           auto pair  = (FemtoMicroPair*) array->ConstructedAt(array->GetEntriesFast());
           fLimits3D.IncrementAfter(bin.x, bin.y, bin.z);
           *pair = fPair;
@@ -128,8 +129,8 @@ namespace Hal {
       Double_t py2  = pt2 * TMath::Sin(phi2);
       Double_t et1  = TMath::Sqrt(pt1 * pt1 + fM1 * fM1);
       Double_t et2  = TMath::Sqrt(pt2 * pt2 + fM2 * fM2);
-      Double_t pz1  = TMath::Sign(et1 * 0.5, y1) * TMath::Exp(-y1) * (TMath::Exp(2.0 * y1) - 1.0);
-      Double_t pz2  = TMath::Sign(et2 * 0.5, y2) * TMath::Exp(-y2) * (TMath::Exp(2.0 * y2) - 1.0);
+      Double_t pz1  = et1 * TMath::SinH(y1);
+      Double_t pz2  = et2 * TMath::SinH(y2);
       Double_t e1   = TMath::Sqrt(et1 * et1 + pz1 * pz1);
       Double_t e2   = TMath::Sqrt(et2 * et2 + pz2 * pz2);
       Double_t Px   = px1 + px2;

@@ -28,6 +28,7 @@ class TClonesArray;
 
 namespace Hal {
   class FemtoCorrFunc;
+  class CorrFitPairFile;
   class CorrFitPairGenerator : public TObject {
   protected:
     Bool_t fInited = {kFALSE};
@@ -41,10 +42,7 @@ namespace Hal {
     Double_t fSideCut[2]      = {0, 0};
     Double_t fOverStep        = {0};
     Int_t fBinLimit           = {10000};
-    TString fFileName         = {"pair.root"};
-    TFile* fOutFile           = {nullptr};
     FemtoCorrFunc* fCF        = {nullptr};
-    TTree* fOutTree           = {nullptr};
     TH1* fDebugHisto          = {nullptr};
     Hal::FemtoPair* fHbtPair  = {nullptr};
     Femto::EKinematics fFrame = {Femto::EKinematics::kLCMS};
@@ -56,7 +54,7 @@ namespace Hal {
     enum class EGrouping { kOneDim, kThreeDim };
     EGrouping fGroupingFlag = {EGrouping::kOneDim};
     CorrFitMapGroupConfig fGrouping;
-    std::vector<TClonesArray*> fSignalPairs;
+    CorrFitPairFile* fPairFile       = {nullptr};
     virtual void GenerateEvent() = 0;
     Int_t GetBin(Double_t val) const;
 
@@ -90,7 +88,7 @@ namespace Hal {
      * set name of the pair file
      * @param name
      */
-    void SetOutput(TString name) { fFileName = name; };
+    void SetOutput(TString name);
     /**
      * set maximum number of pairs per bin
      * @param limit

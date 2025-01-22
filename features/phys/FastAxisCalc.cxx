@@ -20,6 +20,7 @@ namespace Hal {
     fStep           = 1.0 / fStep;
     fMinBin         = 0;
     fMaxBin         = steps + 1;
+    fBins           = x.GetNbins();
   }
 
   void FastAxisCalc::Recalc(const TAxis& x) {
@@ -30,6 +31,7 @@ namespace Hal {
     fStep           = 1.0 / fStep;
     fMinBin         = 0;
     fMaxBin         = steps + 1;
+    fBins           = x.GetNbins();
   }
 
   void FastAxisCalc::RoundToMinusOne() { fMinBin = fMaxBin = -1; }

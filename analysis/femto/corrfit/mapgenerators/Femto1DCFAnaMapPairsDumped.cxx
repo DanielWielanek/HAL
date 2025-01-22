@@ -32,62 +32,45 @@
 #include <TObject.h>
 #include <TTree.h>
 
+#include "CorrFitMapGroupConfig.h"
+#include "CorrFitPairFile.h"
+
 namespace Hal {
   Femto1DCFAnaMapPairsDumped::Femto1DCFAnaMapPairsDumped() :
-    Femto1DCFAnaMapMC(kFALSE),
-    fInFile("pairs.root"),
-    fFile(nullptr),
-    fTree(nullptr),
-    fPairsSignal(nullptr),
-    fPairsBackground(nullptr),
-    fUseBackground(kFALSE),
-    fWeightedBackround(kFALSE),
-    fMaxEvents(-1) {}
+    Femto1DCFAnaMapMC(kFALSE), fInFile("pairs.root"), fUseBackground(kFALSE), fWeightedBackround(kFALSE), fMaxEvents(-1) {}
 
-  void Femto1DCFAnaMapPairsDumped::SetInFile(TString filename) { fInFile = filename; }
+  void Femto1DCFAnaMapPairsDumped::SetInFile(TString filename) { fPairFile = new Hal::CorrFitPairFile(filename, "read"); }
 
   void Femto1DCFAnaMapPairsDumped::Run(Int_t start, Int_t end) {
     if (start == end) {
       start = 0;
-      end   = fTree->GetEntries();
+      end   = fPairFile->GetEntries();
     }
     for (int i = start; i < end; i++) {
-      fTree->GetEntry(i);
-      if (!fUseBackground) {
-        MakePairsWeighted(fPairsSignal, kTRUE);
-        MakePairsUnWeighted(fPairsSignal, kFALSE);
+      fPairFile->GetEntry(i);
+      int bins = fPairFile->GetConfig()->GetNbins();
+      if (!fUseBackground && fPairFile->GetConfig()->HaveSignal()) {
+        for (int j = 0; j < bins; j++) {
+          MakePairsWeighted(fPairFile->GetSignal(j), kTRUE);
+          MakePairsUnWeighted(fPairFile->GetSignal(j), kFALSE);
+        }
       } else {
-        MakePairsWeighted(fPairsSignal, kTRUE);
+        for (int j = 0; j < bins; j++)
+          MakePairsWeighted(fPairFile->GetSignal(j), kTRUE);
         if (fWeightedBackround) {
-          MakePairsWeighted(fPairsBackground, kFALSE);
+          for (int j = 0; j < bins; j++)
+            MakePairsWeighted(fPairFile->GetBackground(j), kFALSE);
         } else {
-          MakePairsUnWeighted(fPairsBackground, kFALSE);
+          for (int j = 0; j < bins; j++)
+            MakePairsUnWeighted(fPairFile->GetBackground(j), kFALSE);
         }
       }
     }
   }
 
   Bool_t Femto1DCFAnaMapPairsDumped::Init() {
-    fFile = new TFile(fInFile);
-    if (fFile->IsZombie()) return kFALSE;
-    TList* list = fFile->GetListOfKeys();
-    for (int i = 0; i < list->GetEntries(); i++) {
-      TKey* key    = (TKey*) list->At(i);
-      TObject* obj = fFile->Get(key->GetName());
-      if (obj->InheritsFrom("TTree")) {
-        fTree = (TTree*) obj;
-        break;
-      }
-    }
-    if (fTree == nullptr) return kFALSE;
-    TBranch* br  = fTree->GetBranch("FemtoSignal.");
-    fPairsSignal = new TClonesArray("Hal::FemtoMiniPair");
-    br->SetAddress(&fPairsSignal);
-    if (fUseBackground) {
-      br               = fTree->GetBranch("FemtoBackground.");
-      fPairsBackground = new TClonesArray("Hal::FemtoMiniPair");
-      br->SetAddress(&fPairsBackground);
-    }
+    fPairFile->Init();
+    if (!fPairFile->GetConfig()->HaveBackground()) fUseBackground = kFALSE;
     return Femto1DCFAnaMapMC::Init();
   }
 

@@ -11,6 +11,7 @@
 #include "CorrFitMapGroupConfig.h"
 
 #include "Array.h"
+#include "CorrFitPairFile.h"
 #include "Cout.h"
 #include "FemtoMiniPair.h"
 
@@ -52,9 +53,9 @@ namespace Hal {
       const Int_t defSize = 100;
       for (int bin = 0; bin < fGrouping.GetNbins(); bin++) {
         const Double_t kstar = fCentersX[bin] * scale;
-        fSignalPairs[bin]->ExpandCreateFast(defSize);
+        auto vec             = fPairFile->GetSignal(bin);
         for (int i = 0; i < defSize; i++) {
-          pair = (FemtoMicroPair*) fSignalPairs[bin]->UncheckedAt(i);
+          pair = (FemtoMicroPair*) vec->UncheckedAt(i);
           gRandom->Sphere(x, y, z, kstar);
           build();
         }
@@ -64,11 +65,12 @@ namespace Hal {
       const int binY      = fCentersY.GetSize();
       const int binX      = fCentersX.GetSize();
       for (int bin = 0; bin < fGrouping.GetNbins(); bin++) {
-        fSignalPairs[bin]->ExpandCreateFast(defSize * binY * binX);
+        auto vec = fPairFile->GetSignal(bin);
+        vec->ExpandCreateFast(defSize * binY * binX);
         int count = 0;
         for (int biny = 0; biny < binY; biny++) {
           for (int binx = 0; binx < binX; binx++) {
-            pair = (FemtoMicroPair*) fSignalPairs[bin]->UncheckedAt(count++);
+            pair = (FemtoMicroPair*) vec->UncheckedAt(count++);
             z    = fCentersZ[bin] * scale;
             y    = fCentersY[biny] * scale;
             x    = fCentersX[binx] * scale;

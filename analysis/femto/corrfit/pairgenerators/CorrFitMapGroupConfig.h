@@ -17,29 +17,37 @@
 namespace Hal {
 
   class CorrFitMapGroupConfig : public Object {
-    Int_t fMode = {0};
+    const Int_t kBitDataMode         = {0};
+    const Int_t kBitBranchModeSignal = {1};
+    const Int_t kBitBranchModeBckg   = {2};
+    UInt_t fMode                     = {0};
     Int_t fBins;
+    Int_t fBranchMode = {0};
     Double_t fMin, fMax, fStep;
     Femto::EKinematics fFrame = {Femto::EKinematics::kLCMS};
 
   public:
     CorrFitMapGroupConfig();
-    void SetGroupByKLong() { fMode = 1; };
-    void SetGroupByKStar() { fMode = 0; };
+    void SetGroupByKLong() { SETBIT(fMode, kBitDataMode); };
+    void SetGroupByKStar() { CLRBIT(fMode, kBitDataMode); };
     void SetAxis(Int_t bins, Double_t min, Double_t max);
     Femto::EKinematics GetFrame() const { return fFrame; }
     void SetFrame(Femto::EKinematics frame) { fFrame = frame; }
     Int_t GetBin(const FemtoPair* pair) const;
     Int_t GetNbins() const { return fBins; }
-    Bool_t GroupByLong() const;
-    Bool_t GroupByKStar() const;
+    inline Bool_t GroupByLong() const { return TESTBIT(fMode, kBitDataMode); };
+    inline Bool_t GroupByKStar() const { return !GroupByLong(); };
     Double_t GetMin() const { return fMin; };
     Double_t GetMax() const { return fMax; };
+    void EnableSignal() { SETBIT(fMode, kBitBranchModeSignal); };
+    void EnableBackground() { SETBIT(fMode, kBitBranchModeBckg); };
+    Bool_t HaveSignal() const { return TESTBIT(fMode, kBitBranchModeSignal); };
+    Bool_t HaveBackground() const { return TESTBIT(fMode, kBitBranchModeSignal); };
     virtual void Add(const Object* pack);
     std::vector<TString> GetBranchesByValue(Double_t min, Double_t max, Bool_t signal = kTRUE) const;
     std::vector<TString> GetBranchesByIndex(Int_t min, Int_t max, Bool_t signal = kTRUE) const;
     virtual ~CorrFitMapGroupConfig() {};
-    ClassDef(CorrFitMapGroupConfig, 1)
+    ClassDef(CorrFitMapGroupConfig, 2)
   };
 } /* namespace Hal */
 

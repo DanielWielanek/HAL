@@ -8,6 +8,7 @@
  */
 #include "CorrFitPairGeneratorYPtKtStubborn.h"
 
+#include "CorrFitPairFile.h"
 #include "FemtoCorrFuncKt.h"
 #include "FemtoMiniPair.h"
 
@@ -39,7 +40,7 @@ namespace Hal {
           bin = GeneratePairOneDim();
           if (bin < 1) continue;
           if (fLimitsN[bin] == startBin) {
-            auto array = fSignalPairs[bin];
+            auto array = fPairFile->GetSignal(bin);
             fLimitsN.IncrementAfter(bin);
             auto pair = (FemtoMicroPair*) array->ConstructedAt(array->GetEntriesFast());
             *pair     = fPair;
@@ -62,7 +63,7 @@ namespace Hal {
           if (bin.y < 1) continue;
           if (bin.z < 1) continue;
           if (fLimits3D[bin.x][bin.y][bin.z] == startBin) {
-            auto array = fSignalPairs[bin.z - 1];
+            auto array = fPairFile->GetSignal(bin.z - 1);
             auto pair  = (FemtoMicroPair*) array->ConstructedAt(array->GetEntriesFast());
             fLimits3D.IncrementAfter(bin.x, bin.y, bin.z);
             *pair = fPair;
@@ -70,8 +71,9 @@ namespace Hal {
           }
         } while (counted != totalSize);
         for (int i = 0; i < totalSize; i++) {
-          for (auto sig : fSignalPairs) {
-            auto pair = (FemtoMicroPair*) sig->ConstructedAt(0);
+          int bins = fPairFile->GetConfig()->GetNbins();
+          for (int ii = 0; ii < bins; ii++) {
+            auto pair = (FemtoMicroPair*) fPairFile->GetSignal(ii)->ConstructedAt(0);
             *fHbtPair = *pair;
             fHbtPair->Compute();
           }

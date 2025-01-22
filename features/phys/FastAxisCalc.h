@@ -18,6 +18,7 @@ namespace Hal {
    */
   class FastAxisCalc : public TObject {
     Double_t fMin = {0}, fMax = {1.0}, fStep = {100.0};
+    Int_t fBins   = {0};
     Int_t fMinBin = {0};
     Int_t fMaxBin = {100};
 
@@ -31,6 +32,10 @@ namespace Hal {
       if (val >= fMax) return fMaxBin;
       return (val - fMin) * fStep + 1.0;
     }
+    inline Int_t GetNBins() const { return fBins; };
+    Double_t GetMin() const { return fMin; }
+    Double_t GetMax() const { return fMax; }
+    Double_t GetStep() const { return fStep; }
     virtual void Print(Option_t* option = "") const;
     virtual ~FastAxisCalc() {};
     ClassDef(FastAxisCalc, 1)

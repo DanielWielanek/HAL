@@ -9,6 +9,7 @@
 
 #include "CorrFitPairGenerator.h"
 
+#include "CorrFitPairFile.h"
 #include "Cout.h"
 #include "DividedHisto.h"
 #include "FemtoCorrFunc.h"
@@ -91,12 +92,10 @@ namespace Hal {
     fGrouping.SetAxis(bins, min, max);
     fNBins = bins;
 
-    fOutFile = new TFile(fFileName, "recreate");
-    fOutTree = new TTree("HalTree", "Tree");
-    fOutFile->mkdir("HalInfo");
-    fOutFile->cd("HalInfo");
-    fGrouping.Write();
-    fOutFile->cd();
+    fGrouping.EnableSignal();
+    fPairFile->SetConfig(fGrouping);
+    fPairFile->Init();
+
 
     auto FillCenters = [&](Array_1<Double_t>& array, Int_t binsx, Double_t minx, Double_t maxx) {
       Double_t step = (maxx - minx) / double(binsx);
@@ -119,47 +118,39 @@ namespace Hal {
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "x");
       FillCenters(fCentersX, bins, min, max);
     }
-
-    auto vec = fGrouping.GetBranchesByValue(0, 0, kTRUE);  // 0,0 -> get all branches
-    int idx  = 0;
-    for (auto branchName : vec) {
-      fSignalPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
-      fOutTree->Branch(branchName, &*fSignalPairs[idx]);
-      idx++;
-    }
     fInited = kTRUE;
     return kTRUE;
   }
 
+  void CorrFitPairGenerator::SetOutput(TString name) { fPairFile = new CorrFitPairFile(name, "recreate"); }
+
   void CorrFitPairGenerator::SetCorrFctn(const FemtoCorrFunc& cf) { fCF = (FemtoCorrFunc*) cf.Clone(); }
 
   void CorrFitPairGenerator::Run(Int_t entries) {
-    if (!fInited || !fOutFile) return;
+    if (!fInited || !fPairFile) return;
+
     int percent = entries / 100;
     if (percent == 0) percent = 1;
     for (int i = 0; i < entries; i++) {
       if (i % percent == 0) { Cout::ProgressBar(i, entries); }
       if (fDebug) {
         unsigned int count = 1;
-        for (auto data : fSignalPairs) {
-          fDebugHisto->SetBinContent(count, fDebugHisto->GetBinContent(count) + data->GetEntriesFast());
+        Int_t bins         = fPairFile->GetConfig()->GetNbins();
+        for (int ii = 0; ii < bins; ii++) {
+          auto vec = fPairFile->GetSignal(ii);
+          fDebugHisto->SetBinContent(count, fDebugHisto->GetBinContent(count) + vec->GetEntriesFast());
           ++count;
         }
       }
-      for (auto data : fSignalPairs)
-        data->Clear();
+      fPairFile->ClearData();
       GenerateEvent();
-      fOutTree->Fill();
+      fPairFile->Fill();
     }
-    fOutTree->Write();
-    fOutFile->Close();
-
-    delete fOutFile;
-    fOutFile = nullptr;
+    delete fPairFile;
+    fPairFile = nullptr;
     if (fDebug) {
       TFile* f = new TFile(Form("%s_debug.root", ClassName()), "recreate");
       fDebugHisto->Write();
-      // delete fDebugHisto;
       fDebugHisto = nullptr;
       f->Close();
       delete f;
@@ -179,7 +170,7 @@ namespace Hal {
   }
 
   CorrFitPairGenerator::~CorrFitPairGenerator() {
-    if (fOutFile) { fOutFile->Close(); }
+    if (fPairFile) { delete fPairFile; }
     if (fCF) delete fCF;
   }
 

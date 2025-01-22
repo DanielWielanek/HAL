@@ -22,13 +22,11 @@ class TClonesArray;
  * class for generating 1-dim HBT map, use pairs from dumped file
  */
 namespace Hal {
+  class CorrFitPairFile;
   class Femto1DCFAnaMapPairsDumped : public Femto1DCFAnaMapMC {
   protected:
     TString fInFile;
-    TFile* fFile;
-    TTree* fTree;
-    TClonesArray* fPairsSignal;
-    TClonesArray* fPairsBackground;
+    CorrFitPairFile* fPairFile = {nullptr};
     Bool_t fUseBackground;
     Bool_t fWeightedBackround;
     Int_t fMaxEvents;

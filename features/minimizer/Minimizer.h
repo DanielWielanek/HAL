@@ -24,37 +24,11 @@
  * disabled then minimum is found by using parabolic interpolation around
  * discrete minimum.
  */
-/*
-class HalMinimizerParameter : public TObject {
-private:
-  Double_t fMapMin;
-  Double_t fMapMax;
-  Double_t fMin;
-  Double_t fMax;
-  Double_t fStartParam;
-  Int_t fMapSteps;
-  std::vector<Double_t> fValues;
-  TString fParName;
 
-public:
-  HalMinimizerParameter() : fMapMin(0), fMapMax(0), fMin(0), fMax(0), fStartParam(0), fMapSteps(0) {};
-  Double_t GetMapMin() const { return fMapMin; };
-  Double_t GetMapMax() const { return fMapMax; }
-
-  Int_t GetMapSteps() const { return fMapSteps; };
-  Int_t GetNProbes() const { return fValues.size(); };
-  Double_t GetStepSize() const {
-    Double_t n = GetNProbes() - 1;
-    return (fMin - fMax) / n;
-  };
-  Bool_t IsConst() const {
-    if (GetNProbes() < 1) return kTRUE;
-    return kFALSE;
-  }
-  virtual ~HalMinimizerParameter() {};
-};
-*/
+class TFile;
+class TTree;
 namespace Hal {
+  class MultiDimFile;
   class Minimizer : public ROOT::Math::Minimizer {
 
   protected:
@@ -71,6 +45,7 @@ namespace Hal {
 
     ROOT::Math::IMultiGenFunction* fFunc;
     eMinimizeType fMinimizeType;
+    MultiDimFile* fDumpFile = {nullptr};
     Int_t fNCalls;
     Int_t fFreePars = {0};
     Bool_t fDiscreteFit;
@@ -78,6 +53,8 @@ namespace Hal {
     Bool_t fMapSet;
     Double_t fGlobMin;
     Double_t fNDF;
+    Bool_t fDump = {kFALSE};
+    TString fDumpFileName;
     double* fQuantumFits;  //[fNo]
     double* fSmoothFits;   //[fNo]
     double* fErrors;       //[fNo]
@@ -90,6 +67,7 @@ namespace Hal {
     void MinimizeNelderMead();
     void ChangeStateVector(std::vector<Int_t>& vec);
     void SetTempParams();
+    void PrepareDump();
     void EstimateError(Int_t par, Double_t& min, Double_t& quantumMin, Double_t& error);
     Bool_t LoopOverParameter(Int_t param);
     Bool_t IsFixed(Int_t i) const;
@@ -101,6 +79,11 @@ namespace Hal {
   public:
     Minimizer();
     Bool_t IsMapSet() const { return fMapSet; }
+    /**
+     * enable dumping to root file that can be used by extrapolator
+     * @param dumpFile
+     */
+    void SetDumpFile(TString dumpFile);
     void SetNDF(Double_t ndf) { fNDF = ndf; }
     void SetTrace(Bool_t trace) { fTrace = trace; };
     /**

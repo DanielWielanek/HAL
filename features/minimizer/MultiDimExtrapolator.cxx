@@ -9,6 +9,8 @@
 
 #include "CorrelationHisto.h"
 #include "Cout.h"
+#include "MultiDimDataManager.h"
+#include "MultiDimFile.h"
 
 #include <TFile.h>
 #include <TNtuple.h>
@@ -18,44 +20,33 @@
 
 namespace Hal {
 
-  void MultiDimExtrapolator::LoadFromTFile(TString file) {
-    fFile        = new TFile(file);
-    fTree        = (TTree*) fFile->Get("data");
-    fDataManager = (MultiDimDataManager*) fFile->Get("info");
-    fTree->SetBranchAddress("vector", &fValues);
-    fTree->GetEntry(0);
-    if (fValues->size() != 0) {
-      if (fValues->size() - 1 != fDataManager->GetSize()) {
-        Hal::Cout::PrintInfo(Form("Incompatible data %lu expected %i", fValues->size() - 1, fDataManager->GetSize()),
-                             EInfo::kError);
-      }
-    }
-  }
+  void MultiDimExtrapolator::LoadFromTFile(TString file) { fInFile = new Hal::MultiDimFile(file); }
 
   Hal::CorrelationHisto* MultiDimExtrapolator::GetCorrHisto() const {
-    Hal::CorrelationHisto* res = new Hal::CorrelationHisto(fDataManager->GetSize());
-    auto params                = fDataManager->GetParams();
+    Hal::CorrelationHisto* res = new Hal::CorrelationHisto(fInFile->GetConfig()->GetSize());
+    auto params                = fInFile->GetConfig()->GetParams();
     for (int i = 0; i < params.size(); i++) {
       res->ConfigParam(i,
                        params[i].GetNPoints(),
-                       params[i].GetMapMin() - 0.5 * params[i].GetDParam(),
-                       params[i].GetMapMax() + 0.5 * params[i].GetDParam(),
+                       params[i].GetMapMin() - 0.5 * params[i].GetStepSize(),
+                       params[i].GetMapMax() + 0.5 * params[i].GetStepSize(),
                        params[i].GetParName());
     }
     res->Init();
-    std::vector<Double_t> values(fValues->size() - 1);
-    for (int i = 0; i < fTree->GetEntries(); i++) {
-      fTree->GetEntry(i);
+    auto valuesTree = fInFile->GetValues();
+    std::vector<Double_t> values(valuesTree->size() - 1);
+    for (int i = 0; i < fInFile->GetEntries(); i++) {
+      fInFile->GetEntry(i);
       for (int j = 0; j < values.size(); j++) {
-        values[j] = (*fValues)[j + 1];
+        values[j] = (*valuesTree)[j + 1];
       }
-      res->FillUnchecked(values, (*fValues)[0]);
+      res->FillUnchecked(values, (*valuesTree)[0]);
     }
     return res;
   }
 
   Double_t MultiDimExtrapolator::Extrapolate(std::vector<Double_t>& x) const {
-    const int dimensions = fDataManager->GetSize();
+    const int dimensions = fInFile->GetConfig()->GetSize();
     // if (dimensions == 0 || size.size() != min_values.size() || size.size() != max_values.size() || size.size() != x.size()) {
     //   throw std::invalid_argument("Dimension mismatch in input parameters.");
     //}
@@ -64,8 +55,8 @@ namespace Hal {
     std::vector<int> lower(dimensions), upper(dimensions);
     std::vector<double> weight(dimensions);
     for (int i = 0; i < dimensions; i++) {
-      auto param        = fDataManager->GetParam(i);
-      double scaled_pos = (x[i] - param.GetMapMin()) * param.GetOverDParam();
+      auto param        = fInFile->GetConfig()->GetParam(i);
+      double scaled_pos = (x[i] - param.GetMapMin()) * param.GetOverStepSize();
       lower[i]          = std::floor(scaled_pos);
       upper[i]          = std::min(lower[i] + 1, param.GetNPoints() - 1);
       weight[i]         = scaled_pos - lower[i];
@@ -83,18 +74,20 @@ namespace Hal {
         bool is_upper = (vertex & (1 << i)) != 0;  // Sprawdź, czy i-ty bit jest 1
         vertex_weight *= is_upper ? weight[i] : (1.0 - weight[i]);
         index += (is_upper ? upper[i] : lower[i]) * stride;
-        stride *= fDataManager->GetParam(i).GetNPoints();
+        stride *= fInFile->GetConfig()->GetParam(i).GetNPoints();
       }
 
-      fTree->GetEntry(index);
-      result += vertex_weight * (*fValues)[0];
+      fInFile->GetEntry(index);
+      result += vertex_weight * (*fInFile->GetValues())[0];
     }
 
     return result;
   }
 
+  MultiDimDataManager* MultiDimExtrapolator::GetConfig() const { return fInFile->GetConfig(); }
+
   MultiDimExtrapolator::~MultiDimExtrapolator() {
-    if (fFile) delete fFile;
+    if (fInFile) delete fInFile;
   }
 
 } /* namespace Hal */

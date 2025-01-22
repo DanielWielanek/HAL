@@ -15,19 +15,17 @@
 class TTree;
 class TFile;
 namespace Hal {
+  class MultiDimFile;
   class CorrelationHisto;
   class MultiDimExtrapolator : public Object {
-    MultiDimDataManager* fDataManager = {nullptr};
-    TTree* fTree                      = {nullptr};
-    TFile* fFile                      = {nullptr};
-    std::vector<Float_t>* fValues     = {nullptr};
+    MultiDimFile* fInFile = {nullptr};
 
   public:
     MultiDimExtrapolator() {};
     void LoadFromTFile(TString file);
     Double_t Extrapolate(std::vector<Double_t>& pos) const;
     Hal::CorrelationHisto* GetCorrHisto() const;
-    MultiDimDataManager* GetDataManager() const { return fDataManager; }
+    MultiDimDataManager* GetConfig() const;
     virtual ~MultiDimExtrapolator();
     ClassDef(MultiDimExtrapolator, 1)
   };

@@ -85,6 +85,8 @@ corrfit/pairgenerators/CorrFitPairGenerator.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorSimple.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorYPtKt.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorYPtKtStubborn.cxx
+corrfit/pairgenerators/CorrFitPairGeneratorConvolutionYPt.cxx
+corrfit/pairgenerators/CorrFitPairFile.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
 corrfit/mapgenerator_multidim/CorrFitFunctor.cxx

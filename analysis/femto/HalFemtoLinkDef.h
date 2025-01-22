@@ -52,10 +52,12 @@
 #pragma link C++ class Hal::FemtoSourceDensityNumerical1D + ;
 #pragma link C++ class Hal::CorrFitMapGroupConfig + ;
 
+#pragma link C++ class Hal::CorrFitPairFile + ;
 #pragma link C++ class Hal::CorrFitPairGenerator + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorSimple + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorYPtKt + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorYPtKtStubborn + ;
+#pragma link C++ class Hal::CorrFitPairGeneratorConvolutionYPt + ;
 
 #pragma link C++ class Hal::Femto1DCF + ;
 #pragma link C++ class Hal::Femto3DCF + ;

@@ -177,7 +177,7 @@ namespace Hal {
         Hal::Std::Discretize(parConf.GetNPoints(), parConf.GetMapMin(), parConf.GetMapMax(), parConf.GetFittedValue(), '=');
 
       Int_t entry = 0;
-      for (Double_t a = parConf.GetMapMin(); a <= parConf.GetMapMax(); a += parConf.GetDParam()) {
+      for (Double_t a = parConf.GetMapMin(); a <= parConf.GetMapMax(); a += parConf.GetStepSize()) {
         fSteps.push_back(a);
         if (a == val) par_sec = entry;
         entry++;

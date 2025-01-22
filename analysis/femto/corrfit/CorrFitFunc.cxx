@@ -226,10 +226,10 @@ namespace Hal {
       max          = Std::Discretize(parval.GetNPoints() - 1, parval.GetMapMin(), parval.GetMapMax(), max, '+');
       if (min < parval.GetMapMin()) min = parval.GetMapMin();
       if (max > parval.GetMapMax()) max = parval.GetMapMax();
-      double step_size = parval.GetDParam();
+      double step_size = parval.GetStepSize();
       min -= step_size * 0.5;
       max += step_size * 0.5;
-      step = std::round((max - min) / parval.GetDParam());
+      step = std::round((max - min) / parval.GetStepSize());
     };
 
 
@@ -448,7 +448,7 @@ namespace Hal {
         min->SetFixedVariable(i, Param.GetParName().Data(), Param.GetStartVal());
       } else {
         if (TMath::IsNaN(Param.GetStartVal())) { Cout::Text(Form(" Par No. %i Is Nan parameter", fFitOrder[i]), "M", kRed); }
-        Double_t step = TMath::Max(Param.GetDParam(), (Param.GetMax() - Param.GetMin()) / 100.0);
+        Double_t step = TMath::Max(Param.GetStepSize(), (Param.GetMax() - Param.GetMin()) / 100.0);
         min->SetLimitedVariable(i, Param.GetParName().Data(), Param.GetMin(), step, Param.GetMin(), Param.GetMax());
       }
     }
@@ -508,7 +508,7 @@ namespace Hal {
         if (!fParameters[i].IsFixed()) {
           FitParam p = minx->GetParConf(i);
           p.Init();
-          double dx = p.GetDParam();
+          double dx = p.GetStepSize();
           SetParLimits(i, parameters[i] - scale * dx, parameters[i] + scale * dx);
           std::cout << "PRESCALED " << p.GetParName() << " " << (parameters[i] - scale * dx) << " "
                     << (parameters[i] + scale * dx) << std::endl;
@@ -519,7 +519,7 @@ namespace Hal {
         if (!fParameters[i].IsFixed()) {
           FitParam p = minx->GetParConf(i);
           p.Init();
-          double dx = p.GetDParam();
+          double dx = p.GetStepSize();
           SetParLimits(i, parameters[i] - dx, parameters[i] + dx);
           MinimizerStepConf conf;
           double npoints = dx / bins + 1;
@@ -665,5 +665,6 @@ namespace Hal {
   }
 
   Hal::CorrFitGUI* CorrFitFunc::StartGui(Int_t prec) { return new CorrFitGUI(this, prec); }
+
 
 }  // namespace Hal

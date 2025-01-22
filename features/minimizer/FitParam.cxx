@@ -76,7 +76,7 @@ namespace Hal {
     std::cout << "\tStart val " << Form("%4.4f ", GetStartVal()) << std::endl;
     std::cout << Form("\tLimits %4.4f - %4.4f ", GetMin(), GetMax()) << std::endl;
     std::cout << "\tMap settings" << std::endl;
-    std::cout << Form("\tNPoints %i  NDx %4.4f", GetNPoints(), GetDParam()) << std::endl;
+    std::cout << Form("\tNPoints %i  NDx %4.4f", GetNPoints(), GetStepSize()) << std::endl;
     std::cout << Form("\tMap Min: %4.4f   Map Max: %4.4f", GetMapMin(), GetMapMax()) << std::endl;
     std::cout << "\tValues ";
     auto array = GetValuesArray();

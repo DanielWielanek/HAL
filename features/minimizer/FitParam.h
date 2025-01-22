@@ -51,7 +51,7 @@ namespace Hal {
     void SetFittedValue(Double_t val) { fFitted = val; };
     void SetError(Double_t error) { fError = error; };
     Int_t GetNPoints() const { return fNPoint; };
-    Double_t GetDParam() const { return fDParam; };
+    Double_t GetStepSize() const { return fDParam; };
     Double_t GetMapMax() const { return fMapMax; }
     Double_t GetMapMin() const { return fMapMin; }
     Double_t GetMax() const { return fMax; }
@@ -59,7 +59,7 @@ namespace Hal {
     Double_t GetStartVal() const { return fStart; };
     Double_t GetFittedValue() const { return fFitted; };
     Double_t GetError() const { return fError; };
-    Double_t GetOverDParam() const { return fOverDParam; }
+    Double_t GetOverStepSize() const { return fOverDParam; }
     FitParam& operator=(const FitParam& other) = default;
     TString GetParName() const { return fName; }
     const std::vector<Double_t> GetValuesArray() const;

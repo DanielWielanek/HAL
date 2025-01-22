@@ -60,7 +60,7 @@ namespace Hal {
     for (int i = fParams.size() - 1; i >= 0; i--) {
       Double_t par          = paramsVal[i];
       Double_t dif          = par - fParams[i].GetMapMin();
-      Double_t overStepSize = fParams[i].GetOverDParam();
+      Double_t overStepSize = fParams[i].GetOverStepSize();
       Int_t bin             = dif * overStepSize;
       pos += bin * step;
       step *= fParams[i].GetNPoints();
@@ -72,7 +72,7 @@ namespace Hal {
     std::vector<Double_t> res(fParams.size());
     for (int i = 0; i < fParams.size(); i++) {
       res[i] = entry % fParams[i].GetNPoints();
-      res[i] = fParams[i].GetMapMin() + res[i] * fParams[i].GetDParam();
+      res[i] = fParams[i].GetMapMin() + res[i] * fParams[i].GetStepSize();
       entry /= fParams[i].GetNPoints();
     }
     return res;
@@ -95,7 +95,7 @@ namespace Hal {
                            Form("%4.4f", i.GetMapMin()),
                            Form("%4.4f", i.GetMapMax()),
                            Form("%d", i.GetNPoints()),
-                           Form("%4.4f", i.GetDParam())});
+                           Form("%4.4f", i.GetStepSize())});
     }
   }
 

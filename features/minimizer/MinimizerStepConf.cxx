@@ -28,7 +28,7 @@ namespace Hal {
       max           = temp;
     }
 
-    Int_t points   = 1 + (int) TMath::Ceil((max - min) / step);  //+1 to take max
+    Int_t points   = 1 + (int) TMath::Nint((max - min) / step);  //+1 to take max
     Bool_t created = kFALSE;
     for (auto& iPar : fParams) {
       if (iPar.GetParName().EqualTo(name)) {
@@ -69,7 +69,6 @@ namespace Hal {
   }
 
   MinimizerStepConf::MinimizerStepConf(const MinimizerStepConf& other, std::vector<int> order) {
-    std::cout << "  > " << other.fParams.size() << " " << other.GetNParams() << std::endl;
     if (order.size() != other.fParams.size()) {
       Hal::Cout::PrintInfo(Form("Cannot configure MinimizerStepConf::MinimizerStepConf conf pars no: %i !=%i (order no)",
                                 (int) other.fParams.size(),
@@ -100,7 +99,6 @@ namespace Hal {
           double max_val  = maxim->GetValue().Atof();
           double dx       = step->GetValue().Atof();
           TString parname = paramname->GetValue();
-          std::cout << "CONFIG " << parname << " " << dx << " " << min_val << " " << max_val << std::endl;
           ConfigureParameter(parname, dx, min_val, max_val, "");
         }
       }

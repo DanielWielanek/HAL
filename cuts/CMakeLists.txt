@@ -132,8 +132,8 @@ cutmonitors/CutMonitorXYZ.cxx
 cutmonitors/PropertyMonitorX.cxx
 cutmonitors/PropertyMonitorXY.cxx
 cutmonitors/PropertyMonitorXYZ.cxx
-cutmonitors/customized/CutMonitorEtaPt.cxx
-cutmonitors/customized/CutMonitorYPt.cxx
+cutmonitors/customized/MonitorKinem.cxx
+cutmonitors/customized/MonitorReso.cxx
 )
 
 Set(HEADERS )

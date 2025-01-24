@@ -137,12 +137,13 @@ namespace Hal {
         step      = 0;
         step_size = 0;
       }
+      Double_t epsilon = 1E-10;
       switch (type) {
         case '+': {
-          step = TMath::Ceil(step);
+          step = TMath::Ceil(step - epsilon);
         } break;
         case '-': {
-          step = TMath::Floor(step);
+          step = TMath::Floor(step + epsilon);
         } break;
         case '=': {
           step = std::round(step);

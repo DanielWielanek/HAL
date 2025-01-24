@@ -20,7 +20,7 @@ namespace Hal {
   public:
     MinimizerStepConf(const MinimizerStepConf& othe, std::vector<int> order);
     MinimizerStepConf();
-    Int_t GetNParams() const { return fParams.size(); }
+    Int_t GetParametersNo() const { return fParams.size(); }
     /**
      * configure parameters
      * @param name

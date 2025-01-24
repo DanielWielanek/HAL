@@ -25,7 +25,7 @@ namespace Hal {
       fDataManager = new Hal::MultiDimDataManager();
       fValues      = new std::vector<Float_t>();
       if (writeParams)
-        fValues->resize(fDataManager->GetSize() + 1);
+        fValues->resize(fDataManager->GetParametersNo() + 1);
       else
         fValues->resize(1);
       fTree->Branch("vec", &fValues);
@@ -36,9 +36,9 @@ namespace Hal {
       fDataManager = (MultiDimDataManager*) fFile->Get("info");
       fTree->SetBranchAddress("vec", &fValues);
       fTree->GetEntry(0);
-      if (fValues->size() != fDataManager->GetSize() + 1) {
+      if (fValues->size() != fDataManager->GetParametersNo() + 1) {
         Hal::Cout::PrintInfo(
-          Form("Ooops, incompatible sizes in MultiDimFile expected %i found %i", fDataManager->GetSize(), (int) fValues->size()),
+          Form("Ooops, incompatible sizes in MultiDimFile expected %i found %i", fDataManager->GetParametersNo(), (int) fValues->size()),
           EInfo::kError);
       }
     }

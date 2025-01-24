@@ -22,8 +22,8 @@ namespace Hal {
 
   public:
     MultiDimExtrapolator() {};
-    void LoadFromTFile(TString file);
-    Double_t Extrapolate(std::vector<Double_t>& pos) const;
+    void OpenFile(TString file);
+    Double_t Extrapolate(const std::vector<Double_t>& pos) const;
     Hal::CorrelationHisto* GetCorrHisto() const;
     MultiDimDataManager* GetConfig() const;
     virtual ~MultiDimExtrapolator();

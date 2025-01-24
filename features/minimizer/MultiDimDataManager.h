@@ -11,7 +11,9 @@
 #include "FitParam.h"
 #include "Object.h"
 namespace Hal {
-
+  /**
+   * class that handles file with multidimensional data
+   */
   class MultiDimDataManager : public Object {
     std::vector<FitParam> fParams;
     std::vector<Int_t> fTempVec;
@@ -21,7 +23,7 @@ namespace Hal {
     void AddParameter(TString name, Double_t low, Double_t high, Double_t step);
     void AddParameter(FitParam& param);
     void Init();
-    inline Int_t GetSize() const { return fParams.size(); }
+    inline Int_t GetParametersNo() const { return fParams.size(); }
     Int_t GetIndexInt(std::vector<int> paramsId) const;
     Int_t GetIndexAny(std::vector<double> paramsVal) const;
     const FitParam& GetParam(Int_t pos) const { return fParams[pos]; }

@@ -55,23 +55,23 @@ namespace Hal {
       kChi2 /*!< minimize function fitted to function */
     };
     enum EMinAlgo {
-      kMinuitMigrad,
-      kMinuitSimplex,
-      kMinuitCombined,
-      kMinuitScan,
-      kMinuitFumili,
-      kGLSMultiMinConjungateFR,
-      kGLSMultiMinConjugatePR,
-      kGLSMultiMinBFGS,
-      kGLSMultiMinBFGS2,
-      kGLSMultiMinSteppestDescent,
-      kGLSMultiFit,
-      kGLSSimAn,
-      kDefaultAlgo,
-      kHalScan,
-      kHalAnt,
-      kHalScanMigrad,
-      kHalScanScan
+      kMinuitMigrad               = 0,
+      kMinuitSimplex              = 1,
+      kMinuitCombined             = 2,
+      kMinuitScan                 = 3,
+      kMinuitFumili               = 4,
+      kGLSMultiMinConjungateFR    = 5,
+      kGLSMultiMinConjugatePR     = 6,
+      kGLSMultiMinBFGS            = 7,
+      kGLSMultiMinBFGS2           = 8,
+      kGLSMultiMinSteppestDescent = 9,
+      kGLSMultiFit                = 10,
+      kGLSSimAn                   = 11,
+      kDefaultAlgo                = 12,
+      kHalScan                    = 13,
+      kHalAnt                     = 14,
+      kHalScanMigrad              = 15,
+      kHalScanScan                = 16
     };
     /**specify the way how the CF is calculated **/
     enum ECalcOption {

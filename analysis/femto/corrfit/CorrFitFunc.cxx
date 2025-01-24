@@ -244,9 +244,10 @@ namespace Hal {
       case kChi2: var = "#chi^{2}"; break;
     }
     TString title = var + "map";
-    if (scale) { title = var + " map (scaled)"; }
+    if (scale) { title = var + " map (scaled bt NDF)"; }
     ChiSqMap2D* map = new ChiSqMap2D("chi_map", par1_steps, par1_min, par1_max, par2_steps, par2_min, par2_max);
     map->SetParNames(fParameters[par1].GetParName(), fParameters[par2].GetParName());
+    map->GetHist()->SetTitle(title);
     Double_t bins, chi;
     for (int i = 0; i < GetParametersNo(); i++) {
       fTempParamsEval[i] = GetParameter(i);
@@ -272,10 +273,8 @@ namespace Hal {
         }
         bins = fActiveBins - GetFreeParamsNo();
         if (scale) {
-          // std::cout<<"SC "<<chi/bins<<std::endl;
           map->GetHist()->SetBinContent(i, j, chi / bins);
         } else {
-          // std::cout<<"NSC "<<chi<<std::endl;
           map->GetHist()->SetBinContent(i, j, chi);
         }
       }
@@ -392,7 +391,7 @@ namespace Hal {
         min->SetLimitedVariable(i, name, 0.5 * (lower + upper), (upper - lower), lower, upper);
       }
     }
-    if (fDiscretteMinimzerConf.GetNParams() != 0) {
+    if (fDiscretteMinimzerConf.GetParametersNo() != 0) {
       MinimizerStepConf conf(fDiscretteMinimzerConf, fFitOrder);
       min->SetParamConf(conf, false);
     } else {

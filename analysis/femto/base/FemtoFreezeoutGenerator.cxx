@@ -1,5 +1,5 @@
 /*
- * FemtoFreezoutGenerator.cxx
+ * FemtoFreezeoutGenerator.cxx
  *
  *  Created on: 26-11-2013
  *      Author: Daniel Wielanek
@@ -7,7 +7,7 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoPair.h"
 #include <TLorentzVector.h>
 #include <TMath.h>
@@ -19,23 +19,23 @@
 #include "Std.h"
 
 namespace Hal {
-  FemtoFreezoutGenerator::FemtoFreezoutGenerator() {}
+  FemtoFreezeoutGenerator::FemtoFreezeoutGenerator() {}
 
-  FemtoFreezoutGenerator::FemtoFreezoutGenerator(const FemtoSourceModel& source) {
+  FemtoFreezeoutGenerator::FemtoFreezeoutGenerator(const FemtoSourceModel& source) {
     fModel = (FemtoSourceModel*) source.MakeCopy();
   }
 
-  void FemtoFreezoutGenerator::SetSourceModel(const FemtoSourceModel& model) {
+  void FemtoFreezeoutGenerator::SetSourceModel(const FemtoSourceModel& model) {
     if (fModel) delete fModel;
     fModel = model.MakeCopy();
   }
 
-  void FemtoFreezoutGenerator::GenerateFreezoutCooordinates(FemtoPair* Pair) {
+  void FemtoFreezeoutGenerator::GenerateFreezeoutCooordinates(FemtoPair* Pair) {
     fModel->GenerateCoordinates(Pair);
     Boost(Pair);
   }
 
-  Bool_t FemtoFreezoutGenerator::Init() {
+  Bool_t FemtoFreezeoutGenerator::Init() {
     if (!fModel) {
       Cout::PrintInfo("No freezout model !", EInfo::kLowWarning);
       fModel = new FemtoSourceModelGauss1D();
@@ -45,19 +45,19 @@ namespace Hal {
     return init;
   }
 
-  Package* FemtoFreezoutGenerator::Report() const {
+  Package* FemtoFreezeoutGenerator::Report() const {
     Package* pack = new Package(this);
     pack->AddObject(fModel->Report());
     return pack;
   }
 
-  FemtoFreezoutGenerator::~FemtoFreezoutGenerator() {
+  FemtoFreezeoutGenerator::~FemtoFreezeoutGenerator() {
     if (fModel) delete fModel;
   }
 
-  FemtoFreezoutGeneratorLCMS::FemtoFreezoutGeneratorLCMS() {}
+  FemtoFreezeoutGeneratorLCMS::FemtoFreezeoutGeneratorLCMS() {}
 
-  void FemtoFreezoutGeneratorLCMS::Boost(FemtoPair* pair) {
+  void FemtoFreezeoutGeneratorLCMS::Boost(FemtoPair* pair) {
     // like in AliFemtoModelGausLCMSFreezeOutGenerator
     // std::cout<<"boost lscm"<<std::endl;
     // std::cout<<pair->Px2()<<std::endl;
@@ -104,19 +104,19 @@ namespace Hal {
 #endif
   }
 
-  Package* FemtoFreezoutGeneratorLCMS::Report() const {
-    Package* pack = FemtoFreezoutGenerator::Report();
+  Package* FemtoFreezeoutGeneratorLCMS::Report() const {
+    Package* pack = FemtoFreezeoutGenerator::Report();
     pack->AddObject(new ParameterString("source kinematics", "LCMS"));
     return pack;
   }
 
-  FemtoFreezoutGeneratorLCMS::~FemtoFreezoutGeneratorLCMS() {}
+  FemtoFreezeoutGeneratorLCMS::~FemtoFreezeoutGeneratorLCMS() {}
 
-  FemtoFreezoutGeneratorPRF::FemtoFreezoutGeneratorPRF() {
+  FemtoFreezeoutGeneratorPRF::FemtoFreezeoutGeneratorPRF() {
     // Cout::CriticalError("PRF freezeout generator Not ready yet");
   }
 
-  void FemtoFreezoutGeneratorPRF::Boost(FemtoPair* pair) {
+  void FemtoFreezeoutGeneratorPRF::Boost(FemtoPair* pair) {
     Double_t tPx = pair->TruePx1() + pair->TruePx2();
     Double_t tPy = pair->TruePy1() + pair->TruePy2();
     Double_t tPz = pair->TruePz1() + pair->TruePz2();
@@ -147,33 +147,33 @@ namespace Hal {
     // X.Print();
   }
 
-  Package* FemtoFreezoutGeneratorPRF::Report() const {
-    Package* pack = FemtoFreezoutGenerator::Report();
+  Package* FemtoFreezeoutGeneratorPRF::Report() const {
+    Package* pack = FemtoFreezeoutGenerator::Report();
     pack->AddObject(new ParameterString("source kinematics", "PRF"));
     return pack;
   }
 
-  FemtoFreezoutGeneratorPRF::~FemtoFreezoutGeneratorPRF() {}
+  FemtoFreezeoutGeneratorPRF::~FemtoFreezeoutGeneratorPRF() {}
 
-  FemtoFreezoutGenerator* FemtoFreezoutGeneratorLCMS::MakeCopy() const { return new FemtoFreezoutGeneratorLCMS(*this); }
+  FemtoFreezeoutGenerator* FemtoFreezeoutGeneratorLCMS::MakeCopy() const { return new FemtoFreezeoutGeneratorLCMS(*this); }
 
-  FemtoFreezoutGenerator* FemtoFreezoutGeneratorPRF::MakeCopy() const { return new FemtoFreezoutGeneratorPRF(*this); }
+  FemtoFreezeoutGenerator* FemtoFreezeoutGeneratorPRF::MakeCopy() const { return new FemtoFreezeoutGeneratorPRF(*this); }
 
-  FemtoFreezoutGenerator::FemtoFreezoutGenerator(const FemtoFreezoutGenerator& generator) : TObject(generator) {
+  FemtoFreezeoutGenerator::FemtoFreezeoutGenerator(const FemtoFreezeoutGenerator& generator) : TObject(generator) {
     if (generator.fModel) fModel = generator.fModel->MakeCopy();
   }
 
-  FemtoFreezoutGeneratorLCMS::FemtoFreezoutGeneratorLCMS(const FemtoFreezoutGeneratorLCMS& generator) :
-    FemtoFreezoutGenerator(generator) {}
+  FemtoFreezeoutGeneratorLCMS::FemtoFreezeoutGeneratorLCMS(const FemtoFreezeoutGeneratorLCMS& generator) :
+    FemtoFreezeoutGenerator(generator) {}
 
-  FemtoFreezoutGeneratorLCMS::FemtoFreezoutGeneratorLCMS(const FemtoSourceModel& model) : FemtoFreezoutGenerator(model) {}
+  FemtoFreezeoutGeneratorLCMS::FemtoFreezeoutGeneratorLCMS(const FemtoSourceModel& model) : FemtoFreezeoutGenerator(model) {}
 
-  FemtoFreezoutGeneratorPRF::FemtoFreezoutGeneratorPRF(const FemtoFreezoutGeneratorPRF& generator) :
-    FemtoFreezoutGenerator(generator) {}
+  FemtoFreezeoutGeneratorPRF::FemtoFreezeoutGeneratorPRF(const FemtoFreezeoutGeneratorPRF& generator) :
+    FemtoFreezeoutGenerator(generator) {}
 
-  FemtoFreezoutGeneratorPRF::FemtoFreezoutGeneratorPRF(const FemtoSourceModel& model) : FemtoFreezoutGenerator(model) {}
+  FemtoFreezeoutGeneratorPRF::FemtoFreezeoutGeneratorPRF(const FemtoSourceModel& model) : FemtoFreezeoutGenerator(model) {}
 
-  void FemtoFreezoutGenerator::Print(Option_t* /*option*/) const {
+  void FemtoFreezeoutGenerator::Print(Option_t* /*option*/) const {
     Cout::Text(ClassName(), "L");
     if (fModel) {
       fModel->Print();

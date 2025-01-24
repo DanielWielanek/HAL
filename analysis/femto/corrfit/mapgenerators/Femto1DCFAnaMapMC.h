@@ -17,7 +17,7 @@
 
 #include "Array.h"
 #include "FemtoConst.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoWeightGenerator.h"
 
 

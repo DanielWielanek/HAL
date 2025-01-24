@@ -109,7 +109,7 @@
 
 #pragma link C++ class Hal::TrackBasicMCCut + ;
 #pragma link C++ class Hal::TrackTFreezCut + ;
-#pragma link C++ class Hal::TrackFreezoutCut + ;
+#pragma link C++ class Hal::TrackFreezeoutCut + ;
 #pragma link C++ class Hal::TrackPdgCut + ;
 #pragma link C++ class Hal::TrackPdgAbsCut + ;
 #pragma link C++ class Hal::TrackStartPositionCut + ;

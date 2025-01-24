@@ -26,7 +26,7 @@
 #include "CorrFitDumpedPairAna.h"
 #include "Cout.h"
 #include "FemtoCorrFuncSimple.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoPairKinematics.h"
 #include "FemtoSourceModel.h"
 #include "FemtoWeightGenerator.h"

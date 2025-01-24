@@ -88,7 +88,7 @@ namespace Hal {
     Double_t tTime = GetDecayTime(mother, M);
 
     const TLorentzVector& mP = mother.GetMomentum();
-    const TLorentzVector& mX = mother.GetFreezoutPosition();
+    const TLorentzVector& mX = mother.GetFreezeoutPosition();
     Int_t pdg1               = channel.GetDaughterPdg(0);
     Int_t pdg2               = channel.GetDaughterPdg(1);
     Double_t m1              = channel.GetDaughterMass(0);
@@ -123,8 +123,8 @@ namespace Hal {
     daughter2->SetPdg(pdg2);
     daughter1->SetMomentum(dau1.X(), dau1.Y(), dau1.Z(), dau1.T());
     daughter2->SetMomentum(dau2.X(), dau2.Y(), dau2.Z(), dau2.T());
-    daughter1->SetFreezoutPosition(X, Y, Z, T);
-    daughter2->SetFreezoutPosition(X, Y, Z, T);
+    daughter1->SetFreezeoutPosition(X, Y, Z, T);
+    daughter2->SetFreezeoutPosition(X, Y, Z, T);
   }
 
   void Decay::Decay3Body(McTrack& mother, std::vector<McTrack*>& daughters, const DecayChannel& channel) const {
@@ -153,7 +153,7 @@ namespace Hal {
 
 
     auto& momP = mother.GetMomentum();
-    auto& momX = mother.GetFreezoutPosition();
+    auto& momX = mother.GetFreezeoutPosition();
     // Decay coordinates
     Double_t X = momX.X() + (momP.Px() / tE) * tTime;
     Double_t Y = momX.Y() + (momP.Py() / tE) * tTime;
@@ -217,9 +217,9 @@ namespace Hal {
     daughter1->SetMomentum(p1.X(), p1.Y(), p1.Z(), p1.T());
     daughter2->SetMomentum(p2.X(), p2.Y(), p2.Z(), p2.T());
     daughter3->SetMomentum(p3.X(), p3.Y(), p3.Z(), p3.T());
-    daughter1->SetFreezoutPosition(X, Y, Z, T);
-    daughter2->SetFreezoutPosition(X, Y, Z, T);
-    daughter3->SetFreezoutPosition(X, Y, Z, T);
+    daughter1->SetFreezeoutPosition(X, Y, Z, T);
+    daughter2->SetFreezeoutPosition(X, Y, Z, T);
+    daughter3->SetFreezeoutPosition(X, Y, Z, T);
   }
 
   Int_t Decay::DecayParticle(McTrack& mother, std::vector<McTrack*>& daughters, Bool_t addToEvent) const {

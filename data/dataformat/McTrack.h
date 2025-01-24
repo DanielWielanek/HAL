@@ -32,7 +32,7 @@ namespace Hal {
     /**
      * @return freezout position
      */
-    inline const TLorentzVector& GetFreezoutPosition() const { return fFreez; };
+    inline const TLorentzVector& GetFreezeoutPosition() const { return fFreez; };
     /**
      *
      * @return start position of particle
@@ -49,7 +49,7 @@ namespace Hal {
      * @param z
      * @param t
      */
-    inline void SetFreezoutPosition(Double_t x, Double_t y, Double_t z, Double_t t) { fFreez.SetXYZT(x, y, z, t); }
+    inline void SetFreezeoutPosition(Double_t x, Double_t y, Double_t z, Double_t t) { fFreez.SetXYZT(x, y, z, t); }
     /**
      * set start point position
      * @param fieldID

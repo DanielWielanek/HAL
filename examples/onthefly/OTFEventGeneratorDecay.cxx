@@ -80,7 +80,7 @@ namespace HalOTF {
     auto makeSim = [](Hal::McTrack tr) {
       OTF::McTrack trx;
       trx.SetMomentum(tr.GetMomentum());
-      trx.SetFreezout(tr.GetFreezoutPosition());
+      trx.SetFreezeout(tr.GetFreezeoutPosition());
       trx.SetPdgCode(tr.GetPdg());
       trx.SetMotherId(tr.GetMotherIndex());
       return trx;
@@ -92,8 +92,8 @@ namespace HalOTF {
       auto track = fMcEvent->GetTrack(i);
       Hal::McTrack mommy;
       mommy.SetMomentum(track->GetMomentum().X(), track->GetMomentum().Y(), track->GetMomentum().Z(), track->GetMomentum().T());
-      mommy.SetFreezoutPosition(
-        track->GetFreezout().X(), track->GetFreezout().Y(), track->GetFreezout().Z(), track->GetFreezout().T());
+      mommy.SetFreezeoutPosition(
+        track->GetFreezeout().X(), track->GetFreezeout().Y(), track->GetFreezeout().Z(), track->GetFreezeout().T());
       mommy.SetPdg(track->GetPdgCode());
       int nDau = fDecayer->DecayParticle(mommy, fDaughters, kFALSE);
 

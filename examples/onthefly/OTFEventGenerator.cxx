@@ -42,7 +42,7 @@ namespace HalOTF { /* namespace Hal */
       tr.SetMomentum(p);
       tr.SetPdgCode(fPids);
       TLorentzVector xr(gRandom->Gaus(0, 1), gRandom->Gaus(0, 1), gRandom->Gaus(0), 0);
-      tr.SetFreezout(xr);
+      tr.SetFreezeout(xr);
       fMcEvent->AddTrack(tr);
 
       OTF::RecoTrack rtr;

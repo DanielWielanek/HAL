@@ -38,11 +38,11 @@
 #pragma link C++ class Hal::FemtoSourceModelNumericalPseudo3d + ;
 #pragma link C++ class Hal::FemtoSourceDensityNumericalPseudo3d + ;
 #pragma link C++ class Hal::FemtoSourceModelGauss3DCross + ;
-#pragma link C++ class Hal::FemtoFreezoutGenerator + ;
-#pragma link C++ class Hal::FemtoFreezoutGeneratorLCMS + ;
-#pragma link C++ class Hal::FemtoFreezoutGeneratorPRF + ;
-#pragma link C++ class Hal::FemtoFreezoutsAna + ;
-#pragma link C++ enum Hal::FemtoFreezoutsAna::EMode;
+#pragma link C++ class Hal::FemtoFreezeoutGenerator + ;
+#pragma link C++ class Hal::FemtoFreezeoutGeneratorLCMS + ;
+#pragma link C++ class Hal::FemtoFreezeoutGeneratorPRF + ;
+#pragma link C++ class Hal::FemtoFreezeoutsAna + ;
+#pragma link C++ enum Hal::FemtoFreezeoutsAna::EMode;
 #pragma link C++ class Hal::FemtoEventBinsAna + ;
 #pragma link C++ class Hal::FemtoFastCutEta + ;
 #pragma link C++ class Hal::FemtoDumpPairAna + ;

@@ -168,10 +168,10 @@ namespace Hal {
         const TLorentzVector& pt2 = track2->GetMomentum();
         fPdg1                     = track1->GetPdg();
         fPdg2                     = track2->GetPdg();
-        const TLorentzVector& x1  = track1->GetFreezoutPosition();
-        const TLorentzVector& x2  = track2->GetFreezoutPosition();
-        SetFreezoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
-        SetFreezoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
+        const TLorentzVector& x1  = track1->GetFreezeoutPosition();
+        const TLorentzVector& x2  = track2->GetFreezeoutPosition();
+        SetFreezeoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
+        SetFreezeoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
         SetTrueMomenta1(pt1.Px(), pt1.Py(), pt1.Pz(), pt1.E());
         SetTrueMomenta2(pt2.Px(), pt2.Py(), pt2.Pz(), pt2.E());
         SetMomenta1(p1.Px(), p1.Py(), p1.Pz());
@@ -184,12 +184,12 @@ namespace Hal {
         if (imtr1 && imtr2) {
           const TLorentzVector& pt1 = imtr1->GetMomentum();
           const TLorentzVector& pt2 = imtr2->GetMomentum();
-          const TLorentzVector& x1  = imtr1->GetFreezoutPosition();
-          const TLorentzVector& x2  = imtr2->GetFreezoutPosition();
+          const TLorentzVector& x1  = imtr1->GetFreezeoutPosition();
+          const TLorentzVector& x2  = imtr2->GetFreezeoutPosition();
           fPdg1                     = imtr1->GetPdg();
           fPdg2                     = imtr2->GetPdg();
-          SetFreezoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
-          SetFreezoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
+          SetFreezeoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
+          SetFreezeoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
           SetTrueMomenta1(pt1.Px(), pt1.Py(), pt1.Pz(), pt1.E());
           SetTrueMomenta2(pt2.Px(), pt2.Py(), pt2.Pz(), pt2.E());
 
@@ -215,12 +215,12 @@ namespace Hal {
         if (imtr1 && imtr2) {
           const TLorentzVector& pt1 = imtr1->GetMomentum();
           const TLorentzVector& pt2 = imtr2->GetMomentum();
-          const TLorentzVector& x1  = imtr1->GetFreezoutPosition();
-          const TLorentzVector& x2  = imtr2->GetFreezoutPosition();
+          const TLorentzVector& x1  = imtr1->GetFreezeoutPosition();
+          const TLorentzVector& x2  = imtr2->GetFreezeoutPosition();
           fPdg1                     = imtr1->GetPdg();
           fPdg2                     = imtr2->GetPdg();
-          SetFreezoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
-          SetFreezoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
+          SetFreezeoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
+          SetFreezeoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
           SetTrueMomenta1(pt1.Px(), pt1.Py(), pt1.Pz(), pt1.E());
           SetTrueMomenta2(pt2.Px(), pt2.Py(), pt2.Pz(), pt2.E());
         } else {
@@ -339,14 +339,14 @@ namespace Hal {
     return 0.5 * TMath::Sqrt(tPx * tPx + tPy * tPy);
   }
 
-  void FemtoPair::SetFreezoutCoord1(Double_t x, Double_t y, Double_t z, Double_t t) {
+  void FemtoPair::SetFreezeoutCoord1(Double_t x, Double_t y, Double_t z, Double_t t) {
     fX1 = x;
     fY1 = y;
     fZ1 = z;
     fT1 = t;
   }
 
-  void FemtoPair::SetFreezoutCoord2(Double_t x, Double_t y, Double_t z, Double_t t) {
+  void FemtoPair::SetFreezeoutCoord2(Double_t x, Double_t y, Double_t z, Double_t t) {
     fX2 = x;
     fY2 = y;
     fZ2 = z;
@@ -405,9 +405,9 @@ namespace Hal {
     SetTrueMomenta2(p2.X(), p2.Y(), p2.Z(), p2.E());
   }
 
-  void FemtoPair::SetFreezouts(const TLorentzVector& x1, const TLorentzVector& x2) {
-    SetFreezoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
-    SetFreezoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
+  void FemtoPair::SetFreezeouts(const TLorentzVector& x1, const TLorentzVector& x2) {
+    SetFreezeoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
+    SetFreezeoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
   }
 
 }  // namespace Hal

@@ -9,7 +9,7 @@
 #ifndef HALFEMTONDIMMAP_H_
 #define HALFEMTONDIMMAP_H_
 
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "XMLNode.h"
 
 #include <TObject.h>
@@ -56,8 +56,8 @@ namespace Hal {
     FemtoCorrFunc* fTempCF     = {nullptr};
     FemtoPair* fPair           = {nullptr};
     std::vector<FemtoCorrFunc*> fCF;
-    FemtoFreezoutGenerator* fTempGenerator = {nullptr};
-    std::vector<FemtoFreezoutGenerator*> fGenerator;
+    FemtoFreezeoutGenerator* fTempGenerator = {nullptr};
+    std::vector<FemtoFreezeoutGenerator*> fGenerator;
     FemtoWeightGenerator* fWeight    = {nullptr};
     CorrFitMapGroupConfig* fGrouping = {nullptr};
     std::vector<TClonesArray*> fSignalClones;      //!
@@ -98,7 +98,7 @@ namespace Hal {
      * set freezout generator
      * @param gen
      */
-    void SetGenerator(const FemtoFreezoutGenerator& gen) { fTempGenerator = gen.MakeCopy(); };
+    void SetGenerator(const FemtoFreezeoutGenerator& gen) { fTempGenerator = gen.MakeCopy(); };
 
   public:
     CorrFitDumpedPairAna(Int_t jobid = -1, Int_t mapsPerAna = -1);

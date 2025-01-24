@@ -15,7 +15,7 @@
 #include <TObject.h>
 namespace Hal {
   class FemtoPair;
-  class FemtoFreezoutGenerator;
+  class FemtoFreezeoutGenerator;
   class FemtoWeightGenerator;
   class FemtoCorrFunc;
   class DividedHisto2D;
@@ -35,7 +35,7 @@ namespace Hal {
     Femto::EKinematics fKinematics;
     Array_1<Double_t> fRadiiBins;
     FemtoPair* fPair;
-    FemtoFreezoutGenerator* fGenerator;
+    FemtoFreezeoutGenerator* fGenerator;
     FemtoWeightGenerator* fWeight;
     DividedHisto2D* fMap;
     Femto1DMapGenerator(Bool_t fake);
@@ -73,7 +73,7 @@ namespace Hal {
      * set source generator algorithm
      * @param gen
      */
-    virtual void SetGenerator(FemtoFreezoutGenerator& gen);
+    virtual void SetGenerator(FemtoFreezeoutGenerator& gen);
     /**
      * set weight computing algorithm
      * @param calc

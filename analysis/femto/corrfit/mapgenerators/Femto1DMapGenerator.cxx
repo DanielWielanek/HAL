@@ -11,7 +11,7 @@
 #include "CorrFitMapKstarRstar.h"
 #include "Cout.h"
 #include "Femto1DCF.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoPair.h"
 #include "FemtoWeightGenerator.h"
 #include "Std.h"
@@ -96,7 +96,7 @@ namespace Hal {
     }
   }
 
-  void Femto1DMapGenerator::SetGenerator(FemtoFreezoutGenerator& gen) {
+  void Femto1DMapGenerator::SetGenerator(FemtoFreezeoutGenerator& gen) {
     if (fGenerator) delete fGenerator;
     fGenerator = gen.MakeCopy();
   }

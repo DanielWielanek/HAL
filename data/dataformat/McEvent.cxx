@@ -50,7 +50,7 @@ namespace Hal {
         tr->SetPdg(trinterface->GetPdg());
         tr->SetStartPosition(
           trinterface->GetStartX(), trinterface->GetStartY(), trinterface->GetStartZ(), trinterface->GetStartT());
-        tr->SetFreezoutPosition(
+        tr->SetFreezeoutPosition(
           trinterface->GetFreezX(), trinterface->GetFreezY(), trinterface->GetFreezZ(), trinterface->GetFreezT());
       }
     }

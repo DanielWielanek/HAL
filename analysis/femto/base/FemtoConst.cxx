@@ -603,7 +603,7 @@ namespace Hal {
       p.SetMomenta(p1, p2);
       TLorentzVector x1(rgaus(sigmar), rgaus(sigmar), rgaus(sigmar), 0);
       TLorentzVector x2(rgaus(sigmar), rgaus(sigmar), rgaus(sigmar), 0);
-      p.SetFreezouts(x1, x2);
+      p.SetFreezeouts(x1, x2);
     }
 
     void FillRandomKinematics(FemtoPair& p, const TVector3& sum, const TVector3& diff, EKinematics kin) {

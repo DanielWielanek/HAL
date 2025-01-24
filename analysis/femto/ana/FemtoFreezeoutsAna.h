@@ -1,13 +1,13 @@
 /*
- * FemtoFreezoutsAna.h
+ * FemtoFreezeoutsAna.h
  *
  *  Created on: 15-08-2014
  *      Author: Daniel Wielanek
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
-#ifndef HALFEMTOFREEZOUTSANA_H_
-#define HALFEMTOFREEZOUTSANA_H_
+#ifndef HALFEMTOFREEZEOUTSANA_H_
+#define HALFEMTOFREEZEOUTSANA_H_
 
 #define SIMPLIFIED_PRF_COMPUTING_IN_FREEZOUT
 #include <Rtypes.h>
@@ -18,7 +18,7 @@
 #include "FemtoBasicAna.h"
 #include "FemtoConst.h"
 #include "FemtoFastCut.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "HistogramManager.h"
 #include "TwoTrackAna.h"
 
@@ -27,7 +27,7 @@
  */
 
 namespace Hal {
-  class FemtoFreezoutsAna : public TwoTrackAna {
+  class FemtoFreezeoutsAna : public TwoTrackAna {
   public:
     enum class EMode { kPRF, kLCMS, kGammaLCMS, kRaw };
 
@@ -45,7 +45,7 @@ namespace Hal {
     Int_t fBins[3];
     Double_t fHistoMin[3];
     Double_t fHistoMax[3];
-    FemtoFreezoutGenerator* fFreezoutGenerator;
+    FemtoFreezeoutGenerator* fFreezeoutGenerator;
     HistogramManager_3_1D<TH1D>* fHistograms1d;
     HistogramManager_3_3D<TH3D>* fHistograms3d;
     void ComputePRF();
@@ -61,12 +61,12 @@ namespace Hal {
     virtual Task::EInitFlag Init();
 
   public:
-    FemtoFreezoutsAna();
+    FemtoFreezeoutsAna();
     /**
      * cop constructor
      * @param ana
      */
-    FemtoFreezoutsAna(const FemtoFreezoutsAna& ana);
+    FemtoFreezeoutsAna(const FemtoFreezeoutsAna& ana);
     /**
      * set PID (if no MC mass/energy is avaiable
      * @param pdg
@@ -97,10 +97,10 @@ namespace Hal {
      * set freezout generator (this is optional)
      * @param freez
      */
-    void SetFreezoutGenerator(const FemtoFreezoutGenerator& freez) { fFreezoutGenerator = freez.MakeCopy(); };
+    void SetFreezeoutGenerator(const FemtoFreezeoutGenerator& freez) { fFreezeoutGenerator = freez.MakeCopy(); };
     void SetFastPairCut(const FemtoFastCut& cut) { fFastCut = cut.MakeCopy(); };
-    virtual ~FemtoFreezoutsAna();
-    ClassDef(FemtoFreezoutsAna, 1)
+    virtual ~FemtoFreezeoutsAna();
+    ClassDef(FemtoFreezeoutsAna, 1)
   };
 }  // namespace Hal
 

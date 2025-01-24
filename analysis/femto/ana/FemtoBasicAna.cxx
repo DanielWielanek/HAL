@@ -42,7 +42,7 @@ namespace Hal {
     fFsiWeight(0.0),
     fFemtoPair(nullptr),
     fCalc(nullptr),
-    fFreezoutGenerator(nullptr),
+    fFreezeoutGenerator(nullptr),
     fCFs(nullptr),
     fCFTemp(nullptr) {
     fMixSize        = 2;
@@ -59,10 +59,10 @@ namespace Hal {
     fFsiWeight(ana.fFsiWeight),
     fFemtoPair(nullptr),
     fCalc(ana.fCalc),
-    fFreezoutGenerator(nullptr) {
+    fFreezeoutGenerator(nullptr) {
     if (ana.fCFs) { fCFs = (ObjectMatrix_2*) ana.fCFs->Clone(); }
     if (ana.fCFTemp) { fCFTemp = (FemtoCorrFunc*) ana.fCFTemp->Clone(); }
-    if (ana.fFreezoutGenerator) { fFreezoutGenerator = ana.fFreezoutGenerator->MakeCopy(); }
+    if (ana.fFreezeoutGenerator) { fFreezeoutGenerator = ana.fFreezeoutGenerator->MakeCopy(); }
     if (ana.fFemtoPair) { fFemtoPair = (FemtoPair*) ana.fFemtoPair->Clone(); }
     if (ana.fCalc) { fCalc = (FemtoWeightGenerator*) ana.fCalc->Clone(); }
   }
@@ -85,11 +85,11 @@ namespace Hal {
       AddToAnaMetadata(pack, new ParameterString("FemtoKinematics", "PHIETA"));
     }
 
-    if (fFreezoutGenerator) {
-      AddToAnaMetadata(pack, new ParameterString("FreezoutGenerator", "Enabled"));
-      AddToAnaMetadata(pack, fFreezoutGenerator->Report());
+    if (fFreezeoutGenerator) {
+      AddToAnaMetadata(pack, new ParameterString("FreezeoutGenerator", "Enabled"));
+      AddToAnaMetadata(pack, fFreezeoutGenerator->Report());
     } else {
-      AddToAnaMetadata(pack, new ParameterString("FreezoutGenerator", "Disabled"));
+      AddToAnaMetadata(pack, new ParameterString("FreezeoutGenerator", "Disabled"));
     }
     if (fCalc) AddToAnaMetadata(pack, fCalc->Report());
     if (fPdg1 != 0) {
@@ -171,8 +171,8 @@ namespace Hal {
     if (fCFTemp) delete fCFTemp;
     fCFTemp = nullptr;
     // check freezout generator
-    if (fFreezoutGenerator) {
-      fFreezoutGenerator->Init();
+    if (fFreezeoutGenerator) {
+      fFreezeoutGenerator->Init();
       AddTags("freezout");
     }
     // check fast cuts -------------------------------------
@@ -226,7 +226,7 @@ namespace Hal {
   }
 
   void FemtoBasicAna::PreprocessFemtoPair() {
-    if (fFreezoutGenerator) fFreezoutGenerator->GenerateFreezoutCooordinates(fFemtoPair);
+    if (fFreezeoutGenerator) fFreezeoutGenerator->GenerateFreezeoutCooordinates(fFemtoPair);
   }
 
   void FemtoBasicAna::ProcessPair_ChargedId() {
@@ -312,7 +312,7 @@ namespace Hal {
   FemtoBasicAna::~FemtoBasicAna() {
     delete fCalc;
     if (fCFs) delete fCFs;
-    if (fFreezoutGenerator) delete fFreezoutGenerator;
+    if (fFreezeoutGenerator) delete fFreezeoutGenerator;
     delete fFemtoPair;
     if (fCFTemp) delete fCFTemp;
   }
@@ -389,9 +389,9 @@ namespace Hal {
         delete fCalc;
         fCalc = nullptr;
       }
-      if (fFreezoutGenerator) {
-        delete fFreezoutGenerator;
-        fFreezoutGenerator = nullptr;
+      if (fFreezeoutGenerator) {
+        delete fFreezeoutGenerator;
+        fFreezeoutGenerator = nullptr;
       }
       if (fCFs) {
         delete fCFs;
@@ -403,7 +403,7 @@ namespace Hal {
       }
       if (other.fFemtoPair) fFemtoPair = (FemtoPair*) other.fFemtoPair->Clone();
       if (other.fCalc) fCalc = (FemtoWeightGenerator*) other.fCalc->Clone();
-      if (other.fFreezoutGenerator) fFreezoutGenerator = (FemtoFreezoutGenerator*) other.fFreezoutGenerator->Clone();
+      if (other.fFreezeoutGenerator) fFreezeoutGenerator = (FemtoFreezeoutGenerator*) other.fFreezeoutGenerator->Clone();
       if (other.fCFTemp) fCFTemp = (FemtoCorrFunc*) other.fCFTemp;
       if (other.fCFs) fCFs = (ObjectMatrix_2*) other.Clone();
 

@@ -37,7 +37,7 @@ namespace HalDbg {
       Dbg::McTrack* mc = (Dbg::McTrack*) ev->GetTrack(i);
       track->ResetTrack(i, this);
       track->SetMomentum(mc->GetMomentum().Px(), mc->GetMomentum().Py(), mc->GetMomentum().Pz(), mc->GetMomentum().E());
-      track->SetFreezoutPosition(mc->GetFreezout().X(), mc->GetFreezout().Y(), mc->GetFreezout().Z(), mc->GetFreezout().T());
+      track->SetFreezeoutPosition(mc->GetFreezeout().X(), mc->GetFreezeout().Y(), mc->GetFreezeout().Z(), mc->GetFreezeout().T());
       track->SetMotherIndex(-1);
       track->SetPdg(mc->GetPdgCode());
     }

@@ -78,7 +78,7 @@ trackcuts/monprop/DCAPropertyMonitor.cxx
 trackcuts/monprop/TofPropertyMonitor.cxx
 
 trackcuts/mc/TrackBasicMCCut.cxx
-trackcuts/mc/TrackFreezoutCut.cxx
+trackcuts/mc/TrackFreezeoutCut.cxx
 trackcuts/mc/TrackMCCut.cxx
 trackcuts/mc/TrackPdgCut.cxx
 trackcuts/mc/TrackStartPositionCut.cxx

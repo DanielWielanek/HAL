@@ -37,12 +37,12 @@ Link_Directories(${LINK_DIRECTORIES})
 set(SRCS
 
 ana/FemtoBasicAna.cxx
-ana/FemtoFreezoutsAna.cxx
+ana/FemtoFreezeoutsAna.cxx
 ana/FemtoDumpPairAna.cxx
 ana/FemtoEventBinsAna.cxx
 
 base/FemtoFastCut.cxx
-base/FemtoFreezoutGenerator.cxx
+base/FemtoFreezeoutGenerator.cxx
 base/FemtoPairKinematics.cxx
 base/FemtoPair.cxx
 base/FemtoMiniPair.cxx

@@ -1,5 +1,5 @@
 /*
- * FemtoFreezoutGenerator.h
+ * FemtoFreezeoutGenerator.h
  *
  *  Created on: 26-11-2013
  *      Author: Daniel Wielanek
@@ -7,8 +7,8 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 
-#ifndef HALFEMTOFREEZOUTGENERATOR_H_
-#define HALFEMTOFREEZOUTGENERATOR_H_
+#ifndef HALFEMTOFREEZEOUTGENERATOR_H_
+#define HALFEMTOFREEZEOUTGENERATOR_H_
 
 #include "FemtoSourceModel.h"
 
@@ -16,7 +16,7 @@
  * class for creating given coordinates in lab frame
  */
 namespace Hal {
-  class FemtoFreezoutGenerator : public TObject {
+  class FemtoFreezeoutGenerator : public TObject {
   protected:
     /**
      * model that generate coordinates in pair frame
@@ -29,18 +29,18 @@ namespace Hal {
     virtual void Boost(FemtoPair* pair) = 0;
 
   public:
-    FemtoFreezoutGenerator();
-    FemtoFreezoutGenerator(const FemtoSourceModel& source);
+    FemtoFreezeoutGenerator();
+    FemtoFreezeoutGenerator(const FemtoSourceModel& source);
     /**
      * copy ctor
      * @param generator
      */
-    FemtoFreezoutGenerator(const FemtoFreezoutGenerator& generator);
+    FemtoFreezeoutGenerator(const FemtoFreezeoutGenerator& generator);
     /**
      * make copy of this object
      * @return
      */
-    virtual FemtoFreezoutGenerator* MakeCopy() const = 0;
+    virtual FemtoFreezeoutGenerator* MakeCopy() const = 0;
     /**
      * defalut initializer
      */
@@ -59,56 +59,56 @@ namespace Hal {
      * generate freezout coordinates and set them to pair
      * @param Pair
      */
-    void GenerateFreezoutCooordinates(FemtoPair* Pair);
+    void GenerateFreezeoutCooordinates(FemtoPair* Pair);
     virtual void Print(Option_t* option = "") const;
     /**
      * create package with report
      * @return package with report
      */
     virtual Package* Report() const;
-    virtual ~FemtoFreezoutGenerator();
-    ClassDef(FemtoFreezoutGenerator, 1)
+    virtual ~FemtoFreezeoutGenerator();
+    ClassDef(FemtoFreezeoutGenerator, 1)
   };
   /**
    * used to boost source according to LCMS frame
    */
-  class FemtoFreezoutGeneratorLCMS : public FemtoFreezoutGenerator {
+  class FemtoFreezeoutGeneratorLCMS : public FemtoFreezeoutGenerator {
   protected:
     void Boost(FemtoPair* pair);
 
   public:
-    FemtoFreezoutGeneratorLCMS();
-    FemtoFreezoutGeneratorLCMS(const FemtoSourceModel& model);
+    FemtoFreezeoutGeneratorLCMS();
+    FemtoFreezeoutGeneratorLCMS(const FemtoSourceModel& model);
     /**
      * copy ctor
      * @param generator
      */
-    FemtoFreezoutGeneratorLCMS(const FemtoFreezoutGeneratorLCMS& generator);
-    FemtoFreezoutGenerator* MakeCopy() const;
+    FemtoFreezeoutGeneratorLCMS(const FemtoFreezeoutGeneratorLCMS& generator);
+    FemtoFreezeoutGenerator* MakeCopy() const;
     virtual Package* Report() const;
-    virtual ~FemtoFreezoutGeneratorLCMS();
-    ClassDef(FemtoFreezoutGeneratorLCMS, 1)
+    virtual ~FemtoFreezeoutGeneratorLCMS();
+    ClassDef(FemtoFreezeoutGeneratorLCMS, 1)
   };
 
   /**
    * used to boost source according to PRF frame
    */
-  class FemtoFreezoutGeneratorPRF : public FemtoFreezoutGenerator {
+  class FemtoFreezeoutGeneratorPRF : public FemtoFreezeoutGenerator {
   protected:
     void Boost(FemtoPair* pair);
 
   public:
-    FemtoFreezoutGeneratorPRF();
+    FemtoFreezeoutGeneratorPRF();
     /**
      * copy ctor
      * @param generator
      */
-    FemtoFreezoutGeneratorPRF(const FemtoFreezoutGeneratorPRF& generator);
-    FemtoFreezoutGeneratorPRF(const FemtoSourceModel& model);
-    FemtoFreezoutGenerator* MakeCopy() const;
+    FemtoFreezeoutGeneratorPRF(const FemtoFreezeoutGeneratorPRF& generator);
+    FemtoFreezeoutGeneratorPRF(const FemtoSourceModel& model);
+    FemtoFreezeoutGenerator* MakeCopy() const;
     virtual Package* Report() const;
-    virtual ~FemtoFreezoutGeneratorPRF();
-    ClassDef(FemtoFreezoutGeneratorPRF, 1)
+    virtual ~FemtoFreezeoutGeneratorPRF();
+    ClassDef(FemtoFreezeoutGeneratorPRF, 1)
   };
 }  // namespace Hal
 

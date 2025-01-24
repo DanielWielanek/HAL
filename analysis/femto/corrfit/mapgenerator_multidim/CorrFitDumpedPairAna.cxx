@@ -38,7 +38,7 @@
 #include "FemtoCorrFunc.h"
 #include "FemtoCorrFuncSimple.h"
 #include "FemtoDumpPairAna.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoMiniPair.h"
 #include "FemtoPair.h"
 #include "FemtoSHCF.h"
@@ -203,15 +203,15 @@ namespace Hal {
 
     if (!parameters) return printErr("Parameters");
 
-    XMLNode* freezXml  = dumpAna->GetChild("FreezoutGenerator");
+    XMLNode* freezXml  = dumpAna->GetChild("FreezeoutGenerator");
     XMLNode* sourceXml = dumpAna->GetChild("SourceModel");
-    if (!freezXml) return printErr("FreezoutGenerator");
+    if (!freezXml) return printErr("FreezeoutGenerator");
 
     if (!sourceXml) return printErr("SourceModel");
-    TClass* freezoutClass             = TClass::GetClass(freezXml->GetValue(), 1, 0);
-    TClass* sourceClass               = TClass::GetClass(sourceXml->GetValue(), 1, 0);
-    FemtoFreezoutGenerator* generator = static_cast<FemtoFreezoutGenerator*>(freezoutClass->New());
-    FemtoSourceModel* source          = static_cast<FemtoSourceModel*>(sourceClass->New());
+    TClass* freezoutClass              = TClass::GetClass(freezXml->GetValue(), 1, 0);
+    TClass* sourceClass                = TClass::GetClass(sourceXml->GetValue(), 1, 0);
+    FemtoFreezeoutGenerator* generator = static_cast<FemtoFreezeoutGenerator*>(freezoutClass->New());
+    FemtoSourceModel* source           = static_cast<FemtoSourceModel*>(sourceClass->New());
     if (source && generator) {
       generator->SetSourceModel(*source);
       SetGenerator(*generator);

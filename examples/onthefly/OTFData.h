@@ -51,7 +51,7 @@ namespace OTF {
 
   class McTrack : public TObject {
     TLorentzVector fMomentum;
-    TLorentzVector fFreezout;
+    TLorentzVector fFreezeout;
     Int_t fPdgCode;
     Int_t fMotherIdx;
 
@@ -59,11 +59,11 @@ namespace OTF {
     McTrack() : fPdgCode(0), fMotherIdx(-1) {};
     void SetMotherId(Int_t momId) { fMotherIdx = momId; }
     void SetPdgCode(Int_t pdgCode) { fPdgCode = pdgCode; }
-    void SetFreezout(const TLorentzVector& freezout) { fFreezout = freezout; }
+    void SetFreezeout(const TLorentzVector& freezout) { fFreezeout = freezout; }
     void SetMomentum(const TLorentzVector& momentum) { fMomentum = momentum; }
     Int_t GetMotherId() const { return fMotherIdx; }
     Int_t GetPdgCode() const { return fPdgCode; }
-    const TLorentzVector& GetFreezout() const { return fFreezout; }
+    const TLorentzVector& GetFreezeout() const { return fFreezeout; }
     const TLorentzVector& GetMomentum() const { return fMomentum; }
     virtual ~McTrack() {};
     ClassDef(McTrack, 1)

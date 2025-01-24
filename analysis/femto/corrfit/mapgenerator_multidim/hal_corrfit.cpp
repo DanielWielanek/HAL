@@ -167,7 +167,7 @@ void preparetemplate() {
   xml_file << "\t\t<Yaxis bins=\"100\" min=\"0.0\" max=\"1.0\"></Yaxis>" << std::endl;
   xml_file << "\t\t<Zaxis bins=\"100\" min=\"0.0\" max=\"1.0\"></Zaxis>" << std::endl;
   xml_file << "\t</CorrelationFunction>" << std::endl;
-  xml_file << "\t<FreezoutGenerator>Hal::FemtoFreezoutGeneratorLCMS</FreezoutGenerator>" << std::endl;
+  xml_file << "\t<FreezeoutGenerator>Hal::FemtoFreezeoutGeneratorLCMS</FreezeoutGenerator>" << std::endl;
   xml_file << "\t<SourceModel>Hal::FemtoSourceModelGauss3D</SourceModel>" << std::endl;
   xml_file << "\t<CalcOptions>" << std::endl;
   xml_file << "\t\t<JobMultiplyFactor>1</JobMultiplyFactor>" << std::endl;

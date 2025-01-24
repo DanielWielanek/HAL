@@ -12,7 +12,7 @@
 #include "DividedHisto.h"
 #include "Femto1DCFAnaMapMC.h"
 #include "Femto1DMapGenerator.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoMiniPair.h"
 #include "FemtoPair.h"
 #include "FemtoSourceModel.h"
@@ -91,7 +91,7 @@ namespace Hal {
       for (int r_bin = 0; r_bin < fRBins; r_bin++) {
         Double_t R = fRadiiBins[r_bin];
         fGenerator->GetSourceModel()->SetRadius(R);
-        fGenerator->GenerateFreezoutCooordinates(fPair);
+        fGenerator->GenerateFreezeoutCooordinates(fPair);
         Double_t weight = fWeight->GenerateWeight(fPair);
         hist->Fill(k, R, weight);
       }

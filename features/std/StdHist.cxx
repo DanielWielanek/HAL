@@ -953,8 +953,16 @@ NamespaceImp(Hal::Std)
     }
 
     void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2) {
+      if (!gPad) {
+        Hal::Cout::PrintInfo("Hal::Std::SetRainbow, pad not found, did you forgot to draw histogram before? ", EInfo::kError);
+        return;
+      }
       gPad->Update();
       TPaletteAxis* palette = (TPaletteAxis*) h.GetListOfFunctions()->FindObject("palette");
+      if (!palette) {
+        Hal::Cout::PrintInfo("Hal::Std::SetRainbow, palette not found, did you forgot to draw histogram before?", EInfo::kError);
+        return;
+      }
       palette->SetX1NDC(x1);
       palette->SetX2NDC(x2);
       palette->SetY1NDC(y1);

@@ -12,7 +12,7 @@
 #include "Array.h"
 #include "Femto1DMapGenerator.h"
 #include "FemtoConst.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoWeightGenerator.h"
 
 #include <Rtypes.h>
@@ -40,7 +40,7 @@ namespace Hal {
 
 
   protected:
-    FemtoFreezoutGenerator* fGeneratorIntegrated = {nullptr};
+    FemtoFreezeoutGenerator* fGeneratorIntegrated = {nullptr};
 
   public:
     Femto1DCFAnaMapMCRoco();

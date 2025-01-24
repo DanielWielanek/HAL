@@ -24,8 +24,8 @@ namespace Hal {
 
     const TLorentzVector& p1 = track1->GetMomentum();
     const TLorentzVector& p2 = track2->GetMomentum();
-    const TLorentzVector& x1 = ((McTrack*) track1)->GetFreezoutPosition();
-    const TLorentzVector& x2 = ((McTrack*) track2)->GetFreezoutPosition();
+    const TLorentzVector& x1 = ((McTrack*) track1)->GetFreezeoutPosition();
+    const TLorentzVector& x2 = ((McTrack*) track2)->GetFreezeoutPosition();
 
 
     Double_t dpx, dpy, dpz, de;

@@ -1,5 +1,5 @@
 /*
- * FemtoFreezoutsAna.cxx
+ * FemtoFreezeoutsAna.cxx
  *
  *  Created on: 15-08-2014
  *      Author: Daniel Wielanek
@@ -7,13 +7,13 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 
-#include "FemtoFreezoutsAna.h"
+#include "FemtoFreezeoutsAna.h"
 
 #include "Cout.h"
 #include "Cut.h"
 #include "FemtoConst.h"
 #include "FemtoFastCut.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoPair.h"
 #include "HistogramManager.h"
 #include "Package.h"
@@ -31,7 +31,7 @@
 
 
 namespace Hal {
-  FemtoFreezoutsAna::FemtoFreezoutsAna() :
+  FemtoFreezeoutsAna::FemtoFreezeoutsAna() :
     TwoTrackAna(kFALSE),
     fPdg1(211),
     fPdg2(211),
@@ -44,7 +44,7 @@ namespace Hal {
     fIgnoreSign(kFALSE),
     fUseFakeMomenta(kFALSE),
     fFemtoPair(nullptr),
-    fFreezoutGenerator(nullptr),
+    fFreezeoutGenerator(nullptr),
     fHistograms1d(nullptr),
     fHistograms3d(nullptr) {
     fBackgroundMode = kNoBackground;
@@ -55,10 +55,10 @@ namespace Hal {
       fHistoMin[i] = -100;
       fHistoMax[i] = 100;
     }
-    AddTags("freezouts");
+    AddTags("freezeouts");
   }
 
-  FemtoFreezoutsAna::FemtoFreezoutsAna(const FemtoFreezoutsAna& ana) :
+  FemtoFreezeoutsAna::FemtoFreezeoutsAna(const FemtoFreezeoutsAna& ana) :
     TwoTrackAna(ana),
     fPdg1(ana.fPdg1),
     fPdg2(ana.fPdg2),
@@ -72,7 +72,7 @@ namespace Hal {
     fIgnoreSign(ana.fIgnoreSign),
     fUseFakeMomenta(ana.fUseFakeMomenta),
     fFemtoPair(nullptr),
-    fFreezoutGenerator(nullptr),
+    fFreezeoutGenerator(nullptr),
     fHistograms1d(nullptr),
     fHistograms3d(nullptr) {
     if (ana.fFastCut) { fFastCut = (FemtoFastCut*) ana.fFastCut->Clone(); }
@@ -91,10 +91,10 @@ namespace Hal {
         } break;
       }
     }
-    if (ana.fFreezoutGenerator) { fFreezoutGenerator = ana.fFreezoutGenerator->MakeCopy(); }
+    if (ana.fFreezeoutGenerator) { fFreezeoutGenerator = ana.fFreezeoutGenerator->MakeCopy(); }
   }
 
-  void FemtoFreezoutsAna::ComputePRF() {
+  void FemtoFreezeoutsAna::ComputePRF() {
     Int_t bin = fFastCut->GetBin();
     if (bin < 0) return;
     TLorentzVector p1, p2, x1, x2;
@@ -135,7 +135,7 @@ namespace Hal {
     }
   }
 
-  void FemtoFreezoutsAna::ComputeLCMS() {
+  void FemtoFreezeoutsAna::ComputeLCMS() {
     Int_t bin = fFastCut->GetBin();
     if (bin < 0) return;
     TLorentzVector p1, p2, x1, x2;
@@ -171,7 +171,7 @@ namespace Hal {
     }
   }
 
-  void FemtoFreezoutsAna::ComputePRFL() {
+  void FemtoFreezeoutsAna::ComputePRFL() {
     Int_t bin = fFastCut->GetBin();
     if (bin < 0) return;
     TLorentzVector p1, p2, x1, x2;
@@ -202,7 +202,7 @@ namespace Hal {
     }
   }
 
-  void FemtoFreezoutsAna::ComputeLCMSGamma() {
+  void FemtoFreezeoutsAna::ComputeLCMSGamma() {
     Int_t bin = fFastCut->GetBin();
     if (bin < 0) return;
     TLorentzVector p1, p2, x1, x2;
@@ -254,7 +254,7 @@ namespace Hal {
     }
   }
 
-  void FemtoFreezoutsAna::ComputeRaw() {
+  void FemtoFreezeoutsAna::ComputeRaw() {
     Int_t bin = fFastCut->GetBin();
     if (bin < 0) return;
     TLorentzVector p1, p2, x1, x2;
@@ -287,7 +287,7 @@ namespace Hal {
     }
   }
 
-  void FemtoFreezoutsAna::ProcessFemtoPair() {
+  void FemtoFreezeoutsAna::ProcessFemtoPair() {
     switch (fKinematicsMode) {
       case EMode::kPRF: ComputePRF(); break;
       case EMode::kLCMS: ComputeLCMS(); break;
@@ -297,7 +297,7 @@ namespace Hal {
     }
   }
 
-  void FemtoFreezoutsAna::SetMomentumCut(Double_t cut) {
+  void FemtoFreezeoutsAna::SetMomentumCut(Double_t cut) {
     if (fCut <= 0) {
       Cout::PrintInfo("KSTar cut shouldn't be <=0", EInfo::kLowWarning);
       return;
@@ -305,7 +305,7 @@ namespace Hal {
     fCut = cut;
   }
 
-  void FemtoFreezoutsAna::SetOption(Option_t* opt) {
+  void FemtoFreezeoutsAna::SetOption(Option_t* opt) {
     TString option = opt;
     if (option.BeginsWith("background:")) {
       Cout::PrintInfo(Form("%s backgrounds are not supported", this->ClassName()), EInfo::kDebugInfo);
@@ -323,7 +323,7 @@ namespace Hal {
     }
   }
 
-  void FemtoFreezoutsAna::AddCut(const Cut& cut, Option_t* opt) {
+  void FemtoFreezeoutsAna::AddCut(const Cut& cut, Option_t* opt) {
     if (cut.GetCollectionID() != 0 && cut.GetUpdateRatio() == ECutUpdate::kEvent) {
       Cout::PrintInfo("This class not work with more than 1 event cut collection", EInfo::kLowWarning);
       return;
@@ -344,7 +344,7 @@ namespace Hal {
     TwoTrackAna::AddCut(cut, opt);
   }
 
-  Task::EInitFlag FemtoFreezoutsAna::Init() {
+  Task::EInitFlag FemtoFreezeoutsAna::Init() {
     Task::EInitFlag prev = TwoTrackAna::Init();
     if (prev == Task::EInitFlag::kFATAL) return prev;
     fHistograms1d = new HistogramManager_3_1D<TH1D>();
@@ -400,12 +400,12 @@ namespace Hal {
     axis2[1] = HistogramAxisConf(titles[4]);
 
 
-    fHistograms1d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis2, "Freezouts1d", kFALSE);
-    fHistograms3d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis, "Freezouts3d", kFALSE);
+    fHistograms1d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis2, "Freezeouts1d", kFALSE);
+    fHistograms3d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis, "Freezeouts3d", kFALSE);
     return Task::EInitFlag::kSUCCESS;
   }
 
-  Package* FemtoFreezoutsAna::Report() const {
+  Package* FemtoFreezeoutsAna::Report() const {
     Package* pack = TwoTrackAna::Report();
     if (fKinematicsMode == EMode::kPRF) {
       AddToAnaMetadata(pack, new ParameterString("FemtoKinematics", "PRF"));
@@ -414,11 +414,11 @@ namespace Hal {
     } else if (fKinematicsMode == EMode::kGammaLCMS) {
       AddToAnaMetadata(pack, new ParameterString("FemtoKinematics", "LCMS+Gamma"));
     }
-    if (fFreezoutGenerator) {
-      AddToAnaMetadata(pack, new ParameterString("FreezoutGenerator", "Enabled"));
-      AddToAnaMetadata(pack, fFreezoutGenerator->Report());
+    if (fFreezeoutGenerator) {
+      AddToAnaMetadata(pack, new ParameterString("FreezeoutGenerator", "Enabled"));
+      AddToAnaMetadata(pack, fFreezeoutGenerator->Report());
     } else {
-      AddToAnaMetadata(pack, new ParameterString("FreezoutGenerator", "Disabled"));
+      AddToAnaMetadata(pack, new ParameterString("FreezeoutGenerator", "Disabled"));
     }
     if (fPdg1 != 0) {
       AddToAnaMetadata(pack, new ParameterInt("Assumed pdg_{1}", fPdg1));
@@ -440,23 +440,23 @@ namespace Hal {
     return pack;
   }
 
-  void FemtoFreezoutsAna::ProcessPair() {
+  void FemtoFreezeoutsAna::ProcessPair() {
     fFemtoPair->Build(fCurrentSignalPair);
     PreprocessFemtoPair();
     ProcessFemtoPair();
   }
 
-  void FemtoFreezoutsAna::PreprocessFemtoPair() {
-    if (fFreezoutGenerator) fFreezoutGenerator->GenerateFreezoutCooordinates(fFemtoPair);
+  void FemtoFreezeoutsAna::PreprocessFemtoPair() {
+    if (fFreezeoutGenerator) fFreezeoutGenerator->GenerateFreezeoutCooordinates(fFemtoPair);
   }
 
-  FemtoFreezoutsAna::~FemtoFreezoutsAna() {
+  FemtoFreezeoutsAna::~FemtoFreezeoutsAna() {
     delete fHistograms1d;
     delete fHistograms3d;
     delete fFastCut;
   }
 
-  void FemtoFreezoutsAna::SetAxes(Int_t bins, Double_t min, Double_t max) {
+  void FemtoFreezeoutsAna::SetAxes(Int_t bins, Double_t min, Double_t max) {
     for (int i = 0; i < 3; i++) {
       fBins[i]     = bins;
       fHistoMin[i] = min;
@@ -464,21 +464,21 @@ namespace Hal {
     }
   }
 
-  void FemtoFreezoutsAna::SetOutAxis(Int_t bins, Double_t min, Double_t max) {
+  void FemtoFreezeoutsAna::SetOutAxis(Int_t bins, Double_t min, Double_t max) {
     const Int_t i = 0;
     fBins[i]      = bins;
     fHistoMin[i]  = min;
     fHistoMax[i]  = max;
   }
 
-  void FemtoFreezoutsAna::SetSideAxis(Int_t bins, Double_t min, Double_t max) {
+  void FemtoFreezeoutsAna::SetSideAxis(Int_t bins, Double_t min, Double_t max) {
     const Int_t i = 1;
     fBins[i]      = bins;
     fHistoMin[i]  = min;
     fHistoMax[i]  = max;
   }
 
-  void FemtoFreezoutsAna::SetLongAxis(Int_t bins, Double_t min, Double_t max) {
+  void FemtoFreezeoutsAna::SetLongAxis(Int_t bins, Double_t min, Double_t max) {
     const Int_t i = 2;
     fBins[i]      = bins;
     fHistoMin[i]  = min;

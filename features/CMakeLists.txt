@@ -86,6 +86,7 @@ minimizer/MinimizerStepConf.cxx
 minimizer/MultiDimDataManager.cxx
 minimizer/MultiDimExtrapolator.cxx
 minimizer/MultiDimFile.cxx
+minimizer/MultiDimMinuit.cxx
 )
 install(FILES ${EXT_HEADERS}
         DESTINATION include

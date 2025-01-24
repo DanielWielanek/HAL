@@ -168,6 +168,7 @@
 #pragma link C++ class Hal::CompressionMap + ;
 #pragma link C++ class Hal::MultiDimExtrapolator + ;
 #pragma link C++ class Hal::MultiDimDataManager + ;
+#pragma link C++ class Hal::MultiDimMinuit + ;
 // STD STUFF
 #pragma link C++ class std::vector < Hal::FitParam> + ;
 #pragma link C++ class std::vector < TString> + ;

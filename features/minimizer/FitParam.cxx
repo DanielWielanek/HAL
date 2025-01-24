@@ -114,9 +114,10 @@ namespace Hal {
   }
 
   void FitParam::ShirkBorders() {
+    if (IsFixed()) return;
     Init();
-    fMin += GetStepSize();
-    fMax -= GetStepSize();
+    if (fMin <= fMapMin + fDParam) fMin = fMapMin + GetStepSize();
+    if (fMax >= fMapMax - fDParam) fMax = fMapMax - GetStepSize();
     Init();
   }
 

@@ -28,7 +28,7 @@
 
 namespace Hal {
   CorrFitGUI::CorrFitGUI(CorrFit* f, Int_t prec) :
-    TGMainFrame(gClient->GetRoot(), 350, 300 + 440), fFunc(f), fNormIndex(fFunc->GetParameterIndex("N")) {
+    TGMainFrame(gClient->GetRoot(), 350, 800), fFunc(f), fNormIndex(fFunc->GetParameterIndex("N")) {
     const Int_t width            = 350;
     Int_t nparams                = fFunc->GetParametersNo();
     fInitalNorm                  = fFunc->GetParameter(fNormIndex);
@@ -120,7 +120,7 @@ namespace Hal {
     SetCleanup(kDeepCleanup);
     SetWindowName("CorrFit GUI");
     MapSubwindows();
-    Resize(width + 1, nparams * 40 + 240);
+    Resize(width + 1, nparams * 40 + 440);
     MapWindow();
   }
 

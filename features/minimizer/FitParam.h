@@ -50,6 +50,8 @@ namespace Hal {
     void SetParName(const TString& name) { fName = name; }
     void SetFittedValue(Double_t val) { fFitted = val; };
     void SetError(Double_t error) { fError = error; };
+    void ExtendToMapLimts();
+    void ShirkBorders();
     Int_t GetNPoints() const { return fNPoint; };
     Double_t GetStepSize() const { return fDParam; };
     Double_t GetMapMax() const { return fMapMax; }

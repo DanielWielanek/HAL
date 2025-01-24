@@ -95,7 +95,7 @@ namespace Hal {
     if (IsFixed() || fDParam == 0) {
       values.push_back(fMin);
     } else {
-      for (double x = fMin; x <= fMax; x += fDParam) {
+      for (double x = fMin; x <= fMax + 1e-9; x += fDParam) {
         values.push_back(x);
       }
     }
@@ -105,6 +105,19 @@ namespace Hal {
   void FitParam::SetMapRangeByStep(Double_t min, Double_t max, Double_t step) {
     Int_t nPoints = (max - min) / step + 1;
     SetMapRange(min, max, nPoints);
+  }
+
+  void FitParam::ExtendToMapLimts() {
+    fMin = fMapMin;
+    fMax = fMapMax;
+    Init();
+  }
+
+  void FitParam::ShirkBorders() {
+    Init();
+    fMin += GetStepSize();
+    fMax -= GetStepSize();
+    Init();
   }
 
 }  // namespace Hal

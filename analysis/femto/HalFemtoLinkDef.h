@@ -41,7 +41,7 @@
 #pragma link C++ class Hal::FemtoFreezeoutGenerator + ;
 #pragma link C++ class Hal::FemtoFreezeoutGeneratorLCMS + ;
 #pragma link C++ class Hal::FemtoFreezeoutGeneratorPRF + ;
-#pragma link C++ class Hal::FemtoFreezeeoutsAna + ;
+#pragma link C++ class Hal::FemtoFreezeoutsAna + ;
 #pragma link C++ enum Hal::FemtoFreezeoutsAna::EMode;
 #pragma link C++ class Hal::FemtoEventBinsAna + ;
 #pragma link C++ class Hal::FemtoFastCutEta + ;

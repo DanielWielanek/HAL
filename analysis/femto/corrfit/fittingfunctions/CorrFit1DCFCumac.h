@@ -120,10 +120,10 @@ namespace Hal {
     Int_t Gamma_a0PiEtaID() const { return 7; }
     Int_t Gamma_a0KKID() const { return 8; }
     /**
-     * assymetry = (1-e^2)/2 where e is the K0-K0-bar abundance assymetry
+     * alpha = (1-e^2)/2 where e is the K0-K0-bar abundance asymmetry
      * @return
      */
-    Int_t AssymetryID() const { return 9; }
+    Int_t AlphaID() const { return 9; }
 
     /**
      *

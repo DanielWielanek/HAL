@@ -353,7 +353,7 @@ namespace Hal {
     Double_t fkM = (fk / r).Rho();
 
     Double_t strong =
-      params[AssymetryID()] * (fkM * fkM + 4. * fk.Re() / (fPis * r) * F1(qr) - 2.0 * fk.Im() * F2(qr) / (r));  // brakowalo pi?
+      params[AlphaID()] * (fkM * fkM + 4. * fk.Re() / (fPis * r) * F1(qr) - 2.0 * fk.Im() * F2(qr) / (r));  // brakowalo pi?
     return params[NormID()] * (1 + params[LambdaID()] * (TMath::Exp(-qr * qr) + strong));
   }
 
@@ -364,7 +364,7 @@ namespace Hal {
     SetParameterName(Gamma_a0KKID(), "#gamma_{a_{0K#bar{K}}");
     SetParameterName(Gamma_f0pipiID(), "#gamma_{f_{0#pi#pi}");
     SetParameterName(Gamma_a0PiEtaID(), "#gamma_{a_{0#pi#eta}}");
-    SetParameterName(AssymetryID(), "#alpha");
+    SetParameterName(AlphaID(), "#alpha");
     SetDefParams(3);
   }
 
@@ -388,7 +388,7 @@ namespace Hal {
     FixParameter(Ma0ID(), params[opt][3]);
     FixParameter(Gamma_a0KKID(), params[opt][4]);
     FixParameter(Gamma_a0PiEtaID(), params[opt][5]);
-    FixParameter(AssymetryID(), 0.5);
+    FixParameter(AlphaID(), 0.5);
   }
 
   //==================================================================
@@ -414,7 +414,6 @@ namespace Hal {
     Double_t k2prim = TMath::Sqrt(mpi2 * mpi2 + meta2 * meta2 + s * s - 2.0 * (mpi2 * meta2 + mpi2 * s + meta2 * s)) / (2.0 * U);
     double k2prim_old = k2prim;
     k2prim            = fGammaCalc.Calculate(ak);
-    std::cout << "k- " << k2prim_old << " " << k2prim << std::endl;
     TComplex num(params[Ma0ID()] * params[Ma0ID()] - s, -params[Gamma_a0KKID()] * ak - params[Gamma_a0PiEtaID()] * k2prim);
     TComplex f(params[Gamma_a0KKID()], 0);
     f            = f / num;
@@ -426,7 +425,6 @@ namespace Hal {
     Double_t strong = 0.25 * (fkM * fkM + 4.0 * fk.Re() / (fPis * r) * F1(qr) - 2.0 * fk.Im() * F2(qr) / (r));
 
     double val = params[NormID()] * (1 + params[LambdaID()] * strong);
-    std::cout << ak << " fk " << fk.Re() << " " << fk.Im() << " " << F1(qr) << std::endl;
 
     return val;
   }

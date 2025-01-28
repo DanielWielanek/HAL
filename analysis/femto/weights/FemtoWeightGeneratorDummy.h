@@ -19,7 +19,7 @@ namespace Hal {
     Double_t fGamma_f0pipi  = {0};
     Double_t fGamma_a0pieta = {0};
     Double_t fGamma_a0KK    = {0};
-    Double_t fAssymetry     = {0};
+    Double_t fAlpha         = {0};
 
   public:
     FemtoWeightGeneratorK0K0();
@@ -27,7 +27,7 @@ namespace Hal {
     virtual Double_t GenerateWeight(FemtoPair* pair);
     void SetDefParams(Int_t opt);
 
-    Double_t SetAssymetry() const { return fAssymetry; }
+    Double_t GetAlpha() const { return fAlpha; }
     Double_t GetMf0() const { return fMf0; }
     Double_t GetGammaA0Kk() const { return fGamma_a0KK; }
     Double_t GetGammaA0pieta() const { return fGamma_a0pieta; }
@@ -35,7 +35,8 @@ namespace Hal {
     Double_t GetGammaF0pipi() const { return fGamma_f0pipi; }
     Double_t GetMa0() const { return fMa0; }
 
-    void SetAssymetry(Double_t Assymetry) { this->fAssymetry = Assymetry; }
+    void SetAsymmetry(Double_t Assymetry) { this->fAlpha = 0.5 * (1. - Assymetry * Assymetry); }
+    void SetAlpha(Double_t alpha) { fAlpha = alpha; }
     void SetMf0(Double_t f0) { this->fMf0 = f0; }
     void SetGammaA0Kk(Double_t GammaA0Kk) { fGamma_a0KK = GammaA0Kk; }
     void SetGammaA0pieta(Double_t GammaA0pieta) { fGamma_a0pieta = GammaA0pieta; }

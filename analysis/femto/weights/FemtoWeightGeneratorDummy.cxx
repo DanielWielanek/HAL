@@ -10,6 +10,7 @@
 #include <RtypesCore.h>
 #include <TComplex.h>
 #include <TMath.h>
+#include <TRandom.h>
 #include <complex>
 #include <iostream>
 
@@ -38,7 +39,6 @@ namespace Hal {
       / (2.0 * e);
 
     Double_t k2prim = TMath::Sqrt(mpi2 * mpi2 + meta2 * meta2 + s * s - 2.0 * (mpi2 * meta2 + mpi2 * s + meta2 * s)) / (2.0 * U);
-
     TComplex num1(fMf0 * fMf0 - s, -fGamma_f0KK * fKStar - fGamma_f0pipi * k1prim);
     TComplex num2(fMa0 * fMa0 - s, -fGamma_a0KK * fKStar - fGamma_a0pieta * k2prim);
 
@@ -51,12 +51,22 @@ namespace Hal {
     Double_t tROS  = Hal::Femto::FmToGeV(fRStarOut);
     Double_t tRLS  = Hal::Femto::FmToGeV(fRStarLong);
     Double_t krvec = fKStarOut * tROS + fKStarSide * tRSS + fKStarLong * tRLS;
-    TComplex ikrPlus(0, -krvec);
-    TComplex ikrScalarPlus(0, TMath::Abs(fKStar * Hal::Femto::FmToGeV(fRStar)));
-    TComplex rescattered1 = TComplex::Exp(ikrScalarPlus) / TMath::Abs(Hal::Femto::FmToGeV(fRStar));
-    TComplex rescattered2 = TComplex::Exp(TComplex::Conjugate(ikrScalarPlus)) / TMath::Abs(Hal::Femto::FmToGeV(fRStar));
-    TComplex psiK0K0bar   = TComplex::Exp(ikrPlus) + fAssymetry * fk * rescattered1;
-    TComplex psiK0K0bar2  = TComplex::Exp(-ikrPlus) + fAssymetry * fk * rescattered2;
+    Double_t tRS   = TMath::Abs(Hal::Femto::FmToGeV(fRStar));
+    TComplex ikrPlane(0, krvec);
+    TComplex ikrSphere(0, TMath::Abs(fKStar * tRS));
+    TComplex rescattered1 = TComplex::Exp(ikrSphere) / tRS;
+    TComplex rescattered2 = TComplex::Exp(-ikrSphere) / tRS;
+    Double_t alpha        = fAlpha;
+    TComplex psiK0K0bar, psiK0K0bar2;
+    if (gRandom->Rndm() < alpha) {
+      psiK0K0bar  = (TComplex::Exp(-ikrPlane) + fk * rescattered1);
+      psiK0K0bar2 = TComplex::Exp(ikrPlane) + fk * rescattered1;
+      return ((psiK0K0bar + psiK0K0bar2) * (psiK0K0bar + psiK0K0bar2)).Rho() * 0.5;
+    } else {
+      psiK0K0bar  = TComplex::Exp(-ikrPlane);
+      psiK0K0bar2 = TComplex::Exp(ikrPlane);
+      return ((psiK0K0bar + psiK0K0bar2) * (psiK0K0bar + psiK0K0bar2)).Rho() * 0.5;
+    }
 
 
     Double_t psiK0K0 = (psiK0K0bar + psiK0K0bar2) * (psiK0K0bar + psiK0K0bar2) * 0.5;  // 0.5 - normalization
@@ -129,7 +139,7 @@ namespace Hal {
     fMa0           = params[opt][3];
     fGamma_a0KK    = params[opt][4];
     fGamma_a0pieta = params[opt][5];
-    fAssymetry     = 0.5;
+    fAlpha     = 0.5;
   }
 
 } /* namespace Hal */

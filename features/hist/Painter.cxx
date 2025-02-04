@@ -9,6 +9,7 @@
 #include "Painter.h"
 
 #include <iostream>
+#include <vector>
 
 #include "Cout.h"  //KURWA
 #include "PadStyle.h"
@@ -19,7 +20,8 @@
 namespace Hal {
   const int Painter::kHtmlBit = 0;
   const int Painter::kGridBit = 1;
-
+  const int Painter::kPad     = 2;
+  const int Painter::kCanvas  = 3;
   Painter::Painter() {
     fCommonData.fCanvases = new std::vector<TCanvas*>();
     fCommonData.fPads     = new std::vector<std::vector<TVirtualPad*>>();
@@ -70,8 +72,21 @@ namespace Hal {
   void Painter::MakeCanvasPads(Int_t x, Int_t y, Int_t canvasNo) {
     auto dividePads = [&]() {
       auto canva = GetCanvas(canvasNo);
-      canva->Divide(x, y);
-      int count = 0;
+      int count  = 0;
+      if (!TESTBIT(fDrawFlags, kPad)) {
+        canva->Divide(x, y);
+      } else {  // reuse pads
+        bool cont = true;
+        auto gpad = gPad;
+        do {
+          auto pad = canva->cd(++count);
+          if (gpad == pad) {
+            cont = false;
+            count--;
+          }
+          if (count > 100) cont = false;
+        } while (cont);
+      }
       for (int i = 0; i < x; i++) {
         for (int j = 0; j < y; j++) {
           (*fCommonData.fPads)[canvasNo].push_back(canva->cd(++count));
@@ -83,7 +98,16 @@ namespace Hal {
       dividePads();
     } else {
       for (int i = fCommonData.fCanvases->size(); i <= canvasNo; i++) {
-        auto newCanv = new TCanvas();
+        TCanvas* newCanv = nullptr;
+        if (TESTBIT(fDrawFlags, kPad) || TESTBIT(fDrawFlags, kCanvas)) {
+          newCanv = dynamic_cast<TCanvas*>(gPad);
+          if (!newCanv) {
+            auto pad = gPad;
+            newCanv  = pad->GetCanvas();
+            gPad     = pad;
+          }
+        }
+        if (!newCanv) newCanv = new TCanvas();
         fCommonData.fCanvases->push_back(newCanv);
         std::vector<TVirtualPad*> pads;
         pads.push_back(newCanv);
@@ -145,6 +169,16 @@ namespace Hal {
       }
     } else {
       CLRBIT(defFlags, kHtmlBit);
+    }
+    if (Hal::Std::FindParam(option, "canvas", kTRUE)) {
+      fOptionsChanged = kTRUE;
+      SETBIT(defFlags, kCanvas);
+      CLRBIT(defFlags, kPad);
+    }
+    if (Hal::Std::FindParam(option, "pad", kTRUE)) {
+      fOptionsChanged = kTRUE;
+      SETBIT(defFlags, kPad);
+      CLRBIT(defFlags, kCanvas);
     }
     auto newOpt = SetOptionInternal(option, defFlags);
     if (newOpt != fDrawFlags) {
@@ -230,5 +264,6 @@ namespace Hal {
       CLRBIT(flag, ibit);
     if (set >= 0) SETBIT(flag, set);
   }
+
 
 } /* namespace Hal */

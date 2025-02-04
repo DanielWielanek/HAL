@@ -44,6 +44,8 @@ namespace Hal {
   protected:
     static const int kHtmlBit;
     static const int kGridBit;
+    static const int kCanvas;
+    static const int kPad;
     /**
      * set bit in drawing flag
      * @param bit
@@ -205,6 +207,9 @@ namespace Hal {
      * default - reset flags to default and add additional flags from option
      * default! -reset flags to default and ignore rest of the option
      * keep - keeps old flags, add only new flags
+     * canvas - reuse canvas do not create pads
+     * that requires single pad
+     * pad - reuse canvas and pads
      * skip - ignore this method
      * @see SetOptionInternal:
      */

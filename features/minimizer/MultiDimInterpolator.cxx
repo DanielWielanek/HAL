@@ -5,7 +5,7 @@
  *      Author: daniel
  */
 
-#include "MultiDimExtrapolator.h"
+#include "MultiDimInterpolator.h"
 
 #include "CorrelationHisto.h"
 #include "Cout.h"
@@ -20,9 +20,9 @@
 
 namespace Hal {
 
-  void MultiDimExtrapolator::OpenFile(TString file) { fInFile = new Hal::MultiDimFile(file); }
+  void MultiDimInterpolator::OpenFile(TString file) { fInFile = new Hal::MultiDimFile(file); }
 
-  Hal::CorrelationHisto* MultiDimExtrapolator::GetCorrHisto() const {
+  Hal::CorrelationHisto* MultiDimInterpolator::GetCorrHisto() const {
     Hal::CorrelationHisto* res = new Hal::CorrelationHisto(fInFile->GetConfig()->GetParametersNo());
     auto params                = fInFile->GetConfig()->GetParams();
     for (int i = 0; i < params.size(); i++) {
@@ -45,7 +45,7 @@ namespace Hal {
     return res;
   }
 
-  Double_t MultiDimExtrapolator::Extrapolate(const std::vector<Double_t>& x) const {
+  Double_t MultiDimInterpolator::Extrapolate(const std::vector<Double_t>& x) const {
     const int dimensions = fInFile->GetConfig()->GetParametersNo();
     // if (dimensions == 0 || size.size() != min_values.size() || size.size() != max_values.size() || size.size() != x.size()) {
     //   throw std::invalid_argument("Dimension mismatch in input parameters.");
@@ -84,9 +84,9 @@ namespace Hal {
     return result;
   }
 
-  MultiDimDataManager* MultiDimExtrapolator::GetConfig() const { return fInFile->GetConfig(); }
+  MultiDimDataManager* MultiDimInterpolator::GetConfig() const { return fInFile->GetConfig(); }
 
-  MultiDimExtrapolator::~MultiDimExtrapolator() {
+  MultiDimInterpolator::~MultiDimInterpolator() {
     if (fInFile) delete fInFile;
   }
 

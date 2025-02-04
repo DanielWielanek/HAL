@@ -166,7 +166,7 @@
 #pragma link C++ class Hal::FitParam + ;
 #pragma link C++ class Hal::MinimizerStepConf + ;
 #pragma link C++ class Hal::CompressionMap + ;
-#pragma link C++ class Hal::MultiDimExtrapolator + ;
+#pragma link C++ class Hal::MultiDimInterpolator + ;
 #pragma link C++ class Hal::MultiDimDataManager + ;
 #pragma link C++ class Hal::MultiDimMinuit + ;
 // STD STUFF

@@ -14,8 +14,8 @@
 
 #include "Cout.h"
 #include "MultiDimDataManager.h"
-#include "MultiDimExtrapolator.h"
 #include "MultiDimFile.h"
+#include "MultiDimInterpolator.h"
 #include "Std.h"
 #include "StdString.h"
 
@@ -53,7 +53,7 @@ namespace Hal {
       Hal::Cout::PrintInfo("Cannot open two files in MultiDimMinuit", EInfo::kError);
       return;
     }
-    fFunc = new Hal::MultiDimExtrapolator();
+    fFunc = new Hal::MultiDimInterpolator();
     fFunc->OpenFile(file);
     fParameters = fFunc->GetConfig()->GetParams();
     for (auto& x : fParameters) {

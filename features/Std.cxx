@@ -342,7 +342,7 @@ namespace Hal::Std {
     return year_ver * 100 + month_ver;
   }
 
-  TVector3 CalcualteBoostVector(Double_t energy_per_nucleon, Int_t n_proj, Int_t p_proj, Int_t n_tar, Int_t p_tar) {
+  TVector3 CalculateBoostVector(Double_t energy_per_nucleon, Int_t n_proj, Int_t p_proj, Int_t n_tar, Int_t p_tar) {
     Double_t Np      = n_proj;
     Double_t Pp      = p_proj;
     Double_t Nt      = n_tar;

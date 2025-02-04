@@ -5,8 +5,8 @@
  *      Author: daniel
  */
 
-#ifndef HAL_FEATURES_MINIMIZER_MULTIDIMEXTRAPOLATOR_H_
-#define HAL_FEATURES_MINIMIZER_MULTIDIMEXTRAPOLATOR_H_
+#ifndef HAL_FEATURES_MINIMIZER_MULTIDIMINTERPOLATOR_H_
+#define HAL_FEATURES_MINIMIZER_MULTIDIMINTERPOLATOR_H_
 
 #include "Object.h"
 
@@ -20,11 +20,11 @@ namespace Hal {
   /**
    * class for interpolation of multimensional data
    */
-  class MultiDimExtrapolator : public Object {
+  class MultiDimInterpolator : public Object {
     MultiDimFile* fInFile = {nullptr};
 
   public:
-    MultiDimExtrapolator() {};
+    MultiDimInterpolator() {};
     /**
      * opens file with data, file should be created via MultiDimFile class
      * @param file
@@ -46,10 +46,10 @@ namespace Hal {
      * @return information about file congiguration (e.g. number of dimensions etc.)
      */
     MultiDimDataManager* GetConfig() const;
-    virtual ~MultiDimExtrapolator();
-    ClassDef(MultiDimExtrapolator, 1)
+    virtual ~MultiDimInterpolator();
+    ClassDef(MultiDimInterpolator, 1)
   };
 
 } /* namespace Hal */
 
-#endif /* HAL_FEATURES_MINIMIZER_MULTIDIMEXTRAPOLATOR_H_ */
+#endif /* HAL_FEATURES_MINIMIZER_MULTIDIMINTERPOLATOR_H_ */

@@ -84,7 +84,7 @@ minimizer/FitParam.cxx
 minimizer/Minimizer.cxx
 minimizer/MinimizerStepConf.cxx
 minimizer/MultiDimDataManager.cxx
-minimizer/MultiDimExtrapolator.cxx
+minimizer/MultiDimInterpolator.cxx
 minimizer/MultiDimFile.cxx
 minimizer/MultiDimMinuit.cxx
 )

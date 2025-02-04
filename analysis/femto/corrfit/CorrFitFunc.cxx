@@ -244,7 +244,7 @@ namespace Hal {
       case kChi2: var = "#chi^{2}"; break;
     }
     TString title = var + "map";
-    if (scale) { title = var + " map (scaled bt NDF)"; }
+    if (scale) { title = var + " map (scaled by NDF)"; }
     ChiSqMap2D* map = new ChiSqMap2D("chi_map", par1_steps, par1_min, par1_max, par2_steps, par2_min, par2_max);
     map->SetParNames(fParameters[par1].GetParName(), fParameters[par2].GetParName());
     map->GetHist()->SetTitle(title);

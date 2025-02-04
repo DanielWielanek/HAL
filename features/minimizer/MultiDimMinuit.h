@@ -24,7 +24,7 @@ namespace ROOT {
 
 
 namespace Hal {
-  class MultiDimExtrapolator;
+  class MultiDimInterpolator;
 
   class MultiDimMinuit : public Object {
   public:
@@ -34,7 +34,7 @@ namespace Hal {
   protected:
     std::vector<TString> AlgoToOptions(EMinAlgo algo);
     EMinAlgo fMinAlgo           = {EMinAlgo::kMinuitMigrad};
-    MultiDimExtrapolator* fFunc = {nullptr};
+    MultiDimInterpolator* fFunc = {nullptr};
     std::vector<FitParam> fParameters;
     std::vector<Double_t> fValues;
     ROOT::Math::Minimizer* fMinimizer = {nullptr};

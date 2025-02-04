@@ -38,7 +38,6 @@ namespace Hal {
     static const unsigned short int kTitle;
     static const unsigned short int kMin;
     static const unsigned short int kMax;
-    HistoStyle() {};
     /**
      * return predefined style for 1d histogram
      * @param style options:
@@ -50,7 +49,19 @@ namespace Hal {
      * apollo - use tt fods
      * @return
      */
-    static HistoStyle GetStyle(TString style);
+    HistoStyle(TString style = "");
+    /**
+     * return predefined style for 1d histogram
+     * @param style options:
+     * 05 - set margins sizes to 0.05 (default optimal)
+     * 05 like above but sets margin sizes to 0.06
+     * color - set line color/marker color to red
+     * circle - set marker to full circle
+     * center center axes
+     * apollo - use tt fods
+     * @return
+     */
+    [[deprecated]] static HistoStyle GetStyle(TString style);
     /**
      * set title size, title offset, label size and label offset simultaneously
      * @param val

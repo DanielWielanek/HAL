@@ -64,4 +64,4 @@ are setup the server (e.g., python3 -m http.server called inside of report direc
 ## To do
  * simplification of buffer class - using pointers instead of int maps?
  * std::fuction for custom class cuts?
- * generator of simple cuts on macro level
+ * removing duplicate cut monitors

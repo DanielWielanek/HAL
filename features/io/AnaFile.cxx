@@ -453,7 +453,7 @@ namespace Hal {
       case ECutUpdate::kEvent: return "Event_collections_No"; break;
       case ECutUpdate::kTrack: return "Track_collections_No"; break;
       case ECutUpdate::kTwoTrack: return "TwoTrack_collections_No"; break;
-      case ECutUpdate::kTwoTrackBackground: "TwoTrack_collections_background_No"; break;
+      case ECutUpdate::kTwoTrackBackground: return "TwoTrack_collections_background_No"; break;
       default: Cout::PrintInfo("Unknown update ratio", EInfo::kLowWarning); break;
     }
     return "";

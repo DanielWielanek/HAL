@@ -496,7 +496,38 @@ namespace Hal {
                         EInfo::kCriticalError);
       }
     }
+
+    auto sameMon = [](CutMonitor* a, CutMonitor* b) {
+      int n = a->GetAxisNo();
+      if (n != b->GetAxisNo()) return false;
+      int bad = 0;
+      for (int no = 0; no < n; no++) {
+        if (a->GetCutLink(no) == b->GetCutLink(no))
+          if (a->GetCutParameter(no) == b->GetCutParameter(no)) ++bad;
+      }
+      if (bad == n) return true;
+      return false;
+    };
+
+    /** TODO fix for field monitors
+        for (int i = 0; i < fCutMonitors->GetEntries(); i++) {
+          auto mon1 = (CutMonitor*) fCutMonitors->UncheckedAt(i);
+          for (int j = i + 1; j < fCutMonitors->GetEntries(); j++) {
+            auto mon2 = (CutMonitor*) fCutMonitors->UncheckedAt(j);
+            if (mon1->GetAxisNo() == mon2->GetAxisNo()) {
+              bool bad = sameMon(mon1, mon2);
+              if (bad) {
+                TString info = Form("CutCollection::AdvancedMonitorInitialization Duplicate cut found, it will be removed
+       (col=%i)", GetCollectionID());
+
+                Cout::PrintInfo(info, EInfo::kWarning);
+                fCutMonitors->RemoveAt(j--);
+              }
+            }
+          }
+        }**/
     fCutMonitors->Compress();
+
     // standard initialization
     for (int i = 0; i < fCutMonitors->GetEntriesFast(); i++) {
       CutMonitor* mon = ((CutMonitor*) fCutMonitors->UncheckedAt(i));

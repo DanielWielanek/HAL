@@ -33,7 +33,8 @@ namespace Hal {
     fCutMonitors(nullptr),
     fCutMonitorsOptions(nullptr),
     fGlobalOptionCuts(other.fGlobalOptionCuts),
-    fGlobalOptionsCutMonitors(other.fGlobalOptionsCutMonitors) {
+    fGlobalOptionsCutMonitors(other.fGlobalOptionsCutMonitors),
+    fGlobalCollectionId(other.fGlobalCollectionId) {
     if (other.fCuts) {
       fCuts = new TObjArray();
       fCuts->SetOwner(kTRUE);
@@ -269,6 +270,7 @@ namespace Hal {
     if (GetNRequest() != 0) {
       for (int iMon = 0; iMon < GetNRequest(); iMon++) {
         CutMonitor* mon = MakeCutMonitor(iMon);
+        if (fGlobalCollectionId != -1) { mon->SetCollectionID(fGlobalCollectionId); }
         if (mon != nullptr) { AddRawCutMonitor(mon); }
       }
     }
@@ -294,9 +296,16 @@ namespace Hal {
   }
 
   void CutsAndMonitors::SetCollectionID(Int_t id) {
-    for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
-      Cut* cut = static_cast<Cut*>(fCuts->UncheckedAt(i));
-      cut->SetCollectionID(id);
+    fGlobalCollectionId = id;
+    if (fGlobalCollectionId != -1) {
+      for (int iCut = 0; iCut < fCuts->GetEntriesFast(); iCut++) {
+        ((Cut*) fCuts->UncheckedAt(iCut))->SetCollectionID(fGlobalCollectionId);
+      }
+      for (int iMon = 0; iMon < fCutMonitors->GetEntriesFast(); iMon++) {
+        ((CutMonitor*) fCutMonitors->UncheckedAt(iMon))->SetCollectionID(fGlobalCollectionId);
+      }
     }
+
+
   }  // namespace Hal
 }  // namespace Hal

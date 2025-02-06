@@ -42,6 +42,7 @@ namespace Hal {
     TString fGlobalOptionCuts;
     TString fGlobalOptionsCutMonitors;
     std::vector<CutMonitorRequest> fCutMonitorRequests;
+    Int_t fGlobalCollectionId = {-1};
 
   protected:
     /**
@@ -117,7 +118,9 @@ namespace Hal {
     CutsAndMonitors(const CutsAndMonitors& other);
     CutsAndMonitors& operator=(const CutsAndMonitors& other);
     /**
-     * set global option for all cuts
+     * set global option for all cuts, NOTE: if you specify the collection by brackets, you probably should do the same n
+     * SetOptionForAllMonitors. Otherwise the same cut monitors might be added multiple times.
+     * Basically is not recommended use brackets here, better use SetCollectionID instead
      * @param opt
      */
     void SetOptionForAllCuts(TString opt) { fGlobalOptionCuts = opt; };

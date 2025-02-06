@@ -45,7 +45,6 @@ namespace Hal {
     PropertyMonitorXYZ& operator=(const PropertyMonitorXYZ& other);
     virtual Bool_t Init(Int_t task_id);
     virtual Bool_t ObjMonitor() const { return kTRUE; };
-    virtual Bool_t AreSimilar(CutMonitor* other) const;
     virtual Package* Report() const;
     virtual CutMonitor* MakeCopy() const { return (CutMonitor*) this->Clone(); };
     virtual ~PropertyMonitorXYZ();

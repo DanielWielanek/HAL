@@ -345,6 +345,8 @@ namespace Hal {
     if (this->fAxisNo != other->fAxisNo) return kFALSE;
     for (int i = 0; i < fAxisNo; i++) {
       if (!this->fCutNames[i].EqualTo(other->fCutNames[i])) { return kFALSE; }
+      if (fCut[i] != other->fCut[i]) return kFALSE;
+      if (fOptionAxis[i] != other->fOptionAxis[i]) return kFALSE;
     }
     return kTRUE;
   }

@@ -45,6 +45,7 @@ namespace Hal {
     PropertyMonitorXYZ& operator=(const PropertyMonitorXYZ& other);
     virtual Bool_t Init(Int_t task_id);
     virtual Bool_t ObjMonitor() const { return kTRUE; };
+    virtual Bool_t AreSimilar(CutMonitor* other) const;
     virtual Package* Report() const;
     virtual CutMonitor* MakeCopy() const { return (CutMonitor*) this->Clone(); };
     virtual ~PropertyMonitorXYZ();
@@ -75,6 +76,7 @@ namespace Hal {
                          Int_t fieldDZ,
                          std::initializer_list<Double_t> zAxis);
     virtual void Update(Bool_t passed, TObject* obj);
+    virtual Bool_t AreSimilar(CutMonitor* other) const;
     virtual Bool_t Init(Int_t task_id);
     virtual CutMonitor* MakeCopy() const { return new EventFieldMonitorXYZ(*this); }
     virtual ~EventFieldMonitorXYZ() {};
@@ -106,6 +108,7 @@ namespace Hal {
                          Int_t fieldDZ,
                          std::initializer_list<Double_t> zAxis);
     virtual void Update(Bool_t passed, TObject* obj);
+    virtual Bool_t AreSimilar(CutMonitor* other) const;
     virtual Bool_t Init(Int_t task_id);
     virtual CutMonitor* MakeCopy() const { return new TrackFieldMonitorXYZ(*this); }
     virtual ~TrackFieldMonitorXYZ() {};

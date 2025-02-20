@@ -22,6 +22,7 @@
 namespace HalOTF {
   class McEvent;
   class RecoEvent;
+  class ComplexEvent;
 } /* namespace HalOTF */
 
 /**
@@ -30,41 +31,23 @@ namespace HalOTF {
 namespace HalOTF {
   class Reader : public Hal::Reader {
   protected:
-    TH2D* fSpectras     = {nullptr};
-    TH1D* fMultiplicity = {nullptr};
-    Bool_t fOwner;
-    Bool_t fRegister;
-    Int_t fFixedMultiplicity = {-1};
-    Int_t fPids;
-    Int_t fCharge;
-    Int_t fCurrrentMult = {0};
-    Double_t fMass;
-    Double_t fSmear;
+    enum class ETranslate { kNone, kMc, kReco, kComplex };
+    ETranslate fTranslate = {ETranslate::kComplex};
     OTF::McEvent* fMcEvent;
     OTF::RecoEvent* fRecoEvent;
-    /**
-     * cleans up events if neccessary
-     */
-    void PrepareTables();
+    HalOTF::ComplexEvent* fHalComplexEvent   = {nullptr};
+    HalOTF::RecoEvent* fHalRecoEvent         = {nullptr};
+    HalOTF::McEvent* fHalMcEvent             = {nullptr};
+    Hal::EventInterface* fTranslateInterface = {nullptr};
 
   public:
     Reader();
     /**
-     *
-     * @param h histogram x-axis eta, y-axis pt
-     * @param pid pid of particle
-     * @param m multiplicity
+     * specify how to translate events (if want to use a direct access to data
+     * @param opt reco - for reco translation, mc - for sim translatation, complex or mc+reco - for complex translation
+     * note, last Reader task should translate events
      */
-    void SetSpiecies(const TH2D& h, Int_t pid);
-    /**
-     * set multiplicity histogram
-     * @param h
-     */
-    void SetMultHisto(TH1D& h);
-    /** fixes multiplicity  */
-    void SetFixMult(Int_t mult);
-    void SetSmear(Double_t smear) { fSmear = smear; }
-    void Register(Bool_t reg) { fRegister = reg; }
+    void Translate(TString opt);
     virtual void Exec(Option_t* opt);
     virtual Hal::Task::EInitFlag Init();
     virtual ~Reader();

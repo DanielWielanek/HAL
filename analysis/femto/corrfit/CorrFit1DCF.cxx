@@ -25,7 +25,8 @@
 
 #include "Array.h"
 #include "CorrFit1DCF.h"
-#include "CorrFitDrawOptions.h"
+
+#include "CorrFit1DCFPainter.h"
 #include "CorrFitHDFunc1D.h"
 #include "CorrFitMask.h"
 #include "CorrFitMask1D.h"
@@ -39,14 +40,14 @@
 namespace Hal {
 
   CorrFit1DCF::CorrFit1DCF(Int_t parameters) : CorrFitFunc(parameters, 1) {
-    if (GetParametersNo() > 1) {  // not only radii fit also lambda
+    fNormParIndex = 0;
+    if (GetParametersNo() < 2) { HalCoutDebug("1D corrfit func should contain at least 2 params"); }
+    if (GetParametersNo() > 2) {  // not only radii fit also lambda
       SetParameterName(LambdaID(), "#lambda");
       fParameters[LambdaID()].SetRange(0, 1);
     }
     fBinX = 0;
-    if (GetParametersNo() > 2) {  // not only radii & lambda - also norm
-      SetParameterName(NormID(), "N");
-    }
+    SetParameterName(NormID(), "N");
     SetParameterName(RadiusID(), "R");
   }
 
@@ -55,56 +56,9 @@ namespace Hal {
     return fDenominatorHistogram->GetBinContent(bin);
   }
 
-  void CorrFit1DCF::Paint(Bool_t repaint, Bool_t refresh) {
-    if (repaint)
-      if (gPad == nullptr) {
-        TCanvas* c = new TCanvas();
-        fTempPad   = c->cd();
-      }
-    if (fTempPad == nullptr) { fTempPad = gPad; }
-    for (int i = 0; i < GetParametersNo(); i++) {
-      fTempParamsEval[i] = GetParameter(i);
-    }
-    // TODO fFittedFunction->SetParameter(par,val);
-    ParametersChanged();
-
-    if (fDrawFunc.size() == 0) {
-      fDrawFunc.resize(1);
-      fDrawFunc[0].first  = GetFunctionForDrawing();
-      fDrawFunc[0].second = fTempPad;
-    }
-    CopyParamsToTF1(GetTF1(0), kTRUE, kTRUE);
-    if (fDrawOptions.DrawCf()) {
-      MakeTHForDrawing();
-      if (fDrawOptions.AutoNorm()) { fDrawHistograms[0]->Scale(1.0 / GetNorm()); }
-      fDrawHistograms[0]->SetMarkerStyle(kFullSquare);
-      if (fDrawOptions.DrawMinMax()) {
-        fDrawHistograms[0]->SetMinimum(fDrawOptions.GetMin());
-        fDrawHistograms[0]->SetMaximum(fDrawOptions.GetMax());
-      }
-      fDrawHistograms[0]->Draw("SAME");
-    }
-    if (fDrawOptions.AutoNorm()) {
-      GetTF1(0)->SetParameter(NormID(), 1);
-      GetTF1(0)->Draw("SAME");
-    } else {
-      GetTF1(0)->Draw("SAME");
-    }
-    UpdateLegend();
-    if (fLegend) {
-      fTempPad->cd();
-      fLegend->Draw("SAME");
-    }
-
-    if (refresh) {
-      fTempPad->Modified(kTRUE);
-      fTempPad->Update();
-#ifdef __APPLE__
-      for (int ispe = 0; ispe < 2; ispe++) {
-        if (gSystem->ProcessEvents()) break;
-      }
-#endif
-    }
+  void CorrFit1DCF::MakePainter(TString opt) {
+    fPainter = new CorrFit1DCFPainter(this, (Femto1DCF*) fCF);
+    fPainter->SetOption(opt);
   }
 
   void CorrFit1DCF::SetErrors(TH1* num, const TH1* /*den*/) const {
@@ -214,6 +168,7 @@ namespace Hal {
 
   Double_t CorrFit1DCF::GetFunDrawable(Double_t* x, Double_t* params) const {
     fBinX = fDenominatorHistogram->GetXaxis()->FindBin(x[0]);
+    if (params[GetParametersNo()]) { return EvalCF(x, params) / params[fNormParIndex]; }
     return EvalCF(x, params);
   }
 
@@ -266,34 +221,18 @@ namespace Hal {
                              &CorrFit1DCF::GetFunDrawable,
                              fRange.Get(0),
                              fRange.Get(1),
-                             GetParametersNo(),
+                             GetParametersNo() + 1,
                              this->ClassName(),
-                             "GetFunDrawable");
+                             "GetFunDrawable");  // last parameter enable normalization if set to 1
     for (int i = 0; i < GetParametersNo(); i++) {
       draw_func->FixParameter(i, GetParameter(i));
       draw_func->SetParName(i, GetParameterName(i));
     }
+    draw_func->FixParameter(GetParametersNo(), 0);
     draw_func->SetLineColor(GetLineColor());
     draw_func->SetLineStyle(GetLineStyle());
     draw_func->SetLineWidth(GetLineWidth());
     return draw_func;
-  }
-
-  void CorrFit1DCF::MakeTHForDrawing() {
-    if (fDrawHistograms.size() == 0) {
-      TH1* h = (TH1*) ((Femto1DCF*) fCF)->GetHist(kFALSE);
-      h->SetName(Hal::Std::GetUniqueName(h->GetName()));
-      h->SetMinimum(0);
-      h->SetStats(kFALSE);
-      fDrawHistograms.push_back(h);
-    }
-    TH1* cf = (TH1*) ((Femto1DCF*) fCF)->GetHist(kFALSE);  // TODO direct calculate without creation of TH1
-    fDrawHistograms[0]->ResetStats();
-    for (int i = 1; i <= fDrawHistograms[0]->GetNbinsX(); i++) {
-      fDrawHistograms[0]->SetBinContent(i, cf->GetBinContent(i));
-      fDrawHistograms[0]->SetBinError(i, cf->GetBinError(i));
-    }
-    delete cf;
   }
 
   Double_t CorrFit1DCF::EvalCF(const Double_t* x, const Double_t* params) const {
@@ -307,6 +246,11 @@ namespace Hal {
       return val * static_cast<CorrFitHDFunc1D*>(fHDMaps)->GetDenominatorSum()[fBinX];
     }
     return CalculateCF(x, params);
+  }
+
+  Double_t CorrFit1DCF::EvalCFNormalized(const Double_t* x, const Double_t* params) const {
+    Double_t val = EvalCF(x, params);
+    return val / params[NormID()];
   }
 
   void CorrFit1DCF::RecalculateSmoothFunction() const {
@@ -329,5 +273,4 @@ namespace Hal {
     fMask        = (CorrFitMask*) mask->Clone();
     fOwnRangeMap = kTRUE;
   }
-
 }  // namespace Hal

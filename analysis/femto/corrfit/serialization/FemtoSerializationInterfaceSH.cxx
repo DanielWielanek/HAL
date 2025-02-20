@@ -52,6 +52,7 @@ namespace Hal {
       for (int i = 0; i < fMaxJM * 2; i++) {
         for (int j = 0; j < fMaxJM * 2; j++) {
           CopyDataSingle(fCF->fCovNum[iq - 1][i][j], dir);
+          // CopyDataSingle(fCF->fCovNum[iq][i][j], dir);
         }
       }
     }
@@ -72,10 +73,10 @@ namespace Hal {
     auto sqrSeralize = [&](Double_t& val, ECopyDir dirx) {
       Double_t copy;
       if (dirx == ECopyDir::kSerialize) {
-        copy = TMath::Sqrt(val);
+        copy = TMath::Sqrt(val);  // go to error to be compatible with TH1D
         CopyDataSingle(copy, dirx);
       } else {
-        CopyDataSingle(copy, dirx);
+        CopyDataSingle(copy, dirx);  // go to error^2 from TH1D to this
         val = copy * copy;
       }
     };
@@ -88,6 +89,7 @@ namespace Hal {
     }
     for (int i = 0; i < fMaxJM * 2; i++) {
       for (int j = 0; j < fMaxJM * 2; j++) {
+        if (i == j && i == 0) std::cout << "EXPORT COV " << fSlice->fCovMatrix[fBinLow][i][j] << std::endl;
         CopyDataSingle(fSlice->fCovMatrix[fBinLow][i][j], dir);
       }
     }

@@ -41,7 +41,7 @@ io/Jobs.cxx
 io/Object.cxx
 io/Package.cxx
 io/AnaFile.cxx
-io/ObjectVoid.cxx
+io/Pointer.cxx
 
 io/html/PackageSql.cxx
 io/html/Package2HTML.cxx
@@ -51,6 +51,7 @@ io/html/HtmlFile.cxx
 io/html/HtmlObject.cxx
 io/html/HtmlTable.cxx
 io/html/PackageTable.cxx
+io/html/PicTree.cxx
 
 hist/DividedHisto.cxx
 hist/HistogramManager.cxx
@@ -58,8 +59,16 @@ hist/MultiGraph.cxx
 hist/Splines.cxx
 hist/ChiSqMap2D.cxx
 hist/FastHist.cxx
-hist/Style.cxx
 hist/CorrelationHisto.cxx
+hist/Painter.cxx
+hist/styles/AxisStyle.cxx
+hist/styles/FillStyle.cxx
+hist/styles/HistoStyle.cxx
+hist/styles/LineStyle.cxx
+hist/styles/LegendStyle.cxx
+hist/styles/MarkerStyle.cxx
+hist/styles/PadStyle.cxx
+hist/styles/Style.cxx
 
 std/StdHist.cxx
 std/StdString.cxx
@@ -68,10 +77,16 @@ std/StdMath.cxx
 phys/ErrorCalc.cxx
 phys/Helix.cxx
 phys/HelixBase.cxx
+phys/FastAxisCalc.cxx
+phys/ProfileAna2D.cxx
 
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx
 minimizer/MinimizerStepConf.cxx
+minimizer/MultiDimDataManager.cxx
+minimizer/MultiDimInterpolator.cxx
+minimizer/MultiDimFile.cxx
+minimizer/MultiDimMinuit.cxx
 )
 install(FILES ${EXT_HEADERS}
         DESTINATION include

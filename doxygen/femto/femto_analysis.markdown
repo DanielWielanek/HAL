@@ -48,13 +48,13 @@ void otf() {
   
   addCuts(hbt);
 
-  Hal::FemtoFreezoutGeneratorPRF m;
+  Hal::FemtoFreezeoutGeneratorPRF m;
   Hal::FemtoSourceModelGauss3D g;
   g.SetOutRadius(2);
   g.SetSideRadius(3);
   g.SetLongRadius(4);
   m.SetSourceModel(g);
-  hbt->SetFreezoutGenerator(m);
+  hbt->SetFreezeoutGenerator(m);
   
   hbt->SetFormat(new HalOTF::McEvent());
   run->AddTask(hbt); 
@@ -141,16 +141,16 @@ to add them by using weight algorithm. In last line the cuts are added.
 \endcode
 
 OTF data does not provide freezout information. So we have to set the freezoug generator. In principle to generate freezouts we need "freezout generator" and "source model".
-"Source model" generates the coordinates in laboratory frame, the "Freezout generator" boos them to given frame (in this case PRF).
+"Source model" generates the coordinates in laboratory frame, the "Freezeout generator" boos them to given frame (in this case PRF).
 
 \code{.C}
-  Hal::FemtoFreezoutGeneratorPRF m;
+  Hal::FemtoFreezeoutGeneratorPRF m;
   Hal::FemtoSourceModelGauss3D g;
   g.SetOutRadius(2);
   g.SetSideRadius(3);
   g.SetLongRadius(4);
   m.SetSourceModel(g);
-  hbt->SetFreezoutGenerator(m);
+  hbt->SetFreezeoutGenerator(m);
 \endcode
 
 At the end we are setting the format for our hbt task. Then our HBT task is configured.

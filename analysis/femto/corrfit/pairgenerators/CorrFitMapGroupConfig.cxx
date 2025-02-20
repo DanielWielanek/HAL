@@ -30,16 +30,10 @@ namespace Hal {
     fStep = 1.0 / fStep;
   }
 
-  Bool_t CorrFitMapGroupConfig::GroupByLong() const {
-    if (fMode == 1) return kTRUE;
-    return kFALSE;
-  }
-
-  Bool_t CorrFitMapGroupConfig::GroupByKStar() const { return !GroupByLong(); }
 
   Int_t CorrFitMapGroupConfig::GetBin(const FemtoPair* pair) const {
     Double_t val = TMath::Abs(pair->GetT());
-    if (fMode == 1) {  // long
+    if (GroupByLong()) {  // long
       val = TMath::Abs(pair->GetZ());
     }
     Int_t bin = (val - fMin) * fStep;
@@ -84,5 +78,6 @@ namespace Hal {
     }
     return result;
   }
+
 
 } /* namespace Hal */

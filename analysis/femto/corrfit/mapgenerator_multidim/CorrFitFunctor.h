@@ -47,7 +47,7 @@ namespace Hal {
      * @param npoints
      * @return false if parameter not found
      */
-    Bool_t GetParameterConfig(TString name, Double_t& min, Double_t& max, Int_t& npoints);
+    Bool_t GetParameterConfig(TString name, Double_t& min, Double_t& max, Int_t& npoints) const;
     Int_t GetNParams() const;
     TString GetParameterName(Int_t id) const { return fSetup.GetParName(id); };
     Array_1<Float_t>* GetData(Double_t* params);

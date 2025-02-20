@@ -11,11 +11,13 @@
 
 #include "Task.h"
 
-/**
- * special class for fast data selection - works only with AnalysisManager
- */
+
 namespace Hal {
   class Package;
+  /**
+   * special class for fast data selection - works only with AnalysisManager
+   * when trigger task return false the branches with status 0 are ignored, other tasks are not executed
+   */
   class TriggerTask : public Task {
     Bool_t fGood   = {kFALSE};
     Bool_t fActive = {kFALSE};

@@ -8,6 +8,7 @@
  */
 
 #include "OTFReader.h"
+#include "OTFComplexEvent.h"
 #include "OTFMcEvent.h"
 #include "OTFRecoEvent.h"
 
@@ -27,17 +28,7 @@
 #include <TString.h>
 
 namespace HalOTF {
-  Reader::Reader() :
-    fSpectras(nullptr),
-    fOwner(kFALSE),
-    fRegister(kFALSE),
-    fMultiplicity(nullptr),
-    fPids(211),
-    fCharge(1),
-    fMass(0),
-    fSmear(0.01),
-    fMcEvent(nullptr),
-    fRecoEvent(nullptr) {}
+  Reader::Reader() : fMcEvent(nullptr), fRecoEvent(nullptr) {}
 
   Hal::Task::EInitFlag Reader::Init() {
     fMcEvent              = new OTF::McEvent();
@@ -46,92 +37,78 @@ namespace HalOTF {
     if (mng->GetObject("OTF::McEvent.")) {  // branch exists
       fMcEvent   = (OTF::McEvent*) mng->GetObject("OTF::McEvent.");
       fRecoEvent = (OTF::RecoEvent*) mng->GetObject("OTF::RecoEvent.");
-    } else {
-      fOwner = kTRUE;
-      mng->Register("OTF::McEvent.", "HalEvents", fMcEvent, fRegister);
-      mng->Register("OTF::RecoEvent.", "HalEvents", fRecoEvent, fRegister);
     }
+    if (!fMcEvent) {
+      Hal::Cout::PrintInfo(Form("%s %d lack of mc-event", __FILE__, __LINE__), Hal::EInfo::kError);
+      return Hal::Task::EInitFlag::kERROR;
+    }
+    if (!fRecoEvent) {
+      Hal::Cout::PrintInfo(Form("%s %d lack of reco-event", __FILE__, __LINE__), Hal::EInfo::kError);
+      return Hal::Task::EInitFlag::kERROR;
+    }
+
+    switch (fTranslate) {
+      case ETranslate::kMc: {
+        if (mng->GetObject("HalOTF::McEvent.")) {
+          return Hal::Task::EInitFlag::kERROR;
+        } else {
+          fHalMcEvent = new HalOTF::McEvent();
+          mng->Register("HalEvent.", "HalEvents", fHalMcEvent, kFALSE);
+          fTranslateInterface = fHalMcEvent->CreateInterface();
+        }
+      } break;
+      case ETranslate::kReco: {
+        if (mng->GetObject("HalOTF::RecoEvent.")) {
+          return Hal::Task::EInitFlag::kERROR;
+        } else {
+          fHalRecoEvent = new HalOTF::RecoEvent();
+          mng->Register("HalEvent.", "HalEvents", fHalRecoEvent, kFALSE);
+          fTranslateInterface = fHalRecoEvent->CreateInterface();
+        }
+      } break;
+      case ETranslate::kComplex: {
+        if (mng->GetObject("HalOTF::ComplexEvent.")) {
+          return Hal::Task::EInitFlag::kERROR;
+        } else {
+          fHalComplexEvent = new HalOTF::ComplexEvent();
+          mng->Register("HalEvent.", "HalEvents", fHalComplexEvent, kFALSE);
+          fTranslateInterface = fHalComplexEvent->CreateInterface();
+        }
+      } break;
+      default: Hal::Cout::PrintInfo(Form("Translation not set for %s", ClassName()), Hal::EInfo::kWarning); break;
+    }
+    if (fTranslateInterface) fTranslateInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     return Hal::Task::EInitFlag::kSUCCESS;
   }
 
-  void Reader::SetSpiecies(const TH2D& h, Int_t pid) {
-    TH2D* copy         = (TH2D*) h.Clone();
-    TDatabasePDG* pdg  = TDatabasePDG::Instance();
-    TParticlePDG* part = pdg->GetParticle(pid);
-    if (part == nullptr) {
-      Hal::Cout::PrintInfo(Form("Cannot add particle with PID = %i", pid), Hal::EInfo::kWarning);
-      return;
-    }
-    copy->SetDirectory(nullptr);
-    fSpectras = copy;
-    fPids     = pid;
-    fMass     = part->Mass();
-    fCharge   = part->Charge() * 3;
-  }
-
   void Reader::Exec(Option_t* /*opt*/) {
-    PrepareTables();
-    Int_t shift   = fMcEvent->GetNTracks();
-    fCurrrentMult = fFixedMultiplicity;
-    if (fMultiplicity) fCurrrentMult = fMultiplicity->GetRandom();
-
-    for (int i = 0; i < fCurrrentMult; i++) {
-      Double_t pt, y;
-      fSpectras->GetRandom2(y, pt);
-      Double_t mt  = TMath::Sqrt(pt * pt + fMass * fMass);
-      Double_t phi = gRandom->Uniform(-TMath::Pi(), TMath::Pi());
-      Double_t px  = pt * TMath::Cos(phi);
-      Double_t py  = pt * TMath::Sin(phi);
-      Double_t pz  = mt * TMath::SinH(y);
-
-      OTF::McTrack tr;
-      TLorentzVector p;
-      p.SetXYZM(px, py, pz, fMass);
-      tr.SetMomentum(p);
-      tr.SetPdgCode(fPids);
-      TLorentzVector xr(gRandom->Gaus(0, 1), gRandom->Gaus(0, 1), gRandom->Gaus(0), 0);
-      tr.SetFreezout(xr);
-      fMcEvent->AddTrack(tr);
-
-      OTF::RecoTrack rtr;
-      px         = px + gRandom->Gaus(0, fSmear) * px;
-      py         = py + gRandom->Gaus(0, fSmear) * py;
-      pz         = pz + gRandom->Gaus(0, fSmear) * pz;
-      Double_t e = TMath::Sqrt(px * px + py * py + pz * pz + fMass * fMass);
-      rtr.SetMom(px, py, pz, e);
-      rtr.SetNHits(5);
-      rtr.SetCharge(fCharge);
-      rtr.SetMcIndex(i + shift);
-      fRecoEvent->AddTrack(rtr);
+    if (fTranslate != ETranslate::kNone) {
+      switch (fTranslate) {
+        case ETranslate::kMc: {
+          fHalMcEvent->Update(fTranslateInterface);
+        } break;
+        case ETranslate::kReco: {
+          fHalRecoEvent->Update(fTranslateInterface);
+        } break;
+        case ETranslate::kComplex: {
+          fHalComplexEvent->Update(fTranslateInterface);
+        } break;
+        default: break;
+      }
     }
   }
 
-  Reader::~Reader() {
-    if (fSpectras) delete fSpectras;
-    if (fOwner && !fRegister) {
-      if (fMcEvent) delete fMcEvent;
-      if (fRecoEvent) delete fRecoEvent;
+  Reader::~Reader() {}
+
+  void Reader::Translate(TString opt) {
+    Int_t flag = 0;
+    if (Hal::Std::FindParam(opt, "sim")) { flag = 1; }
+    if (Hal::Std::FindParam(opt, "reco")) { flag += 2; }
+    switch (flag) {
+      case 1: fTranslate = ETranslate::kMc; break;
+      case 2: fTranslate = ETranslate::kReco; break;
+      case 3: fTranslate = ETranslate::kComplex; break;
     }
-    if (fMultiplicity) delete fMultiplicity;
-  }
-
-  void Reader::PrepareTables() {
-    if (fOwner) {
-      fRecoEvent->Clear();
-      fMcEvent->Clear();
-    }
-  }
-
-  void Reader::SetMultHisto(TH1D& h) {
-    if (fMultiplicity) delete fMultiplicity;
-    fMultiplicity = (TH1D*) h.Clone();
-    fMultiplicity->SetDirectory(nullptr);
-  }
-
-  void Reader::SetFixMult(Int_t mult) {
-    fFixedMultiplicity = mult;
-    if (fMultiplicity) delete fMultiplicity;
-    fMultiplicity = nullptr;
   }
 
 }  // namespace HalOTF

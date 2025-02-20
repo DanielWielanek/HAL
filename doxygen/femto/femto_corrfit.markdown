@@ -52,7 +52,7 @@ In code below we say that we want to generate a gassian 3-dimensional source in 
 * Ingore sign - ignore momentum sign when fill the CF.
      
 \code{.xml}        
-        <FreezoutGenerator>Hal::FemtoFreezoutGeneratorLCMS</FreezoutGenerator>
+        <FreezeoutGenerator>Hal::FemtoFreezeoutGeneratorLCMS</FreezeoutGenerator>
         <SourceModel>Hal::FemtoSourceModelGauss3D</SourceModel>
         <CalcOptions>
                 <JobMultiplyFactor>1</JobMultiplyFactor>

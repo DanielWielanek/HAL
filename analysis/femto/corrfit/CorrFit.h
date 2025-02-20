@@ -27,9 +27,9 @@ class TVirtualPad;
  * base class for fitting all correlation functions and groups of correlation
  * functions
  */
-
 namespace Hal {
   class CorrFitGUI;
+  class CorrFitPainter;
   class CorrFit : public TObject {
     friend class CorrFitGUI;
 
@@ -55,21 +55,23 @@ namespace Hal {
       kChi2 /*!< minimize function fitted to function */
     };
     enum EMinAlgo {
-      kMinuitMigrad,
-      kMinuitSimplex,
-      kMinuitCombined,
-      kMinuitScan,
-      kMinuitFumili,
-      kGLSMultiMinConjungateFR,
-      kGLSMultiMinConjugatePR,
-      kGLSMultiMinBFGS,
-      kGLSMultiMinBFGS2,
-      kGLSMultiMinSteppestDescent,
-      kGLSMultiFit,
-      kGLSSimAn,
-      kDefaultAlgo,
-      kMinimizerScan,
-      kMinimizerSmartScan
+      kMinuitMigrad               = 0,
+      kMinuitSimplex              = 1,
+      kMinuitCombined             = 2,
+      kMinuitScan                 = 3,
+      kMinuitFumili               = 4,
+      kGLSMultiMinConjungateFR    = 5,
+      kGLSMultiMinConjugatePR     = 6,
+      kGLSMultiMinBFGS            = 7,
+      kGLSMultiMinBFGS2           = 8,
+      kGLSMultiMinSteppestDescent = 9,
+      kGLSMultiFit                = 10,
+      kGLSSimAn                   = 11,
+      kDefaultAlgo                = 12,
+      kHalScan                    = 13,
+      kHalAnt                     = 14,
+      kHalScanMigrad              = 15,
+      kHalScanScan                = 16
     };
     /**specify the way how the CF is calculated **/
     enum ECalcOption {
@@ -85,7 +87,8 @@ namespace Hal {
     ECalcOption fBinCalc;
     EMinFunc fMinFunc;
     EMinAlgo fMinAlgo;
-    void AlgoToOptions(EMinAlgo algo, TString& opt1, TString& opt2) const;
+    CorrFitPainter* fPainter = {nullptr};
+    std::vector<TString> AlgoToOptions(EMinAlgo algo) const;
     /**
      * number of degrees of freedom
      */
@@ -293,6 +296,11 @@ namespace Hal {
      * CF by information from histogram edges
      */
     void SetCalculationOption(ECalcOption f) { fBinCalc = f; }
+    /**
+     *
+     * @return painter for this class (if exists)
+     */
+    CorrFitPainter* GetPainter() const { return fPainter; }
     virtual ~CorrFit();
     ClassDef(CorrFit, 2)
   };

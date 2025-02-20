@@ -51,7 +51,7 @@ namespace Hal {
      * this stuff is needed to check if all track collections belong to given
      * event collections have some particles to avoid e.g. mixing empty kaon
      * events with full pion events in non-id femto this checking is provide if
-     * call update counters (event_collection, kTRUE)
+     * call update counters (eventCol, kTRUE)
      */
     for (int i = 0; i < fEventCollectionsNo; i++) {
       fEventToTrackNo[i]    = cont->GetEventCollection(i)->GetNextNo();
@@ -113,9 +113,8 @@ namespace Hal {
   Event* MemoryMapManager::GetTemporaryEvent() {
     if (!fDirectAcces) fCurrentEvent->Update(fInterface);
     if (fCurrentEvent->GetTotalTrackNo() > fTrackMapSize) {
-      for (int i = 0; i < fEventCollectionsNo; i++) {
+      for (int i = 0; i < fEventCollectionsNo; i++)
         ReloadMap(fCurrentEvent->GetTotalTrackNo() * 1.2);
-      }
     }
     return fCurrentEvent;
   }
@@ -134,18 +133,16 @@ namespace Hal {
       fEventCollectionsNo = fEventCollectionsNo * event_factor;
       fEventToTrackNo     = new Int_t[fEventCollectionsNo];
       for (int i = 0; i < realEventCol; i++) {
-        for (int j = 0; j < event_factor; j++) {
+        for (int j = 0; j < event_factor; j++)
           fEventToTrackNo[j + i * event_factor] = old_map[i];
-        }
         fMaxTrackCollectionNo = TMath::Max(fEventToTrackNo[i], fMaxTrackCollectionNo);
       }
       delete[] old_map;
     }
 
     fEvents = new EventArray*[fEventCollectionsNo];
-    for (Int_t i = 0; i < fEventCollectionsNo; i++) {
+    for (Int_t i = 0; i < fEventCollectionsNo; i++)
       fEvents[i] = new EventArray(fFormatID, fMixSize);
-    }
 
     DataFormatManager* dataManager = DataFormatManager::Instance();
     if (fDirectAcces == kFALSE) {
@@ -160,6 +157,7 @@ namespace Hal {
           break;
         }
       }
+      if (!fCurrentEvent) { Hal::Cout::PrintInfo("Cannot find a event in provided branch list", EInfo::kCriticalError); }
     }
     fTotalTracks  = new Int_t[fEventCollectionsNo];
     fTrackMap     = new Array_4<Int_t>();
@@ -167,87 +165,79 @@ namespace Hal {
     fTrackCounter->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize);  // TODO swap order
     fTrackMap->MakeBigger(fEventCollectionsNo, fTrackCollectionsNo, fMixSize, fTrackMapSize);
     fReadyToMix = new Bool_t[fEventCollectionsNo];
-    for (int i = 0; i < fEventCollectionsNo; i++) {
+    for (int i = 0; i < fEventCollectionsNo; i++)
       fReadyToMix[i] = kFALSE;
-    }
     fCounter = new Int_t[fEventCollectionsNo];
-    for (int i = 0; i < fEventCollectionsNo; i++) {
+    for (int i = 0; i < fEventCollectionsNo; i++)
       fCounter[i] = -1;
-    }
   }
 
-  Int_t MemoryMapManager::GetTracksNo(Int_t event_collection, Int_t track_collection) const {
-    return fTrackCounter->Get(event_collection, track_collection, fCounter[event_collection]);
-    // return fTrackCounter[event_collection][track_collection][
-    // fCounter[event_collection] ];
+  Int_t MemoryMapManager::GetTracksNo(Int_t eventCol, Int_t trackCol) const {
+    return fTrackCounter->Get(eventCol, trackCol, fCounter[eventCol]);
+    // return fTrackCounter[eventCol][trackCol][
+    // fCounter[eventCol] ];
   }
 
-  Int_t MemoryMapManager::GetRawTracksNo(Int_t event_collection) const { return fTotalTracks[event_collection]; }
+  Int_t MemoryMapManager::GetRawTracksNo(Int_t eventCol) const { return fTotalTracks[eventCol]; }
 
   Bool_t MemoryMapManager::IsReadyToMixing(Int_t collection) const { return fReadyToMix[collection]; }
 
   void MemoryMapManager::ResetEventCollection(Int_t collection) {
     fCounter[collection] = -1;
     for (int i = 0; i < fEventToTrackNo[collection]; i++) {
-      for (int j = 0; j < fMixSize; j++) {
+      for (int j = 0; j < fMixSize; j++)
         fTrackCounter->Set(collection, i, j, 0);
-      }
     }
     for (Int_t i = 0; i < fMixSize; i++)
       fEvents[collection]->At(i)->Clear("C");
     fReadyToMix[collection] = kFALSE;
   }
 
-  void MemoryMapManager::AddTrackToMapTrack(Int_t event_collection, Int_t track_collection, Int_t index) {
-    Int_t counter = fCounter[event_collection];
-    fTrackMap->Set(event_collection,
-                   track_collection,
-                   counter,
-                   fTrackCounter->IncrementAfter(event_collection, track_collection, counter),
-                   index);
+  void MemoryMapManager::AddTrackToMapTrack(Int_t eventCol, Int_t trackCol, Int_t index) {
+    Int_t counter = fCounter[eventCol];
+    fTrackMap->Set(eventCol, trackCol, counter, fTrackCounter->IncrementAfter(eventCol, trackCol, counter), index);
   }
 
-  void MemoryMapManager::ResetTrackMaps(Int_t event_collection, Int_t counter) {
+  void MemoryMapManager::ResetTrackMaps(Int_t eventCol, Int_t counter) {
     for (int i = 0; i < fTrackCollectionsNo; i++)
-      fTrackCounter->Set(event_collection, i, counter, 0);
+      fTrackCounter->Set(eventCol, i, counter, 0);
   }
 
-  void MemoryMapManager::ResetTrackMaps(Int_t event_collection, Int_t track_collection, Int_t counter) {
-    // fTrackCounter[event_collection][track_collection][counter]=0;
-    fTrackCounter->Set(event_collection, track_collection, counter, 0);
+  void MemoryMapManager::ResetTrackMaps(Int_t eventCol, Int_t trackCol, Int_t counter) {
+    // fTrackCounter[eventCol][trackCol][counter]=0;
+    fTrackCounter->Set(eventCol, trackCol, counter, 0);
   }
 
-  Int_t MemoryMapManager::GetTracksNo(Int_t event_collection, Int_t track_collection, Int_t counter) const {
-    // return fTrackCounter[event_collection][track_collection][counter];
-    return fTrackCounter->Get(event_collection, track_collection, counter);
+  Int_t MemoryMapManager::GetTracksNo(Int_t eventCol, Int_t trackCol, Int_t counter) const {
+    // return fTrackCounter[eventCol][trackCol][counter];
+    return fTrackCounter->Get(eventCol, trackCol, counter);
   }
 
-  Int_t MemoryMapManager::GetTrackCollectionsNo(Int_t event_collection) const { return fEventToTrackNo[event_collection]; }
+  Int_t MemoryMapManager::GetTrackCollectionsNo(Int_t eventCol) const { return fEventToTrackNo[eventCol]; }
 
   Int_t MemoryMapManager::GetTemporaryTotalTracksNo() const { return fCurrentEvent->GetTotalTrackNo(); }
 
   Event* MemoryMapManager::GetEvent(Int_t collection) const { return (Event*) (fEvents[collection]->At(fCounter[collection])); }
 
-  Track* MemoryMapManager::GetTrack(Int_t event_collection, Int_t track_collection, Int_t index) const {
-    //(fEvents[event_collection]->At(fCounter[event_collection])
-    //)->GetTrack(track,fTrackMap[event_collection][track_collection][fCounter[event_collection]][index]
+  Track* MemoryMapManager::GetTrack(Int_t eventCol, Int_t trackCol, Int_t index) const {
+    //(fEvents[eventCol]->At(fCounter[eventCol])
+    //)->GetTrack(track,fTrackMap[eventCol][trackCol][fCounter[eventCol]][index]
     //);
-    return (fEvents[event_collection]->At(fCounter[event_collection]))
-      ->GetTrack(fTrackMap->Get(event_collection, track_collection, fCounter[event_collection], index));
+    return (fEvents[eventCol]->At(fCounter[eventCol]))->GetTrack(fTrackMap->Get(eventCol, trackCol, fCounter[eventCol], index));
   }
 
-  Track* MemoryMapManager::GetRawTrack(Int_t event_collection, Int_t index) const {
-    return (fEvents[event_collection]->At(fCounter[event_collection]))->GetTrack(index);
+  Track* MemoryMapManager::GetRawTrack(Int_t eventCol, Int_t index) const {
+    return (fEvents[eventCol]->At(fCounter[eventCol]))->GetTrack(index);
   }
 
   Event* MemoryMapManager::GetEvent(Int_t collection, Int_t counter) const { return (Event*) (fEvents[collection]->At(counter)); }
 
-  Track* MemoryMapManager::GetTrack(Int_t event_collection, Int_t track_collection, Int_t counter, Int_t index) const {
-    return (fEvents[event_collection]->At(counter))->GetTrack(fTrackMap->Get(event_collection, track_collection, counter, index));
+  Track* MemoryMapManager::GetTrack(Int_t eventCol, Int_t trackCol, Int_t counter, Int_t index) const {
+    return (fEvents[eventCol]->At(counter))->GetTrack(fTrackMap->Get(eventCol, trackCol, counter, index));
   }
 
-  Track* MemoryMapManager::GetRawTrack(Int_t event_collection, Int_t counter, Int_t index) const {
-    return (fEvents[event_collection]->At(counter))->GetTrack(index);
+  Track* MemoryMapManager::GetRawTrack(Int_t eventCol, Int_t counter, Int_t index) const {
+    return (fEvents[eventCol]->At(counter))->GetTrack(index);
   }
 
   void MemoryMapManager::PrintMap() const {
@@ -278,43 +268,42 @@ namespace Hal {
     }
   }
 
-  void MemoryMapManager::RejectLastEvent(Int_t event_collection) {
+  void MemoryMapManager::RejectLastEvent(Int_t eventCol) {
     for (int i = 0; i < fTrackCollectionsNo; i++)
-      fTrackCounter->Set(event_collection, i, fCounter[event_collection], 0);
-    --fCounter[event_collection];
+      fTrackCounter->Set(eventCol, i, fCounter[eventCol], 0);
+    --fCounter[eventCol];
   }
 
-  Int_t MemoryMapManager::GetCounter(Int_t event_collection) const { return fCounter[event_collection]; }
+  Int_t MemoryMapManager::GetCounter(Int_t eventCol) const { return fCounter[eventCol]; }
 
   void MemoryMapManager::ClearEvent() {
     // need to be called  before next Exec() or lead to memory leak
     fCurrentEvent->Clear();
   }
 
-  void MemoryMapManager::CalculateCompressedMap(Int_t event_collection) {
+  void MemoryMapManager::CalculateCompressedMap(Int_t eventCol) {
     int total_tracks = fCurrentEvent->GetTotalTrackNo();
-    int collections  = fEventToTrackNo[event_collection];
+    int collections  = fEventToTrackNo[eventCol];
 
-    Int_t counter = fCounter[event_collection];
+    Int_t counter = fCounter[eventCol];
     fCompression.Reset(total_tracks);
 
     std::vector<int> links;
     links.resize(fCurrentEvent->GetMaxExpectedLinks());
     // index global map - if fIndexMap[i=>0 need to store particle
     for (int iTrackCollection = 0; iTrackCollection < collections; iTrackCollection++) {
-      for (int j = 0; j < GetTracksNo(event_collection, iTrackCollection); j++) {
-        Int_t index  = fTrackMap->Get(event_collection, iTrackCollection, counter, j);
+      for (int j = 0; j < GetTracksNo(eventCol, iTrackCollection); j++) {
+        Int_t index  = fTrackMap->Get(eventCol, iTrackCollection, counter, j);
         Track* track = fCurrentEvent->GetTrack(index);
         Int_t size   = track->GetLinksFast(links, kTRUE);
-        for (int iLink = 0; iLink < size; iLink++) {
+        for (int iLink = 0; iLink < size; iLink++)
           fCompression.MarkAsGood(links[iLink]);
-        }
       }
     }
     fCompression.Recalculate();
     for (int iTrackCollection = 0; iTrackCollection < collections; iTrackCollection++) {
-      auto submap = fTrackMap->At(event_collection)->At(iTrackCollection)->At(counter);
-      for (int iTrack = 0; iTrack < GetTracksNo(event_collection, iTrackCollection); iTrack++) {
+      auto submap = fTrackMap->At(eventCol)->At(iTrackCollection)->At(counter);
+      for (int iTrack = 0; iTrack < GetTracksNo(eventCol, iTrackCollection); iTrack++) {
         Int_t old_index = submap->Get(iTrack);
         submap->Set(iTrack, fCompression.GetNewIndex(old_index));
       }
@@ -324,8 +313,8 @@ namespace Hal {
     std::cout << "  collections at" << counter << std::endl;
     for (int i = 0; i < collections; i++) {
       std::cout << "Collection " << i << " end = " << End[i] << std::endl;
-      for (int j = 0; j < fTrackCounter->Get(event_collection, i, counter); j++) {
-        std::cout << Form(" %4d", fTrackMap->Get(event_collection, i, counter, j));
+      for (int j = 0; j < fTrackCounter->Get(eventCol, i, counter); j++) {
+        std::cout << Form(" %4d", fTrackMap->Get(eventCol, i, counter, j));
       }
       std::cout << std::endl;
     }
@@ -335,7 +324,7 @@ namespace Hal {
 #ifdef MAPMANAGER_DEBUG
     std::cout << "SUMM" << std::endl;
     for (int i = 0; i < fSumMapSize; i++) {
-      //	std::cout<<Form(" %4d",fTrackMap->Get(event_collection,0,counter,i));
+      //	std::cout<<Form(" %4d",fTrackMap->Get(eventCol,0,counter,i));
     }
     std::cout << std::endl;
     for (int i = 0; i < fSumMapSize; i++) {
@@ -374,12 +363,11 @@ namespace Hal {
   EventArray::EventArray(Int_t task_id, Int_t size) : fSize(size) {
     DataFormatManager* dataManager = DataFormatManager::Instance();
     fArray                         = new Event*[fSize];
-    for (int i = 0; i < fSize; i++) {
+    for (int i = 0; i < fSize; i++)
       fArray[i] = dataManager->GetNewEvent(task_id, EFormatDepth::kBuffered);
-    }
   }
 
-  Track* MemoryMapManager::GetTemporaryTrack(Int_t event_collection, Int_t track_collection, Int_t index) const {
-    return fCurrentEvent->GetTrack(fTrackMap->Get(event_collection, track_collection, fCounter[event_collection], index));
+  Track* MemoryMapManager::GetTemporaryTrack(Int_t eventCol, Int_t trackCol, Int_t index) const {
+    return fCurrentEvent->GetTrack(fTrackMap->Get(eventCol, trackCol, fCounter[eventCol], index));
   }
 }  // namespace Hal

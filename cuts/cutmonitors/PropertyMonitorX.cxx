@@ -146,4 +146,19 @@ namespace Hal {
     }
     return PropertyMonitorX::Init(task_id);
   }
+
+  Bool_t EventFieldMonitorX::AreSimilar(CutMonitor* other) const {
+    auto monitor = dynamic_cast<EventFieldMonitorX*>(other);
+    if (!monitor) return kFALSE;
+    if (fFieldID != monitor->fFieldID) return kFALSE;
+    return CutMonitorX::AreSimilar(other);
+  }
+
+  Bool_t TrackFieldMonitorX::AreSimilar(CutMonitor* other) const {
+    auto monitor = dynamic_cast<TrackFieldMonitorX*>(other);
+    if (!monitor) return kFALSE;
+    if (fFieldID != monitor->fFieldID) return kFALSE;
+    return CutMonitorX::AreSimilar(other);
+  }
+
 }  // namespace Hal

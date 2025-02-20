@@ -30,6 +30,7 @@ namespace Hal {
     }
     fDParam = (fMapMax - fMapMin) / Double_t(fNPoint - 1);
     if (fNPoint == 1) fDParam = 0;
+    if (fDParam) fOverDParam = 1.0 / fDParam;
     fMin   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMin, '-');  // npoint -1 because we have n-1 areas than points
     fMax   = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fMax, '+');
     fStart = Hal::Std::Discretize(fNPoint - 1, fMapMin, fMapMax, fStart, '=');
@@ -75,7 +76,7 @@ namespace Hal {
     std::cout << "\tStart val " << Form("%4.4f ", GetStartVal()) << std::endl;
     std::cout << Form("\tLimits %4.4f - %4.4f ", GetMin(), GetMax()) << std::endl;
     std::cout << "\tMap settings" << std::endl;
-    std::cout << Form("\tNPoints %i  NDx %4.4f", GetNPoints(), GetDParam()) << std::endl;
+    std::cout << Form("\tNPoints %i  NDx %4.4f", GetNPoints(), GetStepSize()) << std::endl;
     std::cout << Form("\tMap Min: %4.4f   Map Max: %4.4f", GetMapMin(), GetMapMax()) << std::endl;
     std::cout << "\tValues ";
     auto array = GetValuesArray();
@@ -94,11 +95,30 @@ namespace Hal {
     if (IsFixed() || fDParam == 0) {
       values.push_back(fMin);
     } else {
-      for (double x = fMin; x <= fMax; x += fDParam) {
+      for (double x = fMin; x <= fMax + 1e-9; x += fDParam) {
         values.push_back(x);
       }
     }
     return values;
+  }
+
+  void FitParam::SetMapRangeByStep(Double_t min, Double_t max, Double_t step) {
+    Int_t nPoints = (max - min) / step + 1;
+    SetMapRange(min, max, nPoints);
+  }
+
+  void FitParam::ExtendToMapLimts() {
+    fMin = fMapMin;
+    fMax = fMapMax;
+    Init();
+  }
+
+  void FitParam::ShirkBorders() {
+    if (IsFixed()) return;
+    Init();
+    if (fMin <= fMapMin + fDParam) fMin = fMapMin + GetStepSize();
+    if (fMax >= fMapMax - fDParam) fMax = fMapMax - GetStepSize();
+    Init();
   }
 
 }  // namespace Hal

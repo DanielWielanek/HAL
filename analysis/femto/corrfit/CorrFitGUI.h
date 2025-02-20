@@ -39,6 +39,8 @@ namespace Hal {
                      Pixel_t back      = GetDefaultFrameBackground());
     void Init(CorrFitGUI* gui, TString parName, FitParam par);
     Double_t GetValue();
+    void SetValue(Double_t val);
+    void SetPrecission(Int_t prec);
     virtual ~CorrFitParButton() {};
     ClassDef(CorrFitParButton, 0)
   };
@@ -67,17 +69,20 @@ namespace Hal {
     CorrFitParButton** fSliders;
     CorrFitChiSelector* fPairChi1;
     CorrFitChiSelector* fPairChi2;
+    TGCheckButton* fAutoNorm;
     TGCheckButton* fChiMin;
     TGCheckButton* fChiLogz;
     TGCheckButton* fChiFit;
+
     Double_t fInitalNorm;
     const Int_t fNormIndex;
     void SetParams();
 
   public:
-    CorrFitGUI(CorrFit* f);
+    CorrFitGUI(CorrFit* f, Int_t prec = -1);
     void ApplyParams();
     void DrawChi2();
+    void Round(Int_t prec);
     virtual ~CorrFitGUI();
     ClassDef(CorrFitGUI, 0)
   };

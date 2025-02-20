@@ -27,6 +27,14 @@ namespace Hal {
     ClassDef(EventMultiplicityCut, 1)
   };
 
+  class EventTotalTrackNoCut : public EventCut {
+  public:
+    EventTotalTrackNoCut();
+    virtual Bool_t Pass(Event* event);
+    virtual ~EventTotalTrackNoCut() {};
+    ClassDef(EventTotalTrackNoCut, 1)
+  };
+
   /**
    * check multiplicity of charged particles in given range for given event
    */

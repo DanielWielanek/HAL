@@ -277,4 +277,15 @@ namespace Hal {
     }
   }
 
+  CorrFitMask3D::CorrFitMask3D(const Hal::Femto3DCF& h) :
+    CorrFitMask3D(h.GetNum()->GetNbinsX(),
+                  h.GetNum()->GetXaxis()->GetBinLowEdge(1),
+                  h.GetNum()->GetXaxis()->GetBinUpEdge(h.GetNum()->GetNbinsX()),
+                  h.GetNum()->GetNbinsY(),
+                  h.GetNum()->GetYaxis()->GetBinLowEdge(1),
+                  h.GetNum()->GetYaxis()->GetBinUpEdge(h.GetNum()->GetNbinsY()),
+                  h.GetNum()->GetNbinsZ(),
+                  h.GetNum()->GetZaxis()->GetBinLowEdge(1),
+                  h.GetNum()->GetZaxis()->GetBinUpEdge(h.GetNum()->GetNbinsZ())) {}
+
 }  // namespace Hal

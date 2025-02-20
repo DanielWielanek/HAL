@@ -32,7 +32,7 @@ TrackCut.cxx
 TwoTrackCut.cxx
 CutsAndMonitors.cxx
 CutMonitorRequest.cxx
-CutFuncs.cxx
+CutOptions.cxx
 #EVENT CUTS
 eventcuts/mc/EventImpactParameterCut.cxx
 eventcuts/EventModuloCut.cxx
@@ -78,7 +78,7 @@ trackcuts/monprop/DCAPropertyMonitor.cxx
 trackcuts/monprop/TofPropertyMonitor.cxx
 
 trackcuts/mc/TrackBasicMCCut.cxx
-trackcuts/mc/TrackFreezoutCut.cxx
+trackcuts/mc/TrackFreezeoutCut.cxx
 trackcuts/mc/TrackMCCut.cxx
 trackcuts/mc/TrackPdgCut.cxx
 trackcuts/mc/TrackStartPositionCut.cxx
@@ -93,6 +93,12 @@ trackcuts/TrackComplexCut.cxx
 trackcuts/TrackVirtualCut.cxx
 trackcuts/TrackFlagCuts.cxx
 trackcuts/TrackNullCut.cxx
+
+trackcuts/v0/TrackV0ArmengerosCut.cxx
+trackcuts/v0/TrackV0Cut.cxx
+trackcuts/v0/TrackV0MinvCut.cxx
+trackcuts/v0/TrackV0TopoCuts.cxx
+trackcuts/v0/TrackBasicV0Cuts.cxx
 #PAIR CUT
 twotrackcuts/kinematics/TwoTrackEtaCut.cxx
 twotrackcuts/kinematics/TwoTrackKtCut.cxx
@@ -126,6 +132,8 @@ cutmonitors/CutMonitorXYZ.cxx
 cutmonitors/PropertyMonitorX.cxx
 cutmonitors/PropertyMonitorXY.cxx
 cutmonitors/PropertyMonitorXYZ.cxx
+cutmonitors/customized/MonitorKinem.cxx
+cutmonitors/customized/MonitorReso.cxx
 )
 
 Set(HEADERS )

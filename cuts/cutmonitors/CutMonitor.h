@@ -23,6 +23,7 @@ namespace Hal {
   class CutContainer;
   class CutMonitor : public TObject {
     friend class CutContainer;
+    friend class CutOptions;
 
   protected:
     /**
@@ -110,6 +111,24 @@ namespace Hal {
      * @return cut monitred by this cut monitor
      */
     Cut* GetCut(Int_t i) const;
+    /**
+     * fill histogram by hand
+     * @param x
+     * @param passed
+     */
+    void ManualFill1D(Double_t x, Bool_t passed);
+    /**
+     * fill histogram by hand
+     * @param x
+     * @param passed
+     */
+    void ManualFill2D(Double_t x, Double_t y, Bool_t passed);
+    /**
+     * fill histogram by hand
+     * @param x
+     * @param passed
+     */
+    void ManualFill3D(Double_t x, Double_t y, Double_t z, Bool_t passed);
 
   public:
     /**
@@ -202,7 +221,7 @@ namespace Hal {
      * @param other
      * @return true if both monitors are similar
      */
-    Bool_t AreSimilar(CutMonitor* other) const;
+    virtual Bool_t AreSimilar(CutMonitor* other) const;
     /**
      *
      * @param i axes no

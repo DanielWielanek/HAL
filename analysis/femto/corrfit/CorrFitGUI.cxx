@@ -9,21 +9,26 @@
 #include "CorrFitGUI.h"
 #include "ChiSqMap2D.h"
 #include "CorrFitFunc.h"
+#include "CorrFitPainter.h"
 #include "Std.h"
 
 #include <TCanvas.h>
 #include <TColor.h>
 #include <TF1.h>
 
+#include <RVersion.h>
 #include <TROOT.h>
 #include <TSystem.h>
 #include <TVirtualPad.h>
 
+#include "Cout.h"
+
+#include "FemtoCFPainter.h"
 #include <utility>
 
 namespace Hal {
-  CorrFitGUI::CorrFitGUI(CorrFit* f) :
-    TGMainFrame(gClient->GetRoot(), 350, 300 + 140), fFunc(f), fNormIndex(fFunc->GetParameterIndex("N")) {
+  CorrFitGUI::CorrFitGUI(CorrFit* f, Int_t prec) :
+    TGMainFrame(gClient->GetRoot(), 350, 800), fFunc(f), fNormIndex(fFunc->GetParameterIndex("N")) {
     const Int_t width            = 350;
     Int_t nparams                = fFunc->GetParametersNo();
     fInitalNorm                  = fFunc->GetParameter(fNormIndex);
@@ -51,7 +56,29 @@ namespace Hal {
       }
       fSliders[i] = new CorrFitParButton(this, 200, 40);
       fSliders[i]->Init(this, name, fFunc->GetParamConf(i));
+      fSliders[i]->SetPrecission(prec);
     }
+
+    TGHorizontalFrame* autonormframe = new TGHorizontalFrame(this, width, 40);
+    fAutoNorm                        = new TGCheckButton(autonormframe, "Autonorm");
+    fAutoNorm->SetOn(kTRUE);
+    fAutoNorm->Connect("Clicked()", this->ClassName(), this, "ApplyParams()");
+
+    TGTextButton* round1 = new TGTextButton(autonormframe, "&Round 1");
+    autonormframe->AddFrame(round1, new TGLayoutHints(kLHintsLeft, 5, 5, 3, 4));
+    round1->Connect("Clicked()", this->ClassName(), this, "Round(=1)");
+
+    TGTextButton* round2 = new TGTextButton(autonormframe, "&Round 2");
+    autonormframe->AddFrame(round2, new TGLayoutHints(kLHintsLeft, 5, 5, 3, 4));
+    round2->Connect("Clicked()", this->ClassName(), this, "Round(=2)");
+
+    TGTextButton* round3 = new TGTextButton(autonormframe, "&Round 3");
+    autonormframe->AddFrame(round3, new TGLayoutHints(kLHintsLeft, 5, 5, 3, 4));
+    round3->Connect("Clicked()", this->ClassName(), this, "Round(=3)");
+
+
+    autonormframe->AddFrame(fAutoNorm, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
+    AddFrame(autonormframe, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
 
     TGHorizontalFrame* legendFrame = new TGHorizontalFrame(this, width, 40);
     TGLabel* lab1                  = new TGLabel(legendFrame, "Par. Name");
@@ -89,11 +116,11 @@ namespace Hal {
     draw->Connect("Clicked()", this->ClassName(), this, "DrawChi2()");
     TGTextButton* exit = new TGTextButton(applyFrame, "&Exit", "gApplication->Terminate(0)");
     applyFrame->AddFrame(exit, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
-    AddFrame(applyFrame, new TGLayoutHints(kLHintsBottom | kLHintsLeft, 5, 5, 5, 5));
+    AddFrame(applyFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
     SetCleanup(kDeepCleanup);
     SetWindowName("CorrFit GUI");
     MapSubwindows();
-    Resize(width + 1, nparams * 40 + 240);
+    Resize(width + 1, nparams * 40 + 440);
     MapWindow();
   }
 
@@ -102,11 +129,24 @@ namespace Hal {
       fFunc->OverwriteParam(i, fSliders[i]->GetValue());
       fFunc->fTempParamsEval[i] = fSliders[i]->GetValue();
     }
-
-    fFunc->ParametersChanged();
-    fFunc->SetErrorsNegative();
-    auto func = dynamic_cast<CorrFitFunc*>(fFunc);
-    if (func) { func->Repaint(); }
+    // fFunc->ParametersChanged(); called by painter
+    // fFunc->SetErrorsNegative();
+    auto func          = dynamic_cast<CorrFitFunc*>(fFunc);
+    Double_t normScale = fFunc->fTempParamsEval[fNormIndex];
+    if (normScale == 0) { normScale = 1; }
+    if (func) {
+      if (func->GetPainter()) {
+        auto cf_painter = (Hal::FemtoCFPainter*) func->GetPainter()->GetParent();
+        if (fAutoNorm->IsOn()) {
+          func->GetPainter()->SetOption("norm+keep");
+          cf_painter->Rescale(1.0 / normScale);
+        } else {
+          func->GetPainter()->SetOption("!norm+keep");
+          cf_painter->Rescale(1.0);
+        }
+      }
+      func->Repaint();
+    }
   }
 
   CorrFitGUI::~CorrFitGUI() { Cleanup(); }
@@ -137,7 +177,7 @@ namespace Hal {
         Hal::Std::Discretize(parConf.GetNPoints(), parConf.GetMapMin(), parConf.GetMapMax(), parConf.GetFittedValue(), '=');
 
       Int_t entry = 0;
-      for (Double_t a = parConf.GetMapMin(); a <= parConf.GetMapMax(); a += parConf.GetDParam()) {
+      for (Double_t a = parConf.GetMapMin(); a <= parConf.GetMapMax(); a += parConf.GetStepSize()) {
         fSteps.push_back(a);
         if (a == val) par_sec = entry;
         entry++;
@@ -180,6 +220,22 @@ namespace Hal {
     } else {
       return fNumberEntry->GetNumber();
     }
+  }
+
+  void CorrFitParButton::SetValue(Double_t val) {
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 26, 00)
+    if (!fDiscrete) { fNumberEntry->SetNumber(val, kFALSE); }
+#else
+    if (!fDiscrete) { fNumberEntry->SetNumber(val); }
+#endif
+  }
+  void CorrFitParButton::SetPrecission(Int_t prec) {
+    TGNumberFormat::EStyle style = TGNumberFormat::EStyle::kNESReal;
+    if (prec == 1) style = TGNumberFormat::EStyle::kNESRealOne;
+    if (prec == 2) style = TGNumberFormat::EStyle::kNESRealTwo;
+    if (prec == 3) style = TGNumberFormat::EStyle::kNESRealThree;
+
+    if (!fDiscrete) { return fNumberEntry->SetFormat(style, TGNumberFormat::EAttribute::kNEAAnyNumber); }
   }
 
   CorrFitChiSelector::CorrFitChiSelector(const TGWindow* p, UInt_t w, UInt_t h, UInt_t options, Pixel_t back) :
@@ -273,4 +329,17 @@ namespace Hal {
       fFunc->OverwriteParam(i, fSliders[i]->GetValue());
     }
   }
+
+  void CorrFitGUI::Round(Int_t prec) {
+    Double_t x = TMath::Power(10, prec);
+    for (int i = 0; i < fFunc->GetParametersNo(); i++) {
+      Double_t val = fSliders[i]->GetValue();
+      val          = std::round(val * x) / x;
+
+      fSliders[i]->SetValue(val);
+    }
+    ApplyParams();
+  }
+
+
 }  // namespace Hal

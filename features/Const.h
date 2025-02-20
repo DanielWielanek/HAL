@@ -13,6 +13,8 @@
  *
  */
 #include <TObject.h>
+#include <TString.h>
+
 namespace Hal {
   class Const {
   public:
@@ -28,6 +30,13 @@ namespace Hal {
     static Int_t KaonZeroLongPID() { return 130; }
     static Int_t KaonZeroShortPID() { return 310; }
     static Int_t ProtonPID() { return 2212; };
+    static Int_t DeuteronPID() { return 1000010020; };
+    static Int_t TritonPID() { return 1000010030; };
+    static Int_t HyperTritonPID() { return 1010010030; };
+    static Int_t HyperHydrogen4PID() { return 1010010040; };
+    static Int_t HyperHelium4PID() { return 1010020040; };
+    static Int_t Helium3PID() { return 1000020030; };
+    static Int_t Helium4PID() { return 1000020040; };
     static Int_t LambdaPID() { return 3122; };
     static Int_t NeutronPID() { return 2112; };
     static Int_t DeltaPlusPID() { return 2214; }
@@ -47,6 +56,12 @@ namespace Hal {
     static Double_t LambdaMass() { return 1.115638; };
     static Double_t NeutronMass() { return 0.939565; }
     static Double_t KaonZeroMass() { return 0.497611; };
+    static Double_t DeuteronMass() { return 1.875; };
+    /**
+     * add new particles to PDG database
+     * @param inFile file with additional particles - TODO implement this function, now only deuteron is added
+     */
+    static void ExtendPdgDatabase(TString inFile = "");
     inline static Double_t PiTo32() { return 5.56832799683170787119479427929036; };
     inline static Double_t PiTo32Over() { return 0.17958712212516655948313371027325; };
     inline static Double_t Sqrt3() { return 1.73205080756887719317660412343685; };

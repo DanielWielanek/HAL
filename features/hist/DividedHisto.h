@@ -348,12 +348,13 @@ namespace Hal {
      */
     Double_t GetScale() const;
     /**
-     *  calucalte denominator/numerator ratio at given range
+     *  calculate numerator/denominator ratio at given range
      * @param min lower norm range
      * @param max upper norm range
+     * @param skip_empty - skip empty bins
      * @return
      */
-    Double_t CalculateNorm(Double_t min, Double_t max) const;
+    Double_t CalculateRawRatio(Double_t min, Double_t max, Bool_t skip_emtpy = kFALSE) const;
     /**
      * used to merge similar objects
      * @param collection
@@ -533,14 +534,15 @@ namespace Hal {
      */
     TH1D* GetProjection1D(Double_t min, Double_t max, Option_t* opt) const { return Projection2DTo1D(min, max, opt); }
     /**
-     *  calucalte denominator/numerator ratio at given range
+     *  calucaltes numerator/denominrator ratio at given range
      * @param min lower norm range
      * @param max upper norm range
      * 	 @param minY lower norm range
      * @param maxY upper norm range
+     * @param skip_empty - skip empty bins
      * @return
      */
-    Double_t CalculateNorm(Double_t minX, Double_t maxX, Double_t minY, Double_t maxY) const;
+    Double_t CalculateRawRatio(Double_t minX, Double_t maxX, Double_t minY, Double_t maxY, Bool_t skip_emtpy = kFALSE) const;
     virtual void Browse(TBrowser* b);
     /**
      * operator =
@@ -703,9 +705,16 @@ namespace Hal {
      * @param maxY upper norm range
      * @param minZ lower norm range
      * @param maxZ upper norm range
+     * @param skip_emty - ignore emtpy bins
      * @return
      */
-    Double_t CalculateNorm(Double_t minX, Double_t maxX, Double_t minY, Double_t maxY, Double_t minZ, Double_t maxZ) const;
+    Double_t CalculateRawRatio(Double_t minX,
+                               Double_t maxX,
+                               Double_t minY,
+                               Double_t maxY,
+                               Double_t minZ,
+                               Double_t maxZ,
+                               Bool_t skip_emtpy = kFALSE) const;
     /**
      * operator =
      * @param other

@@ -29,9 +29,10 @@ namespace Hal {
      * split input string into array of strings delimited by given char
      * @param string string to explode
      * @param delimiter delimiter
+     * @param keepEmpty keep emtpy strings
      * @return vector of strings
      */
-    std::vector<TString> ExplodeString(TString string, Char_t delimiter);
+    std::vector<TString> ExplodeString(TString string, Char_t delimiter, Bool_t keepEmpty = kFALSE);
     /**
      * extract parameters
      * @param argc first argument of main - number of strings
@@ -130,6 +131,22 @@ namespace Hal {
      */
     TString RemoveNChars(TString str, Int_t n, Char_t opt = 'b');
     /**
+     * return vector of lines from file
+     * @param file name of file to read
+     * @param skipEmpty - skip empty lines
+     * @return
+     */
+    std::vector<TString> GetLinesFromFile(TString file, Bool_t skipEmpty = kTRUE);
+    /**
+     * finds patterns like {something}
+     * NOTE - might work incorrectly when brackets are not closed
+     * @param option string to check
+     * @param remove if true remove found patterns
+     * @param skipEmpty if true skip empty brackets in output
+     * @return
+     */
+    std::vector<TString> FindBrackets(TString& option, Bool_t remove = kFALSE, Bool_t skipEmpty = kTRUE);
+    /**
      * find given pattern and ignore upper/lowercase letter
      * patter must be separate world or word separated by '+' signs
      * e.g. FindParam("someapple+orange", "oragne" returns true
@@ -141,6 +158,14 @@ namespace Hal {
      * @return true if match pattern
      */
     Bool_t FindParam(TString& option, TString pattern, Bool_t remove = kFALSE);
+    /**
+     * works like FindParam
+     * @param option
+     * @param pattern
+     * @param remove
+     * @return 0 if param not found -1 if negation found e.g., "!pattern" return 1 if pattern found
+     */
+    Int_t FindParam2(TString& option, TString pattern, Bool_t remove = kFALSE);
     /**
      * find number in exression like *{A}*
      * @param expression

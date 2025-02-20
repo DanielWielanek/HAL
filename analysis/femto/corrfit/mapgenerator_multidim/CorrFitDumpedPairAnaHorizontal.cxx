@@ -35,7 +35,7 @@
 #include "FemtoCorrFunc.h"
 #include "FemtoCorrFuncSimple.h"
 #include "FemtoDumpPairAna.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoMiniPair.h"
 #include "FemtoPair.h"
 #include "FemtoSHCF.h"
@@ -80,7 +80,6 @@ namespace Hal {
       info->SetPairFile(fPairFile);
       info->SetCf(obj);
       auto source = fGenerator[0]->GetSourceModel();
-      HalCoutDebug();
       source->Print();
       CorrFitParamsSetup* setup = new CorrFitParamsSetup("corrfit_conf.xml");
       info->SetSetup(*setup);
@@ -100,7 +99,7 @@ namespace Hal {
           fPairsProcessed++;
           for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
             for (int weightMulti = 0; weightMulti < fMultiplyWeight; weightMulti++) {
-              fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
+              fGenerator[nJobs]->GenerateFreezeoutCooordinates(fPair);
               fPair->SetWeight(fWeight->GenerateWeight(fPair));
               fCF[nJobs]->FillNum(fPair);
               fPair->SetWeight(1.0);
@@ -123,7 +122,7 @@ namespace Hal {
           fPairsProcessed++;
           for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
             for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
-              fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
+              fGenerator[nJobs]->GenerateFreezeoutCooordinates(fPair);
               fPair->SetWeight(fWeight->GenerateWeight(fPair));
               fCF[nJobs]->FillNum(fPair);
             }
@@ -159,7 +158,7 @@ namespace Hal {
           fPairsProcessed++;
           for (int nJobs = 0; nJobs < fMultiplyJobs; nJobs++) {
             for (int weightPair = 0; weightPair < fMultiplyWeight; weightPair++) {
-              fGenerator[nJobs]->GenerateFreezoutCooordinates(fPair);
+              fGenerator[nJobs]->GenerateFreezeoutCooordinates(fPair);
               fPair->SetWeight(fWeight->GenerateWeight(fPair));
               fCF[nJobs]->FillNum(fPair);
             }

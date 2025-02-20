@@ -22,6 +22,7 @@ namespace Hal {
   class CorrFitMask3D;
   class CorrFitMath3DCF;
   class CorrFitSHCF;
+  class CorrFit3DCFPainter;
   class CorrFit3DCF : public CorrFitFunc3D {
 
   public:
@@ -29,15 +30,16 @@ namespace Hal {
     enum class EDrawMode { kNormal, kDiagonal1, kDiagonal2 };
     friend class CorrFitMath3DCF;
     friend class CorrFitSHCF;
-    Array_1<Double_t>* fXbins = {nullptr};
-    Array_1<Double_t>* fYbins = {nullptr};
-    Array_1<Double_t>* fZbins = {nullptr};
-    Double_t fXBinf           = {0};
-    Double_t fYBinf           = {0};
-    Double_t fZBinf           = {0};
-    Double_t fXAxisf          = {0};
-    Double_t fYAxisf          = {0};
-    Double_t fZAxisf          = {0};
+    friend class CorrFit3DCFPainter;
+    Array_1<Double_t> fXbins;
+    Array_1<Double_t> fYbins;
+    Array_1<Double_t> fZbins;
+    Double_t fXBinf  = {0};
+    Double_t fYBinf  = {0};
+    Double_t fZBinf  = {0};
+    Double_t fXAxisf = {0};
+    Double_t fYAxisf = {0};
+    Double_t fZAxisf = {0};
     Double_t GetFunX(Double_t* x, Double_t* params) const;
     Double_t GetFunY(Double_t* x, Double_t* params) const;
     Double_t GetFunZ(Double_t* x, Double_t* params) const;
@@ -51,18 +53,22 @@ namespace Hal {
     Double_t GetFunXYZpmp(Double_t* x, Double_t* params) const;
     Double_t GetFunXYZppm(Double_t* x, Double_t* params) const;
     Double_t GetFunXYZpmm(Double_t* x, Double_t* params) const;
+    Double_t GetFunXY2d(Double_t* x, Double_t* params) const;
+    Double_t GetFunXZ2d(Double_t* x, Double_t* params) const;
+    Double_t GetFunYZ2d(Double_t* x, Double_t* params) const;
+    Double_t GetScaledValue(Double_t x, Double_t* params) const;
     void SetParametersToTF1(TF1* f) const;
     void Calculatef(Double_t width);
 
   protected:
-    Double_t fOldNorm = {1};
     /**
      * processed currednly binX, binY and binZ;
      */
     mutable Int_t fBinX = {0}, fBinY = {0}, fBinZ = {0};
+
+    virtual void MakePainter(TString options);
+
     CorrFitMask3D* GetMask() const { return (CorrFitMask3D*) fMask; };
-    virtual void GetTF1s(Bool_t makeNew, EDrawMode drawMode);
-    virtual void GetTH1s(EDrawMode drawMode);
     /**
      * called for each calculation of chi2 or loglikehood minimalization - used
      * for recalculation CF is parameters are changed
@@ -82,6 +88,7 @@ namespace Hal {
     void DrawDiagonalOther(TString option);
     void DrawDiagonalWithCF(TString option);
     void PrepareRaw();
+    TF1* GetDrawableFunc(TString option);
     double GetChiTFD(const double* par) const;
     double GetChiTF(const double* par) const;
     double GetLogTFD(const double* par) const;
@@ -117,7 +124,6 @@ namespace Hal {
      * @return numerical error for given bin
      */
     virtual Double_t GetNumericalError(Int_t /*x*/, Int_t /*y*/, Int_t /*z*/) const { return 0; };
-    virtual void Paint(Bool_t repaint, Bool_t refresh);
     CorrFit3DCF(e3DMode mode, Int_t parameters = 3);
 
   public:
@@ -125,7 +131,7 @@ namespace Hal {
      * default constructor
      * @param parameters number of parameters
      */
-    CorrFit3DCF(Int_t parameters = 3);
+    CorrFit3DCF(Int_t parameters = 4);
     /**
      * set range fo fitting
      * @param x_min min. value in out direction

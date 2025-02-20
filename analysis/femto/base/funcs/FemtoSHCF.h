@@ -36,7 +36,7 @@ namespace Hal {
 #endif
   class FemtoSHSlice;
   class FemtoYlmSolver;
-  class FemtoSHCFPainter;
+  class FemtoCFPainter;
 
   /**
    * class for storing sphercial harmonics correlation functions
@@ -61,10 +61,11 @@ namespace Hal {
     Array_3<Double_t> fCovNum;
     Array_3<Double_t> fCovDen;
     Array_3<Double_t> fCovCf;
-    Double_t fNormPurity;      //
-    Double_t fNormRadius;      //
-    Double_t fNormBohr;        //
-    TH3D* fCfcov = {nullptr};  //
+    Double_t fNormPurity;                  //
+    Double_t fNormRadius;                  //
+    Double_t fNormBohr;                    //
+    TH3D* fCfcov             = {nullptr};  //
+    FemtoCFPainter* fPainter = {nullptr};  //!
     FemtoYlmIndexes fLmVals;
     FemtoYlmMath fLmMath;
     Bool_t fColzSet = {kFALSE};
@@ -165,8 +166,10 @@ namespace Hal {
      * recalculate correlation function, should be used if numerator/denominator
      * was changed
      * @param number of bin to debu i negative do not debug
+     * @param sumw - use GetEffective entries when calculate the number of entries,
+     * use for ROCO method
      */
-    void RecalculateCF(Int_t debugBin = -1);
+    void RecalculateCF(Int_t debugBin = -1, Bool_t suwm = kFALSE);
     /**
      * add real numerators
      * @param histograms array of numerators
@@ -196,17 +199,10 @@ namespace Hal {
      */
     void SetDenIm(TH1D** histograms, Bool_t clone = kTRUE);
     /**
-     * draw this histograms with default setup
-     * @param opt
+     * see @see #Hal::FemtoSHCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
+     * @param option
      */
     void Draw(Option_t* opt = "");
-    /**
-     *
-     * @param option option like in Draw
-     * @param lowMin {min C00, max C00, min other, max others}
-     * @param userRange {minX, maxX}
-     */
-    void DrawRanges(TString option, std::initializer_list<double> lowMin, std::initializer_list<double> userRange);
     /**
      * normalize by using normalization algorithm for given histogram
      * @param el L
@@ -332,10 +328,16 @@ namespace Hal {
     virtual void Add(const Object* pack);
     virtual Long64_t Merge(TCollection* collection);
     void MakeDummyCov();
+    Array_3<Double_t> GetCovNum() { return fCovNum; }
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual TObject* GetSpecial(TString opt) const;
+    /**
+     *
+     * @return painter (if exists)
+     */
+    FemtoCFPainter* GetPainter() const { return fPainter; }  // KURWA
     virtual ~FemtoSHCF();
-    ClassDef(FemtoSHCF, 5)
+    ClassDef(FemtoSHCF, 6)
   };
 }  // namespace Hal
 #endif /* HALFEMTOSHCF_H_ */

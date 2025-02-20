@@ -15,8 +15,9 @@
 #include <TRegexp.h>
 #include <iostream>
 
+#include "AnaFile.h"
 #include "Cout.h"
-#include "CutFuncs.h"
+#include "CutOptions.h"
 #include "EventBinningCut.h"
 #include "EventComplexCut.h"
 #include "EventVirtualCut.h"
@@ -69,94 +70,76 @@ namespace Hal {
   }
 
   void CutContainer::AddCut(const Cut& cut, Option_t* opt) {
-    TString option = opt;
-    if (Hal::Std::FindParam(option, "im", kTRUE)) {
-      Cut* tempcut = NULL;
-      if (dynamic_cast<const Hal::EventBinningCut*>(&cut)) {
-        Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with im flag", __FILE__, __LINE__), EInfo::kError);
-        return;
-      }
-      Bool_t nulls = Hal::Std::FindParam(option, "null", kTRUE);
-      tempcut      = Hal::Cuts::MakeCutCopy(cut, "im", nulls);
-      if (tempcut == nullptr) return;
-      tempcut->SetCollectionID(cut.GetCollectionID());
-      AddCut(*tempcut, option);
-      delete tempcut;
-      return;
-    } else if (Hal::Std::FindParam(option, "re", kTRUE)) {
-      Cut* tempcut = NULL;
-      if (dynamic_cast<const Hal::EventBinningCut*>(&cut)) {
-        Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with re flag", __FILE__, __LINE__), EInfo::kError);
-        return;
-      }
-      tempcut = Hal::Cuts::MakeCutCopy(cut, "re", kFALSE);
-      if (tempcut == nullptr) return;
-      tempcut->SetCollectionID(cut.GetCollectionID());
-      AddCut(*tempcut, option);
-      delete tempcut;
-      return;
-    }
-    auto collections = Hal::Cuts::GetCollectionsFlags(cut.GetCollectionID(), option);
-    ECutUpdate place = cut.GetUpdateRatio();
-    if (CheckTwoTracksOptions(cut, opt)) {
-#ifdef HAL_DEBUG
-      Cout::PrintInfo("CutContainer using CheckTwoTracksOptions", EInfo::kDebugInfo);
-#endif
-      return;
-    }
-    if (Hal::Std::FindParam(option, "bckg")) place = ECutUpdate::kTwoTrackBackground;
-    if (fSize <= static_cast<Int_t>(place)) {
-      TString update_ratio_name = Hal::Cuts::GetCutUpdateRatioName(place);
-      Cout::PrintInfo(Form("CutContainer can't hold %s cut because it's update ratio (%s) is "
-                           "too big, check fTries or call SetOption(backround) before adding cuts "
-                           "or cut monitors",
-                           cut.ClassName(),
-                           update_ratio_name.Data()),
-                      EInfo::kLowWarning);
-      return;
-    }
+    Hal::CutOptions opts(opt, cut.GetCollectionID());
+    auto modified_cut  = std::unique_ptr<Hal::Cut>(opts.MakeCutCopy(cut));
+    auto collectionsNo = opts.GetCollectionsIds();
+
     // add to cut containers
-    for (auto collection : collections) {
-      if (GetCutContainer(place)->At(collection) == nullptr) {
-        CutCollection* subcont = new CutCollection(fCutContainers, fSize, place, collection);
-        subcont->AddCut(cut.MakeCopy(), opt);
-        GetCutContainer(place)->AddAtAndExpand(subcont, collection);
-      } else if ((collection >= GetCutContainer(place)->GetEntriesFast())) {
-        CutCollection* subcont = new CutCollection(fCutContainers, fSize, place, collection);
-        subcont->AddCut(cut.MakeCopy(), opt);
-        GetCutContainer(place)->AddAtAndExpand(subcont, collection);
+    auto addCutRaw = [&](ECutUpdate upd, Int_t colNo) {
+      if (fSize <= static_cast<Int_t>(upd)) {
+        TString update_ratio_name = Hal::Std::UpdateEnumToString(upd);
+        Cout::PrintInfo(Form("CutContainer can't hold %s cut because it's update ratio (%s) is "
+                             "too big, check fTries or call SetOption(backround) before adding cuts "
+                             "or cut monitors",
+                             cut.ClassName(),
+                             update_ratio_name.Data()),
+                        EInfo::kLowWarning);
+        return;
+      }
+      if (colNo < 0) {
+        Cout::PrintInfo(Form("Cannot have negative collID for cut %s", cut.ClassName()), EInfo::kWarning);
+        return;
+      }
+      if (GetCutContainer(upd)->At(colNo) == nullptr) {
+        CutCollection* subcont = new CutCollection(fCutContainers, fSize, upd, colNo);
+        subcont->AddCut(modified_cut->MakeCopy(), opts);
+        GetCutContainer(upd)->AddAtAndExpand(subcont, colNo);
+      } else if ((colNo >= GetCutContainer(upd)->GetEntriesFast())) {
+        CutCollection* subcont = new CutCollection(fCutContainers, fSize, upd, colNo);
+        subcont->AddCut(modified_cut->MakeCopy(), opts);
+        GetCutContainer(upd)->AddAtAndExpand(subcont, colNo);
       } else {
-        ((CutCollection*) GetCutContainer(place)->UncheckedAt(collection))->AddCut(cut.MakeCopy(), opt);
+        ((CutCollection*) GetCutContainer(upd)->UncheckedAt(colNo))->AddCut(modified_cut->MakeCopy(), opts);
+      }
+    };
+    std::vector<ECutUpdate> upds;
+    if (cut.GetUpdateRatio() == ECutUpdate::kTwoTrack || cut.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground) {
+      if (opts.Sig()) upds.push_back(ECutUpdate::kTwoTrack);
+      if (opts.Bckg()) upds.push_back(ECutUpdate::kTwoTrackBackground);
+    } else {
+      upds.push_back(cut.GetUpdateRatio());
+    }
+    for (auto upd : upds) {
+      for (auto colId : collectionsNo) {
+        addCutRaw(upd, colId);
       }
     }
   }
 
   void CutContainer::AddMonitor(const CutMonitor& monitor, Option_t* opt) {
-    TString option           = opt;
-    CutMonitor* monitor_copy = monitor.MakeCopy();
-    ExtractComplexMonitor(monitor_copy, option);
-    if (ExtractRegExp2(*monitor_copy, option)) {
-      delete monitor_copy;
-      return;
+    Hal::CutOptions opts(opt, monitor.GetCollectionID());
+    auto monitor_copy = std::unique_ptr<Hal::CutMonitor>(opts.MakeMonitorCopy(monitor));
+    std::vector<ECutUpdate> upds;
+    if (monitor.GetUpdateRatio() == ECutUpdate::kTwoTrack || monitor.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground) {
+      if (opts.Sig()) upds.push_back(ECutUpdate::kTwoTrack);
+      if (opts.Bckg()) upds.push_back(ECutUpdate::kTwoTrackBackground);
+    } else {
+      upds.push_back(monitor.GetUpdateRatio());
     }
-    if (ExtractRegExp(*monitor_copy, option)) {
-      delete monitor_copy;
-      return;
+    for (auto upd : upds) {
+      if (fSize <= static_cast<Int_t>(upd)) {
+        Cout::PrintInfo("CutContainer can't hold this cut because it's update ratio is to big, check fTries or call "
+                        "SetOption(backround) before adding cuts or cut monitors",
+                        EInfo::kLowWarning);
+        return;
+      }
+      auto collections = opts.GetCollectionsIds();
+      for (int colId : collections) {
+        auto copy = monitor_copy->MakeCopy();
+        copy->SetCollectionID(colId);
+        fTempCutMonitors[static_cast<Int_t>(upd)]->AddLast(copy);
+      }
     }
-    ECutUpdate update = monitor.GetUpdateRatio();
-    if (update == ECutUpdate::kNo) return;
-    if (CheckTwoTracksOptions(*monitor_copy, option)) {
-      delete monitor_copy;
-      return;
-    }
-    if (Hal::Std::FindParam(option, "bckg")) { update = ECutUpdate::kTwoTrackBackground; }
-    if (fSize <= static_cast<Int_t>(update)) {
-      Cout::PrintInfo("CutContainer can't hold this cut because it's update ratio is to big, check fTries or call "
-                      "SetOption(backround) before adding cuts or cut monitors",
-                      EInfo::kLowWarning);
-      return;
-    }
-    fTempCutMonitors[static_cast<Int_t>(update)]->AddLast(monitor_copy);
   }
 
   void CutContainer::InitReport() const {
@@ -282,120 +265,23 @@ namespace Hal {
 
   Package* CutContainer::Report() const {
     Package* pack = new Package(this, kTRUE);
-    if (fSize > 0) {
-      pack->AddObject(new ParameterInt("Event_collections_No", GetCutContainer(ECutUpdate::kEvent)->GetEntriesFast()));
+    auto getList  = [&](ECutUpdate upd) {
+      TString collectionNo = Hal::AnaFile::GetCollectionCountName(upd);
+      pack->AddObject(new ParameterInt(collectionNo, GetCutContainer(upd)->GetEntriesFast()));
       TList* list1 = new TList();
       list1->SetOwner(kTRUE);
-      list1->SetName("EventCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kEvent)->GetEntriesFast(); i++) {
-        list1->Add(((CutCollection*) GetCutContainer(ECutUpdate::kEvent)->UncheckedAt(i))->Report());
+      list1->SetName(Hal::AnaFile::GetCollectionListName(upd));
+      for (int i = 0; i < GetCutContainer(upd)->GetEntriesFast(); i++) {
+        list1->Add(((CutCollection*) GetCutContainer(upd)->UncheckedAt(i))->Report());
       }
       pack->AddObject(list1);
-    }
-    if (fSize > 1) {
-      pack->AddObject(new ParameterInt("Track_collections_No", GetCutContainer(ECutUpdate::kTrack)->GetEntriesFast()));
-      TList* list2 = new TList();
-      list2->SetOwner(kTRUE);
-      list2->SetName("TrackCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kTrack)->GetEntriesFast(); i++) {
-        list2->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTrack)->UncheckedAt(i))->Report());
-      }
-      pack->AddObject(list2);
-    }
-    if (fSize > 2) {
-      pack->AddObject(new ParameterInt("TwoTrack_collections_No", GetCutContainer(ECutUpdate::kTwoTrack)->GetEntriesFast()));
-      TList* list3 = new TList();
-      list3->SetOwner(kTRUE);
-      list3->SetName("TwoTrackCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kTwoTrack)->GetEntriesFast(); i++) {
-        list3->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTwoTrack)->UncheckedAt(i))->Report());
-      }
-      pack->AddObject(list3);
-    }
-    if (fSize > 3) {
-      pack->AddObject(new ParameterInt("TwoTrack_collections_background_No",
-                                       GetCutContainer(ECutUpdate::kTwoTrackBackground)->GetEntriesFast()));
-      TList* list4 = new TList();
-      list4->SetOwner(kTRUE);
-      list4->SetName("TwoTrackBackgroundCutCollectionList");
-      for (int i = 0; i < GetCutContainer(ECutUpdate::kTwoTrackBackground)->GetEntriesFast(); i++) {
-        list4->Add(((CutCollection*) GetCutContainer(ECutUpdate::kTwoTrackBackground)->UncheckedAt(i))->Report());
-      }
-      pack->AddObject(list4);
-    }
+    };
+    if (fSize > 0) getList(ECutUpdate::kEvent);
+    if (fSize > 1) getList(ECutUpdate::kTrack);
+    if (fSize > 2) getList(ECutUpdate::kTwoTrack);
+    if (fSize > 3) getList(ECutUpdate::kTwoTrackBackground);
     pack->SetComment(this->ClassName());
     return pack;
-  }
-
-  Bool_t CutContainer::ExtractRegExp(const CutMonitor& cut, Option_t* opt) {
-    TString option = opt;
-    Int_t number, jump;
-    Bool_t found = Hal::Std::FindExpressionTwoValues(option, number, jump, kTRUE);
-    if (!found) return kFALSE;
-    // found regular exprestion like {number x number}
-    Int_t begin_collection = cut.GetCollectionID();
-    if (begin_collection == -1) {
-      Cout::PrintInfo(Form("Adding cut monitor %s (first cut %s ) with collection no -1, with "
-                           "regular expression like {AxB} set initial collection no to 0",
-                           cut.ClassName(),
-                           cut.GetCutName(0).Data()),
-                      EInfo::kLowWarning);
-      begin_collection = 0;
-    }
-    CutMonitor* temp_cut;
-    for (int i = 0; i < number; i++) {
-      temp_cut = cut.MakeCopy();
-      temp_cut->SetCollectionID(begin_collection + i * jump);
-      AddMonitor(*temp_cut, option.Data());
-      delete temp_cut;
-    }
-    return kTRUE;
-  }
-
-  Bool_t CutContainer::CheckTwoTracksOptions(const CutMonitor& cutmon, Option_t* opt) {
-    if (!(cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrack || cutmon.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground)) {
-      return kFALSE;
-    }
-    TString option = opt;
-    if (Hal::Std::FindParam(option, "bckg") && Hal::Std::FindParam(option, "sig")) {  // bckg + sig options
-      Hal::Std::FindParam(option, "bckg", kTRUE);
-      Hal::Std::FindParam(option, "im", kTRUE);
-      AddMonitor(cutmon, option + "bckg");
-      AddMonitor(cutmon, option + "sig");
-      return kTRUE;
-    } else if (Hal::Std::FindParam(option, "both", kTRUE)) {  // both options
-      AddMonitor(cutmon, option + "+sig");
-      AddMonitor(cutmon, option + "+bckg");
-      return kTRUE;
-    } else if (!Hal::Std::FindParam(option, "bckg") && !Hal::Std::FindParam(option, "sig")) {  // no specification
-      AddMonitor(cutmon, option + "+sig");
-      AddMonitor(cutmon, option + "+bckg");
-      return kTRUE;
-    }
-    return kFALSE;  // valid option - sig or bckg
-  }
-
-  Bool_t CutContainer::CheckTwoTracksOptions(const Cut& cut, Option_t* opt) {
-    if (!(cut.GetUpdateRatio() == ECutUpdate::kTwoTrack || cut.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground)) {
-      return kFALSE;
-    }
-    TString option = opt;
-    if (Hal::Std::FindParam(option, "bckg") && Hal::Std::FindParam(option, "sig")) {  // bckg + sig options
-      Hal::Std::FindParam(option, "bckg", kTRUE);
-      Hal::Std::FindParam(option, "sig", kTRUE);
-      AddCut(cut, option);
-      AddCut(cut, option);
-      return kTRUE;
-    } else if (Hal::Std::FindParam(option, "both", kTRUE)) {  // both options
-      AddCut(cut, option + "+sig");
-      AddCut(cut, option + "+bckg");
-      return kTRUE;
-    } else if (!Hal::Std::FindParam(option, "bckg") && !Hal::Std::FindParam(option, "sig")) {  // no specification
-      AddCut(cut, option + "+sig");
-      AddCut(cut, option + "+bckg");
-      return kTRUE;
-    }
-    return kFALSE;  // valid option - sig or bckg
   }
 
   Int_t CutContainer::GetEventCollectionsNo() const {
@@ -416,17 +302,6 @@ namespace Hal {
   Int_t CutContainer::GetTwoTrackCollectionsBackgroundNo() const {
     if (fSize < 4) return 0;
     return GetCutContainer(ECutUpdate::kTwoTrackBackground)->GetEntriesFast();
-  }
-
-  Bool_t CutContainer::ExtractRegExp2(const CutMonitor& monit, Option_t* opt) {
-    TString option = opt;
-    Int_t number;
-    if (!Hal::Std::FindExpressionSingleValue(option, number, kTRUE)) return kFALSE;
-    CutMonitor* temp_mon = monit.MakeCopy();
-    temp_mon->SetCollectionID(number);
-    AddMonitor(*temp_mon, option.Data());
-    delete temp_mon;
-    return kTRUE;
   }
 
   void CutContainer::MakeDummyCopies(ECutUpdate update, CutContainer* other, Bool_t copy_link) {
@@ -452,61 +327,6 @@ namespace Hal {
       CutCollection* to   = (CutCollection*) this->GetCutContainer(update)->UncheckedAt(i);
       to->MakeDummyCopy(from, copy_link);
     }
-  }
-
-  void CutContainer::ExtractComplexMonitor(CutMonitor* mon, TString& opt) {
-    Int_t flag = 0;
-    if (Hal::Std::FindParam(opt, "im") || Hal::Std::FindParam(opt, "re")) {
-      if (opt.Contains("im")) flag = -1;
-      if (opt.Contains("re")) flag = 1;
-      opt.ReplaceAll("+im", "");
-      opt.ReplaceAll("+re", "");
-      opt.ReplaceAll("im", "");
-      opt.ReplaceAll("re", "");
-      Int_t size = 1;
-      if (mon->InheritsFrom("Hal::CutMonitorXY")) size = 2;
-      if (mon->InheritsFrom("Hal::CutMonitorXYZ")) size = 3;
-      switch (size) {
-        case 1: {
-          MakeComplexAxis(mon, 0, flag);
-        } break;
-        case 2: {
-          MakeComplexAxis(mon, 0, flag);
-          MakeComplexAxis(mon, 1, flag);
-        } break;
-        case 3: {
-          MakeComplexAxis(mon, 0, flag);
-          MakeComplexAxis(mon, 1, flag);
-          MakeComplexAxis(mon, 2, flag);
-        } break;
-      }
-    }
-  }
-
-  void CutContainer::MakeComplexAxis(CutMonitor* mon, Int_t axis, Int_t flag) {
-    TString cut_name = mon->GetCutName(axis);
-    TClass* clas     = TClass::GetClass(cut_name, kTRUE, kTRUE);
-    TString pattern  = "";
-    if (clas->InheritsFrom("Hal::EventCut")) {
-      if (flag == -1) {  // im
-        pattern = "Hal::EventImaginaryCut";
-      } else {  // re
-        pattern = "Hal::EventRealCut";
-      }
-    } else if (clas->InheritsFrom("Hal::TrackCut")) {
-      if (flag == -1) {  // im
-        pattern = "Hal::TrackImaginaryCut";
-      } else {  // re
-        pattern = "Hal::TrackRealCut";
-      }
-    } else {
-      if (flag == -1) {  // im
-        pattern = "Hal::TwoTrackImaginaryCut";
-      } else {  // re
-        pattern = "Hal::TwoTrackRealCut";
-      }
-    }
-    mon->fCutNames[axis] = Form("%s(%s)", pattern.Data(), mon->GetCutName(axis).Data());
   }
 
   Int_t CutContainer::GetCollectionsNo(ECutUpdate update) const {
@@ -639,4 +459,6 @@ namespace Hal {
     }
     return kFALSE;
   }
+
+
 }  // namespace Hal

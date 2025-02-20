@@ -75,7 +75,7 @@ namespace Hal {
     row2.AddContent(HtmlCell(HtmlCore::CheckBr(GetComment())));
     table.AddContent(row2);
     file.AddContent(table);
-    file.AddStringContent(HtmlCore::GetJsDiv("kt.root", "canvas;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(path, "kt.root", "canvas;1"));
     AddHTMLCode(file);
     file.Save();
     return HtmlCore::GetUrl(Form("corrfunc_%i/corrfunc.html", counter), this->ClassName());

@@ -232,13 +232,26 @@ namespace Hal {
     return ioutcountz;
   }
 
-  FemtoYlmSolver::FemtoYlmSolver(Int_t maxL, FemtoSHCF* cf) :
-    fMaxJM((maxL + 1) * (maxL + 1)), fFactorialsSize((maxL + 1) * 4), fMaxL(maxL), fSlice(FemtoSHSlice(maxL)), fCF(cf) {
+  FemtoYlmSolver::FemtoYlmSolver(Int_t maxL, FemtoSHCF* cf, Bool_t sumw) :
+    fMaxJM((maxL + 1) * (maxL + 1)),
+    fFactorialsSize((maxL + 1) * 4),
+    fMaxL(maxL),
+    fSumw(sumw),
+    fSlice(FemtoSHSlice(maxL)),
+    fCF(cf) {
     fLmVals.Resize(maxL);
     fFactorials.resize(fFactorialsSize);
-    fMaxJM2_4      = 4.0 * fMaxJM * fMaxJM;
-    fNumEnt        = cf->GetNumRe(0, 0)->GetEntries();
-    fDenEnt        = cf->GetDenRe(0, 0)->GetEntries();
+    fMaxJM2_4 = 4.0 * fMaxJM * fMaxJM;
+
+    if (fSumw) {
+      fNumEnt = cf->GetNumRe(0, 0)->GetEffectiveEntries();  // KURWA
+      fDenEnt = cf->GetDenRe(0, 0)->GetEffectiveEntries();  // KURWA
+    } else {
+      fNumEnt = cf->GetNumRe(0, 0)->GetEntries();
+      fDenEnt = cf->GetDenRe(0, 0)->GetEntries();
+    }
+
+
     Double_t fac   = 1;
     fFactorials[0] = 1;
     for (int iter = 1; iter < fFactorialsSize; iter++) {
@@ -855,7 +868,10 @@ namespace Hal {
         wksum += wk;
       }
       fNormFactor *= sksum / wksum;
-      fNormFactor /= num0->GetEntries() / den0->GetEntries();
+      if (fSumw) {
+        fNormFactor /= num0->GetEffectiveEntries() / den0->GetEffectiveEntries();
+      } else
+        fNormFactor /= num0->GetEntries() / den0->GetEntries();
     }
     //    fNumEnt = num0->GetEntries();
     //    fDenEnt = den0->GetEntries();

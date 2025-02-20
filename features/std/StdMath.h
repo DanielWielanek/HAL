@@ -129,6 +129,13 @@ namespace Hal {
      * @return pair - quotient + reminder
      */
     std::pair<Int_t, Int_t> Division(Int_t num, Int_t div);
+    /**
+     * NOTE: sometimes this algo fails to invert matrices, in such case prints warnings
+     * @param x
+     * @param y
+     * @return polynomial fitted to n-points p[0] is const term
+     */
+    std::vector<Double_t> LagrangeInterpol(const std::vector<Double_t>& x, const std::vector<Double_t>& y);
   }  // namespace Std
 }  // namespace Hal
 #endif /* HAL_FEATURES_STD_HALSTDMATH_H_ */

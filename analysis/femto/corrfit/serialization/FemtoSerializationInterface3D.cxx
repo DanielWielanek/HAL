@@ -8,6 +8,8 @@
  */
 #include "FemtoSerializationInterface3D.h"
 
+#include "Cout.h"
+
 namespace Hal {
 
   Bool_t FemtoSerializationInterface3D::GetBinsNo() {
@@ -37,8 +39,8 @@ namespace Hal {
     ExpandArrayIfSerialize(fSlice->fOutBins * fSlice->fSideBins * 2, dir);
     for (unsigned int iO = 0; iO < fSlice->fOutBins; iO++) {
       for (unsigned int iS = 0; iS < fSlice->fSideBins; iS++) {
-        CopyDataSingle(fSlice->fNum[iO][iS][fBinLow], dir);
-        CopyDataSingle(fSlice->fDen[iO][iS][fBinLow], dir);
+        CopyDataSingle(fSlice->fNum[fBinLow][iO][iS], dir);
+        CopyDataSingle(fSlice->fDen[fBinLow][iO][iS], dir);
       }
     }
   }
@@ -46,7 +48,8 @@ namespace Hal {
   void FemtoSerializationInterface3D::ConvertCFSimple(ECopyDir dir) {
     TH3D* n = (TH3D*) fCF->GetNum();
     TH3D* d = (TH3D*) fCF->GetDen();
-    ExpandArrayIfSerialize(n->GetNbinsX() * n->GetNbinsY() * (fBinHi - fBinLow - 1), dir);
+    ExpandArrayIfSerialize(n->GetNbinsX() * n->GetNbinsY() * (fBinHi - fBinLow + 1), dir);
+    Hal::Cout::DebugInfo(fBinHi - fBinLow + 1);
     std::vector<TH3*> cfsN, cfsD;
     cfsN.push_back(n);
     cfsD.push_back(d);
@@ -63,7 +66,7 @@ namespace Hal {
     ExpandArrayIfSerialize(fSlice->fOutBins * fSlice->fSideBins, dir);
     for (unsigned int iO = 0; iO < fSlice->fOutBins; iO++) {
       for (unsigned int iS = 0; iS < fSlice->fSideBins; iS++) {
-        CopyDataPair(fSlice->fNum[iO][iS][fBinLow], fSlice->fDen[iO][iS][fBinLow], dir);
+        CopyDataPair(fSlice->fNum[fBinLow][iO][iS], fSlice->fDen[fBinLow][iO][iS], dir);
       }
     }
   }

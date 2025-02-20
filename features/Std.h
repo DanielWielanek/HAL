@@ -5,13 +5,14 @@
 #include "StdMath.h"
 #include "StdString.h"
 
+#include <complex>
 #include <vector>
 //#define HAL_DEBUG
 class TVirtualPad;
 
 #define Draw_2D_option "colz"
 #define Draw_3D_option "box2"
-#define HAL_PHYSICALANALYSYS_VER "jun2024"
+#define HAL_PHYSICALANALYSYS_VER "feb2025"
 
 // some enums used almost everywhere
 
@@ -30,9 +31,11 @@ class TClonesArray;
 namespace Hal {
   class CompressionMap;
   namespace Std {
-    struct ITriplet {
-      int x, y, z;
+    template<typename T>
+    struct Triplet {
+      T x, y, z;
     };
+    typedef std::complex<double> DComplex;
     /**
      * conver enum to "human readable" update ratio description
      * @param upd
@@ -137,7 +140,7 @@ namespace Hal {
      * @param p_tar number of protons in  target
      * @return
      */
-    TVector3 CalcualteBoostVector(Double_t energy_per_nucleon, Int_t n_proj, Int_t p_proj, Int_t n_tar, Int_t p_tar);
+    TVector3 CalculateBoostVector(Double_t energy_per_nucleon, Int_t n_proj, Int_t p_proj, Int_t n_tar, Int_t p_tar);
     /**
      * compres TClonesArray by using map
      * @param array

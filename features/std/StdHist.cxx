@@ -38,8 +38,10 @@
 #include "Splines.h"
 #include "Std.h"
 
-NamespaceImp(Hal::Std);
-namespace Hal {
+NamespaceImp(Hal::Std)
+
+
+  namespace Hal {
   namespace Std {
     void RemoveNan(TH1* h, Double_t fill, Double_t fill_e) {
       if (h->InheritsFrom("TH3")) {
@@ -203,14 +205,21 @@ namespace Hal {
         axis->SetRange(min, max);
         nbins = 1 + max - min;
       } else {
+        if (min == max) {  // same values, this makes problem
+          max = min + axis->GetBinWidth(1) * 0.1;
+        }
         axis->SetRangeUser(min, max);
         nbins = 1 + axis->FindBin(max) - axis->FindBin(min);
       }
       projection = (TH2D*) histo_cloned->Project3D(projection_option);
       delete histo_cloned;
-      axis->SetRange(0, 0);
+      //   axis->SetRange(0, 0);
       if (sumw) projection->Sumw2();
       if (option.Contains("scale")) { projection->Scale(1.0 / nbins); }
+      if (!option.Contains("noautoname")) {
+        TString name = Form("%i_2dproj", anonymCounter++);
+        projection->SetName(name);
+      }
       projection->SetDirectory(0);
       return projection;
     }
@@ -569,7 +578,7 @@ namespace Hal {
       h->ResetStats();
     }
 
-    void CopyAxisProp(TAxis* from, TAxis* to, TString option) {
+    void CopyAxisProp(const TAxis* from, TAxis* to, TString option) {
       TAxis default_axis = TAxis();
       if (default_axis.GetCenterTitle() != from->GetCenterTitle()) to->CenterTitle(from->GetCenterTitle());
       if (default_axis.GetNdivisions() != from->GetNdivisions()) to->SetNdivisions(from->GetNdivisions());
@@ -586,7 +595,7 @@ namespace Hal {
 
     TH1D* GetDiagonalProjection1D(TH3* h, TString dir, Double_t start, Double_t start2) {
       if (h->GetNbinsX() != h->GetNbinsY() || h->GetNbinsX() != h->GetNbinsZ()) {
-        Hal::Cout::PrintInfo("Cannto make projection in nonsymetric histo", Hal::EInfo::kLowWarning);
+        Hal::Cout::PrintInfo("Cannot make projection in nonsymetric histo", Hal::EInfo::kLowWarning);
         return nullptr;
       }
       TString temp     = dir;
@@ -921,15 +930,39 @@ namespace Hal {
       h.SetMarkerSize(s);
     }
 
-    void MakeBeautiful() {
-      gStyle->SetPalette(kRainBow);
-      TGaxis::SetMaxDigits(3);
-      gStyle->SetCanvasPreferGL(kTRUE);
+    void MakeBeautiful(TString opt) {
+      if (FindParam(opt, "apollo", kTRUE)) {
+        gStyle->SetTitleFont(82, "");
+        gStyle->SetStatFont(82);
+        gStyle->SetLabelFont(82);
+        gStyle->SetPalette(kGreyScale);
+      }
+      if (FindParam(opt, "bold", kTRUE)) {
+        gStyle->SetLineWidth(2);
+        gStyle->SetFrameLineWidth(2);
+      }
+      if (opt == "beauty") {
+        gStyle->SetPalette(kRainBow);
+        TGaxis::SetMaxDigits(3);
+        gStyle->SetCanvasPreferGL(kTRUE);
+      }
+      if (opt == "") {
+        gStyle->SetPalette(kRainBow);
+        TGaxis::SetMaxDigits(3);
+      }
     }
 
     void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2) {
+      if (!gPad) {
+        Hal::Cout::PrintInfo("Hal::Std::SetRainbow, pad not found, did you forgot to draw histogram before? ", EInfo::kError);
+        return;
+      }
       gPad->Update();
       TPaletteAxis* palette = (TPaletteAxis*) h.GetListOfFunctions()->FindObject("palette");
+      if (!palette) {
+        Hal::Cout::PrintInfo("Hal::Std::SetRainbow, palette not found, did you forgot to draw histogram before?", EInfo::kError);
+        return;
+      }
       palette->SetX1NDC(x1);
       palette->SetX2NDC(x2);
       palette->SetY1NDC(y1);
@@ -1138,5 +1171,51 @@ namespace Hal {
       }
       return kTRUE;
     }
+    void CopyHistProp(const TH1& from, TH1& to, TString opt) {
+      auto d3 = static_cast<const TH3*>(&from);
+
+      CopyAxisProp(from.GetXaxis(), to.GetXaxis(), opt);
+      CopyAxisProp(from.GetYaxis(), to.GetYaxis(), opt);
+      if (d3) CopyAxisProp(from.GetZaxis(), to.GetZaxis(), opt);
+      to.SetMarkerSize(from.GetMarkerSize());
+      to.SetMarkerStyle(from.GetMarkerStyle());
+      to.SetMarkerColor(from.GetMarkerColor());
+      to.SetLineStyle(from.GetLineStyle());
+      to.SetLineWidth(from.GetLineWidth());
+      to.SetLineColor(from.GetLineColor());
+      to.SetFillColor(from.GetFillColor());
+      to.SetFillStyle(from.GetFillStyle());
+    }
+
+    Double_t GetMaximum(const std::vector<TH1*> histos) {
+      Double_t maxig = -1E+10;
+      auto findMax   = [](TH1* x) {
+        Double_t maxi = -1E+10;
+        TH1* h1       = dynamic_cast<TH1*>(x);
+        TH1* h2       = dynamic_cast<TH2*>(x);
+        TH1* h3       = dynamic_cast<TH3*>(x);
+        if (h3) {
+          for (int i = 1; i <= h3->GetNbinsX() + 1; i++)
+            for (int j = 1; j <= h3->GetNbinsY() + 1; j++)
+              for (int k = 1; k <= h3->GetNbinsZ() + 1; k++)
+                maxi = TMath::Max(h3->GetBinContent(i, j, k), maxi);
+        } else if (h2) {
+          for (int i = 1; i <= h2->GetNbinsX() + 1; i++)
+            for (int j = 1; j <= h2->GetNbinsY() + 1; j++)
+              maxi = TMath::Max(h2->GetBinContent(i, j), maxi);
+        } else {
+          for (int i = 1; i <= h1->GetNbinsX() + 1; i++)
+            maxi = TMath::Max(h1->GetBinContent(i), maxi);
+        }
+        return maxi;
+      };
+
+      for (auto x : histos) {
+        maxig = TMath::Max(maxig, findMax(x));
+      }
+      return maxig;
+    }
+
+
   }  // namespace Std
 }  // namespace Hal

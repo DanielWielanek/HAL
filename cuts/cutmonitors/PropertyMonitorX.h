@@ -67,6 +67,7 @@ namespace Hal {
      */
     EventFieldMonitorX(Int_t fieldID, std::initializer_list<Double_t> xAxis);
     virtual void Update(Bool_t passed, TObject* obj);
+    virtual Bool_t AreSimilar(CutMonitor* other) const;
     virtual Bool_t Init(Int_t task_id);
     virtual CutMonitor* MakeCopy() const { return new EventFieldMonitorX(*this); }
     virtual ~EventFieldMonitorX() {};
@@ -94,6 +95,7 @@ namespace Hal {
      */
     TrackFieldMonitorX(Int_t fieldID, std::initializer_list<Double_t> xAxis);
     virtual void Update(Bool_t passed, TObject* obj);
+    virtual Bool_t AreSimilar(CutMonitor* other) const;
     virtual Bool_t Init(Int_t task_id);
     virtual CutMonitor* MakeCopy() const { return new TrackFieldMonitorX(*this); }
     virtual ~TrackFieldMonitorX() {};

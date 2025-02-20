@@ -33,7 +33,7 @@ namespace HalDbg {
       Double_t RamKB = fProcInfo.fMemResident;
       Double_t dTime = fProcInfo.fCpuUser - fPrevTime;
       fPrevTime      = fProcInfo.fCpuUser;
-      TString info   = Form("Event %8d   Res Mem: %5d(MB)   DUserCPU: %3.4f(s)", fCounter, int(RamKB / 1000.0), dTime);
+      TString info   = Form("Event %8d   ResMem: %5d (MB)   DUserCPU: %3.4f (s)", fCounter, int(RamKB / 1000.0), dTime);
       if (fUseLog) {
         fOutLog << info << std::endl;
       } else {

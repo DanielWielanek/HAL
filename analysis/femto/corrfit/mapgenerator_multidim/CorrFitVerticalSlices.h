@@ -62,6 +62,12 @@ namespace Hal {
     std::pair<int, int> FindBin(FemtoPair* pair);
     void FillNum(Int_t bin, FemtoPair* pair);
     void FillDen(Int_t bin, FemtoPair* pair);
+    /**
+     *
+     * @param bin - slice bit (depends on rout/ride currently calculated
+     * @param coord - coordinates - q-out and q-side bins
+     * @param w weight
+     */
     void FillNumDirect(Int_t bin, std::pair<int, int> coord, Double_t w) { fNum[bin][coord.first][coord.second] += w; }
     void FillDenDirect(Int_t bin, std::pair<int, int> coord, Double_t w) { fDen[bin][coord.first][coord.second] += w; }
     virtual ~CorrFitVerticalSlices3D() {};
@@ -96,6 +102,8 @@ namespace Hal {
     std::complex<double>* GetBufferCalc(FemtoPair* pair);
     void FillNumBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin);
     void FillDenBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin);
+    void FillNumBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin);
+    void FillDenBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin);
     const std::vector<Double_t>& GetNumReal(Int_t bin) const { return fShNumReal[bin]; };
     const std::vector<Double_t>& GetNumImag(Int_t bin) const { return fShNumImag[bin]; };
     const std::vector<Double_t>& GetDenReal(Int_t bin) const { return fShDenReal[bin]; };

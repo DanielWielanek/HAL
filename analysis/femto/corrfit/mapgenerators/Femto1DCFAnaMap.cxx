@@ -21,7 +21,7 @@
 #include "Femto1DCF.h"
 #include "FemtoCorrFunc.h"
 #include "FemtoCorrFuncKt.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoPair.h"
 #include "FemtoSourceModel.h"
 #include "FemtoWeightGenerator.h"
@@ -90,8 +90,8 @@ namespace Hal {
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
-      fFreezoutGenerator->GetSourceModel()->SetRadius(R);
-      fFreezoutGenerator->GenerateFreezoutCooordinates(fFemtoPair);
+      fFreezeoutGenerator->GetSourceModel()->SetRadius(R);
+      fFreezeoutGenerator->GenerateFreezeoutCooordinates(fFemtoPair);
       Double_t weight = fCalc->GenerateWeight(fFemtoPair);
       fFemtoPair->SetWeight(weight);
       map->FillNum(fFemtoPair);
@@ -115,8 +115,8 @@ namespace Hal {
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
-      fFreezoutGenerator->GetSourceModel()->SetRadius(R);
-      fFreezoutGenerator->GenerateFreezoutCooordinates(fFemtoPair);
+      fFreezeoutGenerator->GetSourceModel()->SetRadius(R);
+      fFreezeoutGenerator->GenerateFreezeoutCooordinates(fFemtoPair);
       Double_t weight = fCalc->GenerateWeight(fFemtoPair);
       fFemtoPair->SetWeight(weight);
       map->FillDenRotated(fFemtoPair);
@@ -129,8 +129,8 @@ namespace Hal {
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
-      fFreezoutGenerator->GetSourceModel()->SetRadius(R);
-      fFreezoutGenerator->GenerateFreezoutCooordinates(fFemtoPair);
+      fFreezeoutGenerator->GetSourceModel()->SetRadius(R);
+      fFreezeoutGenerator->GenerateFreezeoutCooordinates(fFemtoPair);
       Double_t weight = fCalc->GenerateWeight(fFemtoPair);
       fFemtoPair->SetWeight(weight);
       map->FillDenHemisphere(fFemtoPair);
@@ -154,8 +154,8 @@ namespace Hal {
     for (Double_t i = 0; i < fRbins; i++) {
       Double_t R = fRMinEff + i * fRStep;
       map->SetR(R);
-      fFreezoutGenerator->GetSourceModel()->SetRadius(R);
-      fFreezoutGenerator->GenerateFreezoutCooordinates(fFemtoPair);
+      fFreezeoutGenerator->GetSourceModel()->SetRadius(R);
+      fFreezeoutGenerator->GenerateFreezeoutCooordinates(fFemtoPair);
       Double_t weight = fCalc->GenerateWeight(fFemtoPair);
       fFemtoPair->SetWeight(weight);
       map->FillDenCharged(fFemtoPair);
@@ -173,7 +173,7 @@ namespace Hal {
     Task::EInitFlag stat = FemtoBasicAna::Init();
     if (stat == Task::EInitFlag::kFATAL) return Task::EInitFlag::kFATAL;
 
-    if (fFreezoutGenerator == NULL) {
+    if (fFreezeoutGenerator == NULL) {
       Cout::PrintInfo("No freezoug generator", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }

@@ -16,6 +16,7 @@
 #include "Cout.h"
 #include "Package.h"
 #include "Parameter.h"
+#include "Reader.h"
 #include "Source.h"
 #include "Std.h"
 #include "Task.h"
@@ -32,12 +33,16 @@ namespace Hal {
   Bool_t AnalysisManager::Init() {
     Cout::PrintInfo("=== AnalysisManager::Init ===", EInfo::kInfo);
     if (fSource == nullptr) exit(0);
+    Cout::PrintInfo("=== Source::Init ===", EInfo::kInfo);
+    Bool_t initSource = fSource->Init();
+    if (!initSource) { Cout::PrintInfo("Can't init source!", EInfo::kCriticalError); }
     fManager = fSource->GetIOManager();
     if (!fManager) {
       Cout::PrintInfo("IO manager not found!", EInfo::kCriticalError);
       exit(0);
     }
     if (fField == nullptr) { fField = new MagField(); }
+    Cout::PrintInfo("=== Setting up the manager ===", EInfo::kInfo);
     fManager->SetField(fField);
     fManager->SetOutput(fOutputFile);
     fManager->Init();
@@ -65,8 +70,8 @@ namespace Hal {
     }
     Cout::PrintInfo("=== Init tasks ===", EInfo::kInfo);
     for (auto task : fTasks) {
+      Cout::PrintInfo(Form("==> Init task %s", task->ClassName()), EInfo::kDebugInfo);
       Task::EInitFlag stat = task->Init();
-      Cout::PrintInfo(Form("  Init task %s", task->ClassName()), EInfo::kDebugInfo);
       switch (stat) {
         case Task::EInitFlag::kERROR: {
           Cout::PrintInfo(Form("  Task %s go to passive mode", task->ClassName()), EInfo::kDebugInfo);
@@ -83,6 +88,12 @@ namespace Hal {
       }
     }
     if (fActiveTriggers.size() > 0) { fTriggersEnabled = kTRUE; }
+    Cout::PrintInfo("=== Locking unused branches ===", EInfo::kDebugInfo);
+    fManager->LockUnusedBranches();  // lock unused branches by setting status to zero
+    if (Hal::Cout::GetVerboseMode() <= EInfo::kDebugInfo) {
+      Cout::PrintInfo("=== Manager status ===", EInfo::kDebugInfo);
+      fManager->PrintInfo();
+    }
     return kTRUE;
   }
 
@@ -125,7 +136,7 @@ namespace Hal {
     metadata_new->AddObject(new ParameterString("Date", Hal::Std::GetDate(), 'f'));
     metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
-    metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetInputFileName(), 'f'));
+    metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetSourceName(), 'f'));
     metadata_new->AddObject(fManager->GetBranchesList());
 
     TList* trigList = new TList();
@@ -169,6 +180,19 @@ namespace Hal {
     fManager->CloseManager();
   }
 
+  void AnalysisManager::AddTask(Task* ana) {
+    if (auto trig = dynamic_cast<TriggerTask*>(ana)) {
+      fTriggers.push_back(trig);
+    } else if (auto reader = dynamic_cast<Reader*>(ana)) {
+      if (fTasks.size() != 0)
+        Hal::Cout::PrintInfo("You are adding reader as not a first task,  this might lead to undefined behaviour",
+                             EInfo::kWarning);
+      fTasks.push_back(ana);
+    } else {
+      fTasks.push_back(ana);
+    }
+  }
+
   AnalysisManager::~AnalysisManager() {
     delete fSource;
     delete fManager;
@@ -180,10 +204,6 @@ namespace Hal {
     }
     if (fField) delete fField;
   }
-
-  void AnalysisManager::AddReader(Reader* /*reader*/) {}
-
-  void AnalysisManager::AddTrigger(TriggerTask* /*trigger*/) {}
 
   void AnalysisManager::DoStep(Int_t entry) {
     if (fTriggersEnabled) {

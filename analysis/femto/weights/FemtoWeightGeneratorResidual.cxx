@@ -113,10 +113,10 @@ namespace Hal {
     fResPair->SetPdg1(track1->GetPdg());
     fResPair->SetPdg2(track2->GetPdg());
 
-    const TLorentzVector& x1 = track1->GetFreezoutPosition();
-    const TLorentzVector& x2 = track2->GetFreezoutPosition();
-    fResPair->SetFreezoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
-    fResPair->SetFreezoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
+    const TLorentzVector& x1 = track1->GetFreezeoutPosition();
+    const TLorentzVector& x2 = track2->GetFreezeoutPosition();
+    fResPair->SetFreezeoutCoord1(x1.X(), x1.Y(), x1.Z(), x1.T());
+    fResPair->SetFreezeoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
     fResPair->SetTrueMomenta1(pt1.Px(), pt1.Py(), pt1.Pz(), pt1.E());
     fResPair->SetTrueMomenta2(pt2.Px(), pt2.Py(), pt2.Pz(), pt2.E());
     // fResPair->SetMomenta1(p1.Px(), p1.Py(), p1.Pz()); // currently not necessary

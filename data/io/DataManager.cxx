@@ -51,13 +51,11 @@ namespace Hal {
 
   TObject* DataManager::GetObject(const char* BrName) { return fManager->GetObject(BrName); }
 
-  TFile* DataManager::GetInFile() { return fManager->GetInFile(); }
-
   const std::vector<TString> DataManager::GetBranchNameList() { return fManager->GetBranchNameList(); }
 
   MagField* DataManager::GetField() const { return fManager->GetField(); }
 
-  TString DataManager::GetInputFileName() const { return fManager->GetInputFileName(); }
+  TString DataManager::GetSourceName() const { return fManager->GetSourceName(); }
 
   void DataManager::GetIOManagerInfo() { fManager->PrintInfo(); }
 

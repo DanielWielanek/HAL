@@ -153,9 +153,8 @@ namespace Hal {
   Int_t AnaFile::GetMerged() const { return GetMainPackage()->GetMerged(); }
 
   Package* AnaFile::GetCutCollection(Hal::ECutUpdate update, Int_t no) const {
-    TList* list      = NULL;
-    TString listName = Form("%sCutCollectionList", Hal::Std::UpdateEnumToString(update).Data());
-    list             = ((TList*) GetCutContainer()->GetObjectByName(listName));
+    TString listName = GetCollectionListName(update);
+    auto list        = ((TList*) GetCutContainer()->GetObjectByName(listName));
     return (Package*) list->At(no);
   }
 
@@ -170,14 +169,8 @@ namespace Hal {
   }
 
   Int_t AnaFile::GetCollectionsNo(Hal::ECutUpdate update) const {
-    TString label = "";
-    switch (update) {
-      case Hal::ECutUpdate::kEvent: label = "Event_collections_No"; break;
-      case Hal::ECutUpdate::kTrack: label = "Track_collections_No"; break;
-      case Hal::ECutUpdate::kTwoTrack: label = "TwoTrack_collections_No"; break;
-      case Hal::ECutUpdate::kTwoTrackBackground: label = "TwoTrack_collections_background_No"; break;
-      default: return 0; break;
-    }
+    TString label = GetCollectionCountName(update);
+    if (label.Length() == 0) return 0;
     if (GetCutContainer()->Exist(label, 0)) { return ((ParameterInt*) GetCutContainer()->GetObjectByName(label))->GetValue(); }
     return 0;
   }
@@ -444,4 +437,26 @@ namespace Hal {
   Package* AnaFile::GetMainPackage() const { return static_cast<Package*>(fMainPackageArray->UncheckedAt(fCurrentPackID)); }
 
   Package* AnaFile::GetCutContainer() const { return static_cast<Package*>(fCutContainerArray->UncheckedAt(fCurrentPackID)); }
+
+  TString AnaFile::GetCollectionListName(Hal::ECutUpdate update) {
+    switch (update) {
+      case Hal::ECutUpdate::kEvent: return "EventCutCollectionList"; break;
+      case Hal::ECutUpdate::kTrack: return "TrackCutCollectionList"; break;
+      case Hal::ECutUpdate::kTwoTrack: return "TwoTrackCutCollectionList"; break;
+      case Hal::ECutUpdate::kTwoTrackBackground: return "TwoTrackBackgroundCutCollectionList"; break;
+      default: return ""; break;
+    }
+  }
+
+  TString AnaFile::GetCollectionCountName(Hal::ECutUpdate upd) {
+    switch (upd) {
+      case ECutUpdate::kEvent: return "Event_collections_No"; break;
+      case ECutUpdate::kTrack: return "Track_collections_No"; break;
+      case ECutUpdate::kTwoTrack: return "TwoTrack_collections_No"; break;
+      case ECutUpdate::kTwoTrackBackground: return "TwoTrack_collections_background_No"; break;
+      default: Cout::PrintInfo("Unknown update ratio", EInfo::kLowWarning); break;
+    }
+    return "";
+  }
+
 }  // namespace Hal

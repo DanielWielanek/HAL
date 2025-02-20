@@ -33,7 +33,6 @@ set(SRCS
    V0CandBasicCut.cxx
    V0Candidate.cxx
    V0CandidateHelix.cxx
-   V0MassInvCut.cxx
 )
 
 Set(HEADERS )

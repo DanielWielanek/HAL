@@ -41,14 +41,15 @@ namespace Hal {
      */
     static HtmlCore* Instance();
     /**
-     *
+     * @param path - path counted from main file
      * @param root_file path to root file
      * @param object_name  name of displayed object (take care about ;1!)
      * @param draw_opt drawing option
      * @param draw_div_name name of div where plot will be painted (should be
      * unique)
      */
-    static TString GetJsDiv(TString root_file, TString object_name, TString draw_opt = "colz", TString draw_div_name = "drawing");
+    static TString
+    GetJsDiv(TString path, TString root_file, TString object_name, TString draw_opt = "colz", TString draw_div_name = "drawing");
     /**
      * return URL to file
      * @param adress adress of file

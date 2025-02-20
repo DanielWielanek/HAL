@@ -6,6 +6,7 @@ set(HAL_CORE "${HAL_CORE_DIR}")
 set(HAL_FEATURES
 	${HAL_CORE}/features
 	${HAL_CORE}/features/hist
+	${HAL_CORE}/features/hist/styles
 	${HAL_CORE}/features/io
 	${HAL_CORE}/features/io/html
 	${HAL_CORE}/features/std
@@ -65,6 +66,7 @@ set(HAL_HBT
 	${HAL_CORE}/analysis/femto/corrfit/pairgenerators
 	${HAL_CORE}/analysis/femto/corrfit/serialization
     ${HAL_CORE}/analysis/femto/corrfit/roco
+    ${HAL_CORE}/analysis/femto/painters
 	${HAL_CORE}/analysis/femto/imaging
 	${HAL_CORE}/analysis/femto/base/source_models
 	${HAL_CORE}/analysis/femto/base/corrfunc
@@ -95,6 +97,7 @@ EndMacro(SetHeaderVariables)
 Macro(PrintConfig)
     Set(INFOFLAG_1 "")
     Set(INFOFLAG_2 "")
+    Set(INFOFLAG_3 "")
     if(NOT WIN32)
       string(ASCII 27 Esc)
       set(ColourReset "${Esc}[m")
@@ -116,12 +119,15 @@ Macro(PrintConfig)
       
       Set(INFOFLAG_1 "${BoldCyan}")
       Set(INFOFLAG_2 "${ColourReset}")
+      Set(INFOFLAG_3 "${BoldMagenta}")
     endif()
         message(STATUS "${INFOFLAG_1}Compilation with FairRoot: ${USE_FAIRROOT}${INFOFLAG_2}")
         message(STATUS "${INFOFLAG_1}Build examples:            ${USE_EXAMPLES}${INFOFLAG_2}")
         message(STATUS "${INFOFLAG_1}C++ standard:              ${CMAKE_CXX_STANDARD}${INFOFLAG_2}")
         message(STATUS "${INFOFLAG_1}Installation path:         ${CMAKE_INSTALL_PREFIX}${INFOFLAG_2}")
-
+    if(DEFINED CIA)
+    	message(STATUS "${INFOFLAG_3}Magic flag enabled${INFOFLAG_2}")
+    endif()
 EndMacro()
 
 
@@ -131,3 +137,8 @@ Macro(InstallMimes HAL_CORE)
 	file(WRITE $ENV{HOME}/.root.mimes ${CONTENT_A})
 	file(APPEND $ENV{HOME}/.root.mimes ${CONTENT_B})
 EndMacro(InstallMimes)
+
+if(NOT DEFINED INCLUDE_HAL_SUBDIR)
+  set(INCLUDE_HAL_SUBDIR FALSE)
+endif()
+

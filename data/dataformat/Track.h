@@ -11,6 +11,7 @@
 #define HALTRACK_H_
 
 #include "V0Track.h"
+#include "XiTrack.h"
 
 #include "Link.h"
 
@@ -48,7 +49,9 @@ namespace Hal {
       kGlobal      = 3,
       kMother      = 4,  // set if mother is known (and its secondary)
       kV0Daughters = 5,  // set if v0 and daughters are known
-      kXiDaughters = 6   // set if xi and daughters are known
+      kXiDaughters = 6,  // set if xi and daughters are known
+      kBackground  = 7,  // set if background particle
+      kEmbedded    = 8   // set if embedded particle
     };
     /**
      * returns v0 value if vo is not null
@@ -155,6 +158,13 @@ namespace Hal {
      * @param daughters  - true if daughters ID's are known
      */
     void EnableV0(Bool_t v0, Bool_t daughters = kTRUE);
+
+    /**
+     *
+     * @param xi if true mark particle as Xi, otherwise mark as normal particle
+     * @param daughters  - true if daughters ID's are known
+     */
+    void EnableXi(Bool_t xi, Bool_t daughters = kTRUE);
     /**
      * set particle mother index
      * @param index
@@ -211,14 +221,35 @@ namespace Hal {
     inline Bool_t IsGoodV0() const { return TESTBIT(fType, kV0Daughters); };
     /**
      *
+     * @returntrue if particle is Xi and daughters ID's are known
+     */
+
+    inline Bool_t IsGoodXi() const { return TESTBIT(fType, kXiDaughters); }
+    /**
+     *
      * @return true if track is global
      */
     inline Bool_t IsGlobal() const { return TESTBIT(fType, kGlobal); };
     /**
      *
+     * @return true if track is background track
+     */
+    inline Bool_t IsBackground() const { return TESTBIT(fType, kBackground); }
+    /**
+     *
+     * @return true if track is embedded
+     */
+    inline Bool_t IsEmbedded() const { return TESTBIT(fType, kEmbedded); }
+    /**
+     *
      * @return pointer to standard hidden info
      */
     V0Track* GetV0Info() const;
+    /**
+     *
+     * @returnpointer to standard hidden info
+     */
+    XiTrack* GetXiInfo() const;
     /**
      * mark tras as global if global is true
      * @param global
@@ -257,6 +288,11 @@ namespace Hal {
      * @return true if particle has 3 dependencies (probably V0)
      */
     inline Bool_t IsV0() const { return TESTBIT(fType, kV0); };
+    /**
+     *
+     * @return true if particle has 4 dependencies (probably Xi)
+     */
+    inline Bool_t IsXi() const { return TESTBIT(fType, kXi); };
     /**
      * copy basic data from other track
      * does not copy event or "thisID"

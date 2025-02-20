@@ -12,7 +12,7 @@
 
 #include "Array.h"
 #include "FemtoCorrFunc.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoWeightGenerator.h"
 #include "TwoTrackAna.h"
 
@@ -55,7 +55,7 @@ namespace Hal {
     /**
      * pointer to class that generate freezout positions
      */
-    FemtoFreezoutGenerator* fFreezoutGenerator;
+    FemtoFreezeoutGenerator* fFreezeoutGenerator;
     /**
      * array of correlation function
      */
@@ -177,7 +177,7 @@ namespace Hal {
      * set freezout generator that creates points of particles creation
      * @param gen freezout generator
      */
-    void SetFreezoutGenerator(const FemtoFreezoutGenerator& gen) { fFreezoutGenerator = gen.MakeCopy(); }
+    void SetFreezeoutGenerator(const FemtoFreezeoutGenerator& gen) { fFreezeoutGenerator = gen.MakeCopy(); }
     /**
      * set assumed pid of particle (replaces SetMass)
      * @param PID

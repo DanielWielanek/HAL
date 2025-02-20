@@ -32,7 +32,7 @@ namespace Hal {
     fPosArray.resize(fSetup.GetNParams());
   }
 
-  Bool_t CorrFitFunctor::GetParameterConfig(TString name, Double_t& min, Double_t& max, Int_t& point) {
+  Bool_t CorrFitFunctor::GetParameterConfig(TString name, Double_t& min, Double_t& max, Int_t& point) const {
     int paramId = -1;
     for (int i = 0; i < fSetup.GetNParams(); i++) {
       if (fSetup.GetParName(i) == name) {

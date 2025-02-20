@@ -43,7 +43,7 @@ namespace Hal {
     fCurrentEventCollectionID(0),
     fTiers(tiers),
     fPDG(nullptr),
-    fCutContainer(NULL),
+    fCutContainer(nullptr),
     fMemoryMap(nullptr),
     fCurrentEvent(nullptr),
     fComment(""),
@@ -54,6 +54,7 @@ namespace Hal {
     fDataFormatManager(nullptr) {
     fTaskID            = DataFormatManager::Instance()->RegisterFormat();
     fDataFormatManager = DataFormatManager::Instance();
+    SETBIT(fFormatOption, eBitFormat::kChecking);
     SetFormatOption(EFormatOption::kStandardAcess);
     SetFormatOption(EFormatOption::kNoKeepSource);
     SetFormatOption(EFormatOption::kNoCompress);
@@ -371,7 +372,7 @@ namespace Hal {
   Task::EInitFlag EventAna::CheckFormat() {
     DataFormatManager* formatManager = DataFormatManager::Instance();
     DataManager* datamanager         = DataManager::Instance();
-    SetInputFileName(DataManager::Instance()->GetInputFileName());
+    SetInputFileName(DataManager::Instance()->GetSourceName());
     if (formatManager->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered) == nullptr) {
       Cout::PrintInfo("Format is not set, switching to reader", EInfo::kError);
       SetFormatOption(EFormatOption::kReaderAccess);
@@ -386,6 +387,9 @@ namespace Hal {
           formatManager->SetFormat(event->GetNewEvent(), GetTaskID(), EFormatDepth::kBuffered, kTRUE);
         }
         return Task::EInitFlag::kSUCCESS;
+      } else {
+        Cout::PrintInfo("L1 format from reader has not been found", EInfo::kError);
+        return Task::EInitFlag::kFATAL;
       }
     } else {
       if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {  // direct access to data by classname.
@@ -428,11 +432,13 @@ namespace Hal {
 #endif
     std::vector<TString> brName;
     if (TESTBIT(fFormatOption, eBitFormat::kReader)) {
+      Hal::Cout::PrintInfo("InitMemoryMap - push to reader mode", EInfo::kDebugInfo);
       brName.push_back("HalEvent.");
     } else if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {
       TString evName = DataFormatManager::Instance()->GetFormat(GetTaskID())->ClassName();
       brName.push_back(Form("%s.", evName.Data()));
       brName.push_back(evName);
+      Hal::Cout::PrintInfo("InitMemoryMap - push to direct access mode", EInfo::kDebugInfo);
     }
     fMemoryMap->Init(1, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
   }

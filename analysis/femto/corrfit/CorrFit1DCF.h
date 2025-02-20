@@ -19,24 +19,28 @@ class TLegend;
 namespace Hal {
   class CorrFitMath1DCF;
   class CorrFitMask1D;
+  class CorrFit1DCFPainter;
   /**
    * abstract class for fitting 1-dim correlation functions
    */
   class CorrFit1DCF : public CorrFitFunc {
     friend class Femto1DCF;
     friend class CorrFitMath1DCF;
+    friend class CorrFit1DCFPainter;
 
   private:
     Double_t EvalDenominator(Double_t x) const;
-    Int_t fRinvParIndex   = {0};
-    Int_t fLambdaParIndex = {1};
-    Int_t fNormParIndex   = {2};
 
   protected:
+    Int_t fRinvParIndex   = {1};
+    Int_t fLambdaParIndex = {2};
     /**
      * pointer of acutally calculated bin during chi-square computation
      */
     mutable Int_t fBinX;
+
+    virtual void MakePainter(TString opt);
+
     CorrFitMask1D* GetMask() const { return (CorrFitMask1D*) fMask; };
     /**
      * calculate numerical errors
@@ -57,12 +61,6 @@ namespace Hal {
      */
     virtual TF1* GetFunctionForDrawing() const;
     /**
-     *@param normalize normalize this func
-     * @return TH1D used for drawing function
-     *
-     */
-    virtual void MakeTHForDrawing();
-    /**
      * functions used for drawing
      * @param x value of momentum difference
      * @param params parameters array
@@ -70,7 +68,7 @@ namespace Hal {
      */
     Double_t GetFunDrawable(Double_t* x, Double_t* params) const;
     /**
-     * fuction that return value of correlated fuction at given bin. If
+     * function that return value of correlated function at given bin. If
      * calculation is performed with option "taking into account bin widht" the
      * this return  CalculateCF()
      * @param x array of values (only x[0] is used)
@@ -79,6 +77,13 @@ namespace Hal {
      */
     Double_t EvalCF(const Double_t* x, const Double_t* params) const;
     /**
+     * returns EvalCF but normalized
+     * @param x
+     * @param params
+     * @return
+     */
+    Double_t EvalCFNormalized(const Double_t* x, const Double_t* params) const;
+    /**
      * fuction that return value of correlated fuction at given point
      * @param x array of values (only x[0] is used)
      * @param params array of parameters
@@ -86,8 +91,6 @@ namespace Hal {
      */
     virtual Double_t CalculateCF(const Double_t* /*x*/, const Double_t* /*params*/) const { return 1; };
     virtual void Fit(TObject* histo);
-
-    virtual void Paint(Bool_t repaint = kTRUE, Bool_t refresh = kTRUE);
 
   public:
     /** default constructor
@@ -115,12 +118,6 @@ namespace Hal {
      */
     void SetLambdaLimits(Double_t min, Double_t max) { SetParLimits(LambdaID(), min, max); }
     /**
-     * set limits of fitted norm
-     * @param min minimal value
-     * @param max maximal value
-     */
-    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(NormID(), min, max); };
-    /**
      *
      * @return return radius value
      */
@@ -142,16 +139,6 @@ namespace Hal {
     Double_t GetLambdaError() const { return GetParError(LambdaID()); };
     /**
      *
-     * @return normalization parameter
-     */
-    Double_t GetNorm() const { return GetParameter(NormID()); };
-    /**
-     *
-     * @return normalization error
-     */
-    Double_t GetNormError() const { return GetParError(NormID()); };
-    /**
-     *
      * @return param number that correspond to radii
      */
     inline Int_t RadiusID() const { return fRinvParIndex; };
@@ -160,11 +147,6 @@ namespace Hal {
      * @return param number that correspond to lambda
      */
     inline Int_t LambdaID() const { return fLambdaParIndex; };
-    /**
-     *
-     * @return param number that correspond to norm
-     */
-    inline Int_t NormID() const { return fNormParIndex; };
     virtual ~CorrFit1DCF();
     ClassDef(CorrFit1DCF, 1)
   };

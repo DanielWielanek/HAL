@@ -39,10 +39,11 @@ namespace Hal {
     /**calcuclate bin in flat array **/
     Double_t bin = (fBinX - 1) * fFunctorXbins * fFunctorYbins + (fBinY - 1) * fFunctorYbins + fBinZ - 1;
     Double_t num = fData->Get(bin) - 1.0;
+    if (TMath::IsNaN(num)) num = 0;
     return params[NormID()] * (1.0 + num * params[LambdaID()]);
   }
 
-  CorrFit3DCFMultiDim::CorrFit3DCFMultiDim(Int_t params) : CorrFit3DCF(params) { fMinAlgo = EMinAlgo::kMinimizerScan; }
+  CorrFit3DCFMultiDim::CorrFit3DCFMultiDim(Int_t params) : CorrFit3DCF(params) { fMinAlgo = EMinAlgo::kHalScan; }
 
   void CorrFit3DCFMultiDim::SetFunctor(CorrFitFunctor* functor) {
     fFunctor = functor;
@@ -79,21 +80,20 @@ namespace Hal {
   }
 
   void CorrFit3DCFMultiDim::SetMinimizer(EMinAlgo alg) {
-    if (alg == kMinimizerScan || alg == kMinimizerSmartScan) {
-      if (alg == kMinimizerSmartScan) { std::cout << "Smart scan" << std::endl; }
+    if (alg == kHalScan || alg == kHalAnt) {
+      if (alg == kHalAnt) { std::cout << "Smart scan" << std::endl; }
       CorrFit3DCF::SetMinimizer(alg);
     } else {
       Cout::Text("This class supports correctly only Minimizer", "L", kYellow);
     }
   }
 
-  void CorrFit3DCFMultiDim::PrepareMinimizer() {
+  void CorrFit3DCFMultiDim::PrepareHalMinimizer() const {
     std::cout << "PREPARING MINIMIZER" << GetParametersNo() << std::endl;
     Minimizer* min = Minimizer::Instance();
     for (int i = 0; i < GetParametersNo(); i++) {
       std::string par_name = GetParameterName(i).Data();
       if (!IsParFixed(i)) {  // fixed parameters will be configured later
-
         TString name = par_name;
         Double_t Min, Max;
         Int_t points;

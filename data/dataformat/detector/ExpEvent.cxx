@@ -28,8 +28,8 @@ namespace Hal {
     fNTofTracks   = other.fNTofTracks;
   }
 
-  ExpEvent::ExpEvent(TString track_class, TString v0_class) :
-    Event(track_class, v0_class), fRunInfoId(0), fEventTrigger(0), fNTofTracks(0) {
+  ExpEvent::ExpEvent(TString track_class, TString v0_class, TString xi_class) :
+    Event(track_class, v0_class, xi_class), fRunInfoId(0), fEventTrigger(0), fNTofTracks(0) {
     fVertexError = new TLorentzVector();
     fMagField    = new TVector3;
   }

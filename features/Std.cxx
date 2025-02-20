@@ -26,8 +26,61 @@
 #include <iostream>
 #include <vector>
 
-
 NamespaceImp(Hal::Std);
+
+namespace {  // interal functions
+  TString GetJsRoot5or6() {
+    TString jsrootdir = gSystem->Getenv("JSROOT");
+    TString rootdir   = gSystem->Getenv("ROOTSYS");
+    TString coreName  = "JSRootCore.js";
+    if (Hal::Std::GetJsRootVer() == 6) { coreName = "JSRoot.core.js"; }
+
+    TString rootdirFair = rootdir + "/share/root/js/scripts/" + coreName;
+    rootdir             = rootdir + "/js/scripts/" + coreName;
+    rootdir.ReplaceAll("//", "/");
+    std::cout << "PATH " << rootdir << std::endl;
+    std::vector<TString> location;
+    location.push_back(rootdirFair);
+    location.push_back(rootdir);
+    TString mainVal = "";
+    if (jsrootdir.Length() > 0) { return jsrootdir; }
+
+    for (auto place : location) {
+      if (Hal::Std::FileExists(place)) {
+        place.ReplaceAll("scripts/" + coreName, "");
+        return place;
+      }
+    }
+    Hal::Cout::PrintInfo("JSROOT not found!", Hal::EInfo::kError);
+    return "";
+  }
+
+  TString GetJsRoot7() {
+    TString jsrootdir = gSystem->Getenv("JSROOT");
+    TString rootdir   = gSystem->Getenv("ROOTSYS");
+    TString coreName  = "main.mjs";
+
+    TString rootdirFair = rootdir + "/share/root/js/modules/" + coreName;
+    rootdir             = rootdir + "/js/modules/" + coreName;
+    rootdir.ReplaceAll("//", "/");
+    std::cout << "PATH " << rootdir << std::endl;
+    std::vector<TString> location;
+    location.push_back(rootdirFair);
+    location.push_back(rootdir);
+    TString mainVal = "";
+    if (jsrootdir.Length() > 0) { return jsrootdir; }
+
+    for (auto place : location) {
+      if (Hal::Std::FileExists(place)) {
+        place.ReplaceAll("modules/" + coreName, "");
+        return place;
+      }
+    }
+    Hal::Cout::PrintInfo("JSROOT not found!", Hal::EInfo::kError);
+    return "";
+  }
+}  // namespace
+
 namespace Hal::Std {
 
   void CopyFiles(TString from, TString to, Bool_t hidden) {
@@ -273,29 +326,8 @@ namespace Hal::Std {
   }
 
   TString GetJsRoot() {
-    TString jsrootdir = gSystem->Getenv("JSROOT");
-    TString rootdir   = gSystem->Getenv("ROOTSYS");
-    TString coreName  = "JSRootCore.js";
-    if (GetJsRootVer() >= 6) { coreName = "JSRoot.core.js"; }
-
-    TString rootdirFair = rootdir + "/share/root/js/scripts/" + coreName;
-    rootdir             = rootdir + "/js/scripts/" + coreName;
-    rootdir.ReplaceAll("//", "/");
-    std::cout << "PATH " << rootdir << std::endl;
-    std::vector<TString> location;
-    location.push_back(rootdirFair);
-    location.push_back(rootdir);
-    TString mainVal = "";
-    if (jsrootdir.Length() > 0) { return jsrootdir; }
-
-    for (auto place : location) {
-      if (FileExists(place)) {
-        place.ReplaceAll("scripts/" + coreName, "");
-        return place;
-      }
-    }
-    Hal::Cout::PrintInfo("JSROOT not found!", Hal::EInfo::kError);
-    return "";
+    if (GetJsRootVer() == 7) { return GetJsRoot7(); }
+    return GetJsRoot5or6();
   }
 
   Int_t VersionId(TString name) {
@@ -310,7 +342,7 @@ namespace Hal::Std {
     return year_ver * 100 + month_ver;
   }
 
-  TVector3 CalcualteBoostVector(Double_t energy_per_nucleon, Int_t n_proj, Int_t p_proj, Int_t n_tar, Int_t p_tar) {
+  TVector3 CalculateBoostVector(Double_t energy_per_nucleon, Int_t n_proj, Int_t p_proj, Int_t n_tar, Int_t p_tar) {
     Double_t Np      = n_proj;
     Double_t Pp      = p_proj;
     Double_t Nt      = n_tar;
@@ -343,9 +375,10 @@ namespace Hal::Std {
     array->Compress();
   }
 
+  Int_t GetJsRootVer() {
+    Int_t ver = ::ROOT::GetROOT()->GetVersionInt();
+    if (ver < 62400) return 5;
+    if (ver < 62812) return 6;
+    return 7;
+  }
 }  // namespace Hal::Std
-Int_t Hal::Std::GetJsRootVer() {
-  Int_t ver = ::ROOT::GetROOT()->GetVersionInt();
-  if (ver < 62400) return 5;
-  return 6;
-}

@@ -39,7 +39,7 @@ namespace Hal {
       return res;
     }
 
-    std::vector<TString> ExplodeString(TString string, Char_t delimiter) {
+    std::vector<TString> ExplodeString(TString string, Char_t delimiter, Bool_t keepEmpty) {
       std::vector<TString> array;
       if (string.Length() == 0) return array;
       if (string[0] == delimiter) string = string(1, string.Length() - 1);
@@ -49,7 +49,11 @@ namespace Hal {
       for (int count = 0; count < no; count++) {
         Size_t pos      = string.First(delimiter);
         TString element = string(0, pos);
-        if (element.Length() != 0) array.push_back(element);
+        if (keepEmpty) {
+          if (element.Length() != 0) array.push_back(element);
+        } else {
+          array.push_back(element);
+        }
         string = string(pos + 1, string.Length() - pos - 1);
       }
       return array;
@@ -280,6 +284,45 @@ namespace Hal {
         return TString(str(0, lenght - n));
     }
 
+    std::vector<TString> GetLinesFromFile(TString file, Bool_t skip) {
+      std::ifstream txtfile(file);
+      std::string instr;
+      std::vector<TString> res;
+      while (std::getline(txtfile, instr)) {
+        TString line = instr;
+        if (line.Length() == 0 && skip) continue;
+        res.push_back(instr);
+      }
+      txtfile.close();
+      return res;
+    }
+
+    std::vector<TString> FindBrackets(TString& option, Bool_t remove, Bool_t skipEmpty) {
+      TString expr = "";
+      TString copy = option;
+      TRegexp regexp("\\{[^}]*\\}");
+      std::vector<TString> res;
+      std::vector<TString> resRaw;
+      do {
+        expr = copy(regexp);
+        if (expr.Length()) {  // we have something!
+          resRaw.push_back(expr);
+          expr = expr(1, expr.Length() - 2);
+          if (skipEmpty) {
+            if (expr.Length() > 1) res.push_back(expr);
+          } else
+            res.push_back(expr);
+          copy.Remove(copy.First('{'), 1);
+        }
+
+      } while (expr.Length());
+      if (remove) {
+        for (auto i : resRaw)
+          option.ReplaceAll(i, "");
+      }
+      return res;
+    }
+
     void ReplaceInFile(TString path, TString newPath, TString oldPattern, TString newPattern) {
       if (!FileExists(path)) return;
       if (path.EqualTo(".temp.txt")) {
@@ -367,6 +410,16 @@ namespace Hal {
         return kTRUE;
       }
       return kFALSE;
+    }
+
+    Int_t FindParam2(TString& option, TString pattern, Bool_t remove) {
+      TString negPar = Form("!%s", pattern.Data());
+      if (FindParam(option, negPar, remove)) {
+        return -1;
+      } else if (FindParam(option, pattern, remove)) {
+        return 1;
+      }
+      return 0;
     }
 
     Bool_t FindExpressionSingleValue(TString& expression, Int_t& val, Bool_t remove) {

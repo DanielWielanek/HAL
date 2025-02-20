@@ -18,6 +18,15 @@ cd HAL
 mkdir build
 cd build
 </pre></code>
+### Docker
+It's also possible to use docker images, first download repo
+<pre><code>
+docker pull ghcr.io/danielwielanek/root-container:latest
+</pre></code>
+and then run
+<pre><code>
+docker run --rm -it ghcr.io/danielwielanek/root-container:latest
+</pre></code>
 2. Now call cmake to build software:
 <pre><code>
 cmake -DCMAKE_INSTALL_PREFIX=[place to install] .. <br>

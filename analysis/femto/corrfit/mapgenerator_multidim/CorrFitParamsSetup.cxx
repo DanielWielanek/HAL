@@ -11,6 +11,7 @@
 
 
 #include <TApplication.h>
+#include <TChain.h>
 #include <TClass.h>
 #include <TFile.h>
 #include <TMath.h>
@@ -25,7 +26,7 @@
 #include "CorrFitDumpedPairAna.h"
 #include "Cout.h"
 #include "FemtoCorrFuncSimple.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoPairKinematics.h"
 #include "FemtoSourceModel.h"
 #include "FemtoWeightGenerator.h"
@@ -56,7 +57,7 @@ namespace Hal {
       fMax[i]      = par->GetAttrib("max")->GetValue().Atof();
       double step  = par->GetAttrib("step")->GetValue().Atof();
       fNpoints[i]  = TMath::Ceil((fMax[i] - fMin[i]) / double(step)) + 1;
-      fMax[i]      = double(fNpoints[i]) * step;
+      fMax[i]      = fMin[i] + double(fNpoints[i] - 1) * step;
       fNames[i]    = par->GetAttrib("name")->GetValue();
     }
   }

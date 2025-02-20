@@ -17,7 +17,6 @@ namespace Hal {
     friend class Femto3DCF;
     friend class FemtoSHCF;
     Int_t fLambdaParIndex;
-    Int_t fNormParIndex;
     Int_t fRoutParIndex;
     Int_t fRsideParIndex;
     Int_t fRlongParIndex;
@@ -72,22 +71,6 @@ namespace Hal {
      * @return lambda error
      */
     Double_t GetLambdaError() const { return GetParameter(fLambdaParIndex); };
-    /**
-     *
-     * @return normalization
-     */
-    Double_t GetNorm() const { return GetParameter(fNormParIndex); };
-    /**
-     *
-     * @return normalization error
-     */
-    Double_t GetNormError() const { return GetParError(fNormParIndex); };
-    /**
-     * set norm limits
-     * @param min
-     * @param max
-     */
-    void SetNormLimits(Double_t min, Double_t max) { SetParLimits(NormID(), min, max); }
     /**
      * set lambda limits
      * @param min
@@ -147,11 +130,6 @@ namespace Hal {
      * @return id of lambda parameter (if available)
      */
     inline Int_t LambdaID() const { return fLambdaParIndex; }
-    /**
-     *
-     * @return id of normalization parameter (if available)
-     */
-    inline Int_t NormID() const { return fNormParIndex; }
     virtual ~CorrFitFunc3D() {};
     ClassDef(CorrFitFunc3D, 1)
   };

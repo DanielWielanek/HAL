@@ -66,7 +66,6 @@ namespace Hal {
       fShNumRealE[paramBin][ilm] += wRe * wRe;
       fShNumImagE[paramBin][ilm] += wIm * wIm;
       fNum[paramBin] += weight;
-      for (int ilm2 = 0; ilm2 < fMaxJM; ilm2++) {}
     }
     Double_t weight2 = weight * weight;
     for (int ilmzero = 0; ilmzero < fMaxJM; ilmzero++) {
@@ -80,7 +79,6 @@ namespace Hal {
       }
     }
   }
-
   void CorrFitVerticalSlicesSH::FillDenBuffer(std::complex<double>* shCoord, Double_t weight, Int_t paramBin) {
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
       Double_t wRe = real(shCoord[ilm]) * weight;
@@ -90,7 +88,47 @@ namespace Hal {
       fShDenRealE[paramBin][ilm] += wRe * wRe;
       fShDenImagE[paramBin][ilm] += wIm * wIm;
       fDen[paramBin] += weight;
-      for (int ilm2 = 0; ilm2 < fMaxJM; ilm2++) {}
+    }
+  }
+
+  void CorrFitVerticalSlicesSH::FillNumBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin) {
+    for (int ilm = 0; ilm < fMaxJM; ilm++) {
+      for (auto w : weight) {
+        Double_t wRe = real(shCoord[ilm]) * w;
+        Double_t wIm = imag(shCoord[ilm]) * w;
+        fShNumReal[paramBin][ilm] += wRe;
+        fShNumImag[paramBin][ilm] -= wIm;
+        fShNumRealE[paramBin][ilm] += wRe * wRe;
+        fShNumImagE[paramBin][ilm] += wIm * wIm;
+        fNum[paramBin] += w;
+      }
+    }
+    for (int ilmzero = 0; ilmzero < fMaxJM; ilmzero++) {
+      const int twoilmzero = ilmzero * 2;
+      for (int ilmprim = 0; ilmprim < fMaxJM; ilmprim++) {
+        const int twoilmprim = ilmprim * 2;
+        for (auto w : weight) {
+          double w2 = w * w;
+          fCovMatrix[paramBin][twoilmzero][twoilmprim] += real(shCoord[ilmzero]) * real(shCoord[ilmprim]) * w2;
+          fCovMatrix[paramBin][twoilmzero][twoilmprim + 1] += real(shCoord[ilmzero]) * -imag(shCoord[ilmprim]) * w2;
+          fCovMatrix[paramBin][twoilmzero + 1][twoilmprim] -= imag(shCoord[ilmzero]) * real(shCoord[ilmprim]) * w2;
+          fCovMatrix[paramBin][twoilmzero + 1][twoilmprim + 1] -= imag(shCoord[ilmzero]) * -imag(shCoord[ilmprim]) * w2;
+        }
+      }
+    }
+  }
+
+  void CorrFitVerticalSlicesSH::FillDenBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin) {
+    for (int ilm = 0; ilm < fMaxJM; ilm++) {
+      for (auto w : weight) {
+        Double_t wRe = real(shCoord[ilm]) * w;
+        Double_t wIm = imag(shCoord[ilm]) * w;
+        fShDenReal[paramBin][ilm] += wRe;
+        fShDenImag[paramBin][ilm] -= wIm;
+        fShDenRealE[paramBin][ilm] += wRe * wRe;
+        fShDenImagE[paramBin][ilm] += wIm * wIm;
+        fDen[paramBin] += w;
+      }
     }
   }
 
@@ -110,8 +148,8 @@ namespace Hal {
     fMin[1]      = h.GetNum()->GetYaxis()->GetBinLowEdge(1);
     fOverStep[0] = 1.0 / h.GetNum()->GetXaxis()->GetBinWidth(1);
     fOverStep[1] = 1.0 / h.GetNum()->GetYaxis()->GetBinWidth(1);
-    Hal::Std::ResizeVector3D(fNum, fOutBins, fSideBins, nSamples);
-    Hal::Std::ResizeVector3D(fDen, fOutBins, fSideBins, nSamples);
+    Hal::Std::ResizeVector3D(fNum, nSamples, fOutBins, fSideBins);
+    Hal::Std::ResizeVector3D(fDen, nSamples, fOutBins, fSideBins);
   }
 
   CorrFitVerticalSlicesSH::CorrFitVerticalSlicesSH(const Hal::FemtoSHCF& h, Int_t nSamples) :
@@ -132,8 +170,13 @@ namespace Hal {
 
   std::pair<int, int> CorrFitVerticalSlices3D::FindBin(FemtoPair* pair) {
     std::pair<int, int> res;
-    res.first  = int((pair->GetX() - fMin[0]) * fOverStep[0]);
-    res.second = int((pair->GetY() - fMin[1]) * fOverStep[1]);
+    if (pair->IsAbs()) {
+      res.first  = int((TMath::Abs(pair->GetX()) - fMin[0]) * fOverStep[0]);
+      res.second = int((TMath::Abs(pair->GetY()) - fMin[1]) * fOverStep[1]);
+    } else {
+      res.first  = int((pair->GetX() - fMin[0]) * fOverStep[0]);
+      res.second = int((pair->GetY() - fMin[1]) * fOverStep[1]);
+    }
     return res;
   }
 

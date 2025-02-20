@@ -25,6 +25,9 @@ namespace Hal {
     fZ = z;
     return Integr();
   }
+
+  Double_t CorrFit1DCFCumac::F(Double_t d, Double_t r0) const { return 1.0 - d / (2.0 * fPis * r0); }
+
   Double_t CorrFit1DCFCumac::F2(Double_t z) const { return (1.0 - TMath::Exp(-z * z)) / z; }
 
   Double_t CorrFit1DCFCumac::Ff1(Double_t x) const { return TMath::Exp(x * x - fZ * fZ) / fZ; }
@@ -271,17 +274,6 @@ namespace Hal {
     FixParameter(LambdaPolarizationID(), 0);
   }
 
-  Double_t CorrFit1DCFCumacPLam::Get(Double_t q, Double_t r) {
-    Double_t val[1];
-    val[0]      = q;
-    fKinematics = Femto::EKinematics::kLCMS;
-    Double_t params[8];
-    for (int i = 0; i < 8; i++)
-      params[i] = GetParameter(i);
-    FixParameter(RadiusID(), r);
-    return CalculateCF(val, params);
-  }
-
   CorrFit1DCFCumacPLam::~CorrFit1DCFCumacPLam() {}
 
   Double_t CorrFit1DCFCumacPLam::CalculateCF(const Double_t* x, const Double_t* params) const {
@@ -342,13 +334,12 @@ namespace Hal {
     Double_t U           = TMath::Sqrt(s);
     Double_t k1prim      = TMath::Sqrt(ak * ak + mK2 - mpi2);
     Double_t e           = TMath::Sqrt(ak2 + mK2) * 2.0;
-    Double_t k3prim =
-      TMath::Sqrt(mpi2 * mpi2 - 2.0 * mpi2 * meta2 - 2.0 * e * e * mpi2 + meta2 * meta2 - 2.0 * e * e * meta2 + e * e * e * e)
-      / (2.0 * e);
+    // Double_t k3prim =
+    //   TMath::Sqrt(mpi2 * mpi2 - 2.0 * mpi2 * meta2 - 2.0 * e * e * mpi2 + meta2 * meta2 - 2.0 * e * e * meta2 + e * e * e * e)
+    //   / (2.0 * e);
 
     Double_t k2prim = TMath::Sqrt(mpi2 * mpi2 + meta2 * meta2 + s * s - 2.0 * (mpi2 * meta2 + mpi2 * s + meta2 * s)) / (2.0 * U);
 
-    std::cout << k2prim - k3prim << std::endl;
     TComplex num1(params[Mf0ID()] * params[Mf0ID()] - s, -params[Gamma_f0KKID()] * ak - params[Gamma_f0pipiID()] * k1prim);
     TComplex num2(params[Ma0ID()] * params[Ma0ID()] - s, -params[Gamma_a0KKID()] * ak - params[Gamma_a0PiEtaID()] * k2prim);
 
@@ -361,7 +352,8 @@ namespace Hal {
     Double_t qr  = ak * r * 2.;
     Double_t fkM = (fk / r).Rho();
 
-    Double_t strong = params[AssymetryID()] * (fkM * fkM + 4. * fk.Re() / (fPis * r) * F1(qr) - 2.0 * fk.Im() * F2(qr) / r);
+    Double_t strong =
+      params[AlphaID()] * (fkM * fkM + 4. * fk.Re() / (fPis * r) * F1(qr) - 2.0 * fk.Im() * F2(qr) / (r));  // brakowalo pi?
     return params[NormID()] * (1 + params[LambdaID()] * (TMath::Exp(-qr * qr) + strong));
   }
 
@@ -372,7 +364,7 @@ namespace Hal {
     SetParameterName(Gamma_a0KKID(), "#gamma_{a_{0K#bar{K}}");
     SetParameterName(Gamma_f0pipiID(), "#gamma_{f_{0#pi#pi}");
     SetParameterName(Gamma_a0PiEtaID(), "#gamma_{a_{0#pi#eta}}");
-    SetParameterName(AssymetryID(), "#alpha");
+    SetParameterName(AlphaID(), "#alpha");
     SetDefParams(3);
   }
 
@@ -396,6 +388,169 @@ namespace Hal {
     FixParameter(Ma0ID(), params[opt][3]);
     FixParameter(Gamma_a0KKID(), params[opt][4]);
     FixParameter(Gamma_a0PiEtaID(), params[opt][5]);
-    FixParameter(AssymetryID(), 0.5);
+    FixParameter(AlphaID(), 0.5);
   }
+
+  //==================================================================
+  Double_t CorrFit1DCFCumacK0Kch::CalculateCF(const Double_t* x, const Double_t* params) const {
+    Double_t ak = 0;
+    switch (fKinematics) {
+      case Femto::EKinematics::kPRF: ak = x[0]; break;
+      case Femto::EKinematics::kLCMS: ak = x[0] * 0.5; break;
+      default: ak = 0.0; break;
+    }
+    const Double_t mK2   = Const::KaonZeroMass() * Const::KaonZeroMass();
+    const Double_t mpi2  = Const::PionPlusMass() * Const::PionPlusMass();
+    const Double_t meta2 = 0.547862 * 0.547862;
+    const Double_t ak2   = ak * ak;
+    Double_t s           = 4. * (ak2 + mK2);
+    Double_t U           = TMath::Sqrt(s);
+    Double_t k1prim      = TMath::Sqrt(ak * ak + mK2 - mpi2);
+    Double_t e           = TMath::Sqrt(ak2 + mK2) * 2.0;
+    Double_t k3prim =
+      TMath::Sqrt(mpi2 * mpi2 - 2.0 * mpi2 * meta2 - 2.0 * e * e * mpi2 + meta2 * meta2 - 2.0 * e * e * meta2 + e * e * e * e)
+      / (2.0 * e);
+
+    Double_t k2prim = TMath::Sqrt(mpi2 * mpi2 + meta2 * meta2 + s * s - 2.0 * (mpi2 * meta2 + mpi2 * s + meta2 * s)) / (2.0 * U);
+    double k2prim_old = k2prim;
+    k2prim            = fGammaCalc.Calculate(ak);
+    TComplex num(params[Ma0ID()] * params[Ma0ID()] - s, -params[Gamma_a0KKID()] * ak - params[Gamma_a0PiEtaID()] * k2prim);
+    TComplex f(params[Gamma_a0KKID()], 0);
+    f            = f / num;
+    TComplex fk  = f;
+    Double_t r   = params[RadiusID()] * Femto::FmToGeV();
+    Double_t qr  = ak * r * 2.;
+    Double_t fkM = (fk / r).Rho();
+
+    Double_t strong = 0.25 * (fkM * fkM + 4.0 * fk.Re() / (fPis * r) * F1(qr) - 2.0 * fk.Im() * F2(qr) / (r));
+
+    double val = params[NormID()] * (1 + params[LambdaID()] * strong);
+
+    return val;
+  }
+
+  CorrFit1DCFCumacK0Kch::CorrFit1DCFCumacK0Kch() : CorrFit1DCFCumac(10) {
+    SetParameterName(Ma0ID(), "m_{a_0}");
+    SetParameterName(Gamma_a0KKID(), "#gamma_{a_{0K#bar{K}}");
+    SetParameterName(Gamma_a0PiEtaID(), "#gamma_{a_{0#pi#eta}}");
+    SetDefParams(3);
+  }
+
+  void CorrFit1DCFCumacK0Kch::SetDefParams(Int_t opt) {
+    Double_t params[5][3] = {
+      {0.985, 0.4038, 0.3711}, {0.992, 0.5555, 0.4401}, {1.003, 0.8365, 0.4580}, {0.974, 0.3330, 0.2220}, {}};
+
+    //.9467,.9698,2.763,
+    for (int i = 0; i < 3; i++) {
+      Double_t val = 0;
+      for (int j = 0; j < 4; j++)
+        val += params[j][i];
+      params[4][i] = val / 4.0;
+    }
+
+    if (opt > 4) opt = 4;
+    fGammaCalc.ReInit(Const::KaonZeroMass(), Const::KaonZeroMass(), Const::PionPlusMass(), 0.547862);
+    FixParameter(Gamma_a0KKID(), params[opt][1]);
+    FixParameter(Gamma_a0PiEtaID(), params[opt][2]);
+    FixParameter(Ma0ID(), params[opt][0]);
+    for (int i = 0; i < GetParametersNo(); i++) {
+      fTempParamsEval[i] = fParameters[i].GetMin();
+    }
+  }
+
+  Double_t CorrFit1DCFCumacDLam::CalculateCF(const Double_t* x, const Double_t* params) const {
+    Double_t ak = 0;
+    switch (fKinematics) {
+      case Femto::EKinematics::kPRF: ak = x[0]; break;
+      case Femto::EKinematics::kLCMS: ak = x[0] * 0.5; break;
+      default: ak = 0.0; break;
+    }
+
+    Double_t f0_d  = params[DoubletScatteringLengthID()];
+    Double_t d0_d  = params[DoubletEffectiveRadiusID()];
+    Double_t f0_q  = params[QuartetScatteringLenghtID()];
+    Double_t d0_q  = params[QuartetEffectiveRadiusID()];
+    Double_t r0    = Femto::FmToGeV(params[RadiusID()]);
+    Double_t q     = 2.0 * ak;
+    auto component = [&](double f0, double d0) {
+      f0 = Femto::FmToGeV(f0);
+      d0 = Femto::FmToGeV(d0);
+      // TComplex tmp = TComplex(d0 * ak * ak * 0.5, -ak) - 1.0 / f0;  // https://arxiv.org/pdf/2005.05012
+      TComplex tmp = TComplex(d0 * ak * ak * 0.5, -ak) + 1.0 / f0;  // Yu Hu
+      auto fk      = TComplex(1.0, 0) / tmp;
+      return (fk * fk).Rho() * F(d0, r0) / (2.0 * r0 * r0) + 2.0 * fk.Re() / (fPis * r0) * F1(q * r0) - fk.Im() / r0 * F2(q * r0);
+    };
+    // std::cout << "FK " << component(f0_d, d0_d) << " " << component(f0_q, d0_q) << std::endl;
+    Double_t strong = (component(f0_d, d0_d) + 2.0 * component(f0_q, d0_q)) / 3.0;
+    return params[NormID()] * (1.0 + params[LambdaID()] * strong);
+  }
+
+  CorrFit1DCFCumacDLam::CorrFit1DCFCumacDLam() : CorrFit1DCFCumac(7) {
+    SetParameterName(DoubletScatteringLengthID(), "f_{0d}");
+    SetParameterName(DoubletEffectiveRadiusID(), "d_{0d}");
+    SetParameterName(QuartetScatteringLenghtID(), "f_{0q}");
+    SetParameterName(QuartetEffectiveRadiusID(), "d_{0q}");
+    FixParameter(DoubletScatteringLengthID(), 2.31);
+    FixParameter(DoubletEffectiveRadiusID(), 3.04);
+    FixParameter(QuartetScatteringLenghtID(), 1.78);
+    FixParameter(QuartetEffectiveRadiusID(), 3.22);
+  }
+
+
+  Double_t CorrFit1DCFCumac::Get(Double_t q, Double_t r) {
+    Double_t val[1];
+    val[0] = q;
+    Double_t params[GetParametersNo()];
+    for (int i = 0; i < GetParametersNo(); i++)
+      params[i] = GetParameter(i);
+    FixParameter(RadiusID(), r);
+    return CalculateCF(val, params);
+  }
+
+  Double_t CorrFit1DCFCumacStrong::CalculateCF(const Double_t* x, const Double_t* params) const {
+    Double_t ak = 0;
+    switch (fKinematics) {
+      case Femto::EKinematics::kPRF: ak = x[0]; break;
+      case Femto::EKinematics::kLCMS: ak = x[0] * 0.5; break;
+      default: ak = 0.0; break;
+    }
+    Double_t r0    = Femto::FmToGeV(params[RadiusID()]);
+    Double_t q     = 2.0 * ak;
+    auto component = [&](double f0, double d0) {
+      f0 = Femto::FmToGeV(f0);
+      d0 = Femto::FmToGeV(d0);
+      // TComplex tmp = TComplex(d0 * ak * ak * 0.5, -ak) - 1.0 / f0;  // https://arxiv.org/pdf/2005.05012
+      TComplex tmp = TComplex(d0 * ak * ak * 0.5, -ak) + 1.0 / f0;  // Yu Hu
+      auto fk      = TComplex(1.0, 0) / tmp;
+      return (fk * fk).Rho() * F(d0, r0) / (2.0 * r0 * r0) + 2.0 * fk.Re() / (fPis * r0) * F1(q * r0) - fk.Im() / r0 * F2(q * r0);
+    };
+    double cf = 0;
+    for (int iSpin = 0; iSpin < fSpinStates; iSpin++) {
+      cf += params[SpinWeightID(iSpin)] * component(params[F0ID(iSpin)], params[D0ID(iSpin)]);
+    }
+    return params[NormID()] * (1.0 + params[LambdaID()] * cf);
+  }
+
+  CorrFit1DCFCumacStrong::CorrFit1DCFCumacStrong(Int_t spinStates) :
+    CorrFit1DCFCumac(3 + spinStates * 3), fSpinStates(spinStates) {
+    fNormParIndex   = 0;
+    fLambdaParIndex = 1;
+    fRinvParIndex   = 2;
+    SetParameterName(LambdaID(), "#lambda");
+    SetParameterName(NormID(), "N");
+    SetParameterName(RadiusID(), "R");
+    int start_par = 3;
+    for (int i = 0; i < fSpinStates; i++) {
+      SetParameterName(start_par++, Form("f0_%i", i));
+      SetParameterName(start_par++, Form("d0_%i", i));
+      SetParameterName(start_par++, Form("frac_%i", i));
+    }
+  }
+
+  Int_t CorrFit1DCFCumacStrong::SpinWeightID(Int_t spin) const { return 3 + spin * 3 + 2; }
+
+  Int_t CorrFit1DCFCumacStrong::D0ID(Int_t spin) const { return 3 + spin * 3 + 1; }
+
+  Int_t CorrFit1DCFCumacStrong::F0ID(Int_t spin) const { return 3 + spin * 3; }
+
 }  // namespace Hal

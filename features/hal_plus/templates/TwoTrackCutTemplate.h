@@ -11,7 +11,7 @@ namespace MyHal {
   class TwoTrackCutTemplate : public Hal::TwoTrackCut {
   public:
     TwoTrackCutTemplate();
-    Int_t Init(Int_t taskID);
+    Bool_t Init(Int_t taskID);
     Bool_t Pass(Hal::TwoTrack* pair);
     Hal::Package* Report() const;
     virtual ~TwoTrackCutTemplate() {};

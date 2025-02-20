@@ -17,6 +17,7 @@
 #include <RtypesCore.h>
 
 namespace Hal {
+  class Femto3DCF;
   class CorrFitMask3D : public CorrFitMask {
   public:
     enum class EFitExtraMask {
@@ -38,6 +39,7 @@ namespace Hal {
     void CalculateSliceBins(Array_3<Short_t>& map);
 
   public:
+    CorrFitMask3D(const Hal::Femto3DCF& h);
     CorrFitMask3D(Int_t binsX   = 100,
                   Double_t minX = 0,
                   Double_t maxX = 1,

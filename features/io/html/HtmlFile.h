@@ -32,7 +32,7 @@ namespace Hal {
      * @param filename name of the file
      * @param mainFile tell if this is the "main file". Main file means that
      * all javascripts and css are copied to the "main file's" directory. If
-     * mainFile is fale then code will not copy those fille but will try to use
+     * mainFile is false then code will not copy those files but will try to use
      * relative path to "main file"
      */
     HtmlFile(TString filename = "", Bool_t mainFile = kFALSE);

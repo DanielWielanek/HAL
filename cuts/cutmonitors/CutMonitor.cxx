@@ -15,6 +15,8 @@
 
 #include <TClass.h>
 #include <TH1.h>
+#include <TH2.h>
+#include <TH3.h>
 
 
 namespace Hal {
@@ -343,7 +345,34 @@ namespace Hal {
     if (this->fAxisNo != other->fAxisNo) return kFALSE;
     for (int i = 0; i < fAxisNo; i++) {
       if (!this->fCutNames[i].EqualTo(other->fCutNames[i])) { return kFALSE; }
+      if (fCut[i] != other->fCut[i]) return kFALSE;
+      if (fOptionAxis[i] != other->fOptionAxis[i]) return kFALSE;
     }
     return kTRUE;
   }
+
+  void CutMonitor::ManualFill1D(Double_t x, Bool_t passed) {
+    if (passed) {
+      fHistoPassed->Fill(x);
+    } else {
+      fHistoFailed->Fill(x);
+    }
+  }
+
+  void CutMonitor::ManualFill2D(Double_t x, Double_t y, Bool_t passed) {
+    if (passed) {
+      ((TH2*) fHistoPassed)->Fill(x, y);
+    } else {
+      ((TH2*) fHistoFailed)->Fill(x, y);
+    }
+  }
+
+  void CutMonitor::ManualFill3D(Double_t x, Double_t y, Double_t z, Bool_t passed) {
+    if (passed) {
+      ((TH3*) fHistoPassed)->Fill(x, y, z);
+    } else {
+      ((TH3*) fHistoFailed)->Fill(x, y, z);
+    }
+  }
+
 }  // namespace Hal

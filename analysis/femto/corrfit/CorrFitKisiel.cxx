@@ -29,7 +29,6 @@
 #include <TObjArray.h>
 #include <TVirtualPad.h>
 
-#include "CorrFitDrawOptions.h"
 #include "Std.h"
 #include "StdString.h"
 
@@ -133,30 +132,31 @@ namespace Hal {
   }
 
   void CorrFitKisiel::Paint(Bool_t repaint, Bool_t refresh) {
-    CorrFit1DCF::Paint(repaint, kFALSE);
-    if (fDrawOptions.DrawNumErr() && fDrawOptions.DrawCf()) {
-      if (fOldNumErr == nullptr) { fOldNumErr = (TH1D*) fDrawHistograms[0]->Clone("sys_err"); }
-      fOldNumErr->SetFillStyle(3001);
-      fOldNumErr->SetFillColor(kGray + 2);
-      Double_t norm = 1;
-      if (fDrawOptions.AutoNorm()) { norm = GetNorm(); }
-      for (int iX = 1; iX <= fDrawHistograms[0]->GetNbinsX(); iX++) {
-        fOldNumErr->SetBinContent(iX, fDrawHistograms[0]->GetBinContent(iX));
-        fOldNumErr->SetBinError(iX, fMaps[0]->EvalNumErrorBin(iX, 1) * norm);
-      }
+    return; /*
+CorrFit1DCF::Paint(repaint, kFALSE);
+if (fDrawOptions.DrawNumErr() && fDrawOptions.DrawCf()) {
+ if (fOldNumErr == nullptr) { fOldNumErr = (TH1D*) fDrawHistograms[0]->Clone("sys_err"); }
+ fOldNumErr->SetFillStyle(3001);
+ fOldNumErr->SetFillColor(kGray + 2);
+ Double_t norm = 1;
+ if (fDrawOptions.AutoNorm()) { norm = GetNorm(); }
+ for (int iX = 1; iX <= fDrawHistograms[0]->GetNbinsX(); iX++) {
+   fOldNumErr->SetBinContent(iX, fDrawHistograms[0]->GetBinContent(iX));
+   fOldNumErr->SetBinError(iX, fMaps[0]->EvalNumErrorBin(iX, 1) * norm);
+ }
 
-      fOldNumErr->SetMarkerSize(0);
-      fOldNumErr->SetMinimum(0);
-      if (fDrawOptions.DrawMinMax()) {
-        fOldNumErr->SetMinimum(fDrawOptions.GetMin());
-        fOldNumErr->SetMaximum(fDrawOptions.GetMax());
-      }
-      fOldNumErr->Draw("SAME+E2");
-    }
-    if (refresh) {
-      fTempPad->Modified(kTRUE);
-      fTempPad->Update();
-    }
+ fOldNumErr->SetMarkerSize(0);
+ fOldNumErr->SetMinimum(0);
+ if (fDrawOptions.DrawMinMax()) {
+   fOldNumErr->SetMinimum(fDrawOptions.GetMin());
+   fOldNumErr->SetMaximum(fDrawOptions.GetMax());
+ }
+ fOldNumErr->Draw("SAME+E2");
+}
+if (refresh) {
+ fTempPad->Modified(kTRUE);
+ fTempPad->Update();
+}*/
   }
 
   CorrFitKisiel::~CorrFitKisiel() {

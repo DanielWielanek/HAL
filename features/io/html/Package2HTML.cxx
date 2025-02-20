@@ -8,6 +8,7 @@
  */
 
 #include "Package2HTML.h"
+#include "AnaFile.h"
 #include "Cout.h"
 #include "HtmlCore.h"
 #include "HtmlDiv.h"
@@ -47,6 +48,7 @@
 #include <cstring>
 #include <vector>
 
+#include "PicTree.h"
 #include "StdString.h"
 #include <iostream>
 
@@ -60,9 +62,6 @@ namespace Hal {
     fCutContainerPosition(0),
     fPackageID(0),
     fCollectionsNo {0, 0, 0, 0},
-    fBasicRadius(40),
-    fWindowWidth(800),
-    fWIndowHeight(800),
     fCurrentCutContainer(nullptr),
     fListDeep(0),
     fSoftVer(0) {}
@@ -544,7 +543,7 @@ namespace Hal {
 
   void Package2HTML::CreateCutHTML(HtmlObject& table, Hal::ECutUpdate cut_update, Int_t collection_no) {
     TString group_name, desc, names;
-    group_name = GetGroupListName(cut_update);
+    group_name = Hal::AnaFile::GetCollectionListName(cut_update);
     switch (cut_update) {
       case Hal::ECutUpdate::kEvent:
         desc  = "EventCollection";
@@ -702,7 +701,6 @@ namespace Hal {
     TString min, max, unit;
 
     for (int i = 1; i < cut_size; i++) {
-      std::cout << "SIZED" << address << std::endl;
       min    = Form("MinCut_%i", i);
       max    = Form("MaxCut_%i", i);
       unit   = Form("UnitName_%i", i);
@@ -868,7 +866,7 @@ namespace Hal {
                                           Int_t& counter,
                                           TString path) {
     TString group_name, desc, names;
-    group_name = GetGroupListName(cut_upd);
+    group_name = Hal::AnaFile::GetCollectionListName(cut_upd);
     switch (cut_upd) {
       case Hal::ECutUpdate::kEvent:
         desc  = "EventCollection";
@@ -921,79 +919,50 @@ namespace Hal {
     //-------------two track cut table
   }
 
-  void Package2HTML::DrawContainer(Package* pack,
-                                   Int_t tiers_no,
-                                   Int_t tier,
-                                   Int_t collections_from_no,
-                                   Int_t collections_to_no,
-                                   Int_t layer,
-                                   Int_t line_style,
-                                   Int_t tier_jump) const {
-    // UInt_t passedF =
-    // ((ParameterULong64*)cutCont->GetObjectByName("PassedFast"))->GetValue();
+  Package2HTML::containerInfo Package2HTML::GetContainerInfo(Package* pack, Bool_t rev) const {
     Double_t failedF = GetULong(pack, "FailedFast");
     Double_t passedS = GetULong(pack, "PassedSlow");
     Double_t failedS = GetULong(pack, "FailedSlow");
     Double_t passed  = passedS;
     Double_t failed  = failedF + failedS;
-
-    Double_t passRatio         = ((Double_t) passed) / ((Double_t(failed + passed)));
+    containerInfo info;
+    info.sFraction             = passed / (failed + passed);
     ParameterInt* collectionno = (ParameterInt*) pack->GetObjectByName("CollectionID");
-    Int_t collection_no        = collectionno->GetValue();
-    Color_t passed_color       = kGreen + line_style * 2;
-    Color_t failed_color       = kRed + line_style * 2;
-    TString label              = Form("%i", collection_no);
-    //---------- draw lines from lower level to higher level of collections
-    if (tier_jump != 0) {
+    info.sColId                = collectionno->GetValue();
+    if (!rev) {
       TList* linkList;
       if (pack->Exist("NextObj"))
         linkList = (TList*) pack->GetObjectByName("NextObj");  // backward compatibility
       else
-        linkList = (TList*) pack->GetObjectByName(Form("NextObj_%i", layer));
-      if (!linkList) return;
+        linkList = (TList*) pack->GetObjectByName(Form("NextObj_%i", 0));
+      if (!linkList) return info;
       for (int i = 0; i < linkList->GetEntries(); i++) {
         Int_t collection_to = ((ParameterInt*) linkList->At(i))->GetValue();
-        Double_t width      = 2.0;
-        Int_t style         = 10;
-        Color_t color       = line_style + 1;
-        if (line_style < 10) {
-          style = line_style + 1;
-          width = 2.0 * line_style + width;
-        }
-        DrawLine(tiers_no,
-                 tier,
-                 tier + tier_jump,
-                 collections_from_no,
-                 collections_to_no,
-                 collection_no,
-                 collection_to,
-                 width,
-                 style,
-                 color);
+        info.sLinks.push_back(collection_to);
+      }
+    } else {
+      TList* linkList;
+      if (pack->Exist("NextObj"))
+        linkList = (TList*) pack->GetObjectByName("NextObj");  // backward compatibility
+      else
+        linkList = (TList*) pack->GetObjectByName(Form("NextObj_%i", 1));
+      if (!linkList) return info;
+      for (int i = 0; i < linkList->GetEntries(); i++) {
+        Int_t collection_to = ((ParameterInt*) linkList->At(i))->GetValue();
+        info.sLinks.push_back(collection_to);
       }
     }
-    // draw circles
-    DrawCircle(tiers_no,
-               tier,
-               collections_from_no,
-               collection_no,
-               passRatio,
-               fBasicRadius,
-               passed_color,
-               failed_color,
-               Form("%i", collection_no));
+    return info;
   }
 
   void Package2HTML::ExportCollections(HtmlObject& object, TString path) {
     if (fCurrentCutContainer == NULL) return;
-    Bool_t batch = gROOT->IsBatch();
-    gROOT->SetBatch(kTRUE);
-    TCanvas* c1 = new TCanvas("canv", "canv", fWindowWidth, fWIndowHeight);
-    c1->Range(0, 0, fWindowWidth, fWIndowHeight);
-    TList* listE        = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kEvent));
-    TList* listT        = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTrack));
-    TList* listT2       = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrack));
-    TList* listT2B      = (TList*) fCurrentCutContainer->GetObjectByName(GetGroupListName(Hal::ECutUpdate::kTwoTrackBackground));
+
+    TList* listE  = (TList*) fCurrentCutContainer->GetObjectByName(AnaFile::GetCollectionListName(ECutUpdate::kEvent));
+    TList* listT  = (TList*) fCurrentCutContainer->GetObjectByName(AnaFile::GetCollectionListName(ECutUpdate::kTrack));
+    TList* listT2 = (TList*) fCurrentCutContainer->GetObjectByName(AnaFile::GetCollectionListName(ECutUpdate::kTwoTrack));
+    TList* listT2B =
+      (TList*) fCurrentCutContainer->GetObjectByName(AnaFile::GetCollectionListName(ECutUpdate::kTwoTrackBackground));
     Int_t eventCol      = 0;
     Int_t trackCol      = 0;
     Int_t ttrackCol     = 0;
@@ -1012,45 +981,48 @@ namespace Hal {
       levelsNo++;
     }
     if (listT2B) { ttrackColBckg = listT2B->GetEntries(); }
+    PicTree pic;
     for (int i = 0; i < eventCol; i++) {
-      auto pack    = (Package*) listE->At(i);
-      int tierJump = 0;
-      if (listT) tierJump = 1;
-      DrawContainer(pack, levelsNo, 0, eventCol, trackCol, 0, 0,
-                    tierJump);  // normal drawing without lines
+      auto pack = (Package*) listE->At(i);
+      auto info = GetContainerInfo(pack);
+      pic.AddPoint(0, info.sColId, 0, info.sFraction);
+      for (auto link : info.sLinks)
+        pic.AddLink({0, 1}, {info.sColId, link}, 0);
     }
     for (int i = 0; i < trackCol; i++) {
       auto pack = (Package*) listT->At(i);
       if (listT2B) {
-        DrawContainer(pack, levelsNo, 1, trackCol, ttrackColBckg, 1, 1,
-                      1);  // draw lines to backround collections
+        auto info = GetContainerInfo(pack, true);
+        for (auto link : info.sLinks) {
+          pic.AddLink({1, 2}, {info.sColId, link}, 1);
+        }
       }
       if (listT2) {
-        DrawContainer(pack, levelsNo, 1, trackCol, ttrackCol, 0, 0,
-                      1);  // normal drawing with lines
-      } else {
-        DrawContainer(pack, levelsNo, 1, trackCol, ttrackCol, 0, 0,
-                      0);  // normal drawing without lines
+        auto info = GetContainerInfo(pack, false);
+        for (auto link : info.sLinks) {
+          pic.AddLink({1, 2}, {info.sColId, link}, 0);
+        }
       }
+      auto info = GetContainerInfo(pack, false);
+      pic.AddPoint(1, i, 0, info.sFraction);
     }
+
     for (int i = 0; i < ttrackColBckg; i++) {
-      fBasicRadius += 10;
-      DrawContainer((Package*) listT2B->At(i), levelsNo, 2, ttrackColBckg, 0, 0, 1,
-                    0);  // draw without lines
-      fBasicRadius -= 10;
+      auto info = GetContainerInfo((Package*) listT2B->At(i), false);
+      pic.AddPoint(2, i, 1, info.sFraction);
     }
     for (int i = 0; i < ttrackCol; i++) {
-      DrawContainer((Package*) listT2->At(i), levelsNo, 2, ttrackCol, 0, 0, 0, 0);  // draw only circles
+      auto info = GetContainerInfo((Package*) listT2->At(i), false);
+      pic.AddPoint(2, i, 0, info.sFraction);
     }
     TString short_path = path(fDir.Length() + 1, path.Length());
     TString text       = Form("<img class=\"pic\" src=\"%s/main_pict.png\"  width=\"%i \" height=\"%i "
                         "\">",
                         short_path.Data(),
-                        (int) fWindowWidth,
-                        (int) fWIndowHeight);
+                        (int) pic.GetWidth(),
+                        (int) pic.GetHeight());
     object.AddStringContent(text);
-    c1->SaveAs(Form("%s/main_pict.png", path.Data()));
-    gROOT->SetBatch(batch);
+    pic.SaveAs(Form("%s/main_pict.png", path.Data()));
   }
 
   TString Package2HTML::GetLink1D(TH1* h1, TH1* h2, Int_t no, TString path) const {
@@ -1071,7 +1043,7 @@ namespace Hal {
     c1->SaveAs(Form("%s/cutmon.root", path.Data()));
 
     HtmlFile file(filename, kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv("cutmon.root", "cutmon;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(path + "/", "cutmon.root", "cutmon;1"));
     file.Save();
     return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
   }
@@ -1093,7 +1065,7 @@ namespace Hal {
     c1->SaveAs(Form("%s/cutmon.root", path.Data()));
     delete c1;
     HtmlFile file(filename, kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv("cutmon.root", "cutmon;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(path, "cutmon.root", "cutmon;1"));
     file.Save();
     return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
   }
@@ -1115,7 +1087,7 @@ namespace Hal {
     c1->SaveAs(Form("%s/cutmon.root", path.Data()));
     delete c1;
     HtmlFile file(filename, kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv("cutmon.root", "cutmon;1"));
+    file.AddStringContent(HtmlCore::GetJsDiv(path, "cutmon.root", "cutmon;1"));
     file.Save();
     return HtmlCore::GetUrl(Form("th1_%i/histo.html", no), Form("2x%s", h1->ClassName()));
 
@@ -1138,7 +1110,7 @@ namespace Hal {
   }
 
   TString Package2HTML::GetLinkToCut(Hal::ECutUpdate update, Int_t collection_no, Int_t cut_no, Bool_t fast) const {
-    TString list_name          = GetGroupListName(update);
+    TString list_name          = Hal::AnaFile::GetCollectionListName(update);
     TList* list                = (TList*) fCurrentCutContainer->GetObjectByName(list_name);
     Package* cut_sub_container = (Package*) list->At(collection_no);
     Int_t list_pos             = 0;
@@ -1159,7 +1131,7 @@ namespace Hal {
   }
 
   TString Package2HTML::GetLinkToCutMonitor(Hal::ECutUpdate update, Int_t collection_no, Int_t no) const {
-    TString list_name          = GetGroupListName(update);
+    TString list_name          = Hal::AnaFile::GetCollectionListName(update);
     TList* list                = (TList*) fCurrentCutContainer->GetObjectByName(list_name);
     Package* cut_sub_container = (Package*) list->At(collection_no);
     Int_t list_pos             = 0;
@@ -1178,16 +1150,6 @@ namespace Hal {
                 no);
   }
 
-  TString Package2HTML::GetGroupListName(Hal::ECutUpdate update) const {
-    switch (update) {
-      case Hal::ECutUpdate::kEvent: return "EventCutCollectionList"; break;
-      case Hal::ECutUpdate::kTrack: return "TrackCutCollectionList"; break;
-      case Hal::ECutUpdate::kTwoTrack: return "TwoTrackCutCollectionList"; break;
-      case Hal::ECutUpdate::kTwoTrackBackground: return "TwoTrackBackgroundCutCollectionList"; break;
-      default: return ""; break;
-    }
-  }
-
   Package2HTML::~Package2HTML() {
     if (fHTML) delete fHTML;
     if (fFile) {
@@ -1196,64 +1158,12 @@ namespace Hal {
     }
   }
 
-  void Package2HTML::DrawCircle(Double_t tiers_no,
-                                Double_t layer,
-                                Double_t collections_no,
-                                Double_t collection,
-                                Double_t pass_ratio,
-                                Double_t radii,
-                                Color_t passed_col,
-                                Color_t failed_col,
-                                TString label) const {
-    Double_t Y_step     = fWIndowHeight / collections_no;
-    Double_t X_step     = fWindowWidth / tiers_no;
-    Double_t X_center   = X_step * (layer + 0.5);
-    Double_t Y_center   = fWIndowHeight - Y_step * (collection + 0.5);
-    Double_t angle_pass = 360.0 * pass_ratio;
-    Double_t X_coor     = X_center;
-    Double_t Y_coor     = Y_center;
-    TArc* b2            = new TArc(X_coor, Y_coor, radii, 0, 360);
-    b2->SetFillColor(failed_col);
-    b2->Draw();
-    if (pass_ratio > 1E-3) {
-      TArc* b1 = new TArc(X_coor, Y_coor, radii, 90, 90 - angle_pass);
-      b1->SetFillColor(passed_col);
-      b1->Draw("SAME");
-    }
-    if (label.EqualTo(" ") == kFALSE) {
-      TLatex t;
-      t.DrawText(X_center - 5, Y_center - 10, label);
-    }
-  }
-
-  void Package2HTML::DrawLine(Double_t layers_no,
-                              Double_t layer_from,
-                              Double_t layer_to,
-                              Double_t collections_from_no,
-                              Double_t collections_to_no,
-                              Double_t collection_from,
-                              Double_t collection_to,
-                              Double_t width,
-                              Int_t style,
-                              Color_t color) const {
-    Double_t Y1_step = fWIndowHeight / collections_from_no;
-    Double_t Y2_step = fWIndowHeight / collections_to_no;
-    Double_t X_step  = fWindowWidth / layers_no;
-    Double_t X1      = X_step * (layer_from + 0.5);
-    Double_t X2      = X_step * (layer_to + 0.5);
-    Double_t Y1      = fWIndowHeight - Y1_step * (collection_from + 0.5);
-    Double_t Y2      = fWIndowHeight - Y2_step * (collection_to + 0.5);
-    TLine* line      = new TLine(X1, Y1, X2, Y2);
-    line->SetLineWidth(4.0);
-    line->SetLineWidth(width);
-    line->SetLineStyle(style);
-    line->SetLineColor(color);
-    line->Draw();
-  }
-
   void Package2HTML::GetCollectionsNumbers() {
-    TString collection_name[4] = {
-      "Event_collections_No", "Track_collections_No", "TwoTrack_collections_No", "TwoTrack_collections_background_No"};
+    TString collection_name[4] = {AnaFile::GetCollectionCountName(ECutUpdate::kEvent),
+                                  AnaFile::GetCollectionCountName(ECutUpdate::kTrack),
+                                  AnaFile::GetCollectionCountName(ECutUpdate::kTwoTrack),
+                                  AnaFile::GetCollectionCountName(ECutUpdate::kTwoTrackBackground)};
+
     ParameterInt* event_collections_no    = (ParameterInt*) fCurrentCutContainer->GetObjectByName(collection_name[0], 0);
     ParameterInt* track_collections_no    = (ParameterInt*) fCurrentCutContainer->GetObjectByName(collection_name[1], 0);
     ParameterInt* twotrack_collections_no = (ParameterInt*) fCurrentCutContainer->GetObjectByName(collection_name[2], 0);

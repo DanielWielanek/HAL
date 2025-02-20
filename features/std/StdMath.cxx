@@ -12,8 +12,10 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TMatrixD.h>
+#include <iostream>
 
 NamespaceImp(Hal::Std)
+
 
   ;
 namespace Hal {
@@ -135,12 +137,13 @@ namespace Hal {
         step      = 0;
         step_size = 0;
       }
+      Double_t epsilon = 1E-10;
       switch (type) {
         case '+': {
-          step = TMath::Ceil(step);
+          step = TMath::Ceil(step - epsilon);
         } break;
         case '-': {
-          step = TMath::Floor(step);
+          step = TMath::Floor(step + epsilon);
         } break;
         case '=': {
           step = std::round(step);
@@ -206,6 +209,41 @@ namespace Hal {
       res.second     = reminder;
       Int_t afdiv    = (num - reminder) / div;
       res.first      = afdiv;
+      return res;
+    }
+
+    std::vector<Double_t> LagrangeInterpol(const std::vector<Double_t>& x, const std::vector<Double_t>& y) {
+      std::vector<Double_t> res(x.size(), 0.0);
+      if (x.size() != y.size()) { throw std::invalid_argument("LagrnageInterpol different size of x and y"); }
+      const int n = x.size();
+
+      TMatrixD X(n, n);
+      TMatrixD Y(n, 1);
+
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          X[i][j] = TMath::Power(x[i], n - j - 1);
+        }
+        Y[i][0] = y[i];
+      }
+      auto xP     = X;
+      auto X1     = X.Invert();
+      auto S      = X1 * Y;
+      auto SOL    = xP * S;
+      Bool_t fine = kTRUE;
+      for (int i = 0; i < n; i++) {
+        if (TMath::Abs(Y[i][0] - SOL[i][0]) > 0.01) fine = kFALSE;
+      }
+      if (!fine) {
+        std::cout << "Hal::Std::Math::LagrangeInterpol" << std::endl;
+        std::cout << "Probably there was a problem with inverion of matrix in LangrangeInterpol" << std::endl;
+        for (int i = 0; i < n; i++) {
+          std::cout << "\tExpected val" << Y[i][0] << " obtained " << SOL[i][0] << std::endl;
+        }
+      }
+      for (int i = 0; i < n; i++) {
+        res[i] = S[n - i - 1][0];
+      }
       return res;
     }
   }  // namespace Std

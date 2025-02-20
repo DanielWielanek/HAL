@@ -11,6 +11,7 @@
 #define HALFEMTOCONST_H_
 
 #include "Array.h"
+#include "Object.h"
 #include "TString.h"
 /**
  * femtoscopic kinematics mode
@@ -77,6 +78,8 @@ namespace Hal {
       kLambdaAntiLambda = 213
 
     };
+
+
   }  // namespace Femto
 
   class FemtoPair;
@@ -178,6 +181,41 @@ namespace Hal {
      * @return cf type kUnkown if failed to export
      */
     ECFType GetCFType(TObject* obj);
+    /**
+     * calculate of k* for different pairs, assuming momentum conservation
+     */
+    class CorrFitGammaCalc : public Object {
+      Double_t fA2    = {0};
+      Double_t fB2    = {0};
+      Double_t fConsA = {0};
+      Double_t fConsB = {0};
+
+    public:
+      /**
+       * masses of particles a+b=> c+d
+       * @param a
+       * @param b
+       * @param c
+       * @param d
+       */
+      CorrFitGammaCalc(Double_t a = 0, Double_t b = 0, Double_t c = 0, Double_t d = 0) { ReInit(a, b, c, d); };
+      /**
+       * changes masses of particles
+       * @param a
+       * @param b
+       * @param c
+       * @param d
+       */
+      void ReInit(Double_t a, Double_t b, Double_t c, Double_t d);
+      /**
+       *
+       * @param kstar
+       * @return k'
+       */
+      Double_t Calculate(Double_t kstar) const;
+      virtual ~CorrFitGammaCalc() {};
+      ClassDef(CorrFitGammaCalc, 0)
+    };
   }  // namespace Femto
 }  // namespace Hal
 

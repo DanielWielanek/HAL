@@ -8,8 +8,10 @@
  */
 #include "CorrFit.h"
 
+#include "CorrFitPainter.h"
 #include "Cout.h"
 #include "Std.h"
+
 #include <TF1.h>
 
 namespace Hal {
@@ -25,75 +27,70 @@ namespace Hal {
     fThreshold(0) {
     fParameters.resize(fParametersNo);
     for (int i = 0; i < fParametersNo; i++) {
-      fParameters[i].SetMapMin(0);
-      fParameters[i].SetMapMax(10);
+      fParameters[i].SetMapMin(-9999);
+      fParameters[i].SetMapMax(9999);
     }
     fTempParamsEval = new Double_t[fParametersNo];
   }
 
-  void CorrFit::AlgoToOptions(EMinAlgo algo, TString& opt1, TString& opt2) const {
+  std::vector<TString> CorrFit::AlgoToOptions(EMinAlgo algo) const {
+    TString pattern;
+    std::vector<TString> res;
     switch (algo) {
       case kMinuitMigrad: {
-        opt1 = "Minuit2";
-        opt2 = "Migrad";
+        pattern = "Minuit2:Migrad";
       } break;
       case kMinuitSimplex: {
-        opt1 = "Minuit2";
-        opt2 = "Simplex";
+        pattern = "Minuit2:Simplex";
       } break;
       case kMinuitCombined: {
-        opt1 = "Minuit2";
-        opt2 = "Combined";
+        pattern = "Minuit2:Combined";
       } break;
       case kMinuitScan: {
-        opt1 = "Minuit2";
-        opt2 = "Scan";
+        pattern = "Minuit2:Scan";
       } break;
       case kMinuitFumili: {
-        opt1 = "Minuit2";
-        opt2 = "Fumili";
+        pattern = "Minuit2:Scan";
       } break;
       case kGLSMultiMinConjungateFR: {
-        opt1 = "GSLMultiMin";
-        opt2 = "ConjugateFR";
+        pattern = "GSLMultiMin:ConjugateFR";
       } break;
       case kGLSMultiMinConjugatePR: {
-        opt1 = "GSLMultiMin";
-        opt2 = "ConjugatePR";
+        pattern = "GSLMultiMin:ConjugatePR";
       } break;
       case kGLSMultiMinBFGS: {
-        opt1 = "GSLMultiMin";
-        opt2 = "BFGS";
+        pattern = "GSLMultiMin:BFGS";
       } break;
       case kGLSMultiMinBFGS2: {
-        opt1 = "GSLMultiMin";
-        opt2 = "BFGS2";
+        pattern = "GSLMultiMin:BFGS2";
       } break;
       case kGLSMultiMinSteppestDescent: {
-        opt1 = "GSLMultiMin";
-        opt2 = "SteepestDescent";
+        pattern = "GSLMultiMin:SteepestDescent";
       } break;
       case kGLSMultiFit: {
-        opt1 = "GSLMultiFit";
-        opt2 = "";
+        pattern = "GSLMultiFit:";
       } break;
       case kGLSSimAn: {
-        opt1 = "GSLSimAn";
-        opt2 = "";
+        pattern = "GSLSimAn:";
       } break;
       case kDefaultAlgo: {
-        opt1 = "Minuit2";
-        opt2 = "Migrad";
+        pattern = "Minuit2:Migrad";
       } break;
-      case kMinimizerScan: {
-        opt1 = "MInimizer";
-        opt2 = "Scan";
+      case kHalScan: {
+        pattern = "HalMinimizer:Scan";
       } break;
-      case kMinimizerSmartScan: {
-        opt1 = "Minimizer";
-        opt2 = "SmartScan";
+      case kHalAnt: {
+        pattern = "HalMinimizer:Ant";
+      } break;
+      case kHalScanMigrad: {
+        pattern = "HalMinimizer:Scan:Minuit2:Migrad";
+      } break;
+      case kHalScanScan: {
+        pattern = "HalMinimizer:Scan:Minuit2:Migrad";
       } break;
     }
+    res = Hal::Std::ExplodeString(pattern, ':');
+    return res;
   }
 
   void CorrFit::ChangeParametersNo() {
@@ -187,10 +184,12 @@ namespace Hal {
       f->SetLineWidth(GetLineWidth());
     }
   }
+
   CorrFit::~CorrFit() {
     for (auto f : fDrawFunc) {
       if (f.first != nullptr) { delete f.first; }
     }
+    if (fPainter) delete fPainter;
     /*delete[] fTempParamsEval;*/
   }
 

@@ -6,7 +6,6 @@
 #pragma link off all typedefs;
 
 #ifdef __MAKECINT__
-#pragma link C++ namespace Hal::Cuts;
 #pragma link C++ class Hal::Cut + ;
 #pragma link C++ class Hal::SubCut + ;
 #pragma link C++ class Hal::SubCutHisto + ;
@@ -24,6 +23,19 @@
 #pragma link C++ class Hal::CutMonitorRequest + ;
 #pragma link C++ class std::vector < Hal::CutMonitorRequest> + ;
 #pragma link C++ class Hal::CutMonAxisConf + ;
+#pragma link C++ class Hal::CutOptions + ;
+
+#pragma link C++ class Hal::TrackV0Cut + ;
+#pragma link C++ class Hal::TrackV0MinvCut + ;
+#pragma link C++ class Hal::TrackV0DaughterDistCut + ;
+#pragma link C++ class Hal::TrackV0DecLenCut + ;
+#pragma link C++ class Hal::TrackV0CosAngleCut + ;
+#pragma link C++ class Hal::TrackV0ArmengerosCut + ;
+#pragma link C++ class Hal::TrackV0InvMassLambdaCut + ;
+#pragma link C++ class Hal::TrackV0InvMassAntiLambdaCut + ;
+#pragma link C++ class Hal::TrackV0InvMassK0Cut + ;
+#pragma link C++ class Hal::TrackBasicV0Cuts + ;
+
 
 // Cut monitors
 #pragma link C++ class Hal::CutMonitor + ;
@@ -39,9 +51,15 @@
 #pragma link C++ class Hal::TrackFieldMonitorX + ;
 #pragma link C++ class Hal::TrackFieldMonitorXY + ;
 #pragma link C++ class Hal::TrackFieldMonitorXYZ + ;
+#pragma link C++ class Hal::MonitorYPt + ;
+#pragma link C++ class Hal::MonitorEtaPt + ;
+#pragma link C++ class Hal::MonitorResoP + ;
+#pragma link C++ class Hal::MonitorResoPhi + ;
+#pragma link C++ class Hal::MonitorResoTheta + ;
 // EventCut
 #pragma link C++ class Hal::EventMultiplicityCut + ;
 #pragma link C++ class Hal::EventMultiChargedCut + ;
+#pragma link C++ class Hal::EventTotalTrackNoCut + ;
 #pragma link C++ class Hal::EventMultiplicityZVertexCut + ;
 #pragma link C++ class Hal::EventModuloCut + ;
 #pragma link C++ class Hal::EventPtMaxCut + ;
@@ -91,7 +109,7 @@
 
 #pragma link C++ class Hal::TrackBasicMCCut + ;
 #pragma link C++ class Hal::TrackTFreezCut + ;
-#pragma link C++ class Hal::TrackFreezoutCut + ;
+#pragma link C++ class Hal::TrackFreezeoutCut + ;
 #pragma link C++ class Hal::TrackPdgCut + ;
 #pragma link C++ class Hal::TrackPdgAbsCut + ;
 #pragma link C++ class Hal::TrackStartPositionCut + ;

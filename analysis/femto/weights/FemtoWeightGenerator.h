@@ -64,6 +64,11 @@ namespace Hal {
      *  relative separation magnitude
      */
     Double_t fRStar;
+    /**
+     * calculate prf variables r* is in fm/c
+     * @param pair
+     */
+    void CalculateKinematics(FemtoPair* pair);
 
   public:
     /**

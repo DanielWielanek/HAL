@@ -30,6 +30,7 @@ namespace HalUni {
     fB             = temp->GetB();
     fPhi           = temp->GetPhi();
     fTotalTracksNo = temp->GetNpa();
+    fMultiplicity  = fTotalTracksNo;
     fTracks->Clear();
     for (int i = 0; i < fTotalTracksNo; i++) {
       UParticle* particle    = temp->GetParticle(i);
@@ -46,7 +47,7 @@ namespace HalUni {
         target_track->SetMotherIndex(particle->GetParent());
       }
       target_track->SetMomentum(particle->Px(), particle->Py(), particle->Pz(), particle->E());
-      target_track->SetFreezoutPosition(particle->X(), particle->Y(), particle->Z(), particle->T());
+      target_track->SetFreezeoutPosition(particle->X(), particle->Y(), particle->Z(), particle->T());
       target_track->SetStatus(particle->GetStatus());
     }
   }

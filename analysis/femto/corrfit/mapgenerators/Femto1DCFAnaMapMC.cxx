@@ -56,7 +56,7 @@ namespace Hal {
         Double_t R = fRadiiBins[r_bin];
         fGenerator->GetSourceModel()->SetRadius(R);
         for (int i = 0; i < pairs_per_bin; i++) {
-          fGenerator->GenerateFreezoutCooordinates(fPair);
+          fGenerator->GenerateFreezeoutCooordinates(fPair);
           Double_t weight = fWeight->GenerateWeight(fPair);
           ((TH2*) fMap->GetNum())->Fill(kfill[ikst], R, weight);
           ((TH2*) fMap->GetDen())->Fill(kfill[ikst], R, 1);

@@ -54,7 +54,7 @@ namespace Hal {
         file << "<script src=\"" << fRelativePath
              << "hal_js/scripts/JSRootCore.js\" "
                 "type=\"text/javascript\"></script>\n";
-      } else {
+      } else if (Hal::Std::GetJsRootVer() == 6) {
         file << "<script src=\"" << fRelativePath
              << "hal_js/scripts/JSRoot.core.js\" "
                 "type=\"text/javascript\"></script>\n";

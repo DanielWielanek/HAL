@@ -21,6 +21,13 @@ namespace Hal {
   }
 
   Bool_t EventMultiplicityCut::Pass(Event* event) {
+    SetValue(event->GetMutliplicity());
+    return Validate();
+  }
+
+  EventTotalTrackNoCut::EventTotalTrackNoCut() : EventCut(1) { SetUnitName("TotalTrackNo [N_{track}]"); }
+
+  Bool_t EventTotalTrackNoCut::Pass(Event* event) {
     SetValue(event->GetTotalTrackNo());
     return Validate();
   }

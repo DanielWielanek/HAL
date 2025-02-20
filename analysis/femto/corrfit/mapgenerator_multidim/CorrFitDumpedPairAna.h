@@ -9,7 +9,7 @@
 #ifndef HALFEMTONDIMMAP_H_
 #define HALFEMTONDIMMAP_H_
 
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "XMLNode.h"
 
 #include <TObject.h>
@@ -20,7 +20,7 @@
  * basic class for generation of multidim maps
  */
 class TFile;
-class TTree;
+class TChain;
 class TClonesArray;
 namespace Hal {
   class CorrFitParamsSetup;
@@ -39,8 +39,8 @@ namespace Hal {
 
   class CorrFitDumpedPairAna : public TObject {
     std::vector<TString> fUsedBranches;
-    TFile* fFile = {nullptr};
-    TTree* fTree = {nullptr};
+    TFile* fFile  = {nullptr};
+    TChain* fTree = {nullptr};
 
   protected:
     TString fPairFile;
@@ -56,8 +56,8 @@ namespace Hal {
     FemtoCorrFunc* fTempCF     = {nullptr};
     FemtoPair* fPair           = {nullptr};
     std::vector<FemtoCorrFunc*> fCF;
-    FemtoFreezoutGenerator* fTempGenerator = {nullptr};
-    std::vector<FemtoFreezoutGenerator*> fGenerator;
+    FemtoFreezeoutGenerator* fTempGenerator = {nullptr};
+    std::vector<FemtoFreezeoutGenerator*> fGenerator;
     FemtoWeightGenerator* fWeight    = {nullptr};
     CorrFitMapGroupConfig* fGrouping = {nullptr};
     std::vector<TClonesArray*> fSignalClones;      //!
@@ -68,7 +68,9 @@ namespace Hal {
      * value of bin to -1, then such bin will not be used **/
     Bool_t SaveAsRawArray(TObject* cf, Int_t step);
     Bool_t ConfigureInput();
-    Bool_t FindTree(TDirectory* dir, TList* list);
+    Bool_t ConfigureRootInput();
+    Bool_t ConfigureListInput();
+    TString FindTreeName(TString name) const;
     Bool_t ConfigureFromXML();
     Int_t GetSimStepNo() const { return fMultiplyJobs * fJobId; }
     virtual void RunSignalPair()           = 0;
@@ -96,7 +98,7 @@ namespace Hal {
      * set freezout generator
      * @param gen
      */
-    void SetGenerator(const FemtoFreezoutGenerator& gen) { fTempGenerator = gen.MakeCopy(); };
+    void SetGenerator(const FemtoFreezeoutGenerator& gen) { fTempGenerator = gen.MakeCopy(); };
 
   public:
     CorrFitDumpedPairAna(Int_t jobid = -1, Int_t mapsPerAna = -1);

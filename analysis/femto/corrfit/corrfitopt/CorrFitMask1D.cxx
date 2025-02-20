@@ -71,4 +71,9 @@ namespace Hal {
 
   void CorrFitMask1D::SetBin(Int_t bin, Bool_t state) { fRawMask[bin] = state; }
 
+  CorrFitMask1D::CorrFitMask1D(const Hal::Femto1DCF& cf) :
+    CorrFitMask1D(cf.GetNum()->GetNbinsX(),
+                  cf.GetNum()->GetXaxis()->GetBinLowEdge(1),
+                  cf.GetNum()->GetXaxis()->GetBinUpEdge(cf.GetNum()->GetNbinsX())) {}
+
 }  // namespace Hal

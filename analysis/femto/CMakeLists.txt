@@ -37,12 +37,12 @@ Link_Directories(${LINK_DIRECTORIES})
 set(SRCS
 
 ana/FemtoBasicAna.cxx
-ana/FemtoFreezoutsAna.cxx
+ana/FemtoFreezeoutsAna.cxx
 ana/FemtoDumpPairAna.cxx
 ana/FemtoEventBinsAna.cxx
 
 base/FemtoFastCut.cxx
-base/FemtoFreezoutGenerator.cxx
+base/FemtoFreezeoutGenerator.cxx
 base/FemtoPairKinematics.cxx
 base/FemtoPair.cxx
 base/FemtoMiniPair.cxx
@@ -59,8 +59,6 @@ base/shmath/FemtoYlmIndexes.cxx
 base/shmath/FemtoYlmMath.cxx
 base/shmath/FemtoYlmSolver.cxx
 
-
-corrfit/CorrFitDrawOptions.cxx
 corrfit/CorrFit.cxx
 corrfit/CorrFitMask.cxx
 
@@ -85,8 +83,10 @@ corrfit/mapgenerators/Femto1DCFAnaMapPairsDumped.cxx
 corrfit/pairgenerators/CorrFitMapGroupConfig.cxx
 corrfit/pairgenerators/CorrFitPairGenerator.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorSimple.cxx
-corrfit/pairgenerators/CorrFitPairGeneratorYPt.cxx
-corrfit/pairgenerators/CorrFitPairGeneratorYPtStubborn.cxx
+corrfit/pairgenerators/CorrFitPairGeneratorYPtKt.cxx
+corrfit/pairgenerators/CorrFitPairGeneratorYPtKtStubborn.cxx
+corrfit/pairgenerators/CorrFitPairGeneratorConvolutionYPt.cxx
+corrfit/pairgenerators/CorrFitPairFile.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
 corrfit/mapgenerator_multidim/CorrFitFunctor.cxx
@@ -131,6 +131,7 @@ weights/FemtoWeightGeneratorLednicky.cxx
 weights/FemtoWeightGeneratorResidual.cxx
 weights/FemtoWeightGeneratorSupressed.cxx
 weights/FemtoWeightGeneratorKisiel.cxx
+weights/FemtoWeightGeneratorDummy.cxx
 
 base/funcs/FemtoSHCF.cxx
 base/funcs/FemtoDPhiDEta.cxx
@@ -152,6 +153,13 @@ imaging/FemtoImaging.cxx
 imaging/FemtoImaging1D.cxx
 imaging/FemtoImaging3D.cxx
 
+painters/FemtoCFPainter.cxx
+painters/Femto1DCFPainter.cxx
+painters/Femto3DCFPainter.cxx
+painters/FemtoSHCFPainter.cxx
+painters/CorrFitPainter.cxx
+painters/CorrFit1DCFPainter.cxx
+painters/CorrFit3DCFPainter.cxx
 
 )
 
@@ -169,8 +177,10 @@ if(DEFINED CIA)
         top_secret/CorrFitHDFuncSH.cxx
         top_secret/CorrFitDumpedPairAnaVertical.cxx
         top_secret/BattlestarGalactica.cxx
+        top_secret/BattlestarGalactica10.cxx
         top_secret/BattlestarPegasus.cxx
         top_secret/BattlestarValkyria.cxx
+        top_secret/CorrFitSHCFPainter.cxx
     )
 endif()
 

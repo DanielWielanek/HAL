@@ -16,9 +16,10 @@
 class TList;
 class TChain;
 class TFile;
-/**
- * abstract class that represents almost all I/O operations (except writing histograms after completion of analysis
- */
+namespace Hal {
+  class InputDataInfo;
+}
+
 
 namespace Hal {
   class Package;
@@ -35,6 +36,7 @@ namespace Hal {
   public:
     BranchInfo(TString name = "", TObject* pointer = nullptr, EFlag used = EFlag::kNull) :
       fBrName(name), fPointer(pointer), fFlag(used) {}
+    BranchInfo(const BranchInfo& other) : TObject(other), fBrName(other.fBrName), fPointer(other.fPointer), fFlag(other.fFlag) {}
     EFlag GetFlag() const { return fFlag; }
     TString GetBranchName() const { return fBrName; }
     void SetFlag(EFlag Flag = EFlag::kNull) { fFlag = Flag; }
@@ -44,18 +46,17 @@ namespace Hal {
     virtual ~BranchInfo() {};
     ClassDef(BranchInfo, 1)
   };
-
+  /**
+   * abstract class that represents almost all I/O operations (except writing histograms after completion of analysis
+   */
   class IOManager : public TObject {
   public:
   private:
-    MagField* fField;
+    MagField* fField = {nullptr};
     std::vector<TString> fBranchNameList;
-    std::vector<std::vector<TString>> fInFiles;
-    TString fInputName;
-    std::vector<TString> GetSafeFile(Int_t pos) const;
-    TString GetSafeFile(Int_t i, Int_t j) const;
 
   protected:
+    InputDataInfo* fDataInfo = {nullptr};
     /**
      * list of branches
      */
@@ -73,10 +74,6 @@ namespace Hal {
      * @return
      */
     BranchInfo FindBranch(TString name) const;
-    /**
-     * update the branch list
-     */
-    virtual void RefreshBranchList() {};
     /**
      * Internal function for data registering
      * @param name
@@ -96,8 +93,12 @@ namespace Hal {
     virtual Bool_t InitInternal()                                                                            = 0;
 
   public:
-    IOManager() : fField(nullptr), fBranchNameList(), fInputName("unknown") {};
-    IOManager(TString list);
+    IOManager() : fField(nullptr), fBranchNameList() {};
+    /**
+     * IO manager
+     * @param info - information input data
+     */
+    IOManager(InputDataInfo* info);
     /**
      *
      * @return number of entries in data
@@ -116,11 +117,6 @@ namespace Hal {
      */
     Bool_t Init();
     /**
-     *
-     * @return name of main input file name if avaiable
-     */
-    TString GetInputFileName() const { return fInputName; }
-    /**
      * set magnetic field
      * @param field
      */
@@ -130,11 +126,6 @@ namespace Hal {
      * @param name
      */
     virtual void SetOutput(TString /*name*/) {};
-    /**
-     *  set input file name
-     * @param name
-     */
-    void SetInputName(TString name) { fInputName = name; }
     /**
      * return magnetic field for this data
      * @return
@@ -179,16 +170,21 @@ namespace Hal {
      */
     virtual TObject* GetObject(const char* BrName);
     /**
+     * set branch mode to active without returing object
+     * @param brName
+     */
+    void ActivateBranch(TString brName);
+    /**
      * return pointer to input root file
      * @return
      */
-    virtual TFile* GetInFile() = 0;
+    TString GetSourceName() const;
     /**
      *
      * @return list to branches with data
      */
     std::vector<TString> GetBranchNameList() {
-      RefreshBranchList();
+      UpdateBranches();
       return fBranchNameList;
     };
     /**
@@ -221,29 +217,41 @@ namespace Hal {
     std::vector<TString> GetFilesNames(Int_t entry = 0) const;
     /**
      *
-     * @return number of friens of first file, return -1 if no friens added
+     * @return number of friens of first file, return -1 if no friends added
      */
     Int_t GetFriendsLevel() const;
+    /**
+     * add file to list
+     * @param name
+     */
     void AddFile(TString name);
+    /**
+     * add friend to list of files
+     * @param friendName
+     * @param level
+     */
     void AddFriend(TString friendName, Int_t level);
-
+    /**
+     * set to 0 status of unused branches
+     */
+    virtual void LockUnusedBranches() {};
     /**
      *
      * @return name of first file with data
      */
-    TString GetFirstDataFileName() const { return GetSafeFile(0, 0); };
+    TString GetFirstDataFileName() const;
     /**
      * name of the first friend file
      * @param level
      * @return
      */
-    TString GetFirstFriendFileName(Int_t level) const { return GetSafeFile(level + 1, 0); };
+    TString GetFirstFriendFileName(Int_t level) const;
     /**
      *
      * @param level level
      * @return return names of files at given level if level==-1 return list of main files
      */
-    std::vector<TString> GetFileNameList(Int_t level) const { return GetSafeFile(level + 1); };
+    std::vector<TString> GetFileNameList(Int_t level) const;
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

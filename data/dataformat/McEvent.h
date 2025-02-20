@@ -22,11 +22,12 @@ namespace Hal {
     Double_t fB;
     virtual void ShallowCopyEvent(Event* event);
     virtual void ShallowCopyTracks(Event* event);
-    McEvent(TString track_classname, TString v0_class = "Hal::V0Track");
+    McEvent(TString track_classname, TString v0_class = "Hal::V0Track", TString xi_class = "Hal::XiTrack");
 
   public:
     McEvent();
     McEvent(const McEvent& other);
+    void SetImpactParameter(Double_t b) { fB = b; }
     virtual void Update(EventInterface* interface);
     inline Double_t GetImpactParameter() const { return fB; };
     virtual EFormatType GetFormatType() const { return EFormatType::kSim; };

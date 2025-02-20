@@ -14,6 +14,9 @@
 
 /**
  * class that represents the sources of data for AnalysisManager
+ * source is responsible for reaction of IOManager
+ * IOManager contains InputDataInfo - an array with input files (used if no external data manager is present)
+ * IOManager is a member of DataManager that is responsible for I/O operations
  */
 
 namespace Hal {
@@ -21,34 +24,40 @@ namespace Hal {
   class RootIOManager;
   class Source : public TObject {
   protected:
-    std::vector<TString> fFileName;
+    IOManager* fManager = {nullptr};
+    Source(IOManager* manager) : fManager(manager) {};
 
   public:
     /**
      * constructor
      * @param name name of file
      */
-    Source(TString name = "");
+    Source(TString name = "") {};
     /**
      * add  file to analysis
      * @param friendName
      */
-    virtual void AddFile(TString /*friendName*/ = "") {};
+    virtual void AddFile(TString file = "");
     /**
      * add  file to analysis (friend file will be processed  together with other friends and this file
      * @param friendName
      */
-    virtual void AddFriend(TString /*friendName*/ = "") {};
+    virtual void AddFriend(TString friendName, Int_t level);
     /**
      *
      * @return name of the source data (usually root file)
      */
-    TString GetSourceName() const { return fFileName[0]; };
+    TString GetSourceName() const;
     /**
      *
      * @return IO Manager that is used to acces the data
      */
-    virtual IOManager* GetIOManager() const = 0;
+    virtual IOManager* GetIOManager() const;
+    /**
+     * init source
+     * @return
+     */
+    virtual Bool_t Init() = 0;
     virtual ~Source();
     ClassDef(Source, 1)
   };
@@ -57,14 +66,10 @@ namespace Hal {
    */
   class RootSource : public Source {
   protected:
-    RootIOManager* fManager;
-
   public:
     RootSource(TString name = "");
-    virtual void AddFile(TString fileName = "");
-    virtual void AddFriend(TString friendName = "", Int_t level = 0);
-    IOManager* GetIOManager() const;
-    virtual ~RootSource();
+    virtual Bool_t Init();
+    virtual ~RootSource() {};
     ClassDef(RootSource, 1)
   };
 }  // namespace Hal

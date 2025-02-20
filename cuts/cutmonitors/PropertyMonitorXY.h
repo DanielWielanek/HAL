@@ -68,6 +68,7 @@ namespace Hal {
                         std::initializer_list<Double_t> yAxis);
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t Init(Int_t task_id);
+    virtual Bool_t AreSimilar(CutMonitor* other) const;
     virtual CutMonitor* MakeCopy() const { return new EventFieldMonitorXY(*this); }
     virtual ~EventFieldMonitorXY() {};
     ClassDef(EventFieldMonitorXY, 1)
@@ -94,6 +95,7 @@ namespace Hal {
                         Int_t fieldIDY,
                         std::initializer_list<Double_t> yAxis);
     virtual void Update(Bool_t passed, TObject* obj);
+    virtual Bool_t AreSimilar(CutMonitor* other) const;
     virtual Bool_t Init(Int_t task_id);
     virtual CutMonitor* MakeCopy() const { return new TrackFieldMonitorXY(*this); }
     virtual ~TrackFieldMonitorXY() {};

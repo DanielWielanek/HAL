@@ -12,7 +12,7 @@
 #include "Array.h"
 #include "Femto1DMapGenerator.h"
 #include "FemtoConst.h"
-#include "FemtoFreezoutGenerator.h"
+#include "FemtoFreezeoutGenerator.h"
 #include "FemtoWeightGenerator.h"
 
 #include <Rtypes.h>
@@ -30,7 +30,6 @@ namespace Hal {
   class DividedHisto2D;
   class Femto1DCF;
   class Femto1DCFAnaMapMCRoco : public Femto1DMapGenerator {
-    Double_t fRMinEff = {0}, fRStep = {0};
     Double_t fIntegralScale = {1.0};
     Double_t* fSourceParams = {nullptr};
     TH1D* fSampleRandom     = {nullptr};
@@ -40,7 +39,7 @@ namespace Hal {
 
 
   protected:
-    FemtoFreezoutGenerator* fGeneratorIntegrated = {nullptr};
+    FemtoFreezeoutGenerator* fGeneratorIntegrated = {nullptr};
 
   public:
     Femto1DCFAnaMapMCRoco();
@@ -51,7 +50,7 @@ namespace Hal {
      * @param pairs_per_bin number of pairs in single bin
      * @param refRadius reference radius used to calculate the relative density
      */
-    virtual void Exec(Int_t pairs_per_bin, Bool_t autoscale = kFALSE);
+    virtual void Run(Int_t pairs_per_bin, Bool_t autoscale = kFALSE);
     /**
      *
      * @param filename name of file with map

@@ -23,21 +23,21 @@ namespace Hal {
     McTrack* tr2 = (McTrack*) pair->GetTrack2();
     Double_t x, y, z;
     fP1.SetPxPyPzE(tr1->GetPx(), tr1->GetPy(), tr1->GetPz(), tr1->GetE());
-    const TLorentzVector& fr1 = tr1->GetFreezoutPosition();
+    const TLorentzVector& fr1 = tr1->GetFreezeoutPosition();
     fX1.SetXYZT(fr1.X(), fr1.Y(), fr1.Z(), fr1.T());
     switch (pair->GetPairType()) {
       case TwoTrack::kHemishpere: {
-        const TLorentzVector& fr2 = tr2->GetFreezoutPosition();
+        const TLorentzVector& fr2 = tr2->GetFreezeoutPosition();
         fX2.SetXYZT(-fr2.X(), -fr2.Y(), fr2.Z(), fr2.T());
         fP2.SetXYZT(-tr2->GetPx(), -tr2->GetPy(), tr2->GetPz(), tr2->GetE());
       } break;
       case TwoTrack::kRotated: {
-        const TLorentzVector& fr2 = tr2->GetFreezoutPosition();
+        const TLorentzVector& fr2 = tr2->GetFreezeoutPosition();
         fX2.SetXYZT(-fr2.X(), -fr2.Y(), -fr2.Z(), fr2.T());
         fP2.SetXYZT(-tr2->GetPx(), -tr2->GetPy(), -tr2->GetPz(), tr2->GetE());
       } break;
       default: {
-        const TLorentzVector& fr2 = tr2->GetFreezoutPosition();
+        const TLorentzVector& fr2 = tr2->GetFreezeoutPosition();
         fX2.SetXYZT(fr2.X(), fr2.Y(), fr2.Z(), fr2.T());
         fP2.SetXYZT(tr2->GetPx(), tr2->GetPy(), tr2->GetPz(), tr2->GetE());
       } break;

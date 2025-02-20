@@ -10,6 +10,7 @@
 #include "DividedHisto.h"
 
 #include "Cout.h"
+#include "HistoStyle.h"
 #include "HistogramManager.h"
 #include "HtmlCore.h"
 #include "HtmlFile.h"
@@ -370,7 +371,7 @@ namespace Hal {
     TString file_name = Form("%s/divided.root", path.Data());
     std::ifstream f(file_name.Data());
     if (f.good()) {
-      file.AddStringContent(HtmlCore::GetJsDiv("divided.root", "canvas;1"));
+      file.AddStringContent(HtmlCore::GetJsDiv(path, "divided.root", "canvas;1"));
     } else {
       file.AddStringContent(GetPic());
     }
@@ -1445,19 +1446,22 @@ namespace Hal {
 
   DividedHisto3D::DividedHisto3D(const DividedHisto3D& other) : DividedHisto2D(other) {}
 
-  Double_t DividedHisto1D::CalculateNorm(Double_t min, Double_t max) const {
+  Double_t DividedHisto1D::CalculateRawRatio(Double_t min, Double_t max, Bool_t skip_empty) const {
     Int_t binA = fNum->GetXaxis()->FindBin(min);
     Int_t binB = fNum->GetXaxis()->FindBin(max);
     Double_t N = 0;
     Double_t D = 0;
     for (int i = binA; i <= binB; i++) {
+      if (skip_empty)
+        if (fNum->GetBinContent(i) == 0 || fDen->GetBinContent(i)) continue;
       N += fNum->GetBinContent(i);
       D += fDen->GetBinContent(i);
     }
-    return D / N;
+    return N / D;
   }
 
-  Double_t DividedHisto2D::CalculateNorm(Double_t minX, Double_t maxX, Double_t minY, Double_t maxY) const {
+  Double_t
+  DividedHisto2D::CalculateRawRatio(Double_t minX, Double_t maxX, Double_t minY, Double_t maxY, Bool_t skip_empty) const {
     Int_t binXm = fNum->GetXaxis()->FindBin(minX);
     Int_t binXM = fNum->GetXaxis()->FindBin(maxX);
     Int_t binYm = fNum->GetYaxis()->FindBin(minY);
@@ -1466,15 +1470,22 @@ namespace Hal {
     Double_t D  = 0;
     for (int i = binXm; i <= binXM; i++) {
       for (int j = binYm; j <= binYM; j++) {
+        if (skip_empty)
+          if (fNum->GetBinContent(i, j) == 0 || fDen->GetBinContent(i, j)) continue;
         N += fNum->GetBinContent(i, j);
         D += fDen->GetBinContent(i, j);
       }
     }
-    return D / N;
+    return N / D;
   }
 
-  Double_t
-  DividedHisto3D::CalculateNorm(Double_t minX, Double_t maxX, Double_t minY, Double_t maxY, Double_t minZ, Double_t maxZ) const {
+  Double_t DividedHisto3D::CalculateRawRatio(Double_t minX,
+                                             Double_t maxX,
+                                             Double_t minY,
+                                             Double_t maxY,
+                                             Double_t minZ,
+                                             Double_t maxZ,
+                                             Bool_t skip_empty) const {
     Int_t binXm = fNum->GetXaxis()->FindBin(minX);
     Int_t binXM = fNum->GetXaxis()->FindBin(maxX);
     Int_t binYm = fNum->GetYaxis()->FindBin(minY);
@@ -1486,12 +1497,14 @@ namespace Hal {
     for (int i = binXm; i <= binXM; i++) {
       for (int j = binYm; j <= binYM; j++) {
         for (int k = binZm; k <= binZM; k++) {
+          if (skip_empty)
+            if (fNum->GetBinContent(i, j, k) == 0 || fDen->GetBinContent(i, j, k)) continue;
           N += fNum->GetBinContent(i, j, k);
           D += fDen->GetBinContent(i, j, k);
         }
       }
     }
-    return D / N;
+    return N / D;
   }
 
   TH1D* DividedHisto2D::Projection2DTo1D(Double_t min, Double_t max, Option_t* opt) const {

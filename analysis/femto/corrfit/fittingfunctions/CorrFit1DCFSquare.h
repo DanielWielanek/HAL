@@ -17,8 +17,8 @@
  */
 namespace Hal {
   class CorrFit1DCF_Square : public CorrFit1DCF {
-    const Int_t fA = {0};
-    const Int_t fB = {1};
+    const Int_t fA = {1};
+    const Int_t fB = {2};
 
   protected:
     Double_t CalculateCF(const Double_t* x, const Double_t* params) const;

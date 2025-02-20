@@ -23,6 +23,7 @@
 #pragma link C++ class Hal::ParameterULong64 + ;
 #pragma link C++ class Hal::ParameterBool + ;
 #pragma link C++ class Hal::Package2HTML + ;
+#pragma link C++ class Hal::PicTree + ;
 #pragma link C++ enum Hal::EInfo;
 #pragma link C++ enum Hal::ECutUpdate;
 #pragma link C++ enum Hal::EFormatDepth;
@@ -35,6 +36,8 @@
 #pragma link C++ class Hal::Object + ;
 #pragma link C++ class Hal::MultiGraph + ;
 #pragma link C++ class Hal::Cout + ;
+#pragma link C++ class Hal::Pointer < TObject> + ;
+#pragma link C++ class Hal::DoublePointer < TObject> + ;
 
 #pragma link C++ class Hal::Link + ;
 #pragma link C++ class Hal::Const + ;
@@ -104,10 +107,18 @@
 #pragma link C++ class Hal::FastHist3D + ;
 #pragma link C++ class Hal::Style + ;
 #pragma link C++ class Hal::PadStyle + ;
+#pragma link C++ class Hal::MarkerStyle + ;
+#pragma link C++ class Hal::LineStyle + ;
+#pragma link C++ class Hal::FillStyle + ;
+#pragma link C++ class Hal::AxisStyle + ;
 #pragma link C++ class Hal::HistoStyle + ;
+#pragma link C++ class Hal::LegendStyle + ;
 #pragma link C++ class Hal::CorrelationHisto + ;
+#pragma link C++ class Hal::Painter + ;
 
 #pragma link C++ class Hal::ErrorCalc + ;
+#pragma link C++ class Hal::FastAxisCalc + ;
+#pragma link C++ class Hal::ProfileAna2D + ;
 
 //=============================
 #pragma link C++ class Hal::ObjectMatrix_1 + ;
@@ -151,16 +162,22 @@
 
 
 #pragma link C++ class Hal::Minimizer + ;
+#pragma link C++ class Hal::MultiDimFile + ;
 #pragma link C++ class Hal::FitParam + ;
 #pragma link C++ class Hal::MinimizerStepConf + ;
 #pragma link C++ class Hal::CompressionMap + ;
-
+#pragma link C++ class Hal::MultiDimInterpolator + ;
+#pragma link C++ class Hal::MultiDimDataManager + ;
+#pragma link C++ class Hal::MultiDimMinuit + ;
 // STD STUFF
 #pragma link C++ class std::vector < Hal::FitParam> + ;
 #pragma link C++ class std::vector < TString> + ;
 #pragma link C++ class std::vector < std::vector < TString>> + ;
 #pragma link C++ class std::map < TString, Double_t> + ;
 #pragma link C++ class std::map < TString, Int_t> + ;
+#pragma link C++ class Hal::Std::Triplet < Double_t> + ;
+#pragma link C++ class Hal::Std::Triplet < Int_t> + ;
+#pragma link C++ class Hal::Std::Triplet < Float_t> + ;
 #pragma link C++ class Hal::PackageTable + ;
 //#pragma link C++ class HalParameter+;
 

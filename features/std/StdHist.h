@@ -39,7 +39,14 @@ namespace Hal {
      * @param to copy to
      * @param addition option if "!tit" do not copy  title
      */
-    void CopyAxisProp(TAxis* from, TAxis* to, TString opt = "");
+    void CopyAxisProp(const TAxis* from, TAxis* to, TString opt = "");
+    /**
+     * copy histogram properties (maker size, line width etc.)
+     * @param from
+     * @param to
+     * @param opt
+     */
+    void CopyHistProp(const TH1& from, TH1& to, TString opt = "");
     /**
      * make diagonal projection
      * @param h
@@ -186,8 +193,12 @@ namespace Hal {
     TH3* MakeHisto3D(TString name, TString title, TVector3 Xaxis, TVector3 Yaxis, TVector3 Zaxis, Char_t type = 'D');
     /**
      * set some global settings of painters
+     * @param "" set rainbow palette + set maxi digits 3
+     * "beauty" set raninbow + enable opengl + set maxi digits 3
+     * "apollo" set kGrayScale + courier font on title
+     * "bold" set bold lines
      */
-    void MakeBeautiful();
+    void MakeBeautiful(TString opt = "beauty");
     /**
      * makes folding of histogram around given point, point must be in the middle
      * of bin or in the edge of bin, if point is in the middle of bin then content
@@ -300,6 +311,13 @@ namespace Hal {
      * @return
      */
     Bool_t CheckHistogramData(const TH1& h1, const TH1& h2, Double_t thres = 0, Option_t* opt = "");
+    /**
+     * finds maximum in given histograms
+     * @param
+     * @return
+     */
+    Double_t GetMaximum(const std::vector<TH1*> histos);
+
   }  // namespace Std
 }  // namespace Hal
 #endif /* HALSTDHIST_H_ */

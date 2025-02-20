@@ -43,7 +43,7 @@ namespace Hal {
     if (fSampleRandom) delete fSampleRandom;
   }
 
-  void Femto1DCFAnaMapMCRoco::Exec(Int_t pairs_per_bin, Bool_t autoscale) {
+  void Femto1DCFAnaMapMCRoco::Run(Int_t pairs_per_bin, Bool_t autoscale) {
     if (autoscale) pairs_per_bin = (Double_t) pairs_per_bin * fIntegralScale;
     const Int_t pointsQ                        = fMap->GetNum()->GetNbinsX() + 1;
     Double_t* kstar                            = new Double_t[pointsQ];
@@ -131,7 +131,7 @@ namespace Hal {
       fPair->SetTrueMomenta2(p2.X(), p2.Y(), p2.Z(), p2.T());
 
       for (int i = 0; i < pairs_per_bin; i++) {
-        fGeneratorIntegrated->GenerateFreezoutCooordinates(fPair);
+        fGeneratorIntegrated->GenerateFreezeoutCooordinates(fPair);
         Double_t weight = fWeight->GenerateWeight(fPair);
         TVector3 Radius(sourceModelntegrated->GetROut(), sourceModelntegrated->GetRSide(), sourceModelntegrated->GetRLong());
         // Double_t RadiusFor1D[3] = {0, 0, 0};
@@ -203,66 +203,6 @@ namespace Hal {
       delete monGaus4;
       delete monGaus5;
     }
-    /*
-      mainBin = fRbins * 0.5;
-      fGenerator->GetSourceModel()->SetRadius(fRadiiBins[mainBin]);
-      for (int ikst = 1; ikst <= fMap->GetNum()->GetNbinsX(); ikst++) {
-        Double_t E1 = TMath::Sqrt(fM1 + kstar[ikst] * kstar[ikst]);
-        Double_t E2 = TMath::Sqrt(fM2 + kstar[ikst] * kstar[ikst]);
-        Double_t px, py, pz;
-        gRandom->Sphere(px, py, pz, kstar[ikst]);
-        TLorentzVector p1(px, py, pz, E1);
-        TLorentzVector p2(-px, -py, -pz, E2);
-        p1.Boost(boost);
-        p2.Boost(boost);
-        fPair->SetTrueMomenta1(p1.X(), p1.Y(), p1.Z(), p1.T());
-        fPair->SetTrueMomenta2(p2.X(), p2.Y(), p2.Z(), p2.T());
-
-        for (int i = 0; i < pairs_per_bin; i++) {
-          fGenerator->GenerateFreezoutCooordinates(fPair);
-          Double_t weight    = fWeight->GenerateWeight(fPair);
-          Double_t Radius[3] = {sourceModel->GetROut(), sourceModel->GetRSide(), sourceModel->GetRLong()};
-          Double_t refWeight = 1.0 / sourceModel->GetProbDensity(Radius, parametrizations[mainBin]);
-          for (int r_bin = 0; r_bin < fRbins; r_bin++) {
-            Double_t R         = fRadiiBins[r_bin];
-            Double_t newWeight = sourceModel->GetProbDensity(Radius, parametrizations[r_bin]);
-            Double_t effWeight = newWeight * refWeight;
-            ((TH2*) fMap->GetNum())->Fill(kfill[ikst], R, weight * effWeight);
-            ((TH2*) fMap->GetDen())->Fill(kfill[ikst], R, effWeight);
-          }
-        }
-      }
-
-
-      mainBin = fRbins * 0.9;
-      fGenerator->GetSourceModel()->SetRadius(fRadiiBins[mainBin]);
-      for (int ikst = 1; ikst <= fMap->GetNum()->GetNbinsX(); ikst++) {
-        Double_t E1 = TMath::Sqrt(fM1 + kstar[ikst] * kstar[ikst]);
-        Double_t E2 = TMath::Sqrt(fM2 + kstar[ikst] * kstar[ikst]);
-        Double_t px, py, pz;
-        gRandom->Sphere(px, py, pz, kstar[ikst]);
-        TLorentzVector p1(px, py, pz, E1);
-        TLorentzVector p2(-px, -py, -pz, E2);
-        p1.Boost(boost);
-        p2.Boost(boost);
-        fPair->SetTrueMomenta1(p1.X(), p1.Y(), p1.Z(), p1.T());
-        fPair->SetTrueMomenta2(p2.X(), p2.Y(), p2.Z(), p2.T());
-
-        for (int i = 0; i < pairs_per_bin; i++) {
-          fGenerator->GenerateFreezoutCooordinates(fPair);
-          Double_t weight    = fWeight->GenerateWeight(fPair);
-          Double_t Radius[3] = {sourceModel->GetROut(), sourceModel->GetRSide(), sourceModel->GetRLong()};
-          Double_t refWeight = 1.0 / sourceModel->GetProbDensity(Radius, parametrizations[mainBin]);
-          for (int r_bin = 0; r_bin < fRbins; r_bin++) {
-            Double_t R         = fRadiiBins[r_bin];
-            Double_t newWeight = sourceModel->GetProbDensity(Radius, parametrizations[r_bin]);
-            Double_t effWeight = newWeight * refWeight;
-            ((TH2*) fMap->GetNum())->Fill(kfill[ikst], R, weight * effWeight);
-            ((TH2*) fMap->GetDen())->Fill(kfill[ikst], R, effWeight);
-          }
-        }
-      }
-    */
 
     for (int i = 0; i < fRBins; i++) {
       delete[] parametrizations[i];
@@ -303,14 +243,9 @@ namespace Hal {
     }
 
     fPair = Femto::MakePair(fKinematics, kFALSE);
-    fMap  = new DividedHisto2D("map", fKStarBins, fKStarMin, fKStarMax, fRBins, fRMin, fRMax, 'D');
+    RecalcRadii();
+    fMap = new DividedHisto2D("map", fKStarBins, fKStarMin, fKStarMax, fRBins, fRMin, fRMax, 'D');
     fMap->SetDirectory(nullptr);
-    fRStep   = (fRMax - fRMin) / ((Double_t) fRBins);
-    fRMinEff = fRMin + 0.5 * fRStep;
-    fRadiiBins.MakeBigger(fRBins);
-    for (int r_bin = 0; r_bin < fRBins; r_bin++) {
-      fRadiiBins[r_bin] = fRMinEff + ((double) r_bin) * fRStep;
-    }
 
     TDatabasePDG* pdg   = TDatabasePDG::Instance();
     Int_t pid1          = fWeight->GetPdg1();

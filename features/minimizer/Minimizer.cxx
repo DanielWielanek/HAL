@@ -9,16 +9,23 @@
 
 #include "Minimizer.h"
 
-#include "Array.h"
-#include "Cout.h"
-#include "Std.h"
+#include <Math/IFunction.h>
 #include <Math/IFunctionfwd.h>
+#include <Rtypes.h>
 #include <RtypesCore.h>
 #include <TMath.h>
-#include <TMatrixD.h>
+#include <TMathBase.h>
 #include <TString.h>
-#include <fstream>
+#include <algorithm>
+#include <cfloat>
+#include <iostream>
 #include <string>
+
+#include "Cout.h"
+#include "MultiDimDataManager.h"
+#include "MultiDimFile.h"
+#include "Std.h"
+#include "StdMath.h"
 
 namespace Hal {
   Minimizer* Minimizer::fgInstance = NULL;
@@ -28,6 +35,7 @@ namespace Hal {
     fNCalls(0),
     fDiscreteFit(kFALSE),
     fTrace(kFALSE),
+    fMapSet(kFALSE),
     fGlobMin(1.),
     fNDF(0),
     fQuantumFits(nullptr),
@@ -64,6 +72,7 @@ namespace Hal {
     fParameters[ivar].SetRange(lower, upper);
     fParameters[ivar].SetStartVal(val);
     fParameters[ivar].SetMapRange(lower, upper, TMath::Nint((upper - lower) / step + 1));
+    if (!IsMapSet()) fParameters[ivar].SetMapRange(lower, upper, TMath::Nint((upper - lower) / step + 1));
     fParameters[ivar].SetIsFixed(kFALSE);
     return false;
   }
@@ -100,7 +109,7 @@ namespace Hal {
                       Form("%4.4f", fParameters[i].GetMapMin()),
                       Form("%4.4f", fParameters[i].GetMapMax()),
                       Form("%d", fParameters[i].GetNPoints()),
-                      Form("%4.4f", fParameters[i].GetDParam()),
+                      Form("%4.4f", fParameters[i].GetStepSize()),
                       Form("%4.4f", fParameters[i].GetMin()),
                       Form("%4.4f", fParameters[i].GetMax())});
       if (fParameters[i].IsFixed()) std::cout << Cout::GetDisableColor();
@@ -122,7 +131,7 @@ namespace Hal {
                       Form("%4.4f", fParameters[i].GetMapMin()),
                       Form("%4.4f", fParameters[i].GetMapMax()),
                       Form("%d", fParameters[i].GetNPoints()),
-                      Form("%4.4f", fParameters[i].GetDParam()),
+                      Form("%4.4f", fParameters[i].GetStepSize()),
                       Form("%4.4f", fParameters[i].GetMin()),
                       Form("%4.4f", fParameters[i].GetMax())});
       if (fParameters[i].IsFixed()) std::cout << Cout::GetDisableColor();
@@ -147,7 +156,13 @@ namespace Hal {
     }
   }
 
-  void Minimizer::Reset() { fParameters.clear(); }
+  void Minimizer::Reset() {
+    fParameters.clear();
+    if (fMapSet) {
+      Hal::Cout::PrintInfo("Hal::Minimizer Reset", EInfo::kLowWarning);
+      fMapSet = kFALSE;
+    }
+  }
 
 
   // minimize methods
@@ -156,6 +171,7 @@ namespace Hal {
   bool Minimizer::Minimize() {
     if (GetNParams() == 0) return false;
     InitFit();
+    PrepareDump();
     switch (fMinimizeType) {
       case eMinimizeType::kAnt: {
         /*    LoopOverParameter(0);
@@ -176,6 +192,10 @@ namespace Hal {
       } break;
     }
     FinishFit();
+    if (fDumpFile) {
+      delete fDumpFile;
+      fDumpFile = nullptr;
+    }
     return true;
   }
 
@@ -188,7 +208,10 @@ namespace Hal {
     fFunc = const_cast<ROOT::Math::IMultiGenFunction*>(&func);
   }
 
-  void Minimizer::SetParamConf(const MinimizerStepConf& conf) { conf.SetParameters(fParameters); }
+  void Minimizer::SetParamConf(const MinimizerStepConf& conf, Bool_t overwrite) {
+    conf.SetParameters(fParameters, overwrite);
+    fMapSet = kTRUE;
+  }
 
   Minimizer::~Minimizer() {
     if (fQuantumFits) {
@@ -203,6 +226,13 @@ namespace Hal {
     /** all parameters set **/
     if ((UInt_t) param == fNonConstMap.size()) {
       Double_t chi = GetChi2();
+      if (fDump) {
+        for (int i = 0; i < fParameters.size(); i++) {
+          (*fDumpFile->GetValues())[i + 1] = fTempParams[i];
+        }
+        (*fDumpFile->GetValues())[0] = chi;
+        fDumpFile->Fill();
+      }
       if (chi < fGlobMin) {
         fGlobMin        = chi;
         fStateVectorMin = fStateVector;
@@ -245,7 +275,7 @@ namespace Hal {
   void Minimizer::EstimateError(Int_t par, Double_t& min, Double_t& quantumMin, Double_t& error) {
 
     Double_t x2   = fParamsMin[par];
-    Double_t step = fParameters[par].GetDParam();
+    Double_t step = fParameters[par].GetStepSize();
     Double_t x1   = x2 - step;
     Double_t x3   = x2 + step;
     Double_t y2   = fGlobMin / fNDF;
@@ -544,6 +574,26 @@ namespace Hal {
   Double_t Minimizer::GetChi2() {
     SetTempParams();
     return (*fFunc)(fTempParams);
+  }
+
+  void Minimizer::SetDumpFile(TString dumpFile) {
+    if (dumpFile.Length() == 0)
+      fDump = kFALSE;
+    else {
+      fDump         = kTRUE;
+      fDumpFileName = dumpFile;
+    }
+  }
+
+  void Minimizer::PrepareDump() {
+    if (!fDump) return;
+    if (fDumpFile) delete fDumpFile;
+    fDumpFile = new Hal::MultiDimFile(fDumpFileName, "recreate");
+    for (auto par : fParameters) {
+      fDumpFile->GetConfig()->AddParameter(par.GetParName(), par.GetMin(), par.GetMax(), par.GetStepSize());
+    }
+    fDumpFile->GetConfig()->Init();
+    fDumpFile->GetValues()->resize(fParameters.size() + 1);
   }
 
 }  // namespace Hal

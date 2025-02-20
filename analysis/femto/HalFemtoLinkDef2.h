@@ -8,6 +8,7 @@
 #pragma link C++ enum Hal::EFemtoPairType;
 #pragma link C++ enum Hal::EFitExtraMask;
 #pragma link C++ enum Hal::Femto::EKinematics;
+#pragma link C++ class Hal::Femto::CorrFitGammaCalc + ;
 
 #pragma link C++ class Hal::FemtoPair + ;
 #pragma link C++ class Hal::FemtoMiniPair + ;
@@ -37,11 +38,11 @@
 #pragma link C++ class Hal::FemtoSourceModelNumericalPseudo3d + ;
 #pragma link C++ class Hal::FemtoSourceDensityNumericalPseudo3d + ;
 #pragma link C++ class Hal::FemtoSourceModelGauss3DCross + ;
-#pragma link C++ class Hal::FemtoFreezoutGenerator + ;
-#pragma link C++ class Hal::FemtoFreezoutGeneratorLCMS + ;
-#pragma link C++ class Hal::FemtoFreezoutGeneratorPRF + ;
-#pragma link C++ class Hal::FemtoFreezoutsAna + ;
-#pragma link C++ enum Hal::FemtoFreezoutsAna::EMode;
+#pragma link C++ class Hal::FemtoFreezeoutGenerator + ;
+#pragma link C++ class Hal::FemtoFreezeoutGeneratorLCMS + ;
+#pragma link C++ class Hal::FemtoFreezeoutGeneratorPRF + ;
+#pragma link C++ class Hal::FemtoFreezeoutsAna + ;
+#pragma link C++ enum Hal::FemtoFreezeoutsAna::EMode;
 #pragma link C++ class Hal::FemtoEventBinsAna + ;
 #pragma link C++ class Hal::FemtoFastCutEta + ;
 #pragma link C++ class Hal::FemtoDumpPairAna + ;
@@ -78,7 +79,9 @@
 #pragma link C++ class Hal::CorrFIt1DCFCumacLamLam + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacPLam + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacK0K0 + ;
-#pragma link C++ class Hal::CorrFitDrawOptions + ;
+#pragma link C++ class Hal::CorrFit1DCFCumacK0Kch + ;
+#pragma link C++ class Hal::CorrFit1DCFCumacDLam + ;
+#pragma link C++ class Hal::CorrFit1DCFCumacStrong + ;
 
 #pragma link C++ class Hal::CorrFitParamsSetup + ;
 #pragma link C++ class Hal::CorrFit3DCFMultiDim + ;
@@ -92,10 +95,12 @@
 #pragma link C++ class Hal::CorrFitHDFunc1D + ;
 #pragma link C++ class Hal::CorrFitHDFunc3D + ;
 
+#pragma link C++ class Hal::CorrFitPairFile + ;
 #pragma link C++ class Hal::CorrFitPairGenerator + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorSimple + ;
-#pragma link C++ class Hal::CorrFitPairGeneratorYPt + ;
-#pragma link C++ class Hal::CorrFitPairGeneratorYPtStubborn + ;
+#pragma link C++ class Hal::CorrFitPairGeneratorYPtKt + ;
+#pragma link C++ class Hal::CorrFitPairGeneratorYPtKtStubborn + ;
+#pragma link C++ class Hal::CorrFitPairGeneratorConvolutionYPt + ;
 
 #pragma link C++ class Hal::CorrFit1DCF + ;
 #pragma link C++ class Hal::CorrFit3DCF + ;
@@ -140,6 +145,7 @@
 #pragma link C++ class Hal::FemtoWeightGeneratorResidual + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorSupressed + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorKisiel + ;
+#pragma link C++ class Hal::FemtoWeightGeneratorK0K0 + ;
 
 #pragma link C++ class Hal::CorrFitVerticalSlices + ;
 #pragma link C++ class Hal::CorrFitVerticalSlices1D + ;
@@ -149,6 +155,15 @@
 #pragma link C++ class Hal::CorrFitDumpedPairAnaVertical + ;
 #pragma link C++ class Hal::CorrFitDumpedPairAnaHorizontal + ;
 #pragma link C++ class Hal::CorrFitDumpedPairAna + ;
+
+#pragma link C++ class Hal::FemtoCFPainter + ;
+#pragma link C++ class Hal::Femto1DCFPainter + ;
+#pragma link C++ class Hal::Femto3DCFPainter + ;
+#pragma link C++ class Hal::FemtoSHCFPainter + ;
+#pragma link C++ class Hal::CorrFitPainter + ;
+#pragma link C++ class Hal::CorrFitSHCFPainter + ;
+#pragma link C++ class Hal::CorrFit3DCFPainter + ;
+#pragma link C++ class Hal::CorrFit1DCFPainter + ;
 
 
 #ifndef GSL_DISABLE
@@ -178,6 +193,7 @@
 #pragma link C++ class Hal::CorrFitSHCFMultiDim + ;
 #pragma link C++ class Hal::CorrFitHDFuncSH + ;
 #pragma link C++ class Hal::BattlestarGalactica + ;
+#pragma link C++ class Hal::BattlestarGalactica10 + ;
 #pragma link C++ class Hal::BattlestarPegasus + ;
 #pragma link C++ class Hal::BattlestarValkyria + ;
 //

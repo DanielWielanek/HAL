@@ -167,7 +167,7 @@ void preparetemplate() {
   xml_file << "\t\t<Yaxis bins=\"100\" min=\"0.0\" max=\"1.0\"></Yaxis>" << std::endl;
   xml_file << "\t\t<Zaxis bins=\"100\" min=\"0.0\" max=\"1.0\"></Zaxis>" << std::endl;
   xml_file << "\t</CorrelationFunction>" << std::endl;
-  xml_file << "\t<FreezoutGenerator>Hal::FemtoFreezoutGeneratorLCMS</FreezoutGenerator>" << std::endl;
+  xml_file << "\t<FreezeoutGenerator>Hal::FemtoFreezeoutGeneratorLCMS</FreezeoutGenerator>" << std::endl;
   xml_file << "\t<SourceModel>Hal::FemtoSourceModelGauss3D</SourceModel>" << std::endl;
   xml_file << "\t<CalcOptions>" << std::endl;
   xml_file << "\t\t<JobMultiplyFactor>1</JobMultiplyFactor>" << std::endl;
@@ -334,15 +334,11 @@ void compress() {
   treeIn->SetBranchAddress("data", &Data_in);
   treeOut->Branch("data", &Data_out);
   auto interfaceFrom = (Hal::FemtoSerializationInterface*) CF->GetSpecial("serialization");
-  HalCoutDebug();
   std::cout << interfaceFrom << std::endl;
   std::cout << interfaceFrom->ClassName() << std::endl;
   interfaceFrom->BindCFs(CF);
-  HalCoutDebug();
   interfaceFrom->BindArray(Data_in);
-  HalCoutDebug();
   interfaceFrom->SetOption(Hal::FemtoSerializationInterface::EOption::kFull);
-  HalCoutDebug();
   interfaceFrom->Init();
   auto interfaceTo = (Hal::FemtoSerializationInterface*) CF->GetSpecial("serialization");
   interfaceTo->BindCFs(CF);
@@ -358,6 +354,7 @@ void compress() {
     if (i == 0) std::cout << "ARSIZE " << Data_in->GetSize() << " " << Data_out->GetSize() << std::endl;
     if (sh) {
       sh->RecalculateCF();
+      sh->RecalculateCF(-1, kTRUE);
       /*std::cout << "NUM " << sh->GetNum()->GetBinContent(1) << std::endl;
       std::cout << "NUM " << sh->GetNum()->GetBinContent(2) << std::endl;
       std::cout << "NUM " << sh->GetNum()->GetBinContent(3) << std::endl;

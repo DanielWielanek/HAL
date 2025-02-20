@@ -438,7 +438,7 @@ namespace Hal {
      * @param z
      * @param t
      */
-    void SetFreezoutCoord1(Double_t x, Double_t y, Double_t z, Double_t t);
+    void SetFreezeoutCoord1(Double_t x, Double_t y, Double_t z, Double_t t);
     /**
      * set freezout coordinates of second particle
      * @param x
@@ -446,7 +446,7 @@ namespace Hal {
      * @param z
      * @param t
      */
-    void SetFreezoutCoord2(Double_t x, Double_t y, Double_t z, Double_t t);
+    void SetFreezeoutCoord2(Double_t x, Double_t y, Double_t z, Double_t t);
     /**
      * set momenta
      * @param p1
@@ -464,7 +464,7 @@ namespace Hal {
      * @param x1
      * @param x2
      */
-    void SetFreezouts(const TLorentzVector& x1, const TLorentzVector& x2);
+    void SetFreezeouts(const TLorentzVector& x1, const TLorentzVector& x2);
     /**
      *
      * @return true pair phi

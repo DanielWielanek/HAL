@@ -10,6 +10,7 @@
 #define HALCORRFIT1DCFCUMAC_H_
 
 #include "CorrFit1DCF.h"
+#include "Object.h"
 
 namespace Hal {
   class CorrFit1DCFCumac : public CorrFit1DCF {
@@ -36,10 +37,18 @@ namespace Hal {
     Simps(Double_t a1, Double_t b1, Double_t h1, Double_t reps1, Double_t aeps1, Double_t x, Double_t aih, Double_t aiabs) const;
     Double_t F1(Double_t Z) const;
     Double_t F2(Double_t Z) const;
+    Double_t F(Double_t d, Double_t r0) const;  // for d-lam
     CorrFit1DCFCumac(Int_t params);
 
   public:
     CorrFit1DCFCumac();
+    /**
+     * function for debugging return value of cf for given q, r
+     * @param q qinv
+     * @param r
+     * @return
+     */
+    virtual Double_t Get(Double_t q, Double_t r);
     virtual ~CorrFit1DCFCumac();
     ClassDef(CorrFit1DCFCumac, 1)
   };
@@ -54,7 +63,6 @@ namespace Hal {
 
   public:
     CorrFIt1DCFCumacLamLam();
-    Double_t GetValue(Double_t x, Double_t* p) { return CalculateCF(&x, p); };
     Int_t ScatteringLengthID() const { return 3; };
     Int_t EffectiveRadiusID() const { return 4; };
     Int_t LambdaPolarizationID() const { return 5; };
@@ -73,7 +81,6 @@ namespace Hal {
 
   public:
     CorrFit1DCFCumacPLam();
-    Double_t Get(Double_t q, Double_t r);
     Int_t SingletScatteringLengthID() const { return 3; }
     Int_t SingletEffectiveRadiusID() const { return 4; }
     Int_t TripletScatteringLenghtID() const { return 5; };
@@ -83,13 +90,29 @@ namespace Hal {
     ClassDef(CorrFit1DCFCumacPLam, 1)
   };
 
+  /**
+   * cumac for deuteron-lambda pairs
+   */
+  class CorrFit1DCFCumacDLam : public CorrFit1DCFCumac {
+  protected:
+    virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
+
+  public:
+    CorrFit1DCFCumacDLam();
+    Int_t DoubletScatteringLengthID() const { return 3; }
+    Int_t DoubletEffectiveRadiusID() const { return 4; }
+    Int_t QuartetScatteringLenghtID() const { return 5; };
+    Int_t QuartetEffectiveRadiusID() const { return 6; };
+    virtual ~CorrFit1DCFCumacDLam() {};
+    ClassDef(CorrFit1DCFCumacDLam, 1)
+  };
+
   class CorrFit1DCFCumacK0K0 : public CorrFit1DCFCumac {
   protected:
     virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
 
   public:
     CorrFit1DCFCumacK0K0();
-    Double_t GetValue(Double_t x, Double_t* p) { return CalculateCF(&x, p); };
     Int_t Mf0ID() const { return 3; };
     Int_t Gamma_f0KKID() const { return 4; }
     Int_t Ma0ID() const { return 5; };
@@ -97,10 +120,10 @@ namespace Hal {
     Int_t Gamma_a0PiEtaID() const { return 7; }
     Int_t Gamma_a0KKID() const { return 8; }
     /**
-     * assymetry = (1-e^2)/2 where e is the K0-K0-bar abundance assymetry
+     * alpha = (1-e^2)/2 where e is the K0-K0-bar abundance asymmetry
      * @return
      */
-    Int_t AssymetryID() const { return 9; }
+    Int_t AlphaID() const { return 9; }
 
     /**
      *
@@ -111,5 +134,43 @@ namespace Hal {
     virtual ~CorrFit1DCFCumacK0K0() {};
     ClassDef(CorrFit1DCFCumacK0K0, 1)
   };
+
+  class CorrFit1DCFCumacK0Kch : public CorrFit1DCFCumac {
+  protected:
+    Hal::Femto::CorrFitGammaCalc fGammaCalc;
+
+    virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
+
+  public:
+    CorrFit1DCFCumacK0Kch();
+    Int_t Ma0ID() const { return 0; };
+    Int_t Gamma_a0KKID() const { return 1; }
+    Int_t Gamma_a0PiEtaID() const { return 2; }
+    /**
+     *
+     * @param opt 0 - 5
+     */
+    void SetDefParams(Int_t opt);
+    void UseLCMS() { fKinematics = Femto::EKinematics::kLCMS; }
+    virtual ~CorrFit1DCFCumacK0Kch() {};
+    ClassDef(CorrFit1DCFCumacK0Kch, 1)
+  };
+
+  class CorrFit1DCFCumacStrong : public CorrFit1DCFCumac {
+    const Int_t fSpinStates;
+
+  protected:
+    virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
+
+  public:
+    CorrFit1DCFCumacStrong(Int_t spinStates);
+    Int_t SpinWeightID(Int_t spin) const;
+    Int_t D0ID(Int_t spin) const;
+    Int_t F0ID(Int_t spin) const;
+    virtual ~CorrFit1DCFCumacStrong() {}
+    ClassDef(CorrFit1DCFCumacStrong, 1)
+  };
+
+
 }  // namespace Hal
 #endif /* HALCORRFIT1DCFCUMAC_H_ */

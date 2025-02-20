@@ -10,6 +10,8 @@
 #define HAL_EXAMPLES_ONTHEFLY_OTFIOMANAGER_H_
 
 #include "IOManager.h"
+#include "VirtualIOManager.h"
+
 #include <vector>
 
 #include <RtypesCore.h>
@@ -17,32 +19,12 @@
 
 class TTree;
 class TBranch;
+
 namespace HalOTF {
-  class IOManager : public Hal::IOManager {
-    TString fInFileName;
-    TString fOutFileName;
-    TString fOutTreeName;
-    Int_t fEntries;
-    TFile* fInFile;
-    TFile* fOutFile;
-    TTree* fOutTree;
-
-  protected:
-    void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
-    void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
-    Bool_t InitInternal();
-
+  class Source;
+  class IOManager : public Hal::VirtualIOManager {
   public:
-    IOManager(TString name = "root_virtual.root", Int_t entries = 1);
-    void SetOutput(TString name) { fOutFileName = name; }
-    void SetOutTreeName(TString name) { fOutTreeName = name; }
-    Int_t GetEntries() const;
-    Int_t GetEntry(Int_t i, Int_t flag);
-    TFile* GetInFile();
-    void AddFriend(TString /*name*/) {};
-    void SetInChain(TChain* tempChain, Int_t ident = -1);
-    void FillTree();
-    virtual void CloseManager();
+    IOManager(HalOTF::Source* source = nullptr, Int_t entries = 1);
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

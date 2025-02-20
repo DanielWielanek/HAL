@@ -50,7 +50,7 @@ namespace Hal {
      * @param pairs_per_bin number of pairs in single bin
      * @param refRadius reference radius used to calculate the relative density
      */
-    virtual void Exec(Int_t pairs_per_bin, Bool_t autoscale = kFALSE);
+    virtual void Run(Int_t pairs_per_bin, Bool_t autoscale = kFALSE);
     /**
      *
      * @param filename name of file with map

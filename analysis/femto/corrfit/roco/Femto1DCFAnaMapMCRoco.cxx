@@ -43,7 +43,7 @@ namespace Hal {
     if (fSampleRandom) delete fSampleRandom;
   }
 
-  void Femto1DCFAnaMapMCRoco::Exec(Int_t pairs_per_bin, Bool_t autoscale) {
+  void Femto1DCFAnaMapMCRoco::Run(Int_t pairs_per_bin, Bool_t autoscale) {
     if (autoscale) pairs_per_bin = (Double_t) pairs_per_bin * fIntegralScale;
     const Int_t pointsQ                        = fMap->GetNum()->GetNbinsX() + 1;
     Double_t* kstar                            = new Double_t[pointsQ];

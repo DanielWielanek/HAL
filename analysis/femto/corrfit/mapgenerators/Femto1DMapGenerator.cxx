@@ -69,31 +69,23 @@ namespace Hal {
 
   void Femto1DMapGenerator::SetRBins(Int_t bins, Double_t rmin, Double_t rmax, Bool_t center) {
     if (center) {
-      fRBins = bins + 1;
-      fRadiiBins.MakeBigger(bins + 1);
+      fRBins      = bins + 1;
       Double_t dr = (rmax - rmin) / (Double_t)(bins);
       fRMin       = rmin - dr * 0.5;
       fRMax       = rmax + dr * 0.5;
-      for (int i = 0; i < fRBins; i++) {
-        fRadiiBins[i] = fRMin + dr * i + dr * 0.5;
-      }
+      RecalcRadii();
     } else {
       fRBins = bins;
-      fRadiiBins.MakeBigger(bins);
-      fRMin       = rmin;
-      fRMax       = rmax;
-      Double_t dr = (fRMax - fRMin) / (Double_t)(bins);
-      for (int i = 0; i < fRBins; i++) {
-        fRadiiBins[i] = fRMin + dr * i + dr * 0.5;
-      }
+      fRMin  = rmin;
+      fRMax  = rmax;
+      RecalcRadii();
     }
   }
   void Femto1DMapGenerator::SetRBinsStep(Int_t steps, Double_t min, Double_t step) {
     fRBins = steps;
-    fRadiiBins.MakeBigger(steps);
-    for (int i = 0; i < steps; i++) {
-      fRadiiBins[i] + step*(double(i));
-    }
+    fRMin  = min - step * 0.5;
+    fRMax  = min + step * (double) steps - step * 0.5;
+    RecalcRadii();
   }
 
   void Femto1DMapGenerator::SetGenerator(FemtoFreezeoutGenerator& gen) {
@@ -141,5 +133,12 @@ namespace Hal {
     if (fMap) delete fMap;
   }
 
+  void Femto1DMapGenerator::RecalcRadii() {
+    fRadiiBins.MakeBigger(fRBins);
+    Double_t step = (fRMax - fRMin) / double(fRBins);
+    for (int i = 0; i < fRBins; i++) {
+      fRadiiBins[i] = fRMin + step * 0.5 + step * double(i);
+    }
+  }
 
 }  // namespace Hal

@@ -2,7 +2,7 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ "main" ,"dev"]
+      - main  # Budowanie tylko na push do gałęzi main
   release:
     types: [created]
 

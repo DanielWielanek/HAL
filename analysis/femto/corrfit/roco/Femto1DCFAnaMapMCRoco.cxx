@@ -243,14 +243,9 @@ namespace Hal {
     }
 
     fPair = Femto::MakePair(fKinematics, kFALSE);
-    fMap  = new DividedHisto2D("map", fKStarBins, fKStarMin, fKStarMax, fRBins, fRMin, fRMax, 'D');
+    RecalcRadii();
+    fMap = new DividedHisto2D("map", fKStarBins, fKStarMin, fKStarMax, fRBins, fRMin, fRMax, 'D');
     fMap->SetDirectory(nullptr);
-    fRStep   = (fRMax - fRMin) / ((Double_t) fRBins);
-    fRMinEff = fRMin + 0.5 * fRStep;
-    fRadiiBins.MakeBigger(fRBins);
-    for (int r_bin = 0; r_bin < fRBins; r_bin++) {
-      fRadiiBins[r_bin] = fRMinEff + ((double) r_bin) * fRStep;
-    }
 
     TDatabasePDG* pdg   = TDatabasePDG::Instance();
     Int_t pid1          = fWeight->GetPdg1();

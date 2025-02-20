@@ -39,6 +39,7 @@ namespace Hal {
     FemtoWeightGenerator* fWeight;
     DividedHisto2D* fMap;
     Femto1DMapGenerator(Bool_t fake);
+    void RecalcRadii();
 
   public:
     Femto1DMapGenerator();

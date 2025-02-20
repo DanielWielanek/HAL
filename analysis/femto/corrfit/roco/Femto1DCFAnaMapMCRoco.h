@@ -30,7 +30,6 @@ namespace Hal {
   class DividedHisto2D;
   class Femto1DCF;
   class Femto1DCFAnaMapMCRoco : public Femto1DMapGenerator {
-    Double_t fRMinEff = {0}, fRStep = {0};
     Double_t fIntegralScale = {1.0};
     Double_t* fSourceParams = {nullptr};
     TH1D* fSampleRandom     = {nullptr};

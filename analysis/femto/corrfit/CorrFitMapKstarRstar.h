@@ -66,6 +66,7 @@ namespace Hal {
     CorrFitMapKstarRstarDiv(const CorrFitMapKstarRstarDiv& other);
     CorrFitMapKstarRstarDiv(const DividedHisto2D& other, Femto::EKinematics kin);
     CorrFitMapKstarRstarDiv& operator=(const CorrFitMapKstarRstarDiv& other);
+    DividedHisto2D* GetDividedHisto() const { return fHistoDiv2d; }
     virtual void Recalc(TString extrOpt = "");
     virtual void Add(const Object* pack);
     virtual ~CorrFitMapKstarRstarDiv();

@@ -86,6 +86,7 @@ namespace Hal {
      */
     static std::vector<TString> GetListOfBranches(TChain* chain, Bool_t friends);
     virtual void CloseManager();
+    void CdToOutput();
     virtual ~RootIOManager();
     ClassDef(RootIOManager, 1)
   };

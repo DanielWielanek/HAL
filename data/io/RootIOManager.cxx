@@ -136,4 +136,8 @@ namespace Hal {
     return list;
   }
 
+  void RootIOManager::CdToOutput() {
+    if (fOutFile) fOutFile->cd();
+  }
+
 } /* namespace Hal */

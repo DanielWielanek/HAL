@@ -71,4 +71,8 @@ namespace Hal {
     if (fInFile) delete fInFile;
   }
 
+  void VirtualIOManager::CdToOutput() {
+    if (fOutFile) fOutFile->cd();
+  }
+
 } /* namespace Hal */

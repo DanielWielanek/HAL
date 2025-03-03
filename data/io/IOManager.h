@@ -252,6 +252,10 @@ namespace Hal {
      * @return return names of files at given level if level==-1 return list of main files
      */
     std::vector<TString> GetFileNameList(Int_t level) const;
+    /**
+     * switch gFile to output file
+     */
+    virtual void CdToOutput() = 0;
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

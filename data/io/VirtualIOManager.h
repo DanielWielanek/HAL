@@ -48,6 +48,8 @@ namespace Hal {
     virtual void CloseManager();
     virtual ~VirtualIOManager();
     ClassDef(VirtualIOManager, 1)
+
+      virtual void CdToOutput();
   };
 
 } /* namespace Hal */

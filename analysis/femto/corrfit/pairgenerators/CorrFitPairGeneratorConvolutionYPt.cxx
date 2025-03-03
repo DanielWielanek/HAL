@@ -37,7 +37,11 @@ namespace Hal {
     fOut       = fCentersX[binX];
     fSide      = fCentersY[binY];
     fLong      = fCentersZ[fBinCFZ];
-    fOut = fSide = fLong = 0.0;  // TODO
+    // 1, 0.1, 0.11, 1, 0.07, 0.08, 1, 0.15, 0.16,
+    fOut  = 0.305;
+    fSide = 0.275;
+    fLong = 0.155;
+    //  fOut = fSide = fLong = 0.0;  // TODO
     fOneDimBin++;
     std::cout << "GEN" << fOut << " " << fSide << " " << fLong << std::endl;
     switch (fFrame) {
@@ -119,9 +123,9 @@ namespace Hal {
             q_long = -0.5 * fLong;
           } break;
         }
-        //  q_out += gRandom->Uniform(-0.01, 0.01);
-        //  q_side += gRandom->Uniform(-0.01, 0.01);
-        //  q_long += gRandom->Uniform(-0.01, 0.01);
+        q_out += gRandom->Uniform(-0.01, 0.01);
+        q_side += gRandom->Uniform(-0.01, 0.01);
+        q_long += gRandom->Uniform(-0.01, 0.01);
         TLorentzVector p1, p2;
         p1.SetXYZM(q_out + pt_sum * 0.5, q_side, q_long, fM1);
         p2.SetXYZM(-q_out + pt_sum * 0.5, -q_side, -q_long, fM2);
@@ -139,7 +143,7 @@ namespace Hal {
           Int_t binX2  = fHist2.GetXaxis()->FindBin(P2.Rapidity());
           Int_t binY1  = fHist1.GetYaxis()->FindBin(P1.Pt());
           Int_t binY2  = fHist2.GetYaxis()->FindBin(P2.Pt());
-          Double_t rho = fHist1.GetBinContent(binX1, binY1) * fHist2.GetBinContent(binX2, binY2);
+          Double_t rho = fHist1.GetBinContent(binX1, binY1) * fHist2.GetBinContent(binX2, binY2) * pt_sum;
           if (pt_sum * 0.5 >= fKt[0] && pt_sum * 0.5 <= fKt[1]) { fConvolution.Fill(y_sum, pt_sum, phi, rho); }
         }
       }
@@ -199,9 +203,9 @@ namespace Hal {
           q_long = -0.5 * fLong;
         } break;
       }
-      q_out += gRandom->Uniform(-0.01, 0.01);
-      q_side += gRandom->Uniform(-0.01, 0.01);
-      q_long += gRandom->Uniform(-0.01, 0.01);
+      // q_out += gRandom->Uniform(-0.00, 0.01);
+      // q_side += gRandom->Uniform(-0.01, 0.01);
+      // q_long += gRandom->Uniform(-0.01, 0.01);
       p1.SetXYZM(q_out + pt_sum * 0.5, q_side, q_long, fM1);
       p2.SetXYZM(-q_out + pt_sum * 0.5, -q_side, -q_long, fM2);
       p1.RotateZ(phi_sum);
@@ -250,7 +254,9 @@ namespace Hal {
     for (int iPt = 1; iPt <= fHist1.GetYaxis()->GetNbins(); iPt++) {
       Double_t low    = fHist1.GetYaxis()->GetBinLowEdge(iPt);
       Double_t high   = fHist1.GetYaxis()->GetBinUpEdge(iPt);
-      Double_t weight = high * high - low * low;
+      Double_t weight = TMath::Sqrt(high * high - low * low);
+      weight          = (high + low) * 0.5;
+      // weight          = 1;
       for (int iY = 1; iY <= fHist1.GetNbinsX(); iY++) {
         fHist1.SetBinContent(iY, iPt, fHist1.GetBinContent(iY, iPt) / weight);
         fHist2.SetBinContent(iY, iPt, fHist2.GetBinContent(iY, iPt) / weight);
@@ -266,7 +272,7 @@ namespace Hal {
                         binsPt * 2,
                         ptLow * 2,
                         ptHigh * 2,
-                        10,
+                        1,
                         -TMath::Pi(),
                         TMath::Pi());
     fConvolution.SetDirectory(nullptr);

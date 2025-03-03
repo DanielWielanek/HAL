@@ -11,15 +11,15 @@
 
 #include "PropertyMonitorXY.h"
 
-namespace Hal{
+namespace Hal {
 
-class TofPropertyMonitor : public TrackFieldMonitorXY {
-public:
-  TofPropertyMonitor(Bool_t complex = kFALSE);
-  virtual CutMonitor* MakeCopy() const { return new TofPropertyMonitor(*this); }
-  virtual ~TofPropertyMonitor();
-  ClassDef(TofPropertyMonitor, 1)
-};
-}
+  class TofPropertyMonitor : public TrackFieldMonitorXY {
+  public:
+    TofPropertyMonitor(Bool_t complex = kFALSE);
+    virtual CutMonitor* MakeCopy() const { return new TofPropertyMonitor(*this); }
+    virtual ~TofPropertyMonitor();
+    ClassDef(TofPropertyMonitor, 1)
+  };
+}  // namespace Hal
 
 #endif /* HALFEMTO_CUTS_TRACKCUTS_PROPERTIES_HALTOFPROPERTYMONITOR_H_ */

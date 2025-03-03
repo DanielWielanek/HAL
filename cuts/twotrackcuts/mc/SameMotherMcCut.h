@@ -18,8 +18,8 @@ namespace Hal {
     virtual ~SameMotherMcCut() {};
     ClassDef(SameMotherMcCut, 1)
 
-	virtual Bool_t Init(Int_t);
-};
+      virtual Bool_t Init(Int_t);
+  };
 
 } /* namespace Hal */
 

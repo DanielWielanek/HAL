@@ -29,7 +29,7 @@ class TH1;
 /**
  * abstract class for fitting correlation function
  */
-//#define CF_FIT_TRACKING
+// #define CF_FIT_TRACKING
 namespace ROOT {
   namespace Math {
     class Minimizer;

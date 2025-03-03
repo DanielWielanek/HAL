@@ -18,7 +18,7 @@ namespace Hal {
   class Track;
   class TwoTrack;
 
-  //#define _kinetic_debug
+  // #define _kinetic_debug
   /**
    * basic  abstract class that represents femtoscopic pair
    */

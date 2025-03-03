@@ -10,16 +10,16 @@
 
 #include "Track.h"
 
-namespace Hal{
+namespace Hal {
 
-TrackPzCut::TrackPzCut() : TrackCut(1) { SetUnitName("p_{z} [GeV/c]"); }
+  TrackPzCut::TrackPzCut() : TrackCut(1) { SetUnitName("p_{z} [GeV/c]"); }
 
-Bool_t TrackPzCut::Pass(Track* track) {
-  SetValue(track->GetPz());
-  return Validate();
-}
+  Bool_t TrackPzCut::Pass(Track* track) {
+    SetValue(track->GetPz());
+    return Validate();
+  }
 
-TrackPzCut::~TrackPzCut() {
-  // TODO Auto-generated destructor stub
-}
-}
+  TrackPzCut::~TrackPzCut() {
+    // TODO Auto-generated destructor stub
+  }
+}  // namespace Hal

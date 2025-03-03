@@ -10,22 +10,22 @@
 #define HALTRACKPCUT_H_
 #include "TrackCut.h"
 
-namespace Hal{
+namespace Hal {
 
-class TrackPCut : public TrackCut {
-public:
-  TrackPCut();
-  virtual Bool_t Pass(Track* track);
-  virtual ~TrackPCut();
-  ClassDef(TrackPCut, 1)
-};
+  class TrackPCut : public TrackCut {
+  public:
+    TrackPCut();
+    virtual Bool_t Pass(Track* track);
+    virtual ~TrackPCut();
+    ClassDef(TrackPCut, 1)
+  };
 
-class TrackPSignedCut : public TrackCut {
-public:
-  TrackPSignedCut();
-  virtual Bool_t Pass(Track* track);
-  virtual ~TrackPSignedCut();
-  ClassDef(TrackPSignedCut, 1)
-};
-}
+  class TrackPSignedCut : public TrackCut {
+  public:
+    TrackPSignedCut();
+    virtual Bool_t Pass(Track* track);
+    virtual ~TrackPSignedCut();
+    ClassDef(TrackPSignedCut, 1)
+  };
+}  // namespace Hal
 #endif /* HALTRACKPCUT_H_ */

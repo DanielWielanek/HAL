@@ -287,7 +287,7 @@ namespace Hal {
       params[i] = GetParameter(i);
     }
     params[NormID()] = 1;
-    TH3* num          = (TH3*) unbowler->GetNum();
+    TH3* num         = (TH3*) unbowler->GetNum();
     for (fBinX = 1; fBinX <= unbowler->GetNum()->GetXaxis()->GetNbins(); fBinX++) {
       x[0] = num->GetXaxis()->GetBinCenter(fBinX);
       for (fBinY = 1; fBinY <= unbowler->GetNum()->GetYaxis()->GetNbins(); fBinY++) {

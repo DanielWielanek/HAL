@@ -159,7 +159,7 @@ namespace Hal {
     fReport = nullptr;
     if (other.fReport) fReport = new QAPlotReport(*other.fReport);
     TNamed::operator=(other);
-    fUpdate         = other.fUpdate;
+    fUpdate = other.fUpdate;
     for (int i = 0; i < 3; i++) {
       fSettings[i] = other.fSettings[i];
     }

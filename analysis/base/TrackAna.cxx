@@ -100,7 +100,7 @@ namespace Hal {
 
   TrackAna& TrackAna::operator=(const TrackAna& other) {
     if (this != &other) {
-      EventAna::operator        =(other);
+      EventAna::operator=(other);
       fCurrentTrack             = other.fCurrentTrack;
       fTrackIndex               = other.fTrackIndex;
       fCurrentTrackCollectionID = other.fCurrentEventCollectionID;

@@ -381,8 +381,8 @@ namespace Hal {
 
   void AnaFile::PrintCut(Package* cut) const {
     TString name    = cut->GetName();
-    Double_t passed = (Double_t)(((ParameterULong64*) cut->GetObjectByName("Passed")))->GetValue();
-    Double_t failed = (Double_t)(((ParameterULong64*) cut->GetObjectByName("Failed")))->GetValue();
+    Double_t passed = (Double_t) (((ParameterULong64*) cut->GetObjectByName("Passed")))->GetValue();
+    Double_t failed = (Double_t) (((ParameterULong64*) cut->GetObjectByName("Failed")))->GetValue();
     Int_t cut_size  = (((ParameterInt*) cut->GetObjectByName("CutSize")))->GetValue();
     passed          = passed / (passed + failed) * 100.0;
     if (cut_size == 0) {

@@ -18,9 +18,9 @@
 #include "CutContainer.h"
 #include "Event.h"
 #include "EventVirtualCut.h"
-#include "Std.h"
 #include "MemoryMapManager.h"
 #include "Package.h"
+#include "Std.h"
 
 namespace Hal {
   FluctuationsAna::FluctuationsAna() :

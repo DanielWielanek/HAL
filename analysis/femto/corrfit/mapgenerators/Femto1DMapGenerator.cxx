@@ -70,7 +70,7 @@ namespace Hal {
   void Femto1DMapGenerator::SetRBins(Int_t bins, Double_t rmin, Double_t rmax, Bool_t center) {
     if (center) {
       fRBins      = bins + 1;
-      Double_t dr = (rmax - rmin) / (Double_t)(bins);
+      Double_t dr = (rmax - rmin) / (Double_t) (bins);
       fRMin       = rmin - dr * 0.5;
       fRMax       = rmax + dr * 0.5;
       RecalcRadii();

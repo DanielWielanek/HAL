@@ -29,11 +29,11 @@ namespace Hal {
   HtmlObject& HtmlObject::operator=(const HtmlObject& other) {
     if (this == &other) return *this;
     TObject::operator=(other);
-    fClass           = other.fClass;
-    fID              = other.fID;
-    fStyle           = other.fStyle;
-    fContent         = other.fContent;
-    fOtherAttribs    = other.fOtherAttribs;
+    fClass        = other.fClass;
+    fID           = other.fID;
+    fStyle        = other.fStyle;
+    fContent      = other.fContent;
+    fOtherAttribs = other.fOtherAttribs;
     return *this;
   }
 

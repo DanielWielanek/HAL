@@ -7,7 +7,7 @@
 
 #include <complex>
 #include <vector>
-//#define HAL_DEBUG
+// #define HAL_DEBUG
 class TVirtualPad;
 
 #define Draw_2D_option "colz"

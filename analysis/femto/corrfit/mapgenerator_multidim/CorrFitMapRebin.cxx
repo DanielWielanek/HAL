@@ -163,7 +163,7 @@ namespace Hal {
     Int_t sizeXs        = sizeX / fRebinX;
     Int_t sizeYs        = sizeY / fRebinY;
     Int_t sizeZs        = sizeZ / fRebinZ;
-    Double_t dummyScale = 1.0 / (Float_t)(fRebinX * fRebinY * fRebinZ);
+    Double_t dummyScale = 1.0 / (Float_t) (fRebinX * fRebinY * fRebinZ);
     Array_3<Float_t> temp(fRebinX, fRebinY, fRebinZ);
     for (int i = 0; i < sizeXs; i++) {
       for (int j = 0; j < sizeYs; j++) {

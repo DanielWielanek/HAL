@@ -791,7 +791,7 @@ namespace Hal {
 
   TwoTrackAna& TwoTrackAna::operator=(const TwoTrackAna& other) {
     if (this != &other) {
-      MultiTrackAna::operator    =(other);
+      MultiTrackAna::operator=(other);
       fNonIdIsSet                = other.fNonIdIsSet;
       fSignedBoth                = other.fSignedBoth;
       fIdentical                 = other.fIdentical;

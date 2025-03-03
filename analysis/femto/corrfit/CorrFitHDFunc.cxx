@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-//#define DEBUG_FUNCHD
+// #define DEBUG_FUNCHD
 namespace Hal {
   CorrFitHDFunc::CorrFitHDFunc(Int_t dim) : fDummyVal(-100.01), fDim(dim) {
     fParams = new Double_t[fDim];

@@ -36,8 +36,8 @@ namespace Hal {
   void PackageSql::ExportTask(AnaFile* extr, Int_t file_id, Int_t task_id) {
     // export main objects ??
     TSQLStatement* stat        = fSQL->Statement("INSERT INTO Files  (ID, FILE_ID,TASK_ID, Comment, SoftVer, "
-                                          "Date,DataType,ProcessedEvents,InputFIle,AnaName,Tags,PathFile) VALUES "
-                                          "(?,?,?,?,?,?,?,?,?,?,?,?)");
+                                                 "Date,DataType,ProcessedEvents,InputFIle,AnaName,Tags,PathFile) VALUES "
+                                                 "(?,?,?,?,?,?,?,?,?,?,?,?)");
     Package* metadata          = (Package*) extr->GetMainObject("HalMetadata");
     TString comment            = metadata->GetComment();
     ParameterString* anatype   = (ParameterString*) metadata->GetObjectByName("Analysis Name");

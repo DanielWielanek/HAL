@@ -8,6 +8,4 @@
  */
 #include "HiddenInfo.h"
 
-namespace Hal {
-
-} /* namespace Hal */
+namespace Hal {} /* namespace Hal */

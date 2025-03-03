@@ -18,7 +18,7 @@
 
 #include "TwoTrack.h"
 
-//#define DISABLE_TWO_TRACK_SWAPPING
+// #define DISABLE_TWO_TRACK_SWAPPING
 namespace Hal {
   class TwoTrackAnaChain;
   /**

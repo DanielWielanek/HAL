@@ -9,8 +9,8 @@
 #ifndef HAL_EXAMPLES_ONTHEFLY_DBGMCEVENTINTERFACE_H_
 #define HAL_EXAMPLES_ONTHEFLY_DBGMCEVENTINTERFACE_H_
 
-#include "EventInterface.h"
 #include "DbgData.h"
+#include "EventInterface.h"
 namespace HalDbg {
   class McEventInterface : public Hal::EventInterface {
     Dbg::McEvent* fEvent;

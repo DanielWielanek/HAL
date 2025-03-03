@@ -13,8 +13,8 @@
 #include <TPaveText.h>
 #include <TVirtualPad.h>
 
-#include "StdString.h"
 #include "Parameter.h"
+#include "StdString.h"
 
 #if !defined(__CINT__)
 // templateClassImp(HalStringsPlus);
@@ -113,9 +113,7 @@ namespace Hal {
         case EParameterMerge::kAverage: {
           fValue = fValue * 0.5 + val_typed->GetValue() * 0.5;
         } break;
-        default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
-          break;
+        default: Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError); break;
       }
     }
   }
@@ -159,9 +157,7 @@ namespace Hal {
         case EParameterMerge::kMinimum: {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
-        default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
-          break;
+        default: Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError); break;
       }
     }
   }
@@ -203,9 +199,7 @@ namespace Hal {
         case EParameterMerge::kMinimum: {
           if (fValue.Length() > val_typed->GetValue().Length()) { fValue = val_typed->GetValue(); }
         } break;
-        default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
-          break;
+        default: Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError); break;
       }
     }
   }
@@ -245,9 +239,7 @@ namespace Hal {
         case EParameterMerge::kMinimum: {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
-        default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
-          break;
+        default: Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError); break;
       }
     }
   }
@@ -292,9 +284,7 @@ namespace Hal {
         case EParameterMerge::kMinimum: {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
-        default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
-          break;
+        default: Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError); break;
       }
     }
   }
@@ -341,9 +331,7 @@ namespace Hal {
         case EParameterMerge::kMinimum: {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
-        default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
-          break;
+        default: Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError); break;
       }
     }
   }
@@ -389,9 +377,7 @@ namespace Hal {
         case EParameterMerge::kMinimum: {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
-        default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
-          break;
+        default: Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError); break;
       }
     }
   }
@@ -431,9 +417,7 @@ namespace Hal {
         case EParameterMerge::kMinimum: {
           if (fValue > val_typed->GetValue()) { fValue = val_typed->GetValue(); }
         } break;
-        default:
-          Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError);
-          break;
+        default: Cout::PrintInfo(Form("Unknow merging flag druing merging %s", this->GetName()), Hal::EInfo::kError); break;
       }
     }
   }

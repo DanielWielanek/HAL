@@ -8,10 +8,10 @@
 #include "Cout.h"
 #include <TRegexp.h>
 #include <iostream>
-//#ifndef fgLineLength
-//#define fgLineLength			100
-//#define (fgLineLength-4)		(fgLineLength-4)
-//#endif
+// #ifndef fgLineLength
+// #define fgLineLength			100
+// #define (fgLineLength-4)		(fgLineLength-4)
+// #endif
 #if !defined(R__ALPHA) && !defined(R__SOLARIS) && !defined(R__ACC) && !defined(R__FBSD)
 
 #endif
@@ -127,9 +127,7 @@ namespace Hal {
 
       if ((Int_t) color == -1)
         std::cout << text << std::endl;
-      else {
-        std::cout << GetColor(color) << text << GetDisableColor() << std::endl;
-      }
+      else { std::cout << GetColor(color) << text << GetDisableColor() << std::endl; }
     } else {
       Int_t zz = (Int_t) text.Length() / (fgLineLength - 4);
       for (Int_t i = 0; i < zz; i++) {

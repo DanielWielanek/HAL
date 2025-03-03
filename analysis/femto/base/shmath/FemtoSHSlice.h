@@ -44,7 +44,7 @@ namespace Hal {
     FemtoSHSlice(Int_t L);
     virtual ~FemtoSHSlice();
     void BuildSlice(FemtoSHCF& cf, Int_t slice);
-    FemtoSHSlice(const FemtoSHSlice& other) = default;
+    FemtoSHSlice(const FemtoSHSlice& other)            = default;
     FemtoSHSlice& operator=(const FemtoSHSlice& other) = default;
     ClassDef(FemtoSHSlice, 1)
   };

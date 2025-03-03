@@ -9,8 +9,8 @@
 
 #include "SmearAlgorithm.h"
 
-#include "Parameter.h"
 #include "Package.h"
+#include "Parameter.h"
 
 namespace Hal {
 

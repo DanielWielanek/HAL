@@ -17,7 +17,7 @@ namespace Hal {
     HtmlDiv(TString id, TString className, TString style);
     TString ToString() const;
     virtual ~HtmlDiv();
-    HtmlDiv(const HtmlDiv& other) = default;
+    HtmlDiv(const HtmlDiv& other)            = default;
     HtmlDiv& operator=(const HtmlDiv& other) = default;
     ClassDef(HtmlDiv, 1)
   };

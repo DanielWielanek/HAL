@@ -54,7 +54,7 @@ namespace Hal {
     enum class EGrouping { kOneDim, kThreeDim };
     EGrouping fGroupingFlag = {EGrouping::kOneDim};
     CorrFitMapGroupConfig fGrouping;
-    CorrFitPairFile* fPairFile       = {nullptr};
+    CorrFitPairFile* fPairFile   = {nullptr};
     virtual void GenerateEvent() = 0;
     Int_t GetBin(Double_t val) const;
 

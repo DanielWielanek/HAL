@@ -9,8 +9,8 @@
 
 #include "TrackPdgCut.h"
 
-#include "McTrack.h"
 #include "DataFormatManager.h"
+#include "McTrack.h"
 
 namespace Hal {
 

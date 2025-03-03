@@ -39,7 +39,7 @@ jobs:
        sudo apt-get install dpkg-dev cmake g++ gcc binutils libx11-dev libxpm-dev libxft-dev libxext-dev python3 libssl-dev \
        gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev \
         libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev xvfb xdotool libgsl-dev \
-        libvdt-dev libgif-dev libtbb-dev
+        libvdt-dev libgif-dev libtbb-dev clang-format
        wget --quiet https://root.cern/download/root_v6.34.02.Linux-ubuntu24.10-x86_64-gcc14.2.tar.gz
        tar zxf root_v6.34.02.Linux-ubuntu24.10-x86_64-gcc14.2.tar.gz --directory /opt
        source /opt/root/bin/thisroot.sh
@@ -50,7 +50,9 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-      
+    - name: Format check
+      run: |
+          find . -name "*.cpp" -o -name "*.h" -o -name "*.cxx" | xargs clang-format -style=file -output-replacements-xml | grep -q "<replacement " && echo "Clang-format check failed" && exit 1 || echo "Clang-format check passed"
     - name: Build
       shell: bash
       run: |

@@ -50,9 +50,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-    - name: Ensure .clang-format exists
-      run: |
-          ls -lah .clang-format || echo "No .clang-format found!"
     - name: Format check
       run: |
           find . -name "*.cpp" -o -name "*.h" -o -name "*.cxx" | xargs clang-format-15 -style=file -output-replacements-xml | grep -q "<replacement " && echo "Clang-format check failed" && exit 1 || echo "Clang-format check passed"

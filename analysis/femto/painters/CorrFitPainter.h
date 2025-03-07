@@ -36,8 +36,9 @@ namespace Hal {
     Int_t fNormIndex                   = {-1};
     TLegend* fLegend                   = {nullptr};
     TVirtualPad* fLegendPad            = {nullptr};
-    TString fDefFuncDrawOpt            = "SAME";
+    TString fDefFuncDrawOpt            = {"SAME"};
     std::array<Double_t, 4> fLegendPos = {0.7, 0.95, 0.7, 0.95};
+    Float_t fLegendFontSize            = {0.};
     std::vector<TLegendEntry*> fLegendEntries;
     static const int kAutoNormBit, kLegendBit, kChi2, kChi2Short, kTH1Draw, kTH1DrawSmooth;
     /**

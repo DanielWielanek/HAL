@@ -26,7 +26,9 @@ namespace HalOTF {
 } /* namespace HalOTF */
 
 namespace HalOTF {
-
+  /**
+   *  class that represents a single type of particles that decays into something
+   */
   class EventGeneratorDecay : public HalOTF::EventGenerator {
   protected:
     Hal::Decay* fDecayer = {nullptr};

@@ -33,8 +33,17 @@ namespace Hal {
     Int_t fBinCFZ      = {0};
     FemtoMicroPair fPair;
     Double_t fOut = {0}, fSide = {0}, fLong = {0};
-    void GenerateEventPRF();
-    void GenerateEventLCMS();
+    Double_t fX = {0}, fY = {0}, fZ = {0};
+    void GeneratePairLCMS(const Double_t ptTot,
+                          const Double_t pzTot,
+                          const Double_t phi,
+                          TLorentzVector& p1,
+                          TLorentzVector& p2) const;
+    void
+    GeneratePairPRF(const Double_t ptTot, const Double_t pzTot, const Double_t phi, TLorentzVector& p1, TLorentzVector& p2) const;
+    void CalculateConvolution();
+    virtual void GeneratePairEvent();
+    void SwapSignRandom(Double_t& x, Double_t& y, Double_t& z) const;
     virtual void GenerateEvent();
 
   public:

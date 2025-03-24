@@ -38,20 +38,13 @@ namespace Hal {
     fSide      = fCentersY[binY];
     fLong      = fCentersZ[fBinCFZ];
     // 1, 0.1, 0.11, 1, 0.07, 0.08, 1, 0.15, 0.16,
-    fOut  = 0.305;
-    fSide = 0.275;
-    fLong = 0.155;
+    fOut  = 0.11;
+    fSide = 0.07;
+    fLong = 0.15;
     //  fOut = fSide = fLong = 0.0;  // TODO
     fOneDimBin++;
     std::cout << "GEN" << fOut << " " << fSide << " " << fLong << std::endl;
-    switch (fFrame) {
-      case Hal::Femto::EKinematics::kPRF: {
-        GenerateEventPRF();
-      } break;
-      case Hal::Femto::EKinematics::kLCMS: {
-        GenerateEventLCMS();
-      } break;
-    }
+    GeneratePairEvent();
   }
 
   CorrFitPairGeneratorConvolutionYPt::CorrFitPairGeneratorConvolutionYPt() {}
@@ -65,91 +58,22 @@ namespace Hal {
     fHist2.SetDirectory(nullptr);
   }
 
-  void CorrFitPairGeneratorConvolutionYPt::GenerateEventPRF() {}
-
-  void CorrFitPairGeneratorConvolutionYPt::GenerateEventLCMS() {
+  void CorrFitPairGeneratorConvolutionYPt::GeneratePairEvent() {
     fConvolution.Reset();
-    Double_t sumM   = fM1 + fM2;
-    Double_t q_out  = 0;  // fOut;
-    Double_t q_side = 0;  // fSide;
-    Double_t q_long = 0;  // fLong;
-    for (int iY = 1; iY <= fConvolution.GetNbinsX(); iY++) {
-      Double_t y_sum = fConvolution.GetXaxis()->GetBinCenter(iY);
-      Double_t sinH  = TMath::SinH(y_sum);
-      for (int iPt = 1; iPt <= fConvolution.GetNbinsY(); iPt++) {
-        Double_t pt_sum = fConvolution.GetYaxis()->GetBinCenter(iPt);
-        Double_t pz_sum = TMath::Sqrt(pt_sum * pt_sum + sumM * sumM) * sinH;
-        Int_t se        = TMath::Floor(gRandom->Uniform(0, 8));
-        switch (se) {
-          case 0: {
-            q_out  = 0.5 * fOut;
-            q_side = 0.5 * fSide;
-            q_long = 0.5 * fLong;
-          } break;
+    Double_t sumM = fM1 + fM2;
 
-          case 1: {
-            q_out  = 0.5 * fOut;
-            q_side = 0.5 * fSide;
-            q_long = -0.5 * fLong;
-          } break;
-          case 2: {
-            q_out  = 0.5 * fOut;
-            q_side = -0.5 * fSide;
-            q_long = 0.5 * fLong;
-          } break;
-          case 3: {
-            q_out  = 0.5 * fOut;
-            q_side = -0.5 * fSide;
-            q_long = -0.5 * fLong;
-          } break;
-          case 4: {
-            q_out  = -0.5 * fOut;
-            q_side = 0.5 * fSide;
-            q_long = 0.5 * fLong;
-          } break;
-          case 5: {
-            q_out  = -0.5 * fOut;
-            q_side = 0.5 * fSide;
-            q_long = -0.5 * fLong;
-          } break;
-          case 6: {
-            q_out  = -0.5 * fOut;
-            q_side = -0.5 * fSide;
-            q_long = 0.5 * fLong;
-          } break;
-          case 7: {
-            q_out  = -0.5 * fOut;
-            q_side = -0.5 * fSide;
-            q_long = -0.5 * fLong;
-          } break;
-        }
-        q_out += gRandom->Uniform(-0.01, 0.01);
-        q_side += gRandom->Uniform(-0.01, 0.01);
-        q_long += gRandom->Uniform(-0.01, 0.01);
-        TLorentzVector p1, p2;
-        p1.SetXYZM(q_out + pt_sum * 0.5, q_side, q_long, fM1);
-        p2.SetXYZM(-q_out + pt_sum * 0.5, -q_side, -q_long, fM2);
-        Double_t boostZ = pz_sum / TMath::Sqrt(pz_sum * pz_sum + pt_sum * pt_sum + sumM * sumM);
-        p1.Boost(0, 0, boostZ);
-        p2.Boost(0, 0, boostZ);  // do it later in PRF
-        for (int iPhi = 1; iPhi <= fConvolution.GetNbinsZ(); iPhi++) {
-          Double_t phi      = fConvolution.GetZaxis()->GetBinCenter(iPhi);
-          TLorentzVector P1 = p1;
-          TLorentzVector P2 = p2;
-          P1.RotateZ(phi);
-          P2.RotateZ(phi);
-
-          Int_t binX1  = fHist1.GetXaxis()->FindBin(P1.Rapidity());
-          Int_t binX2  = fHist2.GetXaxis()->FindBin(P2.Rapidity());
-          Int_t binY1  = fHist1.GetYaxis()->FindBin(P1.Pt());
-          Int_t binY2  = fHist2.GetYaxis()->FindBin(P2.Pt());
-          Double_t rho = fHist1.GetBinContent(binX1, binY1) * fHist2.GetBinContent(binX2, binY2) * pt_sum;
-          if (pt_sum * 0.5 >= fKt[0] && pt_sum * 0.5 <= fKt[1]) { fConvolution.Fill(y_sum, pt_sum, phi, rho); }
-        }
-      }
+    fX = fOut;
+    fY = fSide;
+    fZ = fLong;
+    if (fFrame == Hal::Femto::EKinematics::kLCMS) {
+      fX *= 0.5;
+      fY *= 0.5;
+      fZ *= 0.5;
     }
-    auto array = fPairFile->GetSignal(fBinCFZ);
+    CalculateConvolution();
 
+    auto array = fPairFile->GetSignal(fBinCFZ);
+    TLorentzVector p1, p2;
     for (int i = 0; i < fPairsPerBin; i++) {
       Double_t y_sum, pt_sum, phi_sum;
       fConvolution.GetRandom3(y_sum, pt_sum, phi_sum);
@@ -158,65 +82,14 @@ namespace Hal {
         std::cout << "OOPS" << pt_sum * 0.5 << std::endl;
         continue;
       }
-      TLorentzVector p1, p2;
-      Int_t se = TMath::Floor(gRandom->Uniform(0, 8));
-      switch (se) {
-        case 0: {
-          q_out  = 0.5 * fOut;
-          q_side = 0.5 * fSide;
-          q_long = 0.5 * fLong;
-        } break;
-
-        case 1: {
-          q_out  = 0.5 * fOut;
-          q_side = 0.5 * fSide;
-          q_long = -0.5 * fLong;
-        } break;
-        case 2: {
-          q_out  = 0.5 * fOut;
-          q_side = -0.5 * fSide;
-          q_long = 0.5 * fLong;
-        } break;
-        case 3: {
-          q_out  = 0.5 * fOut;
-          q_side = -0.5 * fSide;
-          q_long = -0.5 * fLong;
-        } break;
-        case 4: {
-          q_out  = -0.5 * fOut;
-          q_side = 0.5 * fSide;
-          q_long = 0.5 * fLong;
-        } break;
-        case 5: {
-          q_out  = -0.5 * fOut;
-          q_side = 0.5 * fSide;
-          q_long = -0.5 * fLong;
-        } break;
-        case 6: {
-          q_out  = -0.5 * fOut;
-          q_side = -0.5 * fSide;
-          q_long = 0.5 * fLong;
-        } break;
-        case 7: {
-          q_out  = -0.5 * fOut;
-          q_side = -0.5 * fSide;
-          q_long = -0.5 * fLong;
-        } break;
-      }
-      // q_out += gRandom->Uniform(-0.00, 0.01);
-      // q_side += gRandom->Uniform(-0.01, 0.01);
-      // q_long += gRandom->Uniform(-0.01, 0.01);
-      p1.SetXYZM(q_out + pt_sum * 0.5, q_side, q_long, fM1);
-      p2.SetXYZM(-q_out + pt_sum * 0.5, -q_side, -q_long, fM2);
-      p1.RotateZ(phi_sum);
-      p2.RotateZ(phi_sum);
       Double_t sinH   = TMath::SinH(y_sum);
       Double_t pz_sum = TMath::Sqrt(pt_sum * pt_sum + sumM * sumM) * sinH;
-      Double_t boostZ = pz_sum / TMath::Sqrt(pz_sum * pz_sum + pt_sum * pt_sum + sumM * sumM);
-      p1.Boost(0, 0, boostZ);
-      p2.Boost(0, 0, boostZ);
-
-      auto pair = (FemtoMicroPair*) array->ConstructedAt(array->GetEntriesFast());
+      auto pair       = (FemtoMicroPair*) array->ConstructedAt(array->GetEntriesFast());
+      if (fFrame == Hal::Femto::EKinematics::kLCMS) {
+        GeneratePairLCMS(pt_sum, pz_sum, phi_sum, p1, p2);
+      } else {
+        GeneratePairPRF(pt_sum, pz_sum, phi_sum, p1, p2);
+      }
       pair->SetTrueMomenta1(p1.X(), p1.Y(), p1.Z(), p1.E());
       pair->SetTrueMomenta2(p2.X(), p2.Y(), p2.Z(), p2.E());
       pair->SetMomenta1(p1.X(), p1.Y(), p1.Z(), p1.E());
@@ -280,6 +153,106 @@ namespace Hal {
     fModuloY = fYaxis.GetNBins();
     fModuloZ = fZaxis.GetNBins();
     return kTRUE;
+  }
+
+  void CorrFitPairGeneratorConvolutionYPt::SwapSignRandom(Double_t& x, Double_t& y, Double_t& z) const {
+    Int_t se = TMath::Floor(gRandom->Uniform(0, 8));
+    switch (se) {
+      case 0: {
+      } break;
+      case 1: {
+        x = -x;
+      } break;
+      case 2: {
+        y = -y;
+      } break;
+      case 3: {
+        x = -x;
+        y = -y;
+      } break;
+      case 4: {
+        z = -z;
+      } break;
+      case 5: {
+        x = -x;
+        z = -z;
+      } break;
+      case 6: {
+        y = -y;
+        z = -z;
+      } break;
+      case 7: {
+        x = -x;
+        y = -y;
+        z = -z;
+      } break;
+    }
+  }
+
+  void CorrFitPairGeneratorConvolutionYPt::CalculateConvolution() {
+    fConvolution.Reset();
+    FemtoMicroPair pair;
+    Double_t sumM = fM1 + fM2;
+    TLorentzVector p1, p2;
+    for (int iY = 1; iY <= fConvolution.GetNbinsX(); iY++) {
+      Double_t y_sum = fConvolution.GetXaxis()->GetBinCenter(iY);
+      Double_t sinH  = TMath::SinH(y_sum);
+      for (int iPt = 1; iPt <= fConvolution.GetNbinsY(); iPt++) {
+        Double_t ptTot = fConvolution.GetYaxis()->GetBinCenter(iPt);
+        Double_t pzTot = TMath::Sqrt(ptTot * ptTot + sumM * sumM) * sinH;
+        if (fFrame == Hal::Femto::EKinematics::kLCMS) {
+          GeneratePairLCMS(ptTot, pzTot, 0.0, p1, p2);
+        } else {
+          GeneratePairPRF(ptTot, pzTot, 0.0, p1, p2);
+        }
+        for (int iPhi = 1; iPhi <= fConvolution.GetNbinsZ(); iPhi++) {
+          Double_t phi      = fConvolution.GetZaxis()->GetBinCenter(iPhi);
+          TLorentzVector P1 = p1;
+          TLorentzVector P2 = p2;
+          P1.RotateZ(phi);
+          P2.RotateZ(phi);
+          Int_t binX1  = fHist1.GetXaxis()->FindBin(P1.Rapidity());
+          Int_t binX2  = fHist2.GetXaxis()->FindBin(P2.Rapidity());
+          Int_t binY1  = fHist1.GetYaxis()->FindBin(P1.Pt());
+          Int_t binY2  = fHist2.GetYaxis()->FindBin(P2.Pt());
+          Double_t rho = fHist1.GetBinContent(binX1, binY1) * fHist2.GetBinContent(binX2, binY2) * ptTot;
+          if (ptTot * 0.5 >= fKt[0] && ptTot * 0.5 <= fKt[1]) { fConvolution.Fill(y_sum, ptTot, phi, rho); }
+        }
+      }
+    }
+  }
+
+  void CorrFitPairGeneratorConvolutionYPt::GeneratePairLCMS(const Double_t ptTot,
+                                                            const Double_t pzTot,
+                                                            const Double_t phi,
+                                                            TLorentzVector& p1,
+                                                            TLorentzVector& p2) const {
+    const Double_t sumM = fM1 + fM2;
+    p1.SetXYZM(fX + ptTot * 0.5, fY, fX, fM1);
+    p2.SetXYZM(-fX + ptTot * 0.5, -fY, -fZ, fM2);
+    p1.RotateZ(phi);
+    p2.RotateZ(phi);
+    Double_t boostZ = pzTot / TMath::Sqrt(pzTot * pzTot + ptTot * ptTot + sumM * sumM);
+    p1.Boost(0, 0, boostZ);
+    p2.Boost(0, 0, boostZ);
+  }
+
+  void CorrFitPairGeneratorConvolutionYPt::GeneratePairPRF(const Double_t ptTot,
+                                                           const Double_t pzTot,
+                                                           const Double_t phi,
+                                                           TLorentzVector& p1,
+                                                           TLorentzVector& p2) const {
+    const Double_t sumM = fM1 + fM2;
+    p1.SetXYZM(fX, fY, fZ, fM1);
+    p2.SetXYZM(-fX, -fY, -fZ, fM2);
+    Double_t boostX = ptTot / TMath::Sqrt(ptTot * ptTot + sumM * sumM);
+    p1.Boost(boostX, 0, 0);
+    p2.Boost(boostX, 0, 0);
+    Double_t boostZ = pzTot / TMath::Sqrt(pzTot * pzTot + ptTot * ptTot + sumM * sumM);
+    p1.Boost(0, 0, boostZ);
+    p2.Boost(0, 0, boostZ);
+    p1.RotateZ(phi);
+    p2.RotateZ(phi);
   }
 
 } /* namespace Hal */

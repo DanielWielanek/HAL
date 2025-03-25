@@ -585,7 +585,7 @@ NamespaceImp(Hal::Std)
       if (default_axis.GetTitleColor() != from->GetTitleColor()) to->SetTitleColor(from->GetTitleColor());
       if (default_axis.GetTitleFont() != from->GetTitleFont()) to->SetTitleFont(from->GetTitleFont());
       if (default_axis.GetTitleOffset() != from->GetTitleOffset()) to->SetTitleOffset(from->GetTitleOffset());
-      if (0.035 != from->GetTitleSize()) to->SetTitleSize(from->GetTitleSize());  // why 0.35 is not default? don't know
+      if (Float_t(0.035) != from->GetTitleSize()) to->SetTitleSize(from->GetTitleSize());  // why 0.35 is not default? don't know
       if (default_axis.GetLabelColor() != from->GetLabelColor()) to->SetLabelColor(from->GetLabelColor());
       if (default_axis.GetLabelFont() != from->GetLabelFont()) to->SetLabelFont(from->GetLabelFont());
       if (default_axis.GetLabelOffset() != from->GetLabelOffset()) to->SetLabelOffset(from->GetLabelOffset());

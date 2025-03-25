@@ -181,7 +181,7 @@ namespace Hal {
     return res;
   }
 
-  Bool_t CorrFitPainter::AreSimiliar(ULong64_t current, ULong64_t pattern) const { return pattern == current & pattern; }
+  Bool_t CorrFitPainter::AreSimiliar(ULong64_t current, ULong64_t pattern) const { return (pattern == current) & pattern; }
 
   ULong64_t CorrFitPainter::SetOptionInternal(TString opt, ULong64_t newFlag) {
     ContitionalPattern(opt, "norm", newFlag, kAutoNormBit, kTRUE);

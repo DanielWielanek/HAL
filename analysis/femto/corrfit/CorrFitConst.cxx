@@ -32,6 +32,7 @@ namespace Hal {
           auto cf = (Hal::FemtoSHCF*) obj;
           return cf->GetNum()->GetNbinsX();
         } break;
+        default: return -1; break;
       }
       return -1;
     }

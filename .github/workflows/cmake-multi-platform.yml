@@ -27,12 +27,13 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         build_type: [Release]
         c_compiler: [gcc, clang]
 
     steps:
-    - name: Install ROOT
+    - name: Install ROOT (Linux)
+      if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
        sudo apt-get update
@@ -46,6 +47,17 @@ jobs:
        echo $ROOTSYS
        export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
        root-config --features
+    - name: Install ROOT (macOS)
+      if: matrix.os == 'macos-latest'
+      shell: bash
+      run: |
+        brew update
+        brew install cmake gcc libx11 gsl llvm
+        brew install root
+        source $(brew --prefix root)/bin/thisroot.sh
+        echo $ROOTSYS
+        export DYLD_LIBRARY_PATH=$ROOTSYS/lib:$DYLD_LIBRARY_PATH
+        root-config --features
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -56,9 +68,10 @@ jobs:
     - name: Build
       shell: bash
       run: |
-        source /opt/root/bin/thisroot.sh
+        source $(brew --prefix root)/bin/thisroot.sh || source /opt/root/bin/thisroot.sh
         echo $ROOTSYS
         export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
+        export DYLD_LIBRARY_PATH=$ROOTSYS/lib:$DYLD_LIBRARY_PATH
         CXXFLAGS=$(root-config --cflags)
         CPP_STANDARD=$(echo $CXXFLAGS | grep -o -E '\-std=c\+\+[^ ]+' | sed 's/-std=c++//')
         mkdir build

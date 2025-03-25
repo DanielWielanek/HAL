@@ -52,17 +52,31 @@ jobs:
       shell: bash
       run: |
         brew update
-        brew install cmake gcc libx11 gsl llvm
+        brew upgrade
+        brew install gcc gfortran
+        ln -s $(brew --prefix gcc)/bin/$(ls $(brew --prefix gcc)/bin | grep -o 'gfortran-[0-9]*' | sort -V | tail -n1) /usr/local/bin/gfortran
+        brew install cmake gcc libx11 gsl llvm  clang-format
         brew install root
+        ln -s /opt/homebrew/bin/gsl-config /usr/local/bin/gsl-config
         source $(brew --prefix root)/bin/thisroot.sh
         echo $ROOTSYS
         export DYLD_LIBRARY_PATH=$ROOTSYS/lib:$DYLD_LIBRARY_PATH
         root-config --features
+
+    - name: Set GCC as C compiler (Mac OS)
+      if: ${{ (matrix.os == 'macos-latest') && (matrix.c_compiler == 'gcc') }}
+      shell: bash        
+      run: |
+        ln -s $(brew --prefix gcc)/bin/$(ls $(brew --prefix gcc)/bin | grep -o 'gcc-[0-9]*' | sort -V | tail -n1) /usr/local/bin/gcc
+        ln -s $(brew --prefix gcc)/bin/$(ls $(brew --prefix gcc)/bin | grep -o 'g++-[0-9]*' | sort -V | tail -n1) /usr/local/bin/g++
+        export CC=gcc && export CXX=g++
+
     - name: Checkout code
       uses: actions/checkout@v4
       with:
         fetch-depth: 1
-    - name: Format check
+    - name: Format check (Linux)
+      if: matrix.os == 'ubuntu-latest'
       run: |
           find . -name "*.cpp" -o -name "*.h" -o -name "*.cxx" | xargs clang-format-15 -style=file -output-replacements-xml | grep -q "<replacement " && echo "Clang-format check failed" && exit 1 || echo "Clang-format check passed"
     - name: Build

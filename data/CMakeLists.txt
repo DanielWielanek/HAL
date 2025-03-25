@@ -67,12 +67,14 @@ io/InputDataInfo.cxx
 io/VirtualSource.cxx
 io/VirtualIOManager.cxx
 
+decays/Decay.cxx
+
 )
 
 Set(HEADERS )
 Set(LINKDEF HalDataLinkDef.h)
 Set(LIBRARY_NAME HalData)
-Set(DEPENDENCIES HalFeatures)
+Set(DEPENDENCIES EG HalFeatures)
 
 GENERATE_LIBRARY_HAL()
 

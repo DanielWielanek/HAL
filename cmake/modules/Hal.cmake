@@ -40,11 +40,7 @@ set(HAL_DATA
 	${HAL_CORE}/data/dataformat/compound
 	${HAL_CORE}/data/dataformat/hiddeninfo	
 	${HAL_CORE}/data/io	
-)
-
-set(HAL_GEN
-	${HAL_CORE}/nicagenerators
-	${HAL_CORE}/nicagenerators/readers
+    ${HAL_CORE}/data/decays
 )
 
 set(HAL_ANA

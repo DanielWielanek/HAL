@@ -72,4 +72,7 @@
 #pragma link C++ class Hal::VirtualIOManager + ;
 #pragma link C++ class std::vector < Hal::BranchInfo> + ;
 #pragma link C++ class std::vector < Hal::TriggerTask> + ;
+
+#pragma link C++ class Hal::Decay + ;
+#pragma link C++ class Hal::DecayChannel + ;
 #endif

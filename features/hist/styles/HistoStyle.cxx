@@ -9,6 +9,7 @@
 
 #include <Rtypes.h>
 #include <TAttMarker.h>
+#include <TGraphAsymmErrors.h>
 #include <TGraphErrors.h>
 #include <TH1.h>
 

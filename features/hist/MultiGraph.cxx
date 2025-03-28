@@ -304,8 +304,7 @@ namespace Hal {
     Bool_t copyFillColor  = Hal::Std::FindParam(opt, "fill");
     Bool_t clearFillStyle = Hal::Std::FindParam(opt, "clear");
     Int_t fillStyle       = -1;
-    std::cout << copyLineColor << " " << copyFillColor << " " << clearFillStyle << std::endl;
-    auto bracket = Hal::Std::FindBrackets(opt);
+    auto bracket          = Hal::Std::FindBrackets(opt);
     if (bracket.size()) {
       auto bra  = bracket[0];
       fillStyle = bra.Atoi();
@@ -317,7 +316,6 @@ namespace Hal {
       if (copyLineColor) sys->SetLineColor(stat->GetMarkerColor());
       if (copyFillColor) sys->SetFillColor(stat->GetMarkerColor());
       if (clearFillStyle) {
-        std::cout << " SET FILL STYE -1 " << std::endl;
         sys->SetFillStyle(-1);
       }
     }

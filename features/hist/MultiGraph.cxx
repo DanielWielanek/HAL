@@ -315,9 +315,7 @@ namespace Hal {
       if (fillStyle > 0) { sys->SetFillStyle(fillStyle); }
       if (copyLineColor) sys->SetLineColor(stat->GetMarkerColor());
       if (copyFillColor) sys->SetFillColor(stat->GetMarkerColor());
-      if (clearFillStyle) {
-        sys->SetFillStyle(-1);
-      }
+      if (clearFillStyle) { sys->SetFillStyle(-1); }
     }
   }
 

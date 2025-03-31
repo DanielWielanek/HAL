@@ -35,28 +35,8 @@ endfunction(Format)
   #       Macros for building ROOT dictionary
   #
   ###########################################
+
 Macro(ROOT_GENERATE_DICTIONARY)
-
-  # Macro to switch between the old implementation with parameters
-  # and the new implementation without parameters.
-  # For the new implementation some CMake variables has to be defined
-  # before calling the macro.
-
-  If(${ARGC} EQUAL 0)
-#    Message("New Version")
-    ROOT_GENERATE_DICTIONARY_NEW()
-  Else(${ARGC} EQUAL 0)
-    If(${ARGC} EQUAL 4)
-#      Message("Old Version")
-      ROOT_GENERATE_DICTIONARY_OLD("${ARGV0}" "${ARGV1}" "${ARGV2}" "${ARGV3}")
-    Else(${ARGC} EQUAL 4)
-      Message(FATAL_ERROR "Has to be implemented")
-    EndIf(${ARGC} EQUAL 4)
-  EndIf(${ARGC} EQUAL 0)
-
-EndMacro(ROOT_GENERATE_DICTIONARY)
-
-Macro(ROOT_GENERATE_DICTIONARY_NEW)
 
   # All Arguments needed for this new version of the macro are defined
   # in the parent scope, namely in the CMakeLists.txt of the submodule
@@ -101,7 +81,6 @@ Macro(ROOT_GENERATE_DICTIONARY_NEW)
 	list(REMOVE_DUPLICATES Int_ONLY_DIRS)
     separate_arguments(Int_ONLY_HEADERS)
     separate_arguments(Int_ONLY_DIRS)
-    Message(STATUS "ROOT VER ${ROOT_FOUND_VERSION}")
     Format(Int_ONLY_DIRS_STR "${Int_ONLY_DIRS}" "-I" "")
     String(REPLACE ";" " " Int_DEF_STR "${Int_DEF}")
   	String(REPLACE ";" " " Int_INC_STR "${Int_ONLY_DIRS_STR}")
@@ -160,41 +139,8 @@ Macro(ROOT_GENERATE_DICTIONARY_NEW)
                       )
   EndIf()
 
-endmacro(ROOT_GENERATE_DICTIONARY_NEW)
+endmacro(ROOT_GENERATE_DICTIONARY)
 
-
-MACRO (ROOT_GENERATE_DICTIONARY_OLD INFILES LINKDEF_FILE OUTFILE INCLUDE_DIRS_IN)
-
-  set(INCLUDE_DIRS)
-
-  foreach (_current_FILE ${INCLUDE_DIRS_IN})
-    set(INCLUDE_DIRS ${INCLUDE_DIRS} -I${_current_FILE})
-  endforeach (_current_FILE ${INCLUDE_DIRS_IN})
-
-#  Message("Definitions: ${DEFINITIONS}")
-#  MESSAGE("INFILES: ${INFILES}")
-#  MESSAGE("OutFILE: ${OUTFILE}")
-#  MESSAGE("LINKDEF_FILE: ${LINKDEF_FILE}")
-#  MESSAGE("INCLUDE_DIRS: ${INCLUDE_DIRS}")
-
-  STRING(REGEX REPLACE "^(.*)\\.(.*)$" "\\1.h" bla "${OUTFILE}")
-#  MESSAGE("BLA: ${bla}")
-  SET (OUTFILES ${OUTFILE} ${bla})
-
-
-  if (CMAKE_SYSTEM_NAME MATCHES Linux)
-    ADD_CUSTOM_COMMAND(OUTPUT ${OUTFILES}
-       COMMAND LD_LIBRARY_PATH=${ROOT_LIBRARY_DIR}:${_intel_lib_dirs} ROOTSYS=${ROOTSYS} ${ROOT_CINT_EXECUTABLE}
-       ARGS -f ${OUTFILE} -c -DHAVE_CONFIG_H ${INCLUDE_DIRS} ${INFILES} ${LINKDEF_FILE} DEPENDS ${INFILES} ${LINKDEF_FILE})
-  else (CMAKE_SYSTEM_NAME MATCHES Linux)
-    if (CMAKE_SYSTEM_NAME MATCHES Darwin)
-      ADD_CUSTOM_COMMAND(OUTPUT ${OUTFILES}
-       COMMAND DYLD_LIBRARY_PATH=${ROOT_LIBRARY_DIR} ROOTSYS=${ROOTSYS} ${ROOT_CINT_EXECUTABLE}
-       ARGS -f ${OUTFILE} -c -DHAVE_CONFIG_H ${INCLUDE_DIRS} ${INFILES} ${LINKDEF_FILE} DEPENDS ${INFILES} ${LINKDEF_FILE})
-    endif (CMAKE_SYSTEM_NAME MATCHES Darwin)
-  endif (CMAKE_SYSTEM_NAME MATCHES Linux)
-
-ENDMACRO (ROOT_GENERATE_DICTIONARY_OLD)
 
 MACRO (GENERATE_ROOT_TEST_SCRIPT SCRIPT_FULL_NAME)
 

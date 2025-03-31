@@ -31,20 +31,56 @@
 namespace Hal {
 
   void CorrFitPairGeneratorConvolutionYPt::GenerateEvent() {
-    fBinCFZ    = fOneDimBin % fModuloZ;
-    Int_t binY = ((fOneDimBin - fBinCFZ) / fModuloZ) % fModuloY;
-    Int_t binX = ((fOneDimBin - fBinCFZ - binY * fModuloY) / fModuloZ) % fModuloY;
-    fOut       = fCentersX[binX];
-    fSide      = fCentersY[binY];
-    fLong      = fCentersZ[fBinCFZ];
-    // 1, 0.1, 0.11, 1, 0.07, 0.08, 1, 0.15, 0.16,
-    fOut  = 0.11;
-    fSide = 0.07;
-    fLong = 0.15;
-    //  fOut = fSide = fLong = 0.0;  // TODO
+    fBinCFZ                  = fOneDimBin % fModuloZ;
+    Int_t binY               = ((fOneDimBin - fBinCFZ) / fModuloZ) % fModuloY;
+    Int_t binX               = ((fOneDimBin - fBinCFZ - binY * fModuloY) / fModuloZ) % fModuloY;
+    Double_t q_out           = fCentersX[binX];
+    Double_t q_side          = fCentersY[binY];
+    Double_t q_long          = fCentersZ[fBinCFZ];
+    Double_t q_outLimits[2]  = {q_out - fHalfWidthX, q_out + fHalfWidthX};
+    Double_t q_sideLimits[2] = {q_side - fHalfWidthY, q_side + fHalfWidthY};
+    Double_t q_longLimits[2] = {q_long - fHalfWidthZ, q_long + fHalfWidthZ};
+
+    // fOut  = 0.11;
+    // fSide = 0.07;
+    // fLong = 0.15;
+    std::cout << "COMPUING " << q_out << " " << q_side << " " << q_long << std::endl;
     fOneDimBin++;
-    std::cout << "GEN" << fOut << " " << fSide << " " << fLong << std::endl;
-    GeneratePairEvent();
+    if (fGenerateSwap && fBinSmearFactor > 0) {  // smear and swap
+      for (int i = 0; i < fBinSmearFactor; i++) {
+        for (int j = 0; j < 8; j++) {
+          q_out            = gRandom->Uniform(q_outLimits[0], q_outLimits[1]);
+          q_side           = gRandom->Uniform(q_sideLimits[0], q_sideLimits[1]);
+          q_long           = gRandom->Uniform(q_longLimits[0], q_longLimits[1]);
+          fOut[i * 8 + j]  = (j & 1) ? -q_out : q_out;
+          fSide[i * 8 + j] = (j & 2) ? -q_side : q_side;
+          fLong[i * 8 + j] = (j & 4) ? -q_long : q_long;
+        }
+      }
+    } else if (fGenerateSwap) {  // only swap
+      for (int i = 0; i < 8; i++) {
+        fOut[i]  = (i & 1) ? -q_out : q_out;
+        fSide[i] = (i & 2) ? -q_side : q_side;
+        fLong[i] = (i & 4) ? -q_long : q_long;
+      }
+    } else if (fBinSmearFactor > 0) {  // only smear
+      for (int i = 0; i < fBinSmearFactor; i++) {
+        fOut[i]  = gRandom->Uniform(q_outLimits[0], q_outLimits[1]);
+        fSide[i] = gRandom->Uniform(q_sideLimits[0], q_sideLimits[1]);
+        fLong[i] = gRandom->Uniform(q_longLimits[0], q_longLimits[1]);
+      }
+    } else {  // simples case
+      fOut[0]  = q_out;
+      fSide[0] = q_side;
+      fLong[0] = q_long;
+    }
+    for (int i = 0; i < fOut.size(); i++) {
+      std::cout << fOut[i] << " <==" << std::endl;
+      fX = fOut[i];
+      fY = fSide[i];
+      fZ = fLong[i];
+      GeneratePairEvent();
+    }
   }
 
   CorrFitPairGeneratorConvolutionYPt::CorrFitPairGeneratorConvolutionYPt() {}
@@ -61,10 +97,6 @@ namespace Hal {
   void CorrFitPairGeneratorConvolutionYPt::GeneratePairEvent() {
     fConvolution.Reset();
     Double_t sumM = fM1 + fM2;
-
-    fX = fOut;
-    fY = fSide;
-    fZ = fLong;
     if (fFrame == Hal::Femto::EKinematics::kLCMS) {
       fX *= 0.5;
       fY *= 0.5;
@@ -134,6 +166,19 @@ namespace Hal {
         fHist1.SetBinContent(iY, iPt, fHist1.GetBinContent(iY, iPt) / weight);
         fHist2.SetBinContent(iY, iPt, fHist2.GetBinContent(iY, iPt) / weight);
       }
+    }
+    fOut.resize(1);
+    fSide.resize(1);
+    fLong.resize(1);
+    if (fGenerateSwap) {
+      fOut.resize(8);
+      fSide.resize(8);
+      fLong.resize(8);
+    }
+    if (fBinSmearFactor >= 1) {
+      fOut.resize(fOut.size() * fBinSmearFactor);
+      fSide.resize(fSide.size() * fBinSmearFactor);
+      fLong.resize(fLong.size() * fBinSmearFactor);
     }
 
 

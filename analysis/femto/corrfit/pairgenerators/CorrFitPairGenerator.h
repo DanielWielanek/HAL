@@ -31,9 +31,10 @@ namespace Hal {
   class CorrFitPairFile;
   class CorrFitPairGenerator : public TObject {
   protected:
-    Bool_t fInited = {kFALSE};
-    Bool_t fDebug  = {kFALSE};
-    Bool_t fAbs    = {kFALSE};
+    Bool_t fInited       = {kFALSE};
+    Bool_t fDebug        = {kFALSE};
+    Bool_t fAbs          = {kFALSE};
+    Bool_t fGenerateSwap = {kFALSE};
     Int_t fPid1 = {0}, fPid2 = {0};
     Int_t fNBins = {0};
     Double_t fM1 = {0}, fM2 = {0};
@@ -49,8 +50,8 @@ namespace Hal {
     Array_1<Int_t> fLimitsN;
     Array_3<Int_t> fLimits3D;
     FastAxisCalc fXaxis, fYaxis, fZaxis;
-    Array_1<Double_t> fCentersX;
-    Array_1<Double_t> fCentersY, fCentersZ;
+    Array_1<Double_t> fCentersX, fCentersY, fCentersZ;
+    Double_t fHalfWidthX = {0}, fHalfWidthY = {0}, fHalfWidthZ = {0};
     enum class EGrouping { kOneDim, kThreeDim };
     EGrouping fGroupingFlag = {EGrouping::kOneDim};
     CorrFitMapGroupConfig fGrouping;
@@ -94,6 +95,11 @@ namespace Hal {
      * @param limit
      */
     void SetPairLimitPerBin(Int_t limit) { fBinLimit = limit; };
+    /**
+     * generate pairs with negative values
+     * @param swaped
+     */
+    void GenerateSwap(Bool_t swaped = kTRUE) { fGenerateSwap = swaped; }
     virtual void Run(Int_t entries);
     virtual ~CorrFitPairGenerator();
     ClassDef(CorrFitPairGenerator, 1)

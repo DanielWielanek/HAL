@@ -25,14 +25,15 @@ namespace Hal {
     Float_t fKt[2];
     TH2D fHist1, fHist2;
     TH3D fConvolution;
-    Int_t fPairsPerBin = {100};
-    Int_t fOneDimBin   = {0};
-    Int_t fModuloX     = {0};
-    Int_t fModuloY     = {0};
-    Int_t fModuloZ     = {0};
-    Int_t fBinCFZ      = {0};
+    Int_t fPairsPerBin    = {100};
+    Int_t fOneDimBin      = {0};
+    Int_t fModuloX        = {0};
+    Int_t fModuloY        = {0};
+    Int_t fModuloZ        = {0};
+    Int_t fBinCFZ         = {0};
+    Int_t fBinSmearFactor = {0};
     FemtoMicroPair fPair;
-    Double_t fOut = {0}, fSide = {0}, fLong = {0};
+    std::vector<double> fOut, fSide, fLong;
     Double_t fX = {0}, fY = {0}, fZ = {0};
     void GeneratePairLCMS(const Double_t ptTot,
                           const Double_t pzTot,
@@ -69,6 +70,11 @@ namespace Hal {
      * @return
      */
     Bool_t Init();
+    /**
+     * smear pairs uniformly in bin range
+     * @param factor
+     */
+    void SmearUniformly(Int_t factor) { fBinSmearFactor = factor; };
     void SetPairsPerBin(Int_t nPair) { fPairsPerBin = nPair; }
     virtual ~CorrFitPairGeneratorConvolutionYPt() {};
     ClassDef(CorrFitPairGeneratorConvolutionYPt, 1)

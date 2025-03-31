@@ -63,6 +63,8 @@ Macro(GENERATE_LIBRARY_HAL)
     set(PROJECT_LIBRARY_PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES})
   endif()
 
+
+
   set(Int_LIB ${LIBRARY_NAME})
 
   Set(HeaderRuleName "${Int_LIB}_HEADER_RULES")
@@ -134,6 +136,8 @@ Macro(GENERATE_LIBRARY_HAL)
   Else()
     Add_Library(${Int_LIB} SHARED ${Int_SRCS} ${NO_DICT_SRCS} ${LINKDEF})
   EndIf()
+  
+
   target_link_libraries(${Int_LIB} ${Int_DEPENDENCIES})
   set_target_properties(${Int_LIB} PROPERTIES ${PROJECT_LIBRARY_PROPERTIES})
 

@@ -3,9 +3,7 @@
 # The extension is already found.  Any number of sources could be listed here.
 
 Set(INCLUDE_DIRECTORIES
-
 ${HAL_FEATURES}
-${HAL_CORE}/features/minimizer
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -98,7 +96,9 @@ Set(LIBRARY_NAME HalFeatures)
 Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO  EG )
 #Set(DEPENDENCIES XMLIO SQLIO FairTools)
 
+string(JOIN " " ROOTCLING_FLAGS "-I" ${HAL_FEATURES})
 
+Message(warning "FLAGS ROOTCINT ${ROOTCLING_FLAGS}")
 GENERATE_LIBRARY_HAL()
 
 #copy helpfull files

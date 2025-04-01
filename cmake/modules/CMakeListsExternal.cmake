@@ -39,25 +39,7 @@ if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_GREATER 6.16)
  # set(VMCLIB VMCLibrary)
 #  endif()
 endif()
-Set(Boost_NO_SYSTEM_PATHS TRUE)
-Set(Boost_NO_BOOST_CMAKE TRUE)
 
-#Message("-- Looking for Boost ...")
-  # If an older version of boost is found both of the variables below are
-  # cached and in a second cmake run, a good boost version is found even 
-  # if the version is to old. 
-  # To overcome this problem both variables are cleared before checking
-  # for boost.
-Unset(Boost_INCLUDE_DIR CACHE)
-Unset(Boost_LIBRARY_DIRS CACHE)
-
-#boost not neeeded
-#find_package(Boost 1.48 COMPONENTS program_options thread system timer serialization regex log log_setup filesystem)
-#If (Boost_FOUND)
-#  Set(Boost_Avail 1)
-#Else (Boost_FOUND)
-#  Set(Boost_Avail 0)
-#EndIf (Boost_FOUND)
 
 Message("-- Looking for GSL ...")
 find_package(GSL)
@@ -72,8 +54,6 @@ if(NOT GSL_FOUND)
   find_package(GSL REQUIRED)
 endif()
 
-
-  
   Set(SYSTEM_INCLUDE_DIRECTORIES
     ${ROOT_INCLUDE_DIR}
  #   ${Boost_INCLUDE_DIRS}

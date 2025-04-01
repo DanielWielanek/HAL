@@ -98,7 +98,6 @@ Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Mat
 
 string(JOIN " " ROOTCLING_FLAGS "-I" ${HAL_FEATURES})
 
-Message(warning "FLAGS ROOTCINT ${ROOTCLING_FLAGS}")
 GENERATE_LIBRARY_HAL()
 
 #copy helpfull files

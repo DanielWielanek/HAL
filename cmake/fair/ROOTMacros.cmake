@@ -68,28 +68,23 @@ Macro(ROOT_GENERATE_DICTIONARY)
   EndIf()
 
   get_filename_component(script_name ${Int_DICTIONARY} NAME_WE)
-  If(INCLUDE_HAL_SUBIDIR)
-    list(GET INCLUDE_DIRECTORIES -1 LAST_INCLUDE_DIR)
-  	foreach(header ${HDRS})
-    	get_filename_component(file_name ${header} NAME)
-    	get_filename_component(folder ${header} DIRECTORY )
-   	 	list(APPEND Int_ONLY_HEADERS ${file_name})
-   	 	list(APPEND Int_ONLY_DIRS ${LAST_INCLUDE_DIR}/${folder})
-	endforeach()
-	list(APPEND Int_ONLY_DIRS ${LAST_INCLUDE_DIR})
-	Set(Int_ONLY_DIRS ${INCLUDE_DIRECTORIES})
-	list(REMOVE_DUPLICATES Int_ONLY_DIRS)
-    separate_arguments(Int_ONLY_HEADERS)
-    separate_arguments(Int_ONLY_DIRS)
-    Format(Int_ONLY_DIRS_STR "${Int_ONLY_DIRS}" "-I" "")
-    String(REPLACE ";" " " Int_DEF_STR "${Int_DEF}")
-  	String(REPLACE ";" " " Int_INC_STR "${Int_ONLY_DIRS_STR}")
-  	String(REPLACE ";" " " Int_HDRS_STR "${Int_ONLY_HEADERS}")
-  else()
-    String(REPLACE ";" " " Int_DEF_STR "${Int_DEF}")
-  	String(REPLACE ";" " " Int_INC_STR "${Int_INC}")
-  	String(REPLACE ";" " " Int_HDRS_STR "${Int_HDRS}")
-  endif()
+
+  list(GET INCLUDE_DIRECTORIES -1 LAST_INCLUDE_DIR)
+  foreach(header ${HDRS})
+    get_filename_component(file_name ${header} NAME)
+    get_filename_component(folder ${header} DIRECTORY )
+   	list(APPEND Int_ONLY_HEADERS ${file_name})
+   	list(APPEND Int_ONLY_DIRS ${LAST_INCLUDE_DIR}/${folder})
+  endforeach()
+  list(APPEND Int_ONLY_DIRS ${LAST_INCLUDE_DIR})
+  Set(Int_ONLY_DIRS ${INCLUDE_DIRECTORIES})
+  list(REMOVE_DUPLICATES Int_ONLY_DIRS)
+  separate_arguments(Int_ONLY_HEADERS)
+  separate_arguments(Int_ONLY_DIRS)
+  Format(Int_ONLY_DIRS_STR "${Int_ONLY_DIRS}" "-I" "")
+  String(REPLACE ";" " " Int_DEF_STR "${Int_DEF}")
+  String(REPLACE ";" " " Int_INC_STR "${Int_ONLY_DIRS_STR}")
+  String(REPLACE ";" " " Int_HDRS_STR "${Int_ONLY_HEADERS}")
 
   Set(EXTRA_DICT_PARAMETERS "")
   If (ROOT_FOUND_VERSION GREATER 59999)
@@ -124,50 +119,6 @@ Macro(ROOT_GENERATE_DICTIONARY)
     Install(FILES ${LIBRARY_OUTPUT_PATH}/${Int_PCMFILE} ${Int_ROOTMAPFILE} DESTINATION lib)
 
 endmacro(ROOT_GENERATE_DICTIONARY)
-
-
-MACRO (GENERATE_ROOT_TEST_SCRIPT SCRIPT_FULL_NAME)
-
-  get_filename_component(path_name ${SCRIPT_FULL_NAME} PATH)
-  get_filename_component(file_extension ${SCRIPT_FULL_NAME} EXT)
-  get_filename_component(file_name ${SCRIPT_FULL_NAME} NAME_WE)
-  set(shell_script_name "${file_name}.sh")
-
-  #MESSAGE("PATH: ${path_name}")
-  #MESSAGE("Ext: ${file_extension}")
-  #MESSAGE("Name: ${file_name}")
-  #MESSAGE("Shell Name: ${shell_script_name}")
-
-  string(REPLACE ${PROJECT_SOURCE_DIR}
-         ${PROJECT_BINARY_DIR} new_path ${path_name}
-        )
-
-  #MESSAGE("New PATH: ${new_path}")
-
-  file(MAKE_DIRECTORY ${new_path}/data)
-
-  CONVERT_LIST_TO_STRING(${LD_LIBRARY_PATH})
-  set(MY_LD_LIBRARY_PATH ${output})
-
-  CONVERT_LIST_TO_STRING(${ROOT_INCLUDE_PATH})
-  set(MY_ROOT_INCLUDE_PATH ${output})
-
-  set(my_script_name ${SCRIPT_FULL_NAME})
-
-  Write_Geant4Data_Variables_sh()
-  IF(FAIRROOTPATH)
-    configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/root_macro.sh.in
-                   ${new_path}/${shell_script_name}
-                  )
-  ELSE(FAIRROOTPATH)
-    configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/root_macro.sh.in
-                   ${new_path}/${shell_script_name}
-                  )
-  ENDIF(FAIRROOTPATH)
-  execute_process(COMMAND /bin/chmod u+x ${new_path}/${shell_script_name} OUTPUT_QUIET)
-
-ENDMACRO (GENERATE_ROOT_TEST_SCRIPT)
-
 
 Macro(ROOT_GENERATE_ROOTMAP)
 

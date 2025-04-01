@@ -109,35 +109,19 @@ Macro(ROOT_GENERATE_DICTIONARY)
   # time we run make. To pass the variables a script is created containing the
   # correct values for the needed variables
 
-  IF(FAIRROOTPATH)
-    Configure_File(${FAIRROOTPATH}/share/fairbase/cmake/scripts/generate_dictionary_root.sh.in
-                   ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh
-                  )
-    #EXEC_PROGRAM(/bin/chmod ARGS "u+x ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh")
-    execute_process(COMMAND /bin/chmod u+x ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh OUTPUT_QUIET)
-
-  ELSE(FAIRROOTPATH)
-    Configure_File(${PROJECT_SOURCE_DIR}/cmake/scripts/generate_dictionary_root.sh.in
+   Configure_File(${PROJECT_SOURCE_DIR}/cmake/scripts/generate_dictionary_root.sh.in
                    ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh
                   )
                   #workaround for stand alone compilation
                   execute_process(COMMAND /bin/chmod u+x ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh OUTPUT_QUIET)
-  ENDIF(FAIRROOTPATH)
 
 
-  If (ROOT_FOUND_VERSION GREATER 59999)
     Add_Custom_Command(OUTPUT  ${OUTPUT_FILES}
                        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh
                        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/${Int_PCMFILE} ${LIBRARY_OUTPUT_PATH}/${Int_PCMFILE}
                        DEPENDS ${Int_HDRS} ${Int_LINKDEF}
                       )
     Install(FILES ${LIBRARY_OUTPUT_PATH}/${Int_PCMFILE} ${Int_ROOTMAPFILE} DESTINATION lib)
-  Else()
-    Add_Custom_Command(OUTPUT  ${OUTPUT_FILES}
-                       COMMAND ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh
-                       DEPENDS ${Int_HDRS} ${Int_LINKDEF}
-                      )
-  EndIf()
 
 endmacro(ROOT_GENERATE_DICTIONARY)
 

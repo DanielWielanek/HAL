@@ -43,7 +43,7 @@ namespace Hal {
     Hal::CorrelationHisto* GetCorrHisto() const;
     /**
      *
-     * @return information about file congiguration (e.g. number of dimensions etc.)
+     * @return information about file configuration (e.g. number of dimensions etc.)
      */
     MultiDimDataManager* GetConfig() const;
     virtual ~MultiDimInterpolator();

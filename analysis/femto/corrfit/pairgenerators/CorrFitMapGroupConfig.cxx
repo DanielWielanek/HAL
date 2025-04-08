@@ -9,6 +9,7 @@
 #include "CorrFitMapGroupConfig.h"
 
 #include "Cout.h"
+#include "FemtoPair.h"
 
 namespace Hal {
   CorrFitMapGroupConfig::CorrFitMapGroupConfig() : fBins(100), fMin(0), fMax(100) {
@@ -54,30 +55,14 @@ namespace Hal {
     if (fMin != data->fMin) { printError(); }
   }
 
-  std::vector<TString> CorrFitMapGroupConfig::GetBranchesByValue(Double_t min, Double_t max, Bool_t signal) const {
-    if (min == max && fMin != fMax) { return GetBranchesByValue(fMin, fMax, signal); }
+  std::pair<Int_t, Int_t> CorrFitMapGroupConfig::GetBranchesByValue(Double_t min, Double_t max) const {
+    if (min == max && fMin != fMax) { return GetBranchesByValue(fMin, fMax); }
     Int_t lowBin  = (fMin - min) * fStep;
     Int_t highBin = (fMax - min) * fStep;
-    std::vector<TString> result;
-    TString pattern = "FemtoBackground_%i";
-    if (signal) { pattern = "FemtoSignal_%i"; }
-    for (int i = lowBin; i < highBin; i++) {
-      TString name = Form(pattern, i);
-      result.push_back(name);
-    }
+    std::pair<Int_t, Int_t> result;
+    result.first  = lowBin;
+    result.second = highBin - 1;
     return result;
   }
-
-  std::vector<TString> CorrFitMapGroupConfig::GetBranchesByIndex(Int_t min, Int_t max, Bool_t signal) const {
-    std::vector<TString> result;
-    TString pattern = "FemtoBackground_%i";
-    if (signal) { pattern = "FemtoSignal_%i"; }
-    for (int i = min; i < max; i++) {
-      TString name = Form(pattern, i);
-      result.push_back(name);
-    }
-    return result;
-  }
-
 
 } /* namespace Hal */

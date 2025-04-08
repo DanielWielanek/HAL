@@ -44,14 +44,15 @@ namespace Hal {
     // fOut  = 0.11;
     // fSide = 0.07;
     // fLong = 0.15;
-    std::cout << "COMPUING " << q_out << " " << q_side << " " << q_long << std::endl;
+
     fOneDimBin++;
     if (fGenerateSwap && fBinSmearFactor > 0) {  // smear and swap
       for (int i = 0; i < fBinSmearFactor; i++) {
         for (int j = 0; j < 8; j++) {
-          q_out            = gRandom->Uniform(q_outLimits[0], q_outLimits[1]);
-          q_side           = gRandom->Uniform(q_sideLimits[0], q_sideLimits[1]);
-          q_long           = gRandom->Uniform(q_longLimits[0], q_longLimits[1]);
+          q_out  = gRandom->Uniform(q_outLimits[0], q_outLimits[1]);
+          q_side = gRandom->Uniform(q_sideLimits[0], q_sideLimits[1]);
+          q_long = gRandom->Uniform(q_longLimits[0], q_longLimits[1]);
+
           fOut[i * 8 + j]  = (j & 1) ? -q_out : q_out;
           fSide[i * 8 + j] = (j & 2) ? -q_side : q_side;
           fLong[i * 8 + j] = (j & 4) ? -q_long : q_long;
@@ -75,10 +76,10 @@ namespace Hal {
       fLong[0] = q_long;
     }
     for (int i = 0; i < fOut.size(); i++) {
-      std::cout << fOut[i] << " <==" << std::endl;
-      fX = fOut[i];
-      fY = fSide[i];
-      fZ = fLong[i];
+      auto array = fPairFile->GetSignal(fBinCFZ);
+      fX         = fOut[i];
+      fY         = fSide[i];
+      fZ         = fLong[i];
       GeneratePairEvent();
     }
   }
@@ -86,46 +87,16 @@ namespace Hal {
   CorrFitPairGeneratorConvolutionYPt::CorrFitPairGeneratorConvolutionYPt() {}
 
   void CorrFitPairGeneratorConvolutionYPt::SetHist(const TH2D& hist1, const TH2D& hist2) {
-    hist1.Copy(fHist1);
-    hist2.Copy(fHist2);
-    fHist1.SetName("FirstParticle");
-    fHist2.SetName("SecondParticle");
-    fHist1.SetDirectory(nullptr);
-    fHist2.SetDirectory(nullptr);
+    fConvolution.SetData(hist1, fPid1, hist2, fPid2);
   }
 
   void CorrFitPairGeneratorConvolutionYPt::GeneratePairEvent() {
-    fConvolution.Reset();
-    Double_t sumM = fM1 + fM2;
-    if (fFrame == Hal::Femto::EKinematics::kLCMS) {
-      fX *= 0.5;
-      fY *= 0.5;
-      fZ *= 0.5;
-    }
-    CalculateConvolution();
-
+    fConvolution.Recalculate(fX, fY, fZ);
     auto array = fPairFile->GetSignal(fBinCFZ);
     TLorentzVector p1, p2;
     for (int i = 0; i < fPairsPerBin; i++) {
-      Double_t y_sum, pt_sum, phi_sum;
-      fConvolution.GetRandom3(y_sum, pt_sum, phi_sum);
-      if (pt_sum * 0.5 < fKt[0] && pt_sum * 0.5 > fKt[1]) {
-        i--;
-        std::cout << "OOPS" << pt_sum * 0.5 << std::endl;
-        continue;
-      }
-      Double_t sinH   = TMath::SinH(y_sum);
-      Double_t pz_sum = TMath::Sqrt(pt_sum * pt_sum + sumM * sumM) * sinH;
-      auto pair       = (FemtoMicroPair*) array->ConstructedAt(array->GetEntriesFast());
-      if (fFrame == Hal::Femto::EKinematics::kLCMS) {
-        GeneratePairLCMS(pt_sum, pz_sum, phi_sum, p1, p2);
-      } else {
-        GeneratePairPRF(pt_sum, pz_sum, phi_sum, p1, p2);
-      }
-      pair->SetTrueMomenta1(p1.X(), p1.Y(), p1.Z(), p1.E());
-      pair->SetTrueMomenta2(p2.X(), p2.Y(), p2.Z(), p2.E());
-      pair->SetMomenta1(p1.X(), p1.Y(), p1.Z(), p1.E());
-      pair->SetMomenta2(p2.X(), p2.Y(), p2.Z(), p2.E());
+      auto pair = (FemtoMicroPair*) array->ConstructedAt(array->GetEntriesFast());
+      fConvolution.FillPair(*pair);
     }
   }
 
@@ -133,40 +104,14 @@ namespace Hal {
     bool val = CorrFitPairGenerator::Init();
     if (fGroupingFlag == EGrouping::kOneDim) { return false; }
     if (!val) return val;
-    fHist1.ResetStats();
-    fHist2.ResetStats();
     auto kt = dynamic_cast<Hal::FemtoCorrFuncKt*>(fCF);
     if (kt) {
       auto ktArr = kt->GetRange();
-      fKt[0]     = ktArr[0];
-      fKt[1]     = ktArr[ktArr.GetSize() - 1];
+      fConvolution.SetKt(ktArr[0], ktArr[ktArr.GetSize() - 1]);
+      fConvolution.SetFrame(fFrame);
     }
-    if (fHist1.GetEntries() <= 0) return kFALSE;
-    if (fHist2.GetEntries() <= 0) { fHist2 = fHist1; }
-    if (!Hal::Std::AreSimilar(&fHist1, &fHist2, kTRUE)) {
-      Hal::Cout::PrintInfo("Incompatible yield histograms, different axes?", Hal::EInfo::kError);
-      return kFALSE;
-    }
-    Double_t ptLow, ptHigh;
-    Double_t yLow, yHigh;
-    Int_t binsPt, binsY;
-    Hal::Std::GetAxisPar(fHist1, binsY, yLow, yHigh, "x");
-    Hal::Std::GetAxisPar(fHist1, binsPt, ptLow, ptHigh, "y");
-    if (ptLow != 0) {
-      Hal::Cout::PrintInfo("YPt histo - Pt should start from zero!", Hal::EInfo::kError);
-      return kFALSE;
-    }
-    for (int iPt = 1; iPt <= fHist1.GetYaxis()->GetNbins(); iPt++) {
-      Double_t low    = fHist1.GetYaxis()->GetBinLowEdge(iPt);
-      Double_t high   = fHist1.GetYaxis()->GetBinUpEdge(iPt);
-      Double_t weight = TMath::Sqrt(high * high - low * low);
-      weight          = (high + low) * 0.5;
-      // weight          = 1;
-      for (int iY = 1; iY <= fHist1.GetNbinsX(); iY++) {
-        fHist1.SetBinContent(iY, iPt, fHist1.GetBinContent(iY, iPt) / weight);
-        fHist2.SetBinContent(iY, iPt, fHist2.GetBinContent(iY, iPt) / weight);
-      }
-    }
+    if (!fConvolution.Init()) return kFALSE;
+
     fOut.resize(1);
     fSide.resize(1);
     fLong.resize(1);
@@ -180,20 +125,6 @@ namespace Hal {
       fSide.resize(fSide.size() * fBinSmearFactor);
       fLong.resize(fLong.size() * fBinSmearFactor);
     }
-
-
-    fConvolution = TH3D("convolution",
-                        "convolution",
-                        binsY * 2,
-                        yLow * 2,
-                        yHigh * 2,
-                        binsPt * 2,
-                        ptLow * 2,
-                        ptHigh * 2,
-                        1,
-                        -TMath::Pi(),
-                        TMath::Pi());
-    fConvolution.SetDirectory(nullptr);
     fModuloX = fXaxis.GetNBins();
     fModuloY = fYaxis.GetNBins();
     fModuloZ = fZaxis.GetNBins();
@@ -234,70 +165,23 @@ namespace Hal {
     }
   }
 
-  void CorrFitPairGeneratorConvolutionYPt::CalculateConvolution() {
-    fConvolution.Reset();
-    FemtoMicroPair pair;
-    Double_t sumM = fM1 + fM2;
-    TLorentzVector p1, p2;
-    for (int iY = 1; iY <= fConvolution.GetNbinsX(); iY++) {
-      Double_t y_sum = fConvolution.GetXaxis()->GetBinCenter(iY);
-      Double_t sinH  = TMath::SinH(y_sum);
-      for (int iPt = 1; iPt <= fConvolution.GetNbinsY(); iPt++) {
-        Double_t ptTot = fConvolution.GetYaxis()->GetBinCenter(iPt);
-        Double_t pzTot = TMath::Sqrt(ptTot * ptTot + sumM * sumM) * sinH;
-        if (fFrame == Hal::Femto::EKinematics::kLCMS) {
-          GeneratePairLCMS(ptTot, pzTot, 0.0, p1, p2);
-        } else {
-          GeneratePairPRF(ptTot, pzTot, 0.0, p1, p2);
-        }
-        for (int iPhi = 1; iPhi <= fConvolution.GetNbinsZ(); iPhi++) {
-          Double_t phi      = fConvolution.GetZaxis()->GetBinCenter(iPhi);
-          TLorentzVector P1 = p1;
-          TLorentzVector P2 = p2;
-          P1.RotateZ(phi);
-          P2.RotateZ(phi);
-          Int_t binX1  = fHist1.GetXaxis()->FindBin(P1.Rapidity());
-          Int_t binX2  = fHist2.GetXaxis()->FindBin(P2.Rapidity());
-          Int_t binY1  = fHist1.GetYaxis()->FindBin(P1.Pt());
-          Int_t binY2  = fHist2.GetYaxis()->FindBin(P2.Pt());
-          Double_t rho = fHist1.GetBinContent(binX1, binY1) * fHist2.GetBinContent(binX2, binY2) * ptTot;
-          if (ptTot * 0.5 >= fKt[0] && ptTot * 0.5 <= fKt[1]) { fConvolution.Fill(y_sum, ptTot, phi, rho); }
-        }
-      }
+  void CorrFitPairGeneratorConvolutionYPt::RunFraction(Int_t entries, Int_t nSamples, Int_t nNo) {
+    if (!fInited || !fPairFile) return;
+
+    Int_t nTotalBins  = fXaxis.GetNBins() * fYaxis.GetNBins() * fZaxis.GetNBins();
+    Int_t step        = nTotalBins / nSamples;
+    Int_t nEffEntries = step;
+    int percent       = nEffEntries / 100;
+    if (percent == 0) percent = 1;
+    for (int i = 0; i < nEffEntries; i++) {
+      if (i % percent == 0) { Cout::ProgressBar(i, nEffEntries); }
+      fPairFile->ClearData();
+      int iStep  = i + nEffEntries * nNo;
+      fOneDimBin = iStep;
+      GenerateEvent();
+      fPairFile->Fill();
     }
-  }
-
-  void CorrFitPairGeneratorConvolutionYPt::GeneratePairLCMS(const Double_t ptTot,
-                                                            const Double_t pzTot,
-                                                            const Double_t phi,
-                                                            TLorentzVector& p1,
-                                                            TLorentzVector& p2) const {
-    const Double_t sumM = fM1 + fM2;
-    p1.SetXYZM(fX + ptTot * 0.5, fY, fX, fM1);
-    p2.SetXYZM(-fX + ptTot * 0.5, -fY, -fZ, fM2);
-    p1.RotateZ(phi);
-    p2.RotateZ(phi);
-    Double_t boostZ = pzTot / TMath::Sqrt(pzTot * pzTot + ptTot * ptTot + sumM * sumM);
-    p1.Boost(0, 0, boostZ);
-    p2.Boost(0, 0, boostZ);
-  }
-
-  void CorrFitPairGeneratorConvolutionYPt::GeneratePairPRF(const Double_t ptTot,
-                                                           const Double_t pzTot,
-                                                           const Double_t phi,
-                                                           TLorentzVector& p1,
-                                                           TLorentzVector& p2) const {
-    const Double_t sumM = fM1 + fM2;
-    p1.SetXYZM(fX, fY, fZ, fM1);
-    p2.SetXYZM(-fX, -fY, -fZ, fM2);
-    Double_t boostX = ptTot / TMath::Sqrt(ptTot * ptTot + sumM * sumM);
-    p1.Boost(boostX, 0, 0);
-    p2.Boost(boostX, 0, 0);
-    Double_t boostZ = pzTot / TMath::Sqrt(pzTot * pzTot + ptTot * ptTot + sumM * sumM);
-    p1.Boost(0, 0, boostZ);
-    p2.Boost(0, 0, boostZ);
-    p1.RotateZ(phi);
-    p2.RotateZ(phi);
+    CleanUpFiles();
   }
 
 } /* namespace Hal */

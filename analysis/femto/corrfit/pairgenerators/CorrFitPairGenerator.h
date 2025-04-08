@@ -58,6 +58,7 @@ namespace Hal {
     CorrFitPairFile* fPairFile   = {nullptr};
     virtual void GenerateEvent() = 0;
     Int_t GetBin(Double_t val) const;
+    void CleanUpFiles();
 
   public:
     CorrFitPairGenerator();
@@ -100,6 +101,10 @@ namespace Hal {
      * @param swaped
      */
     void GenerateSwap(Bool_t swaped = kTRUE) { fGenerateSwap = swaped; }
+    /**
+     * run generation for whole map
+     * @param entries number of entries in tree, for each entry n-pairs is generated
+     */
     virtual void Run(Int_t entries);
     virtual ~CorrFitPairGenerator();
     ClassDef(CorrFitPairGenerator, 1)

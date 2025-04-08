@@ -32,18 +32,17 @@ namespace Hal {
   class FemtoPair;
   class FemtoSHCF;
   class FemtoWeightGenerator;
+  class CorrFitPairFile;
 
   /**
    * analysis of pairs created by FemtoDumpPairAna
    */
 
   class CorrFitDumpedPairAna : public TObject {
-    std::vector<TString> fUsedBranches;
-    TFile* fFile  = {nullptr};
-    TChain* fTree = {nullptr};
+    TFile* fFile = {nullptr};
 
   protected:
-    TString fPairFile;
+    CorrFitPairFile* fPairFile = {nullptr};
     Int_t fJobId               = {-1};
     Int_t fMultiplyWeight      = {1};
     Int_t fMultiplyPreprocess  = {1};
@@ -58,33 +57,19 @@ namespace Hal {
     std::vector<FemtoCorrFunc*> fCF;
     FemtoFreezeoutGenerator* fTempGenerator = {nullptr};
     std::vector<FemtoFreezeoutGenerator*> fGenerator;
-    FemtoWeightGenerator* fWeight    = {nullptr};
-    CorrFitMapGroupConfig* fGrouping = {nullptr};
-    std::vector<TClonesArray*> fSignalClones;      //!
-    std::vector<TClonesArray*> fBackgroundClones;  //!
+    FemtoWeightGenerator* fWeight = {nullptr};
     enum class eDumpCalcMode { kSignalPairs = 0, kSignalBackgroundPairs = 1, kBackgroundPairsOnly = 2 };
     eDumpCalcMode fMode;
     /** export CF to root tree, this is used for compression of data, you can set
      * value of bin to -1, then such bin will not be used **/
     Bool_t SaveAsRawArray(TObject* cf, Int_t step);
-    Bool_t ConfigureInput();
-    Bool_t ConfigureRootInput();
-    Bool_t ConfigureListInput();
-    TString FindTreeName(TString name) const;
+    virtual Bool_t InitPairFile() = 0;
     Bool_t ConfigureFromXML();
     Int_t GetSimStepNo() const { return fMultiplyJobs * fJobId; }
     virtual void RunSignalPair()           = 0;
     virtual void RunSignalBackgroundPair() = 0;
     virtual void RunBackgroundPair()       = 0;
     virtual Bool_t IsVertical() const { return kFALSE; }
-    /**
-     * connects to needed branches
-     * @return
-     */
-    virtual Bool_t ConnectToData() = 0;
-    void LockUnusedBranches();
-    void ConnectToSignal(const std::vector<TString>& branches);
-    void ConnectToBackground(const std::vector<TString>& branches);
     /**
      * init place for data
      * @return
@@ -151,7 +136,7 @@ namespace Hal {
      * set path to pair file
      * @param pairFile
      */
-    void SetPairFile(TString pairFile) { fPairFile = pairFile; };
+    void SetPairFile(TString pairFile);
     virtual void Print(Option_t* option = "") const;
     /**
      * preprocess pair

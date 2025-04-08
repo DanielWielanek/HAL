@@ -30,6 +30,7 @@
 
 #include "Array.h"
 #include "CorrFitInfo.h"
+#include "CorrFitPairFile.h"
 #include "CorrFitParamsSetup.h"
 #include "Cout.h"
 #include "Femto1DCF.h"
@@ -50,7 +51,7 @@
 
 namespace Hal {
   CorrFitDumpedPairAna::CorrFitDumpedPairAna(Int_t jobid, Int_t maps_perAna) :
-    TObject(), fPairFile(""), fJobId(jobid), fMultiplyJobs(maps_perAna), fMode(eDumpCalcMode::kSignalPairs) {}
+    TObject(), fJobId(jobid), fMultiplyJobs(maps_perAna), fMode(eDumpCalcMode::kSignalPairs) {}
 
   void CorrFitDumpedPairAna::SetCorrFunc(const FemtoCorrFunc& func) {
     if (fTempCF) delete fTempCF;
@@ -73,10 +74,6 @@ namespace Hal {
       exit(0);  // force exit to prevent crash
       return kFALSE;
     }
-    if (!ConfigureInput()) {
-      Hal::Cout::PrintInfo("Cannot configure input", EInfo::kError);
-      return kFALSE;
-    }
     if (!fWeight) {
       Hal::Cout::PrintInfo("Cannot find weight", EInfo::kError);
       return kFALSE;
@@ -89,8 +86,9 @@ namespace Hal {
       Hal::Cout::PrintInfo("To many CF", EInfo::kError);
       return kFALSE;
     }
-    if (!fTree) {
-      Hal::Cout::PrintInfo("Cannot find tree", EInfo::kError);
+    InitPairFile();
+    if (!fPairFile) {
+      Hal::Cout::PrintInfo("Cannot find pair data", EInfo::kError);
       return kFALSE;
     }
     if (fJobId == -1) {
@@ -120,13 +118,13 @@ namespace Hal {
     if (events > 0) {
       nEvents = events;
     } else {
-      nEvents = fTree->GetEntries();
+      nEvents = fPairFile->GetEntries();
     }
     switch (fMode) {
       case eDumpCalcMode::kSignalBackgroundPairs: {
         Int_t step = nEvents / 100;
         for (int iEvent = 0; iEvent < nEvents; iEvent++) {
-          fTree->GetEntry(iEvent);
+          fPairFile->GetEntry(iEvent);
           if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
           RunSignalBackgroundPair();
           if (fPairThreshold > 0 && fPairThreshold < fPairsProcessed) break;
@@ -134,10 +132,9 @@ namespace Hal {
 
       } break;
       case eDumpCalcMode::kSignalPairs: {
-        RunSignalPair();
         Int_t step = nEvents / 100;
         for (int iEvent = 0; iEvent < nEvents; iEvent++) {
-          fTree->GetEntry(iEvent);
+          fPairFile->GetEntry(iEvent);
           if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
           RunSignalPair();
           if (fPairThreshold > 0 && fPairThreshold < fPairsProcessed) break;
@@ -146,7 +143,7 @@ namespace Hal {
       case eDumpCalcMode::kBackgroundPairsOnly: {
         Int_t step = nEvents / 100;
         for (int iEvent = 0; iEvent < nEvents; iEvent++) {
-          fTree->GetEntry(iEvent);
+          fPairFile->GetEntry(iEvent);
           if (iEvent % step == 0) { Cout::ProgressBar(iEvent, nEvents); }
           RunBackgroundPair();
           if (fPairThreshold > 0 && fPairThreshold < fPairsProcessed) break;
@@ -174,15 +171,6 @@ namespace Hal {
     return kTRUE;
   }
 
-  Bool_t CorrFitDumpedPairAna::ConfigureInput() {
-    if (fPairFile.EndsWith(".root")) {
-      return ConfigureRootInput();
-    } else {
-      ConfigureListInput();
-      return kFALSE;
-    }
-  }
-
   Bool_t CorrFitDumpedPairAna::ConfigureFromXML() {
     auto printErr = [](TString str) {
       Hal::Cout::PrintInfo(Form("Cannot find node: %s in XML", str.Data()), EInfo::kError);
@@ -195,10 +183,11 @@ namespace Hal {
     for (int i = 0; i < parNo; i++) {
       fTotalNumberOfPoints = fTotalNumberOfPoints * setup.GetNPoints(i);
     }
-    XMLNode* root       = file.GetRootNode();
-    fPairFile           = root->GetChild("PairFile")->GetValue();
-    XMLNode* parameters = root->GetChild("Parameters");
-    XMLNode* dumpAna    = root->GetChild("DumpAnalysisConf");
+    XMLNode* root        = file.GetRootNode();
+    TString pairFileName = root->GetChild("PairFile")->GetValue();
+    fPairFile            = new Hal::CorrFitPairFile(pairFileName, "read");
+    XMLNode* parameters  = root->GetChild("Parameters");
+    XMLNode* dumpAna     = root->GetChild("DumpAnalysisConf");
     if (!dumpAna) return printErr("DumpAnalysisConf");
 
     if (!parameters) return printErr("Parameters");
@@ -288,6 +277,10 @@ namespace Hal {
       delete i;
     }
   }
+  void CorrFitDumpedPairAna::SetPairFile(TString pairFile) {
+    if (fPairFile) delete fPairFile;
+    fPairFile = new Hal::CorrFitPairFile(pairFile, "read");
+  }
 
   void CorrFitDumpedPairAna::Print(Option_t* /*option*/) const {
     Cout::Text("CorrFitDumpedPairAna Info", "M");
@@ -296,7 +289,7 @@ namespace Hal {
     Cout::Text(Form("Multiply factor weight: %i", fMultiplyWeight), "L");
     Cout::Text(Form("Multiply factor preprocess: %i", fMultiplyPreprocess), "L");
     Cout::Text(Form("IgnoreSign: %i", fIgnoreSing), "L");
-    Cout::Text(Form("Pair file: %s", fPairFile.Data()), "L");
+    Cout::Text(Form("Pair file: %s", fPairFile->GetFileName().Data()), "L");
     switch (fMode) {
       case eDumpCalcMode::kBackgroundPairsOnly: {
         Cout::Text("Use only background branch", "L");
@@ -318,94 +311,4 @@ namespace Hal {
     Cout::Text("Weight Info", "M");
     if (fWeight) fWeight->Print();
   }
-
-  void CorrFitDumpedPairAna::ConnectToSignal(const std::vector<TString>& branches) {
-    for (auto name : branches) {
-      fUsedBranches.push_back(name);
-      TClonesArray* array = new TClonesArray("Hal::FemtoMicroPair");
-      fTree->SetBranchAddress(name, &array);
-      fSignalClones.push_back(array);
-    }
-  }
-
-  void CorrFitDumpedPairAna::ConnectToBackground(const std::vector<TString>& branches) {
-    for (auto name : branches) {
-      fUsedBranches.push_back(name);
-      TClonesArray* array = new TClonesArray("Hal::FemtoMicroPair");
-      fTree->SetBranchAddress(name, &array);
-      fBackgroundClones.push_back(array);
-    }
-  }
-
-  void CorrFitDumpedPairAna::LockUnusedBranches() {
-    auto list = fTree->GetListOfBranches();
-    for (int i = 0; i < list->GetEntries(); i++) {
-      auto branch    = (TBranch*) list->At(i);
-      Bool_t lock    = kTRUE;
-      TString brName = branch->GetName();
-      for (auto name : fUsedBranches)
-        if (name == brName) {
-          lock = kFALSE;
-          continue;
-        }
-      if (lock) fTree->SetBranchStatus(brName, 0);
-    }
-  }
-
-  Bool_t CorrFitDumpedPairAna::ConfigureRootInput() {
-    fFile     = new TFile(fPairFile);
-    fGrouping = dynamic_cast<CorrFitMapGroupConfig*>(fFile->Get("HalInfo/CorrFitMapGroup"));
-    if (!fGrouping) {
-      Hal::Cout::PrintInfo("Cannot find grouping config", EInfo::kError);
-      return kFALSE;
-    }
-    TString treeName = FindTreeName(fPairFile);
-    fTree            = new TChain(treeName);
-    fTree->AddFile(fPairFile);
-
-    if (treeName.Length() == 0) return kFALSE;
-    Bool_t res = ConnectToData();
-    LockUnusedBranches();
-    return res;
-  }
-
-  Bool_t CorrFitDumpedPairAna::ConfigureListInput() {
-    std::vector<TString> filelist;
-    if (fPairFile.EndsWith("/")) {
-      filelist = Hal::Std::GetListOfFiles(fPairFile, "root", kTRUE, kFALSE);
-    } else {
-      filelist = Hal::Std::GetLinesFromFile(fPairFile, kTRUE);
-    }
-    if (filelist.size() < 1) return kFALSE;
-    fFile     = new TFile(filelist[0]);
-    fGrouping = dynamic_cast<CorrFitMapGroupConfig*>(fFile->Get("HalInfo/CorrFitMapGroup"));
-    if (!fGrouping) {
-      Hal::Cout::PrintInfo("Cannot find grouping config", EInfo::kError);
-      return kFALSE;
-    }
-    TString treeName = FindTreeName(filelist[0]);
-    fTree            = new TChain(treeName);
-    for (auto file : filelist) {
-      fTree->AddFile(file);
-    }
-    return kTRUE;
-  }
-
-  TString CorrFitDumpedPairAna::FindTreeName(TString name) const {
-    TFile* f    = new TFile(name);
-    TList* keys = f->GetListOfKeys();
-    TString treeName;
-    for (int i = 0; i < keys->GetEntries(); i++) {
-      TKey* key    = (TKey*) keys->At(i);
-      TObject* obj = f->Get(key->GetName());
-      if (obj->InheritsFrom("TTree")) {
-        treeName = key->GetName();
-        break;
-      }
-    }
-    f->Close();
-    delete f;
-    return treeName;
-  }
-
 }  // namespace Hal

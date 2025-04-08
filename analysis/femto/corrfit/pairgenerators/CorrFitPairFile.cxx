@@ -11,6 +11,7 @@
 #include "Cout.h"
 #include "StdString.h"
 
+#include <TChain.h>
 #include <TClonesArray.h>
 #include <TFile.h>
 #include <TTree.h>
@@ -27,17 +28,30 @@ namespace Hal {
     }
   }
 
-  Bool_t CorrFitPairFile::Init(Int_t startBranch, Int_t endBranch) {
+  Bool_t CorrFitPairFile::Init(Int_t startBranch, Int_t endBranch, Bool_t signal, Bool_t background) {
     if (fMode == 1) { return InitWrite(); }
-    if (fMode == -1) { return InitRead(startBranch, endBranch); }
+    if (fMode == -1) { return InitRead(startBranch, endBranch, signal, background); }
     return kFALSE;
   }
 
   void CorrFitPairFile::SetConfig(const CorrFitMapGroupConfig& config) { fConfig = (CorrFitMapGroupConfig*) config.Clone(); }
 
-  Bool_t CorrFitPairFile::InitRead(Int_t startBranch = -1, Int_t endBranch = -1) {
-    fFile   = new TFile(fFileName);
-    fTree   = (TTree*) fFile->Get("HalTree");
+  Bool_t CorrFitPairFile::InitRead(Int_t startBranch       = -1,
+                                   Int_t endBranch         = -1,
+                                   Bool_t enableSignal     = kTRUE,
+                                   Bool_t enableBackground = kFALSE) {
+    std::vector<TString> files;
+    if (IsVirtual()) return kTRUE;
+    if (fFileName.EndsWith("root")) {
+      files.push_back(fFileName);
+    } else {
+      auto vec = Hal::Std::GetLinesFromFile(fFileName);
+      files    = vec;
+    }
+    fFile = new TFile(files[0]);
+    fTree = new TChain("HalTree");
+    for (auto file : files)
+      ((TChain*) fTree)->AddFile(file);
     fConfig = (CorrFitMapGroupConfig*) fFile->Get("HalInfo/CorrFitMapGroup");
     if (!fConfig) {
       Hal::Cout::PrintInfo("Cannot init CorrFitPairFile in read mode without config!", EInfo::kError);
@@ -53,20 +67,22 @@ namespace Hal {
     if (fConfig->HaveBackground()) {
       for (int idx = 0; idx < bins; idx++)
         fTree->SetBranchStatus(Form("FemtoBackground_%i", idx), 0);
-      for (int idx = start_bin; idx < end_bin; idx++) {
-        fBackground.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
-        fTree->SetBranchStatus(Form("FemtoBackground_%i", idx), 1);
-        fTree->SetBranchAddress(Form("FemtoBackground_%i", idx), &*fBackground[idx]);
-      }
+      if (enableBackground)
+        for (int idx = start_bin; idx < end_bin; idx++) {
+          fBackground.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
+          fTree->SetBranchStatus(Form("FemtoBackground_%i", idx), 1);
+          fTree->SetBranchAddress(Form("FemtoBackground_%i", idx), &*fBackground[idx]);
+        }
     }
     if (fConfig->HaveSignal()) {
       for (int idx = 0; idx < bins; idx++)
-        fTree->SetBranchStatus(Form("FemtoBackground_%i", idx), 0);
-      for (int idx = start_bin; idx < end_bin; idx++) {
-        fTree->SetBranchStatus(Form("FemtoSignal_%i", idx), 1);
-        fSignals.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
-        fTree->SetBranchAddress(Form("FemtoSignal_%i", idx), &*fSignals[idx]);
-      }
+        fTree->SetBranchStatus(Form("FemtoSignal_%i", idx), 0);
+      if (enableSignal)
+        for (int idx = start_bin; idx < end_bin; idx++) {
+          fTree->SetBranchStatus(Form("FemtoSignal_%i", idx), 1);
+          fSignals.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
+          fTree->SetBranchAddress(Form("FemtoSignal_%i", idx), &*fSignals[idx]);
+        }
     }
     return kTRUE;
   }
@@ -120,5 +136,10 @@ namespace Hal {
   void CorrFitPairFile::GetEntry(Int_t i) { fTree->GetEntry(i, 0); }
 
   void CorrFitPairFile::Fill() { fTree->Fill(); }
+
+  Bool_t CorrFitPairFile::IsVirtual() const {
+    if (fFileName == "virtual") return kTRUE;
+    return kFALSE;
+  }
 
 } /* namespace Hal */

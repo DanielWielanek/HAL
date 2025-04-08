@@ -87,6 +87,7 @@ corrfit/pairgenerators/CorrFitPairGeneratorYPtKt.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorYPtKtStubborn.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorConvolutionYPt.cxx
 corrfit/pairgenerators/CorrFitPairFile.cxx
+corrfit/pairgenerators/ConvolutionPairGenerator.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
 corrfit/mapgenerator_multidim/CorrFitFunctor.cxx
@@ -181,6 +182,8 @@ if(DEFINED CIA)
         top_secret/BattlestarPegasus.cxx
         top_secret/BattlestarValkyria.cxx
         top_secret/CorrFitSHCFPainter.cxx
+        top_secret/BattlestarAtlantia.cxx
+        top_secret/BattlestarSolaria.cxx
     )
 endif()
 

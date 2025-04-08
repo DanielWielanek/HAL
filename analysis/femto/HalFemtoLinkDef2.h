@@ -101,6 +101,7 @@
 #pragma link C++ class Hal::CorrFitPairGeneratorYPtKt + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorYPtKtStubborn + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorConvolutionYPt + ;
+#pragma link C++ class Hal::ConvolutionPairGenerator + ;
 
 #pragma link C++ class Hal::CorrFit1DCF + ;
 #pragma link C++ class Hal::CorrFit3DCF + ;
@@ -196,6 +197,8 @@
 #pragma link C++ class Hal::BattlestarGalactica10 + ;
 #pragma link C++ class Hal::BattlestarPegasus + ;
 #pragma link C++ class Hal::BattlestarValkyria + ;
+#pragma link C++ class Hal::BattlestarAtlantia + ;
+#pragma link C++ class Hal::BattlestarSolaria + ;
 //
 
 #pragma link C++ class Hal::FemtoSerializationInterface + ;

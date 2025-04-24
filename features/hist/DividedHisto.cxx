@@ -1453,7 +1453,7 @@ namespace Hal {
     Double_t D = 0;
     for (int i = binA; i <= binB; i++) {
       if (skip_empty)
-        if (fNum->GetBinContent(i) == 0 || fDen->GetBinContent(i)) continue;
+        if (fNum->GetBinContent(i) == 0 || fDen->GetBinContent(i) == 0) continue;
       N += fNum->GetBinContent(i);
       D += fDen->GetBinContent(i);
     }

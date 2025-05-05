@@ -167,6 +167,7 @@
 #pragma link C++ class Hal::TwoTrackRadialDistanceCut + ;
 #pragma link C++ class Hal::TwoTrackDebugCut + ;
 #pragma link C++ class Hal::TwoTrackFemtoPRFCut + ;
+#pragma link C++ class Hal::TwoTrackFemtoPRFCutFull + ;
 #pragma link C++ class Hal::TwoTrackFemtoQinvCut + ;
 #pragma link C++ class Hal::TwoTrackSailorCowboyCut + ;
 #pragma link C++ class Hal::PairDeltaQinvCut + ;

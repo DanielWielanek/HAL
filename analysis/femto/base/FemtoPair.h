@@ -500,6 +500,24 @@ namespace Hal {
      * @param tracks pair to copy data
      */
     void BuildMomenta(TwoTrack* tracks);
+    /**
+     * fill reconstructed momenta
+     * @param p1
+     * @param p2
+     */
+    void GetMomenta(TLorentzVector& p1, TLorentzVector& p2) const;
+    /**
+     * fill true momenta
+     * @param p1
+     * @param p2
+     */
+    void GetTrueMomenta(TLorentzVector& p1, TLorentzVector& p2) const;
+    /**
+     * fill freezouts
+     * @param x1
+     * @param x2
+     */
+    void GetFreezouts(TLorentzVector& x1, TLorentzVector& x2) const;
     virtual TString GetTags() const = 0;
     ClassDef(FemtoPair, 1)
   };

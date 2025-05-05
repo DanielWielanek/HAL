@@ -410,4 +410,19 @@ namespace Hal {
     SetFreezeoutCoord2(x2.X(), x2.Y(), x2.Z(), x2.T());
   }
 
+  void FemtoPair::GetMomenta(TLorentzVector& p1, TLorentzVector& p2) const {
+    p1.SetXYZT(fpx1, fpy1, fpz1, fe1);
+    p2.SetXYZT(fpx2, fpy2, fpz2, fe2);
+  }
+
+  void FemtoPair::GetTrueMomenta(TLorentzVector& p1, TLorentzVector& p2) const {
+    p1.SetXYZT(fPx1, fPy1, fPz1, fE1);
+    p2.SetXYZT(fPx2, fPy2, fPz2, fE2);
+  }
+
+  void FemtoPair::GetFreezouts(TLorentzVector& x1, TLorentzVector& x2) const {
+    x1.SetXYZT(fX1, fY1, fZ1, fT1);
+    x2.SetXYZT(fX2, fY2, fZ2, fT2);
+  }
+
 }  // namespace Hal

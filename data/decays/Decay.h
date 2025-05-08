@@ -20,7 +20,6 @@ namespace Hal {
    * represents a decay channel
    */
   class DecayChannel : public TObject {
-    const Int_t fDaughters;
     std::vector<Int_t> fPdgCodes;
     std::vector<Double_t> fMass;
     Double_t fMassThres = {-1};

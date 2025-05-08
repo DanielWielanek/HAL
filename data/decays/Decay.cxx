@@ -24,7 +24,7 @@
 
 namespace Hal {
 
-  DecayChannel::DecayChannel(Int_t dau1, Int_t dau2, Double_t ratio) : fDaughters(2), fBranchRatio(ratio) {
+  DecayChannel::DecayChannel(Int_t dau1, Int_t dau2, Double_t ratio) : fBranchRatio(ratio) {
     fPdgCodes.resize(2);
     fMass.resize(2);
     fPdgCodes[0] = dau1;
@@ -41,7 +41,7 @@ namespace Hal {
     }
   }
 
-  DecayChannel::DecayChannel(Int_t dau1, Int_t dau2, Int_t dau3, Double_t ratio) : fDaughters(3), fBranchRatio(ratio) {
+  DecayChannel::DecayChannel(Int_t dau1, Int_t dau2, Int_t dau3, Double_t ratio) : fBranchRatio(ratio) {
     fPdgCodes.resize(3);
     fMass.resize(3);
     fPdgCodes[0] = dau1;

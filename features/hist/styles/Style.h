@@ -60,12 +60,18 @@ namespace Hal {
      * values are exported
      * @param node
      */
-    void ExportToXML(XMLNode* node) const;
+    virtual void ExportToXML(XMLNode* node) const = 0;
     /**
      * this should import configuration from xml
      * @param node
      */
-    void ImportFromXML(XMLNode* node);
+    virtual void ImportFromXML(XMLNode* node) = 0;
+    /**
+     * import directly from file
+     * @param filename - name of the xml-file
+     * @param nodeName - name of node with configuration (child of root node)
+     */
+    void LoadFromXML(TString filename, TString nodeName);
     virtual ~Style() {};
     ClassDef(Style, 1);
   };

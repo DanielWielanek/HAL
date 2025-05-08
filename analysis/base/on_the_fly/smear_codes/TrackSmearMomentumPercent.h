@@ -51,7 +51,7 @@ namespace Hal {
      */
     void SetMomentumSmear(Double_t px, Double_t py, Double_t pz);
     Task::EInitFlag Init();
-    void ModifyTrack(SmearedTrack* mod);
+    void ModifyTrack(ComplexTrack* mod);
     virtual SmearAlgorithm* MakeCopy() const { return new TrackSmearMomentumPercent(*this); };
     virtual Package* Report() const;
     virtual ~TrackSmearMomentumPercent();

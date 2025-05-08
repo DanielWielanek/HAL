@@ -39,8 +39,6 @@ dataformat/TrackClones.cxx
 dataformat/DataFormat.cxx
 dataformat/compound/ComplexEvent.cxx
 dataformat/compound/ComplexTrack.cxx
-dataformat/compound/SmearedEvent.cxx
-dataformat/compound/SmearedTrack.cxx
 dataformat/compound/ComplexEventInterface.cxx
 dataformat/detector/ToFTrack.cxx
 dataformat/detector/TpcTrack.cxx

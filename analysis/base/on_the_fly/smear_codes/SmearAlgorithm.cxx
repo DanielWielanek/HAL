@@ -9,6 +9,8 @@
 
 #include "SmearAlgorithm.h"
 
+#include "ComplexEvent.h"
+#include "ComplexTrack.h"
 #include "Package.h"
 #include "Parameter.h"
 
@@ -29,7 +31,7 @@ namespace Hal {
 
   EventSmearVirtual::EventSmearVirtual() : EventSmear() {}
 
-  void EventSmearVirtual::ModifyEvent(SmearedEvent* /*mod*/) {}
+  void EventSmearVirtual::ModifyEvent(ComplexEvent* /*mod*/) {}
 
   SmearAlgorithm* EventSmearVirtual::MakeCopy() const { return new EventSmearVirtual(*this); }
 
@@ -37,7 +39,7 @@ namespace Hal {
 
   TrackSmearVirtual::TrackSmearVirtual() {}
 
-  void TrackSmearVirtual::ModifyTrack(SmearedTrack* /*mod*/) {}
+  void TrackSmearVirtual::ModifyTrack(ComplexTrack* /*mod*/) {}
 
   SmearAlgorithm* TrackSmearVirtual::MakeCopy() const { return new TrackSmearVirtual(*this); }
 

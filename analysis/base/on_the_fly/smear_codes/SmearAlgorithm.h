@@ -14,8 +14,8 @@
 
 namespace Hal {
   class Package;
-  class SmearedEvent;
-  class SmearedTrack;
+  class ComplexEvent;
+  class ComplexTrack;
 
   /**
    * abstract class for smearing algorithms
@@ -55,7 +55,7 @@ namespace Hal {
      * modify event parameters
      * @param mod event to modify
      */
-    virtual void ModifyEvent(SmearedEvent* mod) = 0;
+    virtual void ModifyEvent(ComplexEvent* mod) = 0;
     virtual Package* Report() const;
     virtual ~EventSmear();
     ClassDef(EventSmear, 1)
@@ -67,7 +67,7 @@ namespace Hal {
   class EventSmearVirtual : public EventSmear {
   public:
     EventSmearVirtual();
-    virtual void ModifyEvent(SmearedEvent* mod);
+    virtual void ModifyEvent(ComplexEvent* mod);
     virtual SmearAlgorithm* MakeCopy() const;
     virtual Package* Report() const;
     virtual ~EventSmearVirtual();
@@ -85,7 +85,7 @@ namespace Hal {
      * modify track parameters
      * @param mod smeared track
      */
-    virtual void ModifyTrack(SmearedTrack* mod) = 0;
+    virtual void ModifyTrack(ComplexTrack* mod) = 0;
     virtual ~TrackSmear();
     ClassDef(TrackSmear, 1)
   };
@@ -96,7 +96,7 @@ namespace Hal {
   class TrackSmearVirtual : public TrackSmear {
   public:
     TrackSmearVirtual();
-    virtual void ModifyTrack(SmearedTrack* mod);
+    virtual void ModifyTrack(ComplexTrack* mod);
     virtual SmearAlgorithm* MakeCopy() const;
     virtual ~TrackSmearVirtual();
     ClassDef(TrackSmearVirtual, 1)

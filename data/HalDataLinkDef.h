@@ -26,8 +26,6 @@
 #pragma link C++ class Hal::Track + ;
 #pragma link C++ class Hal::McTrack + ;
 #pragma link C++ class Hal::TwoTrack + ;
-#pragma link C++ class Hal::SmearedEvent + ;
-#pragma link C++ class Hal::SmearedTrack + ;
 #pragma link C++ class Hal::DetectorTrack + ;
 #pragma link C++ class Hal::DetectorEvent + ;
 #pragma link C++ class Hal::ToFTrack + ;

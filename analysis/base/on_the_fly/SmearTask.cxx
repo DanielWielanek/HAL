@@ -19,20 +19,11 @@
 #include "EventAna.h"
 #include "MemoryMapManager.h"
 #include "Package.h"
-#include "SmearedEvent.h"
-#include "SmearedTrack.h"
 #include "Std.h"
 
 
 namespace Hal {
-  SmearTask::SmearTask() :
-    TrackAna(),
-    fOutputFormatID(0),
-    fSave(kFALSE),
-    fEventAlgorithm(NULL),
-    fTrackAlgorithm(NULL),
-    fCurrentTrackSmeared(NULL),
-    fCurrentEventSmeared(NULL) {
+  SmearTask::SmearTask() : TrackAna(), fOutputFormatID(0), fSave(kFALSE), fEventAlgorithm(NULL), fTrackAlgorithm(NULL) {
     DataFormatManager* formats = DataFormatManager::Instance();
     fOutputFormatID            = formats->RegisterFormat();
   }
@@ -63,16 +54,20 @@ namespace Hal {
         Cout::PrintInfo("Cannot set smeared algorithm in smearing task", EInfo::kCriticalError);
         return Task::EInitFlag::kFATAL;
       }
+      if (!dynamic_cast<const Hal::ComplexEvent*>(temp)) {
+        Cout::PrintInfo("Cannot use smeared task for non-complex event", EInfo::kError);
+        return Task::EInitFlag::kFATAL;
+      }
     }
+
     Task::EInitFlag stat = TrackAna::Init();
     if (stat == Task::EInitFlag::kFATAL) return stat;
-    Event* event         = fMemoryMap->GetTemporaryEvent();
-    fCurrentEventSmeared = new SmearedEvent(event);
-    fCurrentEventSmeared->ActivateSmearing();
+    Event* event = fMemoryMap->GetTemporaryEvent();
+    if (!fMemoryMap->IsDirectAccess()) {
+      Cout::PrintInfo("Smear task might not work correctly without direct access to data", EInfo::kError);
+    }
 
     DataManager* ioManager = DataManager::Instance();
-    Event* img             = fCurrentEventSmeared->GetImgEvent();
-    ioManager->Register(Form("%s.", img->ClassName()), "HalEvents", img, kFALSE);
 
     if (fEventAlgorithm == NULL) {
       Cout::PrintInfo("No event smear algorithm, new will be added but do virtual", EInfo::kLowWarning);
@@ -96,14 +91,14 @@ namespace Hal {
   void SmearTask::SaveEvents() { fSave = kTRUE; }
 
   void SmearTask::ProcessEvent() {
-    fEventAlgorithm->ModifyEvent((SmearedEvent*) fCurrentEventSmeared);
+    fEventAlgorithm->ModifyEvent((Hal::ComplexEvent*) fCurrentEvent);
     CutCollection* cont = fCutContainer->GetEventCollection(fCurrentEventCollectionID);
     for (int i = 0; i < fMemoryMap->GetTemporaryTotalTracksNo(); i++) {
       for (int j = 0; j < cont->GetNextNo(); j++) {
         fCurrentTrackCollectionID = cont->GetNextAddr(j);
-        fCurrentTrack             = fCurrentEventSmeared->GetTrack(i);
+        fCurrentTrack             = fCurrentEvent->GetTrack(i);
         if (fCutContainer->PassTrack(fCurrentTrack, fCurrentTrackCollectionID)) {
-          fTrackAlgorithm->ModifyTrack((SmearedTrack*) fCurrentTrack);
+          fTrackAlgorithm->ModifyTrack((Hal::ComplexTrack*) fCurrentTrack);
         }
       }
     }
@@ -112,7 +107,6 @@ namespace Hal {
   void SmearTask::Exec(Option_t* /*opt*/) {
     fProcessedEvents++;
     fCurrentEvent = fMemoryMap->GetTemporaryEvent();
-    fMemoryMap->ManualUpdate(fCurrentEventSmeared);
     for (fCurrentEventCollectionID = 0; fCurrentEventCollectionID < fEventCollectionsNo; fCurrentEventCollectionID++) {
       if (fCutContainer->PassEvent(fCurrentEvent, fCurrentEventCollectionID)) { ProcessEvent(); }
     }
@@ -121,7 +115,5 @@ namespace Hal {
   SmearTask::~SmearTask() {
     if (fEventAlgorithm) delete fEventAlgorithm;
     if (fTrackAlgorithm) delete fTrackAlgorithm;
-    if (fCurrentEventSmeared) delete fCurrentEventSmeared;
-    if (fCurrentTrackSmeared) delete fCurrentTrackSmeared;
   }
 }  // namespace Hal

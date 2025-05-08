@@ -52,6 +52,7 @@ Example:
 
 ```bash
 cmake -DCMAKE_INSTALL_PREFIX=../inst ..
+make -j8 && make install
 ```
 
 ## 🚀 Usage

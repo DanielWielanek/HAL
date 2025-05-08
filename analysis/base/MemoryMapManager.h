@@ -251,6 +251,11 @@ namespace Hal {
      * @return true if buffer is full
      */
     Bool_t IsReadyToMixing(Int_t collection) const;
+    /**
+     *
+     * @return true if direct access
+     */
+    Bool_t IsDirectAccess() const { return fDirectAcces; }
     virtual ~MemoryMapManager();
     ClassDef(MemoryMapManager, 1)
   };

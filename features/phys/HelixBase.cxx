@@ -354,7 +354,7 @@ namespace Hal {
           } else
             break;
         }
-        for (j = -1; - j < MaxIterations; j--) {
+        for (j = -1; -j < MaxIterations; j--) {
           d = (BasePosition(s + j * ds) - point).Mag2();
           if (d < dmin) {
             dmin = d;

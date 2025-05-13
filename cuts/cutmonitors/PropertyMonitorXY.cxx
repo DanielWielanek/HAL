@@ -92,9 +92,9 @@ namespace Hal {
   PropertyMonitorXY& PropertyMonitorXY::operator=(const PropertyMonitorXY& other) {
     if (this != &other) {
       CutMonitorXY::operator=(other);
-      fXaxisName            = other.fXaxisName;
-      fYaxisName            = other.fYaxisName;
-      fFormatType           = other.fFormatType;
+      fXaxisName  = other.fXaxisName;
+      fYaxisName  = other.fYaxisName;
+      fFormatType = other.fFormatType;
     }
     return *this;
   }

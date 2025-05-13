@@ -149,7 +149,7 @@ namespace Hal {
     /**
      * find given pattern and ignore upper/lowercase letter
      * patter must be separate world or word separated by '+' signs
-     * e.g. FindParam("someapple+orange", "oragne" returns true
+     * e.g. FindParam("someapple+orange", "orange" returns true
      * but FindParam("someapple+orange", "apple" returns false
      * @param option
      * @param pattern

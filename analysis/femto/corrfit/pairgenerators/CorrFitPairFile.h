@@ -13,6 +13,7 @@
 
 class TTree;
 class TFile;
+class TChain;
 class TClonesArray;
 namespace Hal {
   class FemtoMicroPair;
@@ -25,7 +26,7 @@ namespace Hal {
     std::vector<TClonesArray*> fSignals;
     std::vector<TClonesArray*> fBackground;
     Int_t fMode = {0};
-    virtual Bool_t InitRead(Int_t startBranch, Int_t endBranch);
+    virtual Bool_t InitRead(Int_t startBranch, Int_t endBranch, Bool_t enableSignal, Bool_t enableBackground);
     virtual Bool_t InitWrite();
 
   public:
@@ -41,7 +42,7 @@ namespace Hal {
      * @param endBranch
      * @param return true if suceeded
      */
-    Bool_t Init(Int_t startBranch = -1, Int_t endBranch = -1);
+    Bool_t Init(Int_t startBranch = -1, Int_t endBranch = -1, Bool_t signal = kTRUE, Bool_t background = kTRUE);
     /**
      * return config file
      * @return
@@ -82,6 +83,14 @@ namespace Hal {
      * @return
      */
     TClonesArray* GetBackground(Int_t idx) const { return fBackground[idx]; }
+    /**
+     *
+     * @return file name
+     */
+    TString GetFileName() const { return fFileName; }
+    Bool_t IsVirtual() const;
+    Int_t GetSignalLength() const { return fSignals.size(); }
+    Int_t GetBackgroundLength() const { return fBackground.size(); };
     virtual ~CorrFitPairFile();
     ClassDef(CorrFitPairFile, 1)
   };

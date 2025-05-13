@@ -27,6 +27,7 @@
 #include "Array.h"
 #include "CorrFitDumpedPairAna.h"
 #include "CorrFitInfo.h"
+#include "CorrFitPairFile.h"
 #include "CorrFitParamsSetup.h"
 #include "Cout.h"
 #include "Femto1DCF.h"
@@ -77,7 +78,7 @@ namespace Hal {
       }
       macro.close();
       info->SetMacroText(val);
-      info->SetPairFile(fPairFile);
+      info->SetPairFile(fPairFile->GetFileName());
       info->SetCf(obj);
       auto source = fGenerator[0]->GetSourceModel();
       source->Print();
@@ -89,7 +90,9 @@ namespace Hal {
   }
 
   void CorrFitDumpedPairAnaHorizontal::RunSignalPair() {
-    for (auto clones : fSignalClones) {
+    Int_t no = fPairFile->GetSignalLength();
+    for (int i = 0; i < no; i++) {
+      auto clones = fPairFile->GetSignal(i);
       for (int jPair = 0; jPair < clones->GetEntriesFast(); jPair++) {
         auto MiniPair = (FemtoMicroPair*) clones->UncheckedAt(jPair);
         *fPair        = *MiniPair;
@@ -112,7 +115,9 @@ namespace Hal {
   }
 
   void CorrFitDumpedPairAnaHorizontal::RunSignalBackgroundPair() {
-    for (auto clones : fSignalClones) {
+    Int_t no = fPairFile->GetSignalLength();
+    for (int i = 0; i < no; i++) {
+      auto clones = fPairFile->GetSignal(i);
       for (int jSig = 0; jSig < clones->GetEntriesFast(); jSig++) {
         auto MiniPair = (FemtoMicroPair*) clones->UncheckedAt(jSig);
         *fPair        = *MiniPair;
@@ -130,7 +135,9 @@ namespace Hal {
         }
       }
     }
-    for (auto clones : fBackgroundClones) {
+    no = fPairFile->GetBackgroundLength();
+    for (int i = 0; i < no; i++) {
+      auto clones = fPairFile->GetBackground(i);
       for (int jSig = 0; jSig < clones->GetEntriesFast(); jSig++) {
         auto MiniPair = (FemtoMicroPair*) clones->UncheckedAt(jSig);
         *fPair        = *MiniPair;
@@ -148,7 +155,9 @@ namespace Hal {
   }
 
   void CorrFitDumpedPairAnaHorizontal::RunBackgroundPair() {
-    for (auto clones : fSignalClones) {
+    Int_t no = fPairFile->GetBackgroundLength();
+    for (int i = 0; i < no; i++) {
+      auto clones = fPairFile->GetBackground(i);
       for (int jMix = 0; jMix < clones->GetEntriesFast(); jMix++) {
         auto MiniPair = (FemtoMicroPair*) clones->UncheckedAt(jMix);
         *fPair        = *MiniPair;
@@ -192,24 +201,21 @@ namespace Hal {
     return kTRUE;
   }
 
-  Bool_t CorrFitDumpedPairAnaHorizontal::ConnectToData() {
+  Bool_t CorrFitDumpedPairAnaHorizontal::InitPairFile() {
     Int_t bins;
     Double_t min, max;
     Hal::Std::GetAxisPar(*fCF[0]->GetCF(0)->GetNum(), bins, min, max, "x");
+    auto grouping = fPairFile->GetConfig();
+    auto vec      = grouping->GetBranchesByValue(min, max);
     switch (fMode) {
       case eDumpCalcMode::kSignalPairs: {
-        auto vec = fGrouping->GetBranchesByValue(min, max, true);
-        ConnectToSignal(vec);
+        fPairFile->Init(vec.first, vec.second, kTRUE, kFALSE);
       } break;
       case eDumpCalcMode::kBackgroundPairsOnly: {
-        auto vec = fGrouping->GetBranchesByValue(min, max, false);
-        ConnectToBackground(vec);
+        fPairFile->Init(vec.first, vec.second, kFALSE, kTRUE);
       } break;
       case eDumpCalcMode::kSignalBackgroundPairs: {
-        auto vec = fGrouping->GetBranchesByValue(min, max, false);
-        ConnectToBackground(vec);
-        vec = fGrouping->GetBranchesByValue(min, max, true);
-        ConnectToSignal(vec);
+        fPairFile->Init(vec.first, vec.second, kTRUE, kTRUE);
       } break;
     }
     return kTRUE;

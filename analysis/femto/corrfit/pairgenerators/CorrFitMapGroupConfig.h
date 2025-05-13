@@ -10,9 +10,13 @@
 #define HAL_ANALYSIS_FEMTO_CORRFIT_PAIRGENERATORS_CORRFITMAPGROUPCONFIG_H_
 
 
-#include "FemtoMiniPair.h"
+#include <Rtypes.h>
+#include <RtypesCore.h>
+#include <utility>
 
+#include "FemtoConst.h"
 #include "Object.h"
+
 
 namespace Hal {
 
@@ -44,8 +48,7 @@ namespace Hal {
     Bool_t HaveSignal() const { return TESTBIT(fMode, kBitBranchModeSignal); };
     Bool_t HaveBackground() const { return TESTBIT(fMode, kBitBranchModeSignal); };
     virtual void Add(const Object* pack);
-    std::vector<TString> GetBranchesByValue(Double_t min, Double_t max, Bool_t signal = kTRUE) const;
-    std::vector<TString> GetBranchesByIndex(Int_t min, Int_t max, Bool_t signal = kTRUE) const;
+    std::pair<Int_t, Int_t> GetBranchesByValue(Double_t min, Double_t max) const;
     virtual ~CorrFitMapGroupConfig() {};
     ClassDef(CorrFitMapGroupConfig, 2)
   };

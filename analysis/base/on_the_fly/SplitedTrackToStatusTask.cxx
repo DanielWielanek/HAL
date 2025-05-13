@@ -96,8 +96,8 @@ namespace Hal {
   SplitedTrackToStatusTask& SplitedTrackToStatusTask::operator=(const SplitedTrackToStatusTask& other) {
     if (this == &other) return *this;
     EventAna::operator=(other);
-    fArrayReco        = other.fArrayReco;
-    fArraySim         = other.fArraySim;
+    fArrayReco = other.fArrayReco;
+    fArraySim  = other.fArraySim;
     return *this;
   }
 }  // namespace Hal

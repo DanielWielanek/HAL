@@ -10,7 +10,6 @@
 #ifdef __MAKECINT__
 #endif
 
-//#pragma link C++ class HalCout+
 #pragma link C++ class Hal::Package + ;
 #pragma link C++ class Hal::AnaFile + ;
 #pragma link C++ class Hal::ParameterDouble + ;
@@ -179,6 +178,6 @@
 #pragma link C++ class Hal::Std::Triplet < Int_t> + ;
 #pragma link C++ class Hal::Std::Triplet < Float_t> + ;
 #pragma link C++ class Hal::PackageTable + ;
-//#pragma link C++ class HalParameter+;
+// #pragma link C++ class HalParameter+;
 
 #endif

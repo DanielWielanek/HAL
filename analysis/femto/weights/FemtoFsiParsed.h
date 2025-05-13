@@ -246,7 +246,7 @@ namespace Hal {
      *ierr, int *nunit, int key_len, int ch8_len);
      */
 
-    Double_t r_imag(complex* x) { return (Double_t)(x->i); }
+    Double_t r_imag(complex* x) { return (Double_t) (x->i); }
     void c_div(complex* a, complex* b, complex* c) {
       std::complex<Double_t> z1(b->r, b->i);
       std::complex<Double_t> z2(c->r, c->i);

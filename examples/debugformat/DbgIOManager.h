@@ -45,6 +45,8 @@ namespace HalDbg {
     virtual void CloseManager();
     virtual ~IOManager();
     ClassDef(IOManager, 1)
+
+      virtual void CdToOutput();
   };
 }  // namespace HalDbg
 

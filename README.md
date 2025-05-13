@@ -3,74 +3,115 @@ Heavy ion Analysis Libraries
 
 Framework for analysis of the collisions of heavy ions. 
 
-## prerequisites
+## ⚙️ Prerequisites
 This software requires:
  
- * ROOT 6
- * gls-lib (GNU scientific libraries)
- * cmake
+- [ROOT 6](https://root.cern/)
+- [GSL (GNU Scientific Library)](https://www.gnu.org/software/gsl/)
+- cmake 3.11 or never
+- (optional) Python 3 + `http.server` module (for interactive reports)
  
+---
 
-## installation
-1. enter your HAL directory, and make build directory, enter there:
-<pre><code>
+## 🐳 Installation
+
+### Docker
+
+You can use pre-built Docker images:
+
+```bash
+docker pull ghcr.io/danielwielanek/root-container:latest
+```
+
+Then run the container:
+
+```bash
+docker run --rm -it ghcr.io/danielwielanek/root-container:latest
+```
+
+> ⚠️ Note: This container is based on the latest main branch.
+
+### Building from source code
+
+1. Create a build directory:
+
+```bash
 cd HAL
 mkdir build
 cd build
-</pre></code>
-### Docker
-It's also possible to use docker images, first download repo
-<pre><code>
-docker pull ghcr.io/danielwielanek/root-container:latest
-</pre></code>
-and then run
-<pre><code>
-docker run --rm -it ghcr.io/danielwielanek/root-container:latest
-</pre></code>
-2. Now call cmake to build software:
-<pre><code>
-cmake -DCMAKE_INSTALL_PREFIX=[place to install] .. <br>
-make & make install
-#optionally to use [N] cores
+```
+
+2. Run CMake and install [N - number of cores for compilation]:
+
+```bash
+cmake -DCMAKE_INSTALL_PREFIX=[install_path] ..
 make -j[N] && make install
-</pre></code>
+```
 
-Usually i install HAL in "inst" directory next to "build" directory:
-<pre><code>
+Example:
+
+```bash
 cmake -DCMAKE_INSTALL_PREFIX=../inst ..
-</pre></code>
+make -j8 && make install
+```
 
-## usage
-To use hal you should source the proper file:
-<pre><code>
+## 🚀 Usage
+
+To use HAL, source the configuration script:
+
+```bash
 source [INSTALL_DIRECTORY]/bin/hal_config.sh
-</pre></code>
-## Additional parameters for cmake
-Sometimes is required to set some additional parameters to HAL:
+```
 
-* CMAKE_CXX_STANDARD - sets cmake standard  by hand (default is 17) - note: this standard should be compatible with standard used for ROOT compilation. To check ROOT compilation flag type 
-&lt;root-config --cflags&gt; e.g.: if output contains -std=c++17 it means that your ROOT was compiled with standard 17. In most cases it is not necessary to set this flag
-* JSROOT_DIR=[path] - sets [path] to custom JS ROOT (can be used if HAL is not compatible with JSROOT installed with ROOT)
-* FAIRROOT=OFF - disables compilation with FairRoot even if FairRoot is found in system
-* EXAMPLES=ON - enable examples
-
-Note: to use the option set -D[option] flag e.g., -DEXAMPLES=ON during calling cmake 
+> ⚠️ Note: sourcing should be done once (per session/terminal)
 
 
-* Page @subpage femto_analysis
-* Page @subpage subpage_2
-* Page @subpage subpage_3
+## ⚙️ Additional CMake Options
 
-## Applications
-This software contains not only libraries but also few applications:
-* hal-report generates HTML report, unfortunatelly jsroot will not work directly you have to setup a sever or pretend that you
-are setup the server (e.g., python3 -m http.server called inside of report directory)
-* hal-merger for efficient merging of many HAL files
-* hal-jobs to submit jobs on cluster without painfull BASH
-* hal-cmake a helper for fast buidlign libraries/classes for cuts 
+> ℹ️ Use -D[OPTION]=[VALUE] with cmake to enable features.
+
+For Typical Users
+ * **EXAMPLES=ON** – enables example generators (Unigen, OTF)
+
+For Advanced Use
+ * **INCLUDE_HAL_SUBDIR=TRUE** – install headers in Hal/ subdirectory (for use as a dependency, e.g., in CbmROOT)
+ * **JSROOT_DIR=[path]** – specify custom JSROOT directory if ROOT's version causes issues
+
+If Compilation Fails
+ * **CMAKE_CXX_STANDARD=[XX]** – manually set C++ standard (default is 17).
+ * **ROOTSYS=[path]** – manually specify ROOT path
+ * **GLS_DIR=[path]** – manually specify GSL path
+
+>   ⚠️ Note: to check ROOT cxx standard version use command:
+
+```bash
+root-config --cflags
+```
+
+if returns -std=c++17 your standard is 17
+
+📦 Applications
+
+This software includes several helper tools:
+
+ * **hal-report** – generates HTML reports (requires local server for JSROOT, e.g. python3 -m http.server)
+ * **hal-merger** – efficient merging of multiple HAL files
+ * **hal-jobs** – submit cluster jobs without painful Bash scripting
+ * **hal-cmake** – helper for building libraries/classes for cuts
+
+📝 To Do
+   * Simplify Buffer class (use pointers instead of int maps?)
+   * Consider using std::function for custom class cuts
+   * Add macro-level cut generator
+
+📚 Documentation
+
+    Page @subpage femto_analysis
+
+    Page @subpage subpage_2
 
 
-## To do
  * simplification of buffer class - using pointers instead of int maps?
  * std::fuction for custom class cuts?
  * removing duplicate cut monitors
+

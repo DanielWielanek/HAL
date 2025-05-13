@@ -19,11 +19,11 @@
  * class for representation of track from unigen in "fake" format
  */
 namespace HalUni {
-class UnigenTrack : public Hal::McTrack {
-public:
-  UnigenTrack();
-  virtual ~UnigenTrack();
-  ClassDef(UnigenTrack, 1)
-};
-}
+  class UnigenTrack : public Hal::McTrack {
+  public:
+    UnigenTrack();
+    virtual ~UnigenTrack();
+    ClassDef(UnigenTrack, 1)
+  };
+}  // namespace HalUni
 #endif /* NICAUNIGENTRACK_H_ */

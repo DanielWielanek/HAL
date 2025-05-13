@@ -2,9 +2,8 @@
 Macro(SetHeaderVariables HAL_CORE_DIR)
 set(HAL_CORE "${HAL_CORE_DIR}")
 
-
+#do not forget that last directory must be "core" directory with lindef ile
 set(HAL_FEATURES
-	${HAL_CORE}/features
 	${HAL_CORE}/features/hist
 	${HAL_CORE}/features/hist/styles
 	${HAL_CORE}/features/io
@@ -12,13 +11,14 @@ set(HAL_FEATURES
 	${HAL_CORE}/features/std
 	${HAL_CORE}/features/minimizer
 	${HAL_CORE}/features/phys
+	${HAL_CORE}/features
 )
 
 set(HAL_CUTS
-    ${HAL_CORE}/cuts
     ${HAL_CORE}/cuts/eventcuts
     ${HAL_CORE}/cuts/eventcuts/detector
     ${HAL_CORE}/cuts/eventcuts/general
+    ${HAL_CORE}/cuts/eventcuts/mc
     ${HAL_CORE}/cuts/trackcuts
     ${HAL_CORE}/cuts/trackcuts/mc
     ${HAL_CORE}/cuts/trackcuts/detector
@@ -26,33 +26,33 @@ set(HAL_CUTS
     ${HAL_CORE}/cuts/trackcuts/mc
     ${HAL_CORE}/cuts/trackcuts/resolution
     ${HAL_CORE}/cuts/trackcuts/monprop
+    ${HAL_CORE}/cuts/trackcuts/v0
     ${HAL_CORE}/cuts/twotrackcuts
     ${HAL_CORE}/cuts/twotrackcuts/detector
     ${HAL_CORE}/cuts/twotrackcuts/kinematics
     ${HAL_CORE}/cuts/twotrackcuts/mc
+    ${HAL_CORE}/cuts/twotrackcuts/compound    
     ${HAL_CORE}/cuts/cutmonitors
+    ${HAL_CORE}/cuts/cutmonitors/customized
+    ${HAL_CORE}/cuts
 )
 
 set(HAL_DATA
-    ${HAL_CORE}/data/
 	${HAL_CORE}/data/dataformat
 	${HAL_CORE}/data/dataformat/detector
 	${HAL_CORE}/data/dataformat/compound
 	${HAL_CORE}/data/dataformat/hiddeninfo	
 	${HAL_CORE}/data/io	
-)
-
-set(HAL_GEN
-	${HAL_CORE}/nicagenerators
-	${HAL_CORE}/nicagenerators/readers
+    ${HAL_CORE}/data/decays
+    ${HAL_CORE}/data
 )
 
 set(HAL_ANA
-	${HAL_CORE}/analysis/base
 	${HAL_CORE}/analysis/base/dump
 	${HAL_CORE}/analysis/base/chains
 	${HAL_CORE}/analysis/base/on_the_fly
 	${HAL_CORE}/analysis/base/on_the_fly/smear_codes
+    ${HAL_CORE}/analysis/base
 )
 set(HAL_HBT
 	${HAL_CORE}/analysis/femto/ana
@@ -121,7 +121,6 @@ Macro(PrintConfig)
       Set(INFOFLAG_2 "${ColourReset}")
       Set(INFOFLAG_3 "${BoldMagenta}")
     endif()
-        message(STATUS "${INFOFLAG_1}Compilation with FairRoot: ${USE_FAIRROOT}${INFOFLAG_2}")
         message(STATUS "${INFOFLAG_1}Build examples:            ${USE_EXAMPLES}${INFOFLAG_2}")
         message(STATUS "${INFOFLAG_1}C++ standard:              ${CMAKE_CXX_STANDARD}${INFOFLAG_2}")
         message(STATUS "${INFOFLAG_1}Installation path:         ${CMAKE_INSTALL_PREFIX}${INFOFLAG_2}")

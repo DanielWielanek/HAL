@@ -86,6 +86,7 @@ namespace Hal {
           exit(0);
         } break;
       }
+      fManager->CdToOutput();  // to clean up if user forget to come back to output file
     }
     if (fActiveTriggers.size() > 0) { fTriggersEnabled = kTRUE; }
     Cout::PrintInfo("=== Locking unused branches ===", EInfo::kDebugInfo);
@@ -162,7 +163,7 @@ namespace Hal {
     }
     metadata_new->AddObject(list);
 
-
+    fManager->CdToOutput();
     TDirectory* dir = (TDirectory*) gFile;
 
     GoToDir("HalInfo");

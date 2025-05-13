@@ -73,7 +73,7 @@ namespace Hal {
     }
 
     Object::operator=(other);
-    fOriginName     = other.fOriginName;
+    fOriginName = other.fOriginName;
     if (other.f1dHistos) f1dHistos = new HistogramManager_1_1D<TH1D>(*other.f1dHistos);
     if (other.f2dHistos) f2dHistos = new HistogramManager_1_2D<TH2D>(*other.f2dHistos);
     if (other.f3dHistos) f3dHistos = new HistogramManager_1_3D<TH3D>(*other.f3dHistos);

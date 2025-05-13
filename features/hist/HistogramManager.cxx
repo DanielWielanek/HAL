@@ -85,7 +85,7 @@ namespace Hal {
     for (int i = 0; i < fSize; i++) {
       fArray[i] = new T(Form(title, i), Form(title, i), axisconf[0].GetNBins(), axisconf[0].GetMin(), axisconf[0].GetMax());
       fArray[i]->GetXaxis()->SetTitle(axisconf[0].GetTitle());
-      fArray[i]->GetYaxis()->SetTitle(axisconf[1].GetTitle());
+      if (axisconf.size() > 1) fArray[i]->GetYaxis()->SetTitle(axisconf[1].GetTitle());
       fComments[i] = " ";
       if (Sumw) { fArray[i]->Sumw2(); }
     }
@@ -190,7 +190,7 @@ namespace Hal {
                         axisconf[1].GetMax());
       fArray[i]->GetXaxis()->SetTitle(axisconf[0].GetTitle());
       fArray[i]->GetYaxis()->SetTitle(axisconf[1].GetTitle());
-      fArray[i]->GetZaxis()->SetTitle(axisconf[2].GetTitle());
+      if (axisconf.size() > 2) fArray[i]->GetZaxis()->SetTitle(axisconf[2].GetTitle());
       if (Sumw) { fArray[i]->Sumw2(); }
       fComments[i] = " ";
     }

@@ -12,17 +12,17 @@
 /**
  * check track azimuthal angle
  */
-namespace Hal{
+namespace Hal {
 
-class TrackPhiCut : public TrackCut {
-  Bool_t fRound;
+  class TrackPhiCut : public TrackCut {
+    Bool_t fRound;
 
-public:
-  TrackPhiCut();
-  virtual Bool_t Init(Int_t task_id);
-  virtual Bool_t Pass(Track* track);
-  virtual ~TrackPhiCut();
-  ClassDef(TrackPhiCut, 1)
-};
-}
+  public:
+    TrackPhiCut();
+    virtual Bool_t Init(Int_t task_id);
+    virtual Bool_t Pass(Track* track);
+    virtual ~TrackPhiCut();
+    ClassDef(TrackPhiCut, 1)
+  };
+}  // namespace Hal
 #endif /* HALTRACKPHICUT_H_ */

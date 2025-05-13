@@ -30,22 +30,10 @@ namespace Hal {
 
   Task::EInitFlag BoostTask::Init() {
     Task::EInitFlag stat = EventAna::Init();
-    const Event* event   = DataFormatManager::Instance()->GetFormat(GetTaskID());
-    fEventInterface      = event->CreateInterface();
-    if (fEventInterface) {
-      EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fEventInterface);
-      if (source) fTrackInterface = source->GetTrackInterface();
-    } else {
-      return Task::EInitFlag::kFATAL;
-    }
-    fCurrentEvent = fMemoryMap->GetTemporaryEvent();
     return stat;
   }
 
-  void BoostTask::Exec(Option_t* /*opt*/) {
-    EventInterfaceAdvanced* source = dynamic_cast<EventInterfaceAdvanced*>(fEventInterface);
-    if (source) source->Boost(fBoostVx, fBoostVy, fBoostVz);
-  }
+  void BoostTask::Exec(Option_t* /*opt*/) { fCurrentEvent->Boost(fBoostVx, fBoostVy, fBoostVz); }
 
   void BoostTask::SetBoost(Double_t vx, Double_t vy, Double_t vz, Option_t* /*opt*/) {
     fBoostVx = vx;

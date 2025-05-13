@@ -29,7 +29,6 @@ Link_Directories(${LINK_DIRECTORIES})
 # List of source files
 set(SRCS
    SpectraAna.cxx
-   Decay.cxx
 )
 
 Set(HEADERS )

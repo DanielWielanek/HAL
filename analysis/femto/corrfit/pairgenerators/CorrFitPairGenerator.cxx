@@ -13,6 +13,7 @@
 #include "Cout.h"
 #include "DividedHisto.h"
 #include "FemtoCorrFunc.h"
+#include "FemtoPair.h"
 #include "StdHist.h"
 
 #include <vector>
@@ -72,6 +73,7 @@ namespace Hal {
     fOverStep = (max - min) / ((double) bins);
     fOverStep = 1.0 / fOverStep;
     if (fLow == 0) fAbs = kTRUE;  // enable abs, because function starts with zero
+    if (!fAbs) fGenerateSwap = kFALSE;
     if (dummy->GetLabelsNo() > 0) {
       TString label = dummy->GetLabel(0);
       fFrame        = Femto::LabelToKinematics(label);
@@ -101,7 +103,7 @@ namespace Hal {
       Double_t step = (maxx - minx) / double(binsx);
       array.MakeBigger(binsx);
       for (int i = 0; i < binsx; i++) {
-        Double_t val = step * i + step * 0.5;
+        Double_t val = step * i + step * 0.5 + minx;
         array[i]     = val;
       }
     };
@@ -114,9 +116,13 @@ namespace Hal {
       FillCenters(fCentersY, bins, min, max);
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "z");
       FillCenters(fCentersZ, bins, min, max);
+      fHalfWidthX = dummy->GetNum()->GetXaxis()->GetBinWidth(1) * 0.5;
+      fHalfWidthY = dummy->GetNum()->GetYaxis()->GetBinWidth(1) * 0.5;
+      fHalfWidthZ = dummy->GetNum()->GetZaxis()->GetBinWidth(1) * 0.5;
     } else {
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "x");
       FillCenters(fCentersX, bins, min, max);
+      fHalfWidthX = dummy->GetNum()->GetXaxis()->GetBinWidth(1) * 0.5;
     }
     fInited = kTRUE;
     return kTRUE;
@@ -128,7 +134,6 @@ namespace Hal {
 
   void CorrFitPairGenerator::Run(Int_t entries) {
     if (!fInited || !fPairFile) return;
-
     int percent = entries / 100;
     if (percent == 0) percent = 1;
     for (int i = 0; i < entries; i++) {
@@ -146,15 +151,7 @@ namespace Hal {
       GenerateEvent();
       fPairFile->Fill();
     }
-    delete fPairFile;
-    fPairFile = nullptr;
-    if (fDebug) {
-      TFile* f = new TFile(Form("%s_debug.root", ClassName()), "recreate");
-      fDebugHisto->Write();
-      fDebugHisto = nullptr;
-      f->Close();
-      delete f;
-    }
+    CleanUpFiles();
   }
 
   Int_t CorrFitPairGenerator::GetBin(Double_t val) const {
@@ -172,6 +169,18 @@ namespace Hal {
   CorrFitPairGenerator::~CorrFitPairGenerator() {
     if (fPairFile) { delete fPairFile; }
     if (fCF) delete fCF;
+  }
+
+  void CorrFitPairGenerator::CleanUpFiles() {
+    delete fPairFile;
+    fPairFile = nullptr;
+    if (fDebug) {
+      TFile* f = new TFile(Form("%s_debug.root", ClassName()), "recreate");
+      fDebugHisto->Write();
+      fDebugHisto = nullptr;
+      f->Close();
+      delete f;
+    }
   }
 
 } /* namespace Hal */

@@ -70,4 +70,8 @@ namespace HalDbg {
     fOutFile->Close();
   }
 
+  void IOManager::CdToOutput() {
+    if (fOutFile) fOutFile->cd();
+  }
+
 }  // namespace HalDbg

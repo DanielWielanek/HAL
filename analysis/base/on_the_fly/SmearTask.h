@@ -21,6 +21,7 @@
  * task for smearing events, later such "smeared" events can be used in analysis
  * as normal events but usually some parameters are modified by this class to
  * simulate detector response
+ * TODO rewrite this for complex event purely
  */
 namespace Hal {
   class SmearTask : public TrackAna {
@@ -41,14 +42,6 @@ namespace Hal {
      * track smearing algorithm
      */
     TrackSmear* fTrackAlgorithm;
-    /**
-     * pointer to current smeared track
-     * **/
-    SmearedTrack* fCurrentTrackSmeared;
-    /**
-     * pointer to current smeared event
-     **/
-    SmearedEvent* fCurrentEventSmeared;
     virtual void ProcessEvent();
     virtual void CheckCutContainerCollections();
     virtual Task::EInitFlag Init();

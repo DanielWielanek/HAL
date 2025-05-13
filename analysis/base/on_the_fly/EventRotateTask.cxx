@@ -22,8 +22,8 @@ namespace Hal {
   EventRotateTask& EventRotateTask::operator=(const EventRotateTask& other) {
     if (this != &other) {
       EventAna::operator=(other);
-      fPhiMin           = other.fPhiMin;
-      fPhiMax           = other.fPhiMax;
+      fPhiMin = other.fPhiMin;
+      fPhiMax = other.fPhiMax;
     }
     return *this;
   }

@@ -74,4 +74,4 @@ namespace Hal {
     fPdg        = TDatabasePDG::Instance();
     return stat;
   }
-}
+}  // namespace Hal

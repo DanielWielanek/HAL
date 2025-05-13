@@ -103,7 +103,7 @@ namespace Hal {
     return res;
   }
 
-  Bool_t FemtoCFPainter::AreSimiliar(ULong64_t current, ULong64_t pattern) const { return pattern == current & pattern; }
+  Bool_t FemtoCFPainter::AreSimiliar(ULong64_t current, ULong64_t pattern) const { return (pattern == current) & pattern; }
 
   ULong64_t FemtoCFPainter::SetOptionInternal(TString opt, ULong64_t newOpts) {
     if (Hal::Std::FindParam(opt, "num", kTRUE)) { SETBIT(newOpts, kNumBit); }

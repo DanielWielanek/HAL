@@ -71,7 +71,7 @@ namespace Hal {
     void Solve(Bool_t recalc);
     void SetDebugBin(Int_t dbg) { fDebugBin = dbg; }
     virtual ~FemtoYlmSolver();
-    FemtoYlmSolver(const FemtoYlmSolver& other) = default;
+    FemtoYlmSolver(const FemtoYlmSolver& other)            = default;
     FemtoYlmSolver& operator=(const FemtoYlmSolver& other) = delete;
     ClassDef(FemtoYlmSolver, 1)
   };  // namespace Hal

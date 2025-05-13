@@ -25,8 +25,8 @@ namespace Hal {
     virtual ~CorrFitPairGeneratorSimple() {};
     ClassDef(CorrFitPairGeneratorSimple, 1)
 
-    virtual Bool_t Init();
-};
+      virtual Bool_t Init();
+  };
 
 } /* namespace Hal */
 

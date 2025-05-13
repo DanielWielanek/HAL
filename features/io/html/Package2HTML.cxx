@@ -652,8 +652,8 @@ namespace Hal {
 
     if (fSoftVer < 201705) { complex = kFALSE; }
     Int_t collection_no  = ((ParameterInt*) cut->GetObjectByName("CollectionID"))->GetValue();
-    TString passed       = Hal::Std::RoundToString((Float_t)(GetULong(cut, "Passed")), -3, "prefix");
-    TString failed       = Hal::Std::RoundToString((Float_t)(GetULong(cut, "Failed")), -3, "prefix");
+    TString passed       = Hal::Std::RoundToString((Float_t) (GetULong(cut, "Passed")), -3, "prefix");
+    TString failed       = Hal::Std::RoundToString((Float_t) (GetULong(cut, "Failed")), -3, "prefix");
     const Int_t cut_size = (((ParameterInt*) cut->GetObjectByName("CutSize")))->GetValue();
     TString type         = "Slow";
     TString address      = HtmlCore::GetUrl(GetLinkToCut(cut_update, collection_no, no, fast), name);
@@ -1017,7 +1017,7 @@ namespace Hal {
     }
     TString short_path = path(fDir.Length() + 1, path.Length());
     TString text       = Form("<img class=\"pic\" src=\"%s/main_pict.png\"  width=\"%i \" height=\"%i "
-                        "\">",
+                              "\">",
                         short_path.Data(),
                         (int) pic.GetWidth(),
                         (int) pic.GetHeight());
@@ -1207,7 +1207,7 @@ namespace Hal {
   }
 
   ULong64_t Package2HTML::GetULong(const Package* pack, TString name) const {
-    return (ULong64_t)((ParameterULong64*) pack->GetObjectByName(name))->GetValue();
+    return (ULong64_t) ((ParameterULong64*) pack->GetObjectByName(name))->GetValue();
   }
 
   Bool_t Package2HTML::ExtractRunInfo() {

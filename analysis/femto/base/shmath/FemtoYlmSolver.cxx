@@ -19,7 +19,7 @@
 #include <gsl/gsl_vector_double.h>
 #include <iostream>
 
-//#define _FINISH_DEBUG_
+// #define _FINISH_DEBUG_
 namespace Hal {
 
   FemtoYlmSolver::FemtoYlmSolver() {}

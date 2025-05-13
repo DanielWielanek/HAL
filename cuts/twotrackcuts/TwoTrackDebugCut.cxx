@@ -9,8 +9,8 @@
 
 #include "TwoTrackDebugCut.h"
 
-#include "McTrack.h"
 #include "DataFormatManager.h"
+#include "McTrack.h"
 #include "TwoTrack.h"
 namespace Hal {
   TwoTrackDebugCut::TwoTrackDebugCut() : TwoTrackCut(2) {

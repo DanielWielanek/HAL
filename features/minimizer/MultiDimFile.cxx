@@ -37,9 +37,10 @@ namespace Hal {
       fTree->SetBranchAddress("vec", &fValues);
       fTree->GetEntry(0);
       if (fValues->size() != fDataManager->GetParametersNo() + 1) {
-        Hal::Cout::PrintInfo(
-          Form("Ooops, incompatible sizes in MultiDimFile expected %i found %i", fDataManager->GetParametersNo(), (int) fValues->size()),
-          EInfo::kError);
+        Hal::Cout::PrintInfo(Form("Ooops, incompatible sizes in MultiDimFile expected %i found %i",
+                                  fDataManager->GetParametersNo(),
+                                  (int) fValues->size()),
+                             EInfo::kError);
       }
     }
   }

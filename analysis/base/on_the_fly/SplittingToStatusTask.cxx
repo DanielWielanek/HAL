@@ -73,7 +73,7 @@ namespace Hal {
   SplittingToStatusTask& SplittingToStatusTask::operator=(const SplittingToStatusTask& other) {
     if (this == &other) return *this;
     EventAna::operator=(other);
-    fSplitFlag        = other.fSplitFlag;
+    fSplitFlag = other.fSplitFlag;
     return *this;
   }
 }  // namespace Hal

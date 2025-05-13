@@ -12,8 +12,8 @@
 #include "XMLNode.h"
 
 namespace Hal {
-   const unsigned short int FillStyle::kColor = 0;
-   const unsigned short int FillStyle::kStyle = 1;
+  const unsigned short int FillStyle::kColor = 0;
+  const unsigned short int FillStyle::kStyle = 1;
 
   void FillStyle::SetColor(Int_t val) { SetI(kColor, val); }
 

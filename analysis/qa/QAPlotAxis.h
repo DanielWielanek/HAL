@@ -35,7 +35,7 @@ namespace Hal {
       fMin = min;
       fMax = max;
     }
-    QAPlotAxis(const QAPlotAxis& other) = default;
+    QAPlotAxis(const QAPlotAxis& other)            = default;
     QAPlotAxis& operator=(const QAPlotAxis& other) = default;
     virtual ~QAPlotAxis();
     ClassDef(QAPlotAxis, 1)

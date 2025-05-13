@@ -94,16 +94,23 @@ namespace Hal {
     fGrouping.SetAxis(bins, min, max);
     fLimitsN.MakeBigger(bins);
     fLimitsD.MakeBigger(bins);
-    auto vec = fGrouping.GetBranchesByValue(0, 0, kTRUE);  // 0,0 -> get all branches
+    auto vec = fGrouping.GetBranchesByValue(0, 0);  // 0,0 -> get all branches
     int idx  = 0;
-    for (auto branchName : vec) {
+    std::vector<TString> names;
+    for (int i = vec.first; i < vec.second; i++) {
+      names.push_back(Form("FemtoSignal_%i", i));
+    }
+    for (auto branchName : names) {
       fSignalPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
       mngr->Register(branchName, "FemtoPairs", fSignalPairs[idx++], kTRUE);
     }
     if (fWriteBackground) {
+      std::vector<TString> names2;
+      for (int i = vec.first; i < vec.second; i++) {
+        names2.push_back(Form("FemtoBackground_%i", i));
+      }
       idx = 0;
-      vec = fGrouping.GetBranchesByValue(0, 0, kFALSE);
-      for (auto branchName : vec) {
+      for (auto branchName : names2) {
         fBackgroundPairs.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
         mngr->Register(branchName, "FemtoPairs", fBackgroundPairs[idx++], kTRUE);
       }

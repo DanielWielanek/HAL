@@ -14,7 +14,5 @@
 #pragma link off all functions;
 
 #pragma link C++ class Hal::SpectraAna + ;
-#pragma link C++ class Hal::Decay + ;
-#pragma link C++ class Hal::DecayChannel + ;
 
 #endif

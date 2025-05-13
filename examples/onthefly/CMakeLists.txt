@@ -36,6 +36,7 @@ OTFRecoEventInterface.cxx
 OTFSource.cxx
 OTFEventGenerator.cxx
 OTFEventGeneratorDecay.cxx
+OTFEventGeneratorDecayer.cxx
 )
 
 Set(HEADERS )

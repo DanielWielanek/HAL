@@ -18,7 +18,7 @@ namespace Hal {
     void RunSignalPair();
     void RunSignalBackgroundPair();
     void RunBackgroundPair();
-    Bool_t ConnectToData();
+    Bool_t InitPairFile();
     /**
      * init  generators - for vertical init all generators for horizontal init generators x multiplicity
      */

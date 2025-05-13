@@ -1,5 +1,4 @@
 Set(INCLUDE_DIRECTORIES
-
 ${HAL_FEATURES}
 ${HAL_DATA}
 )
@@ -40,8 +39,6 @@ dataformat/TrackClones.cxx
 dataformat/DataFormat.cxx
 dataformat/compound/ComplexEvent.cxx
 dataformat/compound/ComplexTrack.cxx
-dataformat/compound/SmearedEvent.cxx
-dataformat/compound/SmearedTrack.cxx
 dataformat/compound/ComplexEventInterface.cxx
 dataformat/detector/ToFTrack.cxx
 dataformat/detector/TpcTrack.cxx
@@ -67,12 +64,14 @@ io/InputDataInfo.cxx
 io/VirtualSource.cxx
 io/VirtualIOManager.cxx
 
+decays/Decay.cxx
+
 )
 
 Set(HEADERS )
 Set(LINKDEF HalDataLinkDef.h)
 Set(LIBRARY_NAME HalData)
-Set(DEPENDENCIES HalFeatures)
+Set(DEPENDENCIES EG HalFeatures)
 
 GENERATE_LIBRARY_HAL()
 

@@ -14,15 +14,15 @@
 /**
  * check track transverse momentum
  */
-namespace Hal{
+namespace Hal {
 
-class TrackPtCut : public TrackCut {
-protected:
-public:
-  TrackPtCut();
-  virtual Bool_t Pass(Track* track);
-  virtual ~TrackPtCut();
-  ClassDef(TrackPtCut, 1)
-};
-}
+  class TrackPtCut : public TrackCut {
+  protected:
+  public:
+    TrackPtCut();
+    virtual Bool_t Pass(Track* track);
+    virtual ~TrackPtCut();
+    ClassDef(TrackPtCut, 1)
+  };
+}  // namespace Hal
 #endif /* HALPTCUT_H_ */

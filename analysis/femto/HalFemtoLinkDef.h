@@ -58,6 +58,7 @@
 #pragma link C++ class Hal::CorrFitPairGeneratorYPtKt + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorYPtKtStubborn + ;
 #pragma link C++ class Hal::CorrFitPairGeneratorConvolutionYPt + ;
+#pragma link C++ class Hal::ConvolutionPairGenerator + ;
 
 #pragma link C++ class Hal::Femto1DCF + ;
 #pragma link C++ class Hal::Femto3DCF + ;
@@ -195,6 +196,6 @@
 
 #endif
 
-//#pragma link C++ class Led+;
+// #pragma link C++ class Led+;
 
 #endif

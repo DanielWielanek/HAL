@@ -13,9 +13,10 @@
 #include <TMath.h>
 #include <TRandom.h>
 
+#include "ComplexTrack.h"
+#include "McTrack.h"
 #include "Package.h"
 #include "Parameter.h"
-#include "SmearedTrack.h"
 #include "Track.h"
 
 
@@ -61,14 +62,14 @@ namespace Hal {
     return pack;
   }
 
-  void TrackSmearMomentumPercent::ModifyTrack(SmearedTrack* mod) {
+  void TrackSmearMomentumPercent::ModifyTrack(ComplexTrack* mod) {
     Double_t px, py, pz, e;
-    TLorentzVector* true_mom = mod->GetTrueMomentum();
-    px                       = true_mom->Px();
-    py                       = true_mom->Py();
-    pz                       = true_mom->Pz();
-    e                        = true_mom->E();
-    Double_t m2              = e * e - px * px - py * py - pz * pz;
+    Hal::McTrack* mc = (Hal::McTrack*) mod->GetImgTrack();
+    px               = mc->GetMomentum().Px();
+    py               = mc->GetMomentum().Py();
+    pz               = mc->GetMomentum().Pz();
+    e                = mc->GetMomentum().E();
+    Double_t m2      = e * e - px * px - py * py - pz * pz;
     switch (fSmearMode) {
       case 1:  // pt only
       {
@@ -83,6 +84,7 @@ namespace Hal {
     }
     e = TMath::Sqrt(m2 + px * px + py * py + pz * pz);
     mod->SetMomentum(px, py, pz, e);
+    mod->GetRealTrack()->SetMomentum(px, py, pz, e);
   }
 
   Task::EInitFlag TrackSmearMomentumPercent::Init() {

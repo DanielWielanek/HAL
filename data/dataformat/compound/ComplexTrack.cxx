@@ -28,9 +28,9 @@ namespace Hal {
   ComplexTrack& ComplexTrack::operator=(const ComplexTrack& other) {
     if (this != &other) {
       Track::operator=(other);
-      fMatchID       = other.fMatchID;
-      fRealTrack     = other.fRealTrack;
-      fImgTrack      = other.fImgTrack;
+      fMatchID   = other.fMatchID;
+      fRealTrack = other.fRealTrack;
+      fImgTrack  = other.fImgTrack;
     }
     return *this;
   }

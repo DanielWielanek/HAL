@@ -23,7 +23,7 @@
 #include <iostream>
 #include <string>
 
-//#define _MULTIDIM_DEBUG_
+// #define _MULTIDIM_DEBUG_
 
 
 namespace Hal {

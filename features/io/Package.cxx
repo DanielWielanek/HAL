@@ -302,7 +302,7 @@ namespace Hal {
     if (option == " ") {  // check by name && index
       Int_t counter = 0;
       for (Int_t i = 0; i < fNo; i++) {
-        TString temp_name = (TString)((fArrayObjects->At(i))->GetName());
+        TString temp_name = (TString) ((fArrayObjects->At(i))->GetName());
         if (name.EqualTo(temp_name)) {
           counter++;
           if (counter > index) return kTRUE;
@@ -321,7 +321,7 @@ namespace Hal {
       }
     } else if (option == "name") {  // only check by name
       for (Int_t i = 0; i < fNo; i++) {
-        TString temp_name = (TString)((fArrayObjects->At(i))->GetName());
+        TString temp_name = (TString) ((fArrayObjects->At(i))->GetName());
         if (name.EqualTo(temp_name)) { return kTRUE; }
       }
     }

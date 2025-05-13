@@ -70,7 +70,7 @@ typedef int bool;
 #define type_of_call
 #endif
 
-//#define LEDNICKY_CHEATING
+// #define LEDNICKY_CHEATING
 #define OLD_LEDNICKY  // keep compatibility with old lednicky code
 
 // --- Prototype of the function used in the weight calculator
@@ -124,7 +124,7 @@ void type_of_call F77_NAME(setkpkmmodel, SETKPKMMODEL)(const int& i_model, const
 }
 */
 // Test function for Lambda potential
-//#define printlam F77_NAME(printlam,PRINTLAM)
+// #define printlam F77_NAME(printlam,PRINTLAM)
 // extern "C" {void type_of_call printlam_();}
 // there is not PRINTLAM in *.F file
 
@@ -294,10 +294,10 @@ ClassImp(FemtoWeightGeneratorLednicky)
   FemtoWeightGeneratorLednicky& FemtoWeightGeneratorLednicky::operator=(const FemtoWeightGeneratorLednicky& aWeight) {
     if (this == &aWeight) return *this;
     FemtoWeightGenerator::operator=(aWeight);
-    fWei                          = aWeight.fWei;
-    fWein                         = aWeight.fWein;
-    fWeif                         = aWeight.fWeif;
-    fWeightDen                    = aWeight.fWeightDen;
+    fWei       = aWeight.fWei;
+    fWein      = aWeight.fWein;
+    fWeif      = aWeight.fWeif;
+    fWeightDen = aWeight.fWeightDen;
 
     fItest          = aWeight.fItest;
     fIch            = aWeight.fIch;

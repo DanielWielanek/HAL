@@ -18,7 +18,7 @@
 #include "CutMonitor.h"
 #include "Std.h"
 
-//#define SHOW_CUT_INIT
+// #define SHOW_CUT_INIT
 /**
  * class for storing all cuts and cut monitors used in analysis
  */

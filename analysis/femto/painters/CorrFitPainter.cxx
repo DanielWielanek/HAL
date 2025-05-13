@@ -103,6 +103,7 @@ namespace Hal {
     for (auto str : label) {
       fLegendEntries.push_back(fLegend->AddEntry((TObject*) 0x0, str, ""));
     }
+    if (fLegendFontSize != 0) fLegend->SetTextSize(fLegendFontSize);
   }
 
   void CorrFitPainter::UpdateLegend() {
@@ -180,7 +181,7 @@ namespace Hal {
     return res;
   }
 
-  Bool_t CorrFitPainter::AreSimiliar(ULong64_t current, ULong64_t pattern) const { return pattern == current & pattern; }
+  Bool_t CorrFitPainter::AreSimiliar(ULong64_t current, ULong64_t pattern) const { return (pattern == current) & pattern; }
 
   ULong64_t CorrFitPainter::SetOptionInternal(TString opt, ULong64_t newFlag) {
     ContitionalPattern(opt, "norm", newFlag, kAutoNormBit, kTRUE);
@@ -207,6 +208,11 @@ namespace Hal {
           if (vals.size() == 4) {
             for (int i = 0; i < 4; i++)
               fLegendPos[i] = vals[i];
+          }
+          if (vals.size() == 5) {
+            for (int i = 0; i < 4; i++)
+              fLegendPos[i] = vals[i];
+            fLegendFontSize = vals[4];
           }
         }
       }

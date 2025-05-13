@@ -27,4 +27,5 @@
 #pragma link C++ class HalOTF::RecoTrack + ;
 #pragma link C++ class HalOTF::RecoEventInterface + ;
 #pragma link C++ class HalOTF::Source + ;
+#pragma link C++ class HalOTF::EventGeneratorDecayer + ;
 #endif

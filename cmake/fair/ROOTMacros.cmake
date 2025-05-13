@@ -35,28 +35,8 @@ endfunction(Format)
   #       Macros for building ROOT dictionary
   #
   ###########################################
+
 Macro(ROOT_GENERATE_DICTIONARY)
-
-  # Macro to switch between the old implementation with parameters
-  # and the new implementation without parameters.
-  # For the new implementation some CMake variables has to be defined
-  # before calling the macro.
-
-  If(${ARGC} EQUAL 0)
-#    Message("New Version")
-    ROOT_GENERATE_DICTIONARY_NEW()
-  Else(${ARGC} EQUAL 0)
-    If(${ARGC} EQUAL 4)
-#      Message("Old Version")
-      ROOT_GENERATE_DICTIONARY_OLD("${ARGV0}" "${ARGV1}" "${ARGV2}" "${ARGV3}")
-    Else(${ARGC} EQUAL 4)
-      Message(FATAL_ERROR "Has to be implemented")
-    EndIf(${ARGC} EQUAL 4)
-  EndIf(${ARGC} EQUAL 0)
-
-EndMacro(ROOT_GENERATE_DICTIONARY)
-
-Macro(ROOT_GENERATE_DICTIONARY_NEW)
 
   # All Arguments needed for this new version of the macro are defined
   # in the parent scope, namely in the CMakeLists.txt of the submodule
@@ -88,9 +68,23 @@ Macro(ROOT_GENERATE_DICTIONARY_NEW)
   EndIf()
 
   get_filename_component(script_name ${Int_DICTIONARY} NAME_WE)
+
+  list(GET INCLUDE_DIRECTORIES -1 LAST_INCLUDE_DIR)
+  foreach(header ${HDRS})
+    get_filename_component(file_name ${header} NAME)
+    get_filename_component(folder ${header} DIRECTORY )
+   	list(APPEND Int_ONLY_HEADERS ${file_name})
+   	list(APPEND Int_ONLY_DIRS ${LAST_INCLUDE_DIR}/${folder})
+  endforeach()
+  list(APPEND Int_ONLY_DIRS ${LAST_INCLUDE_DIR})
+  Set(Int_ONLY_DIRS ${INCLUDE_DIRECTORIES})
+  list(REMOVE_DUPLICATES Int_ONLY_DIRS)
+  separate_arguments(Int_ONLY_HEADERS)
+  separate_arguments(Int_ONLY_DIRS)
+  Format(Int_ONLY_DIRS_STR "${Int_ONLY_DIRS}" "-I" "")
   String(REPLACE ";" " " Int_DEF_STR "${Int_DEF}")
-  String(REPLACE ";" " " Int_INC_STR "${Int_INC}")
-  String(REPLACE ";" " " Int_HDRS_STR "${Int_HDRS}")
+  String(REPLACE ";" " " Int_INC_STR "${Int_ONLY_DIRS_STR}")
+  String(REPLACE ";" " " Int_HDRS_STR "${Int_ONLY_HEADERS}")
 
   Set(EXTRA_DICT_PARAMETERS "")
   If (ROOT_FOUND_VERSION GREATER 59999)
@@ -110,114 +104,21 @@ Macro(ROOT_GENERATE_DICTIONARY_NEW)
   # time we run make. To pass the variables a script is created containing the
   # correct values for the needed variables
 
-  IF(FAIRROOTPATH)
-    Configure_File(${FAIRROOTPATH}/share/fairbase/cmake/scripts/generate_dictionary_root.sh.in
-                   ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh
-                  )
-    #EXEC_PROGRAM(/bin/chmod ARGS "u+x ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh")
-    execute_process(COMMAND /bin/chmod u+x ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh OUTPUT_QUIET)
-
-  ELSE(FAIRROOTPATH)
-    Configure_File(${PROJECT_SOURCE_DIR}/cmake/scripts/generate_dictionary_root.sh.in
+   Configure_File(${PROJECT_SOURCE_DIR}/cmake/scripts/generate_dictionary_root.sh.in
                    ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh
                   )
                   #workaround for stand alone compilation
                   execute_process(COMMAND /bin/chmod u+x ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh OUTPUT_QUIET)
-  ENDIF(FAIRROOTPATH)
 
 
-  If (ROOT_FOUND_VERSION GREATER 59999)
     Add_Custom_Command(OUTPUT  ${OUTPUT_FILES}
                        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh
                        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/${Int_PCMFILE} ${LIBRARY_OUTPUT_PATH}/${Int_PCMFILE}
                        DEPENDS ${Int_HDRS} ${Int_LINKDEF}
                       )
     Install(FILES ${LIBRARY_OUTPUT_PATH}/${Int_PCMFILE} ${Int_ROOTMAPFILE} DESTINATION lib)
-  Else()
-    Add_Custom_Command(OUTPUT  ${OUTPUT_FILES}
-                       COMMAND ${CMAKE_CURRENT_BINARY_DIR}/generate_dictionary_${script_name}.sh
-                       DEPENDS ${Int_HDRS} ${Int_LINKDEF}
-                      )
-  EndIf()
 
-endmacro(ROOT_GENERATE_DICTIONARY_NEW)
-
-
-MACRO (ROOT_GENERATE_DICTIONARY_OLD INFILES LINKDEF_FILE OUTFILE INCLUDE_DIRS_IN)
-
-  set(INCLUDE_DIRS)
-
-  foreach (_current_FILE ${INCLUDE_DIRS_IN})
-    set(INCLUDE_DIRS ${INCLUDE_DIRS} -I${_current_FILE})
-  endforeach (_current_FILE ${INCLUDE_DIRS_IN})
-
-#  Message("Definitions: ${DEFINITIONS}")
-#  MESSAGE("INFILES: ${INFILES}")
-#  MESSAGE("OutFILE: ${OUTFILE}")
-#  MESSAGE("LINKDEF_FILE: ${LINKDEF_FILE}")
-#  MESSAGE("INCLUDE_DIRS: ${INCLUDE_DIRS}")
-
-  STRING(REGEX REPLACE "^(.*)\\.(.*)$" "\\1.h" bla "${OUTFILE}")
-#  MESSAGE("BLA: ${bla}")
-  SET (OUTFILES ${OUTFILE} ${bla})
-
-
-  if (CMAKE_SYSTEM_NAME MATCHES Linux)
-    ADD_CUSTOM_COMMAND(OUTPUT ${OUTFILES}
-       COMMAND LD_LIBRARY_PATH=${ROOT_LIBRARY_DIR}:${_intel_lib_dirs} ROOTSYS=${ROOTSYS} ${ROOT_CINT_EXECUTABLE}
-       ARGS -f ${OUTFILE} -c -DHAVE_CONFIG_H ${INCLUDE_DIRS} ${INFILES} ${LINKDEF_FILE} DEPENDS ${INFILES} ${LINKDEF_FILE})
-  else (CMAKE_SYSTEM_NAME MATCHES Linux)
-    if (CMAKE_SYSTEM_NAME MATCHES Darwin)
-      ADD_CUSTOM_COMMAND(OUTPUT ${OUTFILES}
-       COMMAND DYLD_LIBRARY_PATH=${ROOT_LIBRARY_DIR} ROOTSYS=${ROOTSYS} ${ROOT_CINT_EXECUTABLE}
-       ARGS -f ${OUTFILE} -c -DHAVE_CONFIG_H ${INCLUDE_DIRS} ${INFILES} ${LINKDEF_FILE} DEPENDS ${INFILES} ${LINKDEF_FILE})
-    endif (CMAKE_SYSTEM_NAME MATCHES Darwin)
-  endif (CMAKE_SYSTEM_NAME MATCHES Linux)
-
-ENDMACRO (ROOT_GENERATE_DICTIONARY_OLD)
-
-MACRO (GENERATE_ROOT_TEST_SCRIPT SCRIPT_FULL_NAME)
-
-  get_filename_component(path_name ${SCRIPT_FULL_NAME} PATH)
-  get_filename_component(file_extension ${SCRIPT_FULL_NAME} EXT)
-  get_filename_component(file_name ${SCRIPT_FULL_NAME} NAME_WE)
-  set(shell_script_name "${file_name}.sh")
-
-  #MESSAGE("PATH: ${path_name}")
-  #MESSAGE("Ext: ${file_extension}")
-  #MESSAGE("Name: ${file_name}")
-  #MESSAGE("Shell Name: ${shell_script_name}")
-
-  string(REPLACE ${PROJECT_SOURCE_DIR}
-         ${PROJECT_BINARY_DIR} new_path ${path_name}
-        )
-
-  #MESSAGE("New PATH: ${new_path}")
-
-  file(MAKE_DIRECTORY ${new_path}/data)
-
-  CONVERT_LIST_TO_STRING(${LD_LIBRARY_PATH})
-  set(MY_LD_LIBRARY_PATH ${output})
-
-  CONVERT_LIST_TO_STRING(${ROOT_INCLUDE_PATH})
-  set(MY_ROOT_INCLUDE_PATH ${output})
-
-  set(my_script_name ${SCRIPT_FULL_NAME})
-
-  Write_Geant4Data_Variables_sh()
-  IF(FAIRROOTPATH)
-    configure_file(${FAIRROOTPATH}/share/fairbase/cmake/scripts/root_macro.sh.in
-                   ${new_path}/${shell_script_name}
-                  )
-  ELSE(FAIRROOTPATH)
-    configure_file(${PROJECT_SOURCE_DIR}/cmake/scripts/root_macro.sh.in
-                   ${new_path}/${shell_script_name}
-                  )
-  ENDIF(FAIRROOTPATH)
-  execute_process(COMMAND /bin/chmod u+x ${new_path}/${shell_script_name} OUTPUT_QUIET)
-
-ENDMACRO (GENERATE_ROOT_TEST_SCRIPT)
-
+endmacro(ROOT_GENERATE_DICTIONARY)
 
 Macro(ROOT_GENERATE_ROOTMAP)
 

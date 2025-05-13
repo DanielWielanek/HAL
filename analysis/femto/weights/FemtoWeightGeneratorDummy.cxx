@@ -139,7 +139,7 @@ namespace Hal {
     fMa0           = params[opt][3];
     fGamma_a0KK    = params[opt][4];
     fGamma_a0pieta = params[opt][5];
-    fAlpha     = 0.5;
+    fAlpha         = 0.5;
   }
 
 } /* namespace Hal */

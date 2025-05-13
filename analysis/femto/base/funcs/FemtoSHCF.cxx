@@ -53,8 +53,8 @@
 #include "StdString.h"
 #include "Style.h"
 
-//#define FULL_CALC
-//#define _FINISH_DEBUG_
+// #define FULL_CALC
+// #define _FINISH_DEBUG_
 namespace Hal {
   FemtoSHCF::FemtoSHCF() :
     DividedHisto1D(),

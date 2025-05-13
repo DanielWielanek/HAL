@@ -110,4 +110,8 @@ This software includes several helper tools:
 
     Page @subpage subpage_2
 
-    Page @subpage subpage_3
+
+ * simplification of buffer class - using pointers instead of int maps?
+ * std::fuction for custom class cuts?
+ * removing duplicate cut monitors
+

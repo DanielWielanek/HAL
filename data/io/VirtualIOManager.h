@@ -31,8 +31,7 @@ namespace Hal {
     VirtualSource* fSource;
 
   protected:
-    virtual void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
-    virtual void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
+    virtual void RegisterInternal(TString name, TString folderName, TObject* obj, Bool_t toFile);
     virtual Bool_t InitInternal();
 
   public:

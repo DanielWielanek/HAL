@@ -28,8 +28,7 @@ namespace HalDbg {
     TTree* fOutTree;
 
   protected:
-    void RegisterInternal(const char* name, const char* folderName, TNamed* obj, Bool_t toFile);
-    void RegisterInternal(const char* name, const char* Foldername, TCollection* obj, Bool_t toFile);
+    void RegisterInternal(TString name, TString folderName, TObject* obj, Bool_t toFile);
     Bool_t InitInternal();
 
   public:

@@ -44,6 +44,8 @@ namespace Hal {
     static Int_t RStarSide() { return 5; }
     static Int_t RStarLong() { return 6; }
     static Int_t TStar() { return 7; }
+    static Int_t RStar() { return 8; }
+    static Int_t KStar() { return 9; }
     static Int_t KStarOut() { return 0; };
     static Int_t KStarSide() { return 1; };
     static Int_t KStarLong() { return 2; };

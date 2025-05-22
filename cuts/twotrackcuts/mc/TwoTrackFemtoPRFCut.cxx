@@ -90,16 +90,18 @@ namespace Hal {
   TwoTrackFemtoPRFCut::~TwoTrackFemtoPRFCut() {}
 
 
-  TwoTrackFemtoPRFCutFull::TwoTrackFemtoPRFCutFull() : TwoTrackCut(8) {
-    SetUnitName("k^{*}_{out} [GeV/c]", 0);
-    SetUnitName("k^{*}_{side} [GeV/c]", 1);
-    SetUnitName("k^{*}_{long} [GeV/c]", 2);
-    SetUnitName("k^{*}_{en} [GeV/c]", 3);
+  TwoTrackFemtoPRFCutFull::TwoTrackFemtoPRFCutFull() : TwoTrackCut(10) {
+    SetUnitName("k^{*}_{out} [GeV/c]", KStarOut());
+    SetUnitName("k^{*}_{side} [GeV/c]", KStarSide());
+    SetUnitName("k^{*}_{long} [GeV/c]", KStarLong());
+    SetUnitName("k^{*}_{en} [GeV/c]", KStarEn());
 
-    SetUnitName("r^{*}_{out} [fm/c]", 4);
-    SetUnitName("r^{*}_{side} [fm/c]", 5);
-    SetUnitName("r^{*}_{long} [fm/c]", 6);
-    SetUnitName("t^{*} [fm/c]", 7);
+    SetUnitName("r^{*}_{out} [fm/c]", RStarOut());
+    SetUnitName("r^{*}_{side} [fm/c]", RStarSide());
+    SetUnitName("r^{*}_{long} [fm/c]", RStarLong());
+    SetUnitName("t^{*} [fm/c]", TStar());
+    SetUnitName("k^{*} [GeV/c]", KStar());
+    SetUnitName("r^{*} [fm]", RStar());
   }
 
   Bool_t TwoTrackFemtoPRFCutFull::Pass(TwoTrack* pair) {
@@ -137,11 +139,13 @@ namespace Hal {
     SetValue(y, RStarSide());
     SetValue(z, RStarLong());
     SetValue(t, TStar());
+    SetValue(TMath::Sqrt(x * x + y * y + z * z), RStar());
 
     SetValue(fP1.X(), KStarOut());
     SetValue(fP1.Y(), KStarSide());
     SetValue(fP1.Z(), KStarLong());
     SetValue(fP1.T(), KStarEn());
+    SetValue(fP1.P(), KStar());
     return Validate();
   }
 

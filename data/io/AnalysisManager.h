@@ -10,6 +10,7 @@
 #define HAL_ANALYSIS_BASE_HALRUNANA_H_
 
 #include <TObject.h>
+#include <TStopwatch.h>
 #include <TString.h>
 
 /**
@@ -24,6 +25,9 @@ namespace Hal {
   class TriggerTask;
   class Package;
   class AnalysisManager : public TObject {
+    TStopwatch fTimer;
+    Double_t fInitTime      = {0};
+    Double_t fFinishTime    = {0};
     UInt_t fProcessedEvents = {0};
     Bool_t fTriggersEnabled = {kFALSE};
     Bool_t fProgressBar     = {kFALSE};
@@ -88,6 +92,7 @@ namespace Hal {
      * @param field
      */
     void SetField(MagField* field) { fField = field; }
+    AnalysisManager operator=(const AnalysisManager& other) = delete;
     virtual ~AnalysisManager();
     ClassDef(AnalysisManager, 1)
   };

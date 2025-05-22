@@ -26,12 +26,14 @@
 
 #include <RtypesCore.h>
 #include <TFile.h>
+#include <TInterpreter.h>
 
 namespace Hal {
   AnalysisManager::AnalysisManager() {}
 
   Bool_t AnalysisManager::Init() {
     Cout::PrintInfo("=== AnalysisManager::Init ===", EInfo::kInfo);
+    fTimer.Start();
     if (fSource == nullptr) exit(0);
     Cout::PrintInfo("=== Source::Init ===", EInfo::kInfo);
     Bool_t initSource = fSource->Init();
@@ -95,10 +97,14 @@ namespace Hal {
       Cout::PrintInfo("=== Manager status ===", EInfo::kDebugInfo);
       fManager->PrintInfo();
     }
+    fInitTime = fTimer.CpuTime();
+
     return kTRUE;
   }
 
   void AnalysisManager::Run(Int_t start, Int_t end) {
+    fTimer.Reset();
+    fTimer.Start();
     if (start == -1 && end == -1) {
       start = 0;
       end   = fManager->GetEntries();
@@ -117,6 +123,8 @@ namespace Hal {
       DoStep(i);
       fManager->FillTree();
     }
+    fTimer.Stop();
+    fFinishTime = fTimer.CpuTime();
     Finish();
   }
 
@@ -138,6 +146,9 @@ namespace Hal {
     metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetSourceName(), 'f'));
+    metadata_new->AddObject(new ParameterString("Input macro", gInterpreter->GetCurrentMacroName(), 'f'));
+    metadata_new->AddObject(new ParameterDouble("Initialization Time [s]", fInitTime, 'f'));
+    metadata_new->AddObject(new ParameterDouble("Processing time [s]", fFinishTime, 'f'));
     metadata_new->AddObject(fManager->GetBranchesList());
 
     TList* trigList = new TList();

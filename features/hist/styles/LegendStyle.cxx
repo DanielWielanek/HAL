@@ -66,4 +66,12 @@ namespace Hal {
     if (auto child = node->GetChild("FillStyle")) { fFill.ImportFromXML(child); }
     if (auto child = node->GetChild("LineStyle")) { fLine.ImportFromXML(child); }
   }
+
+  LegendStyle::LegendStyle(TString style) {
+    if (style.Length() == 0) return;
+    if (Hal::Std::FindParam(style, "apollo", kTRUE)) { SetFont(82); }
+    if (Hal::Std::FindParam(style, "05", kTRUE)) { SetFontSize(0.05); }
+    if (Hal::Std::FindParam(style, "06", kTRUE)) { SetFontSize(0.06); }
+  }
+
 } /* namespace Hal */

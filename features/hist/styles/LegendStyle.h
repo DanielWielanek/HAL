@@ -25,8 +25,8 @@ namespace Hal {
     static const unsigned short int kFontStyle;
 
   public:
-    LegendStyle() {};
-    static LegendStyle GetStyle(TString opt);
+    LegendStyle(TString style = "");
+    [[depreacted]] static LegendStyle GetStyle(TString opt);
     void SetFontSize(Float_t size);
     void SetFont(Int_t style);
     void Import(const TLegend& x);

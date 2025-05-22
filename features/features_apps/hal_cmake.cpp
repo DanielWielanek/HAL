@@ -23,9 +23,6 @@
  *# basic usage
  *
  *this application can do following things:
- * hal-cmake --template=<TYPE> --name=<NAME> prepares a template header and source file for cut, the TYPE can be event-cut,
- * track-cut, twotrack-cut for given type of cut template e.g. hal-cmake --template=event-cut MyVertex create template for event
- * cut class called MyVertex
  * hal-cmake --dir=[LIBRARY_NAME] - create a template CMakeLists.txt file and LinkDef file for given directory, NOTE: the parser
  * trying to find class names but its's at early stage, so please check LinkDef file
 
@@ -34,60 +31,31 @@
 
 void PrepareLib(TString name);
 
-void SetNames(TString& plusPath,
-              TString& pattern,
-              TString& toCopy,
-              TString& headerGuard,
-              TString& newGuard,
-              TString& name,
-              TString inputName);
-
-void PrepareMonitor(TString name, TString type1, TString type2);
-
 void UpdateLib();
 
 void MakeLinkDef(TString name, std::vector<TString> sources);
 
 std::vector<TString> ParseHeader(TString sourceName);
 
-void PrepareCutClass(TString type, TString name);
-
 int main(int argc, char* argv[]) {
   if (argc < 2) {
     std::cout << "not enough params, type --help" << std::endl;
-    return 0;
+    return 1;
   }
   auto args = Hal::Std::ConvertMainArgs(argc, argv);
   if (args[0].first == "help") {  // print help
     std::cout << "options" << std::endl;
     std::cout << "--dir=[LIBRARYNAME] prepare cmake template for this directory" << std::endl;
     std::cout << "--updatedir update cmake SRC list and linkdef" << std::endl;
-    std::cout << "--template=[TYPE] --name=[NAME] prepares template for class" << std::endl;
-    std::cout << "\t TYPE = event-cut, track-cut, twotrack-cut for cuts" << std::endl;
-    std::cout << "\t TYPE = event-monx, event-mony, event-monz, for x, xy, xyz, property monitors for events" << std::endl;
-    std::cout << "\t TYPE = track-monx, track-mony, track-monz, for x, xy, xyz, property monitors for tracks" << std::endl;
-    std::cout << "\t TYPE = twotrack-monx, twotrack-mony, twotrack-monz, for x, xy, xyz, property monitors for pairs"
-              << std::endl;
-    std::cout << "\tName = name of class e.g. hal_cmake --type=event-cut --name=Multiplicity " << std::endl;
   }
   if (args[0].first == "dir") {
     PrepareLib(args[0].second);
-    return 1;
+    return 0;
   }
   if (args[0].first == "updatedir") {
     UpdateLib();
-    return 1;
+    return 0;
   }
-  if (args[0].first == "template") {
-    auto vec = Hal::Std::ExplodeString(args[0].second, '-');
-    if (vec.size() <= 1) return 0;
-    if (vec[1].EqualTo("cut")) { PrepareCutClass(args[0].second, args[1].second); }
-    if (vec[1].EqualTo("monx")) { PrepareMonitor(args[1].second, vec[0], "x"); }
-    if (vec[1].EqualTo("mony")) { PrepareMonitor(args[1].second, vec[0], "y"); }
-    if (vec[1].EqualTo("monz")) { PrepareMonitor(args[1].second, vec[0], "z"); }
-  }
-
-
   return 1;
 }
 
@@ -160,50 +128,6 @@ void UpdateLib() {
   MakeLinkDef(linkdef, cppFiles);
 }
 
-void SetNames(TString& plusPath,
-              TString& pattern,
-              TString& toCopy,
-              TString& headerGuard,
-              TString& newGuard,
-              TString& name,
-              TString inputName) {
-  pattern     = inputName;
-  toCopy      = plusPath + "templates/" + inputName;
-  headerGuard = "TEMPLATES_" + inputName;
-  headerGuard.ToUpper();
-  newGuard = name;
-  newGuard.ToUpper();
-}
-
-void PrepareCutClass(TString type, TString name) {
-  TString plusPath = Hal::Std::GetHalrootPlus();
-  TString toCopy;
-  TString pattern;
-  TString headerGuard;
-  TString newGuard;
-
-
-  if (type.EqualTo("event-cut", TString::ECaseCompare::kIgnoreCase)) {
-    SetNames(plusPath, pattern, toCopy, headerGuard, newGuard, name, "EventCutTemplate");
-  }
-  if (type.EqualTo("track-cut", TString::ECaseCompare::kIgnoreCase)) {
-    SetNames(plusPath, pattern, toCopy, headerGuard, newGuard, name, "TrackCutTemplate");
-  }
-  if (type.EqualTo("twotrack-cut", TString::ECaseCompare::kIgnoreCase)) {
-    SetNames(plusPath, pattern, toCopy, headerGuard, newGuard, name, "TwoTrackCutTemplate");
-  }
-  if (toCopy.Length() == 0) {
-    std::cout << "Wrong flag in template type" << std::endl;
-    return;
-  }
-  TString tempFile[2] = {"temp.txt", "temp2.txt"};
-  gSystem->CopyFile(Form("%s.cxx", toCopy.Data()), tempFile[0]);
-  Hal::Std::ReplaceInFile(tempFile[0], Form("%s.cxx", name.Data()), pattern, name);
-  gSystem->CopyFile(Form("%s.h", toCopy.Data()), tempFile[0], kTRUE);
-  Hal::Std::ReplaceInFile(tempFile[0], tempFile[1], pattern, name);  // replace classname
-  Hal::Std::ReplaceInFile(tempFile[1], Form("%s.h", name.Data()), headerGuard, newGuard);
-  gSystem->Exec("rm temp.txt temp2.txt");
-}
 
 std::vector<TString> ParseHeader(TString sourceName) {
   TString header = sourceName.ReplaceAll(".cpp", ".h");
@@ -295,46 +219,4 @@ void MakeLinkDef(TString name, std::vector<TString> sources) {
   linkdef << "" << std::endl;
   linkdef << "#endif" << std::endl;
   linkdef.close();
-}
-
-void PrepareMonitor(TString name, TString type1, TString type2) {
-  TString baseClassName;
-  if (type2 == "x") {
-    baseClassName = "PropertyMonitorTemplateX";
-  } else if (type2 == "y") {
-    baseClassName = "PropertyMonitorTemplateXY";
-  } else if (type2 == "z") {
-    baseClassName = "PropertyMonitorTemplateXYZ";
-  } else {
-    return;
-  }
-  TString cutUpdate;
-  TString updateMethod;
-  if (type1 == "event") {
-    cutUpdate    = "Hal::ECutUpdate::kEvent";
-    updateMethod = "  Hal::Event *event = (Hal::Event*)obj;";
-  } else if (type1 == "track") {
-    cutUpdate    = "Hal::ECutUpdate::kTrack";
-    updateMethod = "  Hal::Track *track = (Hal::Track*)obj; ";
-  } else if (type1 == "twotrack") {
-    cutUpdate    = "Hal::ECutUpdate::kTwoTrack";
-    updateMethod = "  Hal::TwoTrack *pair = (Hal::TwoTrack*)obj; ";
-  } else {
-    return;
-  }
-  TString plusPath = Hal::Std::GetHalrootPlus();
-  TString toCopy;
-  TString pattern;
-  TString headerGuard;
-  TString newGuard;
-  SetNames(plusPath, pattern, toCopy, headerGuard, newGuard, name, baseClassName);
-  gSystem->CopyFile(Form("%s.cxx", toCopy.Data()), Form("%s.cxx", name.Data()));
-  gSystem->CopyFile(Form("%s.h", toCopy.Data()), Form("%s.h", name.Data()));
-  Hal::Std::ReplaceInFile(Form("%s.h", name.Data()), Form("%s.h", name.Data()), {headerGuard, baseClassName}, {newGuard, name});
-  // header
-  Hal::Std::ReplaceInFile(Form("%s.cxx", name.Data()),
-                          Form("%s.cxx", name.Data()),
-                          {TString("__UPDATE_METHOD__"), TString("__UPDATE__"), baseClassName},
-                          {updateMethod, cutUpdate, name});
-  // header
 }

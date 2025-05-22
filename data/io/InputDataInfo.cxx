@@ -48,6 +48,8 @@ namespace Hal {
         std::vector<TString> row {singleFile};
         fFileNames.push_back(row);
       }
+    } else if (file.Length() == 0) {
+      // do nothing
     } else {
       fFileNames.resize(1);
       fFileNames[0].push_back(file);

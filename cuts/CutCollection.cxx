@@ -508,6 +508,17 @@ namespace Hal {
       if (bad == n) return true;
       return false;
     };
+    Int_t n = fCutMonitors->GetEntries();
+    std::vector<int> toRemove;
+    for (int i = 0; i < fCutMonitors->GetEntries(); i++) {
+      auto a = (CutMonitor*) fCutMonitors->UncheckedAt(i);
+      if (a == nullptr) continue;
+      for (int j = i + 1; j < fCutMonitors->GetEntries(); j++) {
+        auto b = (CutMonitor*) fCutMonitors->UncheckedAt(j);
+        if (b == nullptr) continue;
+        if (a->AreSimilar(*b)) { fCutMonitors->RemoveAt(j); }
+      }
+    }
 
     /** TODO fix for field monitors
         for (int i = 0; i < fCutMonitors->GetEntries(); i++) {

@@ -14,6 +14,7 @@
 #include "CutMonitorRequest.h"
 
 #include <TLorentzVector.h>
+#include <TObjArray.h>
 #include <TString.h>
 
 
@@ -35,10 +36,10 @@ namespace Hal {
 
 
   class CutsAndMonitors : public TObject {
-    TObjArray* fCuts;
-    TObjArray* fCutsOptions;
-    TObjArray* fCutMonitors;
-    TObjArray* fCutMonitorsOptions;
+    TObjArray fCuts;
+    TObjArray fCutsOptions;
+    TObjArray fCutMonitors;
+    TObjArray fCutMonitorsOptions;
     TString fGlobalOptionCuts;
     TString fGlobalOptionsCutMonitors;
     std::vector<CutMonitorRequest> fCutMonitorRequests;

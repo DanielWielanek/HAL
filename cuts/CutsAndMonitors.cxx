@@ -18,186 +18,116 @@
 #include <TObjString.h>
 
 namespace Hal {
-  CutsAndMonitors::CutsAndMonitors() :
-    fCuts(nullptr),
-    fCutsOptions(nullptr),
-    fCutMonitors(nullptr),
-    fCutMonitorsOptions(nullptr),
-    fGlobalOptionCuts(""),
-    fGlobalOptionsCutMonitors("") {}
+  CutsAndMonitors::CutsAndMonitors() : fGlobalOptionCuts(""), fGlobalOptionsCutMonitors("") {
+    fCuts.SetOwner(kTRUE);
+    fCutsOptions.SetOwner(kTRUE);
+    fCutMonitors.SetOwner(kTRUE);
+    fCutMonitorsOptions.SetOwner(kTRUE);
+  }
 
   CutsAndMonitors::CutsAndMonitors(const CutsAndMonitors& other) :
     TObject(other),
-    fCuts(nullptr),
-    fCutsOptions(nullptr),
-    fCutMonitors(nullptr),
-    fCutMonitorsOptions(nullptr),
     fGlobalOptionCuts(other.fGlobalOptionCuts),
     fGlobalOptionsCutMonitors(other.fGlobalOptionsCutMonitors),
     fGlobalCollectionId(other.fGlobalCollectionId) {
-    if (other.fCuts) {
-      fCuts = new TObjArray();
-      fCuts->SetOwner(kTRUE);
-      fCutsOptions = new TObjArray();
-      fCutsOptions->SetOwner(kTRUE);
-      for (int iCut = 0; iCut < other.fCuts->GetEntries(); iCut++) {
-        Cut* cut        = (Cut*) other.fCuts->UncheckedAt(iCut);
-        TObjString* str = (TObjString*) other.fCutsOptions->UncheckedAt(iCut);
-        fCuts->AddLast(cut->MakeCopy());
-        fCutsOptions->AddLast(str->Clone());
-      }
+    fCuts.SetOwner(kTRUE);
+    fCutsOptions.SetOwner(kTRUE);
+    for (int iCut = 0; iCut < other.fCuts.GetEntries(); iCut++) {
+      Cut* cut        = (Cut*) other.fCuts.UncheckedAt(iCut);
+      TObjString* str = (TObjString*) other.fCutsOptions.UncheckedAt(iCut);
+      fCuts.AddLast(cut->MakeCopy());
+      fCutsOptions.AddLast(str->Clone());
     }
-    if (other.fCutMonitors) {
-      fCutMonitors = new TObjArray();
-      fCutMonitors->SetOwner(kTRUE);
-      fCutMonitorsOptions = new TObjArray();
-      fCutMonitorsOptions->SetOwner(kTRUE);
-      for (int iCutMon = 0; iCutMon < other.fCutMonitors->GetEntries(); iCutMon++) {
-        CutMonitor* cut = (CutMonitor*) other.fCutMonitors->UncheckedAt(iCutMon);
-        TObjString* str = (TObjString*) other.fCutMonitorsOptions->UncheckedAt(iCutMon);
-        fCutMonitors->AddLast(cut->MakeCopy());
-        fCutMonitorsOptions->AddLast(str->Clone());
-      }
+
+    for (int iCutMon = 0; iCutMon < other.fCutMonitors.GetEntries(); iCutMon++) {
+      CutMonitor* cut = (CutMonitor*) other.fCutMonitors.UncheckedAt(iCutMon);
+      TObjString* str = (TObjString*) other.fCutMonitorsOptions.UncheckedAt(iCutMon);
+      fCutMonitors.AddLast(cut->MakeCopy());
+      fCutMonitorsOptions.AddLast(str->Clone());
     }
   }
 
-  Int_t CutsAndMonitors::GetNCuts() const {
-    if (fCuts == nullptr) return 0;
-    return fCuts->GetEntries();
-  }
+  Int_t CutsAndMonitors::GetNCuts() const { return fCuts.GetEntries(); }
 
-  Int_t CutsAndMonitors::GetNCutMonitors() const {
-    if (fCutMonitors == nullptr) return 0;
-    return fCutMonitors->GetEntries();
-  }
+  Int_t CutsAndMonitors::GetNCutMonitors() const { return fCutMonitors.GetEntries(); }
 
   CutsAndMonitors& CutsAndMonitors::operator=(const CutsAndMonitors& other) {
     if (&other == this) return *this;
-    if (fCuts) {
-      delete fCuts;
-      delete fCutsOptions;
-      fCuts        = nullptr;
-      fCutsOptions = nullptr;
-    }
-    if (fCutMonitors) {
-      delete fCutMonitors;
-      delete fCutMonitorsOptions;
-      fCutMonitors        = nullptr;
-      fCutMonitorsOptions = nullptr;
-    }
+    fCuts.Clear();
+    fCutsOptions.Clear();
+    fCutMonitors.Clear();
+    fCutMonitorsOptions.Clear();
     fGlobalOptionCuts         = other.fGlobalOptionCuts;
     fGlobalOptionsCutMonitors = other.fGlobalOptionsCutMonitors;
-
-    if (other.fCuts) {
-      fCuts = new TObjArray();
-      fCuts->SetOwner(kTRUE);
-      fCutsOptions = new TObjArray();
-      fCutsOptions->SetOwner(kTRUE);
-      for (int iCut = 0; iCut < other.fCuts->GetEntries(); iCut++) {
-        Cut* cut        = (Cut*) other.fCuts->UncheckedAt(iCut);
-        TObjString* str = (TObjString*) other.fCutsOptions->UncheckedAt(iCut);
-        fCuts->AddLast(cut->MakeCopy());
-        fCutsOptions->AddLast(str->Clone());
-      }
+    for (int iCut = 0; iCut < other.fCuts.GetEntries(); iCut++) {
+      Cut* cut        = (Cut*) other.fCuts.UncheckedAt(iCut);
+      TObjString* str = (TObjString*) other.fCutsOptions.UncheckedAt(iCut);
+      fCuts.AddLast(cut->MakeCopy());
+      fCutsOptions.AddLast(str->Clone());
     }
-    if (other.fCutMonitors) {
-      fCutMonitors = new TObjArray();
-      fCutMonitors->SetOwner(kTRUE);
-      fCutMonitorsOptions = new TObjArray();
-      fCutMonitorsOptions->SetOwner(kTRUE);
-      for (int iCutMon = 0; iCutMon < other.fCutMonitors->GetEntries(); iCutMon++) {
-        CutMonitor* cut = (CutMonitor*) other.fCutMonitors->UncheckedAt(iCutMon);
-        TObjString* str = (TObjString*) other.fCutMonitorsOptions->UncheckedAt(iCutMon);
-        fCutMonitors->AddLast(cut->MakeCopy());
-        fCutMonitorsOptions->AddLast(str->Clone());
-      }
+    for (int iCutMon = 0; iCutMon < other.fCutMonitors.GetEntries(); iCutMon++) {
+      CutMonitor* cut = (CutMonitor*) other.fCutMonitors.UncheckedAt(iCutMon);
+      TObjString* str = (TObjString*) other.fCutMonitorsOptions.UncheckedAt(iCutMon);
+      fCutMonitors.AddLast(cut->MakeCopy());
+      fCutMonitorsOptions.AddLast(str->Clone());
     }
     return *this;
   }
 
   void CutsAndMonitors::AddCut(const Cut& cut, Option_t* opt) {
-    if (fCuts == nullptr) {
-      fCuts        = new TObjArray();
-      fCutsOptions = new TObjArray();
-      fCuts->SetOwner(kTRUE);
-      fCutsOptions->SetOwner(kTRUE);
-    }
     TObjString* str = new TObjString(opt);
-    fCuts->Add(cut.MakeCopy());
-    fCutsOptions->Add(str);
+    fCuts.Add(cut.MakeCopy());
+    fCutsOptions.Add(str);
   }
 
   void CutsAndMonitors::AddCutMonitor(const CutMonitor& monitor, Option_t* opt) {
-    if (fCutMonitors == nullptr) {
-      fCutMonitors        = new TObjArray();
-      fCutMonitorsOptions = new TObjArray();
-      fCutMonitors->SetOwner(kTRUE);
-      fCutMonitorsOptions->SetOwner(kTRUE);
-    }
     TObjString* str = new TObjString(opt);
-    fCutMonitors->Add(monitor.MakeCopy());
-    fCutMonitorsOptions->Add(str);
+    fCutMonitors.Add(monitor.MakeCopy());
+    fCutMonitorsOptions.Add(str);
   }
 
-  const Cut* CutsAndMonitors::GetCut(Int_t i) const { return static_cast<Cut*>(fCuts->UncheckedAt(i)); }
+  const Cut* CutsAndMonitors::GetCut(Int_t i) const { return static_cast<Cut*>(fCuts.UncheckedAt(i)); }
 
   TString CutsAndMonitors::GetCutOption(Int_t i) const {
-    TString opt = static_cast<TObjString*>(fCutsOptions->UncheckedAt(i))->GetString();
+    TString opt = static_cast<TObjString*>(fCutsOptions.UncheckedAt(i))->GetString();
     if (opt == "" || fGlobalOptionCuts == "") { return opt + fGlobalOptionCuts; }
     return opt + "+" + fGlobalOptionCuts;
   }
 
-  const CutMonitor* CutsAndMonitors::GetMonitor(Int_t i) const { return static_cast<CutMonitor*>(fCutMonitors->UncheckedAt(i)); }
+  const CutMonitor* CutsAndMonitors::GetMonitor(Int_t i) const { return static_cast<CutMonitor*>(fCutMonitors.UncheckedAt(i)); }
 
   TString CutsAndMonitors::GetCutMonitorOption(Int_t i) const {
-    TString opt = static_cast<TObjString*>(fCutMonitorsOptions->UncheckedAt(i))->GetString();
+    TString opt = static_cast<TObjString*>(fCutMonitorsOptions.UncheckedAt(i))->GetString();
     if (opt == "" || fGlobalOptionsCutMonitors == "") { return opt + fGlobalOptionsCutMonitors; }
     return opt + "+" + fGlobalOptionsCutMonitors;
   }
 
-  CutsAndMonitors::~CutsAndMonitors() {
-    if (fCutMonitors) delete fCutMonitors;
-    if (fCutMonitorsOptions) delete fCutMonitorsOptions;
-    if (fCuts) delete fCuts;
-    if (fCutsOptions) delete fCutsOptions;
-  }
+  CutsAndMonitors::~CutsAndMonitors() {}
 
-  Cut* CutsAndMonitors::CutAt(Int_t i) const { return static_cast<Cut*>(fCuts->UncheckedAt(i)); }
+  Cut* CutsAndMonitors::CutAt(Int_t i) const { return static_cast<Cut*>(fCuts.UncheckedAt(i)); }
 
-  CutMonitor* CutsAndMonitors::MonitorAt(Int_t i) const { return static_cast<CutMonitor*>(fCutMonitors->UncheckedAt(i)); }
+  CutMonitor* CutsAndMonitors::MonitorAt(Int_t i) const { return static_cast<CutMonitor*>(fCutMonitors.UncheckedAt(i)); }
 
   void CutsAndMonitors::ClearCuts() {
-    fCuts->Clear();
-    fCutsOptions->Clear();
+    fCuts.Clear();
+    fCutsOptions.Clear();
   }
 
   void CutsAndMonitors::ClearMonitors() {
-    fCutMonitors->Clear();
-    fCutMonitorsOptions->Clear();
+    fCutMonitors.Clear();
+    fCutMonitorsOptions.Clear();
   }
 
   void CutsAndMonitors::AddRawCut(Cut* cut, TObjString* opt) {
     if (opt == nullptr) { opt = new TObjString(""); }
-    if (fCuts == nullptr) {
-      fCuts        = new TObjArray();
-      fCutsOptions = new TObjArray();
-      fCuts->SetOwner(kTRUE);
-      fCutsOptions->SetOwner(kTRUE);
-    }
-    fCuts->Add(cut);
-    fCutsOptions->Add(opt);
+    fCuts.Add(cut);
+    fCutsOptions.Add(opt);
   }
 
   void CutsAndMonitors::AddRawCutMonitor(CutMonitor* mon, TObjString* opt) {
     if (opt == nullptr) { opt = new TObjString(""); }
-    if (fCutMonitors == nullptr) {
-      fCutMonitors        = new TObjArray();
-      fCutMonitorsOptions = new TObjArray();
-      fCutMonitors->SetOwner(kTRUE);
-      fCutMonitorsOptions->SetOwner(kTRUE);
-    }
-    fCutMonitors->Add(mon);
-    fCutMonitorsOptions->Add(opt);
+    fCutMonitors.Add(mon);
+    fCutMonitorsOptions.Add(opt);
   }
 
   CutMonitor* CutsAndMonitors::MakeCutMonitor(Int_t request_no) const {
@@ -277,8 +207,8 @@ namespace Hal {
   }
 
   Int_t CutsAndMonitors::GetCutNo(TString classname) const {
-    for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
-      Cut* cut     = static_cast<Cut*>(fCuts->UncheckedAt(i));
+    for (int i = 0; i < fCuts.GetEntriesFast(); i++) {
+      Cut* cut     = static_cast<Cut*>(fCuts.UncheckedAt(i));
       TString name = cut->ClassName();
       if (name.EqualTo(classname)) return i;
     }
@@ -298,11 +228,11 @@ namespace Hal {
   void CutsAndMonitors::SetCollectionID(Int_t id) {
     fGlobalCollectionId = id;
     if (fGlobalCollectionId != -1) {
-      for (int iCut = 0; iCut < fCuts->GetEntriesFast(); iCut++) {
-        ((Cut*) fCuts->UncheckedAt(iCut))->SetCollectionID(fGlobalCollectionId);
+      for (int iCut = 0; iCut < fCuts.GetEntriesFast(); iCut++) {
+        ((Cut*) fCuts.UncheckedAt(iCut))->SetCollectionID(fGlobalCollectionId);
       }
-      for (int iMon = 0; iMon < fCutMonitors->GetEntriesFast(); iMon++) {
-        ((CutMonitor*) fCutMonitors->UncheckedAt(iMon))->SetCollectionID(fGlobalCollectionId);
+      for (int iMon = 0; iMon < fCutMonitors.GetEntriesFast(); iMon++) {
+        ((CutMonitor*) fCutMonitors.UncheckedAt(iMon))->SetCollectionID(fGlobalCollectionId);
       }
     }
 

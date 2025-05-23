@@ -103,6 +103,10 @@ This software includes several helper tools:
    * Simplify Buffer class (use pointers instead of int maps?)
    * Consider using std::function for custom class cuts
    * Add macro-level cut generator
+   
+   * remove templates of jobs
+   * remove templates of cuts 
+   * simplifiy hal-cmake
 
 📚 Documentation
 

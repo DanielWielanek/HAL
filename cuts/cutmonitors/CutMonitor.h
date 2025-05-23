@@ -221,7 +221,7 @@ namespace Hal {
      * @param other
      * @return true if both monitors are similar
      */
-    virtual Bool_t AreSimilar(CutMonitor* other) const;
+    virtual Bool_t AreSimilar(const CutMonitor& other) const;
     /**
      *
      * @param i axes no

@@ -171,19 +171,27 @@ namespace Hal {
     return PropertyMonitorXY::Init(task_id);
   }
 
-  Bool_t EventFieldMonitorXY::AreSimilar(CutMonitor* other) const {
-    auto monitor = dynamic_cast<EventFieldMonitorXY*>(other);
+  Bool_t EventFieldMonitorXY::AreSimilar(const CutMonitor& other) const {
+    auto monitor = dynamic_cast<const EventFieldMonitorXY*>(&other);
     if (!monitor) return kFALSE;
     if (fFieldIDX != monitor->fFieldIDX) return kFALSE;
     if (fFieldIDY != monitor->fFieldIDY) return kFALSE;
     return CutMonitorXY::AreSimilar(other);
   }
 
-  Bool_t TrackFieldMonitorXY::AreSimilar(CutMonitor* other) const {
-    auto monitor = dynamic_cast<TrackFieldMonitorXY*>(other);
+  Bool_t TrackFieldMonitorXY::AreSimilar(const CutMonitor& other) const {
+    auto monitor = dynamic_cast<const TrackFieldMonitorXY*>(&other);
     if (!monitor) return kFALSE;
     if (fFieldIDX != monitor->fFieldIDX) return kFALSE;
     if (fFieldIDY != monitor->fFieldIDY) return kFALSE;
+    return CutMonitorXY::AreSimilar(other);
+  }
+
+  Bool_t PropertyMonitorXY::AreSimilar(const CutMonitor& other) const {
+    auto conv = dynamic_cast<const PropertyMonitorXY*>(&other);
+    if (!conv) return kFALSE;
+    if (fXaxisName != conv->fXaxisName) return kFALSE;
+    if (fYaxisName != conv->fYaxisName) return kFALSE;
     return CutMonitorXY::AreSimilar(other);
   }
 

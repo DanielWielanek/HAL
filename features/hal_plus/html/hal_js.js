@@ -69,88 +69,86 @@ function chageCheckBoxCell(object){
 draw the HTML page with many qa plots
 */
 function qaPopup(what){
+    var plots = document.getElementsByClassName("qa_" + what);
+    if (plots.length === 0) return;
 
-	var plots = document.getElementsByClassName("qa_"+what);
-	if(plots.length==0) return;
-	//var opened = window.open("");
-	var plotsTxt = [];
-	
-	for (i = 0; i < plots.length; i++) {
-	        row = plots[i];
-		var Cells = row.getElementsByTagName("td");
-		if(Cells.length>2){
-			var cellButton = Cells[0];
-			if(cellButton.childNodes[0].checked==true){
-			
-			var cellHisto = Cells[2];
-			var ahref = cellHisto.childNodes[0];
-			plotsTxt.push(ahref.getAttribute("href"));
-			}
-		}
-	} 
-	var headTxt = document.getElementsByTagName("head")[0].innerHTML;
-	var content = "<html><head>"+headTxt+"</head><body>\n";
-	content = content +"<script type='text/javascript'>\n";
-	for(i =0; i<plotsTxt.length;i++){
-		var rootPath = plotsTxt[i];
-		rootPath = rootPath.replace(".html",".root");
-		content = content + "\n var filename"+i+"=\"" + rootPath + "\";\n";
-		content = content + "JSROOT.OpenFile(filename"+i+", function(file){\n";
-		content = content + "JSROOT.gStyle.Palette= 50;\n";
-		content = content + "file.ReadObject(\"canvas;1\", function(obj) {\n";
-		content = content + "JSROOT.draw(\"drawing"+i+"\", obj, \"colz\");\n";
-		content = content + ";});\n;});\n;";
-		/*
-		var filename = "hist_2d_0.root";
-			 JSROOT.OpenFile(filename, function(file) {
-			 JSROOT.gStyle.Palette= 50;
-			file.ReadObject("canvas;1", function(obj) {
-			JSROOT.draw("drawing", obj, "colz");
-			;});
-			;});
-			*/
+    var plotsTxt = [];
+    for (let i = 0; i < plots.length; i++) {
+        let row = plots[i];
+        let Cells = row.getElementsByTagName("td");
+        if (Cells.length > 2) {
+            let cellButton = Cells[0];
+            if (cellButton.childNodes[0].checked === true) {
+                let cellHisto = Cells[2];
+                let ahref = cellHisto.childNodes[0];
+                plotsTxt.push(ahref.getAttribute("href"));
+            }
+        }
+    }
 
-	}
-	content = content + "</script>\n";
-	var l = plotsTxt.length;
-	var style="width:90%;height:900px";
-	var style2="width:90%;height:900px";
-	var per_row = 1;
-	if(l>4){ //draw 2 per line
-		style="width:45%;height:450px";
-		style2="width:90%;height:450px";
-		per_row = 2;
-	}
-	if(l>8){//draw 3 per line
-		style="width:30%;height:300px";
-		style2="width:90%;height:300px";
-		per_row = 3;
-	}
-	if(l>20){//draw 4 per line
-		style="width:25%;height:250px";
-		style2="width:90%;height:250px";
-		per_row = 4;
-	}
-	var closed = false;
-	content = content +"<table style=\"width:100%; border: 1px solid black\" >";
-	for(i =0; i<plotsTxt.length;i++){
-		if(i%per_row==0){
-			closed = false;
-			content = content + "<tr>";
-		}
-		content = content +"<td id=\"drawing"+i+"\" style = \""+style+"\"></td>\n";
-		if(i%per_row==per_row-1){
-			content = content +"</tr>\n";
-			closed = true;
-		}
-	}
-	if(closed==false){
-		content = content +"</tr>\n";
-	}
+    const l = plotsTxt.length;
+    const perRow = l > 20 ? 4 : l > 8 ? 3 : l > 4 ? 2 : 1;
+    const style = l > 20 ? "width:25%;height:250px" :
+                  l > 8 ? "width:30%;height:300px" :
+                  l > 4 ? "width:45%;height:450px" :
+                  "width:90%;height:900px";
 
-	content = content +"</body>";
-	
-	var opened = window.open("");
-	opened.document.write(content);
-	
+    // HTML + dynamiczny <script type="module">
+const base = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+const fullPath = base + '/hal_js/modules/main.mjs';
+
+const fullPaths = plotsTxt.map(p => {
+    // zakładamy, że p to coś jak 'plots/hist_1.html'
+    const rootPath = p.replace(".html", ".root");
+    return `${base}/${rootPath}`;
+});
+magic_line = "const files = [\n";
+for(let i=0; i<fullPaths.length; i++){
+    magic_line += `  "${fullPaths[i]}"` + (i<fullPaths.length-1 ? ",\n" : "\n");
+}
+magic_line += "];\n";
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QA Viewer</title>
+</head>
+<body>
+  <div id="container"></div>
+  <script type="module">
+    import { openFile, draw, settings } from '${fullPath}';
+    ${magic_line};
+    settings.Palette = 50;
+    let container = document.getElementById("container");
+    let perRow = ${perRow};
+    let style = "${style}";
+    let row;
+    for (let i = 0; i < files.length; i++) {
+      if (i % perRow === 0) {
+        row = document.createElement("div");
+        row.style.display = "flex";
+        container.appendChild(row);
+      }
+      let div = document.createElement("div");
+      div.id = "drawing" + i;
+      div.style = style;
+      row.appendChild(div);
+
+      const file = files[i].replace(".html", ".root");
+      openFile(file).then(f => {
+        f.readObject("canvas;1").then(obj => {
+          draw(div.id, obj, "colz");
+        });
+      });
+    }
+  </script>
+</body>
+</html>
+`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
 }

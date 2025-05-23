@@ -244,7 +244,7 @@ namespace Hal {
     c1->SaveAs(rootPathFull);
     delete c1;
     HtmlFile file(htmlPathFull, kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv(rootPathShort, "canvas;1", draw_opt));
+    file.AddStringContent(HtmlCore::GetJsDiv(htmlPathFull, rootPathShort, "canvas;1", draw_opt));
     file.Save();
     return HtmlCore::GetUrl(htmlPathShort, h->GetTitle());
   }

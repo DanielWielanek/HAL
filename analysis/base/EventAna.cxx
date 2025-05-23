@@ -55,7 +55,7 @@ namespace Hal {
     fTaskID            = DataFormatManager::Instance()->RegisterFormat();
     fDataFormatManager = DataFormatManager::Instance();
     SETBIT(fFormatOption, eBitFormat::kChecking);
-    SetFormatOption(EFormatOption::kStandardAcess);
+    SetFormatOption(EFormatOption::kStandardAccess);
     SetFormatOption(EFormatOption::kNoKeepSource);
     SetFormatOption(EFormatOption::kNoCompress);
     AddTags("ana");
@@ -211,7 +211,7 @@ namespace Hal {
   void EventAna::SetFormat(Event* format, EFormatDepth format_depth) {
     DataFormatManager* dataFormat = DataFormatManager::Instance();
     dataFormat->SetFormat(format, GetTaskID(), format_depth);
-    SetFormatOption(EFormatOption::kNoReaderAcces);
+    SetFormatOption(EFormatOption::kNoReaderAccess);
   }
 
   EventAna::EventAna(const EventAna& ana) :
@@ -340,7 +340,7 @@ namespace Hal {
       case EFormatOption::kNoDirectAccess: {
         CLRBIT(fFormatOption, eBitFormat::kDirectAcesss);  // no direct access
       } break;
-      case EFormatOption::kNoReaderAcces: {
+      case EFormatOption::kNoReaderAccess: {
         CLRBIT(fFormatOption, eBitFormat::kReader);  // reader disabled access
       } break;
       case EFormatOption::kCompress: {
@@ -359,7 +359,7 @@ namespace Hal {
         SETBIT(fFormatOption, eBitFormat::kReader);
         CLRBIT(fFormatOption, eBitFormat::kDirectAcesss);
       } break;
-      case EFormatOption::kStandardAcess: {
+      case EFormatOption::kStandardAccess: {
         CLRBIT(fFormatOption, eBitFormat::kDirectAcesss);  // no direct access
         CLRBIT(fFormatOption, eBitFormat::kReader);        // no reader
       } break;

@@ -26,7 +26,6 @@ namespace Hal {
 
   public:
     LegendStyle(TString style = "");
-    [[depreacted]] static LegendStyle GetStyle(TString opt);
     void SetFontSize(Float_t size);
     void SetFont(Int_t style);
     void Import(const TLegend& x);

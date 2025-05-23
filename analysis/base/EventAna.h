@@ -225,11 +225,11 @@ namespace Hal {
       /*!< do not use direct data */
       kReaderAccess,
       /*!< use reader acces (look for branch HalEvent.) */
-      kNoReaderAcces,
+      kNoReaderAccess,
       /*!< */
       kDisableChecking,
       /*!< dusable format checking*/
-      kStandardAcess /**!< standard acces */
+      kStandardAccess /**!< standard acces */
     };
     /**
      * basic constructor

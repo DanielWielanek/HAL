@@ -25,7 +25,7 @@
 
 namespace Hal {
   TrackToFMass2Cut::TrackToFMass2Cut() : TrackExpCut(1) {
-    SetUnitName("ToF M^{2} A [GeV/c^2]", 0);
+    SetUnitName("ToF M^{2} A [GeV^{2}/c^{4}]", 0);
     fLowLine[0]  = -1E+2;
     fHighLine[0] = 1E+2;
     for (int i = 1; i < 3; i++) {
@@ -35,7 +35,7 @@ namespace Hal {
   }
 
   TrackToFMass2Cut::TrackToFMass2Cut(Int_t nParams) : TrackExpCut(nParams) {
-    SetUnitName("ToF M^{2} A [GeV/c^2]", 0);
+    SetUnitName("ToF M^{2} A [GeV^{2}/c^{4}]", 0);
     fLowLine[0]  = -1E+2;
     fHighLine[0] = 1E+2;
     for (int i = 1; i < 3; i++) {

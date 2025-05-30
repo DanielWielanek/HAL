@@ -12,7 +12,7 @@
 
 namespace Hal {
 
-  TrackPdgBinCut::TrackPdgBinCut() : TrackCut(1) { SetUnitName("Pdg type [int["); }
+  TrackPdgBinCut::TrackPdgBinCut() : TrackCut(1) { SetUnitName("Pdg type [int]"); }
 
   Bool_t TrackPdgBinCut::Pass(Track* track) {
     McTrack* tr = (McTrack*) track;

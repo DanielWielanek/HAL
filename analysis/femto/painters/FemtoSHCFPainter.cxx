@@ -114,6 +114,7 @@ namespace Hal {
     hist->SetMinimum(0);
     double max = hist->GetBinContent(hist->GetMaximumBin());
     double min = hist->GetBinContent(hist->GetMinimumBin());
+    if (fRangeX[0] != fRangeX[1]) { hist->GetXaxis()->SetRangeUser(fRangeX[0], fRangeX[1]); }
     if (min < 0) {
       hist->SetMinimum(-1);
     } else {

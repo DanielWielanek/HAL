@@ -29,6 +29,15 @@ Then run the container:
 docker run --rm -it ghcr.io/danielwielanek/root-container:latest
 ```
 
+or
+
+```bash
+docker run -v $(pwd):/host_code--rm -it ghcr.io/danielwielanek/root-container:latest
+```
+
+this option mount current directory to container directory /host_code (so you can use files from your host)
+
+
 > ⚠️ Note: This container is based on the latest main branch.
 
 ### Building from source code

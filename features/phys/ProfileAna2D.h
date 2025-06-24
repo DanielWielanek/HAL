@@ -37,6 +37,11 @@ namespace Hal {
     Bool_t fUseMax          = {kFALSE};
     Bool_t fAnalyzed        = {kFALSE};
     Color_t fColor          = {kRed};
+    Color_t fColor2         = {kGray};
+    std::vector<Double_t> fAverages;
+    std::vector<Double_t> fRMSs;
+    std::vector<Double_t> fValues;
+    Double_t fTotBinsX, fTotMinX, fTotMaxX;
     void AnalyzeProj();
     void AnalyzeCustom();
     void Calculate(const std::vector<Double_t>& valuesX,
@@ -52,6 +57,9 @@ namespace Hal {
                     const Int_t row) const;
 
 
+    Double_t EvaluaRawMean(Double_t* x, Double_t* p) const;
+    Double_t EvaluaRawRMSPlus(Double_t* x, Double_t* p) const;
+    Double_t EvaluaRawRMSMinus(Double_t* x, Double_t* p) const;
     Double_t EvaluateSigma(Double_t* x, Double_t* p) const;
     Double_t EvaluateAverage(Double_t* x, Double_t* p) const;
     Double_t EvalDrawAv(Double_t* x, Double_t* p) const;
@@ -127,9 +135,13 @@ namespace Hal {
     void Draw(Option_t* opt = "");
     /**
      * set color of lines used to draw
-     * @param col
+     * @param colfited - color of fitted parameters
+     * @param colraw - color of RMS/averages/max used for fitting
      */
-    void SetLineColor(Color_t col) { fColor = col; }
+    void SetLineColors(Color_t colfited, Color_t colraw) {
+      fColor  = colfited;
+      fColor2 = colraw;
+    }
     virtual ~ProfileAna2D();
     ClassDef(ProfileAna2D, 1)
   };

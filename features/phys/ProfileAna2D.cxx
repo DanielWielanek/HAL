@@ -31,7 +31,10 @@ namespace Hal {
     Int_t bins;
     Double_t low, high;
     Hal::Std::GetAxisPar(*fHisto, bins, low, high);
-    fAverage = new TF1(Hal::Std::GetUniqueName("polyfit"),
+    fTotBinsX = bins;
+    fTotMinX  = low;
+    fTotMaxX  = high;
+    fAverage  = new TF1(Hal::Std::GetUniqueName("polyfit"),
                        this,
                        &ProfileAna2D::EvaluateAverage,
                        low,
@@ -39,7 +42,7 @@ namespace Hal {
                        poly,
                        this->ClassName(),
                        "EvaluateAverage");
-    fSigma   = new TF1(Hal::Std::GetUniqueName("polyfitsigma"),
+    fSigma    = new TF1(Hal::Std::GetUniqueName("polyfitsigma"),
                      this,
                      &ProfileAna2D::EvaluateSigma,
                      low,
@@ -86,10 +89,23 @@ namespace Hal {
       fXMin = lowX;
       fXMax = highX;
     }
+    fAverages.resize(fHisto->GetXaxis()->GetNbins() + 2);
+    fRMSs.resize(fHisto->GetXaxis()->GetNbins() + 2);
+    fValues.resize(fHisto->GetXaxis()->GetNbins() + 2);
+
+    for (int i = 0; i < fHisto->GetXaxis()->GetNbins() + 2; i++) {
+      fValues[i]   = fHisto->GetXaxis()->GetBinCenter(i);
+      fAverages[i] = 0;
+      fRMSs[i]     = -1;
+    }
+
     for (int i = startBin; i <= endBin; i++) {
       std::vector<Double_t> valuesX, valuesY;
       Double_t mean, sigma, maxi;
       PrepareRow(valuesX, valuesY, mean, sigma, maxi, i);
+
+      fRMSs[i] = sigma;
+
       /*Double_t maxim = 0;
        for (auto x : yVal2)
         maxim = TMath::valuesY(x, maxim);
@@ -112,9 +128,11 @@ namespace Hal {
       }
       if (sum > fRowEntriesCut) {
         if (fUseMax) {
+          fAverages[i] = maxi;
           GrAv->SetPoint(count, fHisto->GetXaxis()->GetBinCenter(i), maxi);
           GrAv->SetPointError(count, 0, sigma / TMath::Sqrt(sum));
         } else {
+          fAverages[i] = mean;
           GrAv->SetPoint(count, fHisto->GetXaxis()->GetBinCenter(i), mean);
           GrAv->SetPointError(count, 0, sigma / TMath::Sqrt(sum));
         }
@@ -268,13 +286,49 @@ namespace Hal {
     Double_t sigma = 1;
     if (Hal::Std::FindParam(option, "sig2", kTRUE)) sigma = 2;
     if (Hal::Std::FindParam(option, "sig3", kTRUE)) sigma = 3;
-
+    Bool_t subplots = false;
+    if (Hal::Std::FindParam(option, "raw", kTRUE)) subplots = true;
 
     sigmaLo->FixParameter(0, -sigma);
     sigmaHi->FixParameter(0, sigma);
     average->SetLineColor(fColor);
     sigmaLo->SetLineColor(fColor);
     sigmaHi->SetLineColor(fColor);
+
+
+    if (subplots) {
+      TF1* rmsLo = new TF1(Hal::Std::GetUniqueName("rmsLo"),
+                           this,
+                           &ProfileAna2D::EvaluaRawRMSMinus,
+                           lowX,
+                           highX,
+                           1,
+                           this->ClassName(),
+                           "RawDrawAvShift");
+      TF1* rmsHi = new TF1(Hal::Std::GetUniqueName("rmsHi"),
+                           this,
+                           &ProfileAna2D::EvaluaRawRMSPlus,
+                           lowX,
+                           highX,
+                           1,
+                           this->ClassName(),
+                           "RawDrawAvShift");
+      TF1* avmax = new TF1(
+        Hal::Std::GetUniqueName("avmax"), this, &ProfileAna2D::EvaluaRawMean, lowX, highX, 1, this->ClassName(), "RawDrawAvMax");
+
+      rmsLo->SetLineColor(fColor2);
+      rmsHi->SetLineColor(fColor2);
+      avmax->SetLineColor(fColor2);
+      rmsLo->SetLineStyle(7);
+      rmsHi->SetLineStyle(7);
+      int width = 5;
+      rmsLo->SetLineWidth(width);
+      rmsHi->SetLineWidth(width);
+      avmax->SetLineWidth(width);
+      avmax->Draw("SAME");
+      rmsHi->Draw("SAME");
+      rmsLo->Draw("SAME");
+    }
     average->Draw("SAME");
     sigmaLo->Draw("SAME");
     sigmaHi->Draw("SAME");
@@ -335,6 +389,27 @@ namespace Hal {
     Double_t mean      = fAverage->Eval(x[0]);
     Double_t full_func = p[0] * TMath::Exp(-TMath::Power(x[1] - mean, 2.0) / (2.0 * sigma * sigma));
     return full_func;
+  }
+
+  Double_t ProfileAna2D::EvaluaRawMean(Double_t* x, Double_t* p) const {
+    double step = (fTotMaxX - fTotMinX) / fTotBinsX;
+    int point   = (x[0] - fTotMinX) / step + 1;
+    if (point >= fTotBinsX) { point = fTotBinsX - 1; }
+    return fAverages[point];
+  }
+
+  Double_t ProfileAna2D::EvaluaRawRMSPlus(Double_t* x, Double_t* p) const {
+    double step = (fTotMaxX - fTotMinX) / fTotBinsX;
+    int point   = (x[0] - fTotMinX) / step + 1;
+    if (point >= fTotBinsX) { point = fTotBinsX - 1; }
+    return fAverages[point] + fRMSs[point];
+  }
+
+  Double_t ProfileAna2D::EvaluaRawRMSMinus(Double_t* x, Double_t* p) const {
+    double step = (fTotMaxX - fTotMinX) / fTotBinsX;
+    int point   = (x[0] - fTotMinX) / step + 1;
+    if (point >= fTotBinsX) { point = fTotBinsX - 1; }
+    return fAverages[point] - fRMSs[point];
   }
 
 } /* namespace Hal */

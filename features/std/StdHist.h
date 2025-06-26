@@ -317,6 +317,16 @@ namespace Hal {
      * @return
      */
     Double_t GetMaximum(const std::vector<TH1*> histos);
+    /**
+     * hide labels on axis
+     * @param obj - object to hide labels it can be TH1, TGraph or TAxis (in a such case you do not have to set x,y or z in opt)
+     * @param opt - option - define axis you can set x,y,z etc. l - mean skip low value, h - high value e.g.
+     * you can also separate options eg.
+     * xyl - hide low values on x and y
+     * xl+yh - hide low values on x and high on y
+     *
+     */
+    void HideAxisLabel(TObject* obj, TString opt);
 
   }  // namespace Std
 }  // namespace Hal

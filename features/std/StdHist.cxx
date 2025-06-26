@@ -17,6 +17,7 @@
 #include <TColor.h>
 #include <TDirectory.h>
 #include <TGaxis.h>
+#include <TGraph.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TH3.h>
@@ -38,10 +39,7 @@
 #include "Splines.h"
 #include "Std.h"
 
-NamespaceImp(Hal::Std)
-
-
-  namespace Hal {
+NamespaceImp(Hal::Std) namespace Hal {
   namespace Std {
     void RemoveNan(TH1* h, Double_t fill, Double_t fill_e) {
       if (h->InheritsFrom("TH3")) {
@@ -1089,6 +1087,7 @@ NamespaceImp(Hal::Std)
       }
       return nh;
     }
+
     std::vector<TObject*> GetPadChildren(TString objName, TString className, TVirtualPad* pad) {
       if (!pad) pad = gPad;
       std::vector<TObject*> list;
@@ -1104,6 +1103,7 @@ NamespaceImp(Hal::Std)
       }
       return list;
     }
+
     Bool_t CheckHistogramData(const TH1& h1, const TH1& h2, Double_t thres, Option_t* opt) {
       TString option  = opt;
       Bool_t debug    = Hal::Std::FindParam(option, "print", kTRUE);
@@ -1171,6 +1171,7 @@ NamespaceImp(Hal::Std)
       }
       return kTRUE;
     }
+
     void CopyHistProp(const TH1& from, TH1& to, TString opt) {
       auto d3 = static_cast<const TH3*>(&from);
 
@@ -1216,6 +1217,45 @@ NamespaceImp(Hal::Std)
       return maxig;
     }
 
+    void HideAxisLabel(TObject* obj, TString opt) {
+      opt.ToLower();
+      opt      = opt.ReplaceAll(" ", "");
+      auto vec = ExplodeString(opt, '+', kFALSE);
+      if (vec.size() > 1) {
+        for (auto str : vec) {
+          HideAxisLabel(obj, str);
+        }
+        return;
+      }
+
+      Bool_t xAx = opt.Contains("x");
+      Bool_t yAx = opt.Contains("y");
+      Bool_t zAx = opt.Contains("z");
+      std::vector<TAxis*> ax;
+      auto hist  = dynamic_cast<TH1*>(obj);
+      auto graph = dynamic_cast<TGraph*>(obj);
+      auto axis  = dynamic_cast<TAxis*>(obj);
+      if (!hist && !graph && !axis) {
+        Cout::PrintInfo("Hal::Std::HideAxisLabel - object is not a histo or a graph", EInfo::kWarning);
+        return;
+      }
+      if (hist) {
+        if (xAx) ax.push_back(hist->GetXaxis());
+        if (yAx) ax.push_back(hist->GetYaxis());
+        if (zAx && hist->GetZaxis()) ax.push_back(hist->GetZaxis());
+      } else if (graph) {
+        if (xAx) ax.push_back(graph->GetXaxis());
+        if (yAx) ax.push_back(graph->GetYaxis());
+      } else if (axis) {
+        ax.push_back(axis);
+      }
+      Bool_t low  = opt.Contains("l");
+      Bool_t high = opt.Contains("h");
+      for (auto iAxis : ax) {
+        if (low) { iAxis->ChangeLabel(1, -1, -1, -1, kWhite, 0, " "); }
+        if (high) { iAxis->ChangeLabel(-1, -1, -1, -1, kWhite, 0, " "); }
+      }
+    }
 
   }  // namespace Std
 }  // namespace Hal

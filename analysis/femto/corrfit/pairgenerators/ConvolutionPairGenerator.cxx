@@ -11,6 +11,7 @@
 #include <TDatabasePDG.h>
 #include <TMath.h>
 #include <TParticlePDG.h>
+#include <iostream>
 
 #include "Cout.h"
 #include "FemtoMiniPair.h"
@@ -20,7 +21,7 @@ namespace Hal {
 
   void ConvolutionPairGenerator::GeneratePairLCMS(const Double_t ptTot, const Double_t pzTot, const Double_t phi) {
     const Double_t sumM = fM1 + fM2;
-    fP1.SetXYZM(fX + ptTot * 0.5, fY, fX, fM1);
+    fP1.SetXYZM(fX + ptTot * 0.5, fY, fZ, fM1);
     fP2.SetXYZM(-fX + ptTot * 0.5, -fY, -fZ, fM2);
     fP1.RotateZ(phi);
     fP2.RotateZ(phi);
@@ -55,6 +56,7 @@ namespace Hal {
       fZ *= 0.5;
     }
     fConvolution.Reset();
+    fConvolution.ResetStats();
     FemtoMicroPair pair;
     Double_t sumM = fM1 + fM2;
     for (int iY = 1; iY <= fConvolution.GetNbinsX(); iY++) {
@@ -111,6 +113,31 @@ namespace Hal {
     pair.SetTrueMomenta2(fP2.X(), fP2.Y(), fP2.Z(), fP2.E());
     pair.SetMomenta1(fP1.X(), fP1.Y(), fP1.Z(), fP1.E());
     pair.SetMomenta2(fP2.X(), fP2.Y(), fP2.Z(), fP2.E());
+  }
+  void ConvolutionPairGenerator::FillPairBad(Hal::FemtoMicroPair& pair, TVector3& shifts) {
+    Double_t fx = fX;
+    Double_t fy = fY;
+    Double_t fz = fZ;
+    fX          = shifts.X();
+    fY          = shifts.Y();
+    fZ          = shifts.Z();
+    Double_t y_sum, pt_sum, phi_sum;
+    fConvolution.GetRandom3(y_sum, pt_sum, phi_sum);
+    if (pt_sum * 0.5 < fKt[0] && pt_sum * 0.5 > fKt[1]) { return; }
+    Double_t sinH   = TMath::SinH(y_sum);
+    Double_t pz_sum = TMath::Sqrt(pt_sum * pt_sum + fSumM * fSumM) * sinH;
+    if (fFrame == Hal::Femto::EKinematics::kLCMS) {
+      GeneratePairLCMS(pt_sum, pz_sum, phi_sum);
+    } else {
+      GeneratePairPRF(pt_sum, pz_sum, phi_sum);
+    }
+    pair.SetTrueMomenta1(fP1.X(), fP1.Y(), fP1.Z(), fP1.E());
+    pair.SetTrueMomenta2(fP2.X(), fP2.Y(), fP2.Z(), fP2.E());
+    pair.SetMomenta1(fP1.X(), fP1.Y(), fP1.Z(), fP1.E());
+    pair.SetMomenta2(fP2.X(), fP2.Y(), fP2.Z(), fP2.E());
+    fX = fx;
+    fY = fy;
+    fZ = fz;
   }
 
   void ConvolutionPairGenerator::FillPair(TLorentzVector& p1, TLorentzVector& p2) {

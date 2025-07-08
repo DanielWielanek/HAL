@@ -112,6 +112,7 @@ namespace Hal {
       fShNumReal[parLoc][lmbin] = re;
       fShNumImag[parLoc][lmbin] = im;
     }
+    void Debug() const;
     virtual ~CorrFitVerticalSlicesSH() {};
     ClassDef(CorrFitVerticalSlicesSH, 1)
 

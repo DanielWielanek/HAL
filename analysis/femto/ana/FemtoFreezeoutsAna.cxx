@@ -427,6 +427,7 @@ namespace Hal {
     axis2[1] = HistogramAxisConf(titles[4]);
     HistogramAxisConf phi_conf("#phi [rad]", 100, 0, TMath::Pi());
     std::vector<HistogramAxisConf> phiConfs;
+    axis[0].SetTitle(titles[3]);
     phiConfs.push_back(axis[0]);
     phiConfs.push_back(phi_conf);
 

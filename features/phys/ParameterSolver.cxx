@@ -7,6 +7,9 @@
 
 #include "ParameterSolver.h"
 
+
+#include "StdString.h"
+
 #include <TF1.h>
 
 
@@ -27,7 +30,7 @@ namespace Hal {
     return GSL_SUCCESS;
   }
 
-  std::vector<Double_t> ParameterSolver::Solve(std::vector<Double_t> initParams) {
+  std::vector<Double_t> ParameterSolver::Solve(std::vector<Double_t> initParams, TString opt) {
     const size_t n_params = fX.size();
     const size_t n_eq     = fX.size();
     if (initParams.size() != fX.size()) { initParams.resize(fX.size()); }
@@ -58,14 +61,17 @@ namespace Hal {
       status = gsl_multiroot_test_residual(solver->f, 1e-7);
     } while (status == GSL_CONTINUE && iter < 100);
 
-    std::cout << "Status: " << gsl_strerror(status) << "\n";
+    if (Hal::Std::FindParam(opt, "print")) {
+      std::cout << "Status: " << gsl_strerror(status) << "\n";
+      std::cout << "Found parameters:\n";
+      for (size_t i = 0; i < n_params; ++i) {
+        std::cout << "p" << i + 1 << " = " << gsl_vector_get(solver->x, i) << "\n";
+      }
+    }
     std::vector<Double_t> solution;
-    std::cout << "Found parameters:\n";
     for (size_t i = 0; i < n_params; ++i) {
-      std::cout << "p" << i + 1 << " = " << gsl_vector_get(solver->x, i) << "\n";
       solution.push_back(gsl_vector_get(solver->x, i));
     }
-
     gsl_multiroot_fsolver_free(solver);
     gsl_vector_free(x);
     gX = gY = nullptr;

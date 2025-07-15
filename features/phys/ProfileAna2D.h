@@ -88,7 +88,8 @@ namespace Hal {
      */
     Int_t fSigmaIdLow  = {EDataId::kSigmaMinus};
     Int_t fSigmaIdHigh = {EDataId::kSigmaPlus};
-    Int_t fMeanId   = {EDataId::kMean};
+    Int_t fMeanId      = {EDataId::kMean};
+
 
   protected:
     Int_t fNParam   = {0};

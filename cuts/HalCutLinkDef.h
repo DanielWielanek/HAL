@@ -181,6 +181,15 @@
 #pragma link C++ class Hal::TwoTrackRealCut + ;
 #pragma link C++ class Hal::TwoTrackImaginaryCut + ;
 #pragma link C++ class Hal::TwoTrackAntiSplittingCut + ;
+
+#pragma link C++ class Hal::MonitorYPt + ;
+#pragma link C++ class Hal::MonitorEtaPt + ;
+#pragma link C++ class Hal::MonitorTofM2 + ;
+#pragma link C++ class Hal::MonitorTofBeta + ;
+#pragma link C++ class Hal::MonitorResoP + ;
+#pragma link C++ class Hal::MonitorResoTheta + ;
+#pragma link C++ class Hal::MonitorResoPhi + ;
+
 /*
 #pragma link C++ class Hal::EventClonedCut+;
 #pragma link C++ class Hal::TrackClonedCut+;

@@ -22,6 +22,14 @@ namespace Hal {
     static Int_t Beta() { return fgBeta; };
     static Int_t Mass2() { return fgMass2; };
     static Int_t Flag() { return fgFlag; };
+    /**
+     * accept only tracks with TOF signal (flag 1)
+     */
+    virtual void AcceptOnlyWithTof() { SetMinMax(1, Flag()); };
+    /**
+     * accept only without TOF signal (flag 0)
+     */
+    virtual void AcceptOnlyWithoutTof() { SetMinMax(0, Flag()); }
     virtual Bool_t Pass(Track* tr);
     virtual ~TrackBasicToFCut();
     ClassDef(TrackBasicToFCut, 1)

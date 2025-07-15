@@ -39,11 +39,6 @@ namespace Hal {
     ToFTrack& operator=(const ToFTrack& track) = default;
     /**
      *
-     * @return value of beta . mass2, energyfor dummy partile
-     */
-    static Float_t DummyVal() { return -1E+6; };
-    /**
-     *
      * @return number of hits in ToF
      */
     inline Int_t GetNHits() const { return fToFNHits; };

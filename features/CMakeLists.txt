@@ -3,7 +3,8 @@
 # The extension is already found.  Any number of sources could be listed here.
 
 Set(INCLUDE_DIRECTORIES
-${HAL_FEATURES}
+ ${HAL_FEATURES}
+ ${GSL_INCLUDE_DIRS}
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -12,7 +13,6 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
 )
 Include_Directories(${INCLUDE_DIRECTORIES})
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-Include_Directories(${GSL_DIR}/include)
 
 Set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}
@@ -130,7 +130,7 @@ Set(Exe_Source
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    Set(DEPENDENCIES gsl gslcblas HalFeatures Tree HalAna HalFemto HalFlow HalSpectra )
+    Set(DEPENDENCIES ${GSL_LIBRARIES} HalFeatures Tree HalAna HalFemto HalFlow HalSpectra )
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
 

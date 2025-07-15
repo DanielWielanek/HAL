@@ -199,8 +199,8 @@ namespace Hal {
                            1,
                            this->ClassName(),
                            "EvalNSigmaPlus");
-    for (int i = 0; i < fNParam; i++)
-      average->FixParameter(i, fParamsAverage[i]);
+    // for (int i = 0; i < fNParam; i++)
+    //    average->FixParameter(i, fParamsAverage[i]);
 
     sigmaLo->SetLineStyle(7);
     sigmaHi->SetLineStyle(7);
@@ -228,7 +228,7 @@ namespace Hal {
                            &ProfileAna2D::EvalRawRMSMinus,
                            lowX,
                            highX,
-                           1,
+                           0,
                            this->ClassName(),
                            "EvalRawRMSMinus");
       TF1* rmsHi = new TF1(Hal::Std::GetUniqueName("rmsHi"),
@@ -236,11 +236,11 @@ namespace Hal {
                            &ProfileAna2D::EvalRawRMSPlus,
                            lowX,
                            highX,
-                           1,
+                           0,
                            this->ClassName(),
                            "EvalRawRMSPlus");
       TF1* avmax = new TF1(
-        Hal::Std::GetUniqueName("avmax"), this, &ProfileAna2D::EvalRawMean, lowX, highX, 1, this->ClassName(), "EvalRawMean");
+        Hal::Std::GetUniqueName("avmax"), this, &ProfileAna2D::EvalRawMean, lowX, highX, 0, this->ClassName(), "EvalRawMean");
       rmsLo->SetLineColor(fColor2);
       rmsHi->SetLineColor(fColor2);
       avmax->SetLineColor(fColor2);
@@ -529,7 +529,7 @@ namespace Hal {
     f->SetParLimits(1, mean * 0.5, mean * 1.5);
     f->SetParLimits(2, rms * 0.5, rms * 1.5);
 
-    copy->Fit(f, "RQ");
+    copy->Fit(f, "WMRQ");
 
     val[EDataId::kMean]            = f->GetParameter(1);
     val[EDataId::kMeanError]       = f->GetParError(1);
@@ -604,7 +604,11 @@ namespace Hal {
 
   Double_t ProfileAna2D::EvalSigmaMinus(Double_t* x, Double_t* p) const { return fSigmaLow->Eval(*x); }
 
-  Double_t ProfileAna2D::EvaluateMean(Double_t* x, Double_t* p) const { return fAverage->Eval(*x); }
+  Double_t ProfileAna2D::EvaluateMean(Double_t* x, Double_t* p) const {
+    Double_t val = fAverage->Eval(*x);
+    if (TMath::IsNaN(val)) return 0;
+    return val;
+  }
 
   std::vector<Double_t>
   ProfileAna2D::InitEstimFunc(const std::unique_ptr<TGraphErrors>& gr, TF1* f, const std::vector<Double_t>& points) const {
@@ -632,10 +636,16 @@ namespace Hal {
         xI.push_back(points[i]);
       }
     }
-    auto solver   = Hal::ParameterSolver(xI, yI, f);
-    auto solution = solver.Solve();
-    solver.ReleaseFunc();  // to not delete TF1
-    return solution;
+    auto solver = Hal::ParameterSolver(xI, yI, f);
+    if (fStartParamsMain.size()) {
+      auto solution = solver.Solve(fStartParamsMain, "print");
+      solver.ReleaseFunc();  // to not delete TF1
+      return solution;
+    } else {
+      auto solution = solver.Solve();
+      solver.ReleaseFunc();  // to not delete TF1
+      return solution;
+    }
   }
 
   void ProfileAna2D::AutoEstimParams(const std::unique_ptr<TGraphErrors>& av,
@@ -660,14 +670,18 @@ namespace Hal {
     } else {
       /** finish average calculation first - we need them for sigmas ! **/
       auto vecAv = InitEstimFunc(av, fAverage, fPoints);
-      for (int i = 0; i < fNParam; i++)
+      if (fStartParamsMain.size() == fNParam) {
+        std::cout << "USING PREDEF params" << std::endl;
+        vecAv = fStartParamsMain;
+      }
+      for (int i = 0; i < fNParam; i++) {
         fAverage->SetParameter(i, vecAv[i]);
-      if (!Hal::Std::FindParam(fAnalyzeOption, UseFixed())) av->Fit(fAverage, "Q");
+      }
+      if (!Hal::Std::FindParam(fAnalyzeOption, UseFixed())) av->Fit(fAverage, "R");
       for (int i = 0; i < fNParam; i++)
         fParamsAverage[i] = fAverage->GetParameter(i);
       auto estimHigh = InitEstimFunc(sigPlus, fSigmaHigh, fPointsSigma);
       auto estimLow  = InitEstimFunc(sigMinus, fSigmaLow, fPointsSigma);
-
       for (int i = 0; i < sigPlus->GetN(); i++) {
         fSigmaHigh->SetParameter(i, estimHigh[i]);
         fSigmaLow->SetParameter(i, estimLow[i]);
@@ -686,11 +700,19 @@ namespace Hal {
   }
 
   Double_t ProfileAna2D::EvalNSigmaPlus(Double_t* x, Double_t* p) const {
-    return fAverage->Eval(*x) + p[0] * fSigmaHigh->Eval(*x);
+    Double_t val  = fAverage->Eval(*x);
+    Double_t val2 = fSigmaHigh->Eval(*x);
+    if (TMath::IsNaN(val + val2)) return 0;
+    return val + p[0] * val2;
   }
 
   Double_t ProfileAna2D::EvalNSigmaMinus(Double_t* x, Double_t* p) const {
-    return fAverage->Eval(*x) - p[0] * fSigmaLow->Eval(*x);
+    Double_t val  = fAverage->Eval(*x);
+    Double_t val2 = fSigmaLow->Eval(*x);
+    if (TMath::IsNaN(val + val2)) return 0;
+    return val + p[0] * val2;
   }
+
+  Double_t ProfileAna2D::GetFittedMean(Double_t x) const { return fAverage->Eval(x); }
 
 } /* namespace Hal */

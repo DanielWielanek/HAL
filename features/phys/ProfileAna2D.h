@@ -82,7 +82,7 @@ namespace Hal {
     Double_t fOutLiersCut      = {-1};
     Color_t fColor             = {kRed};
     Color_t fColor2            = {kGray};
-    TH2* fHisto                = {nullptr};
+
     /**
      * ids of parameters
      */
@@ -92,6 +92,7 @@ namespace Hal {
 
 
   protected:
+    TH2* fHisto     = {nullptr};
     Int_t fNParam   = {0};
     TF1* fAverage   = {nullptr};
     TF1* fSigmaLow  = {nullptr};
@@ -134,6 +135,7 @@ namespace Hal {
     std::vector<Double_t> fParamsSigmaLow;
     std::vector<Double_t> fParamsSigmaHigh;
     std::vector<Double_t> fParamsAverage;
+    std::vector<Double_t> fStartParamsMain;
 
     TString fAnalyzeOption;
     void AnalyzeProj();
@@ -314,6 +316,12 @@ namespace Hal {
     void SetSigmaId(Int_t idLow, Int_t idHigh);
     void SetAverageId(Int_t id) { fMeanId = id; };
     void SetNBinsThreshold(Int_t n) { fBinsThreshold = n; }
+    Double_t GetFittedMean(Double_t x) const;
+    /**
+     * staring parameters to estimation if something goes wrong
+     * @param vec
+     */
+    void SetStartParams(std::vector<Double_t> vec) { fStartParamsMain = vec; };
     std::vector<Double_t> GetMeanParams() const { return fParamsAverage; }
     std::vector<Double_t> GetSigmaPlusParams() const { return fParamsSigmaHigh; }
     std::vector<Double_t> GetSigmaMinusParams() const { return fParamsSigmaLow; }

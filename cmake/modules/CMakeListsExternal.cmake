@@ -30,6 +30,24 @@ Set(STANDALONE TRUE)
 
 
 find_package(ROOT 6.00.00 REQUIRED)
+
+find_library(ROOT_XML_LIBRARY XML PATHS ${ROOT_LIBRARY_DIR})
+find_library(ROOT_SQLITE_LIBRARY RSQLite PATHS ${ROOT_LIBRARY_DIR})
+
+execute_process(COMMAND root-config --features
+                OUTPUT_VARIABLE ROOT_FEATURES
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+if(NOT "${ROOT_FEATURES}" MATCHES "xml")
+  message(FATAL_ERROR "ROOT compiled without XML support.")
+endif()
+
+if(NOT "${ROOT_FEATURES}" MATCHES "sqlite")
+  message(WARNING "ROOT compiled without SQLite support.")
+endif()
+
+
+
 if("${ROOT_VERSION_MAJOR}.${ROOT_VERSION_MINOR}" VERSION_GREATER 6.16)
   Execute_Process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-vmc OUTPUT_VARIABLE ROOT_vmc_FOUND)
   String(STRIP ${ROOT_vmc_FOUND} ROOT_vmc_FOUND)

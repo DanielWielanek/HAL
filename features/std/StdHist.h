@@ -24,8 +24,12 @@ class TVirtualPad;
 namespace Hal {
   namespace Std {
     namespace {
+#if __cplusplus >= 201703L
+      [[maybe_unused]] int anonymCounter = {0};
+#else
       int anonymCounter = {0};
-    }
+#endif
+    }  // namespace
     /**
      * remove nans from histogram
      * @param h histogram to check
@@ -314,9 +318,11 @@ namespace Hal {
     /**
      * finds maximum in given histograms
      * @param
+     * @param underflow - include underflow bins
+     * @param overflow - inlcude overflow bins
      * @return
      */
-    Double_t GetMaximum(const std::vector<TH1*> histos);
+    Double_t GetMaximum(const std::vector<TH1*> histos, Bool_t underflow = kFALSE, Bool_t overflow = kFALSE);
     /**
      * hide labels on axis
      * @param obj - object to hide labels it can be TH1, TGraph or TAxis (in a such case you do not have to set x,y or z in opt)

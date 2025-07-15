@@ -12,6 +12,7 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
 )
 Include_Directories(${INCLUDE_DIRECTORIES})
 Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
+Include_Directories(${GSL_DIR}/include)
 
 Set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}

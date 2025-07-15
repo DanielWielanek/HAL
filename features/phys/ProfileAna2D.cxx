@@ -9,15 +9,15 @@
 
 #include <RtypesCore.h>
 #include <TF1.h>
-#include <TFile.h>  //FIX-ME remove it
 #include <TGraphErrors.h>
 #include <TH2.h>
 #include <TLine.h>
+#include <TMarker.h>
 #include <TMath.h>
 #include <TProfile.h>
 #include <TROOT.h>
 
-
+#include "ParameterSolver.h"
 #include "Std.h"
 #include "StdHist.h"
 
@@ -28,9 +28,9 @@ namespace Hal {
 
   ProfileAna2D::ProfileAna2D(TH2& h, Int_t poly) : fNParam(poly) {
     fHisto = (TH2*) h.Clone();
-    fPolyAverage.resize(poly);
-    fPolySigmaLow.resize(poly);
-    fPolySigmaHigh.resize(poly);
+    fParamsAverage.resize(poly);
+    fParamsSigmaLow.resize(poly);
+    fParamsSigmaHigh.resize(poly);
     Int_t bins;
     Double_t low, high;
     Hal::Std::GetAxisPar(*fHisto, bins, low, high);
@@ -70,6 +70,7 @@ namespace Hal {
 
     fFittingProjPattern = "[0] * exp(-0.5 * pow((x - [1]) / [2], 2))";
     InitializeAnalysis();
+
     if (Hal::Std::FindParam(fAnalyzeOption, UseFreeGaus())) {
       auto GrAv      = std::make_unique<TGraphErrors>();
       auto GrSiPlus  = std::make_unique<TGraphErrors>();
@@ -79,7 +80,7 @@ namespace Hal {
         auto data             = ReCalculateFreeGauss(slice);
         fRmsLow[slice.fBin]   = data[fSigmaIdLow];
         fRmsHigh[slice.fBin]  = data[fSigmaIdHigh];
-        fAverages[slice.fBin] = data[fAverageId];
+        fAverages[slice.fBin] = data[fMeanId];
         Double_t xGlob        = fValues[slice.fBin];
         int i                 = slice.fBin;
         Double_t sum          = data[EDataId::kEntries];
@@ -90,23 +91,8 @@ namespace Hal {
         GrSiPlus->SetPoint(count, xGlob, fRmsHigh[i]);
         GrSiPlus->SetPointError(count++, 0, fRmsHigh[i] / TMath::Sqrt(2.0 * sum));
       }
-      auto vecAv = InitEstim(GrAv);
-      auto vecSi = InitEstim(GrSiPlus);
-      for (int i = 0; i < fNParam; i++) {
-        fAverage->SetParameter(i, vecAv[i]);
-        fSigmaLow->SetParameter(i, vecSi[i]);
-        fSigmaHigh->SetParameter(i, vecSi[i]);
-      }
-      if (!Hal::Std::FindParam(fAnalyzeOption, UseFixed())) {
-        GrAv->Fit(fAverage, "Q");
-        GrSiPlus->Fit(fSigmaHigh, "Q");
-        GrSiMinus->Fit(fSigmaLow, "Q");
-      }
-      for (int i = 0; i < fNParam; i++) {
-        fPolyAverage[i]   = fAverage->GetParameter(i);
-        fPolySigmaLow[i]  = fSigmaLow->GetParameter(i);
-        fPolySigmaHigh[i] = fSigmaHigh->GetParameter(i);
-      }
+
+      AutoEstimParams(GrAv, GrSiMinus, GrSiPlus);
     } else if (Hal::Std::FindParam(fAnalyzeOption, UseRMSGaus())) {
       auto GrAv      = std::make_unique<TGraphErrors>();
       auto GrSiPlus  = std::make_unique<TGraphErrors>();
@@ -117,7 +103,7 @@ namespace Hal {
         int i          = slice.fBin;
         fRmsLow[i]     = data[fSigmaIdLow];
         fRmsHigh[i]    = data[fSigmaIdHigh];
-        fAverages[i]   = data[fAverageId];
+        fAverages[i]   = data[fMeanId];
         Double_t xGlob = fValues[i];
         Double_t sum   = data[EDataId::kEntries];
         GrAv->SetPoint(count, xGlob, fAverages[i]);
@@ -127,23 +113,7 @@ namespace Hal {
         GrSiPlus->SetPoint(count, xGlob, fRmsHigh[i]);
         GrSiPlus->SetPointError(count++, 0, fRmsHigh[i] / TMath::Sqrt(2.0 * sum));
       }
-      auto vecAv = InitEstim(GrAv);
-      auto vecSi = InitEstim(GrSiPlus);
-      for (int i = 0; i < fNParam; i++) {
-        fAverage->SetParameter(i, vecAv[i]);
-        fSigmaLow->SetParameter(i, vecSi[i]);
-        fSigmaHigh->SetParameter(i, vecSi[i]);
-      }
-      if (!Hal::Std::FindParam(fAnalyzeOption, UseFixed())) {
-        GrAv->Fit(fAverage, "Q");
-        GrSiPlus->Fit(fSigmaHigh, "Q");
-        GrSiMinus->Fit(fSigmaLow, "Q");
-      }
-      for (int i = 0; i < fNParam; i++) {
-        fPolyAverage[i]   = fAverage->GetParameter(i);
-        fPolySigmaLow[i]  = fSigmaLow->GetParameter(i);
-        fPolySigmaHigh[i] = fSigmaHigh->GetParameter(i);
-      }
+      AutoEstimParams(GrAv, GrSiMinus, GrSiPlus);
     }
   }
 
@@ -155,7 +125,6 @@ namespace Hal {
     if (sigmaHi > sigmaHigh) return kFALSE;
     return kTRUE;
   }
-
 
   std::vector<Double_t> ProfileAna2D::Calculate(const std::vector<Double_t>& valuesX,
                                                 const std::vector<Double_t>& valuesY) const {
@@ -216,29 +185,27 @@ namespace Hal {
       Hal::Std::GetUniqueName("polyfit"), this, &ProfileAna2D::EvaluateMean, lowX, highX, 0, this->ClassName(), "EvaluateMean");
     TF1* sigmaLo = new TF1(Hal::Std::GetUniqueName("sigmafitLo"),
                            this,
-                           &ProfileAna2D::EvalShiftedMinus,
+                           &ProfileAna2D::EvalNSigmaMinus,
                            lowX,
                            highX,
                            1,
                            this->ClassName(),
-                           "EvalShiftedMinus");
+                           "EvalNSigmaMinus");
     TF1* sigmaHi = new TF1(Hal::Std::GetUniqueName("sigmafitHi"),
                            this,
-                           &ProfileAna2D::EvalShiftedPlus,
+                           &ProfileAna2D::EvalNSigmaPlus,
                            lowX,
                            highX,
                            1,
                            this->ClassName(),
-                           "EvalShiftedPlus");
-    for (int i = 0; i < fNParam; i++) {
-      average->FixParameter(i, fAverage->GetParameter(i));
-      sigmaLo->FixParameter(i, fSigmaLow->GetParameter(i));
-      sigmaHi->FixParameter(i, fSigmaHigh->GetParameter(i));
-    }
+                           "EvalNSigmaPlus");
+    for (int i = 0; i < fNParam; i++)
+      average->FixParameter(i, fParamsAverage[i]);
 
     sigmaLo->SetLineStyle(7);
     sigmaHi->SetLineStyle(7);
-
+    sigmaHi->FixParameter(0, 1);
+    sigmaLo->FixParameter(0, 1);
 
     TString option = opt;
     if (Hal::Std::FindParam(option, "colz", kTRUE)) { fHisto->Draw("colz"); }
@@ -292,15 +259,14 @@ namespace Hal {
     sigmaHi->Draw("SAME");
   }
 
-
   ProfileAna2D::~ProfileAna2D() {
     if (fAverage) delete fAverage;
-    if (fSigmaHigh) delete fSigmaHigh;
-    if (fSigmaLow) delete fSigmaLow;
     if (fHisto) delete fHisto;
+    if (fSigmaLow) delete fSigmaLow;
+    if (fSigmaHigh) delete fSigmaHigh;
   }
 
-  std::vector<Double_t> ProfileAna2D::InitEstim(const std::unique_ptr<TGraphErrors>& gr) const {
+  std::vector<Double_t> ProfileAna2D::InitEstimPoly(const std::unique_ptr<TGraphErrors>& gr) const {
     std::vector<Double_t> valuesX;
     std::vector<Double_t> valuesY;
     for (int i = 0; i < gr->GetN(); i++) {
@@ -363,6 +329,31 @@ namespace Hal {
     copy->SetLineColor(fColor);
     copy->Draw("same");
 
+    Double_t th1rms     = copy->GetRMS();
+    Double_t th1mean    = copy->GetMean();
+    const Double_t yrms = 0.606531;
+
+    if (Hal::Std::FindParam(opt, "stat")) {
+      TMarker* m = new TMarker(th1mean, yrms, 33);
+      m->SetMarkerSize(2);
+      m->SetMarkerColor(fColor2);
+      m->Draw("SAME");
+      TLine* l = new TLine(th1mean - th1rms, yrms, th1mean + th1rms, yrms);
+      l->SetLineColor(fColor2);
+      l->SetLineWidth(2);
+      l->Draw("SAME");
+
+      l = new TLine(th1mean - th1rms, yrms - 0.05, th1mean - th1rms, yrms + 0.05);
+      l->SetLineColor(fColor2);
+      l->SetLineWidth(2);
+      l->Draw("SAME");
+      l = new TLine(th1mean + th1rms, yrms - 0.05, th1mean + th1rms, yrms + 0.05);
+      l->SetLineColor(fColor2);
+      l->SetLineWidth(2);
+      l->Draw("SAME");
+    }
+
+
     Int_t bins;
     Double_t xmin, xmax;
     Hal::Std::GetAxisPar(*copy, bins, xmin, xmax, "x");
@@ -376,8 +367,6 @@ namespace Hal {
     Double_t sigmaLo = fSigmaLow->Eval(val);
     Double_t sigmaHi = fSigmaHigh->Eval(val);
     double x         = val;
-    std::cout << "SIGMA " << val << " " << sigmaHi << " " << EvalRawRMSPlus(&val, nullptr) - EvalRawMean(&val, nullptr)
-              << std::endl;
     gauss->SetParameters(1.0, av, sigmaHi);
     gauss->SetLineColor(fColor);
     gauss->SetNpx(1000);
@@ -435,9 +424,10 @@ namespace Hal {
       delete fSigmaLow;
       delete fSigmaHigh;
     }
-    fAverage   = new TF1(Hal::Std::GetUniqueName("polyfit"), fFittingPattern, fTotMinX, fTotMaxX);
-    fSigmaLow  = new TF1(Hal::Std::GetUniqueName("polyfitsigma"), fFittingPattern, fTotMinX, fTotMaxX);
-    fSigmaHigh = new TF1(Hal::Std::GetUniqueName("polyfitsigma"), fFittingPattern, fTotMinX, fTotMaxX);
+    fAverage = new TF1(Hal::Std::GetUniqueName("polyfit"), fFittingPattern, fTotMinX, fTotMaxX);
+    if (fFreeSigma) fFittingSigmaPattern = fFittingPattern;
+    fSigmaHigh = new TF1(Hal::Std::GetUniqueName("polyfitsigma"), fFittingSigmaPattern, fTotMinX, fTotMaxX);
+    fSigmaLow  = new TF1(Hal::Std::GetUniqueName("polyfitsigma"), fFittingSigmaPattern, fTotMinX, fTotMaxX);
     fData.clear();
     int count      = 0;
     Double_t min   = lowX;
@@ -479,7 +469,32 @@ namespace Hal {
     }
   }
 
-  void ProfileAna2D::AnalizeCustom() {}
+  void ProfileAna2D::AnalizeCustom() {
+    std::cout << "---- " << ClassName() << " ----" << std::endl;
+    std::cout << "Custom Analysis" << std::endl;
+    InitializeAnalysis();
+
+    auto GrAv      = std::make_unique<TGraphErrors>();
+    auto GrSiPlus  = std::make_unique<TGraphErrors>();
+    auto GrSiMinus = std::make_unique<TGraphErrors>();
+    int count      = 0;
+    for (auto& slice : fData) {
+      auto data      = ReCalculateFree(slice);
+      int i          = slice.fBin;
+      fRmsLow[i]     = data[fSigmaIdLow];
+      fRmsHigh[i]    = data[fSigmaIdHigh];
+      fAverages[i]   = data[fMeanId];
+      Double_t xGlob = fValues[i];
+      Double_t sum   = data[EDataId::kEntries];
+      GrAv->SetPoint(count, xGlob, fAverages[i]);
+      GrAv->SetPointError(count, 0, fRmsHigh[i] / TMath::Sqrt(sum));
+      GrSiMinus->SetPoint(count, xGlob, fRmsLow[i]);
+      GrSiMinus->SetPointError(count, 0, fRmsLow[i] / TMath::Sqrt(2.0 * sum));
+      GrSiPlus->SetPoint(count, xGlob, fRmsHigh[i]);
+      GrSiPlus->SetPointError(count++, 0, fRmsHigh[i] / TMath::Sqrt(2.0 * sum));
+    }
+    AutoEstimParams(GrAv, GrSiMinus, GrSiPlus);
+  }
 
   void ProfileAna2D::SetSigmaId(Int_t idA, Int_t idB) {
     fSigmaIdLow  = idA;
@@ -489,6 +504,44 @@ namespace Hal {
   void ProfileAna2D::AnalyzePolyGausFitSlice() {}
 
   std::vector<Double_t> ProfileAna2D::ReCalculateGauss(const SliceData& data) const { return Calculate(data.fX, data.fY); }
+
+  std::vector<Double_t> ProfileAna2D::ReCalculateFree(const SliceData& data) const {
+
+    auto val   = ReCalculateGauss(data);
+    TH1D* copy = Hal::Std::GetProjection1D(fHisto, fValues[data.fBin], fValues[data.fBin], "y");
+    copy->Reset();
+    for (int i = 0; i < data.fX.size(); i++) {
+      int bin = copy->GetXaxis()->FindBin(data.fX[i]);
+      copy->SetBinContent(bin, data.fY[i]);
+      copy->SetBinError(bin, data.fYe[i]);
+    }
+    Int_t bins;
+    Double_t xmin, xmax;
+    Hal::Std::GetAxisPar(*copy, bins, xmin, xmax, "x");
+    TF1* f         = new TF1("tempfit", fFittingProjPattern, xmin, xmax);
+    double maximum = Hal::Std::GetMaximum({copy});
+    double mean    = copy->GetMean();
+    double rms     = copy->GetRMS();
+    f->SetParameter(0, maximum);
+    f->SetParameter(1, mean);
+    f->SetParameter(2, rms);
+    f->SetParLimits(0, maximum * 0.5, maximum * 1.5);
+    f->SetParLimits(1, mean * 0.5, mean * 1.5);
+    f->SetParLimits(2, rms * 0.5, rms * 1.5);
+
+    copy->Fit(f, "RQ");
+
+    val[EDataId::kMean]            = f->GetParameter(1);
+    val[EDataId::kMeanError]       = f->GetParError(1);
+    val[EDataId::kMaxY]            = f->GetParameter(0);
+    val[EDataId::kSigmaMinus]      = f->GetParameter(2);
+    val[EDataId::kSigmaPlus]       = f->GetParameter(2);
+    val[EDataId::kSigmaMinusError] = f->GetParError(2);
+    val[EDataId::kSigmaPlusError]  = f->GetParError(2);
+    delete f;
+    delete copy;
+    return val;
+  }
 
   std::vector<Double_t> ProfileAna2D::ReCalculateFreeGauss(const SliceData& data) const {
 
@@ -551,14 +604,93 @@ namespace Hal {
 
   Double_t ProfileAna2D::EvalSigmaMinus(Double_t* x, Double_t* p) const { return fSigmaLow->Eval(*x); }
 
-  Double_t ProfileAna2D::EvalShiftedPlus(Double_t* x, Double_t* p) const {
+  Double_t ProfileAna2D::EvaluateMean(Double_t* x, Double_t* p) const { return fAverage->Eval(*x); }
+
+  std::vector<Double_t>
+  ProfileAna2D::InitEstimFunc(const std::unique_ptr<TGraphErrors>& gr, TF1* f, const std::vector<Double_t>& points) const {
+    std::vector<Double_t> valuesX;
+    std::vector<Double_t> valuesY;
+    for (int i = 0; i < gr->GetN(); i++) {
+      Double_t x, y;
+      gr->GetPoint(i, x, y);
+      valuesX.push_back(x);
+      valuesY.push_back(y);
+    }
+    std::vector<Double_t> res, xI, yI;
+    const Int_t N = valuesX.size();
+    const Int_t m = fNParam;
+    if (points.size() == 0) {
+      double step = static_cast<double>(N - 1) / (m - 1);
+      for (int i = 0; i < m; ++i) {
+        int index = static_cast<int>(i * step + 0.5);
+        xI.push_back(valuesX[index]);
+        yI.push_back(valuesY[index]);
+      }
+    } else {
+      for (unsigned int i = 0; i < points.size(); i++) {
+        yI.push_back(gr->Eval(points[i]));
+        xI.push_back(points[i]);
+      }
+    }
+    auto solver   = Hal::ParameterSolver(xI, yI, f);
+    auto solution = solver.Solve();
+    solver.ReleaseFunc();  // to not delete TF1
+    return solution;
+  }
+
+  void ProfileAna2D::AutoEstimParams(const std::unique_ptr<TGraphErrors>& av,
+                                     const std::unique_ptr<TGraphErrors>& sigMinus,
+                                     const std::unique_ptr<TGraphErrors>& sigPlus) {
+
+
+    if (fFreeSigma) {
+      auto vecAv      = InitEstimFunc(av, fAverage, fPoints);
+      auto vecSiMinus = InitEstimFunc(sigMinus, fSigmaLow, fPoints);
+      auto vecSiPlus  = InitEstimFunc(sigPlus, fSigmaHigh, fPoints);
+      for (int i = 0; i < fNParam; i++) {
+        fAverage->SetParameter(i, vecAv[i]);
+        fSigmaLow->SetParameter(i, vecSiMinus[i]);
+        fSigmaHigh->SetParameter(i, vecSiPlus[i]);
+      }
+      if (!Hal::Std::FindParam(fAnalyzeOption, UseFixed())) {
+        av->Fit(fAverage, "Q");
+        sigPlus->Fit(fSigmaHigh, "Q");
+        sigMinus->Fit(fSigmaLow, "Q");
+      }
+    } else {
+      /** finish average calculation first - we need them for sigmas ! **/
+      auto vecAv = InitEstimFunc(av, fAverage, fPoints);
+      for (int i = 0; i < fNParam; i++)
+        fAverage->SetParameter(i, vecAv[i]);
+      if (!Hal::Std::FindParam(fAnalyzeOption, UseFixed())) av->Fit(fAverage, "Q");
+      for (int i = 0; i < fNParam; i++)
+        fParamsAverage[i] = fAverage->GetParameter(i);
+      auto estimHigh = InitEstimFunc(sigPlus, fSigmaHigh, fPointsSigma);
+      auto estimLow  = InitEstimFunc(sigMinus, fSigmaLow, fPointsSigma);
+
+      for (int i = 0; i < sigPlus->GetN(); i++) {
+        fSigmaHigh->SetParameter(i, estimHigh[i]);
+        fSigmaLow->SetParameter(i, estimLow[i]);
+      }
+      if (!Hal::Std::FindParam(fAnalyzeOption, UseFixed())) {
+        sigPlus->Fit(fSigmaHigh, "Q");
+        sigMinus->Fit(fSigmaLow, "Q");
+      }
+    }
+    for (int i = 0; i < fNParam; i++)
+      fParamsAverage[i] = fAverage->GetParameter(i);
+    for (int i = 0; i < fSigmaLow->GetNpar(); i++) {
+      fParamsSigmaLow[i]  = fSigmaLow->GetParameter(i);
+      fParamsSigmaHigh[i] = fSigmaHigh->GetParameter(i);
+    }
+  }
+
+  Double_t ProfileAna2D::EvalNSigmaPlus(Double_t* x, Double_t* p) const {
     return fAverage->Eval(*x) + p[0] * fSigmaHigh->Eval(*x);
   }
 
-  Double_t ProfileAna2D::EvalShiftedMinus(Double_t* x, Double_t* p) const {
-    return fAverage->Eval(*x) + p[0] * fSigmaLow->Eval(*x);
+  Double_t ProfileAna2D::EvalNSigmaMinus(Double_t* x, Double_t* p) const {
+    return fAverage->Eval(*x) - p[0] * fSigmaLow->Eval(*x);
   }
-
-  Double_t ProfileAna2D::EvaluateMean(Double_t* x, Double_t* p) const { return fAverage->Eval(*x); }
 
 } /* namespace Hal */

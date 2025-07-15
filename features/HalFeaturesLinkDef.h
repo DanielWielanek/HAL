@@ -118,6 +118,8 @@
 #pragma link C++ class Hal::ErrorCalc + ;
 #pragma link C++ class Hal::FastAxisCalc + ;
 #pragma link C++ class Hal::ProfileAna2D + ;
+#pragma link C++ class Hal::SmearAlgo + ;
+#pragma link C++ class Hal::SmearAlgoMatrix + ;
 
 //=============================
 #pragma link C++ class Hal::ObjectMatrix_1 + ;
@@ -168,6 +170,8 @@
 #pragma link C++ class Hal::MultiDimInterpolator + ;
 #pragma link C++ class Hal::MultiDimDataManager + ;
 #pragma link C++ class Hal::MultiDimMinuit + ;
+#pragma link C++ class Hal::ParameterSolver + ;
+
 // STD STUFF
 #pragma link C++ class std::vector < Hal::FitParam> + ;
 #pragma link C++ class std::vector < TString> + ;

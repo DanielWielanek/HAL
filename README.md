@@ -6,10 +6,11 @@ Framework for analysis of the collisions of heavy ions.
 ## ⚙️ Prerequisites
 This software requires:
  
-- [ROOT 6](https://root.cern/)
+- [ROOT 6](https://root.cern/) [with XML support]
 - [GSL (GNU Scientific Library)](https://www.gnu.org/software/gsl/)
 - cmake 3.11 or never
 - (optional) Python 3 + `http.server` module (for interactive reports)
+- C++ compiler with C++14 or never
  
 ---
 

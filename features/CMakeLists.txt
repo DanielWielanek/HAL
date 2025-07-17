@@ -17,7 +17,6 @@ Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 Set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}
   ${GSL_LIBRARY_DIRS} 
-  ${FAIRROOT_LIBRARY_DIR}
 )
 
 link_directories( ${LINK_DIRECTORIES})
@@ -96,8 +95,8 @@ install(FILES ${EXT_HEADERS}
 Set(HEADERS )
 Set(LINKDEF HalFeaturesLinkDef.h)
 Set(LIBRARY_NAME HalFeatures)
-Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO  EG gsl gslcblas )
-#Set(DEPENDENCIES XMLIO SQLIO FairTools)
+Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO EG gsl gslcblas )
+
 
 string(JOIN " " ROOTCLING_FLAGS "-I" ${HAL_FEATURES})
 

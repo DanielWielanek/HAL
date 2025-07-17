@@ -13,9 +13,9 @@ ${HAL_HBT}
 ${HAL_CUTS}
 )
 
-Set(SYSTEM_INCLUDE_DIRECTORIES
- ${ROOT_INCLUDE_DIR} 
- ${BASE_INCLUDE_DIRECTORIES}
+Set(LINK_DIRECTORIES
+  ${ROOT_LIBRARY_DIR}
+  ${GSL_LIBRARY_DIRS} 
 )
 
 Include_Directories(
@@ -184,6 +184,7 @@ if(DEFINED CIA)
         top_secret/CorrFitSHCFPainter.cxx
         top_secret/BattlestarAtlantia.cxx
         top_secret/BattlestarSolaria.cxx
+        top_secret/GausianSourceDenstityFastCalc.cxx
     )
 endif()
 
@@ -209,10 +210,6 @@ Set(LIBRARY_NAME HalFemto)
 Set(DEPENDENCIES HalAna Minuit Minuit2 Fumili)
 if(NOT DEFINED DISABLE_SQLITE)
    # Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
-endif()
-
-if(NOT DEFINED DISABLE_GSL)
-	Set(DEPENDENCIES ${DEPENDENCIES} gsl gslcblas)
 endif()
 
 if (NOT DEFINED DISABLE_SQLITE)

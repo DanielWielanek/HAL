@@ -86,7 +86,7 @@ namespace Hal {
   CutMonitorXYZ::~CutMonitorXYZ() {}
 
   void CutMonitorXYZ::Update(Bool_t pass, TObject* /*obj*/) {
-    if (fExUpdate) {
+    if (IsExclusive()) {
       if (fCut[0]->HasPassed() && fCut[1]->HasPassed() && fCut[2]->HasPassed()) {
         TrueUpdate(kTRUE);
       } else {
@@ -132,11 +132,11 @@ namespace Hal {
     fHistoPassed->GetZaxis()->SetTitle(fCut[2]->GetUnit(fOptionAxis[2]));
     name         = "Failed";
     fHistoFailed = (TH3D*) fHistoPassed->Clone(name);
-    fInit        = kTRUE;
+    MarkAsInitialized();
   }
 
   Bool_t CutMonitorXYZ::Init(Int_t task_id) {
-    if (fInit == kFALSE) { return CutMonitor::Init(task_id); }
+    if (IsInitialized() == kFALSE) { return CutMonitor::Init(task_id); }
     return kFALSE;
   }
 

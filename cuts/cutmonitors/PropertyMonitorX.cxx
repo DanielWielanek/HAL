@@ -12,6 +12,7 @@
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "Cout.h"
+#include "DataFormat.h"
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "Package.h"
@@ -53,7 +54,7 @@ namespace Hal {
   }
 
   Bool_t PropertyMonitorX::Init(Int_t task_id) {
-    if (fInit) {
+    if (IsInitialized()) {
 #ifdef HAL_DEBUG
       Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kDebugInfo);
 #endif
@@ -64,7 +65,7 @@ namespace Hal {
     TH1::AddDirectory(kFALSE);
     CreateHistograms();
     TH1::AddDirectory(kTRUE);
-    fInit = kTRUE;
+    MarkAsInitialized();
     return kTRUE;
   }
 
@@ -110,7 +111,9 @@ namespace Hal {
 
   Bool_t EventFieldMonitorX::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    fXaxisName      = ev->GetFieldName(fFieldID);
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldID)) { fFieldID += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldID)) { fFieldID += Hal::DataFieldID::ImStep; }
+    fXaxisName = ev->GetFieldName(fFieldID);
     return PropertyMonitorX::Init(task_id);
   }
   //========================================================================
@@ -132,6 +135,8 @@ namespace Hal {
 
   Bool_t TrackFieldMonitorX::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldID)) { fFieldID += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldID)) { fFieldID += Hal::DataFieldID::ImStep; }
     if (ev->InheritsFrom("Hal::ComplexEvent")) {
       ComplexTrack* tr  = (ComplexTrack*) ev->GetNewTrack();
       ComplexEvent* tev = (ComplexEvent*) ev->GetNewEvent();

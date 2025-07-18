@@ -52,8 +52,8 @@ namespace Hal {
    */
 
   class EventFieldMonitorXY : public PropertyMonitorXY {
-    const Int_t fFieldIDX;
-    const Int_t fFieldIDY;
+    Int_t fFieldIDX;
+    Int_t fFieldIDY;
 
   public:
     /**
@@ -80,8 +80,8 @@ namespace Hal {
    */
 
   class TrackFieldMonitorXY : public PropertyMonitorXY {
-    const Int_t fFieldIDX;
-    const Int_t fFieldIDY;
+     Int_t fFieldIDX;
+     Int_t fFieldIDY;
 
   public:
     /**

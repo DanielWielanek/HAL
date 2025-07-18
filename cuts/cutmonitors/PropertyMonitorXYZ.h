@@ -56,9 +56,9 @@ namespace Hal {
    * class for monitoring properties of events by using field ID
    */
   class EventFieldMonitorXYZ : public PropertyMonitorXYZ {
-    const Int_t fFieldIDX;
-    const Int_t fFieldIDY;
-    const Int_t fFieldIDZ;
+    Int_t fFieldIDX;
+    Int_t fFieldIDY;
+    Int_t fFieldIDZ;
 
   public:
     /**
@@ -88,9 +88,9 @@ namespace Hal {
    * class for monitoring properties of tracks by using field ID
    */
   class TrackFieldMonitorXYZ : public PropertyMonitorXYZ {
-    const Int_t fFieldIDX;
-    const Int_t fFieldIDY;
-    const Int_t fFieldIDZ;
+    Int_t fFieldIDX;
+    Int_t fFieldIDY;
+    Int_t fFieldIDZ;
 
   public:
     /**

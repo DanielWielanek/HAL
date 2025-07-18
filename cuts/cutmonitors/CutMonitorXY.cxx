@@ -79,7 +79,7 @@ namespace Hal {
   }
 
   void CutMonitorXY::Update(Bool_t passed, TObject* /*obj*/) {
-    if (fExUpdate) {
+    if (IsExclusive()) {
       if (fCut[0]->HasPassed() && fCut[1]->HasPassed()) {
         TrueUpdate(kTRUE);
       } else {

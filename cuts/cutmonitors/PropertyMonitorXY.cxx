@@ -12,6 +12,7 @@
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "Cout.h"
+#include "DataFormat.h"
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "Package.h"
@@ -57,7 +58,7 @@ namespace Hal {
   }
 
   Bool_t PropertyMonitorXY::Init(Int_t task_id) {
-    if (fInit) {
+    if (IsInitialized()) {
 #ifdef HAL_DEBUG
       Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kDebugInfo);
 #endif
@@ -68,7 +69,7 @@ namespace Hal {
     TH1::AddDirectory(kFALSE);
     CreateHistograms();
     TH1::AddDirectory(kTRUE);
-    fInit = kTRUE;
+    MarkAsInitialized();
     return kTRUE;
   }
 
@@ -126,8 +127,12 @@ namespace Hal {
 
   Bool_t EventFieldMonitorXY::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    fXaxisName      = ev->GetFieldName(fFieldIDX);
-    fYaxisName      = ev->GetFieldName(fFieldIDY);
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ImStep; }
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ImStep; }
+    fXaxisName = ev->GetFieldName(fFieldIDX);
+    fYaxisName = ev->GetFieldName(fFieldIDY);
     return PropertyMonitorXY::Init(task_id);
   }
   //========================================================================
@@ -154,6 +159,10 @@ namespace Hal {
 
   Bool_t TrackFieldMonitorXY::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ImStep; }
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ImStep; }
     if (ev->InheritsFrom("Hal::ComplexEvent")) {
       ComplexTrack* tr  = (ComplexTrack*) ev->GetNewTrack();
       ComplexEvent* tev = (ComplexEvent*) ev->GetNewEvent();

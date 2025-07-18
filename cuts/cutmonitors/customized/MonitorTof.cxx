@@ -10,6 +10,7 @@
 #include <RtypesCore.h>
 #include <TH2.h>
 
+#include "ComplexTrack.h"
 #include "DataFormat.h"
 #include "DataFormatManager.h"
 #include "Event.h"
@@ -23,14 +24,32 @@ namespace Hal {
   }
 
   Bool_t MonitorTofM2::Init(Int_t task_id) {
+    PropertyMonitorXY::Init(task_id);
     auto dataManager = Hal::DataFormatManager::Instance();
     auto event       = dataManager->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (event->GetFieldVal(Hal::DataFieldID::Track::EExp::kTofM2)) return kTRUE;
+    if (IsRe()) {
+      fXaxisName.ReplaceAll(" [", "_{re} [");
+      fYaxisName.ReplaceAll(" [", "_{re} [");
+      if (event->GetFieldVal(Hal::DataFieldID::Track::EExp::kTofM2 + Hal::DataFieldID::ReStep)) return kTRUE;
+    } else if (IsIm()) {
+      fXaxisName.ReplaceAll(" [", "_{im} [");
+      fYaxisName.ReplaceAll(" [", "_{im} [");
+      if (event->GetFieldVal(Hal::DataFieldID::Track::EExp::kTofM2 + Hal::DataFieldID::ImStep)) return kTRUE;
+    } else {
+      if (event->GetFieldVal(Hal::DataFieldID::Track::EExp::kTofM2)) return kTRUE;
+    }
     return kFALSE;
   }
 
   void MonitorTofM2::Update(Bool_t passed, TObject* obj) {
-    auto track    = (Hal::ExpTrack*) obj;
+    Hal::ExpTrack* track = nullptr;
+    if (IsRe()) {
+      track = (Hal::ExpTrack*) ((Hal::ComplexTrack*) obj)->GetRealTrack();
+    } else if (IsIm()) {
+      track = (Hal::ExpTrack*) ((Hal::ComplexTrack*) obj)->GetRealTrack();
+    } else {
+      track = (Hal::ExpTrack*) obj;
+    }
     auto tofTrack = (Hal::ToFTrack*) track->GetDetTrack(Hal::DetectorID::kTOF);
     double valueY = tofTrack->GetMass2();
     double valueX = track->GetMomentum().P() * track->GetCharge();
@@ -48,7 +67,14 @@ namespace Hal {
   }
 
   void MonitorTofBeta::Update(Bool_t passed, TObject* obj) {
-    auto track    = (Hal::ExpTrack*) obj;
+    Hal::ExpTrack* track = nullptr;
+    if (IsRe()) {
+      track = (Hal::ExpTrack*) ((Hal::ComplexTrack*) obj)->GetRealTrack();
+    } else if (IsIm()) {
+      track = (Hal::ExpTrack*) ((Hal::ComplexTrack*) obj)->GetImgTrack();
+    } else {
+      track = (Hal::ExpTrack*) obj;
+    }
     auto tofTrack = (Hal::ToFTrack*) track->GetDetTrack(Hal::DetectorID::kTOF);
     double valueY = tofTrack->GetBeta();
     double valueX = track->GetMomentum().P() * track->GetCharge();
@@ -61,9 +87,20 @@ namespace Hal {
   }
 
   Bool_t MonitorTofBeta::Init(Int_t task_id) {
+    PropertyMonitorXY::Init(task_id);
     auto dataManager = Hal::DataFormatManager::Instance();
     auto event       = dataManager->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (event->GetFieldVal(Hal::DataFieldID::Track::EExp::kToFBeta)) return kTRUE;
+    if (IsRe()) {
+      fXaxisName.ReplaceAll(" [", "_{re} [");
+      fYaxisName.ReplaceAll(" [", "_{re} [");
+      if (event->GetFieldVal(Hal::DataFieldID::Track::EExp::kToFBeta + Hal::DataFieldID::ReStep)) return kTRUE;
+    } else if (IsIm()) {
+      fXaxisName.ReplaceAll(" [", "_{im} [");
+      fYaxisName.ReplaceAll(" [", "_{im} [");
+      if (event->GetFieldVal(Hal::DataFieldID::Track::EExp::kToFBeta + Hal::DataFieldID::ImStep)) return kTRUE;
+    } else {
+      if (event->GetFieldVal(Hal::DataFieldID::Track::EExp::kToFBeta)) return kTRUE;
+    }
     return kFALSE;
   }
 }  // namespace Hal

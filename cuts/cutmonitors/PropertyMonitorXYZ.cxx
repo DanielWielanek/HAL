@@ -12,6 +12,7 @@
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "Cout.h"
+#include "DataFormat.h"
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "Package.h"
@@ -53,7 +54,7 @@ namespace Hal {
     fHistoPassed->GetZaxis()->SetTitle(fZaxisName);
     name         = "Failed";
     fHistoFailed = (TH3D*) fHistoPassed->Clone(name);
-    fInit        = kTRUE;
+    MarkAsInitialized();
   }
 
   PropertyMonitorXYZ::PropertyMonitorXYZ(TString xLabel, TString yLabel, TString zLabel, ECutUpdate update) :
@@ -69,7 +70,7 @@ namespace Hal {
   }
 
   Bool_t PropertyMonitorXYZ::Init(Int_t task_id) {
-    if (fInit) {
+    if (IsInitialized()) {
 #ifdef HAL_DEBUG
       Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kDebugInfo);
 #endif
@@ -80,7 +81,7 @@ namespace Hal {
     TH1::AddDirectory(kFALSE);
     CreateHistograms();
     TH1::AddDirectory(kTRUE);
-    fInit = kTRUE;
+    MarkAsInitialized();
     return kTRUE;
   }
 
@@ -149,7 +150,12 @@ namespace Hal {
 
   Bool_t EventFieldMonitorXYZ::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ImStep; }
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ImStep; }
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDZ)) { fFieldIDZ += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDZ)) { fFieldIDZ += Hal::DataFieldID::ImStep; }
     fXaxisName = ev->GetFieldName(fFieldIDX);
     fYaxisName = ev->GetFieldName(fFieldIDY);
     fZaxisName = ev->GetFieldName(fFieldIDZ);
@@ -182,6 +188,12 @@ namespace Hal {
   }
 
   Bool_t TrackFieldMonitorXYZ::Init(Int_t task_id) {
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ImStep; }
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ImStep; }
+    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDZ)) { fFieldIDZ += Hal::DataFieldID::ReStep; }
+    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDZ)) { fFieldIDZ += Hal::DataFieldID::ImStep; }
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
     if (ev->InheritsFrom("Hal::ComplexEvent")) {
       ComplexTrack* tr  = (ComplexTrack*) ev->GetNewTrack();

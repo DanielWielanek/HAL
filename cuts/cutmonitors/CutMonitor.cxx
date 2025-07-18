@@ -42,22 +42,7 @@ namespace Hal {
     return fOptionAxis[i];
   }
 
-  CutMonitor::CutMonitor(Int_t size) :
-    TObject(),
-    fAxisNo(size),
-    fCuts(0),
-    fCollectionID(-1),
-    fAxisBins(NULL),
-    fOptionAxis(NULL),
-    fHistoPassed(NULL),
-    fHistoFailed(NULL),
-    fAxisMin(NULL),
-    fAxisMax(NULL),
-    fCut(NULL),
-    fCutNames(NULL) {
-    fInit     = kFALSE;
-    fExUpdate = kFALSE;
-    fCuts     = 0;
+  CutMonitor::CutMonitor(Int_t size) : TObject(), fAxisNo(size) {
     if (fAxisNo > 0) {
       fUpdateRatio = ECutUpdate::kNo;
       fCut         = new Cut*[fAxisNo];
@@ -76,10 +61,8 @@ namespace Hal {
     }
   }
 
-  CutMonitor::CutMonitor(const CutMonitor& other) :
-    TObject(other), fAxisNo(other.fAxisNo), fHistoPassed(NULL), fHistoFailed(NULL) {
-    fInit         = kFALSE;
-    fExUpdate     = other.fExUpdate;
+  CutMonitor::CutMonitor(const CutMonitor& other) : TObject(other), fAxisNo(other.fAxisNo) {
+    fFlags        = other.fFlags;
     fCuts         = other.fCuts;
     fUpdateRatio  = other.fUpdateRatio;
     fCut          = new Cut*[fAxisNo];
@@ -100,7 +83,7 @@ namespace Hal {
   }
 
   Bool_t CutMonitor::Init(Int_t /*task_id*/) {
-    if (fInit) {
+    if (IsInitialized()) {
 #ifdef HAL_DEBUG
       Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kDebugInfo);
 #endif
@@ -124,7 +107,7 @@ namespace Hal {
     TH1::AddDirectory(kFALSE);
     CreateHistograms();
     TH1::AddDirectory(kTRUE);
-    fInit = kTRUE;
+    MarkAsInitialized();
     return kTRUE;
   }
 
@@ -156,7 +139,7 @@ namespace Hal {
 
   void CutMonitor::TrueUpdate(Bool_t /*passed*/) {}
 
-  void CutMonitor::EnableExclusiveUpdate() { fExUpdate = kTRUE; }
+  void CutMonitor::EnableExclusiveUpdate() { SETBIT(fFlags, EFlagBit::kExclusive); }
 
   void CutMonitor::CreateHistograms() {}
 
@@ -255,12 +238,11 @@ namespace Hal {
       fHistoFailed = nullptr;
       if (fHistoPassed) delete fHistoPassed;
       fHistoPassed = nullptr;
-      if (other.fInit) {
+      if (other.IsInitialized()) {
         fHistoPassed = (TH1*) other.fHistoPassed->Clone();
         fHistoFailed = (TH1*) other.fHistoFailed->Clone();
       }
-      fInit        = other.fInit;
-      fExUpdate    = other.fExUpdate;
+      fFlags       = other.fFlags;
       fUpdateRatio = other.fUpdateRatio;
     }
     return *this;
@@ -271,7 +253,7 @@ namespace Hal {
     pack->AddObject(new ParameterInt("Cuts", fCuts));
     pack->AddObject(new ParameterInt("CollectionID", fCollectionID));
     pack->AddObject(new ParameterInt("UpdateRatio", (Int_t) fUpdateRatio));
-    pack->AddObject(new ParameterInt("ExclusiveUpdate", (Int_t) fExUpdate));
+    pack->AddObject(new ParameterInt("ExclusiveUpdate", (Int_t) IsExclusive()));
 
     if (!ObjMonitor()) {
       TH1* hP = (TH1*) fHistoPassed->Clone();

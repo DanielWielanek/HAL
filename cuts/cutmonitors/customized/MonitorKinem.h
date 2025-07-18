@@ -18,6 +18,7 @@ namespace Hal {
   public:
     MonitorYPt();
     virtual void Update(Bool_t passed, TObject* obj);
+    virtual Bool_t Init(Int_t task_id);
     virtual ~MonitorYPt() {};
     ClassDef(MonitorYPt, 1)
   };
@@ -28,6 +29,7 @@ namespace Hal {
   public:
     MonitorEtaPt();
     virtual void Update(Bool_t passed, TObject* obj);
+    virtual Bool_t Init(Int_t task_id);
     virtual ~MonitorEtaPt() {};
     ClassDef(MonitorEtaPt, 1)
   };

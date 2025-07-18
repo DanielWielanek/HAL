@@ -35,4 +35,24 @@ namespace Hal {
       return detectorID;
     }
   }
+  namespace DataFieldID {
+    Bool_t IsEvent(Int_t field) {
+      if (field >= Internal::EventStart) return kTRUE;
+      return kFALSE;
+    }
+
+    Bool_t IsRe(Int_t field) {
+      if (field >= Internal::EventStart) { field = field - Internal::EventStart; }
+      if (field < ImStep) {
+        if (field >= ReStep) return kTRUE;
+      }
+      return kFALSE;
+    }
+
+    Bool_t IsIm(Int_t field) {
+      if (field >= Internal::EventStart) { field = field - Internal::EventStart; }
+      if (field >= ImStep) { return kTRUE; }
+      return kFALSE;
+    }
+  }  // namespace DataFieldID
 }  // namespace Hal

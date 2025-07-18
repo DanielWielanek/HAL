@@ -26,6 +26,7 @@ namespace Hal {
     friend class CutOptions;
 
   protected:
+    enum EFlagBit { kInit = 0, kExclusive = 1, kRe = 2, kIm = 3 };
     /**
      * number of axis in cut monitor
      */
@@ -33,55 +34,51 @@ namespace Hal {
     /**
      * number of currently added cuts
      */
-    Int_t fCuts;
+    Int_t fCuts = {0};
     /**
      * collection number of this cut monitor
      */
-    Int_t fCollectionID;
+    Int_t fCollectionID = {-1};
     /**
      * array with numbers of axis bins
      */
-    Int_t* fAxisBins;  //[fAxisNo]
+    Int_t* fAxisBins = {nullptr};  //[fAxisNo]
     /**
      * array with parameters numbers used from cuts for all axes
      */
-    Int_t* fOptionAxis;  //[fAxisNo]
+    Int_t* fOptionAxis = {nullptr};  //[fAxisNo]
     /**
      * histogram with passed objects
      */
-    TH1* fHistoPassed;
+    TH1* fHistoPassed = {nullptr};
     /**
      * histogram with failed objects
      */
-    TH1* fHistoFailed;
+    TH1* fHistoFailed = {nullptr};
     /**
      * array with lower edges of axes
      */
-    Double_t* fAxisMin;  //[fAxisNo]
+    Double_t* fAxisMin = {nullptr};  //[fAxisNo]
     /**
      * array with upper edges of axes
      */
-    Double_t* fAxisMax;  //[fAxisNo]
+    Double_t* fAxisMax = {nullptr};  //[fAxisNo]
     /**
-     * init flag, true if monitor has been initialized
+     *  flag for holding informations
      */
-    Bool_t fInit;
-    /**
-     * exclusive flag, true if monitor works in exclusive mode
-     */
-    Bool_t fExUpdate;
+    Int_t fFlags = {0};
     /**
      * array with pointers to monitored cuts
      */
-    Cut** fCut;  //[fAxisNo]
+    Cut** fCut = {nullptr};  //[fAxisNo]
     /**
      * array with pointers to names of monitored cuts
      */
-    TString* fCutNames;  //[fAxisNo]
+    TString* fCutNames = {nullptr};  //[fAxisNo]
     /**
      * update ratio of this cut monitor
      */
-    ECutUpdate fUpdateRatio;
+    ECutUpdate fUpdateRatio = {ECutUpdate::kNo};
     /**
      * allocate histograms
      */
@@ -129,6 +126,30 @@ namespace Hal {
      * @param passed
      */
     void ManualFill3D(Double_t x, Double_t y, Double_t z, Bool_t passed);
+    /**
+     *
+     * @return true if initialized
+     */
+    Bool_t IsInitialized() const { return TESTBIT(fFlags, EFlagBit::kInit); }
+    /**
+     * marks as initialized
+     */
+    void MarkAsInitialized() { SETBIT(fFlags, EFlagBit::kInit); }
+    /**
+     *
+     * @return true if exclusive
+     */
+    inline Bool_t IsExclusive() const { return TESTBIT(fFlags, EFlagBit::kExclusive); }
+    /**
+     *
+     * @return true if marked as real
+     */
+    Bool_t IsRe() const { return TESTBIT(fFlags, EFlagBit::kRe); }
+    /**
+     *
+     * @return true if marked as imaginary
+     */
+    Bool_t IsIm() const { return TESTBIT(fFlags, EFlagBit::kIm); }
 
   public:
     /**
@@ -265,8 +286,16 @@ namespace Hal {
      * @return pointer to linked cut
      */
     Cut* GetCutLink(Int_t i) const { return fCut[i]; };
+    /**
+     * mark as real cut (used by some property monitors)
+     */
+    void SetFlagRe() { SETBIT(fFlags, EFlagBit::kRe); }
+    /**
+     * mark as imaginary cut (used by some property monitors)
+     */
+    void SetFlagIm() { SETBIT(fFlags, EFlagBit::kIm); }
     virtual ~CutMonitor();
-    ClassDef(CutMonitor, 1)
+    ClassDef(CutMonitor, 2)
   };
 }  // namespace Hal
 #endif /* HALCUTMONITOR_H_ */

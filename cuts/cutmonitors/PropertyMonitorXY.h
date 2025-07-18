@@ -80,8 +80,8 @@ namespace Hal {
    */
 
   class TrackFieldMonitorXY : public PropertyMonitorXY {
-     Int_t fFieldIDX;
-     Int_t fFieldIDY;
+    Int_t fFieldIDX;
+    Int_t fFieldIDY;
 
   public:
     /**

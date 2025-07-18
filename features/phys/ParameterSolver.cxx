@@ -8,6 +8,7 @@
 #include "ParameterSolver.h"
 
 
+#include "Cout.h"
 #include "StdString.h"
 
 #include <TF1.h>
@@ -82,6 +83,19 @@ namespace Hal {
 
   ParameterSolver::~ParameterSolver() {
     if (fFunc) delete fFunc;
+  }
+
+  ParameterSolver::ParameterSolver(std::vector<Double_t> x, std::vector<Double_t> y, TF1* func) {
+    fX    = x;
+    fY    = y;
+    fFunc = func;
+    if (fX.size() != fY.size()) {
+      Hal::Cout::PrintInfo(Form("ParameterSolver different x, y size in ct-or"), Hal::EInfo::kWarning);
+    }
+    if (fX.size() != fFunc->GetNpar()) {
+      Hal::Cout::PrintInfo(Form("ParameterSolver size of x is different than number of parameters in function!"),
+                           Hal::EInfo::kWarning);
+    }
   }
 
 } /* namespace Hal */

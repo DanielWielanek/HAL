@@ -19,7 +19,8 @@ class TF1;
 
 namespace Hal {
   /**
-   * class that solves non-linear equations
+   * class that solves non-linear equations. Thank to this function user can find a values of parameters for a function in a such
+   * a way that they goes through points x,y
    */
   class ParameterSolver : public Object {
     std::vector<Double_t> fX;
@@ -42,16 +43,18 @@ namespace Hal {
      * @return
      */
     static int Residuals(const gsl_vector* params, void* /*unused*/, gsl_vector* f);
-    ParameterSolver(std::vector<Double_t> x, std::vector<Double_t> y, TF1* func) {
-      fX    = x;
-      fY    = y;
-      fFunc = func;
-    };
+    /**
+     * main constructor
+     * @param x values of x
+     * @param y values of y
+     * @param func function to find parameters
+     */
+    ParameterSolver(std::vector<Double_t> x, std::vector<Double_t> y, TF1* func);
     /**
      *
      * @param initParams - starting parameters (optional)
      * @param opt - if "print" - prints parameters
-     * @return
+     * @return vector of found parameters
      */
     std::vector<Double_t> Solve(std::vector<Double_t> initParams = {}, TString opt = "");
     /**

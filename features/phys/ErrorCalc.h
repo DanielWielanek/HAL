@@ -12,6 +12,9 @@
 #include "Std.h"
 #include <TNamed.h>
 namespace Hal {
+  /**
+   * class for manipulation of errors in principle it calculates the total systematical uncertainty and performs barlow test
+   */
   class ErrorCalc : public TNamed {
     Double_t fMeasurement       = {0};
     Double_t fStatisticalUncert = {0};
@@ -26,7 +29,7 @@ namespace Hal {
      */
     ErrorCalc(TString name = "", Double_t val = 0, Double_t err = 0);
     /**
-     * set measured value of paramter
+     * set measured value of parameter
      * @param val
      */
     void SetMeasuredVal(Double_t val) { fMeasurement = val; }
@@ -65,11 +68,11 @@ namespace Hal {
      */
     Double_t TotalSys(Int_t prec = 4) const;
     /**
-     * return error by eq = sqrt(err[0]^2+err[1]^2+...)
+     * return
      * @param errs
-     * @return
+     * @return error by eq = sqrt(err[0]^2+err[1]^2+...)
      */
-    static Double_t SumError(std::initializer_list<Double_t> errs);
+    static Double_t SumError(std::vector<Double_t> errs);
     virtual ~ErrorCalc() = default;
     ClassDef(ErrorCalc, 0)
   };

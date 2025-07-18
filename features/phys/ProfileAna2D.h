@@ -56,7 +56,7 @@ namespace Hal {
      */
     static TString UseFixed() { return "fix"; }
     static TString UseRMSGaus() { return "rmsgauss"; };
-    static TString UseFreeGaus() { return "reegauss"; }
+    static TString UseFreeGaus() { return "freegauss"; }
     enum EDataId {
       kSigmaPlus       = 0,
       kSigmaMinus      = 1,

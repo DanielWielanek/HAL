@@ -199,8 +199,6 @@ namespace Hal {
                            1,
                            this->ClassName(),
                            "EvalNSigmaPlus");
-    // for (int i = 0; i < fNParam; i++)
-    //    average->FixParameter(i, fParamsAverage[i]);
 
     sigmaLo->SetLineStyle(7);
     sigmaHi->SetLineStyle(7);
@@ -357,9 +355,6 @@ namespace Hal {
     Int_t bins;
     Double_t xmin, xmax;
     Hal::Std::GetAxisPar(*copy, bins, xmin, xmax, "x");
-    // TF1* gauss = new TF1(
-    //  "gauss", "(x>[1]) ? [0] * exp(-0.5 * pow((x - [1]) / [2]/1.5, 2)) : [0] * exp(-0.5 * pow((x - [1]) / [2], 2))", xmin,
-    //  xmax);
 
     TF1* gauss = new TF1("gauss", fFittingProjPattern, xmin, xmax);
 
@@ -670,10 +665,7 @@ namespace Hal {
     } else {
       /** finish average calculation first - we need them for sigmas ! **/
       auto vecAv = InitEstimFunc(av, fAverage, fPoints);
-      if (fStartParamsMain.size() == fNParam) {
-        std::cout << "USING PREDEF params" << std::endl;
-        vecAv = fStartParamsMain;
-      }
+      if (fStartParamsMain.size() == fNParam) { vecAv = fStartParamsMain; }
       for (int i = 0; i < fNParam; i++) {
         fAverage->SetParameter(i, vecAv[i]);
       }

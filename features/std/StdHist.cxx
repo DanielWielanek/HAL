@@ -548,6 +548,48 @@ NamespaceImp(Hal::Std) namespace Hal {
       }
     }
 
+    TH1* ExtendToUnderFlowOverFlow(const TH1& h) {
+      TH1* res = nullptr;
+      Int_t binsX, binsY, binsZ;
+      Double_t minX, minY, minZ, maxX, maxY, maxZ;
+      Hal::Std::GetAxisPar(h, binsX, minX, maxX, "x");
+      Hal::Std::GetAxisPar(h, binsY, minY, maxY, "y");
+      Hal::Std::GetAxisPar(h, binsZ, minZ, maxZ, "z");
+      Double_t dx   = h.GetXaxis()->GetBinWidth(1);
+      Double_t dy   = h.GetYaxis()->GetBinWidth(1);
+      Double_t dz   = h.GetZaxis()->GetBinWidth(1);
+      TString title = h.GetTitle();
+      TString name  = h.GetName();
+
+      if (h.InheritsFrom("TH3")) {  // 3D histo
+        res = new TH3D(
+          name, title, binsX + 2, minX - dx, maxX + dx, binsY + 2, minY - dy, maxY + dy, binsZ + 2, minZ - dz, maxZ + dz);
+        for (int i = 0; i <= binsX + 1; i++) {
+          for (int j = 0; j <= binsY + 1; j++) {
+            for (int k = 0; k <= binsZ + 1; k++) {
+              res->SetBinContent(i + 1, j + 1, k + 1, h.GetBinContent(i, j, k));
+              res->SetBinError(i + 1, j + 1, k + 1, h.GetBinError(i, j, k));
+            }
+          }
+        }
+      } else if (h.InheritsFrom("TH2")) {
+        res = new TH2D(name, title, binsX + 2, minX - dx, maxX + dx, binsY + 2, minY - dy, maxY + dy);
+        for (int i = 0; i <= binsX + 1; i++) {
+          for (int j = 0; j <= binsY + 1; j++) {
+            res->SetBinContent(i + 1, j + 1, h.GetBinContent(i, j));
+            res->SetBinError(i + 1, j + 1, h.GetBinError(i, j));
+          }
+        }
+      } else {
+        res = new TH1D(name, title, binsX + 2, minX - dx, maxX + dx);
+        for (int i = 0; i <= binsX + 1; i++) {
+          res->SetBinContent(i + 1, h.GetBinContent(i));
+          res->SetBinError(i + 1, h.GetBinError(i));
+        }
+      }
+      return res;
+    }
+
     void HistogramExtend(TH1* h, Char_t axis, Double_t factor) {
       TAxis* x = NULL;
       switch (axis) {

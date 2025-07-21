@@ -124,6 +124,13 @@ namespace Hal {
      */
     TH2D* GetProjection2D(const TH3* histo, Double_t min, Double_t max, Option_t* opt);
     /**
+     * extend this histogram by adding artificial overflow/underfow bin, NOTE: works correctly onlyy for histograms
+     * with same bin widht
+     * @param h
+     * @return
+     */
+    TH1* ExtendToUnderFlowOverFlow(const TH1& h);
+    /**
      * set under/overflow bins along given egde
      * @param h histogram
      * @param option - set x,y, z to specify axis, "ov" then fill overlow if "uv"

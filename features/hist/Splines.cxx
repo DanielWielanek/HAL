@@ -211,7 +211,7 @@ namespace Hal {
     }
   }
 
-  Spline2D::Spline2D(TH2* h, Option_t* opt_int) : fXaxis(NULL), fYaxis(NULL), fNbinsX(0), fNbinsY(0), fA(), fAe(NULL) {
+  Spline2D::Spline2D(TH2* h, Option_t* opt_int) : fXaxis(NULL), fYaxis(NULL), fNbinsX(0), fNbinsY(0), fA() {
     if (h == nullptr) {
       Hal::Cout::Text("making copy Spline with null histogram");
       return;
@@ -220,9 +220,8 @@ namespace Hal {
     fYaxis  = (TAxis*) h->GetYaxis()->Clone("Yspline");
     fNbinsX = fXaxis->GetNbins();
     fNbinsY = fYaxis->GetNbins();
-    fAe     = new Array_2<Double_t>();
     fA.MakeBigger(fXaxis->GetNbins() + 2, fYaxis->GetNbins() + 2, 9);
-    fAe->MakeBigger(fXaxis->GetNbins() + 2, fYaxis->GetNbins() + 2);
+    fAe.MakeBigger(fXaxis->GetNbins() + 2, fYaxis->GetNbins() + 2);
     if (fXaxis->IsVariableBinSize() && fYaxis->IsVariableBinSize()) {
       Cout::PrintInfo("Bot axes have non-fixed bin size 2dim interpolation will probably not "
                       "work",
@@ -246,7 +245,7 @@ namespace Hal {
           for (int b = -1; b < 2; b++)
             z[a + 1][b + 1] = temp_histo->GetBinContent(i + a, j + b);
         CalcParams(x, y, z, Params);
-        (*fAe)[i][j] = temp_histo->GetBinError(i, j);
+        fAe[i][j] = temp_histo->GetBinError(i, j);
         for (int p = 0; p < 9; p++)
           fA[i][j][p] = Params[p];
       }
@@ -284,6 +283,14 @@ namespace Hal {
     }
 
     delete temp_histo;
+  }
+  Spline2D::Spline2D(const Spline2D& other) {
+    if (other.fXaxis) fXaxis = (TAxis*) other.fXaxis->Clone();
+    if (other.fYaxis) fYaxis = (TAxis*) other.fYaxis->Clone();
+    fNbinsX = other.fNbinsX;
+    fNbinsY = other.fNbinsY;
+    fA      = other.fA;
+    fAe     = other.fAe;
   }
 
   void Spline2D::Refit() {
@@ -368,7 +375,7 @@ namespace Hal {
            + fA.Get(ix, iy, 5) * y2 + fA.Get(ix, iy, 6) * x2 * y + fA.Get(ix, iy, 7) * x * y2 + fA.Get(ix, iy, 8) * x2 * y2;
   }
 
-  Double_t Spline2D::ErrorBin(Int_t bin_x, Int_t bin_y) const { return fAe->Get(bin_x, bin_y); }
+  Double_t Spline2D::ErrorBin(Int_t bin_x, Int_t bin_y) const { return fAe.Get(bin_x, bin_y); }
 
   void Spline2D::Eval(Double_t x, Double_t y, Double_t& f, Double_t& error) const {
     Int_t ix    = fXaxis->FindFixBin(x);
@@ -377,7 +384,7 @@ namespace Hal {
     Double_t y2 = y * y;
     f = fA.Get(ix, iy, 0) + fA.Get(ix, iy, 1) * x + fA.Get(ix, iy, 2) * y + fA.Get(ix, iy, 3) * x * y + fA.Get(ix, iy, 4) * x2
         + fA.Get(ix, iy, 5) * y2 + fA.Get(ix, iy, 6) * x2 * y + fA.Get(ix, iy, 7) * x * y2 + fA.Get(ix, iy, 8) * x2 * y2;
-    error = fAe->Get(ix, iy);
+    error = fAe.Get(ix, iy);
   }
 
   void Spline2D::CalcParams(Double_t x[3], Double_t y[3], Double_t z[3][3], Double_t params[9]) {
@@ -498,7 +505,7 @@ namespace Hal {
   Double_t Spline2D::GetError(Double_t x, Double_t y) const {
     Int_t ix = fXaxis->FindFixBin(x);
     Int_t iy = fYaxis->FindFixBin(y);
-    return fAe->Get(ix, iy);
+    return fAe.Get(ix, iy);
   }
 
   Spline2D::~Spline2D() {}

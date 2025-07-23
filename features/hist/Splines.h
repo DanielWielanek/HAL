@@ -114,12 +114,12 @@ namespace Hal {
    */
   class Spline2D : public TObject {
     enum EInterpolation { kConst, kAverage, kLinear };
-    TAxis* fXaxis;
-    TAxis* fYaxis;
+    TAxis* fXaxis = {nullptr};
+    TAxis* fYaxis = {nullptr};
     Int_t fNbinsX;
     Int_t fNbinsY;
     Array_3<Double_t> fA;
-    Array_2<Double_t>* fAe;
+    Array_2<Double_t> fAe;
     void CalcParams(Double_t x[3], Double_t y[3], Double_t z[3][3], Double_t params[9]);
     void Extrapolate(TH2* h, Option_t* extraopolation_opt) const;
     void Extrapolate(const TH2* from, TH2* to, Int_t x, Int_t y, EInterpolation opt) const;
@@ -135,6 +135,7 @@ namespace Hal {
      * same as last bin
      */
     Spline2D(TH2* h = NULL, Option_t* interpolation = "");
+    Spline2D(const Spline2D& other);
     /**
      * smear this histogram
      */

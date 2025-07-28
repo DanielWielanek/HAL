@@ -150,6 +150,14 @@ namespace Hal {
      * @return true if marked as imaginary
      */
     Bool_t IsIm() const { return TESTBIT(fFlags, EFlagBit::kIm); }
+    /**
+     * mark as real cut (used by some property monitors)
+     */
+    void SetFlagRe();
+    /**
+     * mark as imaginary cut (used by some property monitors)
+     */
+    void SetFlagIm();
 
   public:
     /**
@@ -286,14 +294,6 @@ namespace Hal {
      * @return pointer to linked cut
      */
     Cut* GetCutLink(Int_t i) const { return fCut[i]; };
-    /**
-     * mark as real cut (used by some property monitors)
-     */
-    void SetFlagRe();
-    /**
-     * mark as imaginary cut (used by some property monitors)
-     */
-    void SetFlagIm();
     virtual ~CutMonitor();
     ClassDef(CutMonitor, 2)
   };

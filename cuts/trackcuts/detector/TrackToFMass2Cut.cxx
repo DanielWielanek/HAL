@@ -118,7 +118,7 @@ namespace Hal {
                                  Double_t x2,
                                  Double_t y2,
                                  Double_t x3,
-                                 Double_t y3) {
+                                 Double_t y3) const {
     TMatrixD A(3, 3);
     A[0][0] = x1 * x1;
     A[0][1] = x1;
@@ -138,7 +138,6 @@ namespace Hal {
     c          = C[0][0];
     b          = C[1][0];
     a          = C[2][0];
-    std::cout << a << " " << b << " " << c << std::endl;
   }
 
   void TrackToFMass2Cut::SetDownPoints(Double_t x1, Double_t y1, Double_t x2, Double_t y2, Double_t x3, Double_t y3) {

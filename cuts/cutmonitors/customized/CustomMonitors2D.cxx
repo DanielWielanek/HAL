@@ -7,6 +7,7 @@
 
 #include "CustomMonitors2D.h"
 #include "ComplexTrack.h"
+#include "Cout.h"
 #include "DataFormat.h"
 #include "DataFormatManager.h"
 #include "Event.h"
@@ -37,7 +38,10 @@ namespace Hal {
     if (fFormatType == EFormatType::kComplexReco) {
       auto name1 = track->GetFieldName(fFieldId1);
       auto name2 = track->GetFieldName(fFieldId2);
-      if (name1 == "[]" || name2 == "[]") step = Hal::DataFieldID::ReStep;
+      if (name1 == "[]" || name2 == "[]") {
+        Hal::Cout::PrintInfo(Form("Trying to switch to *real format* in %s", ClassName()), EInfo::kDebugInfo);
+        step = Hal::DataFieldID::ReStep;
+      }
     }
     fFieldId1 += step;
     fFieldId2 += step;
@@ -74,7 +78,10 @@ namespace Hal {
     if (fFormatType == EFormatType::kComplexReco) {
       auto name1 = event->GetFieldName(fFieldId1);
       auto name2 = event->GetFieldName(fFieldId2);
-      if (name1 == "[]" || name2 == "[]") step = Hal::DataFieldID::ReStep;
+      if (name1 == "[]" || name2 == "[]") {
+        Hal::Cout::PrintInfo(Form("Trying to switch to *real format* in %s", ClassName()), EInfo::kDebugInfo);
+        step = Hal::DataFieldID::ReStep;
+      }
     }
     fFieldId1 += step;
     fFieldId2 += step;

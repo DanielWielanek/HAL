@@ -48,6 +48,7 @@ namespace Hal {
     static Int_t SigmaMinusPID() { return 3112; };
     static Int_t XiZeroPID() { return 3322; };
     static Int_t XiMinusPID() { return 3312; };
+    static TString PdgToName(Int_t pid);
     static Double_t ElectronMass() { return 0.000510998; };
     static Double_t MuonMass() { return 0.105658; };
     static Double_t PionPlusMass() { return 0.13957; };

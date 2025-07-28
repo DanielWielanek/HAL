@@ -189,6 +189,8 @@
 #pragma link C++ class Hal::MonitorResoP + ;
 #pragma link C++ class Hal::MonitorResoTheta + ;
 #pragma link C++ class Hal::MonitorResoPhi + ;
+#pragma link C++ class Hal::MonitorDcaRZ + ;
+#pragma link C++ class Hal::MonitorDcaXY + ;
 #pragma link C++ class Hal::CustomTrackMonitors2D + ;
 #pragma link C++ class Hal::CustomEventMonitors2D + ;
 #pragma link C++ class Hal::MonitorEventVertexXY + ;

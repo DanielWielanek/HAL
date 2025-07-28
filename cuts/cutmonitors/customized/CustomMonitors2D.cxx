@@ -12,6 +12,8 @@
 #include "Event.h"
 #include "ExpTrack.h"
 
+#include <memory>
+
 namespace Hal {
 
   CustomTrackMonitors2D::CustomTrackMonitors2D() : PropertyMonitorXY("", "", ECutUpdate::kTrack) {}
@@ -25,9 +27,9 @@ namespace Hal {
 
   Bool_t CustomTrackMonitors2D::Init(Int_t task_id) {
     auto event    = Hal::DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    auto track    = event->GetNewTrack();
-    auto newEvent = event->GetNewEvent();
-    track->SetEvent(newEvent);
+    auto track    = std::unique_ptr<Hal::Track>(event->GetNewTrack());
+    auto newEvent = std::unique_ptr<Hal::Event>(event->GetNewEvent());
+    track->SetEvent(newEvent.get());
     fFormatType = event->GetFormatType();
     Int_t step  = 0;
     if (IsRe()) step = Hal::DataFieldID::ReStep;
@@ -39,14 +41,9 @@ namespace Hal {
     }
     fFieldId1 += step;
     fFieldId2 += step;
-    std::cout << __FILE__ << " " << __LINE__ << " " << event->ClassName() << std::endl;
-    std::cout << IsRe() << " " << IsIm() << " " << ClassName() << std::endl;
     fXaxisName = track->GetFieldName(fFieldId1);
     fYaxisName = track->GetFieldName(fFieldId2);
-    delete track;
-    delete newEvent;
-    auto res = PropertyMonitorXY::Init(task_id);
-    std::cout << fXaxisName << " " << fYaxisName << " " << res << std::endl;
+    auto res   = PropertyMonitorXY::Init(task_id);
     if (fXaxisName == "[]" || fYaxisName == "[]") return kFALSE;
     return res;
   }

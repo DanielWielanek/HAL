@@ -13,13 +13,20 @@
 namespace Hal {
   /**
    * class almost like PropertyMonitors but with automatical switch between complex and im format
-   * use "re" "im" flag from SetOption
+   * use "re" "im" flag from SetOption, this class check if "IsRe" or "IsIm" flags are set by "AddCut(option) were
+   * added (or by hand - however this should not be done)
    */
 
   class CustomTrackMonitors2D : public PropertyMonitorXY {
 
   protected:
+    /**
+     * id of first field
+     */
     Int_t fFieldId1 = {0};
+    /**
+     * id of second field
+     */
     Int_t fFieldId2 = {0};
 
   public:

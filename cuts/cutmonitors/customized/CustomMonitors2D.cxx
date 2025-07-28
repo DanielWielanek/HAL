@@ -24,18 +24,39 @@ namespace Hal {
   }
 
   Bool_t CustomTrackMonitors2D::Init(Int_t task_id) {
-    auto res   = PropertyMonitorXY::Init(task_id);
-    auto event = Hal::DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    Int_t step = 0;
+    auto event    = Hal::DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
+    auto track    = event->GetNewTrack();
+    auto newEvent = event->GetNewEvent();
+    track->SetEvent(newEvent);
+    fFormatType = event->GetFormatType();
+    Int_t step  = 0;
     if (IsRe()) step = Hal::DataFieldID::ReStep;
     if (IsIm()) step = Hal::DataFieldID::ImStep;
-    if (fFormatType == EFormatType::kComplexReco) step = Hal::DataFieldID::ReStep;
+    if (fFormatType == EFormatType::kComplexReco) {
+      auto name1 = track->GetFieldName(fFieldId1);
+      auto name2 = track->GetFieldName(fFieldId2);
+      if (name1 == "[]" || name2 == "[]") step = Hal::DataFieldID::ReStep;
+    }
     fFieldId1 += step;
     fFieldId2 += step;
-    fXaxisName = event->GetFieldName(fFieldId1);
-    fYaxisName = event->GetFieldName(fFieldId2);
+    std::cout << __FILE__ << " " << __LINE__ << " " << event->ClassName() << std::endl;
+    std::cout << IsRe() << " " << IsIm() << " " << ClassName() << std::endl;
+    fXaxisName = track->GetFieldName(fFieldId1);
+    fYaxisName = track->GetFieldName(fFieldId2);
+    delete track;
+    delete newEvent;
+    auto res = PropertyMonitorXY::Init(task_id);
+    std::cout << fXaxisName << " " << fYaxisName << " " << res << std::endl;
     if (fXaxisName == "[]" || fYaxisName == "[]") return kFALSE;
     return res;
+  }
+
+  Bool_t CustomTrackMonitors2D::AreSimilar(const Hal::CutMonitor& other) const {
+    auto conv = dynamic_cast<const CustomTrackMonitors2D*>(&other);
+    if (!conv) return kFALSE;
+    if (fXaxisName != conv->fXaxisName) return kFALSE;
+    if (fYaxisName != conv->fYaxisName) return kFALSE;
+    return kTRUE;
   }
 
   CustomEventMonitors2D::CustomEventMonitors2D() : PropertyMonitorXY("", "", ECutUpdate::kEvent) {}
@@ -48,17 +69,31 @@ namespace Hal {
   }
 
   Bool_t CustomEventMonitors2D::Init(Int_t task_id) {
-    auto res   = PropertyMonitorXY::Init(task_id);
-    auto event = Hal::DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    Int_t step = 0;
+    auto event  = Hal::DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
+    fFormatType = event->GetFormatType();
+    Int_t step  = 0;
     if (IsRe()) step = Hal::DataFieldID::ReStep;
     if (IsIm()) step = Hal::DataFieldID::ImStep;
-    if (fFormatType == EFormatType::kComplexReco) step = Hal::DataFieldID::ReStep;
+    if (fFormatType == EFormatType::kComplexReco) {
+      auto name1 = event->GetFieldName(fFieldId1);
+      auto name2 = event->GetFieldName(fFieldId2);
+      if (name1 == "[]" || name2 == "[]") step = Hal::DataFieldID::ReStep;
+    }
     fFieldId1 += step;
     fFieldId2 += step;
     fXaxisName = event->GetFieldName(fFieldId1);
     fYaxisName = event->GetFieldName(fFieldId2);
     if (fXaxisName == "[]" || fYaxisName == "[]") return kFALSE;
+    auto res = PropertyMonitorXY::Init(task_id);
     return res;
   }
+
+  Bool_t CustomEventMonitors2D::AreSimilar(const Hal::CutMonitor& other) const {
+    auto conv = dynamic_cast<const CustomEventMonitors2D*>(&other);
+    if (!conv) return kFALSE;
+    if (fXaxisName != conv->fXaxisName) return kFALSE;
+    if (fYaxisName != conv->fYaxisName) return kFALSE;
+    return kTRUE;
+  }
+
 } /* namespace Hal */

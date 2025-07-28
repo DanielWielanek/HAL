@@ -71,6 +71,9 @@ namespace Hal {
   Hal::CutMonitor* CutOptions::MakeMonitorCopy(const Hal::CutMonitor& x) const {
     auto MakeComplexAxis = [](CutMonitor* moni, const Int_t axis, const Int_t flag) {
       if (flag == 0) return;
+      if (moni->ObjMonitor()) {
+        return;  // do not create magic flags from object monitors
+      }
       TString cut_name = moni->GetCutName(axis);
       TClass* clas     = TClass::GetClass(cut_name, kTRUE, kTRUE);
       if (!clas) {

@@ -15,9 +15,6 @@ namespace Hal {
    * monitor to plot rapidity vs pt
    */
   class MonitorYPt : public CustomTrackMonitors2D {
-    Int_t fFieldId1 = {0};
-    Int_t fFieldId2 = {0};
-
   public:
     MonitorYPt();
     virtual ~MonitorYPt() {};
@@ -27,9 +24,6 @@ namespace Hal {
    * monitor to plot pseudorapidity vs pt
    */
   class MonitorEtaPt : public CustomTrackMonitors2D {
-    Int_t fFieldId1 = {0};
-    Int_t fFieldId2 = {0};
-
   public:
     MonitorEtaPt();
     virtual ~MonitorEtaPt() {};

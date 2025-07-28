@@ -137,8 +137,10 @@ namespace Hal {
       for (int colId : collections) {
         auto copy = monitor_copy->MakeCopy();
         copy->SetCollectionID(colId);
-        if (opts.Re()) copy->SetFlagRe();
-        if (opts.Im()) copy->SetFlagIm();
+        if (copy->ObjMonitor()) {
+          if (opts.Re()) copy->SetFlagRe();
+          if (opts.Im()) copy->SetFlagIm();
+        }
         fTempCutMonitors[static_cast<Int_t>(upd)]->AddLast(copy);
       }
     }

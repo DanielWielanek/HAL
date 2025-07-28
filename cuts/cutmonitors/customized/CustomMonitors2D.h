@@ -26,6 +26,7 @@ namespace Hal {
     CustomTrackMonitors2D();
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t Init(Int_t task_id);
+    virtual Bool_t AreSimilar(const Hal::CutMonitor& other) const;
     virtual ~CustomTrackMonitors2D() {};
     ClassDef(CustomTrackMonitors2D, 1)
   };
@@ -38,6 +39,7 @@ namespace Hal {
   public:
     CustomEventMonitors2D();
     virtual void Update(Bool_t passed, TObject* obj);
+    virtual Bool_t AreSimilar(const Hal::CutMonitor& other) const;
     virtual Bool_t Init(Int_t task_id);
     virtual ~CustomEventMonitors2D() {};
     ClassDef(CustomEventMonitors2D, 1)

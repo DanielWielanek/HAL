@@ -361,7 +361,7 @@ namespace Hal {
     if (ObjMonitor())
       SETBIT(fFlags, EFlagBit::kRe);
     else
-      Hal::Cout::PrintInfo("Trying to add Re Flag to non-obj monitor", EInfo::kLowWarning);
+      Hal::Cout::PrintInfo("Trying to add Re flag to non-obj monitor", EInfo::kLowWarning);
   }
   /**
    * mark as imaginary cut (used by some property monitors)
@@ -370,7 +370,7 @@ namespace Hal {
     if (ObjMonitor())
       SETBIT(fFlags, EFlagBit::kIm);
     else
-      Hal::Cout::PrintInfo("Trying to add Re Flag to non-obj monitor", EInfo::kLowWarning);
+      Hal::Cout::PrintInfo("Trying to add Im flag to non-obj monitor", EInfo::kLowWarning);
   }
 
 }  // namespace Hal

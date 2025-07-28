@@ -289,11 +289,11 @@ namespace Hal {
     /**
      * mark as real cut (used by some property monitors)
      */
-    void SetFlagRe() { SETBIT(fFlags, EFlagBit::kRe); }
+    void SetFlagRe();
     /**
      * mark as imaginary cut (used by some property monitors)
      */
-    void SetFlagIm() { SETBIT(fFlags, EFlagBit::kIm); }
+    void SetFlagIm();
     virtual ~CutMonitor();
     ClassDef(CutMonitor, 2)
   };

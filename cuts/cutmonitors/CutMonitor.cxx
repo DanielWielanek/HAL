@@ -357,4 +357,20 @@ namespace Hal {
     }
   }
 
+  void CutMonitor::SetFlagRe() {
+    if (ObjMonitor())
+      SETBIT(fFlags, EFlagBit::kRe);
+    else
+      Hal::Cout::PrintInfo("Trying to add Re Flag to non-obj monitor", EInfo::kLowWarning);
+  }
+  /**
+   * mark as imaginary cut (used by some property monitors)
+   */
+  void CutMonitor::SetFlagIm() {
+    if (ObjMonitor())
+      SETBIT(fFlags, EFlagBit::kIm);
+    else
+      Hal::Cout::PrintInfo("Trying to add Re Flag to non-obj monitor", EInfo::kLowWarning);
+  }
+
 }  // namespace Hal

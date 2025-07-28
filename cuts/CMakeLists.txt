@@ -134,6 +134,9 @@ cutmonitors/PropertyMonitorXYZ.cxx
 cutmonitors/customized/MonitorKinem.cxx
 cutmonitors/customized/MonitorReso.cxx
 cutmonitors/customized/MonitorTof.cxx
+cutmonitors/customized/MonitorDCA.cxx
+cutmonitors/customized/MonitorEventVertex.cxx
+cutmonitors/customized/CustomMonitors2D.cxx
 )
 
 Set(HEADERS )

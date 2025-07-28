@@ -32,27 +32,14 @@
 // template CutCollection<UEvent,UParticle>//
 namespace Hal {
   CutCollection::CutCollection(TObjArray** container, Int_t cont_size, ECutUpdate mode, Int_t collectionNo) :
-    fPassedSlow(0),
-    fFailedSlow(0),
-    fPassedFast(0),
-    fFailedFast(0),
-    fFastCutsNo(0),
-    fSlowCutsNo(0),
-    fCutMonitorsNo(0),
-    fInit(kFALSE),
-    fDummy(kFALSE),
-    fCollectionID(0),
     fContainerSize(cont_size),
-    fStep(1),
-    fCutContainerArr(NULL)  // this is needed to link cut monitors in case of cloning
+    fCutContainerArr(container)  // this is needed to link cut monitors in case of cloning
   {
-    fCutContainerArr = container;
-    fCutMonitors     = new TObjArray();
-    fCuts            = new TObjArray();
-    fFastCuts        = new TObjArray();
-    fInit            = kFALSE;
-    fMode            = mode;
-    fCollectionID    = collectionNo;
+    fCutMonitors  = new TObjArray();
+    fCuts         = new TObjArray();
+    fFastCuts     = new TObjArray();
+    fMode         = mode;
+    fCollectionID = collectionNo;
   }
 
   void CutCollection::AddCut(Cut* cut, Hal::CutOptions opts) {
@@ -785,21 +772,7 @@ namespace Hal {
     return pack;
   }
 
-  CutCollection::CutCollection() :
-    fPassedSlow(0),
-    fFailedSlow(0),
-    fPassedFast(0),
-    fFailedFast(0),
-    fFastCutsNo(0),
-    fSlowCutsNo(0),
-    fCutMonitorsNo(0),
-    fMode(ECutUpdate::kNo),
-    fInit(kFALSE),
-    fDummy(kFALSE),
-    fCollectionID(0),
-    fContainerSize(0),
-    fStep(1),
-    fCutContainerArr(0) {
+  CutCollection::CutCollection() : fMode(ECutUpdate::kNo), fCutContainerArr(0) {
     Cout::PrintInfo("default constructor of CutCollection should never be used !!", EInfo::kLowWarning);
   }
 

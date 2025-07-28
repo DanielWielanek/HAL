@@ -53,14 +53,14 @@ namespace Hal {
     TObjArray* fCutMonitors = {nullptr};
     TObjArray* fCuts        = {nullptr};
     TObjArray* fFastCuts    = {nullptr};
-    ULong64_t fPassedSlow, fFailedSlow, fPassedFast, fFailedFast;
-    Int_t fFastCutsNo;
-    Int_t fSlowCutsNo;
-    Int_t fCutMonitorsNo;
+    ULong64_t fPassedSlow = {0}, fFailedSlow = {0}, fPassedFast = {0}, fFailedFast = {0};
+    Int_t fFastCutsNo    = {0};
+    Int_t fSlowCutsNo    = {0};
+    Int_t fCutMonitorsNo = {0};
     CutCollectionLinks fPrev, fNext, fPrevBckg, fNextBckg;
     ECutUpdate fMode;  // mode event/ track. two track
-    Bool_t fInit, fDummy;
-    Int_t fCollectionID, fContainerSize, fStep;
+    Bool_t fInit = {kFALSE}, fDummy = {kFALSE};
+    Int_t fCollectionID = {0}, fContainerSize = {0}, fStep = {1};
     TObjArray** fCutContainerArr;  //[fContainerSize]
     /**
      * update cut monitors

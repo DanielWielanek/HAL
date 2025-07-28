@@ -209,9 +209,13 @@ namespace Hal {
   TString ComplexEvent::GetFieldName(Int_t fieldID) const {
     if (fieldID >= DataFieldID::Internal::ImStepEvent) {
       if (GetImgEvent() == nullptr) return "xxx";
-      return GetImgEvent()->GetFieldName(fieldID - DataFieldID::ImStep) + " (im)";
+      TString res = GetImgEvent()->GetFieldName(fieldID - DataFieldID::ImStep);
+      res.ReplaceAll(" [", "_{im} [");
+      return res;
     } else if (fieldID >= DataFieldID::Internal::ReStepEvent) {
-      return GetRealEvent()->GetFieldName(fieldID - DataFieldID::ReStep) + " (re)";
+      TString res = GetRealEvent()->GetFieldName(fieldID - DataFieldID::ReStep);
+      res.ReplaceAll(" [", "_{re} [");
+      return res;
     }
     switch (fieldID) {
       case DataFieldID::Event::EComplex::kDeltaRPhi: return "#Delta #phi [rad]"; break;

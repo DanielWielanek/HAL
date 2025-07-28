@@ -340,6 +340,15 @@ namespace Hal {
      *
      */
     void HideAxisLabel(TObject* obj, TString opt);
+    /**
+     *
+     * @param histo
+     * @param n - poly degree
+     * @param low - lower range
+     * @param high - upper range
+     * @return parameters of chebyshev polynomial [0]+x*[1]+...
+     */
+    std::vector<Double_t> ChebyshevInterpolation(const TH1D& histo, Int_t n, Double_t low = 0, Double_t high = 0);
 
   }  // namespace Std
 }  // namespace Hal

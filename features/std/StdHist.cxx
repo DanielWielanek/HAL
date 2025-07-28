@@ -15,6 +15,7 @@
 #include <TAxis.h>
 #include <TCollection.h>
 #include <TColor.h>
+#include <TDecompLU.h>
 #include <TDirectory.h>
 #include <TGaxis.h>
 #include <TGraph.h>
@@ -34,6 +35,7 @@
 #include <TVirtualPad.h>
 #include <iostream>
 #include <utility>
+
 
 #include "Cout.h"
 #include "Splines.h"
@@ -1216,7 +1218,6 @@ NamespaceImp(Hal::Std) namespace Hal {
 
     void CopyHistProp(const TH1& from, TH1& to, TString opt) {
       auto d3 = static_cast<const TH3*>(&from);
-
       CopyAxisProp(from.GetXaxis(), to.GetXaxis(), opt);
       CopyAxisProp(from.GetYaxis(), to.GetYaxis(), opt);
       if (d3) CopyAxisProp(from.GetZaxis(), to.GetZaxis(), opt);
@@ -1307,6 +1308,49 @@ NamespaceImp(Hal::Std) namespace Hal {
         if (low) { iAxis->ChangeLabel(1, -1, -1, -1, kWhite, 0, " "); }
         if (high) { iAxis->ChangeLabel(-1, -1, -1, -1, kWhite, 0, " "); }
       }
+    }
+    std::vector<Double_t> ChebyshevInterpolation(const TH1D& histo, Int_t n, Double_t low, Double_t high) {
+      if (low == high) {
+        low  = histo.GetXaxis()->GetBinLowEdge(0);
+        high = histo.GetXaxis()->GetBinUpEdge(histo.GetNbinsX());
+      }
+      TGraph* gr = new TGraph();
+      for (int i = 1; i <= histo.GetNbinsX(); i++) {
+        double x = histo.GetXaxis()->GetBinCenter(i);
+        double y = histo.GetBinContent(i);
+        gr->SetPoint(i - 1, x, y);
+      }
+
+      std::vector<double> nodes(n);
+      for (int k = 0; k < n; ++k) {
+        double x = TMath::Cos(TMath::Pi() * (2.0 * k + 1) / (2.0 * n));  // [-1,1]
+        nodes[k] = 0.5 * ((high - low) * x + (high + low));              // przeskaluj do [a,b]
+      }
+      TMatrixD A(n, n);
+      TVectorD b(n);
+
+      for (int i = 0; i < n; ++i) {
+        b[i]         = gr->Eval(nodes[i]);
+        double pow_x = 1.0;
+        for (int j = 0; j < n; ++j) {
+          A(i, j) = pow_x;
+          pow_x *= nodes[i];
+        }
+      }
+
+      TDecompLU lu(A);
+      Bool_t ok;
+      TVectorD coeffs = lu.Solve(b, ok);
+      std::vector<Double_t> res;
+      if (!ok) {
+        std::cerr << "Could't find solution in ChebyshevInterpolation!" << std::endl;
+        return res;
+      }
+      delete gr;
+      for (int i = 0; i < n; i++) {
+        res.push_back(coeffs[i]);
+      }
+      return res;
     }
 
   }  // namespace Std

@@ -55,14 +55,14 @@ namespace Hal {
     };
 
   private:
-    Bool_t fNonIdIsSet;
-    Bool_t fSignedBoth;
-    Bool_t fIdentical;
-    Bool_t fSwapPair;  // variable to swap identical particles
-    Bool_t fSkipEmpty;
-    Int_t fCurrentTrack2CollectionNo;
-    Int_t fCurrentTrack1CollectionNo;
-    Track *fCurrentTrack1, *fCurrentTrack2;
+    Bool_t fNonIdIsSet               = {kFALSE};
+    Bool_t fSignedBoth               = {kTRUE};
+    Bool_t fIdentical                = {kTRUE};
+    Bool_t fSwapPair                 = {kTRUE};  // variable to swap identical particles
+    Bool_t fSkipEmpty                = {kTRUE};
+    Int_t fCurrentTrack2CollectionNo = {0};
+    Int_t fCurrentTrack1CollectionNo = {0};
+    Track *fCurrentTrack1 = {nullptr}, *fCurrentTrack2 = {nullptr};
     /**
      * build swapped pair of tracks
      */
@@ -136,27 +136,27 @@ namespace Hal {
     /**
      * background mode used in analysis
      */
-    EAnaMode fBackgroundMode;
+    EAnaMode fBackgroundMode = {EAnaMode::kNoBackground};
     /**
      * points to collection number of actually processed pair
      */
-    Int_t fCurrentPairCollectionID;
+    Int_t fCurrentPairCollectionID = {0};
     /**
      * total number of two track collections
      */
-    Int_t fTwoTrackCollectionsNo;
+    Int_t fTwoTrackCollectionsNo = {0};
     /**
      * total number of two track collections in background
      */
-    Int_t fTwoTrackCollectionsNoBackground;
+    Int_t fTwoTrackCollectionsNoBackground = {0};
     /**
      * currently processed pair
      */
-    TwoTrack* fCurrentSignalPair;
+    TwoTrack* fCurrentSignalPair = {nullptr};
     /**
      * currently processed background pair
      */
-    TwoTrack* fCurrentBackgroundPair;
+    TwoTrack* fCurrentBackgroundPair = {nullptr};
     /**
      * set some tags connected with used background
      */

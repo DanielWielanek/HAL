@@ -23,24 +23,9 @@
 
 namespace Hal {
   TwoTrackAna::TwoTrackAna(Bool_t use_background) :
-    MultiTrackAna((use_background ? ECutUpdate::kTwoTrackBackground : ECutUpdate::kTwoTrackBackground)),
-    fNonIdIsSet(kFALSE),
-    fSignedBoth(kTRUE),
-    fIdentical(kTRUE),
-    fSwapPair(kTRUE),
-    fSkipEmpty(kTRUE),
-    fCurrentTrack2CollectionNo(0),
-    fCurrentTrack1CollectionNo(0),
-    fCurrentTrack1(NULL),
-    fCurrentTrack2(NULL),
-    fBackgroundMode(kNoBackground),
-    fCurrentPairCollectionID(0),
-    fTwoTrackCollectionsNo(0),
-    fTwoTrackCollectionsNoBackground(0),
-    fCurrentSignalPair(NULL),
-    fCurrentBackgroundPair(NULL) {
+    MultiTrackAna((use_background ? ECutUpdate::kTwoTrackBackground : ECutUpdate::kTwoTrackBackground)) {
     fMixSize = 1;
-    AddTags("twotrack");
+    TwoTrackAna::AddTags("twotrack");
   }
 
   Package* TwoTrackAna::Report() const {

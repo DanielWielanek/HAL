@@ -22,14 +22,14 @@ namespace Hal {
     SetXaxis(200, -2, 2);
     SetYaxis(200, 0, 4);
     fFieldId1 = Hal::DataFieldID::Track::EExp::kDcaZ;
-    fFieldId1 = Hal::DataFieldID::Track::EExp::kDcaXY;
+    fFieldId2 = Hal::DataFieldID::Track::EExp::kDcaXY;
   }
 
   MonitorDcaXY::MonitorDcaXY() {
     SetXaxis(200, -2, 2);
-    SetYaxis(200, 0, 4);
+    SetYaxis(200, -2, 2);
     fFieldId1 = Hal::DataFieldID::Track::EExp::kDcaX;
-    fFieldId1 = Hal::DataFieldID::Track::EExp::kDcaY;
+    fFieldId2 = Hal::DataFieldID::Track::EExp::kDcaY;
   }
 
 }  // namespace Hal

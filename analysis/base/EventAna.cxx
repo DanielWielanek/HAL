@@ -35,23 +35,7 @@
 
 namespace Hal {
 
-  EventAna::EventAna(ECutUpdate tiers) :
-    Task(),
-    fProcessedEvents(0),
-    fMixSize(1),
-    fEventCollectionsNo(0),
-    fCurrentEventCollectionID(0),
-    fTiers(tiers),
-    fPDG(nullptr),
-    fCutContainer(nullptr),
-    fMemoryMap(nullptr),
-    fCurrentEvent(nullptr),
-    fComment(""),
-    fInit(kFALSE),
-    fInChain(kFALSE),
-    fTaskID(0),
-    fInFileName(""),
-    fDataFormatManager(nullptr) {
+  EventAna::EventAna(ECutUpdate tiers) : Task(), fTiers(tiers), fComment(""), fTaskID(0), fInFileName("") {
     fTaskID            = DataFormatManager::Instance()->RegisterFormat();
     fDataFormatManager = DataFormatManager::Instance();
     SETBIT(fFormatOption, eBitFormat::kChecking);
@@ -222,11 +206,7 @@ namespace Hal {
     fEventCollectionsNo(ana.fEventCollectionsNo),
     fTiers(ana.fTiers),
     fPDG(ana.fPDG),
-    fCutContainer(NULL),
-    fMemoryMap(NULL),
-    fCurrentEvent(NULL),
     fComment(""),
-    fInit(kFALSE),
     fInChain(ana.fInChain),
     fInFileName(ana.fInFileName),
     fDataFormatManager(ana.fDataFormatManager) {
@@ -234,7 +214,9 @@ namespace Hal {
     if (ana.fCutContainer) { fCutContainer = new CutContainer(*ana.fCutContainer); }
     fCurrentEventCollectionID = 0;
     fTaskID                   = fDataFormatManager->RegisterFormat();
-    if (fDataFormatManager->GetFormat(ana.fTaskID)) { SetFormat(fDataFormatManager->GetFormat(ana.fTaskID)->GetNewEvent()); }
+    if (fDataFormatManager->GetFormat(ana.fTaskID)) {
+      EventAna::SetFormat(fDataFormatManager->GetFormat(ana.fTaskID)->GetNewEvent());
+    }
   }
 
   void EventAna::AddToAnaMetadata(Package* main_pack, TObject* obj) const {

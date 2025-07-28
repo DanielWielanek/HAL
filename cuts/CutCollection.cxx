@@ -51,9 +51,9 @@ namespace Hal {
       return;
     }
 
-    auto compare = [](Cut* cut, TObjArray* array) {
+    auto compare = [](Cut* localcut, TObjArray* array) {
       for (int i = 0; i < array->GetEntriesFast(); i++) {
-        if (cut->CutName() == ((Cut*) array->UncheckedAt(i))->CutName()) return kTRUE;
+        if (localcut->CutName() == ((Cut*) array->UncheckedAt(i))->CutName()) return kTRUE;
       }
       return kFALSE;
     };

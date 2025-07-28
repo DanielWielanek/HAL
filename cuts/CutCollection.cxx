@@ -32,9 +32,6 @@
 // template CutCollection<UEvent,UParticle>//
 namespace Hal {
   CutCollection::CutCollection(TObjArray** container, Int_t cont_size, ECutUpdate mode, Int_t collectionNo) :
-    fCutMonitors(NULL),
-    fCuts(NULL),
-    fFastCuts(NULL),
     fPassedSlow(0),
     fFailedSlow(0),
     fPassedFast(0),
@@ -66,48 +63,50 @@ namespace Hal {
       Cout::PrintInfo("Empty cut", EInfo::kLowWarning);
       return;
     }
+
+    auto compare = [](Cut* cut, TObjArray* array) {
+      for (int i = 0; i < array->GetEntriesFast(); i++) {
+        if (cut->CutName() == ((Cut*) array->UncheckedAt(i))->CutName()) return kTRUE;
+      }
+      return kFALSE;
+    };
+    Bool_t sameCut     = compare(cut, fCuts);
+    Bool_t sameFastCut = compare(cut, fFastCuts);
+
     if (!fast) {  // add normal cut
-      for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
-        if (cut->CutName() == ((Cut*) fCuts->UncheckedAt(i))->CutName()) {
-          Cout::PrintInfo(
-            Form("Cut used %s in collection no %i, cut will be removed", cut->CutName().Data(), cut->GetCollectionID()),
-            EInfo::kLowWarning);
-          return;
-        }
+      if (sameCut) {
+        Cout::PrintInfo(
+          Form("Cut used %s in collection no %i, cut will be removed", cut->CutName().Data(), cut->GetCollectionID()),
+          EInfo::kLowWarning);
+        return;
       }
-      for (int i = 0; i < fFastCuts->GetEntriesFast(); i++) {
-        if (cut->CutName() == ((Cut*) fFastCuts->UncheckedAt(i))->CutName()) {
-          if (!keepDouble) {
-            Cout::PrintInfo(Form("Cut used %s in collection no %i in fast cuts group,  cut will "
-                                 "be "
-                                 "removed",
-                                 cut->ClassName(),
-                                 cut->GetCollectionID()),
-                            EInfo::kLowWarning);
-            return;
-          }
-        }
-      }
-      fCuts->AddLast(cut);
-    } else {
-      for (int i = 0; i < fFastCuts->GetEntriesFast(); i++) {
-        if (cut->CutName() == ((Cut*) fFastCuts->UncheckedAt(i))->CutName()) {
-          Cout::PrintInfo(Form("Cut used %s in collection no %i in as fast, cut will be "
+      if (sameFastCut) {
+        if (!keepDouble) {
+          Cout::PrintInfo(Form("Cut used %s in collection no %i in fast cuts group,  cut will "
+                               "be "
                                "removed",
-                               cut->CutName().Data(),
+                               cut->ClassName(),
                                cut->GetCollectionID()),
                           EInfo::kLowWarning);
           return;
         }
       }
+      fCuts->AddLast(cut);
+    } else {
+      if (sameFastCut) {
+        Cout::PrintInfo(Form("Cut used %s in collection no %i in as fast, cut will be "
+                             "removed",
+                             cut->CutName().Data(),
+                             cut->GetCollectionID()),
+                        EInfo::kLowWarning);
+        return;
+      }
       if (!keepDouble) {
-        for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
-          if (cut->CutName() == ((Cut*) fCuts->UncheckedAt(i))->CutName()) {
-            Cout::PrintInfo(
-              Form("Cut used %s in collection no %i but cut will be removed", cut->CutName().Data(), cut->GetCollectionID()),
-              EInfo::kLowWarning);
-            return;
-          }
+        if (sameCut) {
+          Cout::PrintInfo(
+            Form("Cut used %s in collection no %i but cut will be removed", cut->CutName().Data(), cut->GetCollectionID()),
+            EInfo::kLowWarning);
+          return;
         }
       }
       fFastCuts->AddLast(cut);
@@ -787,9 +786,6 @@ namespace Hal {
   }
 
   CutCollection::CutCollection() :
-    fCutMonitors(NULL),
-    fCuts(NULL),
-    fFastCuts(NULL),
     fPassedSlow(0),
     fFailedSlow(0),
     fPassedFast(0),

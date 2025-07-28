@@ -50,8 +50,9 @@ namespace Hal {
 
   class CutCollection : public TObject {
   private:
-    TObjArray* fCutMonitors;
-    TObjArray *fCuts, *fFastCuts;
+    TObjArray* fCutMonitors = {nullptr};
+    TObjArray* fCuts        = {nullptr};
+    TObjArray* fFastCuts    = {nullptr};
     ULong64_t fPassedSlow, fFailedSlow, fPassedFast, fFailedFast;
     Int_t fFastCutsNo;
     Int_t fSlowCutsNo;

@@ -11,7 +11,6 @@
 namespace Hal {
   TwoTrack::TwoTrack() {}
 
-  TwoTrack::~TwoTrack() {
-    // TODO Auto-generated destructor stub
-  }
+  TwoTrack::~TwoTrack() {}
+
 }  // namespace Hal

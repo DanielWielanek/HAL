@@ -17,7 +17,9 @@
 #include <iostream>
 
 namespace Hal {
-  CorrFitInfo::CorrFitInfo() : TNamed(), fCF(nullptr), fMacroText(""), fPairFile(""), fVertical(kFALSE) { SetName("Info"); }
+  CorrFitInfo::CorrFitInfo() : TNamed(), fCF(nullptr), fMacroText(""), fPairFile(""), fVertical(kFALSE) {
+    CorrFitInfo::SetName("Info");
+  }
 
   CorrFitInfo::~CorrFitInfo() {
     if (fCF) delete fCF;
@@ -33,7 +35,7 @@ namespace Hal {
   }
 
   CorrFitInfo::CorrFitInfo(const CorrFitInfo& other) : TNamed() {
-    SetName(other.GetName());
+    CorrFitInfo::SetName(other.GetName());
     fCF        = other.fCF->Clone();
     fMacroText = other.fMacroText;
     fPairFile  = other.fMacroText;

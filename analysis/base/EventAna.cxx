@@ -42,7 +42,7 @@ namespace Hal {
     SetFormatOption(EFormatOption::kStandardAccess);
     SetFormatOption(EFormatOption::kNoKeepSource);
     SetFormatOption(EFormatOption::kNoCompress);
-    AddTags("ana");
+    Hal::EventAna::AddTags("ana");
 #ifdef _HAL_CLEAR_BUFFER_
     fIsLastTask = kFALSE;
 #endif

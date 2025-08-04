@@ -518,7 +518,7 @@ namespace Hal {
   }
 
   TwoTrackAna::~TwoTrackAna() {
-    DeleteHiddenPairInfo();
+    TwoTrackAna::DeleteHiddenPairInfo();
     if (fCurrentSignalPair) delete fCurrentSignalPair;
     if (fCurrentBackgroundPair) delete fCurrentBackgroundPair;
   }

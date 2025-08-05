@@ -36,11 +36,9 @@ namespace Hal {
     EventBinningCut(const EventCut& cut, const std::initializer_list<Int_t>& init);
     EventBinningCut(const EventCut& cut, const std::initializer_list<std::initializer_list<Double_t>>& init);
     EventBinningCut(const EventBinningCut& other);
-    EventBinningCut* MakeCopy() const;
-    EventBinningCut* MakeCopyReal() const;
-    EventBinningCut* MakeCopyImg() const;
+    EventBinningCut* MakeCopy(TString opt = "") const;
     EventBinningCut& operator=(const EventBinningCut& other);
-    EventCut* GetCut() const { return (EventCut*) fEventCut->MakeCopy(); };
+    EventCut* GetCut() const { return (EventCut*) fEventCut->MakeCopy(""); };
     Int_t GetBinsNo() const { return fTotalBinsNo; };
     void GetBinParam(Int_t bin, std::vector<Double_t>& mini, std::vector<Double_t>& maxi, std::vector<TString>& strings) const;
     virtual Package* Report() const;

@@ -200,7 +200,6 @@ namespace Hal {
   }
 
   void TrackFieldMonitorXY::MakeComplexAxes(TString opt) {
-    std::cout << __FILE__ << " Make complex " << opt << std::endl;
     if (Hal::Std::FindParam(opt, "re")) fTranslator.SwitchToRe();
     if (Hal::Std::FindParam(opt, "im")) fTranslator.SwitchToIm();
   }

@@ -124,6 +124,7 @@ twotrackcuts/mc/PdgBinPairCut.cxx
 twotrackcuts/mc/SameMotherMcCut.cxx
 twotrackcuts/TwoTrackVirtualCut.cxx
 #CUT MONITORS
+cutmonitors/CutMonitorFieldIdTranslator.cxx
 cutmonitors/CutMonitor.cxx
 cutmonitors/CutMonitorX.cxx
 cutmonitors/CutMonitorXY.cxx
@@ -136,7 +137,7 @@ cutmonitors/customized/MonitorReso.cxx
 cutmonitors/customized/MonitorTof.cxx
 cutmonitors/customized/MonitorDCA.cxx
 cutmonitors/customized/MonitorEventVertex.cxx
-cutmonitors/customized/CustomMonitors2D.cxx
+cutmonitors/CutMonitorComplex.cxx
 )
 
 Set(HEADERS )

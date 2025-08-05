@@ -8,6 +8,7 @@
 #include "CutMonitorXY.h"
 
 #include "Cut.h"
+#include "CutOptions.h"
 
 #include <RtypesCore.h>
 #include <TAxis.h>
@@ -64,12 +65,6 @@ namespace Hal {
     }
 #endif
   }
-
-  CutMonitor* CutMonitorXY::MakeCopy() const { return (CutMonitor*) new CutMonitorXY(*this); }
-
-  CutMonitorXY::CutMonitorXY(const CutMonitorXY& other) : CutMonitor(other) {}
-
-  CutMonitorXY::~CutMonitorXY() {}
 
   Bool_t CutMonitorXY::Init(Int_t task_id) {
     return CutMonitor::Init(task_id);

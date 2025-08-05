@@ -66,7 +66,7 @@ namespace Hal {
      * copy c-tor
      * @param other object to copy
      */
-    CutMonitorXYZ(const CutMonitorXYZ& other);
+    CutMonitorXYZ(const CutMonitorXYZ& other) : CutMonitor(other) {};
     /**
      * Assignment operator
      * @param other
@@ -75,8 +75,7 @@ namespace Hal {
     CutMonitorXYZ& operator=(const CutMonitorXYZ& other);
     virtual Bool_t Init(Int_t task_id);
     virtual void Update(Bool_t pass, TObject* obj);
-    virtual CutMonitor* MakeCopy() const;
-    virtual ~CutMonitorXYZ();
+    virtual ~CutMonitorXYZ() {};
     ClassDef(CutMonitorXYZ, 1)
   };
 }  // namespace Hal

@@ -14,6 +14,7 @@
 #include <TString.h>
 
 #include "Cut.h"
+#include "CutOptions.h"
 #include "StdString.h"
 
 namespace Hal {
@@ -78,12 +79,6 @@ namespace Hal {
         ->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]), fCut[2]->GetValue(fOptionAxis[2]));
     }
   }
-
-  CutMonitor* CutMonitorXYZ::MakeCopy() const { return (CutMonitor*) new CutMonitorXYZ(*this); }
-
-  CutMonitorXYZ::CutMonitorXYZ(const CutMonitorXYZ& other) : CutMonitor(other) {}
-
-  CutMonitorXYZ::~CutMonitorXYZ() {}
 
   void CutMonitorXYZ::Update(Bool_t pass, TObject* /*obj*/) {
     if (IsExclusive()) {

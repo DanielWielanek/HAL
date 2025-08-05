@@ -56,6 +56,17 @@
 #pragma link C++ class Hal::MonitorResoP + ;
 #pragma link C++ class Hal::MonitorResoPhi + ;
 #pragma link C++ class Hal::MonitorResoTheta + ;
+#pragma link C++ class Hal::CutMonitorFieldIdTranslator + ;
+
+#pragma link C++ class Hal::MonitorComplexPair + ;
+#pragma link C++ class Hal::ComplexMonitor + ;
+#pragma link C++ class Hal::EventCutMonitorImaginary + ;
+#pragma link C++ class Hal::TrackCutMonitorImaginary + ;
+#pragma link C++ class Hal::TwoTrackCutMonitorImaginary + ;
+#pragma link C++ class Hal::EventCutMonitorReal + ;
+#pragma link C++ class Hal::TrackCutMonitorReal + ;
+#pragma link C++ class Hal::TwoTrackCutMonitorReal + ;
+
 // EventCut
 #pragma link C++ class Hal::EventMultiplicityCut + ;
 #pragma link C++ class Hal::EventMultiChargedCut + ;

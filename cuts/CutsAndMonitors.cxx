@@ -20,9 +20,7 @@
 namespace Hal {
   CutsAndMonitors::CutsAndMonitors() : fGlobalOptionCuts(""), fGlobalOptionsCutMonitors("") {
     fCuts.SetOwner(kTRUE);
-    fCutsOptions.SetOwner(kTRUE);
     fCutMonitors.SetOwner(kTRUE);
-    fCutMonitorsOptions.SetOwner(kTRUE);
   }
 
   CutsAndMonitors::CutsAndMonitors(const CutsAndMonitors& other) :
@@ -31,19 +29,16 @@ namespace Hal {
     fGlobalOptionsCutMonitors(other.fGlobalOptionsCutMonitors),
     fGlobalCollectionId(other.fGlobalCollectionId) {
     fCuts.SetOwner(kTRUE);
-    fCutsOptions.SetOwner(kTRUE);
+    fCutsOptions        = other.fCutsOptions;
+    fCutMonitorsOptions = other.fCutMonitorsOptions;
     for (int iCut = 0; iCut < other.fCuts.GetEntries(); iCut++) {
-      Cut* cut        = (Cut*) other.fCuts.UncheckedAt(iCut);
-      TObjString* str = (TObjString*) other.fCutsOptions.UncheckedAt(iCut);
+      Cut* cut = (Cut*) other.fCuts.UncheckedAt(iCut);
       fCuts.AddLast(cut->MakeCopy());
-      fCutsOptions.AddLast(str->Clone());
     }
 
     for (int iCutMon = 0; iCutMon < other.fCutMonitors.GetEntries(); iCutMon++) {
       CutMonitor* cut = (CutMonitor*) other.fCutMonitors.UncheckedAt(iCutMon);
-      TObjString* str = (TObjString*) other.fCutMonitorsOptions.UncheckedAt(iCutMon);
       fCutMonitors.AddLast(cut->MakeCopy());
-      fCutMonitorsOptions.AddLast(str->Clone());
     }
   }
 
@@ -53,43 +48,40 @@ namespace Hal {
 
   CutsAndMonitors& CutsAndMonitors::operator=(const CutsAndMonitors& other) {
     if (&other == this) return *this;
+
     fCuts.Clear();
-    fCutsOptions.Clear();
+    fCutsOptions = other.fCutsOptions;
     fCutMonitors.Clear();
-    fCutMonitorsOptions.Clear();
+    fCutMonitorsOptions       = other.fCutMonitorsOptions;
     fGlobalOptionCuts         = other.fGlobalOptionCuts;
     fGlobalOptionsCutMonitors = other.fGlobalOptionsCutMonitors;
     for (int iCut = 0; iCut < other.fCuts.GetEntries(); iCut++) {
-      Cut* cut        = (Cut*) other.fCuts.UncheckedAt(iCut);
-      TObjString* str = (TObjString*) other.fCutsOptions.UncheckedAt(iCut);
+      Cut* cut = (Cut*) other.fCuts.UncheckedAt(iCut);
       fCuts.AddLast(cut->MakeCopy());
-      fCutsOptions.AddLast(str->Clone());
     }
     for (int iCutMon = 0; iCutMon < other.fCutMonitors.GetEntries(); iCutMon++) {
       CutMonitor* cut = (CutMonitor*) other.fCutMonitors.UncheckedAt(iCutMon);
-      TObjString* str = (TObjString*) other.fCutMonitorsOptions.UncheckedAt(iCutMon);
       fCutMonitors.AddLast(cut->MakeCopy());
-      fCutMonitorsOptions.AddLast(str->Clone());
     }
     return *this;
   }
 
   void CutsAndMonitors::AddCut(const Cut& cut, Option_t* opt) {
-    TObjString* str = new TObjString(opt);
+    TString str = opt;
     fCuts.Add(cut.MakeCopy());
-    fCutsOptions.Add(str);
+    fCutsOptions.push_back(str);
   }
 
   void CutsAndMonitors::AddCutMonitor(const CutMonitor& monitor, Option_t* opt) {
-    TObjString* str = new TObjString(opt);
+    TString str = opt;
     fCutMonitors.Add(monitor.MakeCopy());
-    fCutMonitorsOptions.Add(str);
+    fCutMonitorsOptions.push_back(str);
   }
 
   const Cut* CutsAndMonitors::GetCut(Int_t i) const { return static_cast<Cut*>(fCuts.UncheckedAt(i)); }
 
   TString CutsAndMonitors::GetCutOption(Int_t i) const {
-    TString opt = static_cast<TObjString*>(fCutsOptions.UncheckedAt(i))->GetString();
+    TString opt = fCutsOptions[i];
     if (opt == "" || fGlobalOptionCuts == "") { return opt + fGlobalOptionCuts; }
     return opt + "+" + fGlobalOptionCuts;
   }
@@ -97,7 +89,7 @@ namespace Hal {
   const CutMonitor* CutsAndMonitors::GetMonitor(Int_t i) const { return static_cast<CutMonitor*>(fCutMonitors.UncheckedAt(i)); }
 
   TString CutsAndMonitors::GetCutMonitorOption(Int_t i) const {
-    TString opt = static_cast<TObjString*>(fCutMonitorsOptions.UncheckedAt(i))->GetString();
+    TString opt = fCutMonitorsOptions[i];
     if (opt == "" || fGlobalOptionsCutMonitors == "") { return opt + fGlobalOptionsCutMonitors; }
     return opt + "+" + fGlobalOptionsCutMonitors;
   }
@@ -110,46 +102,34 @@ namespace Hal {
 
   void CutsAndMonitors::ClearCuts() {
     fCuts.Clear();
-    fCutsOptions.Clear();
+    fCutsOptions.clear();
   }
 
   void CutsAndMonitors::ClearMonitors() {
     fCutMonitors.Clear();
-    fCutMonitorsOptions.Clear();
+    fCutMonitorsOptions.clear();
   }
 
-  void CutsAndMonitors::AddRawCut(Cut* cut, TObjString* opt) {
-    if (opt == nullptr) { opt = new TObjString(""); }
+  void CutsAndMonitors::AddRawCut(Cut* cut, TString opt) {
     fCuts.Add(cut);
-    fCutsOptions.Add(opt);
+    fCutsOptions.push_back(opt);
   }
 
-  void CutsAndMonitors::AddRawCutMonitor(CutMonitor* mon, TObjString* opt) {
-    if (opt == nullptr) { opt = new TObjString(""); }
+  void CutsAndMonitors::AddRawCutMonitor(CutMonitor* mon, TString opt) {
     fCutMonitors.Add(mon);
-    fCutMonitorsOptions.Add(opt);
+    fCutMonitorsOptions.push_back(opt);
   }
 
   CutMonitor* CutsAndMonitors::MakeCutMonitor(Int_t request_no) const {
     if (request_no < 0 || request_no > (int) fCutMonitorRequests.size()) return nullptr;
     CutMonitorRequest req = fCutMonitorRequests[request_no];
-    auto TransformOpt     = [](TString opt) {
-      if (Hal::Std::FindParam(opt, "re")) {
-        return "re";
-      } else if (Hal::Std::FindParam(opt, "im")) {
-        return "im";
-      } else {
-        return "";
-      }
-    };
-    Int_t dim = req.GetNDim();
+    Int_t dim             = req.GetNDim();
     switch (dim) {
       case 1: {
         CutMonAxisConf x = req.GetConf('x');
         if (x.GetCutNo() < 0) x.FixCutNo(GetCutNo(x.GetCutClassName()));
         const Cut* CutX  = GetCut(x.GetCutNo());
-        TString optX     = TransformOpt(GetCutOption(x.GetCutNo()));
-        CutMonitorX* mon = new CutMonitorX(CutX->CutName(optX), x.GetParameterNo());
+        CutMonitorX* mon = new CutMonitorX(CutX->CutName(), x.GetParameterNo());
         mon->SetXaxis(x.GetNBins(), x.GetMin(), x.GetMax());
         return mon;
       } break;
@@ -160,9 +140,7 @@ namespace Hal {
         if (y.GetCutNo() < 0) y.FixCutNo(GetCutNo(y.GetCutClassName()));
         const Cut* CutX   = GetCut(x.GetCutNo());
         const Cut* CutY   = GetCut(y.GetCutNo());
-        TString optX      = TransformOpt(GetCutOption(x.GetCutNo()));
-        TString optY      = TransformOpt(GetCutOption(y.GetCutNo()));
-        CutMonitorXY* mon = new CutMonitorXY(CutX->CutName(optX), x.GetParameterNo(), CutY->CutName(optY), y.GetParameterNo());
+        CutMonitorXY* mon = new CutMonitorXY(CutX->CutName(), x.GetParameterNo(), CutY->CutName(), y.GetParameterNo());
         mon->SetXaxis(x.GetNBins(), x.GetMin(), x.GetMax());
         mon->SetYaxis(y.GetNBins(), y.GetMin(), y.GetMax());
         return mon;
@@ -177,15 +155,8 @@ namespace Hal {
         const Cut* CutX    = GetCut(x.GetCutNo());
         const Cut* CutY    = GetCut(y.GetCutNo());
         const Cut* CutZ    = GetCut(z.GetCutNo());
-        TString optX       = TransformOpt(GetCutOption(x.GetCutNo()));
-        TString optY       = TransformOpt(GetCutOption(y.GetCutNo()));
-        TString optZ       = TransformOpt(GetCutOption(z.GetCutNo()));
-        CutMonitorXYZ* mon = new CutMonitorXYZ(CutX->CutName(optX),
-                                               x.GetParameterNo(),
-                                               CutY->CutName(optY),
-                                               y.GetParameterNo(),
-                                               CutZ->CutName(optZ),
-                                               z.GetParameterNo());
+        CutMonitorXYZ* mon = new CutMonitorXYZ(
+          CutX->CutName(), x.GetParameterNo(), CutY->CutName(), y.GetParameterNo(), CutZ->CutName(), z.GetParameterNo());
         mon->SetXaxis(x.GetNBins(), x.GetMin(), x.GetMax());
         mon->SetYaxis(y.GetNBins(), y.GetMin(), y.GetMax());
         mon->SetZaxis(z.GetNBins(), z.GetMin(), z.GetMax());

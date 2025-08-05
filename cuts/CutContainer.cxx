@@ -118,7 +118,7 @@ namespace Hal {
 
   void CutContainer::AddMonitor(const CutMonitor& monitor, Option_t* opt) {
     Hal::CutOptions opts(opt, monitor.GetCollectionID());
-    auto monitor_copy = std::unique_ptr<Hal::CutMonitor>(opts.MakeMonitorCopy(monitor));
+    auto monitor_copy = std::unique_ptr<Hal::CutMonitor>(monitor.MakeCopy());
     std::vector<ECutUpdate> upds;
     if (monitor.GetUpdateRatio() == ECutUpdate::kTwoTrack || monitor.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground) {
       if (opts.Sig()) upds.push_back(ECutUpdate::kTwoTrack);

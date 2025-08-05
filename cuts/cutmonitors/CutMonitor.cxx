@@ -29,7 +29,8 @@ namespace Hal {
       fAxisMax[opt]  = max;
       fAxisBins[opt] = bins;
     } else {
-      Cout::PrintInfo(Form("You cant configure more than %i axis in %s", fAxisNo + 1, this->ClassName()), EInfo::kLowWarning);
+      Cout::PrintInfo(Form("CutMonitor: You cant configure more than %i axis in %s", fAxisNo + 1, this->ClassName()),
+                      EInfo::kLowWarning);
     }
   }
 
@@ -86,20 +87,20 @@ namespace Hal {
   Bool_t CutMonitor::Init(Int_t /*task_id*/) {
     if (IsInitialized()) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kDebugInfo);
+      Cout::PrintInfo(Form("CutMonitor: %s is initialized ", this->ClassName()), EInfo::kDebugInfo);
 #endif
       return kFALSE;
     }
     for (int i = 0; i < fAxisNo; i++) {
       if (fCut[i] == NULL) {
-        Cout::PrintInfo(Form("Missed cut %i %s in %s", i, fCutNames[i].Data(), this->ClassName()), EInfo::kError);
+        Cout::PrintInfo(Form("CutMonitor: Missed cut %i %s in %s", i, fCutNames[i].Data(), this->ClassName()), EInfo::kError);
         return kFALSE;
       }
     }
     for (int i = 0; i < fAxisNo; i++) {
       for (int j = i + 1; j < fAxisNo; j++) {
         if (fCut[i]->GetUpdateRatio() != fCut[j]->GetUpdateRatio()) {
-          Cout::PrintInfo("Not compatible update ratios this might cause wrong "
+          Cout::PrintInfo("CutMonitor: Not compatible update ratios this might cause wrong "
                           "results in CutMonitor",
                           EInfo::kLowWarning);
         }
@@ -146,7 +147,7 @@ namespace Hal {
 
   void CutMonitor::AddCut(TString cut, Int_t parameter_no) {
     if (Hal::Std::FindParam(cut, "Cloned")) {
-      Cout::PrintInfo("You can't add Cloned Cuts to CutMonitor", EInfo::kLowWarning);
+      Cout::PrintInfo("CutMonitor: You can't add Cloned Cuts to CutMonitor", EInfo::kLowWarning);
       return;
     }
     TClass* classdata = NULL;
@@ -159,7 +160,7 @@ namespace Hal {
     ECutUpdate newUpd = ECutUpdate::kNo;
 
     if (classdata == nullptr) {
-      Cout::PrintInfo(Form("Cannot find class %s", cut.Data()), EInfo::kLowWarning);
+      Cout::PrintInfo(Form("CutMonitor: Cannot find class %s", cut.Data()), EInfo::kLowWarning);
     } else {
       if (classdata->InheritsFrom("Hal::EventCut")) newUpd = ECutUpdate::kEvent;
       if (classdata->InheritsFrom("Hal::TrackCut")) newUpd = ECutUpdate::kTrack;
@@ -183,7 +184,7 @@ namespace Hal {
     if (fAxisNo > 0) {
       SetAxis(bins, min, max, 0);
     } else {
-      Cout::PrintInfo("CutMonitor::X axis not found", EInfo::kLowWarning);
+      Cout::PrintInfo("CutMonitor: CutMonitor::X axis not found", EInfo::kLowWarning);
     }
   }
 
@@ -191,7 +192,7 @@ namespace Hal {
     if (fAxisNo > 1) {
       SetAxis(bins, min, max, 1);
     } else {
-      Cout::PrintInfo("CutMonitor::Y axis not found", EInfo::kLowWarning);
+      Cout::PrintInfo("CutMonitor: CutMonitor::Y axis not found", EInfo::kLowWarning);
     }
   }
 
@@ -199,7 +200,7 @@ namespace Hal {
     if (fAxisNo > 2) {
       SetAxis(bins, min, max, 2);
     } else {
-      Cout::PrintInfo("CutMonitor::Z axis not found", EInfo::kLowWarning);
+      Cout::PrintInfo("CutMonitor: CutMonitor::Z axis not found", EInfo::kLowWarning);
     }
   }
 
@@ -231,7 +232,7 @@ namespace Hal {
     if (this != &other) {
       fCuts         = other.fCuts;
       fCollectionID = other.fCollectionID;
-      if (fAxisNo != other.fAxisNo) { Cout::PrintInfo("Copy incompatible cut monitors", EInfo::kLowWarning); }
+      if (fAxisNo != other.fAxisNo) { Cout::PrintInfo("CutMonitor: Copy incompatible cut monitors", EInfo::kLowWarning); }
       for (int i = 0; i < fAxisNo; i++) {
         fAxisBins[i]   = other.fAxisBins[i];
         fOptionAxis[i] = other.fOptionAxis[i];
@@ -374,7 +375,7 @@ namespace Hal {
       TClass* clas     = TClass::GetClass(cut_name, kTRUE, kTRUE);
       if (!clas) {
         Hal::Cout::PrintInfo(
-          Form("Cannot find %s class for monitoring, probably you mixed options of adding/creating cut monitor e.g.,"
+          Form("CutMonitor: Cannot find %s class for monitoring, probably you mixed options of adding/creating cut monitor e.g.,"
                "you create cut monitor with im/re option and added with im/re options",
                cut_name.Data()),
           EInfo::kError);

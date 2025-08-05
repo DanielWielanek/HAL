@@ -87,14 +87,14 @@ namespace Hal {
      * @param cut name of cut to find
      * @return array of found cuts
      */
-    TObjArray* LocateInLowerCollections(TString cut);
+    std::vector<Cut*> LocateInLowerCollections(TString cut);
     /**
      * look for cuts with given name in this collection or look in lower
      * collections that are linked with this collection
      * @param classname name looked for monitor
      * @return array of found cuts
      */
-    TObjArray* LocateCuts(TString classname);
+    std::vector<Cut*> LocateCuts(TString classname);
     /**
      * check if cuts are compatibile
      * @param cut1 first cut to check

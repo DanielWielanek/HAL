@@ -12,6 +12,7 @@
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "Cout.h"
+#include "CutMonitorComplex.h"
 #include "DataFormat.h"
 #include "DataFormatManager.h"
 #include "Event.h"
@@ -119,12 +120,13 @@ namespace Hal {
     return *this;
   }
 
-  PropertyMonitorXYZ::~PropertyMonitorXYZ() {
-    // TODO Auto-generated destructor stub
-  }
   //========================================================================
   EventFieldMonitorXYZ::EventFieldMonitorXYZ(Int_t fieldIDX, Int_t fiedIDY, Int_t fiedIDZ) :
-    PropertyMonitorXYZ("", "", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {}
+    PropertyMonitorXYZ("", "", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {
+    fTranslator.SetFieldId(fFieldIDX, 0);
+    fTranslator.SetFieldId(fFieldIDY, 1);
+    fTranslator.SetFieldId(fFieldIDZ, 2);
+  }
 
   EventFieldMonitorXYZ::EventFieldMonitorXYZ(Int_t fieldIDX,
                                              std::initializer_list<Double_t> xAxis,
@@ -150,20 +152,25 @@ namespace Hal {
 
   Bool_t EventFieldMonitorXYZ::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ReStep; }
-    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ImStep; }
-    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ReStep; }
-    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ImStep; }
-    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDZ)) { fFieldIDZ += Hal::DataFieldID::ReStep; }
-    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDZ)) { fFieldIDZ += Hal::DataFieldID::ImStep; }
-    fXaxisName = ev->GetFieldName(fFieldIDX);
-    fYaxisName = ev->GetFieldName(fFieldIDY);
-    fZaxisName = ev->GetFieldName(fFieldIDZ);
+    fXaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(0));
+    fYaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(1));
+    fZaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(2));
     return PropertyMonitorXYZ::Init(task_id);
   }
+
+  void EventFieldMonitorXYZ::MakeComplexAxes(TString opt) {
+    if (Hal::Std::FindParam(opt, "re")) fTranslator.SwitchToRe();
+    if (Hal::Std::FindParam(opt, "im")) fTranslator.SwitchToIm();
+  }
+
   //========================================================================
+
   TrackFieldMonitorXYZ::TrackFieldMonitorXYZ(Int_t fieldIDX, Int_t fiedIDY, Int_t fiedIDZ) :
-    PropertyMonitorXYZ("", "", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {}
+    PropertyMonitorXYZ("", "", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY), fFieldIDZ(fiedIDZ) {
+    fTranslator.SetFieldId(fFieldIDX, 0);
+    fTranslator.SetFieldId(fFieldIDY, 1);
+    fTranslator.SetFieldId(fFieldIDZ, 2);
+  }
 
   TrackFieldMonitorXYZ::TrackFieldMonitorXYZ(Int_t fieldIDX,
                                              std::initializer_list<Double_t> xAxis,
@@ -188,47 +195,32 @@ namespace Hal {
   }
 
   Bool_t TrackFieldMonitorXYZ::Init(Int_t task_id) {
-    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ReStep; }
-    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDX)) { fFieldIDX += Hal::DataFieldID::ImStep; }
-    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ReStep; }
-    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDY)) { fFieldIDY += Hal::DataFieldID::ImStep; }
-    if (IsRe() && !Hal::DataFieldID::IsRe(fFieldIDZ)) { fFieldIDZ += Hal::DataFieldID::ReStep; }
-    if (IsIm() && !Hal::DataFieldID::IsIm(fFieldIDZ)) { fFieldIDZ += Hal::DataFieldID::ImStep; }
+
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (ev->InheritsFrom("Hal::ComplexEvent")) {
-      ComplexTrack* tr  = (ComplexTrack*) ev->GetNewTrack();
-      ComplexEvent* tev = (ComplexEvent*) ev->GetNewEvent();
-      tr->SetEvent(tev);
-      fXaxisName = tr->GetFieldName(fFieldIDX);
-      fYaxisName = tr->GetFieldName(fFieldIDY);
-      fZaxisName = tr->GetFieldName(fFieldIDZ);
-      delete tr;
-      delete tev;
-    } else {
-      Track* tr  = ev->GetNewTrack();
-      fXaxisName = tr->GetFieldName(fFieldIDX);
-      fYaxisName = tr->GetFieldName(fFieldIDY);
-      fZaxisName = tr->GetFieldName(fFieldIDZ);
-      delete tr;
-    }
+    auto tr         = std::unique_ptr<Track>(ev->GetNewTrack());
+    auto event      = std::unique_ptr<Event>(ev->GetNewEvent());
+    tr->SetEvent(event.get());
+    fXaxisName = tr->GetFieldName(fTranslator.GetFieldFull(0));
+    fYaxisName = tr->GetFieldName(fTranslator.GetFieldFull(1));
+    fZaxisName = tr->GetFieldName(fTranslator.GetFieldFull(2));
     return PropertyMonitorXYZ::Init(task_id);
   }
 
   Bool_t EventFieldMonitorXYZ::AreSimilar(const CutMonitor& other) const {
     auto monitor = dynamic_cast<const EventFieldMonitorXYZ*>(&other);
     if (!monitor) return kFALSE;
-    if (fFieldIDX != monitor->fFieldIDX) return kFALSE;
-    if (fFieldIDY != monitor->fFieldIDY) return kFALSE;
-    if (fFieldIDZ != monitor->fFieldIDZ) return kFALSE;
+    if (fTranslator.GetFieldFull(0) != monitor->fTranslator.GetFieldFull(0)) return kFALSE;
+    if (fTranslator.GetFieldFull(1) != monitor->fTranslator.GetFieldFull(1)) return kFALSE;
+    if (fTranslator.GetFieldFull(2) != monitor->fTranslator.GetFieldFull(2)) return kFALSE;
     return CutMonitorXYZ::AreSimilar(other);
   }
 
   Bool_t TrackFieldMonitorXYZ::AreSimilar(const CutMonitor& other) const {
     auto monitor = dynamic_cast<const TrackFieldMonitorXYZ*>(&other);
     if (!monitor) return kFALSE;
-    if (fFieldIDX != monitor->fFieldIDX) return kFALSE;
-    if (fFieldIDY != monitor->fFieldIDY) return kFALSE;
-    if (fFieldIDZ != monitor->fFieldIDZ) return kFALSE;
+    if (fTranslator.GetFieldFull(0) != monitor->fTranslator.GetFieldFull(0)) return kFALSE;
+    if (fTranslator.GetFieldFull(1) != monitor->fTranslator.GetFieldFull(1)) return kFALSE;
+    if (fTranslator.GetFieldFull(2) != monitor->fTranslator.GetFieldFull(2)) return kFALSE;
     return CutMonitorXYZ::AreSimilar(other);
   }
 
@@ -239,6 +231,11 @@ namespace Hal {
     if (fYaxisName != conv->fYaxisName) return kFALSE;
     if (fZaxisName != conv->fZaxisName) return kFALSE;
     return CutMonitorXYZ::AreSimilar(other);
+  }
+
+  void TrackFieldMonitorXYZ::MakeComplexAxes(TString opt) {
+    if (Hal::Std::FindParam(opt, "re")) fTranslator.SwitchToRe();
+    if (Hal::Std::FindParam(opt, "im")) fTranslator.SwitchToIm();
   }
 
 }  // namespace Hal

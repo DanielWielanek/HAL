@@ -13,7 +13,9 @@
  * class to monitor data properties (in contrast to cut monitor doesnt require
  * cuts
  */
+#include "CutMonitorFieldIdTranslator.h"
 #include "CutMonitorXY.h"
+
 namespace Hal {
   class PropertyMonitorXY : public CutMonitorXY {
 
@@ -42,8 +44,7 @@ namespace Hal {
     virtual Bool_t ObjMonitor() const { return kTRUE; };
     virtual Bool_t AreSimilar(const CutMonitor& other) const;
     virtual Package* Report() const;
-    virtual CutMonitor* MakeCopy() const { return (CutMonitor*) this->Clone(); };
-    virtual ~PropertyMonitorXY();
+    virtual ~PropertyMonitorXY() {};
     ClassDef(PropertyMonitorXY, 1)
   };
 
@@ -54,6 +55,10 @@ namespace Hal {
   class EventFieldMonitorXY : public PropertyMonitorXY {
     Int_t fFieldIDX;
     Int_t fFieldIDY;
+    CutMonitorFieldIdTranslator fTranslator;
+
+  protected:
+    virtual void MakeComplexAxes(TString opt = "");
 
   public:
     /**
@@ -70,7 +75,6 @@ namespace Hal {
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t Init(Int_t task_id);
     virtual Bool_t AreSimilar(const CutMonitor& other) const;
-    virtual CutMonitor* MakeCopy() const { return new EventFieldMonitorXY(*this); }
     virtual ~EventFieldMonitorXY() {};
     ClassDef(EventFieldMonitorXY, 1)
   };
@@ -82,6 +86,10 @@ namespace Hal {
   class TrackFieldMonitorXY : public PropertyMonitorXY {
     Int_t fFieldIDX;
     Int_t fFieldIDY;
+    CutMonitorFieldIdTranslator fTranslator;
+
+  protected:
+    virtual void MakeComplexAxes(TString opt = "");
 
   public:
     /**
@@ -98,7 +106,6 @@ namespace Hal {
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t AreSimilar(const CutMonitor& other) const;
     virtual Bool_t Init(Int_t task_id);
-    virtual CutMonitor* MakeCopy() const { return new TrackFieldMonitorXY(*this); }
     virtual ~TrackFieldMonitorXY() {};
     ClassDef(TrackFieldMonitorXY, 1)
   };

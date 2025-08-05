@@ -18,18 +18,15 @@
 
 namespace Hal {
 
-  MonitorDcaRZ::MonitorDcaRZ() {
+  MonitorDcaRZ::MonitorDcaRZ() :
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EExp::kDcaZ, Hal::DataFieldID::Track::EExp::kDcaXY) {
     SetXaxis(200, -2, 2);
     SetYaxis(200, 0, 4);
-    fFieldId1 = Hal::DataFieldID::Track::EExp::kDcaZ;
-    fFieldId2 = Hal::DataFieldID::Track::EExp::kDcaXY;
   }
 
-  MonitorDcaXY::MonitorDcaXY() {
+  MonitorDcaXY::MonitorDcaXY() : TrackFieldMonitorXY(Hal::DataFieldID::Track::EExp::kDcaX, Hal::DataFieldID::Track::EExp::kDcaY) {
     SetXaxis(200, -2, 2);
     SetYaxis(200, -2, 2);
-    fFieldId1 = Hal::DataFieldID::Track::EExp::kDcaX;
-    fFieldId2 = Hal::DataFieldID::Track::EExp::kDcaY;
   }
 
 }  // namespace Hal

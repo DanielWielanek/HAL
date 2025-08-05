@@ -20,19 +20,16 @@
 
 namespace Hal {
 
-  MonitorEtaPt::MonitorEtaPt() {
+  MonitorEtaPt::MonitorEtaPt() :
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kRapidity, Hal::DataFieldID::Track::EBasic::kPt) {
     SetXaxis(200, -2, 2);
     SetYaxis(200, 0, 4);
-    fFieldId1 = Hal::DataFieldID::Track::EBasic::kRapidity;
-    fFieldId2 = Hal::DataFieldID::Track::EBasic::kPt;
   }
 
 
-  MonitorYPt::MonitorYPt() {
+  MonitorYPt::MonitorYPt() : TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kEta, Hal::DataFieldID::Track::EBasic::kPt) {
     SetXaxis(200, -2, 2);
     SetYaxis(200, 0, 4);
-    fFieldId1 = Hal::DataFieldID::Track::EBasic::kEta;
-    fFieldId2 = Hal::DataFieldID::Track::EBasic::kPt;
   }
 
 } /* namespace Hal */

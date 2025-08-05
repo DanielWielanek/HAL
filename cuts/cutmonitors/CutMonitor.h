@@ -24,9 +24,10 @@ namespace Hal {
   class CutMonitor : public TObject {
     friend class CutContainer;
     friend class CutOptions;
+    friend class ComplexMonitor;
 
   protected:
-    enum EFlagBit { kInit = 0, kExclusive = 1, kRe = 2, kIm = 3 };
+    enum EFlagBit { kInit = 0, kExclusive = 1 };
     /**
      * number of axis in cut monitor
      */
@@ -141,23 +142,17 @@ namespace Hal {
      */
     inline Bool_t IsExclusive() const { return TESTBIT(fFlags, EFlagBit::kExclusive); }
     /**
-     *
-     * @return true if marked as real
+     * make complex axes for cuts
+     * @param opt
      */
-    Bool_t IsRe() const { return TESTBIT(fFlags, EFlagBit::kRe); }
+    virtual void MakeComplexAxes(TString opt = "");
     /**
-     *
-     * @return true if marked as imaginary
+     * tries to make an complex monitors, return nullptr if failed, moved only to avoid full
+     * declaration in hader
+     * @param opt
+     * @return
      */
-    Bool_t IsIm() const { return TESTBIT(fFlags, EFlagBit::kIm); }
-    /**
-     * mark as real cut (used by some property monitors)
-     */
-    void SetFlagRe();
-    /**
-     * mark as imaginary cut (used by some property monitors)
-     */
-    void SetFlagIm();
+    CutMonitor* TryMakeComplexMonitor(TString opt) const;
 
   public:
     /**
@@ -280,9 +275,10 @@ namespace Hal {
     virtual void Update(Bool_t passed, TObject* obj);
     /**
      * make copy of this object
+     * @param opt copy option, for some of the cut monitors "re" and "im" make real and imaginary copy of monitor
      * @return copy of this
      */
-    virtual CutMonitor* MakeCopy() const;
+    virtual CutMonitor* MakeCopy(TString opt = "") const;
     /**
      *
      * @return report from this cut monitor

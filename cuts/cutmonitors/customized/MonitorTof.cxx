@@ -18,17 +18,15 @@
 #include "Std.h"
 
 namespace Hal {
-  MonitorTofM2::MonitorTofM2() {
+  MonitorTofM2::MonitorTofM2() :
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kPq, Hal::DataFieldID::Track::EExp::kTofM2) {
     SetXaxis(200, -2, 2);
     SetYaxis(200, -0.5, 2.5);
-    fFieldId1 = Hal::DataFieldID::Track::EBasic::kPq;
-    fFieldId2 = Hal::DataFieldID::Track::EExp::kTofM2;
   }
 
-  MonitorTofBeta::MonitorTofBeta() {
+  MonitorTofBeta::MonitorTofBeta() :
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kPq, Hal::DataFieldID::Track::EExp::kToFBeta) {
     SetXaxis(200, -2, 2);
     SetYaxis(200, -0.25, 1.25);
-    fFieldId1 = Hal::DataFieldID::Track::EBasic::kPq;
-    fFieldId2 = Hal::DataFieldID::Track::EExp::kToFBeta;
   }
 }  // namespace Hal

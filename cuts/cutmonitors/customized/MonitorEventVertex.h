@@ -8,17 +8,17 @@
 #ifndef HAL_CUTS_CUTMONITORS_CUSTOMIZED_MONITOREVENTVERTEX_H_
 #define HAL_CUTS_CUTMONITORS_CUSTOMIZED_MONITOREVENTVERTEX_H_
 
-#include "CustomMonitors2D.h"
+#include "PropertyMonitorXY.h"
 
 namespace Hal {
 
-  class MonitorEventVertexXY : public CustomEventMonitors2D {
+  class MonitorEventVertexXY : public EventFieldMonitorXY {
   public:
     MonitorEventVertexXY();
     virtual ~MonitorEventVertexXY() {};
     ClassDef(MonitorEventVertexXY, 1)
   };
-  class MonitorEventVertexRZ : public CustomEventMonitors2D {
+  class MonitorEventVertexRZ : public EventFieldMonitorXY {
   public:
     MonitorEventVertexRZ();
     virtual ~MonitorEventVertexRZ() {};

@@ -8,18 +8,18 @@
 #ifndef HAL_CUTS_CUTMONITORS_CUSTOMIZED_MONITORDCA_H_
 #define HAL_CUTS_CUTMONITORS_CUSTOMIZED_MONITORDCA_H_
 
-#include "CustomMonitors2D.h"
+#include "PropertyMonitorXY.h"
 
 namespace Hal {
 
-  class MonitorDcaRZ : public CustomTrackMonitors2D {
+  class MonitorDcaRZ : public TrackFieldMonitorXY {
 
   public:
     MonitorDcaRZ();
     virtual ~MonitorDcaRZ() {};
     ClassDef(MonitorDcaRZ, 1)
   };
-  class MonitorDcaXY : public CustomTrackMonitors2D {
+  class MonitorDcaXY : public TrackFieldMonitorXY {
 
   public:
     MonitorDcaXY();

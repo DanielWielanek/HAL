@@ -8,13 +8,13 @@
 #ifndef HAL_CUTS_CUTMONITORS_CUSTOMIZED_MONITORTRACKKINEM_H_
 #define HAL_CUTS_CUTMONITORS_CUSTOMIZED_MONITORTRACKKINEM_H_
 
-#include "CustomMonitors2D.h"
+#include "PropertyMonitorXY.h"
 
 namespace Hal {
   /**
    * monitor to plot rapidity vs pt
    */
-  class MonitorYPt : public CustomTrackMonitors2D {
+  class MonitorYPt : public TrackFieldMonitorXY {
   public:
     MonitorYPt();
     virtual ~MonitorYPt() {};
@@ -23,7 +23,7 @@ namespace Hal {
   /**
    * monitor to plot pseudorapidity vs pt
    */
-  class MonitorEtaPt : public CustomTrackMonitors2D {
+  class MonitorEtaPt : public TrackFieldMonitorXY {
   public:
     MonitorEtaPt();
     virtual ~MonitorEtaPt() {};

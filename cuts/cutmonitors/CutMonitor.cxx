@@ -9,6 +9,7 @@
 
 #include "Cout.h"
 #include "Cut.h"
+#include "CutMonitorComplex.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "StdString.h"
@@ -208,7 +209,12 @@ namespace Hal {
     }
   }
 
-  CutMonitor* CutMonitor::MakeCopy() const { return new CutMonitor(*this); }
+  CutMonitor* CutMonitor::MakeCopy(TString opt) const {
+    auto res = TryMakeComplexMonitor(opt);
+    if (!res) res = (CutMonitor*) this->Clone();
+    res->MakeComplexAxes(opt);
+    return res;
+  }
 
   CutMonitor::~CutMonitor() {
     delete[] fCut;
@@ -357,20 +363,88 @@ namespace Hal {
     }
   }
 
-  void CutMonitor::SetFlagRe() {
-    if (ObjMonitor())
-      SETBIT(fFlags, EFlagBit::kRe);
-    else
-      Hal::Cout::PrintInfo("Trying to add Re flag to non-obj monitor", EInfo::kLowWarning);
-  }
-  /**
-   * mark as imaginary cut (used by some property monitors)
-   */
-  void CutMonitor::SetFlagIm() {
-    if (ObjMonitor())
-      SETBIT(fFlags, EFlagBit::kIm);
-    else
-      Hal::Cout::PrintInfo("Trying to add Im flag to non-obj monitor", EInfo::kLowWarning);
+  void CutMonitor::MakeComplexAxes(TString opt) {
+    if (ObjMonitor()) return;  // do not create magic flags from object monitors
+    Bool_t Re = kFALSE, Im = kFALSE;
+    if (Hal::Std::FindParam(opt, "re")) Re = kTRUE;
+    if (Hal::Std::FindParam(opt, "im")) Im = kTRUE;
+    if (Re == kFALSE && Im == kFALSE) return;
+    for (int axis = 0; axis < GetAxisNo(); axis++) {
+      TString cut_name = GetCutName(axis);
+      TClass* clas     = TClass::GetClass(cut_name, kTRUE, kTRUE);
+      if (!clas) {
+        Hal::Cout::PrintInfo(
+          Form("Cannot find %s class for monitoring, probably you mixed options of adding/creating cut monitor e.g.,"
+               "you create cut monitor with im/re option and added with im/re options",
+               cut_name.Data()),
+          EInfo::kError);
+        return;
+      }
+      TString pattern = "";
+      if (clas->InheritsFrom("Hal::EventCut")) {
+        if (Im) {  // im
+          pattern = "Hal::EventImaginaryCut";
+        } else if (Re) {  // re
+          pattern = "Hal::EventRealCut";
+        }
+      } else if (clas->InheritsFrom("Hal::TrackCut")) {
+        if (Im) {  // im
+          pattern = "Hal::TrackImaginaryCut";
+        } else if (Re) {  // re
+          pattern = "Hal::TrackRealCut";
+        }
+      } else {
+        if (Im) {  // im
+          pattern = "Hal::TwoTrackImaginaryCut";
+        } else if (Re) {  // re
+          pattern = "Hal::TwoTrackRealCut";
+        }
+      }
+      fCutNames[axis] = Form("%s(%s)", pattern.Data(), GetCutName(axis).Data());
+    }
   }
 
+  CutMonitor* CutMonitor::TryMakeComplexMonitor(TString opt) const {
+    if (!ObjMonitor()) return nullptr;
+    if (dynamic_cast<const ComplexMonitor*>(this)) return nullptr;
+    if (Hal::Std::FindParam(opt, "im")) {
+      switch (fUpdateRatio) {
+        case ECutUpdate::kEvent: {
+          return new Hal::EventCutMonitorImaginary((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTrack: {
+          return new Hal::TrackCutMonitorImaginary((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTwoTrack: {
+          return new Hal::TwoTrackCutMonitorImaginary((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTwoTrackBackground: {
+          return new Hal::TwoTrackCutMonitorImaginary((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kNo: {
+          return nullptr;
+        } break;
+      }
+    }
+    if (Hal::Std::FindParam(opt, "re")) {
+      switch (fUpdateRatio) {
+        case ECutUpdate::kEvent: {
+          return new Hal::EventCutMonitorReal((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTrack: {
+          return new Hal::TrackCutMonitorReal((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTwoTrack: {
+          return new Hal::TwoTrackCutMonitorReal((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTwoTrackBackground: {
+          return new Hal::TwoTrackCutMonitorReal((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kNo: {
+          return nullptr;
+        } break;
+      }
+    }
+    return nullptr;
+  }
 }  // namespace Hal

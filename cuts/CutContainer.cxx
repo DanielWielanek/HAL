@@ -126,6 +126,10 @@ namespace Hal {
     } else {
       upds.push_back(monitor.GetUpdateRatio());
     }
+    TString option     = opt;
+    TString target_opt = "";
+    if (Hal::Std::FindParam(option, "re")) target_opt = "re";
+    if (Hal::Std::FindParam(option, "im")) target_opt = "im";
     for (auto upd : upds) {
       if (fSize <= static_cast<Int_t>(upd)) {
         Cout::PrintInfo("CutContainer can't hold this cut because it's update ratio is to big, check fTries or call "
@@ -135,12 +139,8 @@ namespace Hal {
       }
       auto collections = opts.GetCollectionsIds();
       for (int colId : collections) {
-        auto copy = monitor_copy->MakeCopy();
+        auto copy = monitor_copy->MakeCopy(target_opt);
         copy->SetCollectionID(colId);
-        if (copy->ObjMonitor()) {
-          if (opts.Re()) copy->SetFlagRe();
-          if (opts.Im()) copy->SetFlagIm();
-        }
         fTempCutMonitors[static_cast<Int_t>(upd)]->AddLast(copy);
       }
     }

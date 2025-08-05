@@ -164,9 +164,9 @@ namespace Hal {
       Cout::PrintInfo("CutContainer: Wrong ECut Update in Link Collections", EInfo::kError);
     }
     if (static_cast<Int_t>(opt_high) >= fSize) {
-      Cout::PrintInfo("CutContainer: To big opt_high, link will be ingored", EInfo::kError);
+      Cout::PrintInfo("CutContainer: Too big opt_high, link will be ingored", EInfo::kError);
     } else if (static_cast<Int_t>(opt_low) >= fSize) {
-      Cout::PrintInfo("CutContainer: To big opt_low, link will be ingored", EInfo::kError);
+      Cout::PrintInfo("CutContainer: Too big opt_low, link will be ingored", EInfo::kError);
     }
     CutCollection* low  = NULL;
     CutCollection* high = NULL;
@@ -402,7 +402,7 @@ namespace Hal {
     switch (policy) {
       case ELinkPolicy::kOneToMany: {
         if (lowLinks != 1) {
-          Cout::PrintInfo("CutContainer: EventAna::LinkCollections one-to-many to much first collections!", EInfo::kError);
+          Cout::PrintInfo("CutContainer: EventAna::LinkCollections one-to-many too much first collections!", EInfo::kError);
           return kFALSE;
         }
         for (int i = 0; i < highLinks; i++) {

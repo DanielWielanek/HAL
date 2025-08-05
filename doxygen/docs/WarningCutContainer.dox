@@ -1,264 +1,67 @@
-/**
- * @page WarningCutContainer Warning Codes for Class CutContainer
- *  
+/** \page WarningCutContainer Warning Codes for Class CutContainer
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Unknown update ratio</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00042'>CutContainer.cxx, line: 42</a></span><br>
+ * <span style='color:black;'>Update ratio for this cut container is not specified</span><br>
 
- * <span style='color:blue; font-weight:bold;'>Unknown update ration in CutContainer</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 42</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
-    37:       case ECutUpdate::kEvent: fSize = 1; break;
-    38:       case ECutUpdate::kTrack: fSize = 2; break;
-    39:       case ECutUpdate::kTwoTrack: fSize = 3; break;
-    40:       case ECutUpdate::kTwoTrackBackground: fSize = 4; break;
-    41:       default: {
-    42:         Cout::PrintInfo("Unknown update ration in CutContainer", EInfo::kError);
-    43:       } break;
-    44:     }
-    45:     fCutContainers   = new TObjArray*[fSize];
-    46:     fTempCutMonitors = new TObjArray*[fSize];
-    47:     for (int i = 0; i < fSize; i++) {
- * </div>
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: container already initialized</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00055'>CutContainer.cxx, line: 55</a></span><br>
+ * <span style='color:black;'>Container was initialized before</span><br>
 
- * <span style='color:blue; font-weight:bold;'>CutContainer already initialized</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 55</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
-    50:     }\n
-    51:   }\n
-    52: \n
-    53:   CutContainer::CutContainer(const CutContainer& cont) :\n
-    54:     TObject(cont), fInit(kFALSE), fSize(cont.fSize), fTempCutMonitors(NULL), fCutContainers(NULL) {\n
-    55:     if (cont.fInit == kTRUE) { Cout::PrintInfo("CutContainer already initialized", EInfo::kError); }\n
-    56:     fCutContainers   = new TObjArray*[fSize];\n
-    57:     fTempCutMonitors = new TObjArray*[fSize];\n
-    58:     for (int i = 0; i < fSize; i++) {\n
-    59:       fCutContainers[i] = new TObjArray();\n
-    60:       for (int j = 0; j < cont.fCutContainers[i]->GetEntries(); j++) {\n
- * </div>
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: You add cut monitor with both im and re flags, this is not supported now, only re flag will be used</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00132'>CutContainer.cxx, line: 132</a></span><br>
+ * <span style='color:black;'>Cut monitor was added with flag "im+re" this is not supported</span><br>
 
- * <span style='color:blue; font-weight:bold;'>You add cut monitor with both im and re flags, this is not supported now, only re flag will be used</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 132</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:1px; font-family:monospace; white-space: pre-wrap;'>
- *  127:       upds.push_back(monitor.GetUpdateRatio());\n
- *  128:     }\n
- *  129:     TString option     = opt;\n
- *  130:     TString target_opt = "";\n
- *  131:     if (Hal::Std::FindParam(option, "re") && Hal::Std::FindParam(option, "im")) {\n
- *  132:       Cout::PrintInfo("You add cut monitor with both im and re flags, this is not supported now, only re flag will be used",\n
- *  133:                       EInfo::kLowWarning);\n
- *  134:     }\n
- *  135:     if (Hal::Std::FindParam(option, "re")) target_opt = "re";\n
- *  136:     if (Hal::Std::FindParam(option, "im")) target_opt = "im";\n
- *  137:     for (auto upd : upds) {\n
- * </div>
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Wrong ECut Update in Link Collections</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00164'>CutContainer.cxx, line: 164</a></span><br>
+ * <span style='color:black;'>During linking attempt to link into wrong update happened</span><br>
 
- * <span style='color:blue; font-weight:bold;'>Wrong ECut Update in Link Collections</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 162</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre;'>
- *  157:       }\n
- *  158:     }\n
- *  159:   }\n
- *  160: \n
- *  161:   void CutContainer::LinkCollections(ECutUpdate opt_low, Int_t in_low, ECutUpdate opt_high, Int_t in_high) {\n
- *  162:     if (opt_high == opt_low || opt_low > opt_high) { Cout::PrintInfo("Wrong ECut Update in Link Collections", EInfo::kError); }\n
- *  163:     if (static_cast<Int_t>(opt_high) >= fSize) {\n
- *  164:       Cout::PrintInfo("To big opt_high, link will be ingored", EInfo::kError);\n
- *  165:     } else if (static_cast<Int_t>(opt_low) >= fSize) {\n
- *  166:       Cout::PrintInfo("To big opt_low, link will be ingored", EInfo::kError);\n
- *  167:     }\n
- * </div>
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Too big opt_high, link will be ingored</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00167'>CutContainer.cxx, line: 167</a></span><br>
+ * <span style='color:black;'>During linking wrong linkig flag was set (larger than size of containers)</span><br>
 
- * <span style='color:blue; font-weight:bold;'>To big opt_high, link will be ingored</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 164</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  159:   }\n
- *  160: \n
- *  161:   void CutContainer::LinkCollections(ECutUpdate opt_low, Int_t in_low, ECutUpdate opt_high, Int_t in_high) {\n
- *  162:     if (opt_high == opt_low || opt_low > opt_high) { Cout::PrintInfo("Wrong ECut Update in Link Collections", EInfo::kError); }\n
- *  163:     if (static_cast<Int_t>(opt_high) >= fSize) {\n
- *  164:       Cout::PrintInfo("To big opt_high, link will be ingored", EInfo::kError);\n
- *  165:     } else if (static_cast<Int_t>(opt_low) >= fSize) {\n
- *  166:       Cout::PrintInfo("To big opt_low, link will be ingored", EInfo::kError);\n
- *  167:     }\n
- *  168:     CutCollection* low  = NULL;\n
- *  169:     CutCollection* high = NULL;\n
- * </div>
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Too big opt_low, link will be ingored</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00169'>CutContainer.cxx, line: 169</a></span><br>
+ * <span style='color:black;'>During linking wrong linkig flag was set (larger than size of containers)</span><br>
 
- * <span style='color:blue; font-weight:bold;'>To big opt_low, link will be ingored</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 166</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  161:   void CutContainer::LinkCollections(ECutUpdate opt_low, Int_t in_low, ECutUpdate opt_high, Int_t in_high) {\n
- *  162:     if (opt_high == opt_low || opt_low > opt_high) { Cout::PrintInfo("Wrong ECut Update in Link Collections", EInfo::kError); }\n
- *  163:     if (static_cast<Int_t>(opt_high) >= fSize) {\n
- *  164:       Cout::PrintInfo("To big opt_high, link will be ingored", EInfo::kError);\n
- *  165:     } else if (static_cast<Int_t>(opt_low) >= fSize) {\n
- *  166:       Cout::PrintInfo("To big opt_low, link will be ingored", EInfo::kError);\n
- *  167:     }\n
- *  168:     CutCollection* low  = NULL;\n
- *  169:     CutCollection* high = NULL;\n
- *  170:     if (opt_low == ECutUpdate::kEvent) {\n
- *  171:       low = (CutCollection*) GetCutContainer(opt_low)->At(in_low);\n
- * </div>
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Invalid opt_low argument in CutContainer::LinkCollections</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00178'>CutContainer.cxx, line: 178</a></span><br>
+ * <span style='color:black;'>Too low linking argument (not track, not event)</span><br>
 
- * <span style='color:blue; font-weight:bold;'>Invalid opt_low argument in CutContainer::LinkCollections</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 175</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  170:     if (opt_low == ECutUpdate::kEvent) {\n
- *  171:       low = (CutCollection*) GetCutContainer(opt_low)->At(in_low);\n
- *  172:     } else if (opt_low == ECutUpdate::kTrack) {\n
- *  173:       low = (CutCollection*) GetCutContainer(opt_low)->At(in_low);\n
- *  174:     } else {\n
- *  175:       Cout::PrintInfo("Invalid opt_low argument in CutContainer::LinkCollections", EInfo::kError);\n
- *  176:       return;\n
- *  177:     }\n
- *  178:     if (opt_high == ECutUpdate::kTrack) {\n
- *  179:       high = (CutCollection*) GetCutContainer(opt_high)->At(in_high);\n
- *  180:     } else if (opt_high == ECutUpdate::kTwoTrack || opt_high == ECutUpdate::kTwoTrackBackground) {\n
- * </div>
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Invalid opt_high argument in CutContainer::LinkCollections</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00186'>CutContainer.cxx, line: 186</a></span><br>
+ * <span style='color:black;'>Bad linking flag, (not track, not two-track)</span><br>
 
- * <span style='color:blue; font-weight:bold;'>Invalid opt_high argument in CutContainer::LinkCollections</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 183</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  178:     if (opt_high == ECutUpdate::kTrack) {\n
- *  179:       high = (CutCollection*) GetCutContainer(opt_high)->At(in_high);\n
- *  180:     } else if (opt_high == ECutUpdate::kTwoTrack || opt_high == ECutUpdate::kTwoTrackBackground) {\n
- *  181:       high = (CutCollection*) GetCutContainer(opt_high)->At(in_high);\n
- *  182:     } else {\n
- *  183:       Cout::PrintInfo("Invalid opt_high argument in CutContainer::LinkCollections", EInfo::kError);\n
- *  184:       return;\n
- *  185:     }\n
- *  186:     if (low == NULL || high == NULL) {\n
- *  187:       Cout::PrintInfo("Cant link some collections", EInfo::kError);\n
- *  188:       return;\n
- * </div>
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Cant link some collections</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00190'>CutContainer.cxx, line: 190</a></span><br>
+ * <span style='color:black;'>Collections not found for given flags</span><br>
 
- * <span style='color:blue; font-weight:bold;'>Cant link some collections</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 187</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  182:     } else {\n
- *  183:       Cout::PrintInfo("Invalid opt_high argument in CutContainer::LinkCollections", EInfo::kError);\n
- *  184:       return;\n
- *  185:     }\n
- *  186:     if (low == NULL || high == NULL) {\n
- *  187:       Cout::PrintInfo("Cant link some collections", EInfo::kError);\n
- *  188:       return;\n
- *  189:     }\n
- *  190:     high->AddPreviousAddr(in_low, 0);\n
- *  191:     if (opt_high == ECutUpdate::kTwoTrackBackground) {\n
- *  192:       if (!high->IsDummy()) low->AddNextAddr(in_high, kTRUE);\n
- * </div>
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: CutContainer has been initialized before</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00234'>CutContainer.cxx, line: 234</a></span><br>
+ * <span style='color:black;'>Container was initialized</span><br>
 
- * <span style='color:blue; font-weight:bold;'>CutContainer has been initialized before</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 229</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  224:     }\n
- *  225:   }\n
- *  226: \n
- *  227:   void CutContainer::Init(const Int_t task_id) {\n
- *  228:     if (fInit == kTRUE) {\n
- *  229:       Cout::PrintInfo("CutContainer has been initialized before", EInfo::kLowWarning);\n
- *  230:       return;\n
- *  231:     }\n
- *  232:     for (int i = 0; i < fSize; i++) {\n
- *  233:       VerifyOrder(fCutContainers[i]);\n
- *  234:     }\n
- * </div>
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>Initializing cut collection</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00260'>CutContainer.cxx, line: 260</a></span><br>
+ * <span style='color:black;'>Just info for debugging</span><br>
 
- * <span style='color:blue; font-weight:bold;'>Initializing cut collection</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 254</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  249:             ((CutCollection*) (fCutContainers[k]->UncheckedAt(i)))->AddCutMonitor(clone);\n
- *  250:           }\n
- *  251:         }\n
- *  252:       }\n
- *  253: #ifdef HAL_DEBUG\n
- *  254:       Cout::PrintInfo("Initializing cut collection", EInfo::kDebugInfo);\n
- *  255: #endif\n
- *  256:       for (int i = 0; i < fCutContainers[k]->GetEntriesFast(); i++) {\n
- *  257: #ifdef HAL_DEBUG\n
- *  258:         Cout::PrintInfo(Form("Initializing cut collection at %i", k), EInfo::kDebugInfo);\n
- *  259: #endif\n
- * </div>
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>Deleting temporary cut monitors</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00270'>CutContainer.cxx, line: 270</a></span><br>
+ * <span style='color:black;'>Just info for debugging</span><br>
 
- * <span style='color:blue; font-weight:bold;'>Deleting temporary cut monitors</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 264</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  259: #endif\n
- *  260:         ((CutCollection*) (fCutContainers[k]->UncheckedAt(i)))->Init(task_id);\n
- *  261:       }\n
- *  262:     }\n
- *  263: #ifdef HAL_DEBUG\n
- *  264:     Cout::PrintInfo("Deleting temporary cut monitors", EInfo::kDebugInfo);\n
- *  265: #endif\n
- *  266:     for (int i = 0; i < fSize; i++) {\n
- *  267:       fTempCutMonitors[i]->Delete();\n
- *  268:     }\n
- *  269:     delete[] fTempCutMonitors;\n
- * </div>
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: You can't copy sub containers from not initialized cut container to initialized cut container!! </span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00336'>CutContainer.cxx, line: 336</a></span><br>
+ * <span style='color:black;'></span><br>
 
- * <span style='color:blue; font-weight:bold;'>You can't copy sub containers from not initialized cut container to initialized cut container!! </span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 330</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  325:                       "object in source cut container",\n
- *  326:                       EInfo::kError);\n
- *  327:       return;\n
- *  328:     }\n
- *  329:     if (this->fInit == kTRUE || other->fInit == kFALSE) {\n
- *  330:       Cout::PrintInfo("You can't copy sub containers from not initialized cut container to initialized cut container!! ",\n
- *  331:                       EInfo::kLowWarning);\n
- *  332:     }\n
- *  333:     for (int i = 0; i < other->GetCutContainer(update)->GetEntriesFast(); i++) {\n
- *  334:       CutCollection* from = (CutCollection*) other->GetCutContainer(update)->UncheckedAt(i);\n
- *  335:       CutCollection* to   = (CutCollection*) this->GetCutContainer(update)->UncheckedAt(i);\n
- * </div>
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: EventAna::LinkCollections one-to-many too much first collections!</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00405'>CutContainer.cxx, line: 405</a></span><br>
+ * <span style='color:black;'>More than one container in lower layer</span><br>
 
- * <span style='color:blue; font-weight:bold;'>EventAna::LinkCollections one-to-many to much first collections!</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 398</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  393:     if (lowLinks == 0) AddVirtualCut(first, 0);\n
- *  394:     if (highLinks == 0) AddVirtualCut(last, 0);\n
- *  395:     switch (policy) {\n
- *  396:       case ELinkPolicy::kOneToMany: {\n
- *  397:         if (lowLinks != 1) {\n
- *  398:           Cout::PrintInfo("EventAna::LinkCollections one-to-many to much first collections!", EInfo::kError);\n
- *  399:           return kFALSE;\n
- *  400:         }\n
- *  401:         for (int i = 0; i < highLinks; i++) {\n
- *  402:           LinkCollections(first, 0, last, i);\n
- *  403:         }\n
- * </div>
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: EventAna::LinkCollections equal link cannot group cuts!</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00417'>CutContainer.cxx, line: 417</a></span><br>
+ * <span style='color:black;'>Can't link according to policy kEqual - wrong number of collections. Try different number of collections in analysis.</span><br>
 
- * <span style='color:blue; font-weight:bold;'>EventAna::LinkCollections equal link cannot group cuts!</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 410</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  405:       } break;\n
- *  406:       case ELinkPolicy::kEqual: {\n
- *  407:         if (lowLinks > highLinks) {\n
- *  408:           Int_t jump = lowLinks / highLinks;\n
- *  409:           if (lowLinks % highLinks) {\n
- *  410:             Cout::PrintInfo("EventAna::LinkCollections equal link cannot group cuts!", EInfo::kError);\n
- *  411:             return kFALSE;\n
- *  412:           }\n
- *  413:           for (int i = 0; i < highLinks; i++) {\n
- *  414:             for (int j = 0; j < jump; j++) {\n
- *  415:               LinkCollections(first, i * jump + j, last, i);\n
- * </div>
-
- * <span style='color:blue; font-weight:bold;'>EventAna::LinkCollections equal link cannot group cuts!</span><br>
- * <span style='color:green;'>File: CutContainer.cxx, line: 422</span><br>
- * <div style='background:#f0f0f0; border:1px solid #ccc; padding:10px; font-family:monospace; white-space: pre-wrap;'>
- *  417:           }\n
- *  418:           return kTRUE;\n
- *  419:         } else {\n
- *  420:           Int_t jump = highLinks / lowLinks;\n
- *  421:           if (highLinks % lowLinks) {\n
- *  422:             Cout::PrintInfo("EventAna::LinkCollections equal link cannot group cuts!", EInfo::kError);\n
- *  423:             return kFALSE;\n
- *  424:           }\n
- *  425:           for (int i = 0; i < lowLinks; i++) {\n
- *  426:             for (int j = 0; j < jump; j++) {\n
- *  427:               LinkCollections(first, i, last, i * jump + j);\n
- * </div>
-
-
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: EventAna::LinkCollections equal link cannot group cuts!</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00429'>CutContainer.cxx, line: 429</a></span><br>
+ * <span style='color:black;'>Can't link according to policy kEqual - wrong number of collections. Try different number of collections in analysis.</span><br>
 
 
 

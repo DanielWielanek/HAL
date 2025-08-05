@@ -1,0 +1,84 @@
+/** \page WarningEventAna Warning Codes for Class EventAna
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>EventAna: Failed to check format</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00057'>EventAna.cxx, line: 57</a></span><br>
+ * <span style='color:black;'>Something went wrong during checking format. Maybe format was not set?</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>EventAna: Failed to init cut container</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00063'>EventAna.cxx, line: 63</a></span><br>
+ * <span style='color:black;'>Something goes wrong when init cut container was called.</span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>EventAna: Null Cut Container, building ...</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00108'>EventAna.cxx, line: 108</a></span><br>
+ * <span style='color:black;'>No cut containers in analysis (not cut added?). The new cut container will be constructed.</span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>EventAna: Checking Cut Containers ...</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00113'>EventAna.cxx, line: 113</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>EventAna: NULL subcontainer for events</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00123'>EventAna.cxx, line: 123</a></span><br>
+ * <span style='color:black;'>Some cut container of events is nullptr. Maybe some event cuts should be added?</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>EventAna: NULL subcontainer for tracks</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00132'>EventAna.cxx, line: 132</a></span><br>
+ * <span style='color:black;'>Some cut container of tracks is nullptr. Maybe some track cuts should be added?</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>EventAna: NULL subcontainer for two-tracks</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00141'>EventAna.cxx, line: 141</a></span><br>
+ * <span style='color:black;'>Some cut container of pairs is nullptr. Maybe some pair cuts should be added?</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>EventAna: NULL subcontainer for background pairs</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00150'>EventAna.cxx, line: 150</a></span><br>
+ * <span style='color:black;'>Some cut container of pairs is nullptr. Maybe some pair cuts should be added?</span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>EventAna: Initialization cut container</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00159'>EventAna.cxx, line: 159</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>EventAna: Adding virtual event cut</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00176'>EventAna.cxx, line: 176</a></span><br>
+ * <span style='color:black;'>No event cuts in cut container. A virtual cut will be added (cut that accept all events)</span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [WARNING       ]</span> <span style='color:blue; font-weight:bold;'>EventAna: This object has been initialized, this may result in crash</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00200'>EventAna.cxx, line: 200</a></span><br>
+ * <span style='color:black;'>Event ana was initialized!</span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>EventAna: cannot call AddToMetadata if main_pack argument is NULL</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00211'>EventAna.cxx, line: 211</a></span><br>
+ * <span style='color:black;'>Main package with results was not found. Wrong analysis manager?</span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>EventAna: cannot add object in AddToMetadata package don't contain any Metadata object</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00216'>EventAna.cxx, line: 216</a></span><br>
+ * <span style='color:black;'>Cannot find Metadata section in output file. Wrong analysis manager?</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>EventAna: Format is not set, switching to reader</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00347'>EventAna.cxx, line: 347</a></span><br>
+ * <span style='color:black;'>Format was not set. Task will try switch to reader - look for branch "HalEvent." in data</span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> []</span> <span style='color:blue; font-weight:bold;'>EventAna: L1 format from reader has been found</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00354'>EventAna.cxx, line: 354</a></span><br>
+ * <span style='color:black;'>Format from reader was found and will be set to this task.</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>EventAna: L1 format from reader has not been found</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00361'>EventAna.cxx, line: 361</a></span><br>
+ * <span style='color:black;'>Format from reader was not found!</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>EventAna: The format is present but does not exist in the tree!</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00389'>EventAna.cxx, line: 389</a></span><br>
+ * <span style='color:black;'>Format was set, but for some reason is not present in data (there is no branch wi</span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>EventAna: Initialization MemoryMap</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00400'>EventAna.cxx, line: 400</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>EventAna: InitMemoryMap - push to reader mode</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00403'>EventAna.cxx, line: 403</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>EventAna: InitMemoryMap - push to direct access mode</span> <br>
+ * <span style='color:green;'>File: <a href='EventAna_8cxx_source.html#l00409'>EventAna.cxx, line: 409</a></span><br>
+ * <span style='color:black;'></span><br>
+
+
+
+ */

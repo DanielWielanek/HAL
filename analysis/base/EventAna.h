@@ -32,6 +32,7 @@ namespace Hal {
   class EventAnaChain;
   /**
    * Base class for physical analysis
+   * See @ref WarningEventAna for all possible warning codes used by this class.
    */
   class EventAna : public Task {
     friend EventAnaChain;

@@ -23,7 +23,7 @@ class TH3;
 class TH3D;
 
 /**
- * class that intepolate 1D histogram by parabolic interpolation, interpolation
+ * class that interpolate 1D histogram by parabolic interpolation, interpolation
  * parameters are different fo each bin of this "pseudohistogram". Therefore on
  * bin edges interpolation is not continuous - this can be fixed by call Refit
  * method

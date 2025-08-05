@@ -1,12 +1,19 @@
 #include "Cut.h"
 
+#include <RtypesCore.h>
+#include <TObjArray.h>
+#include <stddef.h>
+#include <utility>
+
 #include "Cout.h"
 #include "DataFormatManager.h"
 #include "Event.h"
+#include "EventComplexCut.h"
 #include "Package.h"
 #include "Parameter.h"
-
-#include <TObjArray.h>
+#include "StdString.h"
+#include "TrackComplexCut.h"
+#include "TwoTrackComplexCut.h"
 
 namespace Hal {
   Cut::Cut(const Int_t size, ECutUpdate update, TString group_flag) :
@@ -165,6 +172,52 @@ namespace Hal {
     }
     Cout::Text(Form("Passed %llu", GetPassed()), "M");
     Cout::Text(Form("Failed %llu", GetFailed()), "M");
+  }
+
+  Cut* Cut::MakeCopy(TString opt) const {
+    Cut* res           = nullptr;
+    Bool_t acceptNulls = Hal::Std::FindParam(opt, "null");
+    if (Hal::Std::FindParam(opt, "re")) {
+      switch (fUpdateRatio) {
+        case ECutUpdate::kEvent: {
+          res = new EventRealCut(static_cast<const EventCut&>(*this));
+        } break;
+        case ECutUpdate::kTrack: {
+          res = new TrackRealCut(static_cast<const TrackCut&>(*this));
+        } break;
+        case ECutUpdate::kTwoTrack: {
+          res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(*this));
+        } break;
+        case ECutUpdate::kTwoTrackBackground: {
+          res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(*this));
+        } break;
+        default: return nullptr; break;
+      }
+      return res;
+    }
+    if (Hal::Std::FindParam(opt, "im")) {
+      switch (fUpdateRatio) {
+        case ECutUpdate::kEvent: {
+          res = new EventImaginaryCut(static_cast<const EventCut&>(*this));
+          if (acceptNulls) static_cast<EventImaginaryCut*>(res)->AcceptNulls(kTRUE);
+        } break;
+        case ECutUpdate::kTrack: {
+          res = new TrackImaginaryCut(static_cast<const TrackCut&>(*this));
+          if (acceptNulls) static_cast<TrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
+        } break;
+        case ECutUpdate::kTwoTrack: {
+          res = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(*this));
+          if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
+        } break;
+        case ECutUpdate::kTwoTrackBackground: {
+          res = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(*this));
+          if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
+        } break;
+        default: return nullptr; break;
+      }
+      return res;
+    }
+    return (Cut*) this->Clone();
   }
 
   Cut& Cut::operator=(const Cut& other) {

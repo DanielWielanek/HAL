@@ -312,9 +312,10 @@ namespace Hal {
     /**
      * copy of this cut, can be implemented by CutDef macro (if cut don't have
      * dynamically allocated objects or have copy ctor
+     * @param opt - option of making cut, can be re or im
      * @return copy of this cut
      */
-    virtual Cut* MakeCopy() const { return (Cut*) this->Clone(); };
+    virtual Cut* MakeCopy(TString opt = "") const;
     /**
      *
      * @return report about this cut

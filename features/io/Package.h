@@ -101,6 +101,11 @@ namespace Hal {
      */
     void RemoveObjectByName(TString name, Int_t index = 0, Bool_t delete_obj = kTRUE);
     /**
+     * move objects from target to this, remove objects from this
+     * @param target
+     */
+    void MoveInnerObjects(Package* target);
+    /**
      * used to by TBrowser
      * @param b
      */

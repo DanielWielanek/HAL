@@ -356,4 +356,14 @@ namespace Hal {
     return 1;
   }
 
+  void Package::MoveInnerObjects(Package* target) {
+    fArrayObjects->SetOwner(kFALSE);
+    for (int i = 0; i < fArrayObjects->GetEntries(); i++) {
+      target->fArrayObjects->AddLast(fArrayObjects->At(i));
+    }
+    target->fNo = target->fArrayObjects->GetEntries();
+    fArrayObjects->Clear();
+    fArrayObjects->SetOwner(kTRUE);
+  }
+
 }  // namespace Hal

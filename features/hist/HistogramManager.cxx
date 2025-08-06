@@ -25,8 +25,8 @@ namespace Hal {
 
   HistogramAxisConf::HistogramAxisConf(TString title, Int_t bins, Double_t min, Double_t max) :
     TNamed(), fBins(bins), fMin(min), fMax(max) {
-    SetName(title);
-    SetTitle(title);
+    HistogramAxisConf::SetName(title);
+    HistogramAxisConf::SetTitle(title);
   }
 
   void HistogramAxisConf::Print(Option_t* /*option*/) const {

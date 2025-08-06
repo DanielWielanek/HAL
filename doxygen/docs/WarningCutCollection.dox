@@ -1,0 +1,194 @@
+/** \page WarningCutCollection Warning Codes for Class CutCollection
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Empty cut</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00049'>CutCollection.cxx, line: 49</a></span><br>
+ * <span style='color:black;'>AddCut was called with nullptr to cut</span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut used %s in collection no %i, cut will be removed</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00064'>CutCollection.cxx, line: 64</a></span><br>
+ * <span style='color:black;'>AddCutMonitor was called with nullptr to monitor</span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut used %s in collection no %i in fast cuts group,  cut will </span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00072'>CutCollection.cxx, line: 72</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut used %s in collection no %i in as fast, cut will be </span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00084'>CutCollection.cxx, line: 84</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut used %s in collection no %i but cut will be removed</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00093'>CutCollection.cxx, line: 93</a></span><br>
+ * <span style='color:black;'>Cut was used in this collection</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Empty monitor</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00114'>CutCollection.cxx, line: 114</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Monitor cut used</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00120'>CutCollection.cxx, line: 120</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: CutCollection has been initialized</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00145'>CutCollection.cxx, line: 145</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Failed to init %s in cut collection %i</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00151'>CutCollection.cxx, line: 151</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Succesfully  inited %s in cut collection %i</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00161'>CutCollection.cxx, line: 161</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Failed to init %s in cut collection %i</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00172'>CutCollection.cxx, line: 172</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Succesfully inited %s in cut collection %i</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00182'>CutCollection.cxx, line: 182</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Initializing cut monitors</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00190'>CutCollection.cxx, line: 190</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Looking for %s in subcontainer %i</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00239'>CutCollection.cxx, line: 239</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cant replicate initialized CutCollection - this lead </span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00250'>CutCollection.cxx, line: 250</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Problem with initalization obj monitor [%s]</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00299'>CutCollection.cxx, line: 299</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Problem with initalization CutMonitorXY [%s]</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00311'>CutCollection.cxx, line: 311</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s has only %i not %i parameters</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00313'>CutCollection.cxx, line: 313</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Hal::CutMonitorX [%s] not found!</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00323'>CutCollection.cxx, line: 323</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Problem with initalization CutMonitorXY [%s] vs [%s]</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00333'>CutCollection.cxx, line: 333</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s not found</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00337'>CutCollection.cxx, line: 337</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s not found</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00340'>CutCollection.cxx, line: 340</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: There is too many links or cuts cut monitor %s %s will be removed</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00344'>CutCollection.cxx, line: 344</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Problem with initalization CutMonitorXY [%s] vs [%s]</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00353'>CutCollection.cxx, line: 353</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s has only %i not %i parameters</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00356'>CutCollection.cxx, line: 356</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Problem with initalization CutMonitorXY [%s] vs [%s]</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00363'>CutCollection.cxx, line: 363</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s has only %i not %i parameters</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00366'>CutCollection.cxx, line: 366</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Problem with Hal::CutMonitorXYZ [%s] vs [%s] vs [%s]</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00385'>CutCollection.cxx, line: 385</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s not found</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00390'>CutCollection.cxx, line: 390</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s not found</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00391'>CutCollection.cxx, line: 391</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s not found</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00392'>CutCollection.cxx, line: 392</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: There is too many links or cuts monitor %s %s will be removed</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00395'>CutCollection.cxx, line: 395</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Hal::CutMonitorXYZ has no cuts compatible with </span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00409'>CutCollection.cxx, line: 409</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Couldn't find compatible cuts for monitoring</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00420'>CutCollection.cxx, line: 420</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Couldn't find compatible cuts for monitoring</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00430'>CutCollection.cxx, line: 430</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Couldn't find compatible cuts for monitoring</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00440'>CutCollection.cxx, line: 440</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: CutCollection: Problem with initalization Hal::CutMonitorXY [%s] vs [%s] vs </span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00446'>CutCollection.cxx, line: 446</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: CutCollection: Cut %s has only %i not %i parameters</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00452'>CutCollection.cxx, line: 452</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: CutCollection: Problem with initalization Hal::CutMonitorXY [%s] vs [%s] vs </span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00459'>CutCollection.cxx, line: 459</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s has only %i not %i parameters</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00465'>CutCollection.cxx, line: 465</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Problem with initalization Hal::CutMonitorXY [%s] vs [%s] vs </span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00472'>CutCollection.cxx, line: 472</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut %s has only %i not %i parameters</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00478'>CutCollection.cxx, line: 478</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [CRITICAL ERROR]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Problems with class name %s of cuts this is an critial error</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00493'>CutCollection.cxx, line: 493</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Looking for cuts in lower collections</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00617'>CutCollection.cxx, line: 617</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Cut not found cut and no lower collections present</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00623'>CutCollection.cxx, line: 623</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: Unknown update mode inf CutCollection</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00645'>CutCollection.cxx, line: 645</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutCollection: default constructor of CutCollection should never be used !!</span> <br>
+ * <span style='color:green;'>File: <a href='CutCollection_8cxx_source.html#l00786'>CutCollection.cxx, line: 786</a></span><br>
+ * <span style='color:black;'></span><br>
+
+
+
+
+ */

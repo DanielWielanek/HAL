@@ -57,7 +57,7 @@ namespace Hal {
   }
 
   ErrorCalc::ErrorCalc(TString name, Double_t val, Double_t err) {
-    SetName(name);
+    ErrorCalc::SetName(name);
     fMeasurement       = val;
     fStatisticalUncert = err;
   }

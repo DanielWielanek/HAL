@@ -31,10 +31,7 @@ namespace Hal {
    * CutsAndMonitors::SetOptionForAllCuts("re") is equivalent of
    * EventAna::AddCut(some_cut,"{0}+re"), @see TrackKinematicsCutAndMonitor as and example of
    * this class
-   *
    */
-
-
   class CutsAndMonitors : public TObject {
     TObjArray fCuts;
     std::vector<TString> fCutsOptions;
@@ -100,7 +97,7 @@ namespace Hal {
      * add all cut monitor requests
      * @param option passed by @see MakeCutMonitors
      */
-    virtual void AddAllCutMonitorRequests(Option_t* opt) {};
+    virtual void AddAllCutMonitorRequests(Option_t* opt);
     /**
      * return cut monitor request
      * @param request_no

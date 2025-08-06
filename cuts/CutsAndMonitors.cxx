@@ -8,10 +8,11 @@
  */
 
 #include "CutsAndMonitors.h"
+
+#include "Cout.h"
 #include "CutMonitorX.h"
 #include "CutMonitorXY.h"
 #include "CutMonitorXYZ.h"
-
 #include "HistogramManager.h"
 
 #include <TObjArray.h>
@@ -209,4 +210,12 @@ namespace Hal {
 
 
   }  // namespace Hal
+
+  void CutsAndMonitors::AddAllCutMonitorRequests(Option_t* opt) {
+    if (fCutMonitorRequests.size() != 0) {
+      Hal::Cout::PrintInfo("CutsAndMonitors: AddAllCutMonitorRequests should be overridden if monitor request is full",
+                           EInfo::kLowWarning);
+    }
+  }
+
 }  // namespace Hal

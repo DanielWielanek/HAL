@@ -21,13 +21,14 @@
 namespace Hal {
 
   MonitorEtaPt::MonitorEtaPt() :
-    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kRapidity, Hal::DataFieldID::Track::EBasic::kPt) {
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kEta, Hal::DataFieldID::Track::EBasic::kPt) {
     SetXaxis(200, -2, 2);
     SetYaxis(200, 0, 4);
   }
 
 
-  MonitorYPt::MonitorYPt() : TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kEta, Hal::DataFieldID::Track::EBasic::kPt) {
+  MonitorYPt::MonitorYPt() :
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kRapidity, Hal::DataFieldID::Track::EBasic::kPt) {
     SetXaxis(200, -2, 2);
     SetYaxis(200, 0, 4);
   }

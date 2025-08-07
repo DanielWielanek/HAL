@@ -155,6 +155,7 @@ namespace Hal {
     fXaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(0));
     fYaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(1));
     fZaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(2));
+    if (fXaxisName == "[]" || fYaxisName == "[]" || fZaxisName == "[]") return kFALSE;
     return PropertyMonitorXYZ::Init(task_id);
   }
 
@@ -203,6 +204,7 @@ namespace Hal {
     fXaxisName = tr->GetFieldName(fTranslator.GetFieldFull(0));
     fYaxisName = tr->GetFieldName(fTranslator.GetFieldFull(1));
     fZaxisName = tr->GetFieldName(fTranslator.GetFieldFull(2));
+    if (fXaxisName == "[]" || fYaxisName == "[]" || fZaxisName == "[]") return kFALSE;
     return PropertyMonitorXYZ::Init(task_id);
   }
 

@@ -121,6 +121,7 @@ namespace Hal {
   Bool_t EventFieldMonitorX::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
     fXaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(0));
+    if (fXaxisName == "[]") return kFALSE;
     return PropertyMonitorX::Init(task_id);
   }
 
@@ -154,6 +155,7 @@ namespace Hal {
     auto event      = std::unique_ptr<Event>(ev->GetNewEvent());
     tr->SetEvent(event.get());
     fXaxisName = tr->GetFieldName(fTranslator.GetFieldFull(0));
+    if (fXaxisName == "[]") return kFALSE;
     return PropertyMonitorX::Init(task_id);
   }
 

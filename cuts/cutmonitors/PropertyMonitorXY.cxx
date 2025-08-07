@@ -133,6 +133,7 @@ namespace Hal {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
     fXaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(0));
     fYaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(1));
+    if (fXaxisName == "[]" || fYaxisName == "[]") return kFALSE;
     return PropertyMonitorXY::Init(task_id);
   }
   //========================================================================
@@ -167,6 +168,7 @@ namespace Hal {
     tr->SetEvent(event.get());
     fXaxisName = tr->GetFieldName(fTranslator.GetFieldFull(0));
     fYaxisName = tr->GetFieldName(fTranslator.GetFieldFull(1));
+    if (fXaxisName == "[]" || fYaxisName == "[]") return kFALSE;
     return PropertyMonitorXY::Init(task_id);
   }
 

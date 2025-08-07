@@ -21,7 +21,7 @@ namespace Hal {
       fLinks[i] = link.fLinks[i];
   }
 
-  Link Link::operator=(const Link& link) {
+  Link& Link::operator=(const Link& link) {
     if (this != &link) {
       if (fSize < link.fActiveSize) {
         delete[] fLinks;

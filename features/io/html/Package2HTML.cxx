@@ -727,10 +727,13 @@ namespace Hal {
     if (ex == 1) exupdate = "yes";
     TString monitor_class = monitor->GetName();
     TClass* class_temp    = TClass::GetClass(monitor_class);
-    if (class_temp->InheritsFrom("Hal::ComplexMonitor")) {
-      TString innerClass = ((ParameterString*) monitor->GetObjectByName("OriginMonitor"))->GetValue();
-      monitor_class      = Form("%s</br>(%s)", monitor_class.Data(), innerClass.Data());
-    }
+    if (class_temp) {
+      if (class_temp->InheritsFrom("Hal::ComplexMonitor")) {
+        TString innerClass = ((ParameterString*) monitor->GetObjectByName("OriginMonitor"))->GetValue();
+        monitor_class      = Form("%s</br>(%s)", monitor_class.Data(), innerClass.Data());
+      }
+    } else
+      Hal::Cout::PrintInfo(Form("Cut monitor %s not recognized, raw extraction", monitor_class.Data()), EInfo::kWarning);
     TString address = HtmlCore::GetUrl(GetLinkToCutMonitor(update, collection_no, no), monitor_class);
     TString link =
       GetLinkCutMon((TH1*) monitor->GetObjectByName("Passed"), (TH1*) monitor->GetObjectByName("Failed"), counter, path);

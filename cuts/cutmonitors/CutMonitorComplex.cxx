@@ -85,6 +85,7 @@ namespace Hal {
 
   void EventCutMonitorImaginary::Update(Bool_t passed, TObject* obj) {
     auto event = ((Hal::ComplexEvent*) obj)->GetImgEvent();
+    if (!event) return;
     fMonitor->Update(passed, event);
   }
 
@@ -94,6 +95,7 @@ namespace Hal {
 
   void TrackCutMonitorImaginary::Update(Bool_t passed, TObject* obj) {
     auto track = ((Hal::ComplexTrack*) obj)->GetImgTrack();
+    if (!track) return;
     fMonitor->Update(passed, track);
   }
 

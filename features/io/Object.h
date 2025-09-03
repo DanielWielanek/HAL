@@ -53,8 +53,11 @@ namespace Hal {
      * @param dir directory to extract the strucuture of object
      * @param rel_dir relative path from this to dir
      */
-    virtual void
-    HTMLExtractIntoTable(Int_t /* no*/, Int_t /*no_ext*/, HtmlTable& /*table*/, TString /*dir*/ = "", TString /*rel_dir */ = "") const {};
+    virtual void HTMLExtractIntoTable(Int_t /* no*/,
+                                      Int_t /*no_ext*/,
+                                      HtmlTable& /*table*/,
+                                      TString /*dir*/      = "",
+                                      TString /*rel_dir */ = "") const {};
     /**
      * add object of the same class to this
      * @param pack added object

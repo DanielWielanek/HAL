@@ -71,7 +71,13 @@ namespace Hal {
     void CreateCutLink(HtmlObject& table, Hal::ECutUpdate cut_update, Package* obj, Int_t no, Bool_t fast);
     void CreateCutMonitorLink(HtmlObject& table, Hal::ECutUpdate update, Package* obj, Int_t no, Int_t counter, TString path);
     void CreateCutMonitorHTML(HtmlObject& table, Hal::ECutUpdate cut_upd, Int_t collection_no, Int_t& counter, TString path);
-    void CreateListTable(HtmlObject& table, TList* list, Int_t posNo, Int_t no, TString path_data, TString path_url, TString drawClass);
+    void CreateListTable(HtmlObject& table,
+                         TList* list,
+                         Int_t posNo,
+                         Int_t no,
+                         TString path_data,
+                         TString path_url,
+                         TString drawClass);
     containerInfo GetContainerInfo(Package* Pack, Bool_t rev = kFALSE) const;
     HtmlFile* fHTML;
     TFile* fFile;

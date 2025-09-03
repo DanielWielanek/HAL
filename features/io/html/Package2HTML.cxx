@@ -429,7 +429,7 @@ namespace Hal {
 
       } else if (nameClass == "Hal::QAPlotReport") {
         Object* rep = (Object*) object;
-        rep->HTMLExtractIntoTable(i,fTObjectCounter["qa"]++, halTable, path, inject);
+        rep->HTMLExtractIntoTable(i, fTObjectCounter["qa"]++, halTable, path, inject);
       } else if (nameClass != "TList" || fListDeep != 0) {
         HtmlRow row;
         row.SetClass(styleCell);
@@ -440,7 +440,7 @@ namespace Hal {
           {nameClass, oryginal_class, AddToUrl(inject, HtmlCore::HTMLExtract(object, fTObjectCounter["TList"]++, path))});
         halTable.AddContent(row);
       } else {
-        CreateListTable(halTable, (TList*) object, i,fTObjectCounter["TList"]++, path, inject, styleCell);
+        CreateListTable(halTable, (TList*) object, i, fTObjectCounter["TList"]++, path, inject, styleCell);
       }
     }
     if (drawMerged) {
@@ -826,7 +826,7 @@ namespace Hal {
 
   void Package2HTML::CreateListTable(HtmlObject& table,
                                      TList* list,
-									 Int_t posNo,
+                                     Int_t posNo,
                                      Int_t no,
                                      TString path_data,
                                      TString path_url,

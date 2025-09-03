@@ -305,7 +305,7 @@ namespace Hal {
     return HtmlCore::GetUrl(relPath, Form("QAPlot [%s]", GetName()));
   }
 
-  void QAPlotReport::HTMLExtractIntoTable(Int_t  no, Int_t no_ext, HtmlTable& table, TString dir, TString rel_dir) const {
+  void QAPlotReport::HTMLExtractIntoTable(Int_t no, Int_t no_ext, HtmlTable& table, TString dir, TString rel_dir) const {
     Bool_t batch = gROOT->IsBatch();
     gROOT->SetBatch(kTRUE);
     TString path   = Form("%s/qa_plot_%i/", dir.Data(), no_ext);

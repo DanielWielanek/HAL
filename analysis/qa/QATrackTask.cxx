@@ -22,7 +22,7 @@
 namespace Hal {
   QATrackTask::QATrackTask() :
     TrackAna(), fEventQA(nullptr), fTempEventPlot(nullptr), fTrackQA(nullptr), fTempTrackPlot(nullptr) {
-    AddTags("qa");
+    TrackAna::AddTags("qa");
   }
 
   QATrackTask::~QATrackTask() {

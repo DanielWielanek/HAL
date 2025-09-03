@@ -256,7 +256,7 @@ namespace Hal {
     fCurrentCutContainer = NULL;
     for (int i = 0; i < pack->GetEntries(); i++) {
       Package* cutpack = (Package*) pack->GetObject(i);
-      if (IsExacltyHalPackage(cutpack)) {  // possible canditate
+      if (IsExactlyHalPackage(cutpack)) {  // possible canditate
         TString pack_class_name(cutpack->GetName(), strlen(cutpack->GetName()));
         if (pack_class_name.EqualTo("Hal::CutContainer")) {
           fCurrentCutContainer  = cutpack;  // found break
@@ -270,7 +270,6 @@ namespace Hal {
     TString metadata = Form("%s/metadata/", path.Data());
     gSystem->mkdir(metadata);
     CreatePackageList(object, (Package*) pack->GetObjectByName("Metadata"), eTableStyle::kMetaData, metadata, 3, "drawmerged");
-    // //KURWA
 
     if (fCurrentCutContainer != NULL) {
       CreateCutAndMonitorList(object, path);
@@ -415,7 +414,7 @@ namespace Hal {
       TObject* object        = pack->GetObject(i);
       TString nameClass      = object->ClassName();
       TString oryginal_class = object->GetName();
-      if (IsExacltyHalPackage(object)) {
+      if (IsExactlyHalPackage(object)) {
         Package* subpack = (Package*) object;
         oryginal_class   = subpack->GetName();
         HtmlRow row;
@@ -430,7 +429,7 @@ namespace Hal {
 
       } else if (nameClass == "Hal::QAPlotReport") {
         Object* rep = (Object*) object;
-        rep->HTMLExtractIntoTable(fTObjectCounter["qa"]++, halTable, path, inject);
+        rep->HTMLExtractIntoTable(i,fTObjectCounter["qa"]++, halTable, path, inject);
       } else if (nameClass != "TList" || fListDeep != 0) {
         HtmlRow row;
         row.SetClass(styleCell);
@@ -441,7 +440,7 @@ namespace Hal {
           {nameClass, oryginal_class, AddToUrl(inject, HtmlCore::HTMLExtract(object, fTObjectCounter["TList"]++, path))});
         halTable.AddContent(row);
       } else {
-        CreateListTable(halTable, (TList*) object, fTObjectCounter["TList"]++, path, inject, styleCell);
+        CreateListTable(halTable, (TList*) object, i,fTObjectCounter["TList"]++, path, inject, styleCell);
       }
     }
     if (drawMerged) {
@@ -827,6 +826,7 @@ namespace Hal {
 
   void Package2HTML::CreateListTable(HtmlObject& table,
                                      TList* list,
+									 Int_t posNo,
                                      Int_t no,
                                      TString path_data,
                                      TString path_url,
@@ -835,7 +835,7 @@ namespace Hal {
     fListDeep++;  // to prevent draw TList in TList
     HtmlRow row;
     row.SetClass(drawClass);
-    HtmlCell cell1(Form("%i", no));
+    HtmlCell cell1(Form("%i", posNo));
     cell1.SetColSpan(2);
     row.AddContent(cell1);
     row.AddContent(HtmlCell("TList"));
@@ -855,7 +855,7 @@ namespace Hal {
       TString temp_classes = Form("%s list_%i", drawClass.Data(), no);
       HtmlRow rowElement("", temp_classes, "display:none");
       rowElement.AddSimpleCells({"", Form("%i", i), classname});
-      if (IsExacltyHalPackage(obj)) {
+      if (IsExactlyHalPackage(obj)) {
         classname = Form("Hal::Package  [%s] ",
                          ((Package*) obj)->GetName());  //</br>
         rowElement.AddContent(HtmlCell(classname));

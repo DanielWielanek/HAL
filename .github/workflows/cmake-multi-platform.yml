@@ -53,6 +53,8 @@ jobs:
       run: |
         brew update
         brew upgrade
+        brew uninstall --force cmake || true
+        brew install cmake
         brew install gcc gfortran
         ln -s $(brew --prefix gcc)/bin/$(ls $(brew --prefix gcc)/bin | grep -o 'gfortran-[0-9]*' | sort -V | tail -n1) /usr/local/bin/gfortran
         brew install cmake gcc libx11 gsl llvm  clang-format

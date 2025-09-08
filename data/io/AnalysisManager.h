@@ -13,6 +13,9 @@
 #include <TStopwatch.h>
 #include <TString.h>
 
+#include <atomic>
+#include <csignal>
+
 /**
  * represents analysis manager for data processing
  */
@@ -25,6 +28,8 @@ namespace Hal {
   class TriggerTask;
   class Package;
   class AnalysisManager : public TObject {
+
+    static std::atomic<bool> fStopFlag;
     TStopwatch fTimer;
     Double_t fInitTime      = {0};
     Double_t fFinishTime    = {0};
@@ -44,6 +49,7 @@ namespace Hal {
     std::vector<Task*> fPassiveTasks;
     void Finish();
     void DoStep(Int_t entry);
+    static void HandleSignal(int signal);
 
   public:
     AnalysisManager();

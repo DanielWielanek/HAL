@@ -22,19 +22,29 @@
 #include "Task.h"
 #include "TriggerTask.h"
 
+#include <atomic>
+#include <chrono>
+#include <csignal>
 #include <cstdlib>
+#include <thread>
 
 #include <RtypesCore.h>
 #include <TFile.h>
 #include <TInterpreter.h>
 
 namespace Hal {
-  AnalysisManager::AnalysisManager() {}
+
+  std::atomic<bool> AnalysisManager::fStopFlag = false;
+
+  AnalysisManager::AnalysisManager() { std::signal(SIGINT, Hal::AnalysisManager::HandleSignal); }
 
   Bool_t AnalysisManager::Init() {
     Cout::PrintInfo("=== AnalysisManager::Init ===", EInfo::kInfo);
     fTimer.Start();
-    if (fSource == nullptr) exit(0);
+    if (fSource == nullptr) {
+      Cout::PrintInfo("No source exiting", EInfo::kCriticalError);
+      exit(0);
+    }
     Cout::PrintInfo("=== Source::Init ===", EInfo::kInfo);
     Bool_t initSource = fSource->Init();
     if (!initSource) { Cout::PrintInfo("Can't init source!", EInfo::kCriticalError); }
@@ -122,6 +132,10 @@ namespace Hal {
       }
       DoStep(i);
       fManager->FillTree();
+      if (fStopFlag) {
+        Hal::Cout::PrintInfo("Stopped by user", EInfo::kWarning);
+        break;
+      }
     }
     fTimer.Stop();
     fFinishTime = fTimer.CpuTime();
@@ -228,6 +242,12 @@ namespace Hal {
     fManager->GetEntry(entry, 1);
     for (auto task : fActiveTasks) {
       task->Exec("");
+    }
+  }
+
+  void AnalysisManager::HandleSignal(int signal) {
+    {
+      if (signal == SIGINT) { fStopFlag = true; }
     }
   }
 

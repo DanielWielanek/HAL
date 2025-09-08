@@ -115,7 +115,7 @@ namespace Hal {
                                            std::initializer_list<Double_t> xAxis,
                                            Int_t fiedIDY,
                                            std::initializer_list<Double_t> yAxis) :
-    PropertyMonitorXY("", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {
+    EventFieldMonitorXY(fieldIDX, fiedIDY) {
     SetAxisList(xAxis, 'x');
     SetAxisList(yAxis, 'y');
   }
@@ -143,7 +143,6 @@ namespace Hal {
                            EInfo::kError);
       return kFALSE;
     }
-    return kFALSE;
     if (fXaxisName == "[]" || fYaxisName == "[]") return kFALSE;
     return PropertyMonitorXY::Init(task_id);
   }
@@ -156,9 +155,9 @@ namespace Hal {
 
   TrackFieldMonitorXY::TrackFieldMonitorXY(Int_t fieldIDX,
                                            std::initializer_list<Double_t> xAxis,
-                                           Int_t fiedIDY,
+                                           Int_t fieldIDY,
                                            std::initializer_list<Double_t> yAxis) :
-    PropertyMonitorXY("", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fiedIDY) {
+    TrackFieldMonitorXY(fieldIDX, fieldIDY) {
     SetAxisList(xAxis, 'x');
     SetAxisList(yAxis, 'y');
   }

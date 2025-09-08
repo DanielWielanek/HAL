@@ -134,7 +134,7 @@ namespace Hal {
                                              std::initializer_list<Double_t> yAxis,
                                              Int_t fieldDZ,
                                              std::initializer_list<Double_t> zAxis) :
-    PropertyMonitorXYZ("", "", "", ECutUpdate::kEvent), fFieldIDX(fieldIDX), fFieldIDY(fieldDY), fFieldIDZ(fieldDZ) {
+    EventFieldMonitorXYZ(fieldIDX, fieldDY, fieldDZ) {
     SetAxisList(xAxis, 'x');
     SetAxisList(yAxis, 'y');
     SetAxisList(zAxis, 'z');
@@ -193,7 +193,7 @@ namespace Hal {
                                              std::initializer_list<Double_t> yAxis,
                                              Int_t fieldDZ,
                                              std::initializer_list<Double_t> zAxis) :
-    PropertyMonitorXYZ("", "", "", ECutUpdate::kTrack), fFieldIDX(fieldIDX), fFieldIDY(fieldDY), fFieldIDZ(fieldDZ) {
+    TrackFieldMonitorXYZ(fieldIDX, fieldDY, fieldDZ) {
     SetAxisList(xAxis, 'x');
     SetAxisList(yAxis, 'y');
     SetAxisList(zAxis, 'z');

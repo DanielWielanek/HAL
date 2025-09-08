@@ -156,15 +156,18 @@ namespace Hal {
     fYaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(1));
     fZaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(2));
     if (fXaxisName == "[]") {
-      Hal::Cout::PrintInfo(Form("Cannot find field for field X:ID = %i", fFieldIDX), EInfo::kError);
+      Hal::Cout::PrintInfo(Form("Cannot find event field for field X:ID = %i [%i]", fFieldIDX, fTranslator.GetFieldFull(0)),
+                           EInfo::kError);
       return kFALSE;
     }
     if (fYaxisName == "[]") {
-      Hal::Cout::PrintInfo(Form("Cannot find field for field Y:ID = %i", fFieldIDY), EInfo::kError);
+      Hal::Cout::PrintInfo(Form("Cannot find event field for field Y:ID = %i [%i]", fFieldIDY, fTranslator.GetFieldFull(1)),
+                           EInfo::kError);
       return kFALSE;
     }
     if (fZaxisName == "[]") {
-      Hal::Cout::PrintInfo(Form("Cannot find field for field Z:ID = %i", fFieldIDZ), EInfo::kError);
+      Hal::Cout::PrintInfo(Form("Cannot find event field for field Z:ID = %i [%i]", fFieldIDZ, fTranslator.GetFieldFull(2)),
+                           EInfo::kError);
       return kFALSE;
     }
     return PropertyMonitorXYZ::Init(task_id);
@@ -216,15 +219,18 @@ namespace Hal {
     fYaxisName = tr->GetFieldName(fTranslator.GetFieldFull(1));
     fZaxisName = tr->GetFieldName(fTranslator.GetFieldFull(2));
     if (fXaxisName == "[]") {
-      Hal::Cout::PrintInfo(Form("Cannot find field for field X:ID = %i", fFieldIDX), EInfo::kError);
+      Hal::Cout::PrintInfo(Form("Cannot find track field for field X:ID = %i [%i]", fFieldIDX, fTranslator.GetFieldFull(0)),
+                           EInfo::kError);
       return kFALSE;
     }
     if (fYaxisName == "[]") {
-      Hal::Cout::PrintInfo(Form("Cannot find field for field Y:ID = %i", fFieldIDY), EInfo::kError);
+      Hal::Cout::PrintInfo(Form("Cannot find track field for field Y:ID = %i [%i]", fFieldIDY, fTranslator.GetFieldFull(1)),
+                           EInfo::kError);
       return kFALSE;
     }
     if (fZaxisName == "[]") {
-      Hal::Cout::PrintInfo(Form("Cannot find field for field Z:ID = %i", fFieldIDZ), EInfo::kError);
+      Hal::Cout::PrintInfo(Form("Cannot find track field for field Z:ID = %i [%i]", fFieldIDZ, fTranslator.GetFieldFull(2)),
+                           EInfo::kError);
       return kFALSE;
     }
     return PropertyMonitorXYZ::Init(task_id);

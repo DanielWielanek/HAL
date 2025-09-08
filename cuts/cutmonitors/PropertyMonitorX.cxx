@@ -122,7 +122,8 @@ namespace Hal {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
     fXaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(0));
     if (fXaxisName == "[]") {
-      Hal::Cout::PrintInfo(Form("Cannot find field for field ID = %i", fFieldID), EInfo::kError);
+      Hal::Cout::PrintInfo(Form("Cannot find event field for field X:ID = %i [%i]", fFieldID, fTranslator.GetFieldFull(0)),
+                           EInfo::kError);
       return kFALSE;
     }
     return PropertyMonitorX::Init(task_id);
@@ -159,7 +160,8 @@ namespace Hal {
     tr->SetEvent(event.get());
     fXaxisName = tr->GetFieldName(fTranslator.GetFieldFull(0));
     if (fXaxisName == "[]") {
-      Hal::Cout::PrintInfo(Form("Cannot find field for field ID = %i", fFieldID), EInfo::kError);
+      Hal::Cout::PrintInfo(Form("Cannot find track field for field X:ID = %i [%i]", fFieldID, fTranslator.GetFieldFull(0)),
+                           EInfo::kError);
       return kFALSE;
     }
     return kFALSE;

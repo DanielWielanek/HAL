@@ -47,7 +47,7 @@ namespace Hal {
     fCFTemp(nullptr) {
     fMixSize        = 2;
     fBackgroundMode = kMixedPairs;
-    AddTags("femto hbt");
+    TwoTrackAna::AddTags("femto hbt");
   }
 
   FemtoBasicAna::FemtoBasicAna(const FemtoBasicAna& ana) :

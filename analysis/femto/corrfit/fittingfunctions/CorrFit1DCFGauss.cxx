@@ -18,7 +18,7 @@ namespace Hal {
     Double_t q = x[0];
     if (fKinematics == Femto::EKinematics::kPRF) q = q * 2.0;
     return params[NormID()]
-           * (1
+           * (1.
               + params[LambdaID()]
                   * TMath::Exp(-Femto::FmToGeV() * Femto::FmToGeV() * (q * q * params[RadiusID()] * params[RadiusID()])));
   }

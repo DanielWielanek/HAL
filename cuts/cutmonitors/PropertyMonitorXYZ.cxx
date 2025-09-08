@@ -155,7 +155,18 @@ namespace Hal {
     fXaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(0));
     fYaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(1));
     fZaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(2));
-    if (fXaxisName == "[]" || fYaxisName == "[]" || fZaxisName == "[]") return kFALSE;
+    if (fXaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field X:ID = %i", fFieldIDX), EInfo::kError);
+      return kFALSE;
+    }
+    if (fYaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field Y:ID = %i", fFieldIDY), EInfo::kError);
+      return kFALSE;
+    }
+    if (fZaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field Z:ID = %i", fFieldIDZ), EInfo::kError);
+      return kFALSE;
+    }
     return PropertyMonitorXYZ::Init(task_id);
   }
 
@@ -204,7 +215,18 @@ namespace Hal {
     fXaxisName = tr->GetFieldName(fTranslator.GetFieldFull(0));
     fYaxisName = tr->GetFieldName(fTranslator.GetFieldFull(1));
     fZaxisName = tr->GetFieldName(fTranslator.GetFieldFull(2));
-    if (fXaxisName == "[]" || fYaxisName == "[]" || fZaxisName == "[]") return kFALSE;
+    if (fXaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field X:ID = %i", fFieldIDX), EInfo::kError);
+      return kFALSE;
+    }
+    if (fYaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field Y:ID = %i", fFieldIDY), EInfo::kError);
+      return kFALSE;
+    }
+    if (fZaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field Z:ID = %i", fFieldIDZ), EInfo::kError);
+      return kFALSE;
+    }
     return PropertyMonitorXYZ::Init(task_id);
   }
 

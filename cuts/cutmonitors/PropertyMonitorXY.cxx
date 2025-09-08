@@ -133,6 +133,15 @@ namespace Hal {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
     fXaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(0));
     fYaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(1));
+    if (fXaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field X:ID = %i", fFieldIDX), EInfo::kError);
+      return kFALSE;
+    }
+    if (fYaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field Y:ID = %i", fFieldIDY), EInfo::kError);
+      return kFALSE;
+    }
+    return kFALSE;
     if (fXaxisName == "[]" || fYaxisName == "[]") return kFALSE;
     return PropertyMonitorXY::Init(task_id);
   }
@@ -168,7 +177,14 @@ namespace Hal {
     tr->SetEvent(event.get());
     fXaxisName = tr->GetFieldName(fTranslator.GetFieldFull(0));
     fYaxisName = tr->GetFieldName(fTranslator.GetFieldFull(1));
-    if (fXaxisName == "[]" || fYaxisName == "[]") return kFALSE;
+    if (fXaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field X:ID = %i", fFieldIDX), EInfo::kError);
+      return kFALSE;
+    }
+    if (fYaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find field for field Y:ID = %i", fFieldIDY), EInfo::kError);
+      return kFALSE;
+    }
     return PropertyMonitorXY::Init(task_id);
   }
 

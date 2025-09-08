@@ -329,6 +329,14 @@ namespace Hal {
      * @param overflow - inlcude overflow bins
      * @return
      */
+    Double_t GetMinimum(const std::vector<TH1*> histos, Bool_t underflow = kFALSE, Bool_t overflow = kFALSE);
+    /**
+     * finds maximum in given histograms
+     * @param
+     * @param underflow - include underflow bins
+     * @param overflow - inlcude overflow bins
+     * @return
+     */
     Double_t GetMaximum(const std::vector<TH1*> histos, Bool_t underflow = kFALSE, Bool_t overflow = kFALSE);
     /**
      * hide labels on axis
@@ -349,6 +357,17 @@ namespace Hal {
      * @return parameters of chebyshev polynomial [0]+x*[1]+...
      */
     std::vector<Double_t> ChebyshevInterpolation(const TH1D& histo, Int_t n, Double_t low = 0, Double_t high = 0);
+    /**
+     * draws square with diagonals
+     * @param sample sample histogram used to calculate points
+     * @param x center of bin
+     * @param y center of bin
+     * @param opt if "x" draw square with rectangle if opt="l" draw one diagonal, if "r" draw second diagonal if not specified
+     * draws only border
+     * @param color - line color
+     * @param width- line width
+     */
+    void DrawDiagonalBins(const TH2& sample, Double_t x, Double_t y, TString opt = "x", Color_t color = kBlack, Int_t width = 1);
 
   }  // namespace Std
 }  // namespace Hal

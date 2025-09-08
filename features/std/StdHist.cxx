@@ -41,7 +41,10 @@
 #include "Splines.h"
 #include "Std.h"
 
-NamespaceImp(Hal::Std) namespace Hal {
+NamespaceImp(Hal::Std)
+
+
+  namespace Hal {
   namespace Std {
     void RemoveNan(TH1* h, Double_t fill, Double_t fill_e) {
       if (h->InheritsFrom("TH3")) {
@@ -1231,6 +1234,45 @@ NamespaceImp(Hal::Std) namespace Hal {
       to.SetFillStyle(from.GetFillStyle());
     }
 
+    Double_t GetMinimum(const std::vector<TH1*> histos, Bool_t underflow, Bool_t overflow) {
+      Double_t minig = 1E+10;
+      auto findMin   = [](TH1* x, Bool_t underFlow, Bool_t overFlow) {
+        Double_t mini = 1E+10;
+        TH1* h1       = dynamic_cast<TH1*>(x);
+        TH1* h2       = dynamic_cast<TH2*>(x);
+        TH1* h3       = dynamic_cast<TH3*>(x);
+        int start     = 1;
+        if (underFlow) start = 0;
+        int endx = x->GetNbinsX();
+        int endy = x->GetNbinsY();
+        int endz = x->GetNbinsZ();
+        if (overFlow) {
+          endx++;
+          endy++;
+          endz++;
+        }
+        if (h3) {
+          for (int i = start; i <= endx; i++)
+            for (int j = start; j <= endy; j++)
+              for (int k = start; k <= endz; k++)
+                mini = TMath::Min(h3->GetBinContent(i, j, k), mini);
+        } else if (h2) {
+          for (int i = start; i <= endx; i++)
+            for (int j = start; j <= endy; j++)
+              mini = TMath::Min(h2->GetBinContent(i, j), mini);
+        } else {
+          for (int i = start; i <= endx; i++)
+            mini = TMath::Min(h1->GetBinContent(i), mini);
+        }
+        return mini;
+      };
+
+      for (auto x : histos) {
+        minig = TMath::Min(minig, findMin(x, underflow, overflow));
+      }
+      return minig;
+    }
+
     Double_t GetMaximum(const std::vector<TH1*> histos, Bool_t underflow, Bool_t overflow) {
       Double_t maxig = -1E+10;
       auto findMax   = [](TH1* x, Bool_t underFlow, Bool_t overFlow) {
@@ -1352,6 +1394,29 @@ NamespaceImp(Hal::Std) namespace Hal {
       }
       return res;
     }
-
+    void DrawDiagonalBins(const TH2& sample, Double_t x, Double_t y, TString opt, Color_t color, Int_t width) {
+      Double_t x1 = sample.GetXaxis()->GetBinLowEdge(sample.GetXaxis()->FindBin(x));
+      Double_t y1 = sample.GetYaxis()->GetBinLowEdge(sample.GetYaxis()->FindBin(y));
+      Double_t x2 = sample.GetXaxis()->GetBinUpEdge(sample.GetXaxis()->FindBin(x));
+      Double_t y2 = sample.GetYaxis()->GetBinUpEdge(sample.GetYaxis()->FindBin(y));
+      std::vector<TLine*> lines;
+      lines.push_back(new TLine(x1, y1, x1, y2));
+      lines.push_back(new TLine(x2, y1, x2, y2));
+      lines.push_back(new TLine(x1, y1, x2, y1));
+      lines.push_back(new TLine(x1, y2, x2, y2));
+      if (Hal::Std::FindParam(opt, "x")) {
+        lines.push_back(new TLine(x1, y1, x2, y2));
+        lines.push_back(new TLine(x1, y2, x2, y1));
+      } else if (Hal::Std::FindParam(opt, "l")) {
+        lines.push_back(new TLine(x1, y1, x2, y2));
+      } else if (Hal::Std::FindParam(opt, "r")) {
+        lines.push_back(new TLine(x1, y2, x2, y1));
+      }
+      for (auto line : lines) {
+        line->SetLineColor(color);
+        line->SetLineWidth(width);
+        line->Draw("SAME");
+      }
+    }
   }  // namespace Std
 }  // namespace Hal

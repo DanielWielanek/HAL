@@ -58,4 +58,24 @@ namespace Hal {
     if (fNewToOldIndex) delete[] fNewToOldIndex;
   }
 
+  CompressionMap& CompressionMap::operator=(const CompressionMap& other) {
+    if (this == &other) return *this;
+    fSize          = other.fSize;
+    fAllocatedSize = other.fSize;
+    fCounter       = other.fCounter;
+    if (fOldToNewIndex) delete[] fOldToNewIndex;
+    if (fNewToOldIndex) delete[] fNewToOldIndex;
+    fOldToNewIndex = nullptr;
+    fNewToOldIndex = nullptr;
+    if (fAllocatedSize > 0) {
+      fOldToNewIndex = new Int_t[fAllocatedSize];
+      fNewToOldIndex = new Int_t[fAllocatedSize];
+      for (int i = 0; i < fAllocatedSize; i++) {
+        fOldToNewIndex[i] = other.fOldToNewIndex[i];
+        fNewToOldIndex[i] = other.fNewToOldIndex[i];
+      }
+    }
+    return *this;
+  }
+
 } /* namespace Hal */

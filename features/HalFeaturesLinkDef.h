@@ -182,6 +182,7 @@
 #pragma link C++ class Hal::Std::Triplet < Int_t> + ;
 #pragma link C++ class Hal::Std::Triplet < Float_t> + ;
 #pragma link C++ class Hal::PackageTable + ;
+#pragma link C++ class std::unordered_map < int, int>;
 // #pragma link C++ class HalParameter+;
 
 #endif

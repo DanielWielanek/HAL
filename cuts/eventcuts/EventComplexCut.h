@@ -48,6 +48,7 @@ namespace Hal {
     virtual Package* Report() const;
     virtual TString CutName(Option_t* opt = "") const;
     EventCut* GetRealCut() const { return fRealCut; };
+    std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const { return fRealCut->GetBinLabels(par); }
     virtual ~EventRealCut();
     ClassDef(EventRealCut, 1)
   };
@@ -68,6 +69,7 @@ namespace Hal {
     virtual Package* Report() const;
     virtual TString CutName(Option_t* opt = "") const;
     EventCut* GetImgCut() const { return fImgCut; };
+    std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const { return fImgCut->GetBinLabels(par); }
     virtual ~EventImaginaryCut();
     ClassDef(EventImaginaryCut, 1)
   };

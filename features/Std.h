@@ -12,7 +12,7 @@ class TVirtualPad;
 
 #define Draw_2D_option "colz"
 #define Draw_3D_option "box2"
-#define HAL_PHYSICALANALYSYS_VER "feb2025"
+#define HAL_PHYSICALANALYSYS_VER "sep2025"
 
 // some enums used almost everywhere
 

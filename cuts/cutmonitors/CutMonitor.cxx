@@ -272,9 +272,12 @@ namespace Hal {
         if (labels.size() > 0) {
           for (auto iLabel : labels) {
             Int_t bin = hP->GetXaxis()->FindBin(iLabel.second);
-            if (bin != 0) {
+            if (bin != 0 && bin <= hP->GetNbinsX()) {
               hP->GetXaxis()->SetBinLabel(bin, iLabel.first);
               hF->GetXaxis()->SetBinLabel(bin, iLabel.first);
+            } else {
+              Hal::Cout::PrintInfo(Form("Wrong bin for cut monitor from cut %s [X-axis]", fCut[0]->ClassName()),
+                                   EInfo::kLowWarning);
             }
           }
         }
@@ -290,9 +293,12 @@ namespace Hal {
         if (labels.size() > 0) {
           for (auto iLabel : labels) {
             Int_t bin = hP->GetYaxis()->FindBin(iLabel.second);
-            if (bin != 0) {
+            if (bin != 0 && bin <= hP->GetNbinsY()) {
               hP->GetYaxis()->SetBinLabel(bin, iLabel.first);
               hF->GetYaxis()->SetBinLabel(bin, iLabel.first);
+            } else {
+              Hal::Cout::PrintInfo(Form("Wrong bin for cut monitor from cut %s [Y-axis]", fCut[1]->ClassName()),
+                                   EInfo::kLowWarning);
             }
           }
         }
@@ -308,9 +314,12 @@ namespace Hal {
         if (labels.size() > 0) {
           for (auto iLabel : labels) {
             Int_t bin = hP->GetZaxis()->FindBin(iLabel.second);
-            if (bin != 0) {
+            if (bin != 0 && bin <= hP->GetNbinsZ()) {
               hP->GetZaxis()->SetBinLabel(bin, iLabel.first);
               hF->GetZaxis()->SetBinLabel(bin, iLabel.first);
+            } else {
+              Hal::Cout::PrintInfo(Form("Wrong bin for cut monitor from cut %s [Z-axis]", fCut[2]->ClassName()),
+                                   EInfo::kLowWarning);
             }
           }
         }

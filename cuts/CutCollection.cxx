@@ -606,7 +606,10 @@ namespace Hal {
     cut_up            = GetUpdateFromName(classname);
     if (fMode == cut_up) {
       Cut* cut = FindCut(classname);
-      arr.push_back(cut);
+      if (!cut) {
+        Cout::PrintInfo(Form("Cut collection: Cannot find cut %s", classname.Data()), EInfo::kLowWarning);
+      } else
+        arr.push_back(cut);
       return arr;
     }
     if (fMode == ECutUpdate::kTwoTrackBackground && cut_up == ECutUpdate::kTwoTrack) {
@@ -876,13 +879,18 @@ namespace Hal {
     if (cutname.BeginsWith("Hal::TrackImaginaryCut")) return ECutUpdate::kTrack;
     if (cutname.BeginsWith("Hal::TwoTrackImaginaryCut")) return ECutUpdate::kTwoTrack;
     TClass* cl = TClass::GetClass(cutname, kFALSE, kTRUE);
+    if (!cl) {  // this is interpreted class, assume that it have same update ratio
+      Cout::PrintInfo(Form("Cannot find update reatio for %s, interpreted class?", cutname.Data()), EInfo::kLowWarning);
+      return fMode;
+    }
     if (cl->InheritsFrom("Hal::EventCut")) {
       return ECutUpdate::kEvent;
     } else if (cl->InheritsFrom("Hal::TrackCut")) {
       return ECutUpdate::kTrack;
-    } else {
+    } else if (cl->InheritsFrom("Hal::TwoTrackCut")) {
       return ECutUpdate::kTwoTrack;
     }
+    return ECutUpdate::kNo;
   }
 
   void CutCollectionLinks::SafeInit() {

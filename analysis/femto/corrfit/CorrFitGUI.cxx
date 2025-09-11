@@ -42,7 +42,7 @@ namespace Hal {
     TGLabel* lab12 = new TGLabel(descFrame, f->GetName());
     descFrame->AddFrame(lab11, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 3, 4));
     descFrame->AddFrame(lab12, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 3, 4));
-    AddFrame(descFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
+    TGMainFrame::AddFrame(descFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
     for (int i = 0; i < nparams; i++) {
       maxL = fFunc->GetParameterName(i).Length();
     }
@@ -62,23 +62,23 @@ namespace Hal {
     TGHorizontalFrame* autonormframe = new TGHorizontalFrame(this, width, 40);
     fAutoNorm                        = new TGCheckButton(autonormframe, "Autonorm");
     fAutoNorm->SetOn(kTRUE);
-    fAutoNorm->Connect("Clicked()", this->ClassName(), this, "ApplyParams()");
+    fAutoNorm->Connect("Clicked()", this->CorrFitGUI::ClassName(), this, "ApplyParams()");
 
     TGTextButton* round1 = new TGTextButton(autonormframe, "&Round 1");
     autonormframe->AddFrame(round1, new TGLayoutHints(kLHintsLeft, 5, 5, 3, 4));
-    round1->Connect("Clicked()", this->ClassName(), this, "Round(=1)");
+    round1->Connect("Clicked()", this->CorrFitGUI::ClassName(), this, "Round(=1)");
 
     TGTextButton* round2 = new TGTextButton(autonormframe, "&Round 2");
     autonormframe->AddFrame(round2, new TGLayoutHints(kLHintsLeft, 5, 5, 3, 4));
-    round2->Connect("Clicked()", this->ClassName(), this, "Round(=2)");
+    round2->Connect("Clicked()", this->CorrFitGUI::ClassName(), this, "Round(=2)");
 
     TGTextButton* round3 = new TGTextButton(autonormframe, "&Round 3");
     autonormframe->AddFrame(round3, new TGLayoutHints(kLHintsLeft, 5, 5, 3, 4));
-    round3->Connect("Clicked()", this->ClassName(), this, "Round(=3)");
+    round3->Connect("Clicked()", this->CorrFitGUI::ClassName(), this, "Round(=3)");
 
 
     autonormframe->AddFrame(fAutoNorm, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
-    AddFrame(autonormframe, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
+    TGMainFrame::AddFrame(autonormframe, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
 
     TGHorizontalFrame* legendFrame = new TGHorizontalFrame(this, width, 40);
     TGLabel* lab1                  = new TGLabel(legendFrame, "Par. Name");
@@ -90,7 +90,7 @@ namespace Hal {
     legendFrame->AddFrame(lab3, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 3, 4));
     legendFrame->AddFrame(lab4, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 3, 4));
 
-    AddFrame(legendFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
+    TGMainFrame::AddFrame(legendFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
 
 
     fPairChi1 = new CorrFitChiSelector(this, width, 100);
@@ -108,20 +108,20 @@ namespace Hal {
     chiFrame->AddFrame(fChiMin, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
     chiFrame->AddFrame(fChiLogz, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
     chiFrame->AddFrame(fChiFit, new TGLayoutHints(kLHintsTop | kLHintsRight, 5, 5, 5, 5));
-    AddFrame(chiFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
+    TGMainFrame::AddFrame(chiFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
 
     TGHorizontalFrame* applyFrame = new TGHorizontalFrame(this, width, 40);
     TGTextButton* draw            = new TGTextButton(applyFrame, "&Draw chi");
     applyFrame->AddFrame(draw, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
-    draw->Connect("Clicked()", this->ClassName(), this, "DrawChi2()");
+    draw->Connect("Clicked()", this->CorrFitGUI::ClassName(), this, "DrawChi2()");
     TGTextButton* exit = new TGTextButton(applyFrame, "&Exit", "gApplication->Terminate(0)");
     applyFrame->AddFrame(exit, new TGLayoutHints(kLHintsCenterX, 5, 5, 3, 4));
-    AddFrame(applyFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
-    SetCleanup(kDeepCleanup);
-    SetWindowName("CorrFit GUI");
-    MapSubwindows();
-    Resize(width + 1, nparams * 40 + 440);
-    MapWindow();
+    TGMainFrame::AddFrame(applyFrame, new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 5, 5, 5));
+    TGMainFrame::SetCleanup(kDeepCleanup);
+    TGMainFrame::SetWindowName("CorrFit GUI");
+    TGMainFrame::MapSubwindows();
+    TGMainFrame::Resize(width + 1, nparams * 40 + 440);
+    TGMainFrame::MapWindow();
   }
 
   void CorrFitGUI::ApplyParams() {
@@ -149,7 +149,7 @@ namespace Hal {
     }
   }
 
-  CorrFitGUI::~CorrFitGUI() { Cleanup(); }
+  CorrFitGUI::~CorrFitGUI() { CorrFitGUI::Cleanup(); }
 
   CorrFitParButton::CorrFitParButton(const TGWindow* p, UInt_t w, UInt_t h, UInt_t options, Pixel_t back) :
     TGHorizontalFrame(p, w, h, options, back), fNumberEntry(nullptr), fComboBox(nullptr), fDiscrete(kFALSE) {}

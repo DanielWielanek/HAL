@@ -82,20 +82,6 @@ namespace Hal {
      */
     Int_t MatchCut(Cut* address, CutCollection* input);
     /**
-     * look for cuts with given names in collections with smaller update ratio
-     * (tier) but linked with this cut container
-     * @param cut name of cut to find
-     * @return array of found cuts
-     */
-    std::vector<Cut*> LocateInLowerCollections(TString cut);
-    /**
-     * look for cuts with given name in this collection or look in lower
-     * collections that are linked with this collection
-     * @param classname name looked for monitor
-     * @return array of found cuts
-     */
-    std::vector<Cut*> LocateCuts(TString classname);
-    /**
      * check if cuts are compatibile
      * @param cut1 first cut to check
      * @param cut2 second cut to check
@@ -105,14 +91,16 @@ namespace Hal {
     Bool_t CheckIfComptatiblie(Cut* cut1, Cut* cut2);
     /**
      *
-     * @param cutname cut name (not cut-class name)
-     * @return cut update ratio
+     * @param upd
+     * @return container array
      */
-    ECutUpdate GetUpdateFromName(TString cutname) const;
-    inline TObjArray* GetCutContainerArray(ECutUpdate upd) const {
-      return fCutContainerArr[static_cast<Int_t>(upd)];
-      ;
-    }
+    inline TObjArray* GetCutContainerArray(ECutUpdate upd) const { return fCutContainerArr[static_cast<Int_t>(upd)]; }
+    /**
+     * try to find cuts for given monitors
+     * @param mon monitor
+     * @return a cut if proper cut was found, otherwise return nullptr
+     */
+    std::vector<Cut*> BasicCheckMonitor(CutMonitor* mon);
 
   public:
     /**

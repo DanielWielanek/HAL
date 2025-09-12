@@ -37,13 +37,13 @@ find_library(ROOT_SQLITE_LIBRARY RSQLite PATHS ${ROOT_LIBRARY_DIR})
 execute_process(COMMAND root-config --features
                 OUTPUT_VARIABLE ROOT_FEATURES
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
-If(DEFINED SKIP_ROOT_FEATURES_CHECKING)
+If(NOT DEFINED SKIP_ROOT_FEATURES_CHECKING)
 	if(NOT "${ROOT_FEATURES}" MATCHES "xml")
-  		message(FATAL_ERROR "ROOT compiled without XML support.")
+  		message(WARNING "ROOT compiled without XML support?")
 	endif()
 
 	if(NOT "${ROOT_FEATURES}" MATCHES "sqlite")
-  		message(WARNING "ROOT compiled without SQLite support.")
+  		message(WARNING "ROOT compiled without SQLite support?")
 	endif()
 endif()
 

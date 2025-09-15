@@ -79,6 +79,7 @@ namespace Hal {
           return;
         }
       }
+      cut->SetCollectionID(fCollectionID);
       fCuts->AddLast(cut);
     } else {
       if (sameFastCut) {
@@ -98,6 +99,7 @@ namespace Hal {
           return;
         }
       }
+      cut->SetCollectionID(fCollectionID);
       fFastCuts->AddLast(cut);
     }
   }

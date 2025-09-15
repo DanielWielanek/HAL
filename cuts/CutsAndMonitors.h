@@ -150,6 +150,7 @@ namespace Hal {
     void AddCutMonitor(const CutMonitor& monitor, Option_t* opt = "");
     /**
      * set collection id to all cuts
+     * NOTE this might be overwriten if user add option for specify exact collection ID e.g. {0}
      * @param id
      */
     void SetCollectionID(Int_t id);

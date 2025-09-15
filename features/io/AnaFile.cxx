@@ -177,18 +177,33 @@ namespace Hal {
 
   TH1* AnaFile::GetHistogramPassed(Hal::ECutUpdate update, Int_t collection, Int_t no) const {
     Package* pack = GetCutCollection(update, collection);
-    TList* lista  = (TList*) pack->GetObjectByName("CutMonitorList");
+    if (!pack) {
+      Hal::Cout::PrintInfo(Form("AnaFile:GetHistogramPassed Cannot find collection [%i]", collection), Hal::EInfo::kWarning);
+      return nullptr;
+    }
+    TList* lista = (TList*) pack->GetObjectByName("CutMonitorList");
     if (lista == NULL) return NULL;
     Package* cutmon = (Package*) lista->At(no);  //(HalPackage*)pack->GetObject(no);
+    if (!cutmon) {
+      Hal::Cout::PrintInfo(Form("AnaFile:GetHistogramPassed Cannot find monitor [%i]", no), Hal::EInfo::kWarning);
+      return nullptr;
+    }
     return (TH1*) cutmon->GetObjectByName("Passed");
   }
 
   TH1* AnaFile::GetHistogramFailed(Hal::ECutUpdate update, Int_t collection, Int_t no) const {
     Package* pack = GetCutCollection(update, collection);
-    TList* lista  = (TList*) pack->GetObjectByName("CutMonitorList");
+    if (!pack) {
+      Hal::Cout::PrintInfo(Form("AnaFile:GetHistogramFailed Cannot find collection [%i]", collection), Hal::EInfo::kWarning);
+      return nullptr;
+    }
+    TList* lista = (TList*) pack->GetObjectByName("CutMonitorList");
     if (lista == NULL) return NULL;
     Package* cutmon = (Package*) lista->At(no);
-    // HalPackage *cutmon = (HalPackage*)pack->GetObject(no);
+    if (!cutmon) {
+      Hal::Cout::PrintInfo(Form("AnaFile:GetHistogramFailed Cannot find monitor [%i]", no), Hal::EInfo::kWarning);
+      return nullptr;
+    }
     return (TH1*) cutmon->GetObjectByName("Failed");
   }
 

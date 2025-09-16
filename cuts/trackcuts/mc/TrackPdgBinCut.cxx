@@ -16,9 +16,9 @@ namespace Hal {
 
   TrackPdgBinCut::TrackPdgBinCut(Bool_t autoload) : TrackCut(1) {
     SetUnitName("Pdg type [int]");
-    SafelyAddToMap(81, "neutral");
-    SafelyAddToMap(82, "positive");
-    SafelyAddToMap(83, "negative");
+    SafelyAddToMap(81, "other neutral");
+    SafelyAddToMap(82, "other positive");
+    SafelyAddToMap(83, "other negative");
     SafelyAddToMap(84, "unknown");
     if (autoload) {
       SafelyAddToMap(Hal::Const::PionPlusPID(), "");

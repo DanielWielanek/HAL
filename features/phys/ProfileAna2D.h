@@ -27,14 +27,14 @@ namespace Hal {
    * by default used to fit gaussians functions + polynomial
    * user should overwrite AnalizeCustom to fit more advanced functions
    * options currently supported:
-   * In default configuration a gaussian function for slice is used and polynomial od given degree is used do describe sigma/mean
-   * of such gaussian. The nubmer of points defines the degreee of polynomia, user can also specify the numbers used to fit the
-   * poly (number of those points also defines the polynomial).
+   * In default configuration a gaussian function for slice is used and polynomial of given degree is used do describe sigma/mean
+   * of such gaussian. The number of points defines the degreee of polynomial, user can also specify the numbers used to fit the
+   * poly (number of those points also defines the polynomial @see     ProfileAna2D(TH2& h, std::vector<Double_t> points);).
    * When UseFixed is called then fitting procedure use points defined in constructor (or choose N-points in similar distances) to
-   * calculate the parameters of fit. When used without "fix" option - the algo only uses those parameters are starting parameters
+   * calculate the parameters of fit. When used without "fix" option - the algo only uses those parameters as starting parameters
    * to fit a free polynomial.
-   * Option UseRMSGauss calculates RMS and sigma from projections and fit them to global data. UseFreeGaus use gaussian func to
-   fit projections.
+   * Option UseRMSGauss calculates RMS and sigma from projections and fit them to global data.
+   *  UseFreeGaus use gaussian func to fit projections.
 
    */
   class ProfileAna2D : public Object {
@@ -317,6 +317,8 @@ namespace Hal {
     void SetAverageId(Int_t id) { fMeanId = id; };
     void SetNBinsThreshold(Int_t n) { fBinsThreshold = n; }
     Double_t GetFittedMean(Double_t x) const;
+    Double_t GetFittedSigmaLo(Double_t x) const;
+    Double_t GetFittedSigmaHi(Double_t x) const;
     /**
      * staring parameters to estimation if something goes wrong
      * @param vec

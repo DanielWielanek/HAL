@@ -309,6 +309,14 @@ namespace Hal {
                  Double_t minZ,
                  Double_t maxZ,
                  TString opt = "vals");
+    /**
+     *
+     * @param objName name of  the object
+     * @param className class name
+     * @param pad pointer to pad
+     * @return objects that are no pad and have  given name and objName, if not cassName is set all objects with given name are
+     * returned
+     */
     std::vector<TObject*> GetPadChildren(TString objName, TString className = "", TVirtualPad* pad = nullptr);
     /**
      * check if two histograms contain the same data (check only bin content not range etc.)

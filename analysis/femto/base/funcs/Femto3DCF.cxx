@@ -36,7 +36,7 @@
 
 namespace Hal {
   Femto3DCF::Femto3DCF(TString name, Femto::EKinematics frame) : DividedHisto3D(name), fFrame(frame) {
-    SetName(name);
+    Femto3DCF::SetName(name);
     AddLabel(Femto::KinematicsToLabel(fFrame));
   }
 
@@ -232,8 +232,8 @@ namespace Hal {
       delete old_num;
       delete old_den;
     }
-    SetAxisNames(fNum);
-    SetAxisNames(fDen);
+    Femto3DCF::SetAxisNames(fNum);
+    Femto3DCF::SetAxisNames(fDen);
     AddLabel(Femto::KinematicsToLabel(fFrame));
   }
 

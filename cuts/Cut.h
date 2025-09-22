@@ -153,6 +153,11 @@ namespace Hal {
      * @return true if prameter is outside limits
      */
     Bool_t OutLimits(Int_t par) const { return !InLimits(par); };
+    /**
+     * used by MakeCopy
+     * @return
+     */
+    virtual Cut* MakeInnerCopy() const { return this->Clone(); }
 
   public:
     /** default constructor

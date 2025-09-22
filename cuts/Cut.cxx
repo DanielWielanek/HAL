@@ -217,7 +217,7 @@ namespace Hal {
       }
       return res;
     }
-    return (Cut*) this->Clone();
+    return (Cut*) MakeInnerCopy();
   }
 
   Cut& Cut::operator=(const Cut& other) {

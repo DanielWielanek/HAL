@@ -123,7 +123,8 @@ namespace Hal {
   }
 
   void FitParam::SetMapRangeByStep(Double_t min, Double_t max, Double_t step) {
-    Int_t nPoints = (max - min) / step + 1;
+    Int_t nPoints = std::round((max - min) / step) + 1;
+    max           = min + double(nPoints - 1.) * step;
     SetMapRange(min, max, nPoints);
   }
 

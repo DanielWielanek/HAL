@@ -31,6 +31,7 @@
 #pragma link C++ class Hal::OptionArray + ;
 #pragma link C++ class Hal::UniqueOptions + ;
 #pragma link C++ class Hal::OptionConverter + ;
+#pragma link C++ class Hal::MainOption + ;
 #pragma link C++ class Hal::PackageSql + ;
 #pragma link C++ class Hal::Object + ;
 #pragma link C++ class Hal::MultiGraph + ;
@@ -171,7 +172,10 @@
 #pragma link C++ class Hal::MultiDimDataManager + ;
 #pragma link C++ class Hal::MultiDimMinuit + ;
 #pragma link C++ class Hal::ParameterSolver + ;
-
+#pragma link C++ class Hal::MultiDimMinimizer + ;
+#pragma link C++ class Hal::MinimizerResult + ;
+#pragma link C++ class Hal::FittedParam + ;
+#pragma link C++ class Hal::MultiDimMinimizerSquare + ;
 // STD STUFF
 #pragma link C++ class std::vector < Hal::FitParam> + ;
 #pragma link C++ class std::vector < TString> + ;

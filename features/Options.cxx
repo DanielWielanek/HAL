@@ -132,4 +132,19 @@ namespace Hal {
   }
 
   OptionArray::~OptionArray() {}
+
+  TString MainOption::GetParameterValue(TString par) const {
+    for (auto i : fParams) {
+      if (i.first == par) return i.second;
+    }
+    return "";
+  }
+
+  Bool_t MainOption::HaveParameter(TString opt) const {
+    for (auto i : fParams) {
+      if (i.first == opt) return kTRUE;
+    }
+    return kFALSE;
+  }
+
 }  // namespace Hal

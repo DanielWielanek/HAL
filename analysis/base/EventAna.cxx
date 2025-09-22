@@ -344,7 +344,7 @@ namespace Hal {
     DataManager* datamanager         = DataManager::Instance();
     SetInputFileName(DataManager::Instance()->GetSourceName());
     if (formatManager->GetFormat(GetTaskID(), EFormatDepth::kNonBuffered) == nullptr) {
-      Cout::PrintInfo("EventAna: Format is not set, switching to reader", EInfo::kError);
+      Cout::PrintInfo("EventAna: Format is not set, switching to reader", EInfo::kInfo);
       SetFormatOption(EFormatOption::kReaderAccess);
     }
     if (TESTBIT(fFormatOption, eBitFormat::kReader)) {  // use reader data

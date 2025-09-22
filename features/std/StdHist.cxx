@@ -1351,6 +1351,7 @@ NamespaceImp(Hal::Std)
         if (high) { iAxis->ChangeLabel(-1, -1, -1, -1, kWhite, 0, " "); }
       }
     }
+
     std::vector<Double_t> ChebyshevInterpolation(const TH1D& histo, Int_t n, Double_t low, Double_t high) {
       if (low == high) {
         low  = histo.GetXaxis()->GetBinLowEdge(0);
@@ -1394,6 +1395,7 @@ NamespaceImp(Hal::Std)
       }
       return res;
     }
+
     void DrawDiagonalBins(const TH2& sample, Double_t x, Double_t y, TString opt, Color_t color, Int_t width) {
       Double_t x1 = sample.GetXaxis()->GetBinLowEdge(sample.GetXaxis()->FindBin(x));
       Double_t y1 = sample.GetYaxis()->GetBinLowEdge(sample.GetYaxis()->FindBin(y));

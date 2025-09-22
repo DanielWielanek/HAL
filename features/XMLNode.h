@@ -35,8 +35,8 @@ namespace Hal {
      * @param value value of attribute
      */
     XMLAttrib(TString name, TString value) {
-      SetName(name);
-      SetTitle(value);
+      XMLAttrib::SetName(name);
+      XMLAttrib::SetTitle(value);
     }
     /**
      *

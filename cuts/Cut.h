@@ -157,7 +157,7 @@ namespace Hal {
      * used by MakeCopy
      * @return
      */
-    virtual Cut* MakeInnerCopy() const { return this->Clone(); }
+    virtual Cut* MakeInnerCopy() const { return (Cut*) this->Clone(); }
 
   public:
     /** default constructor

@@ -22,6 +22,7 @@
 namespace Hal {
   class Track;
   class V0Track : public HiddenInfo {
+  protected:
     Int_t fTrackId;
     Int_t fPosId;
     Int_t fNegId;
@@ -251,7 +252,7 @@ namespace Hal {
      * @param pointer to track that own this hidden info
      * @return dca of V0
      */
-    TVector3 Recalc(const Track& track);
+    virtual TVector3 Recalc(const Track& track);
     virtual ~V0Track();
     ClassDef(V0Track, 1)
   };

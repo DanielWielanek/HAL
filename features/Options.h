@@ -123,6 +123,7 @@ namespace Hal {
      * @return true if parameter opt is present
      */
     Bool_t HaveParameter(TString opt) const;
+    virtual void Print(Option_t* option = "") const;
     virtual ~MainOption() {};
     ClassDef(MainOption, 1)
   };

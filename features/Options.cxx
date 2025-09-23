@@ -10,6 +10,9 @@
 
 #include <TObjString.h>
 #include <TRegexp.h>
+
+#include <iostream>
+
 namespace Hal {
   OptionConverter::OptionConverter() {}
 
@@ -149,6 +152,11 @@ namespace Hal {
           pars.first  = param.ReplaceAll("-", "");
           pars.second = res[1];
           fParams.push_back(pars);
+        } else {
+          std::pair<TString, TString> pars;
+          pars.first  = res[0];
+          pars.second = "";
+          fParams.push_back(pars);
         }
       } else {
         fArgs.push_back(i);
@@ -168,6 +176,18 @@ namespace Hal {
       if (i.first == opt) return kTRUE;
     }
     return kFALSE;
+  }
+
+  void MainOption::Print(Option_t* option) const {
+    std::cout << "MainOption::Print" << std::endl;
+    std::cout << "Arguments:" << std::endl;
+    for (int i = 0; i < fArgs.size(); i++) {
+      std::cout << Form("\t#%i %s", i, fArgs[i].Data()) << std::endl;
+    }
+    std::cout << "Parameters:" << std::endl;
+    for (int i = 0; i < fParams.size(); i++) {
+      std::cout << Form("\t%s:  %s", fParams[i].first.Data(), fParams[i].second.Data()) << std::endl;
+    }
   }
 
 }  // namespace Hal

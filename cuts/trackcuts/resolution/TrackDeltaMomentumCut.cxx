@@ -17,16 +17,16 @@
 namespace Hal {
   TrackDeltaMomentumCut::TrackDeltaMomentumCut(Int_t params) : TrackCut(params), fTrackRe(nullptr), fTrackIm(nullptr) {
     if (params == 5) {
-      SetUnitName("#Deltap_{T} [GeV/c]", Pt());
-      SetUnitName("#Delta#phi [rad]", Phi());
-      SetUnitName("#Delta#theta [GeV/c]", Theta());
-      SetUnitName("#Deltap_{z} [GeV/c]", Pz());
-      SetUnitName("#Deltap [GeV/c]", P());
-      SetMinMax(-TMath::Pi(), TMath::Pi(), Phi());
-      SetMinMax(-TMath::PiOver2(), TMath::PiOver2(), Theta());
-      SetMinMax(-1E+6, 1E+6, P());
-      SetMinMax(-1E+6, 1E+6, Pt());
-      SetMinMax(-1E+6, 1E+6, Pz());
+      SetUnitName("#Deltap_{T} [GeV/c]", Pt);
+      SetUnitName("#Delta#phi [rad]", Phi);
+      SetUnitName("#Delta#theta [GeV/c]", Theta);
+      SetUnitName("#Deltap_{z} [GeV/c]", Pz);
+      SetUnitName("#Deltap [GeV/c]", P);
+      SetMinMax(-TMath::Pi(), TMath::Pi(), Phi);
+      SetMinMax(-TMath::PiOver2(), TMath::PiOver2(), Theta);
+      SetMinMax(-1E+6, 1E+6, P);
+      SetMinMax(-1E+6, 1E+6, Pt);
+      SetMinMax(-1E+6, 1E+6, Pz);
     }
   }
 
@@ -46,11 +46,11 @@ namespace Hal {
       SetValue(-1E+9);
       return ForcedUpdate(kFALSE);
     }
-    SetValue(fTrackIm->GetMomentum().P() - fTrackRe->GetMomentum().P(), P());
-    SetValue(fTrackIm->GetMomentum().Pt() - fTrackRe->GetMomentum().Pt(), Pt());
-    SetValue(fTrackIm->GetMomentum().Pz() - fTrackRe->GetMomentum().Pz(), Pz());
-    SetValue(TVector2::Phi_mpi_pi(fTrackIm->GetMomentum().Phi() - fTrackRe->GetMomentum().Phi()), Phi());
-    SetValue(fTrackIm->GetMomentum().Theta() - fTrackRe->GetMomentum().Theta(), Theta());
+    SetValue(fTrackIm->GetMomentum().P() - fTrackRe->GetMomentum().P(), P);
+    SetValue(fTrackIm->GetMomentum().Pt() - fTrackRe->GetMomentum().Pt(), Pt);
+    SetValue(fTrackIm->GetMomentum().Pz() - fTrackRe->GetMomentum().Pz(), Pz);
+    SetValue(TVector2::Phi_mpi_pi(fTrackIm->GetMomentum().Phi() - fTrackRe->GetMomentum().Phi()), Phi);
+    SetValue(fTrackIm->GetMomentum().Theta() - fTrackRe->GetMomentum().Theta(), Theta);
     Double_t p_mc   = fTrackIm->GetMomentum().P();
     Double_t p_reco = fTrackRe->GetMomentum().P();
     SetValue(p_mc - p_reco);
@@ -85,11 +85,11 @@ namespace Hal {
       SetValue(-1E+9);
       return ForcedUpdate(kFALSE);
     }
-    SetValue(fDiff.P(), P());
-    SetValue(fDiff.Pt(), Pt());
-    SetValue(fDiff.Pz(), Pz());
-    SetValue(fDiff.Phi(), Phi());
-    SetValue(fDiff.Theta(), Theta());
+    SetValue(fDiff.P(), P);
+    SetValue(fDiff.Pt(), Pt);
+    SetValue(fDiff.Pz(), Pz);
+    SetValue(fDiff.Phi(), Phi);
+    SetValue(fDiff.Theta(), Theta);
     return Validate();
   }
 

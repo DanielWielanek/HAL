@@ -17,10 +17,9 @@ namespace Hal {
     Int_t PidToID(McTrack* tr) const;
 
   public:
+    enum ParID { FirstParticle = 0, SecondParticle = 1 };
     PdgBinPairCut();
     virtual Bool_t Pass(TwoTrack* pair);
-    static Int_t FirstParticle() { return 0; }
-    static Int_t SecondParticle() { return 1; };
     std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t i) const;
     virtual ~PdgBinPairCut();
     ClassDef(PdgBinPairCut, 1)

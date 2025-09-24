@@ -23,30 +23,24 @@
 #include "Track.h"
 
 namespace Hal {
-  const Int_t TrackTpcCut::fgTpcHitsId       = 0;
-  const Int_t TrackTpcCut::fgChargeId        = 1;
-  const Int_t TrackTpcCut::fgSigmaPionId     = 2;
-  const Int_t TrackTpcCut::fgSigmaKaonId     = 3;
-  const Int_t TrackTpcCut::fgSigmaProtonId   = 4;
-  const Int_t TrackTpcCut::fgSigmaElectronId = 5;
-  const Int_t TrackTpcCut::fgDeDxId          = 6;
+
 
   TrackTpcCut::TrackTpcCut() : TrackExpCut(7) {
-    SetUnitName("TpcHits [N]", TpcHits());
-    SetUnitName("TpcCharge [q]", Charge());
-    SetUnitName("#sigma#pi", PionSigma());
-    SetUnitName("#sigmaK", KaonSigma());
-    SetUnitName("#sigmaP", ProtonSigma());
-    SetUnitName("#sigmae", ElectronSigma());
-    SetUnitName("dEdX [kV/cm]", DeDx());
-    fParticleType = PionSigma();
-    SetMinMax(-1E+29, 1E+29, PionSigma());
-    SetMinMax(-1E+29, 1E+29, KaonSigma());
-    SetMinMax(-1E+29, 1E+29, ProtonSigma());
-    SetMinMax(-1E+29, 1E+29, ElectronSigma());
-    SetMinMax(0, 1E+29, DeDx());
-    SetMinMax(-1, 1, Charge());
-    SetMinMax(0, 90, TpcHits());
+    SetUnitName("TpcHits [N]", TpcHits);
+    SetUnitName("TpcCharge [q]", Charge);
+    SetUnitName("#sigma#pi", SigmaPion);
+    SetUnitName("#sigmaK", SigmaKaon);
+    SetUnitName("#sigmaP", SigmaProton);
+    SetUnitName("#sigmae", SigmaElectron);
+    SetUnitName("dEdX [kV/cm]", DeDx);
+    fParticleType = SigmaPion;
+    SetMinMax(-1E+29, 1E+29, SigmaPion);
+    SetMinMax(-1E+29, 1E+29, SigmaKaon);
+    SetMinMax(-1E+29, 1E+29, SigmaProton);
+    SetMinMax(-1E+29, 1E+29, SigmaElectron);
+    SetMinMax(0, 1E+29, DeDx);
+    SetMinMax(-1, 1, Charge);
+    SetMinMax(0, 90, TpcHits);
     fMode = kNotBad;
   }
 
@@ -59,30 +53,30 @@ namespace Hal {
 
   void TrackTpcCut::SetSigma(Double_t min, Double_t max, TString opt) {
     if (Hal::Std::FindParam(opt, "pi")) {
-      SetMinMax(min, max, PionSigma());
+      SetMinMax(min, max, SigmaPion);
     } else if (Hal::Std::FindParam(opt, "K")) {
-      SetMinMax(min, max, KaonSigma());
+      SetMinMax(min, max, SigmaKaon);
     } else if (Hal::Std::FindParam(opt, "p")) {
-      SetMinMax(min, max, ProtonSigma());
+      SetMinMax(min, max, SigmaProton);
     } else if (Hal::Std::FindParam(opt, "e")) {
-      SetMinMax(min, max, ElectronSigma());
+      SetMinMax(min, max, SigmaElectron);
     } else {
       Cout::Text("Wrong SetSigma flag please use pi/K/p/e", "L", kOrange);
     }
   }
 
-  void TrackTpcCut::SetCharge(Int_t i) { SetMinAndMax(i, Charge()); }
+  void TrackTpcCut::SetCharge(Int_t i) { SetMinAndMax(i, Charge); }
 
-  void TrackTpcCut::SetNHits(Int_t min, Int_t max) { SetMinMax(min, max, TpcHits()); }
+  void TrackTpcCut::SetNHits(Int_t min, Int_t max) { SetMinMax(min, max, TpcHits); }
 
   Package* TrackTpcCut::Report() const {
     Package* pack = TrackCut::Report();
     TString sigma_name;
     switch (fParticleType) {
-      case fgSigmaPionId: sigma_name = "PionSigma"; break;
-      case fgSigmaKaonId: sigma_name = "KaonSigma"; break;
-      case fgSigmaProtonId: sigma_name = "ProtonSigma"; break;
-      case fgSigmaElectronId: sigma_name = "ElectronSigma"; break;
+      case SigmaPion: sigma_name = "SigmaPion"; break;
+      case SigmaKaon: sigma_name = "SigmaKaon"; break;
+      case SigmaProton: sigma_name = "SigmaProton"; break;
+      case SigmaElectron: sigma_name = "SigmaElectron"; break;
       default: sigma_name = "UnknownSigma"; break;
     }
     ParameterString* str = new ParameterString("ActiveSigma", sigma_name);
@@ -100,27 +94,27 @@ namespace Hal {
     return pack;
   }
 
-  void TrackTpcCut::SetDeDx(Double_t min, Double_t max) { SetMinMax(min, max, DeDx()); }
+  void TrackTpcCut::SetDeDx(Double_t min, Double_t max) { SetMinMax(min, max, DeDx); }
 
   TrackTpcCut::~TrackTpcCut() {}
 
   Bool_t TrackTpcCut::Pass(Track* track) {
     TpcTrack* tpc = (TpcTrack*) ((ExpTrack*) track)->GetDetTrack(DetectorID::kTPC);
     if (tpc == NULL) return ForcedUpdate(kFALSE);
-    SetValue(track->GetCharge(), fgChargeId);
-    SetValue(tpc->GetDeDx(), fgDeDxId);
-    SetValue(tpc->GetNHits(), fgTpcHitsId);
-    SetValue(tpc->GetSigmaPion(), fgSigmaPionId);
-    SetValue(tpc->GetSigmaElectron(), fgSigmaElectronId);
-    SetValue(tpc->GetSigmaKaon(), fgSigmaKaonId);
-    SetValue(tpc->GetSigmaProton(), fgSigmaProtonId);
+    SetValue(track->GetCharge(), Charge);
+    SetValue(tpc->GetDeDx(), DeDx);
+    SetValue(tpc->GetNHits(), TpcHits);
+    SetValue(tpc->GetSigmaPion(), SigmaPion);
+    SetValue(tpc->GetSigmaElectron(), SigmaElectron);
+    SetValue(tpc->GetSigmaKaon(), SigmaKaon);
+    SetValue(tpc->GetSigmaProton(), SigmaProton);
     return ForcedUpdate(Verify());
   }
 
   Bool_t TrackTpcCut::Verify() {
     switch (fMode) {
       case kGood: {
-        for (int i = fgSigmaPionId; i < fgSigmaPionId + 4; i++) {
+        for (int i = SigmaPion; i < SigmaPion + 4; i++) {
           if (i == fParticleType) {  // inside "banana bounds"
             if (GetValue(i) < GetMin(i)) return kFALSE;
             if (GetValue(i) > GetMax(i)) return kFALSE;
@@ -137,14 +131,14 @@ namespace Hal {
       } break;
     }
     // tpc dedx
-    if (GetValue(fgDeDxId) < GetMin(fgDeDxId)) return kFALSE;
-    if (GetValue(fgDeDxId) > GetMax(fgDeDxId)) return kFALSE;
+    if (GetValue(DeDx) < GetMin(DeDx)) return kFALSE;
+    if (GetValue(DeDx) > GetMax(DeDx)) return kFALSE;
     // hits
-    if (GetValue(fgTpcHitsId) < GetMin(fgTpcHitsId)) return kFALSE;
-    if (GetValue(fgTpcHitsId) > GetMax(fgTpcHitsId)) return kFALSE;
+    if (GetValue(TpcHits) < GetMin(TpcHits)) return kFALSE;
+    if (GetValue(TpcHits) > GetMax(TpcHits)) return kFALSE;
     // charge
-    if (GetValue(fgChargeId) < GetMin(fgChargeId)) return kFALSE;
-    if (GetValue(fgChargeId) > GetMax(fgChargeId)) return kFALSE;
+    if (GetValue(Charge) < GetMin(Charge)) return kFALSE;
+    if (GetValue(Charge) > GetMax(Charge)) return kFALSE;
     return kTRUE;
   }
 
@@ -153,13 +147,13 @@ namespace Hal {
 
   void TrackTpcCut::SetActiveSigma(TString flag) {
     if (Hal::Std::FindParam(flag, "pi")) {
-      fParticleType = PionSigma();
+      fParticleType = SigmaPion;
     } else if (Hal::Std::FindParam(flag, "K")) {
-      fParticleType = KaonSigma();
+      fParticleType = SigmaKaon;
     } else if (Hal::Std::FindParam(flag, "p")) {
-      fParticleType = ProtonSigma();
+      fParticleType = SigmaProton;
     } else if (Hal::Std::FindParam(flag, "e")) {
-      fParticleType = ElectronSigma();
+      fParticleType = SigmaElectron;
     } else {
       Cout::Text("Wrong SetActiveSigma flag please use pi/K/p/e", "L", kOrange);
     }

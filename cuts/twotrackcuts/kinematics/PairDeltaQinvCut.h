@@ -19,10 +19,9 @@ namespace Hal {
     Double_t Q(Track* tr1, Track* tr2) const;
 
   public:
+    enum ParID { Relative = 0, Absolute = 1 };
     PairDeltaQinvCut();
     virtual Bool_t Pass(TwoTrack* pair);
-    static Int_t Relative() { return 0; }
-    static Int_t Absolute() { return 1; };
     Bool_t Init(Int_t task_id);
     void SetMass(Double_t m) { fMass1 = fMass2 = m; };
     void SetMass(Double_t m1, Double_t m2) {

@@ -36,6 +36,12 @@ namespace Hal {
 
   /**
    * basic abstract class for all cuts
+   * this classes can contain some additional enums, following convetion is used
+   * enum ParID - describe parameter ID
+   * enum ValID - describe value ID
+   * for example:
+   * SetMinMax(0,1,ParID::SomeValue) mean set accepted values of parameter SomeValue to be between o and 1
+   * SetMinMax(ValID::A, ValID::B,N) mean set accepted value os N-parameter to be between A and B
    */
   class Cut : public TNamed {
     friend class EventComplexCut;

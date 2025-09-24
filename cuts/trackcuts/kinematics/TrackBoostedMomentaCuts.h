@@ -30,15 +30,9 @@ namespace Hal {
     TVector3 fBoost;
 
   public:
+    enum ParID { Px = 0, Py = 1, Pz = 2, Pt = 3, Eta = 4, Rapidity = 5, P = 6 };
     TrackBoostedKinematcisCut();
     void SetBoostVector(TVector3 boost) { fBoost = boost; };
-    static Int_t Px() { return 0; };
-    static Int_t Py() { return 1; };
-    static Int_t Pz() { return 2; };
-    static Int_t Pt() { return 3; };
-    static Int_t Eta() { return 4; };
-    static Int_t Rapidity() { return 5; };
-    static Int_t P() { return 6; }
     Bool_t Init(Int_t format_id = 0);
     virtual Bool_t Pass(Track* track);
     virtual ~TrackBoostedKinematcisCut();

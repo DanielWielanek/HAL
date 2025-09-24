@@ -14,16 +14,16 @@
 
 namespace Hal {
   TrackDCACut::TrackDCACut() : TrackCut(3) {
-    SetUnitName("DCA [cm]", DCA());
-    SetUnitName("DCA XY[cm]", DCAxy());
-    SetUnitName("DCA Z[cm]", DCAz());
+    SetUnitName("DCA [cm]", DCA);
+    SetUnitName("DCA XY[cm]", DCAxy);
+    SetUnitName("DCA Z[cm]", DCAz);
   }
 
   Bool_t TrackDCACut::Pass(Track* track) {
     const TVector3& dca = ((ExpTrack*) track)->GetDCA();
-    SetValue(dca.Mag(), DCA());
-    SetValue(dca.Pt(), DCAxy());
-    SetValue(dca.Z(), DCAz());
+    SetValue(dca.Mag(), DCA);
+    SetValue(dca.Pt(), DCAxy);
+    SetValue(dca.Z(), DCAz);
     return Validate();
   }
 

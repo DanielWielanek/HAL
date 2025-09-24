@@ -28,16 +28,10 @@ namespace Hal {
     TrackTpcMode fMode;
 
   protected:
-    static const int fgSigmaPionId;
-    static const int fgSigmaKaonId;
-    static const int fgSigmaProtonId;
-    static const int fgSigmaElectronId;
-    static const int fgTpcHitsId;
-    static const int fgChargeId;
-    static const int fgDeDxId;
     Bool_t Verify();
 
   public:
+    enum ParID { TpcHits = 0, Charge = 1, SigmaPion = 2, SigmaKaon = 3, SigmaProton = 4, SigmaElectron = 5, DeDx = 6 };
     TrackTpcCut();
     TrackTpcCut(const TrackTpcCut& other);
     virtual Bool_t Pass(Track* track);
@@ -79,41 +73,6 @@ namespace Hal {
      */
     void SetActiveSigma(TString flag);
     void SetDeDx(Double_t min, Double_t max);
-    /**
-     *
-     * @return parameter index for pion sigma
-     */
-    static inline Int_t PionSigma() { return fgSigmaPionId; };
-    /**
-     *
-     * @return  parameter index for kaon sigma
-     */
-    static inline Int_t KaonSigma() { return fgSigmaKaonId; };
-    /**
-     *
-     * @return parameter index for proton sigma
-     */
-    static inline Int_t ProtonSigma() { return fgSigmaProtonId; };
-    /**
-     *
-     * @return parameter index for electron sigma
-     */
-    static inline Int_t ElectronSigma() { return fgSigmaElectronId; };
-    /**
-     *
-     * @return parameter index for number of tpc hits
-     */
-    static inline Int_t TpcHits() { return fgTpcHitsId; };
-    /**
-     *
-     * @return parameter index for charge
-     */
-    static inline Int_t Charge() { return fgChargeId; };
-    /**
-     *
-     * @return parameter index of DeDx
-     */
-    static inline Int_t DeDx() { return fgDeDxId; };
     /**
      *
      * @return active sigma Id

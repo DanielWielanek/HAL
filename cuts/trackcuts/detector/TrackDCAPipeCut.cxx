@@ -16,18 +16,18 @@
 
 namespace Hal {
   TrackDCAPipeCut::TrackDCAPipeCut() : TrackExpCut(3) {
-    SetUnitName("DCA_{abs} [cm]", DCA());
-    SetUnitName("DCA XY_{abs}[cm]", DCAxy());
-    SetUnitName("DCA Z_{abs}[cm]", DCAz());
+    SetUnitName("DCA_{abs} [cm]", DCA);
+    SetUnitName("DCA XY_{abs}[cm]", DCAxy);
+    SetUnitName("DCA Z_{abs}[cm]", DCAz);
   }
 
   Bool_t TrackDCAPipeCut::Pass(Track* track) {
     const Helix& helix = ((ExpTrackHelix*) track)->GetHelix();
     Double_t s         = helix.PathLength(TVector3(0, 0, 0), kFALSE);
     const TVector3 dca = helix.EvalPos(s);
-    SetValue(dca.Mag(), DCA());
-    SetValue(dca.Pt(), DCAxy());
-    SetValue(dca.Z(), DCAz());
+    SetValue(dca.Mag(), DCA);
+    SetValue(dca.Pt(), DCAxy);
+    SetValue(dca.Z(), DCAz);
     return Validate();
   }
 

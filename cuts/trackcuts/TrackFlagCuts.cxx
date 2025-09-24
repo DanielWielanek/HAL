@@ -12,38 +12,38 @@
 namespace Hal {
   Bool_t TrackPrimaryFlagCut::Pass(Track* track) {
     if (track->IsPrimary()) {
-      SetValue(Primary());
+      SetValue(Primary);
     } else {
-      SetValue(NonPrimary());
+      SetValue(NonPrimary);
     }
     return Validate();
   }
 
   Bool_t TrackV0FlagCut::Pass(Track* track) {
     if (track->IsGoodV0()) {
-      SetValue(GoodV0());
+      SetValue(GoodV0);
     } else if (track->IsV0()) {
-      SetValue(BadV0());
+      SetValue(BadV0);
     } else {
-      SetValue(NonV0());
+      SetValue(NonV0);
     }
     return Validate();
   }
 
   Bool_t TrackGoodSecondaryFlagCut::Pass(Track* track) {
     if (track->IsGoodSecondary()) {
-      SetValue(HasMother());
+      SetValue(HasMother);
     } else {
-      SetValue(IsOrphan());
+      SetValue(IsOrphan);
     }
     return Validate();
   }
 
   Bool_t TrackGlobalFlagCut::Pass(Track* track) {
     if (track->IsGlobal()) {
-      SetValue(GlobalTrack());
+      SetValue(GlobalTrack);
     } else {
-      SetValue(NonGlobalTrack());
+      SetValue(NonGlobalTrack);
     }
     return Validate();
   }

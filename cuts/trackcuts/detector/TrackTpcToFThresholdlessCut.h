@@ -14,6 +14,8 @@
 namespace Hal {
   class TrackTpcToFThresholdlessCut : public TrackTpcToFCut {
   public:
+    enum ParID { TpcHits = 0, Charge = 1, SigmaPion = 2, SigmaKaon = 3, SigmaProton = 4, SigmaElectron = 5, DeDx = 6, M2 = 7 };
+
     TrackTpcToFThresholdlessCut(TrackTpcCut* tpc = NULL, TrackToFMass2Cut* tof = NULL);
     virtual Bool_t Pass(Track* tr);
     virtual ~TrackTpcToFThresholdlessCut();

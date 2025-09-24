@@ -21,11 +21,10 @@ namespace Hal {
     void Compute();
 
   public:
+    enum ParID { RStar = 1, KStar = 0 };
     TwoTrackFemtoPRFCut();
     virtual Bool_t Pass(TwoTrack* pair);
     virtual Bool_t Init(Int_t task_id);
-    static Int_t RStar() { return 1; };
-    static Int_t KStar() { return 0; };
     virtual ~TwoTrackFemtoPRFCut();
     ClassDef(TwoTrackFemtoPRFCut, 1)
   };
@@ -37,19 +36,21 @@ namespace Hal {
     void Compute();
 
   public:
+    enum ParID {
+      RStarOut  = 4,
+      RStarSide = 5,
+      RStarLong = 6,
+      TStar     = 7,
+      RStar     = 8,
+      KStar     = 9,
+      KStarOut  = 0,
+      KStarSide = 1,
+      KStarLong = 2,
+      KStarEn   = 3
+    };
     TwoTrackFemtoPRFCutFull();
     virtual Bool_t Pass(TwoTrack* pair);
     virtual Bool_t Init(Int_t task_id);
-    static Int_t RStarOut() { return 4; }
-    static Int_t RStarSide() { return 5; }
-    static Int_t RStarLong() { return 6; }
-    static Int_t TStar() { return 7; }
-    static Int_t RStar() { return 8; }
-    static Int_t KStar() { return 9; }
-    static Int_t KStarOut() { return 0; };
-    static Int_t KStarSide() { return 1; };
-    static Int_t KStarLong() { return 2; };
-    static Int_t KStarEn() { return 3; };
     virtual ~TwoTrackFemtoPRFCutFull();
     ClassDef(TwoTrackFemtoPRFCutFull, 1)
   };

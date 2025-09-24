@@ -14,11 +14,9 @@
 namespace Hal {
   class TwoTrackDCACut : public TwoTrackCut {
   public:
+    enum ParID { DCA = 0, DCAxy = 1, DCAz = 2 };
     TwoTrackDCACut();
     virtual Bool_t Pass(TwoTrack* pair);
-    static Int_t DCA() { return 0; };
-    static Int_t DCAxy() { return 1; };
-    static Int_t DCAz() { return 2; };
     virtual ~TwoTrackDCACut();
     ClassDef(TwoTrackDCACut, 1)
   };

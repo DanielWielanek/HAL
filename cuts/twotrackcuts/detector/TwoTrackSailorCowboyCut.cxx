@@ -110,7 +110,7 @@ namespace Hal {
     TVector3 pos1 = fHz1.EvalPos(s1);
     TVector3 pos2 = fHz1.EvalPos(s2);
     if (s1 == s2 && s1 == Helix::MaxPath()) {  // sailor
-      SetValue(Sailor());
+      SetValue(Sailor);
       return Validate();
     }
     Double_t phi1_1 = TVector2::Phi_mpi_pi(NormalizeAngle(pos1, x1, y1) - phi1);
@@ -119,17 +119,17 @@ namespace Hal {
     Double_t phi2_2 = TVector2::Phi_mpi_pi(NormalizeAngle(pos2, x2, y2) - phi2);
     if (AreBetween(phi1_1, sign1) && AreBetween(phi1_2, sign2)) {  // first point is overlap
       if (pos1.Pt() >= fThreshold) {
-        SetValue(Cowboy());
+        SetValue(Cowboy);
         return Validate();
       }
     }
     if (AreBetween(phi2_1, sign1) && AreBetween(phi2_2, sign2)) {  // first point is overlap
       if (pos2.Pt() >= fThreshold) {
-        SetValue(Cowboy());
+        SetValue(Cowboy);
         return Validate();
       }
     }
-    SetValue(Sailor());
+    SetValue(Sailor);
     return Validate();
   }
 

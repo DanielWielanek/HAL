@@ -14,12 +14,10 @@
 namespace Hal {
   class TrackDCACut : public TrackCut {
   public:
+    enum ParID { DCA = 0, DCAxy = 1, DCAz = 2 };
     TrackDCACut();
     virtual Bool_t Pass(Track* track);
     virtual Bool_t Init(Int_t id_format = 0);
-    static Int_t DCA() { return 0; };
-    static Int_t DCAxy() { return 1; };
-    static Int_t DCAz() { return 2; };
     virtual ~TrackDCACut();
     ClassDef(TrackDCACut, 1)
   };

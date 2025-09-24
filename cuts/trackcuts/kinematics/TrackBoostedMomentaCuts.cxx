@@ -46,26 +46,26 @@ namespace Hal {
   }
 
   TrackBoostedKinematcisCut::TrackBoostedKinematcisCut() : TrackCut(7) {
-    SetUnitName("Px_{boosted} [GeV/c]", Px());
-    SetUnitName("Py_{boosted} [GeV/c]", Py());
-    SetUnitName("Pz_{boosted} [GeV/c]", Pz());
-    SetUnitName("Pt_{boosted} [GeV/c]", Pt());
-    SetUnitName("P_{boosted} [GeV/c]", P());
-    SetUnitName("#eta_{boosted} []", Eta());
-    SetUnitName("Y_{boosted} []", Rapidity());
+    SetUnitName("Px_{boosted} [GeV/c]", Px);
+    SetUnitName("Py_{boosted} [GeV/c]", Py);
+    SetUnitName("Pz_{boosted} [GeV/c]", Pz);
+    SetUnitName("Pt_{boosted} [GeV/c]", Pt);
+    SetUnitName("P_{boosted} [GeV/c]", P);
+    SetUnitName("#eta_{boosted} []", Eta);
+    SetUnitName("Y_{boosted} []", Rapidity);
   }
 
   Bool_t TrackBoostedKinematcisCut::Pass(Track* track) {
     McTrack* mc        = (McTrack*) track;
     TLorentzVector vec = mc->GetMomentum();
     vec.Boost(fBoost);
-    SetValue(vec.Px(), Px());
-    SetValue(vec.Py(), Py());
-    SetValue(vec.Pz(), Pz());
-    SetValue(vec.Pt(), Pt());
-    SetValue(vec.P(), P());
-    SetValue(vec.Eta(), Eta());
-    SetValue(vec.Rapidity(), Rapidity());
+    SetValue(vec.Px(), Px);
+    SetValue(vec.Py(), Py);
+    SetValue(vec.Pz(), Pz);
+    SetValue(vec.Pt(), Pt);
+    SetValue(vec.P(), P);
+    SetValue(vec.Eta(), Eta);
+    SetValue(vec.Rapidity(), Rapidity);
     return Validate();
   }
 

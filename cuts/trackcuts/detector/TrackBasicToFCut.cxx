@@ -14,9 +14,7 @@
 #include "ExpTrack.h"
 #include "ToFTrack.h"
 namespace Hal {
-  const Int_t TrackBasicToFCut::fgMass2 = 0;
-  const Int_t TrackBasicToFCut::fgBeta  = 1;
-  const Int_t TrackBasicToFCut::fgFlag  = 2;
+
   TrackBasicToFCut::TrackBasicToFCut() : TrackExpCut(3) {
     SetUnitName("m_{ToF}^{2} [GeV^{2}/c^{4}]", 0);
     SetUnitName("#beta_{ToF} [c]", 1);

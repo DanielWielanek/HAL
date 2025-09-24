@@ -160,7 +160,10 @@ namespace Hal {
     metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetSourceName(), 'f'));
-    metadata_new->AddObject(new ParameterString("Input macro", gInterpreter->GetCurrentMacroName(), 'f'));
+    if (gInterpreter->GetCurrentMacroName())
+      metadata_new->AddObject(new ParameterString("Input macro", gInterpreter->GetCurrentMacroName(), 'f'));
+    else
+      metadata_new->AddObject(new ParameterString("Input macro", "Loaded by user", 'f'));
     metadata_new->AddObject(new ParameterDouble("Initialization Time [s]", fInitTime, 'f'));
     metadata_new->AddObject(new ParameterDouble("Processing time [s]", fFinishTime, 'f'));
     metadata_new->AddObject(fManager->GetBranchesList());

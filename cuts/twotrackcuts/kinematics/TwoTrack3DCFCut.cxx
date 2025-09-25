@@ -147,22 +147,6 @@ namespace Hal {
     return kTRUE;
   }
 
-  Cut* TwoTrack3DCFCut::MakeCopy(TString opt) const {
-    Cut* res           = nullptr;
-    Bool_t acceptNulls = Hal::Std::FindParam(opt, "null");
-    if (Hal::Std::FindParam(opt, "re")) {
-      res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(*this));
-      // if (acceptNulls) static_cast<TwoTrackRealCut*>(res)->AcceptNulls(kTRUE);
-      return res;
-    }
-    if (Hal::Std::FindParam(opt, "im")) {
-      res = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(*this));
-      if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
-      return res;
-    }
-    return new TwoTrack3DCFCut(*this);
-  }
-
   Package* TwoTrack3DCFCut::Report() const {
     Package* pack = TwoTrackCut::Report();
     if (fFrame == 0) {

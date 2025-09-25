@@ -156,7 +156,7 @@ namespace Hal {
     /**
      *
      * @param par parameter number
-     * @return true if prameter is outside limits
+     * @return true if parameter is outside limits
      */
     Bool_t OutLimits(Int_t par) const { return !InLimits(par); };
     /**

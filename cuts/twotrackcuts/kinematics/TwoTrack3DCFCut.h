@@ -31,7 +31,6 @@ namespace Hal {
     void UsePRF() { fFrame = 1; };
     void UseAbs(Bool_t abs = kTRUE) { fAbs = abs; };
     virtual Bool_t Init(Int_t);
-    virtual Cut* MakeCopy(TString opt = "") const;
     virtual Bool_t Pass(TwoTrack* pair);
     virtual Package* Report() const;
     virtual ~TwoTrack3DCFCut();

@@ -12,9 +12,8 @@
 
 namespace Hal {
 
-  DCAPropertyMonitor::DCAPropertyMonitor(Bool_t complex) :
-    TrackFieldMonitorXY((complex ? DataFieldID::ReStep + DataFieldID::Track::EExp::kDcaZ : DataFieldID::Track::EExp::kDcaZ),
-                        (complex ? DataFieldID::ReStep + DataFieldID::Track::EExp::kDcaXY : DataFieldID::Track::EExp::kDcaXY)) {}
+  DCAPropertyMonitor::DCAPropertyMonitor() :
+    TrackFieldMonitorXY(DataFieldID::Track::EExp::kDcaZ, DataFieldID::Track::EExp::kDcaXY) {}
 
   DCAPropertyMonitor::~DCAPropertyMonitor() {}
 }  // namespace Hal

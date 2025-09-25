@@ -15,8 +15,7 @@ namespace Hal {
 
   class TofPropertyMonitor : public TrackFieldMonitorXY {
   public:
-    TofPropertyMonitor(Bool_t complex = kFALSE);
-    virtual CutMonitor* MakeCopy() const { return new TofPropertyMonitor(*this); }
+    TofPropertyMonitor();
     virtual ~TofPropertyMonitor();
     ClassDef(TofPropertyMonitor, 1)
   };

@@ -12,9 +12,8 @@
 
 namespace Hal {
 
-  TofPropertyMonitor::TofPropertyMonitor(Bool_t complex) :
-    TrackFieldMonitorXY((complex ? DataFieldID::ReStep + DataFieldID::Track::EBasic::kPq : DataFieldID::Track::EBasic::kPq),
-                        (complex ? DataFieldID::ReStep + DataFieldID::Track::EExp::kTofM2 : DataFieldID::Track::EExp::kTofM2)) {}
+  TofPropertyMonitor::TofPropertyMonitor() :
+    TrackFieldMonitorXY(DataFieldID::Track::EBasic::kPq, DataFieldID::Track::EExp::kTofM2) {}
 
   TofPropertyMonitor::~TofPropertyMonitor() {}
 }  // namespace Hal

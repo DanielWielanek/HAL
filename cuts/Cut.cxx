@@ -312,7 +312,6 @@ namespace Hal {
         if (!c->HasDictionary()) { Hal::Cout::PrintInfo(Form("%s has no dictionary", ClassName()), EInfo::kDebugInfo); }
       }
     }
-    std::cout << ClassName() << " cloned " << std::endl;
     return (Cut*) this->Clone();
   }
 }  // namespace Hal

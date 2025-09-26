@@ -279,8 +279,24 @@ namespace Hal {
 
   Hal::Cut* EventComplexCut::MakeInnerCopy() const { return new EventComplexCut(*this); }
 
-  Hal::Cut* EventRealCut::MakeInnerCopy() const { return new EventRealCut(*this); }
+  Hal::Cut* EventRealCut::MakeInnerCopy() const { return new EventRealCut(*this, kTRUE); }
 
-  Hal::Cut* EventImaginaryCut::MakeInnerCopy() const { return new EventImaginaryCut(*this); }
+  Hal::Cut* EventImaginaryCut::MakeInnerCopy() const { return new EventImaginaryCut(*this, kTRUE); }
+
+  EventRealCut::EventRealCut(const EventRealCut& other, Bool_t safe) : EventRealCut(other.GetRealCut()) {
+    TString className = other.ClassName();
+    if (className != "Hal::EventRealCut" && safe) {
+      Hal::Cout::PrintInfo(Form("Unsafe copying %s", ClassName()), EInfo::kDebugInfo);
+    }
+  }
+
+  EventImaginaryCut::EventImaginaryCut(const EventImaginaryCut& other, Bool_t safe) : EventImaginaryCut(other.GetImgCut()) {
+    fNullObjects      = other.fNullObjects;
+    fAcceptNulls      = other.fAcceptNulls;
+    TString className = other.ClassName();
+    if (className != "Hal::EventImaginaryCut" && safe) {
+      Hal::Cout::PrintInfo(Form("Unsafe copying %s", ClassName()), EInfo::kDebugInfo);
+    }
+  }
 
 }  // namespace Hal

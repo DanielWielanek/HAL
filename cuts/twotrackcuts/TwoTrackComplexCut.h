@@ -44,6 +44,8 @@ namespace Hal {
 
   protected:
     virtual Hal::Cut* MakeInnerCopy() const;
+    /** save copy ctor  for make inner copy*/
+    TwoTrackRealCut(const TwoTrackRealCut& other, Bool_t safe);
 
   public:
     TwoTrackRealCut();
@@ -68,6 +70,8 @@ namespace Hal {
 
   protected:
     virtual Hal::Cut* MakeInnerCopy() const;
+    /** save copy ctor  for make inner copy*/
+    TwoTrackImaginaryCut(const TwoTrackImaginaryCut& other, Bool_t safe);
 
   public:
     TwoTrackImaginaryCut();

@@ -276,4 +276,11 @@ namespace Hal {
   EventImaginaryCut::~EventImaginaryCut() {
     if (fImgCut) delete fImgCut;
   }
+
+  Hal::Cut* EventComplexCut::MakeInnerCopy() const { return new EventComplexCut(*this); }
+
+  Hal::Cut* EventRealCut::MakeInnerCopy() const { return new EventRealCut(*this); }
+
+  Hal::Cut* EventImaginaryCut::MakeInnerCopy() const { return new EventImaginaryCut(*this); }
+
 }  // namespace Hal

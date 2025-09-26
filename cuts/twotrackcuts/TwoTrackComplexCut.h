@@ -20,6 +20,9 @@ namespace Hal {
     ULong64_t fNullObjects;
     Bool_t fAcceptNulls;
 
+  protected:
+    virtual Hal::Cut* MakeInnerCopy() const;
+
   public:
     TwoTrackComplexCut();
     TwoTrackComplexCut(const TwoTrackCut* real, const TwoTrackCut* img);
@@ -38,6 +41,9 @@ namespace Hal {
   class TwoTrackRealCut : public TwoTrackCut {
     TwoTrackCut* fRealCut;
     TwoTrack* fPair;
+
+  protected:
+    virtual Hal::Cut* MakeInnerCopy() const;
 
   public:
     TwoTrackRealCut();
@@ -59,6 +65,9 @@ namespace Hal {
     TwoTrack* fPair;
     ULong64_t fNullObjects;
     Bool_t fAcceptNulls;
+
+  protected:
+    virtual Hal::Cut* MakeInnerCopy() const;
 
   public:
     TwoTrackImaginaryCut();

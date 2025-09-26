@@ -298,4 +298,11 @@ namespace Hal {
   TrackImaginaryCut::~TrackImaginaryCut() {
     if (fImgCut) delete fImgCut;
   }
+
+  Hal::Cut* TrackImaginaryCut::MakeInnerCopy() const { return new TrackImaginaryCut(*this); }
+
+  Hal::Cut* TrackComplexCut::MakeInnerCopy() const { return new TrackComplexCut(*this); }
+
+  Hal::Cut* TrackRealCut::MakeInnerCopy() const { return new TrackRealCut(*this); }
+
 }  // namespace Hal

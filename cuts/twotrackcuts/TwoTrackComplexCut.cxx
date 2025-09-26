@@ -315,4 +315,11 @@ namespace Hal {
     if (fImgCut) delete fImgCut;
     if (fPair) delete fPair;
   }
+
+  Hal::Cut* TwoTrackComplexCut::MakeInnerCopy() const { return new TwoTrackComplexCut(*this); }
+
+  Hal::Cut* TwoTrackRealCut::MakeInnerCopy() const { return new TwoTrackRealCut(*this); }
+
+  Hal::Cut* TwoTrackImaginaryCut::MakeInnerCopy() const { return new TwoTrackImaginaryCut(*this); }
+
 }  // namespace Hal

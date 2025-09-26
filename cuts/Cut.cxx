@@ -304,7 +304,7 @@ namespace Hal {
 
   Cut* Cut::MakeInnerCopy() const {
     if (Hal::Cout::GetVerboseMode() == Hal::EInfo::kDebugInfo) {
-      TClass* c = new TClass(ClassName());
+      TClass* c = TClass::GetClass(ClassName());
       if (!c) {
         Hal::Cout::PrintInfo(Form("%s is not recognized as class", ClassName()), EInfo::kDebugInfo);
       } else {

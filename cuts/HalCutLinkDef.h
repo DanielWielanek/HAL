@@ -97,6 +97,9 @@
 #pragma link C++ class Hal::TrackTpcToFThresholdlessCut + ;
 #pragma link C++ class Hal::TrackToFMass2Cut + ;
 #pragma link C++ class Hal::TrackTofMass2CutNoZeros + ;
+#pragma link C++ class Hal::TrackV0DaughterDistCut + ;
+#pragma link C++ class Hal::TrackV0MinvCut + ;
+#pragma link C++ class Hal::TrackV0DecLenCut + ;
 
 #pragma link C++ class Hal::TrackYAssumedCut + ;
 #pragma link C++ class Hal::TrackBetaCut + ;

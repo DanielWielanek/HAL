@@ -47,7 +47,7 @@ namespace Hal {
       kV0          = 1,
       kXi          = 2,
       kGlobal      = 3,
-      kMotherKnown      = 4,  // set if mother is known (and its secondary)
+      kMotherKnown = 4,  // set if mother is known (and its secondary)
       kV0Daughters = 5,  // set if v0 and daughters are known
       kXiDaughters = 6,  // set if xi and daughters are known
       kBackground  = 7,  // set if background particle

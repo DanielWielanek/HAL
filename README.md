@@ -91,6 +91,7 @@ If Compilation Fails
  * **CMAKE_CXX_STANDARD=[XX]** – manually set C++ standard (default is 17).
  * **ROOTSYS=[path]** – manually specify ROOT path
  * **GLS_DIR=[path]** – manually specify GSL path
+ * **SKIP_ROOT_FEATURES_CHECKING=TRUE** - skip checking support of XML and Sqlite (sometimes root is complied with those flags but cmake can't find them)
 
 >   ⚠️ Note: to check ROOT cxx standard version use command:
 
@@ -113,6 +114,7 @@ This software includes several helper tools:
    * Simplify Buffer class (use pointers instead of int maps?)
    * Consider using std::function for custom class cuts
    * Add macro-level cut generator
+   * Set flag IDS of cuts to something like ID to avoid confusion
    
    * remove templates of jobs
    * remove templates of cuts 

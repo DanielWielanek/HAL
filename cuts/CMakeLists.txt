@@ -137,6 +137,7 @@ cutmonitors/customized/MonitorReso.cxx
 cutmonitors/customized/MonitorTof.cxx
 cutmonitors/customized/MonitorDCA.cxx
 cutmonitors/customized/MonitorEventVertex.cxx
+cutmonitors/customized/TrackFlagMonitor.cxx
 cutmonitors/CutMonitorComplex.cxx
 )
 

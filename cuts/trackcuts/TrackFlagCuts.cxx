@@ -47,4 +47,38 @@ namespace Hal {
     }
     return Validate();
   }
+
+  std::vector<std::pair<TString, Double_t>> TrackPrimaryFlagCut::GetBinLabels(Int_t par) const {
+    std::vector<std::pair<TString, Double_t>> res;
+    res.push_back(std::pair<TString, Double_t>("NonPrimary", ValID::NonPrimary));
+    res.push_back(std::pair<TString, Double_t>("Primary", ValID::Primary));
+    return res;
+  }
+
+
+  std::vector<std::pair<TString, Double_t>> TrackV0FlagCut::GetBinLabels(Int_t par) const {
+    std::vector<std::pair<TString, Double_t>> res;
+    res.push_back(std::pair<TString, Double_t>("NonV0", ValID::NonV0));
+    res.push_back(std::pair<TString, Double_t>("BadV0", ValID::BadV0));
+    res.push_back(std::pair<TString, Double_t>("GoodV0", ValID::GoodV0));
+    return res;
+  }
+
+
+  std::vector<std::pair<TString, Double_t>> TrackGoodSecondaryFlagCut::GetBinLabels(Int_t par) const {
+    std::vector<std::pair<TString, Double_t>> res;
+    res.push_back(std::pair<TString, Double_t>("HasMother", ValID::HasMother));
+    res.push_back(std::pair<TString, Double_t>("Orphan", ValID::IsOrphan));
+    return res;
+  }
+
+
+  std::vector<std::pair<TString, Double_t>> TrackGlobalFlagCut::GetBinLabels(Int_t par) const {
+    std::vector<std::pair<TString, Double_t>> res;
+    enum ValID { GlobalTrack = 1, NonGlobalTrack = 0 };
+    res.push_back(std::pair<TString, Double_t>("GlobalTrack", ValID::GlobalTrack));
+    res.push_back(std::pair<TString, Double_t>("NonGlobalTrack", ValID::NonGlobalTrack));
+    return res;
+  }
+
 }  // namespace Hal

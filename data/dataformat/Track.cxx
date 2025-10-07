@@ -34,7 +34,7 @@ namespace Hal {
 
   void Track::SetPrimary() {
     SETBIT(fType, kPrimary);
-    CLRBIT(fType, kMother);
+    CLRBIT(fType, kMotherKnown);
   }
 
   void Track::CopyData(Track* other) {
@@ -183,9 +183,9 @@ namespace Hal {
   void Track::SetSecondary(Bool_t parent) {
     CLRBIT(fType, kPrimary);
     if (parent) {
-      SETBIT(fType, kMother);
+      SETBIT(fType, kMotherKnown);
     } else {
-      CLRBIT(fType, kMother);
+      CLRBIT(fType, kMotherKnown);
     }
   }
 

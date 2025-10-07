@@ -75,7 +75,6 @@ namespace Hal {
 
   std::vector<std::pair<TString, Double_t>> TrackGlobalFlagCut::GetBinLabels(Int_t par) const {
     std::vector<std::pair<TString, Double_t>> res;
-    enum ValID { GlobalTrack = 1, NonGlobalTrack = 0 };
     res.push_back(std::pair<TString, Double_t>("GlobalTrack", ValID::GlobalTrack));
     res.push_back(std::pair<TString, Double_t>("NonGlobalTrack", ValID::NonGlobalTrack));
     return res;

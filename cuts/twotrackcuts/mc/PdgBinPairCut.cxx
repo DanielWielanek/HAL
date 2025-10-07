@@ -10,6 +10,8 @@
 #include "PdgBinPairCut.h"
 
 #include "Cut.h"
+#include "Package.h"
+#include "Parameter.h"
 #include "Track.h"
 #include "TwoTrack.h"
 
@@ -19,44 +21,33 @@
 #include <RtypesCore.h>
 #include <TString.h>
 namespace Hal {
-  PdgBinPairCut::PdgBinPairCut() : TwoTrackCut(2) {
+  PdgBinPairCut::PdgBinPairCut(Bool_t autoload) : TwoTrackCut(2) {
     SetUnitName("First paritcle [AU]", 0);
     SetUnitName("Second paritcle [AU]", 1);
+    SafelyAddToMap(81, "other neutral");
+    SafelyAddToMap(82, "other positive");
+    SafelyAddToMap(83, "other negative");
+    SafelyAddToMap(84, "unknown");
+    if (autoload) {
+      SafelyAddToMap(Hal::Const::PionPlusPID(), "");
+      SafelyAddToMap(-Hal::Const::PionPlusPID(), "");
+      SafelyAddToMap(Hal::Const::KaonPlusPID(), "");
+      SafelyAddToMap(-Hal::Const::KaonPlusPID(), "");
+      SafelyAddToMap(Hal::Const::ProtonPID(), "");
+      SafelyAddToMap(-Hal::Const::ProtonPID(), "");
+      SafelyAddToMap(Hal::Const::ElectronPID(), "");
+      SafelyAddToMap(-Hal::Const::ElectronPID(), "");
+      SafelyAddToMap(Hal::Const::MuonPID(), "");
+      SafelyAddToMap(-Hal::Const::MuonPID(), "");
+    }
   }
 
   Bool_t PdgBinPairCut::Pass(TwoTrack* pair) {
     McTrack* track1 = (McTrack*) pair->GetTrack1();
     McTrack* track2 = (McTrack*) pair->GetTrack2();
-    SetValue(PidToID(track1), 0);
-    SetValue(PidToID(track2), 1);
+    SetValue(GetPid(track1), 0);
+    SetValue(GetPid(track2), 1);
     return Validate();
-  }
-
-  Int_t PdgBinPairCut::PidToID(McTrack* track) const {
-    Int_t val = 0;
-    Int_t pdg = track->GetPdg();
-    switch (pdg) {
-      case -11: val = 2; break;
-      case 211: val = 3; break;
-      case 321: val = 4; break;
-      case 2212: val = 5; break;
-      case 11: val = -2; break;
-      case -211: val = -3; break;
-      case -321: val = -4; break;
-      case -2212: val = -5; break;
-      case 13: val = -6; break;
-      case -13: val = 6; break;
-      default: {
-        Int_t charge = track->GetCharge();
-        switch (charge) {
-          case 0: val = 0; break;
-          case 1: val = 1; break;
-          case -1: val = -1; break;
-          default: val = 7; break;
-        }
-      } break;
-    };
-    return val;
   }
 
   PdgBinPairCut::~PdgBinPairCut() {
@@ -65,20 +56,66 @@ namespace Hal {
 
   std::vector<std::pair<TString, Double_t>> PdgBinPairCut::GetBinLabels(Int_t /*int1*/) const {
     std::vector<std::pair<TString, Double_t>> res;
-    res.push_back(std::pair<TString, Double_t>("0", 0));
-    res.push_back(std::pair<TString, Double_t>("+", 1));
-    res.push_back(std::pair<TString, Double_t>("-", -1));
-    res.push_back(std::pair<TString, Double_t>("unknown", 7));
-    res.push_back(std::pair<TString, Double_t>("e^{+}", 2));
-    res.push_back(std::pair<TString, Double_t>("#pi^{+}", 3));
-    res.push_back(std::pair<TString, Double_t>("K^{+}", 4));
-    res.push_back(std::pair<TString, Double_t>("p", 5));
-    res.push_back(std::pair<TString, Double_t>("#mu^{+}", 6));
-    res.push_back(std::pair<TString, Double_t>("e^{-}", -2));
-    res.push_back(std::pair<TString, Double_t>("#pi^{-}", -3));
-    res.push_back(std::pair<TString, Double_t>("K^{-}", -4));
-    res.push_back(std::pair<TString, Double_t>("#bar{p}", -5));
-    res.push_back(std::pair<TString, Double_t>("#mu^{-}", -6));
+    for (int i = 0; i < fNames.size(); i++) {
+      res.push_back(std::pair<TString, Double_t>(fNames[i], fIndexes[i]));
+    }
     return res;
   }
+
+  void PdgBinPairCut::SafelyAddToMap(Int_t pid, TString name) {
+    auto it = fMap.find(pid);
+    if (it != fMap.end()) { return; }
+    int idx   = fMap.size();
+    fMap[pid] = idx;
+    if (name.Length()) {
+      fNames.push_back(name);
+      fIndexes.push_back(idx);
+    } else {
+      name = Hal::Const::PdgToName(pid);
+      fNames.push_back(name);
+      fIndexes.push_back(idx);
+    }
+  }
+
+  Hal::Package* PdgBinPairCut::Report() const {
+    auto report = TwoTrackCut::Report();
+    for (unsigned int i = 0; i < fIndexes.size(); i++) {
+      report->AddObject(new Hal::ParameterInt(fNames[i], i));
+    }
+    return report;
+  }
+
+  Int_t PdgBinPairCut::GetPid(Hal::Track* track) {
+    McTrack* tr      = (McTrack*) track;
+    Int_t val        = 0;
+    Int_t pdg        = tr->GetPdg();
+    Int_t index_flag = 0;
+    auto it          = fMap.find(pdg);
+    if (it == fMap.end()) {
+      index_flag = -1;
+    } else {
+      index_flag = fMap[pdg];
+    }
+    if (index_flag == -1) {  // unknown particle
+      Int_t charge = track->GetCharge();
+      switch (charge) {
+        case 0: {
+          val = fMap[81];
+        } break;
+        case 1: {
+          val = fMap[82];
+        } break;
+        case -1: {
+          val = fMap[83];
+        } break;
+        default: {
+          val = fMap[84];
+        } break;
+      }
+    } else {  // known particle
+      val = index_flag;
+    }
+    return val;
+  }
+
 }  // namespace Hal

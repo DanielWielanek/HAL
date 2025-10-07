@@ -314,4 +314,10 @@ namespace Hal {
     }
     return (Cut*) this->Clone();
   }
+
+  void CutBackdoor::SetValue(Cut& cut, Double_t value, Int_t index) const { cut.SetValue(value, index); }
+
+
+  void CutBackdoor::SetUnitName(Cut& cut, TString unitName, Int_t index) const { cut.SetUnitName(unitName, index); }
+
 }  // namespace Hal

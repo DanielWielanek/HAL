@@ -7,6 +7,7 @@
 
 #ifdef __MAKECINT__
 #pragma link C++ class Hal::Cut + ;
+#pragma link C++ class Hal::CutBackdoor + ;
 #pragma link C++ class Hal::SubCut + ;
 #pragma link C++ class Hal::SubCutHisto + ;
 #pragma link C++ class Hal::SubCutRectangle + ;
@@ -57,6 +58,10 @@
 #pragma link C++ class Hal::MonitorResoPhi + ;
 #pragma link C++ class Hal::MonitorResoTheta + ;
 #pragma link C++ class Hal::CutMonitorFieldIdTranslator + ;
+
+#pragma link C++ class Hal::TrackFlagChecker + ;
+#pragma link C++ class Hal::TrackFlagMonitor1D + ;
+#pragma link C++ class Hal::TrackFlagMonitor2D + ;
 
 #pragma link C++ class Hal::MonitorComplexPair + ;
 #pragma link C++ class Hal::ComplexMonitor + ;

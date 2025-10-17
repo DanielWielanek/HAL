@@ -128,10 +128,10 @@ namespace Hal {
      * return hbt pair that calculates proper kinematics variables, replaces
      * FemtoPair::Factory
      * @param kin
-     * @param use_fake - use "hidde" momenta for calculations instead of "real"
+     * @param use_fake - use "hidden" momenta for calculations instead of "real"
      * @return
      */
-    FemtoPair* MakePair(EKinematics kin, Bool_t use_fake);
+    FemtoPair* MakePair(EKinematics kin, Bool_t use_mc);
     /**
      * create CF from xml node
      * @param nod

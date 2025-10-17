@@ -115,6 +115,7 @@ namespace Hal {
     }
     if (fPdg1 != fPdg2) { EnableNonIdentical(); }
     Task::EInitFlag prev = TwoTrackAna::Init();
+    if (prev != Task::EInitFlag::kSUCCESS) return prev;
     if (fCutContainer->GetTwoTrackCollectionsNo() != fCutContainer->GetTwoTrackCollectionsBackgroundNo()) {
       Cout::PrintInfo("Two track collectionsNo in signal and background are different - this might result in crash",
                       EInfo::kWarning);

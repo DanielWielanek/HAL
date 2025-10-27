@@ -60,7 +60,7 @@ namespace HalOTF { /* namespace Hal */
 
   EventGenerator::EventGenerator() {}
 
-  void EventGenerator::SetSpiecies(const TH2D& h, Int_t pid) {
+  void EventGenerator::SetSpecies(const TH2D& h, Int_t pid) {
     TH2D* copy         = (TH2D*) h.Clone();
     TDatabasePDG* pdg  = TDatabasePDG::Instance();
     TParticlePDG* part = pdg->GetParticle(pid);

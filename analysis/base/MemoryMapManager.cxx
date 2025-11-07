@@ -29,6 +29,7 @@ namespace Hal {
     fDirectAcces(kFALSE),
     fTrackMapSize(4000),
     fFormatID(0),
+    fLastEventMemoryCollection(0),
     fEventCollectionsNo(1),
     fTrackCollectionsNo(1),
     fMixSize(1),

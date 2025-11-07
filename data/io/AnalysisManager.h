@@ -36,6 +36,7 @@ namespace Hal {
     UInt_t fProcessedEvents = {0};
     Bool_t fTriggersEnabled = {kFALSE};
     Bool_t fProgressBar     = {kFALSE};
+    Bool_t fFixRoot         = {kFALSE};
     MagField* fField        = {nullptr};
     Source* fSource         = {nullptr};
     TString fOutputFile;
@@ -98,6 +99,8 @@ namespace Hal {
      * @param field
      */
     void SetField(MagField* field) { fField = field; }
+    /** skip saving name of output macro - this is ROOT bug that should be fixed soon*/
+    void FixRoot() { fFixRoot = kTRUE; }
     AnalysisManager operator=(const AnalysisManager& other) = delete;
     virtual ~AnalysisManager();
     ClassDef(AnalysisManager, 1)

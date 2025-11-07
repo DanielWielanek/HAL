@@ -48,6 +48,7 @@ namespace Hal {
     static Int_t SigmaMinusPID() { return 3112; };
     static Int_t XiZeroPID() { return 3322; };
     static Int_t XiMinusPID() { return 3312; };
+    static Int_t JPsiPID() { return 443; }
     static TString PdgToName(Int_t pid);
     static Double_t ElectronMass() { return 0.000510998; };
     static Double_t MuonMass() { return 0.105658; };
@@ -58,6 +59,7 @@ namespace Hal {
     static Double_t NeutronMass() { return 0.939565; }
     static Double_t KaonZeroMass() { return 0.497611; };
     static Double_t DeuteronMass() { return 1.875; };
+    static Double_t JPsiMass() { return 3.096916; };
     /**
      * add new particles to PDG database
      * @param inFile file with additional particles - TODO implement this function, now only deuteron is added

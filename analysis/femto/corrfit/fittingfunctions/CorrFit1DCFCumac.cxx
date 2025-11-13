@@ -517,6 +517,7 @@ namespace Hal {
     Double_t r0    = Femto::FmToGeV(params[RadiusID()]);
     Double_t q     = 2.0 * ak;
     auto component = [&](double f0, double d0) {
+      if (f0 == 0 && d0 == 0) return 1.;  // non-interacting?
       f0 = Femto::FmToGeV(f0);
       d0 = Femto::FmToGeV(d0);
       // TComplex tmp = TComplex(d0 * ak * ak * 0.5, -ak) - 1.0 / f0;  // https://arxiv.org/pdf/2005.05012

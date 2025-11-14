@@ -320,4 +320,8 @@ namespace Hal {
     }
   }
 
+  void MultiGraph::SetDrawOption(Int_t no, Option_t* opt) {
+    if (no < fAddingOptions.size()) { fAddingOptions[no] = opt; }
+  }
+
 }  // namespace Hal

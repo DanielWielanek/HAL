@@ -277,6 +277,12 @@ namespace Hal {
      * to odd graphs (event)
      */
     void RecalculateYLogErrors(Double_t ref, Double_t widht, Int_t gr = -1);
+    /**
+     * set draw option for single histogramu (used when added graph to multigraph)
+     * @param no
+     * @param opt
+     */
+    void SetDrawOption(Int_t no, Option_t* opt);
     virtual ~MultiGraph();
     ClassDef(MultiGraph, 2)
   };

@@ -35,8 +35,44 @@ namespace Hal {
 
   protected:
     ChiSqMap2D();
+    /**
+     * calculate uncertainty estimated as an thres% change
+     * @param thres threshold of uncertainty, if negative uses "hessian like method"
+     * @param around_fit if true estimate around fit, otherwise estimate around
+     * global minimum
+     * @return 0 if calculation failed
+     */
+    std::pair<Double_t, Double_t> EstimateErrorX(Double_t thres = 0.1, Bool_t around_fit = kTRUE) const;
+    /**
+     * calculate uncertainty estimated as an thres% change
+     * @param thres threshold of uncertainty, if negative uses "hessian like method"
+     * @param around_fit if true estimate around fit, otherwise estimate around
+     * global minimum
+     * @return 0 if calculation failed
+     */
+    std::pair<Double_t, Double_t> EstimateErrorY(Double_t thres = 0.1, Bool_t around_fit = kTRUE) const;
+    /**
+     * calculate uncertainty by looking at chi2, therefore results strongly depends on bin width
+     * @param thres maximal tolerated value of chi2 for uncertainty
+     * @param around_fit
+     * @return
+     */
+    std::pair<Double_t, Double_t> EstimateErrorXContour(Double_t thres, Bool_t around_fit) const;
+    /**
+     * Calculate uncertainty by looking at chi2 map, results strongly depends on bin width
+     * @param thres maximal tolerated value of chi2 for uncertainty
+     * @param around_fit
+     * @return
+     */
+    std::pair<Double_t, Double_t> EstimateErrorYContour(Double_t thres, Bool_t around_fit) const;
 
   public:
+    enum class EErrorAlgo {
+      kParabolaFit,  // parabola fixed threshod
+      kParabolaMin,  // parabola find mininum
+      kContourFit,   // contour - relatvie to fit
+      kContourMin    // contour - relative to minum
+    };
     /**
      *
      * @param name name of ma
@@ -102,22 +138,21 @@ namespace Hal {
      * @return low  Y-paremeter error
      */
     Double_t GetFitYErrorLow() const;
+
     /**
-     * calculate uncertainty estimated as an thres% change
-     * @param thres threshold of uncertainty, if negative uses "hessian like method"
-     * @param around_fit if true estimate around fit, otherwise estimate around
-     * global minimum
-     * @return 0 if calculation failed
+     * calculate uncerainty estimated as sthres change
+     * @param algo algoritm to estim uncert
+     * @param thres thres
+     * @return lower/upper error
      */
-    Double_t GetEstErrorX(Double_t thres = 0.1, Bool_t around_fit = kTRUE) const;
+    std::pair<Double_t, Double_t> GetEstErorX(EErrorAlgo algo, Double_t thres);
     /**
-     * calculate uncertainty estimated as an thres% change
-     * @param thres threshold of uncertainty, if negative uses "hessian like method"
-     * @param around_fit if true estimate around fit, otherwise estimate around
-     * global minimum
-     * @return 0 if calculation failed
+     * calculate uncerainty estimated as sthres change
+     * @param algo algoritm to estim uncert
+     * @param thres thres
+     * @return lower/upper error
      */
-    Double_t GetEstErrorY(Double_t thres = 0.1, Bool_t around_fit = kTRUE) const;
+    std::pair<Double_t, Double_t> GetEstErorY(EErrorAlgo algo, Double_t thres);
     /**
      *
      * @return minimum on chi2 with parabola interpolation
@@ -128,7 +163,6 @@ namespace Hal {
      * @return minimum on chi2 with parabola interpolation
      */
     Double_t GetEstY() const;
-
     /**
      * histogram with chi-square map
      */
@@ -151,8 +185,9 @@ namespace Hal {
      * return minimal values
      * @param x
      * @param y
+     * @param return minimal value of fHist
      */
-    void GetMin(Double_t& x, Double_t& y) const;
+    Double_t GetMin(Double_t& x, Double_t& y) const;
     /**
      *
      * @param opt min - draw min value on chi2 map as a square
@@ -160,6 +195,14 @@ namespace Hal {
      * nolin - draw without fitted parameters
      */
     void Draw(Option_t* opt = "");
+    /**
+     * draw contour
+     * @param nFree number of free parameters
+     * @param cL confidence level
+     * @param col color
+     * @param width - line width
+     */
+    void DrawContour(Int_t nFree, Double_t cL = 0.68, Color_t col = kGray, Int_t width = 1);
     /**
      * find min max and calculate statistic uncertainty by revering hessian
      * @param x

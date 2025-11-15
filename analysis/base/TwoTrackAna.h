@@ -21,6 +21,7 @@
 // #define DISABLE_TWO_TRACK_SWAPPING
 namespace Hal {
   class TwoTrackAnaChain;
+  class EventBinningCut;
   /**
    * basic class for making two track analysis
    */
@@ -134,6 +135,21 @@ namespace Hal {
 
   protected:
     /**
+     * array with event bins cuts
+     */
+    std::vector<EventBinningCut*> fEventBinningCuts;
+    Int_t fEventBinsMax            = {1};
+    Int_t fEventMemoryCollectionId = {0};
+    /**
+     * if enabled then number of event collections is multiplied by fEventBinsMax
+     * in such case fCurrentEventCollectionID in PassEvent points to "event collectionid"
+     * whereas fEventMemoryCollectionId - points to physical event collection in memory map
+     * fFakeEventBinID
+     *
+     *
+     */
+    Bool_t fEventBinningEnabled = {kFALSE};
+    /**
      * background mode used in analysis
      */
     EAnaMode fBackgroundMode = {EAnaMode::kNoBackground};
@@ -157,6 +173,8 @@ namespace Hal {
      * currently processed background pair
      */
     TwoTrack* fCurrentBackgroundPair = {nullptr};
+
+    virtual void InitMemoryMap();
     /**
      * set some tags connected with used background
      */
@@ -258,6 +276,8 @@ namespace Hal {
      */
     virtual void FinishEventNonIdentical();
     virtual Task::EInitFlag Init();
+    virtual Int_t GetEventBin();
+    virtual Bool_t CheckBinningCuts();
 
   public:
     /**
@@ -303,6 +323,7 @@ namespace Hal {
      * set this analysis as non-identical analysis
      */
     void EnableNonIdentical() { SetOption("nonid"); };
+    virtual void AddCut(const Hal::Cut& cut, Option_t* opt = "");
     /**
      *
      * @return option to set mixed background

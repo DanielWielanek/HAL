@@ -12,13 +12,21 @@
 #include "Cout.h"
 #include "CutCollection.h"
 #include "CutContainer.h"
+#include "CutOptions.h"
+#include "DataFormatManager.h"
+#include "EventBinningCut.h"
+#include "EventCut.h"
+#include "EventVirtualCut.h"
 #include "MemoryMapManager.h"
+#include "Package.h"
 #include "Parameter.h"
 #include "TrackVirtualCut.h"
 #include "TwoTrack.h"
 #include "TwoTrackVirtualCut.h"
 
+#include <TList.h>
 #include <TString.h>
+#include <iostream>
 
 
 namespace Hal {
@@ -59,6 +67,7 @@ namespace Hal {
       AddToAnaMetadata(pack, new ParameterString("Signal", "Identical"));
     else
       AddToAnaMetadata(pack, new ParameterString("Signal", "Non-identical"));
+    AddToAnaMetadata(pack, new ParameterBool("Event Binning", fEventBinningEnabled));
     return pack;
   }
 
@@ -88,6 +97,7 @@ namespace Hal {
   }
 
   Task::EInitFlag TwoTrackAna::Init() {
+
     Task::EInitFlag in = MultiTrackAna::Init();
     SetTags();
     fCurrentSignalPair     = new TwoTrack();
@@ -164,6 +174,7 @@ namespace Hal {
     if (!IdenticalParticles() && fTrackCollectionsNo == 1) {
       Cout::PrintInfo("TwoTrackAna: Not enough track collections i nonid analysis", EInfo::kCriticalError);
     }
+
     switch (fBackgroundMode) {
       case kCharged: {
         if (trackTrig < 2) {
@@ -214,6 +225,7 @@ namespace Hal {
         }
       } break;
     }
+    if (fEventBinningEnabled) CheckBinningCuts();
   }
 
   void TwoTrackAna::LinkCollections() {
@@ -288,8 +300,9 @@ namespace Hal {
 
   void TwoTrackAna::FinishEventIdentical() {
     if (fSkipEmpty) {
-      if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) < 2) {
-        fMemoryMap->RejectLastEvent(fCurrentEventCollectionID);
+      fMemoryMap->SwitchToMemoryCollection(fEventMemoryCollectionId);
+      if (fMemoryMap->GetTracksNoAuto(fCurrentTrackCollectionID) < 2) {
+        fMemoryMap->RejectLastEventAuto();
         return;
       }
     }
@@ -300,7 +313,7 @@ namespace Hal {
       } break;
       case kMixedPairsID: {
         MakePairs();
-        if (fMemoryMap->IsReadyToMixing(fCurrentEventCollectionID)) { MakePairs_Mixed(); }
+        if (fMemoryMap->IsReadyToMixing(fEventMemoryCollectionId)) { MakePairs_Mixed(); }
       } break;
       case kRotatedPairsID: {
         MakePairs();
@@ -318,8 +331,8 @@ namespace Hal {
         // AA AB
         fCurrentTrack1CollectionNo = fCurrentTrackCollectionID;
         fCurrentTrack2CollectionNo = fCurrentTrackCollectionID + 1;
-        if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo) == 0) return;
-        if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo) == 0) return;
+        if (fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo) == 0) return;
+        if (fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo) == 0) return;
         MakePairs_Charged2();
       } break;
       case kChargedID3: {
@@ -327,8 +340,8 @@ namespace Hal {
         // AA BC
         fCurrentTrack1CollectionNo = fCurrentTrackCollectionID + 1;
         fCurrentTrack2CollectionNo = fCurrentTrackCollectionID + 2;
-        if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo) == 0) return;
-        if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo) == 0) return;
+        if (fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo) == 0) return;
+        if (fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo) == 0) return;
         MakePairs_Charged3();
       } break;
       default: Cout::PrintInfo("TwoTrackAna: Unknown Background mode", EInfo::kWarning); break;
@@ -338,11 +351,12 @@ namespace Hal {
   void TwoTrackAna::FinishEventNonIdentical() {
     fCurrentTrack1CollectionNo = fCurrentTrackCollectionID;
     fCurrentTrack2CollectionNo = fCurrentTrackCollectionID + 1;
-    Int_t tr1                  = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
-    Int_t tr2                  = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
+    fMemoryMap->SwitchToMemoryCollection(fEventMemoryCollectionId);
+    Int_t tr1 = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo);
+    Int_t tr2 = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo);
     if (fSkipEmpty) {
       if (tr1 == 0 || tr2 == 0) {
-        fMemoryMap->RejectLastEvent(fCurrentEventCollectionID);
+        fMemoryMap->RejectLastEventAuto();
         return;
       }
     }
@@ -353,7 +367,7 @@ namespace Hal {
       } break;
       case kMixedPairsNID: {
         MakePairs2();
-        if (fMemoryMap->IsReadyToMixing(fCurrentEventCollectionID)) { MakePairs2_Mixed(); }
+        if (fMemoryMap->IsReadyToMixing(fEventMemoryCollectionId)) { MakePairs2_Mixed(); }
       } break;
       case kRotatedPairsNID: {
         MakePairs2();
@@ -375,7 +389,7 @@ namespace Hal {
         MakePairs2();
         // AB // CC
         fCurrentTrackCollectionID = fCurrentTrackCollectionID + 2;
-        if (fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID) == 0) return;
+        if (fMemoryMap->GetTracksNoAuto(fCurrentTrackCollectionID) == 0) return;
         MakePairs2_Charged3();
       } break;
 
@@ -400,7 +414,25 @@ namespace Hal {
   }
 
   void TwoTrackAna::ProcessEvent() {
-    MultiTrackAna::ProcessEvent();
+    const Int_t eventBin = GetEventBin();
+    if (eventBin < 0) return;
+    fEventMemoryCollectionId = fEventBinsMax * fCurrentEventCollectionID + eventBin;
+    fMemoryMap->PrepareMaps(fEventMemoryCollectionId);
+    CutCollection* cont = fCutContainer->GetEventCollection(fCurrentEventCollectionID);
+    for (fTrackIndex = 0; fTrackIndex < fMemoryMap->GetTemporaryTotalTracksNo(); fTrackIndex++) {
+      fCurrentTrack = fCurrentEvent->GetTrack(fTrackIndex);
+      for (int j = 0; j < cont->GetNextNo(); j++) {
+        fCurrentTrackCollectionID = cont->GetNextAddr(j);
+        if (fCutContainer->PassTrack(fCurrentTrack, fCurrentTrackCollectionID)) {
+          fMemoryMap->AddTrackToMapTrack(fEventMemoryCollectionId,
+                                         fCurrentTrackCollectionID,
+                                         fTrackIndex);  // load track into memory map - may be usefull at
+                                                        // finish event
+          ProcessTrack();
+        }
+      }
+    }
+    fMemoryMap->BufferEvent(fEventMemoryCollectionId);
     fCurrentTrackCollectionID = 0;
     if (fIdentical) {
 #ifdef HAL_DEBUG
@@ -423,14 +455,14 @@ namespace Hal {
   void TwoTrackAna::MakePairs_Charged2() {
     // process signed background if main function is from identical tracks
     // background is made from non-identical tracks
-    Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
-    Int_t nTrackB             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
+    Int_t nTrackA             = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo);
+    Int_t nTrackB             = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     for (int i = 0; i < nTrackA; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, i);
       for (int j = 0; j < nTrackB; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, j);
         BuildPair(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -444,14 +476,14 @@ namespace Hal {
     // process signed background if main function is from non-identical tracks
     // background is made from identical tracks
     fCurrentTrackCollectionID = fCurrentTrack1CollectionNo;
-    Int_t nTrack              = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
+    Int_t nTrack              = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrack1CollectionNo);  //
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     for (int i = 0; i < nTrack; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, i);
       for (int j = i + 1; j < nTrack; j++) {
         // if(j>=i)break;
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, j);
         BuildPairSwapped(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -463,12 +495,12 @@ namespace Hal {
     }
     if (fSignedBoth) {
       fCurrentTrackCollectionID = fCurrentTrack2CollectionNo;
-      nTrack                    = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
+      nTrack                    = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo);
       for (int i = 0; i < nTrack; i++) {
-        fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, i);
+        fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, i);
         for (int j = i + 1; j < nTrack; j++) {
           // if(j>=i)break;
-          fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, j);
+          fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, j);
           BuildPairSwapped(fCurrentBackgroundPair);
           for (int k = 0; k < tt_cut_no; k++) {
             fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -482,14 +514,14 @@ namespace Hal {
   }
 
   void TwoTrackAna::MakePairs_Charged3() {
-    Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
-    Int_t nTrackB             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
+    Int_t nTrackA             = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo);
+    Int_t nTrackB             = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrack1CollectionNo);
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     for (int i = 0; i < nTrackA; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, i);
       for (int j = 0; j < nTrackB; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, j);
         BuildPair(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -500,14 +532,14 @@ namespace Hal {
   }
 
   void TwoTrackAna::MakePairs2_Charged3() {
-    Int_t nTrack              = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID);
+    Int_t nTrack              = fMemoryMap->GetTracksNoAuto(fCurrentTrackCollectionID);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);  //
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     for (int i = 0; i < nTrack; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, i);
       for (int j = i + 1; j < nTrack; j++) {
         // if(j>=i)break;
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, j);
         BuildPairSwapped(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -527,16 +559,16 @@ namespace Hal {
   //--------- ANALISE IDENTICAL EVENTS DIFFERENT PARTICLES
 
   void TwoTrackAna::MakePairs() {
-    Int_t nTrack              = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID);
+    Int_t nTrack              = fMemoryMap->GetTracksNoAuto(fCurrentTrackCollectionID);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);  //
     Int_t tt_cut_no           = track_cuts->GetNextNo();
 #ifdef HAL_DEBUG
     Cout::PrintInfo("TwoTrackAna: Making pairs", EInfo::kDebugInfo);
 #endif
     for (int i = 0; i < nTrack; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, i);
       for (int j = i + 1; j < nTrack; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, j);
         BuildPairSwapped(fCurrentSignalPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddr(k);
@@ -548,14 +580,14 @@ namespace Hal {
   //---------- ANALISE NON IDENTICAL PARTICLES
 
   void TwoTrackAna::MakePairs2() {
-    Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
-    Int_t nTrackB             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
+    Int_t nTrackA             = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo);
+    Int_t nTrackB             = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrack1CollectionNo);
     Int_t tt_cut_no           = track_cuts->GetNextNo();
     for (int i = 0; i < nTrackA; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, i);
       for (int j = 0; j < nTrackB; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, j);
         BuildPair(fCurrentSignalPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddr(k);
@@ -570,17 +602,17 @@ namespace Hal {
   void TwoTrackAna::MakePairs_Mixed() {
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
-    Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID);
+    Int_t nTrackA             = fMemoryMap->GetTracksNoAuto(fCurrentTrackCollectionID);
 #ifdef HAL_DEBUG
     Cout::PrintInfo("TwoTrackAna: Mixing event", EInfo::kDebugInfo);
 #endif
     for (int l = 0; l < fMixSize; l++) {
-      if (l == fMemoryMap->GetCounter(fCurrentEventCollectionID)) continue;
-      Int_t nTrackB = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID, l);
+      if (l == fMemoryMap->GetCounter(fEventMemoryCollectionId)) continue;
+      Int_t nTrackB = fMemoryMap->GetTracksNoAuto(fCurrentTrackCollectionID, l);
       for (int i = 0; i < nTrackA; i++) {
-        fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, i);
+        fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, i);
         for (int j = 0; j < nTrackB; j++) {
-          fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, l, j);
+          fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, l, j);
           BuildPairSwapped(fCurrentBackgroundPair);
           for (int m = 0; m < tt_cut_no; m++) {
             fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(m);
@@ -594,14 +626,14 @@ namespace Hal {
   void TwoTrackAna::MakePairs2_Mixed() {
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrack1CollectionNo);
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
-    Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
+    Int_t nTrackA             = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo);
     for (int l = 0; l < fMixSize; l++) {
-      if (l == fMemoryMap->GetCounter(fCurrentEventCollectionID)) continue;
-      Int_t nTrackB = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, l);
+      if (l == fMemoryMap->GetCounter(fEventMemoryCollectionId)) continue;
+      Int_t nTrackB = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo, l);
       for (int i = 0; i < nTrackA; i++) {
-        fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, i);
+        fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, i);
         for (int j = 0; j < nTrackB; j++) {
-          fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, l, j);
+          fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, l, j);
           BuildPair(fCurrentBackgroundPair);
           for (int m = 0; m < tt_cut_no; m++) {
             fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(m);
@@ -610,14 +642,14 @@ namespace Hal {
         }
       }
     }
-    nTrackA = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
+    nTrackA = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo);
     for (int l = 0; l < fMixSize; l++) {
-      if (l == fMemoryMap->GetCounter(fCurrentEventCollectionID)) continue;
-      Int_t nTrackB = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, l);
+      if (l == fMemoryMap->GetCounter(fEventMemoryCollectionId)) continue;
+      Int_t nTrackB = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo, l);
       for (int i = 0; i < nTrackA; i++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, i);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, i);
         for (int j = 0; j < nTrackB; j++) {
-          fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, l, j);
+          fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, l, j);
           BuildPair(fCurrentBackgroundPair);
           for (int m = 0; m < tt_cut_no; m++) {
             fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(m);
@@ -629,14 +661,14 @@ namespace Hal {
   }
 
   void TwoTrackAna::MakePairs_Perfect() {
-    Int_t nTrack              = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID);
+    Int_t nTrack              = fMemoryMap->GetTracksNoAuto(fCurrentTrackCollectionID);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);  //
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     //	fMemoryMap->PrintMap(collection_no);
     for (int i = 0; i < nTrack; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, i);
       for (int j = i + 1; j < nTrack; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, j);
         BuildPairSwapped(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -647,14 +679,14 @@ namespace Hal {
   }
 
   void TwoTrackAna::MakePairs2_Perfect() {
-    Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
-    Int_t nTrackB             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
+    Int_t nTrackA             = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo);
+    Int_t nTrackB             = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrack1CollectionNo);
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     for (int i = 0; i < nTrackA; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, i);
       for (int j = 0; j < nTrackB; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, j);
         BuildPair(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -665,14 +697,14 @@ namespace Hal {
   }
 
   void TwoTrackAna::MakePairs_Rotated() {
-    Int_t nTrack              = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID);
+    Int_t nTrack              = fMemoryMap->GetTracksNoAuto(fCurrentTrackCollectionID);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);  //
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     //	fMemoryMap->PrintMap(collection_no);
     for (int i = 0; i < nTrack; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, i);
       for (int j = i + 1; j < nTrack; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, j);
         BuildPairSwapped(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -683,14 +715,14 @@ namespace Hal {
   }
 
   void TwoTrackAna::MakePairs2_Rotated() {
-    Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
-    Int_t nTrackB             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
+    Int_t nTrackA             = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo);
+    Int_t nTrackB             = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrack1CollectionNo);
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     for (int i = 0; i < nTrackA; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, i);
       for (int j = 0; j < nTrackB; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, j);
         BuildPair(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -701,13 +733,13 @@ namespace Hal {
   }
 
   void TwoTrackAna::MakePairs_Hemisphere() {
-    Int_t nTrack              = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID);
-    CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrackCollectionID);  //
+    Int_t nTrack              = fMemoryMap->GetTracksNoAuto(fCurrentTrackCollectionID);
+    CutCollection* track_cuts = fCutContainer->GetTrackCollection(fEventMemoryCollectionId);  //
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     for (int i = 0; i < nTrack; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, i);
       for (int j = i + 1; j < nTrack; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrackCollectionID, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrackCollectionID, j);
         BuildPairSwapped(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -718,14 +750,14 @@ namespace Hal {
   }
 
   void TwoTrackAna::MakePairs2_Hemisphere() {
-    Int_t nTrackA             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack1CollectionNo);
-    Int_t nTrackB             = fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrack2CollectionNo);
+    Int_t nTrackA             = fMemoryMap->GetTracksNoAuto(fCurrentTrack1CollectionNo);
+    Int_t nTrackB             = fMemoryMap->GetTracksNoAuto(fCurrentTrack2CollectionNo);
     CutCollection* track_cuts = fCutContainer->GetTrackCollection(fCurrentTrack1CollectionNo);
     Int_t tt_cut_no           = track_cuts->GetNextNoBackround();
     for (int i = 0; i < nTrackA; i++) {
-      fCurrentTrack1 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack1CollectionNo, i);
+      fCurrentTrack1 = fMemoryMap->GetTrackAuto(fCurrentTrack1CollectionNo, i);
       for (int j = 0; j < nTrackB; j++) {
-        fCurrentTrack2 = fMemoryMap->GetTrack(fCurrentEventCollectionID, fCurrentTrack2CollectionNo, j);
+        fCurrentTrack2 = fMemoryMap->GetTrackAuto(fCurrentTrack2CollectionNo, j);
         BuildPair(fCurrentBackgroundPair);
         for (int k = 0; k < tt_cut_no; k++) {
           fCurrentPairCollectionID = track_cuts->GetNextAddrBackround(k);
@@ -746,12 +778,21 @@ namespace Hal {
     fCurrentTrack1CollectionNo(0),
     fCurrentTrack1(nullptr),
     fCurrentTrack2(nullptr),
+    fEventBinsMax(ana.fEventBinsMax),
+    fEventBinningEnabled(ana.fEventBinningEnabled),
     fBackgroundMode(ana.fBackgroundMode),
     fCurrentPairCollectionID(0),
     fTwoTrackCollectionsNo(0),
     fTwoTrackCollectionsNoBackground(0),
     fCurrentSignalPair(nullptr),
-    fCurrentBackgroundPair(nullptr) {}
+    fCurrentBackgroundPair(nullptr) {
+    for (auto i : ana.fEventBinningCuts) {
+      if (i)
+        fEventBinningCuts.push_back(i->MakeCopy());
+      else
+        fEventBinningCuts.push_back(nullptr);
+    }
+  }
 
   TwoTrack::PairType TwoTrackAna::GetPairType(EAnaMode mode) {
     switch (mode) {
@@ -784,6 +825,8 @@ namespace Hal {
       fSkipEmpty                 = other.fSkipEmpty;
       fCurrentTrack1CollectionNo = other.fCurrentTrack1CollectionNo;
       fCurrentTrack2CollectionNo = other.fCurrentTrack2CollectionNo;
+      fEventBinsMax              = other.fEventBinsMax;
+      fEventBinningEnabled       = other.fEventBinningEnabled;
       if (other.fCurrentTrack) { fCurrentTrack1 = other.fCurrentTrack1; }
       if (other.fCurrentTrack2) { fCurrentTrack2 = other.fCurrentTrack2; }
     }
@@ -802,6 +845,88 @@ namespace Hal {
         fCurrentBackgroundPair->SetHiddenInfo(nullptr);
       }
   }
+
+  Int_t TwoTrackAna::GetEventBin() {
+    if (fEventBinningEnabled) return fEventBinningCuts[fCurrentEventCollectionID]->CheckBin(fCurrentEvent);
+    return 0;
+  }
+
+  Bool_t TwoTrackAna::CheckBinningCuts() {
+    /** match binned cut from cut container with vector **/
+    Int_t eventCol = fCutContainer->GetEventCollectionsNo();
+    fEventBinningCuts.resize(eventCol, nullptr);
+    auto FindBinCut = [&](int i) {
+      auto subCont  = fCutContainer->GetEventCollection(i);
+      int eventCuts = subCont->GetCutNo();
+      Bool_t found  = false;
+      for (int evCut = 0; evCut < eventCuts; evCut++) {
+        EventCut* ev = (EventCut*) subCont->GetCut(evCut);
+        if (dynamic_cast<EventBinningCut*>(ev)) {
+          if (fEventBinningCuts[i] == nullptr) {
+            fEventBinningCuts[i] = (EventBinningCut*) ev;
+            found                = true;
+          } else {
+            TString message =
+              Form("%s %i: double event binning cut at col %i, cut %s will be ingored", __FILE__, __LINE__, i, ev->ClassName());
+            Hal::Cout::PrintInfo(message, EInfo::kError);
+          }
+        }
+      }
+      return found;
+    };
+    for (int i = 0; i < eventCol; i++) {
+      FindBinCut(i);
+      if (fEventBinningCuts[i] == nullptr) {
+        TString message = Form("%s %i: missing bining cut at col=%i, automatic cut will be added", __FILE__, __LINE__, i);
+        Hal::Cout::PrintInfo(message, EInfo::kError);
+        Hal::EventVirtualCut v;
+        EventBinningCut ev(v, {1});
+        ev.SetCollectionID(i);
+        AddCut(ev);
+        bool found = FindBinCut(i);
+        if (!found) return kFALSE;
+      }
+    }
+    fEventBinsMax = 0;
+    for (unsigned int i = 0; i < fEventBinningCuts.size(); i++) {
+      fEventBinningCuts[i]->SetCollectionID(i);
+      fEventBinsMax = TMath::Max(fEventBinsMax, fEventBinningCuts[i]->GetBinsNo());
+    }
+
+    /**
+     * cuts are matched
+     */
+    return kTRUE;
+  }
+
+  void TwoTrackAna::InitMemoryMap() {
+    fMemoryMap = new MemoryMapManager(fCutContainer);
+    fMemoryMap->SetMixSize(fMixSize);
+    Cout::PrintInfo("EventAna: Initialization MemoryMap", EInfo::kDebugInfo);
+    std::vector<TString> brName;
+    if (TESTBIT(fFormatOption, eBitFormat::kReader)) {
+      Hal::Cout::PrintInfo("EventAna: InitMemoryMap - push to reader mode", EInfo::kDebugInfo);
+      brName.push_back("HalEvent.");
+    } else if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {
+      TString evName = DataFormatManager::Instance()->GetFormat(GetTaskID())->ClassName();
+      brName.push_back(Form("%s.", evName.Data()));
+      brName.push_back(evName);
+      Hal::Cout::PrintInfo("EventAna: InitMemoryMap - push to direct access mode", EInfo::kDebugInfo);
+    }
+    fMemoryMap->Init(fEventBinsMax, GetTaskID(), TESTBIT(fFormatOption, eBitFormat::kCompression), brName);
+  }
+
+  void TwoTrackAna::AddCut(const Hal::Cut& cut, Option_t* opt) {
+    if (dynamic_cast<const Hal::EventBinningCut*>(&cut)) {
+      if (!fEventBinningEnabled) {
+        Hal::Cout::PrintInfo("Trying to add event binned cut to analysis that not support it,cut will be disabled",
+                             Hal::EInfo::kLowWarning);
+        return;
+      }
+    }
+    Hal::TrackAna::AddCut(cut, opt);
+  }
+
 
 }  // namespace Hal
 //---------------------------------------------------------------------------------------

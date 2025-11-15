@@ -31,6 +31,7 @@
 #pragma link C++ class Hal::OptionArray + ;
 #pragma link C++ class Hal::UniqueOptions + ;
 #pragma link C++ class Hal::OptionConverter + ;
+#pragma link C++ class Hal::MainOption + ;
 #pragma link C++ class Hal::PackageSql + ;
 #pragma link C++ class Hal::Object + ;
 #pragma link C++ class Hal::MultiGraph + ;
@@ -118,6 +119,8 @@
 #pragma link C++ class Hal::ErrorCalc + ;
 #pragma link C++ class Hal::FastAxisCalc + ;
 #pragma link C++ class Hal::ProfileAna2D + ;
+#pragma link C++ class Hal::SmearAlgo + ;
+#pragma link C++ class Hal::SmearAlgoMatrix + ;
 
 //=============================
 #pragma link C++ class Hal::ObjectMatrix_1 + ;
@@ -168,6 +171,11 @@
 #pragma link C++ class Hal::MultiDimInterpolator + ;
 #pragma link C++ class Hal::MultiDimDataManager + ;
 #pragma link C++ class Hal::MultiDimMinuit + ;
+#pragma link C++ class Hal::ParameterSolver + ;
+#pragma link C++ class Hal::MultiDimMinimizer + ;
+#pragma link C++ class Hal::MinimizerResult + ;
+#pragma link C++ class Hal::FittedParam + ;
+#pragma link C++ class Hal::MultiDimMinimizerSquare + ;
 // STD STUFF
 #pragma link C++ class std::vector < Hal::FitParam> + ;
 #pragma link C++ class std::vector < TString> + ;
@@ -178,6 +186,7 @@
 #pragma link C++ class Hal::Std::Triplet < Int_t> + ;
 #pragma link C++ class Hal::Std::Triplet < Float_t> + ;
 #pragma link C++ class Hal::PackageTable + ;
+#pragma link C++ class std::unordered_map < int, int>;
 // #pragma link C++ class HalParameter+;
 
 #endif

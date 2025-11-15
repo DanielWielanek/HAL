@@ -33,7 +33,7 @@
 #include "StdString.h"
 
 namespace Hal {
-  CorrFitKisiel::CorrFitKisiel(Int_t params) : CorrFit1DCF(params), fSkipError(kFALSE) {}
+  CorrFitKisiel::CorrFitKisiel(Int_t params) : CorrFit1DCF(params), fSkipError(kTRUE) {}
 
   void CorrFitKisiel::Check() {
     CorrFit1DCF::Check();

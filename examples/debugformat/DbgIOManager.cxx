@@ -48,11 +48,7 @@ namespace HalDbg {
 
   TFile* IOManager::GetInFile() { return fInFile; }
 
-  void IOManager::RegisterInternal(const char* name, const char* /*folderName*/, TNamed* obj, Bool_t toFile) {
-    if (toFile) { fOutTree->Branch(name, obj); }
-  }
-
-  void IOManager::RegisterInternal(const char* name, const char* /*Foldername*/, TCollection* obj, Bool_t toFile) {
+  void IOManager::RegisterInternal(TString name, TString folderName, TObject* obj, Bool_t toFile) {
     if (toFile) { fOutTree->Branch(name, obj); }
   }
 

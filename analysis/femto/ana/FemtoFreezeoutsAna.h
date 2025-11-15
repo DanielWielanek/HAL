@@ -47,6 +47,7 @@ namespace Hal {
     Double_t fHistoMax[3];
     FemtoFreezeoutGenerator* fFreezeoutGenerator;
     HistogramManager_3_1D<TH1D>* fHistograms1d;
+    HistogramManager_3_2D<TH2D>* fHistograms1dphi;
     HistogramManager_3_3D<TH3D>* fHistograms3d;
     void ComputePRF();
     void ComputeLCMS();

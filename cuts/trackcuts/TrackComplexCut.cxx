@@ -298,4 +298,27 @@ namespace Hal {
   TrackImaginaryCut::~TrackImaginaryCut() {
     if (fImgCut) delete fImgCut;
   }
+
+  Hal::Cut* TrackImaginaryCut::MakeInnerCopy() const { return new TrackImaginaryCut(*this, kTRUE); }
+
+  Hal::Cut* TrackComplexCut::MakeInnerCopy() const { return new TrackComplexCut(*this); }
+
+  Hal::Cut* TrackRealCut::MakeInnerCopy() const { return new TrackRealCut(*this, kTRUE); }
+
+  TrackRealCut::TrackRealCut(const TrackRealCut& other, Bool_t safe) : TrackRealCut(other.GetRealCut()) {
+    TString className = other.ClassName();
+    if (className != "Hal::TrackRealCut" && safe) {
+      Hal::Cout::PrintInfo(Form("Unsafe copying %s", ClassName()), EInfo::kDebugInfo);
+    }
+  }
+
+  TrackImaginaryCut::TrackImaginaryCut(const TrackImaginaryCut& other, Bool_t safe) : TrackImaginaryCut(other.GetImgCut()) {
+    fNullObjects      = other.fNullObjects;
+    fAcceptNulls      = other.fAcceptNulls;
+    TString className = other.ClassName();
+    if (className != "Hal::TrackImaginaryCut" && safe) {
+      Hal::Cout::PrintInfo(Form("Unsafe copying %s", ClassName()), EInfo::kDebugInfo);
+    }
+  }
+
 }  // namespace Hal

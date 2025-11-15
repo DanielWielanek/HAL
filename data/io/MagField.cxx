@@ -23,4 +23,16 @@ namespace Hal {
     bField[2]  = field.Z();
   }
 
+  void ConstMagField::SetField(Float_t x, Float_t y, Float_t z) {
+    fBx = x;
+    fBy = y;
+    fBz = z;
+  }
+
+  void ConstMagField::GetFieldValue(const Double_t point[3], Double_t* bField) const {
+    bField[0] = fBx;
+    bField[1] = fBy;
+    bField[2] = fBz;
+  }
+
 }  // namespace Hal

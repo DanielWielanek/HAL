@@ -1,0 +1,8 @@
+/** \page warnings_page Warnings
+
+Here is a collection of warning-related information and tools.
+
+- \subpage WarningCutContainer
+- \subpage WarningEventAna
+- \subpage WarningCutCollection
+*/

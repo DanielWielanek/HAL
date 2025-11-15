@@ -39,6 +39,7 @@ namespace Hal {
     void SetFrame(Hal::Femto::EKinematics frame) { fFrame = frame; }
     void Recalculate(Double_t kout, Double_t kside, Double_t klong);
     void FillPair(Hal::FemtoMicroPair& pair);
+    void FillPairBad(Hal::FemtoMicroPair& pair, TVector3& shifts);
     void FillPair(TLorentzVector& p1, TLorentzVector& p2);
     void SetData(const TH2D& hist1, Int_t pdg1, const TH2D& hist2, Int_t pdg2);
     void SetKt(Double_t min, Double_t max) {

@@ -172,7 +172,7 @@ namespace Hal {
 
   QAPlotReport::QAPlotReport(TString name, Int_t oneDim, Int_t twoDim, Int_t threeDim) :
     Object(), fExtraInfo(nullptr), fOriginName("OriginName", name), f1dHistos(nullptr), f2dHistos(nullptr), f3dHistos(nullptr) {
-    SetName(name);
+    Object::SetName(name);
     f1dFlags.resize(oneDim);
     f2dFlags.resize(twoDim);
     f3dFlags.resize(threeDim);
@@ -244,7 +244,7 @@ namespace Hal {
     c1->SaveAs(rootPathFull);
     delete c1;
     HtmlFile file(htmlPathFull, kFALSE);
-    file.AddStringContent(HtmlCore::GetJsDiv(rootPathShort, "canvas;1", draw_opt));
+    file.AddStringContent(HtmlCore::GetJsDiv(htmlPathFull, rootPathShort, "canvas;1", draw_opt));
     file.Save();
     return HtmlCore::GetUrl(htmlPathShort, h->GetTitle());
   }
@@ -305,19 +305,19 @@ namespace Hal {
     return HtmlCore::GetUrl(relPath, Form("QAPlot [%s]", GetName()));
   }
 
-  void QAPlotReport::HTMLExtractIntoTable(Int_t no, HtmlTable& table, TString dir, TString rel_dir) const {
+  void QAPlotReport::HTMLExtractIntoTable(Int_t no, Int_t no_ext, HtmlTable& table, TString dir, TString rel_dir) const {
     Bool_t batch = gROOT->IsBatch();
     gROOT->SetBatch(kTRUE);
-    TString path   = Form("%s/qa_plot_%i/", dir.Data(), no);
-    TString subdir = Form("qa_plot_%i", no);
-    if (rel_dir.Length() > 0) subdir = Form("%s/qa_plot_%i", rel_dir.Data(), no);
+    TString path   = Form("%s/qa_plot_%i/", dir.Data(), no_ext);
+    TString subdir = Form("qa_plot_%i", no_ext);
+    if (rel_dir.Length() > 0) subdir = Form("%s/qa_plot_%i", rel_dir.Data(), no_ext);
     HtmlCore::FixAddress(path);
     HtmlCore::FixAddress(subdir);
     gSystem->mkdir(path);
 
     // Int_t max = TMath::Max(GetSize1D(), TMath::Max(GetSize2D(), GetSize3D()));
 
-    TString className = Form("med_blue qa_%i", no);
+    TString className = Form("med_blue qa_%i", no_ext);
 
     HtmlRow row;
     row.SetClass("light_blue");
@@ -326,11 +326,11 @@ namespace Hal {
     row.AddContent(cell1);
     row.AddContent(HtmlCell("QAPlotReport"));
     row.AddContent(HtmlCell(this->GetName()));
-    TString rowButton = HtmlCore::GetHideButtonRow(Form("qa_%i", no), "Show/Hide");
+    TString rowButton = HtmlCore::GetHideButtonRow(Form("qa_%i", no_ext), "Show/Hide");
     row.AddContent(HtmlCell(rowButton));
     table.AddContent(row);
     HtmlRow rowPaint("", className, "display:none");
-    TString buttonDraw = Form("<button onclick=\"qaPopup('%i')\">Plot Many</button>", no);
+    TString buttonDraw = Form("<button onclick=\"qaPopup('%i')\">Plot Many</button>", no_ext);
     rowPaint.AddContent(HtmlCellCol(buttonDraw, 5));
     table.AddContent(rowPaint);
     gSystem->mkdir(path);
@@ -348,7 +348,7 @@ namespace Hal {
     data.className = className;
     data.subDir    = subdir;
     data.path      = path;
-    data.no        = no;
+    data.no        = no_ext;
     data.table     = &table;
 
     auto makeRow = [](Int_t nu, TH1* h, constRowData dat) {
@@ -410,7 +410,7 @@ namespace Hal {
     } else {
       HtmlRow extra("", className, "display:none");
       extra.AddContent(HtmlCellCol("Extra pack", 3));
-      TString url = fExtraInfo->HTMLExtract(0, Form("%s/qa_plot_%i/", path.Data(), no));
+      TString url = fExtraInfo->HTMLExtract(0, Form("%s/qa_plot_%i/", path.Data(), no_ext));
       extra.AddContent(HtmlCellCol(url, 4));
       table.AddContent(extra);
     }

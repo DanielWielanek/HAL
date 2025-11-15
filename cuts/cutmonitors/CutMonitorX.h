@@ -38,7 +38,7 @@ namespace Hal {
      * copy ct-or
      * @param other object that should be copied
      */
-    CutMonitorX(const CutMonitorX& other);
+    CutMonitorX(const CutMonitorX& other) : CutMonitor(other) {};
     /**
      * Assignment operator
      * @param other
@@ -47,8 +47,7 @@ namespace Hal {
     CutMonitorX& operator=(const CutMonitorX& other);
     virtual Bool_t Init(Int_t task_id);
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual CutMonitor* MakeCopy() const;
-    virtual ~CutMonitorX();
+    virtual ~CutMonitorX() {};
     ClassDef(CutMonitorX, 1)
   };
 }  // namespace Hal

@@ -14,9 +14,9 @@
 
 namespace Hal {
   TwoTrackLCMSCut::TwoTrackLCMSCut() : TwoTrackCut(3) {
-    SetUnitName("q_{out} [GeV/c]", Rout());
-    SetUnitName("q_{side} [GeV/c]", Rside());
-    SetUnitName("q_{long} [GeV/c]", Rlong());
+    SetUnitName("q_{out} [GeV/c]", Rout);
+    SetUnitName("q_{side} [GeV/c]", Rside);
+    SetUnitName("q_{long} [GeV/c]", Rlong);
     fM = Const::PionPlusMass() * Const::PionPlusMass();
   }
 
@@ -76,9 +76,9 @@ namespace Hal {
 
     Double_t particle2lcms_px = (px2 * tPx + py2 * tPy) / tPt;
     Double_t particle2lcms_py = (-px2 * tPy + py2 * tPx) / tPt;
-    SetValue(particle1lcms_px - particle2lcms_px, Rout());
-    SetValue(particle1lcms_py - particle2lcms_py, Rside());
-    SetValue(particle1lcms_pz - particle2lcms_pz, Rlong());
+    SetValue(particle1lcms_px - particle2lcms_px, Rout);
+    SetValue(particle1lcms_py - particle2lcms_py, Rside);
+    SetValue(particle1lcms_pz - particle2lcms_pz, Rlong);
     return Validate();
   }
 

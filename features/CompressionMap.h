@@ -27,6 +27,12 @@ namespace Hal {
     CompressionMap();
     CompressionMap(const CompressionMap& map);
     /**
+     * Assignment operator
+     * @param b
+     * @return
+     */
+    CompressionMap& operator=(const CompressionMap& b);
+    /**
      * should be called before marking objects
      * @param size size of array to compression
      */

@@ -39,7 +39,7 @@ namespace Hal {
       case ECutUpdate::kTwoTrack: fSize = 3; break;
       case ECutUpdate::kTwoTrackBackground: fSize = 4; break;
       default: {
-        Cout::PrintInfo("Unknown update ration in CutContainer", EInfo::kError);
+        Cout::PrintInfo("CutContainer: Unknown update ratio", EInfo::kError);
       } break;
     }
     fCutContainers   = new TObjArray*[fSize];
@@ -52,7 +52,7 @@ namespace Hal {
 
   CutContainer::CutContainer(const CutContainer& cont) :
     TObject(cont), fInit(kFALSE), fSize(cont.fSize), fTempCutMonitors(NULL), fCutContainers(NULL) {
-    if (cont.fInit == kTRUE) { Cout::PrintInfo("CutContainer already initialized", EInfo::kError); }
+    if (cont.fInit == kTRUE) { Cout::PrintInfo("CutContainer: container already initialized", EInfo::kError); }
     fCutContainers   = new TObjArray*[fSize];
     fTempCutMonitors = new TObjArray*[fSize];
     for (int i = 0; i < fSize; i++) {
@@ -78,7 +78,7 @@ namespace Hal {
     auto addCutRaw = [&](ECutUpdate upd, Int_t colNo) {
       if (fSize <= static_cast<Int_t>(upd)) {
         TString update_ratio_name = Hal::Std::UpdateEnumToString(upd);
-        Cout::PrintInfo(Form("CutContainer can't hold %s cut because it's update ratio (%s) is "
+        Cout::PrintInfo(Form("CutContainer: can't hold %s cut because it's update ratio (%s) is "
                              "too big, check fTries or call SetOption(backround) before adding cuts "
                              "or cut monitors",
                              cut.ClassName(),
@@ -87,7 +87,7 @@ namespace Hal {
         return;
       }
       if (colNo < 0) {
-        Cout::PrintInfo(Form("Cannot have negative collID for cut %s", cut.ClassName()), EInfo::kWarning);
+        Cout::PrintInfo(Form("CutContainer: Cannot have negative collID for cut %s", cut.ClassName()), EInfo::kWarning);
         return;
       }
       if (GetCutContainer(upd)->At(colNo) == nullptr) {
@@ -118,7 +118,7 @@ namespace Hal {
 
   void CutContainer::AddMonitor(const CutMonitor& monitor, Option_t* opt) {
     Hal::CutOptions opts(opt, monitor.GetCollectionID());
-    auto monitor_copy = std::unique_ptr<Hal::CutMonitor>(opts.MakeMonitorCopy(monitor));
+    auto monitor_copy = std::unique_ptr<Hal::CutMonitor>(monitor.MakeCopy());
     std::vector<ECutUpdate> upds;
     if (monitor.GetUpdateRatio() == ECutUpdate::kTwoTrack || monitor.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground) {
       if (opts.Sig()) upds.push_back(ECutUpdate::kTwoTrack);
@@ -126,16 +126,25 @@ namespace Hal {
     } else {
       upds.push_back(monitor.GetUpdateRatio());
     }
+    TString option     = opt;
+    TString target_opt = "";
+    if (Hal::Std::FindParam(option, "re") && Hal::Std::FindParam(option, "im")) {
+      Cout::PrintInfo(
+        "CutContainer: You add cut monitor with both im and re flags, this is not supported now, only re flag will be used",
+        EInfo::kLowWarning);
+    }
+    if (Hal::Std::FindParam(option, "re")) target_opt = "re";
+    if (Hal::Std::FindParam(option, "im")) target_opt = "im";
     for (auto upd : upds) {
       if (fSize <= static_cast<Int_t>(upd)) {
-        Cout::PrintInfo("CutContainer can't hold this cut because it's update ratio is to big, check fTries or call "
+        Cout::PrintInfo("CutContainer: can't hold this cut because it's update ratio is too big, check fTries or call "
                         "SetOption(backround) before adding cuts or cut monitors",
                         EInfo::kLowWarning);
         return;
       }
       auto collections = opts.GetCollectionsIds();
       for (int colId : collections) {
-        auto copy = monitor_copy->MakeCopy();
+        auto copy = monitor_copy->MakeCopy(target_opt);
         copy->SetCollectionID(colId);
         fTempCutMonitors[static_cast<Int_t>(upd)]->AddLast(copy);
       }
@@ -151,11 +160,13 @@ namespace Hal {
   }
 
   void CutContainer::LinkCollections(ECutUpdate opt_low, Int_t in_low, ECutUpdate opt_high, Int_t in_high) {
-    if (opt_high == opt_low || opt_low > opt_high) { Cout::PrintInfo("Wrong ECut Update in Link Collections", EInfo::kError); }
+    if (opt_high == opt_low || opt_low > opt_high) {
+      Cout::PrintInfo("CutContainer: Wrong ECut Update in Link Collections", EInfo::kError);
+    }
     if (static_cast<Int_t>(opt_high) >= fSize) {
-      Cout::PrintInfo("To big opt_high, link will be ingored", EInfo::kError);
+      Cout::PrintInfo("CutContainer: Too big opt_high, link will be ingored", EInfo::kError);
     } else if (static_cast<Int_t>(opt_low) >= fSize) {
-      Cout::PrintInfo("To big opt_low, link will be ingored", EInfo::kError);
+      Cout::PrintInfo("CutContainer: Too big opt_low, link will be ingored", EInfo::kError);
     }
     CutCollection* low  = NULL;
     CutCollection* high = NULL;
@@ -164,7 +175,7 @@ namespace Hal {
     } else if (opt_low == ECutUpdate::kTrack) {
       low = (CutCollection*) GetCutContainer(opt_low)->At(in_low);
     } else {
-      Cout::PrintInfo("Invalid opt_low argument in CutContainer::LinkCollections", EInfo::kError);
+      Cout::PrintInfo("CutContainer: Invalid opt_low argument in CutContainer::LinkCollections", EInfo::kError);
       return;
     }
     if (opt_high == ECutUpdate::kTrack) {
@@ -172,11 +183,11 @@ namespace Hal {
     } else if (opt_high == ECutUpdate::kTwoTrack || opt_high == ECutUpdate::kTwoTrackBackground) {
       high = (CutCollection*) GetCutContainer(opt_high)->At(in_high);
     } else {
-      Cout::PrintInfo("Invalid opt_high argument in CutContainer::LinkCollections", EInfo::kError);
+      Cout::PrintInfo("CutContainer: Invalid opt_high argument in CutContainer::LinkCollections", EInfo::kError);
       return;
     }
     if (low == NULL || high == NULL) {
-      Cout::PrintInfo("Cant link some collections", EInfo::kError);
+      Cout::PrintInfo("CutContainer: Cant link some collections", EInfo::kError);
       return;
     }
     high->AddPreviousAddr(in_low, 0);
@@ -195,9 +206,11 @@ namespace Hal {
 
   void CutContainer::VerifyOrder(TObjArray* obj) {
     for (int i = 0; i < obj->GetEntriesFast(); i++) {
-      if (obj->UncheckedAt(i) == NULL) { Cout::PrintInfo(Form("Null cutsubcontainers at %i", i), EInfo::kError); }
+      if (obj->UncheckedAt(i) == NULL) { Cout::PrintInfo(Form("CutContainer: Null cutsubcontainers at %i", i), EInfo::kError); }
       Int_t collection_no = ((CutCollection*) obj->UncheckedAt(i))->GetCollectionID();
-      if (collection_no != i) { Cout::PrintInfo(Form("Wrong order of cuts [%i]!=%i", i, collection_no), EInfo::kError); }
+      if (collection_no != i) {
+        Cout::PrintInfo(Form("CutContainer: Wrong order of cuts [%i]!=%i", i, collection_no), EInfo::kError);
+      }
     }
   }
 
@@ -218,7 +231,7 @@ namespace Hal {
 
   void CutContainer::Init(const Int_t task_id) {
     if (fInit == kTRUE) {
-      Cout::PrintInfo("CutContainer has been initialized before", EInfo::kLowWarning);
+      Cout::PrintInfo("CutContainer: CutContainer has been initialized before", EInfo::kLowWarning);
       return;
     }
     for (int i = 0; i < fSize; i++) {
@@ -231,7 +244,8 @@ namespace Hal {
           CutMonitor* clone = cutmon->MakeCopy();
           Int_t collection  = cutmon->GetCollectionID();
           if ((CutCollection*) (fCutContainers[k]->UncheckedAt(collection)) == NULL) {
-            Cout::PrintInfo(Form(" Collection %i for cut monitor %s not found", collection, clone->ClassName()), EInfo::kError);
+            Cout::PrintInfo(Form("CutContainer: Collection %i for cut monitor %s not found", collection, clone->ClassName()),
+                            EInfo::kError);
           } else {
             ((CutCollection*) (fCutContainers[k]->UncheckedAt(collection)))->AddCutMonitor(clone);
           }
@@ -307,20 +321,21 @@ namespace Hal {
   void CutContainer::MakeDummyCopies(ECutUpdate update, CutContainer* other, Bool_t copy_link) {
     if (static_cast<Int_t>(update) < 0) return;
     if (this->fSize <= static_cast<Int_t>(update)) {
-      Cout::PrintInfo("Cannot Make Dummy copy of CutCollection!lack of space "
+      Cout::PrintInfo("CutContainer: Cannot Make Dummy copy of CutCollection!lack of space "
                       "in  target cut container!",
                       EInfo::kError);
       return;
     }
     if (other->fSize <= static_cast<Int_t>(update)) {
-      Cout::PrintInfo("Cannot Make Dummy copy of CutCollection!! lack of "
+      Cout::PrintInfo("CutContainer: Cannot Make Dummy copy of CutCollection!! lack of "
                       "object in source cut container",
                       EInfo::kError);
       return;
     }
     if (this->fInit == kTRUE || other->fInit == kFALSE) {
-      Cout::PrintInfo("You can't copy sub containers from not initialized cut container to initialized cut container!! ",
-                      EInfo::kLowWarning);
+      Cout::PrintInfo(
+        "CutContainer: You can't copy sub containers from not initialized cut container to initialized cut container!! ",
+        EInfo::kLowWarning);
     }
     for (int i = 0; i < other->GetCutContainer(update)->GetEntriesFast(); i++) {
       CutCollection* from = (CutCollection*) other->GetCutContainer(update)->UncheckedAt(i);
@@ -387,7 +402,7 @@ namespace Hal {
     switch (policy) {
       case ELinkPolicy::kOneToMany: {
         if (lowLinks != 1) {
-          Cout::PrintInfo("EventAna::LinkCollections one-to-many to much first collections!", EInfo::kError);
+          Cout::PrintInfo("CutContainer: EventAna::LinkCollections one-to-many too much first collections!", EInfo::kError);
           return kFALSE;
         }
         for (int i = 0; i < highLinks; i++) {
@@ -399,7 +414,7 @@ namespace Hal {
         if (lowLinks > highLinks) {
           Int_t jump = lowLinks / highLinks;
           if (lowLinks % highLinks) {
-            Cout::PrintInfo("EventAna::LinkCollections equal link cannot group cuts!", EInfo::kError);
+            Cout::PrintInfo("CutContainer: EventAna::LinkCollections equal link cannot group cuts!", EInfo::kError);
             return kFALSE;
           }
           for (int i = 0; i < highLinks; i++) {
@@ -411,7 +426,7 @@ namespace Hal {
         } else {
           Int_t jump = highLinks / lowLinks;
           if (highLinks % lowLinks) {
-            Cout::PrintInfo("EventAna::LinkCollections equal link cannot group cuts!", EInfo::kError);
+            Cout::PrintInfo("CutContainer: EventAna::LinkCollections equal link cannot group cuts!", EInfo::kError);
             return kFALSE;
           }
           for (int i = 0; i < lowLinks; i++) {

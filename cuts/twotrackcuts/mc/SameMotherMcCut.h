@@ -14,11 +14,10 @@ namespace Hal {
   class SameMotherMcCut : public TwoTrackCut {
   public:
     SameMotherMcCut();
+    virtual Bool_t Init(Int_t);
     virtual Bool_t Pass(TwoTrack* pair);
     virtual ~SameMotherMcCut() {};
     ClassDef(SameMotherMcCut, 1)
-
-      virtual Bool_t Init(Int_t);
   };
 
 } /* namespace Hal */

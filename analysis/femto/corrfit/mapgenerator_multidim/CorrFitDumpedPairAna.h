@@ -52,8 +52,9 @@ namespace Hal {
     Int_t fPairsProcessed      = {0};
     Bool_t fIgnoreSing         = {kFALSE};
     Bool_t fImgMom             = {kFALSE};
-    FemtoCorrFunc* fTempCF     = {nullptr};
-    FemtoPair* fPair           = {nullptr};
+    TVector3 fAxisConf[3];
+    FemtoCorrFunc* fTempCF = {nullptr};
+    FemtoPair* fPair       = {nullptr};
     std::vector<FemtoCorrFunc*> fCF;
     FemtoFreezeoutGenerator* fTempGenerator = {nullptr};
     std::vector<FemtoFreezeoutGenerator*> fGenerator;
@@ -66,6 +67,9 @@ namespace Hal {
     virtual Bool_t InitPairFile() = 0;
     Bool_t ConfigureFromXML();
     Int_t GetSimStepNo() const { return fMultiplyJobs * fJobId; }
+    Int_t GetNBins(Char_t opt = 'x') const;
+    Double_t GetAxisMin(Char_t opt = 'x') const;
+    Double_t GetAxisMax(Char_t opt = 'x') const;
     virtual void RunSignalPair()           = 0;
     virtual void RunSignalBackgroundPair() = 0;
     virtual void RunBackgroundPair()       = 0;

@@ -402,14 +402,14 @@ namespace Hal {
       return "uknonwn";
     }
 
-    FemtoPair* MakePair(EKinematics frame, Bool_t use_fake) {
+    FemtoPair* MakePair(EKinematics frame, Bool_t use_mc) {
       switch (frame) {
-        case EKinematics::kPRF: return new FemtoPairPRF(use_fake); break;
-        case EKinematics::kLCMS: return new FemtoPairLCMS(use_fake); break;
-        case EKinematics::kSH_LCMS: return new FemtoPairLCMS_SH(use_fake); break;
-        case EKinematics::kSH_PRF: return new FemtoPairPRF_SH(use_fake); break;
-        case EKinematics::kPHIETA: return new FemtoPairDPhiDEta(use_fake); break;
-        case EKinematics::kPRFL: return new FemtoPairPRFL(use_fake); break;
+        case EKinematics::kPRF: return new FemtoPairPRF(use_mc); break;
+        case EKinematics::kLCMS: return new FemtoPairLCMS(use_mc); break;
+        case EKinematics::kSH_LCMS: return new FemtoPairLCMS_SH(use_mc); break;
+        case EKinematics::kSH_PRF: return new FemtoPairPRF_SH(use_mc); break;
+        case EKinematics::kPHIETA: return new FemtoPairDPhiDEta(use_mc); break;
+        case EKinematics::kPRFL: return new FemtoPairPRFL(use_mc); break;
         default: return NULL; break;
       }
     }

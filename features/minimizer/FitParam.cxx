@@ -102,8 +102,29 @@ namespace Hal {
     return values;
   }
 
+  const std::vector<Int_t> FitParam::GetIndexesArray() const {
+    std::vector<Int_t> values;
+    if (!IsDiscrete()) {
+      values.push_back(0);
+      return values;
+    }
+    if (IsFixed() || fDParam == 0) {
+      values.push_back(0);
+    } else {
+      Int_t binLo = TMath::Floor((fMin - fMapMin) / fDParam);
+      Int_t binHi = TMath::Ceil((fMax - fMapMin) / fDParam);
+      binLo       = TMath::Max(0, binLo);
+      binHi       = TMath::Min(binHi, (int) fNPoint);
+      for (int i = binLo; i <= binHi; i++) {
+        values.push_back(i);
+      }
+    }
+    return values;
+  }
+
   void FitParam::SetMapRangeByStep(Double_t min, Double_t max, Double_t step) {
-    Int_t nPoints = (max - min) / step + 1;
+    Int_t nPoints = std::round((max - min) / step) + 1;
+    max           = min + double(nPoints - 1.) * step;
     SetMapRange(min, max, nPoints);
   }
 
@@ -120,5 +141,21 @@ namespace Hal {
     if (fMax >= fMapMax - fDParam) fMax = fMapMax - GetStepSize();
     Init();
   }
+
+  Double_t FitParam::GetValueForBin(Int_t i) const { return fMin + double(i) * fDParam; }
+
+  Bool_t FitParam::HasAsymError() const { return (fAsymErrorHigh != fAsymErrorLow); }
+
+  void FitParam::SetAsymetricError(Double_t low, Double_t high) {
+    fAsymErrorLow  = low;
+    fAsymErrorHigh = high;
+    fError         = 0.5 * (fAsymErrorLow + fAsymErrorHigh);
+  }
+
+  Double_t FitParam::GetErrorLow() const { return fAsymErrorLow; }
+
+  Double_t FitParam::GetErrorHigh() const { return fAsymErrorHigh; }
+
+  void FitParam::SetError(Double_t error) { fError = fAsymErrorHigh = fAsymErrorLow = error; }
 
 }  // namespace Hal

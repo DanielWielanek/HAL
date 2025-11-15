@@ -13,7 +13,7 @@
  * class for cut on ToF mass2
  * user can set standard minium and maximum cut (like in basic to cut)
  * and by SetPolyLIneUp/Down apply additional polynomial-like cut that can be
- * expressed as a + b*p + c*p^2
+ * expressed as a*p^2 + b*p + c
  */
 namespace Hal {
   class TrackToFMass2Cut : public TrackExpCut {
@@ -21,7 +21,8 @@ namespace Hal {
     Double_t fLowLine[3];
     Double_t fHighLine[3];
     void
-    GetPoly(Double_t& a, Double_t& b, Double_t& c, Double_t x1, Double_t y1, Double_t x2, Double_t y2, Double_t x3, Double_t y3);
+    GetPoly(Double_t& a, Double_t& b, Double_t& c, Double_t x1, Double_t y1, Double_t x2, Double_t y2, Double_t x3, Double_t y3)
+      const;
     TrackToFMass2Cut(Int_t nParams);
 
   public:

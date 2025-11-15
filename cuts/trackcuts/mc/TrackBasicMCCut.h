@@ -16,12 +16,9 @@
 namespace Hal {
 
   class TrackBasicMCCut : public TrackMCCut {
-    static const int fgStatusId;
-    static const int fgPdgId;
-    static const int fgPtId;
-    static const int fgEtaId;
 
   public:
+    enum ParID { Status = 0, Pdg = 1, Pt = 2, Eta = 3 };
     /**
      * default constructor
      */
@@ -48,26 +45,6 @@ namespace Hal {
      * @param max maximal value of eta
      */
     void SetEtaCut(Double_t min, Double_t max);
-    /**
-     *
-     * @return id of status parameter
-     */
-    static Int_t Status() { return fgStatusId; };
-    /**
-     *
-     * @return id of pdg parameter
-     */
-    static Int_t Pdg() { return fgPdgId; };
-    /**
-     *
-     * @return id of pt parameter
-     */
-    static Int_t Pt() { return fgPtId; };
-    /**
-     *
-     * @return id of eta parameter
-     */
-    static Int_t Eta() { return fgEtaId; };
     Bool_t Pass(Track* track);
     virtual ~TrackBasicMCCut();
     ClassDef(TrackBasicMCCut, 1)

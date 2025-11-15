@@ -12,6 +12,7 @@
 #include "Parameter.h"
 #include "Track.h"
 #include "TwoTrack.h"
+#include "TwoTrackComplexCut.h"
 
 #include <TDatabasePDG.h>
 #include <TLorentzVector.h>
@@ -145,8 +146,6 @@ namespace Hal {
     fM22 = p2->Mass() * p2->Mass();
     return kTRUE;
   }
-
-  Cut* TwoTrack3DCFCut::MakeCopy() const { return new TwoTrack3DCFCut(*this); }
 
   Package* TwoTrack3DCFCut::Report() const {
     Package* pack = TwoTrackCut::Report();

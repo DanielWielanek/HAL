@@ -47,13 +47,17 @@ namespace Hal {
     virtual TString HTMLExtract(Int_t /*no*/, TString /*dir*/ = "") const;
     /**
      * extract this object into html table table
-     * @param no object number
+     * @param no number in table
+     * @param no_ext object number (to extract must be unique)
      * @param table table to extract this object
      * @param dir directory to extract the strucuture of object
      * @param rel_dir relative path from this to dir
      */
-    virtual void
-    HTMLExtractIntoTable(Int_t /* no*/, HtmlTable& /*table*/, TString /*dir*/ = "", TString /*rel_dir */ = "") const {};
+    virtual void HTMLExtractIntoTable(Int_t /* no*/,
+                                      Int_t /*no_ext*/,
+                                      HtmlTable& /*table*/,
+                                      TString /*dir*/      = "",
+                                      TString /*rel_dir */ = "") const {};
     /**
      * add object of the same class to this
      * @param pack added object

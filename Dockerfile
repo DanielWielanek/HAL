@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     dpkg-dev cmake g++ gcc binutils libx11-dev libxpm-dev libxft-dev libxext-dev python3 libssl-dev \
     gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev \
     libegl1-mesa-dev libffi-dev libxcursor-dev libvulkan-dev xvfb xdotool libgsl-dev \
-    libvdt-dev libgif-dev libtbb-dev gfortran\
+    libvdt-dev libgif-dev libtbb-dev gfortran vim\
     wget tar && \
     apt-get clean
 

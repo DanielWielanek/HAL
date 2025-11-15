@@ -21,6 +21,8 @@ namespace Hal {
     Bool_t fTofOpt;
 
   public:
+    enum ParID { TpcHits = 0, Charge = 1, SigmaPion = 2, SigmaKaon = 3, SigmaProton = 4, SigmaElectron = 5, DeDx = 6, M2 = 7 };
+
     TrackTpcToFCut(TrackTpcCut* tpc = NULL, TrackToFMass2Cut* tof = NULL);
     TrackTpcToFCut(const TrackTpcToFCut& other);
     /**
@@ -61,42 +63,6 @@ namespace Hal {
     void SetActiveSigma(TString flag) { fTpc->SetActiveSigma(flag); };
     void SetDeDx(Double_t min, Double_t max);
     void SetM2(Double_t min, Double_t max) { fToF->SetMinMax(min, max); }
-    /**
-     *
-     * @return parameter index for pion sigma
-     */
-    static inline Int_t PionSigma() { return TrackTpcCut::PionSigma(); };
-    /**
-     *
-     * @return  parameter index for kaon sigma
-     */
-    static inline Int_t KaonSigma() { return TrackTpcCut::KaonSigma(); };
-    /**
-     *
-     * @return parameter index for proton sigma
-     */
-    static inline Int_t ProtonSigma() { return TrackTpcCut::ProtonSigma(); };
-    /**
-     *
-     * @return parameter index for electron sigma
-     */
-    static inline Int_t ElectronSigma() { return TrackTpcCut::ElectronSigma(); };
-    /**
-     *
-     * @return parameter index for number of tpc hits
-     */
-    static inline Int_t TpcHits() { return TrackTpcCut::TpcHits(); };
-    /**
-     *
-     * @return parameter index for charge
-     */
-    static inline Int_t Charge() { return TrackTpcCut::Charge(); };
-    /**
-     *
-     * @return parameter index of DeDx
-     */
-    static inline Int_t DeDx() { return TrackTpcCut::DeDx(); };
-    static inline Int_t M2() { return 7; };
     void SetToFPolyLineDown(Double_t a, Double_t b, Double_t c) { fToF->SetPolyLineDown(a, b, c); };
     void SetToFPolyLIneUp(Double_t a, Double_t b, Double_t c) { fToF->SetPolyLineUp(a, b, c); };
     void GetPolyUp(Double_t& a, Double_t& b, Double_t& c) const { fToF->GetPolyUp(a, b, c); };

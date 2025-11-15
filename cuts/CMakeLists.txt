@@ -12,7 +12,6 @@ Set(SYSTEM_INCLUDE_DIRECTORIES
 Set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}
   ${GSL_LIBRARY_DIRS} 
-  ${FAIRROOT_LIBRARY_DIR}
 )
 
 Include_Directories(${INCLUDE_DIRECTORIES})
@@ -125,6 +124,7 @@ twotrackcuts/mc/PdgBinPairCut.cxx
 twotrackcuts/mc/SameMotherMcCut.cxx
 twotrackcuts/TwoTrackVirtualCut.cxx
 #CUT MONITORS
+cutmonitors/CutMonitorFieldIdTranslator.cxx
 cutmonitors/CutMonitor.cxx
 cutmonitors/CutMonitorX.cxx
 cutmonitors/CutMonitorXY.cxx
@@ -134,6 +134,11 @@ cutmonitors/PropertyMonitorXY.cxx
 cutmonitors/PropertyMonitorXYZ.cxx
 cutmonitors/customized/MonitorKinem.cxx
 cutmonitors/customized/MonitorReso.cxx
+cutmonitors/customized/MonitorTof.cxx
+cutmonitors/customized/MonitorDCA.cxx
+cutmonitors/customized/MonitorEventVertex.cxx
+cutmonitors/customized/TrackFlagMonitor.cxx
+cutmonitors/CutMonitorComplex.cxx
 )
 
 Set(HEADERS )

@@ -15,8 +15,7 @@ namespace Hal {
 
   class DCAPropertyMonitor : public TrackFieldMonitorXY {
   public:
-    DCAPropertyMonitor(Bool_t complex = kFALSE);
-    virtual CutMonitor* MakeCopy() const { return new DCAPropertyMonitor(*this); }
+    DCAPropertyMonitor();
     virtual ~DCAPropertyMonitor();
     ClassDef(DCAPropertyMonitor, 1)
   };

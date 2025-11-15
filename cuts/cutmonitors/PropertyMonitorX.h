@@ -9,6 +9,7 @@
 #ifndef HALPROPERTYMONITORX_H_
 #define HALPROPERTYMONITORX_H_
 
+#include "CutMonitorFieldIdTranslator.h"
 #include "CutMonitorX.h"
 
 /**
@@ -39,10 +40,10 @@ namespace Hal {
      */
     PropertyMonitorX& operator=(const PropertyMonitorX& other);
     virtual Bool_t Init(Int_t task_id);
+    virtual Bool_t AreSimilar(const CutMonitor& other) const;
     virtual Bool_t ObjMonitor() const { return kTRUE; };
-    virtual CutMonitor* MakeCopy() const { return new PropertyMonitorX(*this); };
     virtual Package* Report() const;
-    virtual ~PropertyMonitorX();
+    virtual ~PropertyMonitorX() {};
     ClassDef(PropertyMonitorX, 1)
   };
 
@@ -51,7 +52,11 @@ namespace Hal {
    */
 
   class EventFieldMonitorX : public PropertyMonitorX {
-    const Int_t fFieldID;
+    Int_t fFieldID;
+    CutMonitorFieldIdTranslator fTranslator;
+
+  protected:
+    virtual void MakeComplexAxes(TString opt = "");
 
   public:
     /**
@@ -67,9 +72,8 @@ namespace Hal {
      */
     EventFieldMonitorX(Int_t fieldID, std::initializer_list<Double_t> xAxis);
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Bool_t AreSimilar(CutMonitor* other) const;
+    virtual Bool_t AreSimilar(const CutMonitor& other) const;
     virtual Bool_t Init(Int_t task_id);
-    virtual CutMonitor* MakeCopy() const { return new EventFieldMonitorX(*this); }
     virtual ~EventFieldMonitorX() {};
     ClassDef(EventFieldMonitorX, 1)
   };
@@ -79,7 +83,11 @@ namespace Hal {
    */
 
   class TrackFieldMonitorX : public PropertyMonitorX {
-    const Int_t fFieldID;
+    Int_t fFieldID;
+    CutMonitorFieldIdTranslator fTranslator;
+
+  protected:
+    virtual void MakeComplexAxes(TString opt = "");
 
   public:
     /**
@@ -95,9 +103,8 @@ namespace Hal {
      */
     TrackFieldMonitorX(Int_t fieldID, std::initializer_list<Double_t> xAxis);
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Bool_t AreSimilar(CutMonitor* other) const;
+    virtual Bool_t AreSimilar(const CutMonitor& other) const;
     virtual Bool_t Init(Int_t task_id);
-    virtual CutMonitor* MakeCopy() const { return new TrackFieldMonitorX(*this); }
     virtual ~TrackFieldMonitorX() {};
     ClassDef(TrackFieldMonitorX, 1)
   };

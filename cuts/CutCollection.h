@@ -50,16 +50,17 @@ namespace Hal {
 
   class CutCollection : public TObject {
   private:
-    TObjArray* fCutMonitors;
-    TObjArray *fCuts, *fFastCuts;
-    ULong64_t fPassedSlow, fFailedSlow, fPassedFast, fFailedFast;
-    Int_t fFastCutsNo;
-    Int_t fSlowCutsNo;
-    Int_t fCutMonitorsNo;
+    TObjArray* fCutMonitors = {nullptr};
+    TObjArray* fCuts        = {nullptr};
+    TObjArray* fFastCuts    = {nullptr};
+    ULong64_t fPassedSlow = {0}, fFailedSlow = {0}, fPassedFast = {0}, fFailedFast = {0};
+    Int_t fFastCutsNo    = {0};
+    Int_t fSlowCutsNo    = {0};
+    Int_t fCutMonitorsNo = {0};
     CutCollectionLinks fPrev, fNext, fPrevBckg, fNextBckg;
     ECutUpdate fMode;  // mode event/ track. two track
-    Bool_t fInit, fDummy;
-    Int_t fCollectionID, fContainerSize, fStep;
+    Bool_t fInit = {kFALSE}, fDummy = {kFALSE};
+    Int_t fCollectionID = {0}, fContainerSize = {0}, fStep = {1};
     TObjArray** fCutContainerArr;  //[fContainerSize]
     /**
      * update cut monitors
@@ -81,20 +82,6 @@ namespace Hal {
      */
     Int_t MatchCut(Cut* address, CutCollection* input);
     /**
-     * look for cuts with given names in collections with smaller update ratio
-     * (tier) but linked with this cut container
-     * @param cut name of cut to find
-     * @return array of found cuts
-     */
-    TObjArray* LocateInLowerCollections(TString cut);
-    /**
-     * look for cuts with given name in this collection or look in lower
-     * collections that are linked with this collection
-     * @param classname name looked for monitor
-     * @return array of found cuts
-     */
-    TObjArray* LocateCuts(TString classname);
-    /**
      * check if cuts are compatibile
      * @param cut1 first cut to check
      * @param cut2 second cut to check
@@ -104,14 +91,16 @@ namespace Hal {
     Bool_t CheckIfComptatiblie(Cut* cut1, Cut* cut2);
     /**
      *
-     * @param cutname cut name (not cut-class name)
-     * @return cut update ratio
+     * @param upd
+     * @return container array
      */
-    ECutUpdate GetUpdateFromName(TString cutname) const;
-    inline TObjArray* GetCutContainerArray(ECutUpdate upd) const {
-      return fCutContainerArr[static_cast<Int_t>(upd)];
-      ;
-    }
+    inline TObjArray* GetCutContainerArray(ECutUpdate upd) const { return fCutContainerArr[static_cast<Int_t>(upd)]; }
+    /**
+     * try to find cuts for given monitors
+     * @param mon monitor
+     * @return a cut if proper cut was found, otherwise return nullptr
+     */
+    std::vector<Cut*> BasicCheckMonitor(CutMonitor* mon);
 
   public:
     /**

@@ -32,6 +32,7 @@ namespace Hal {
   class EventAnaChain;
   /**
    * Base class for physical analysis
+   * See @ref WarningEventAna for all possible warning codes used by this class.
    */
   class EventAna : public Task {
     friend EventAnaChain;
@@ -45,24 +46,24 @@ namespace Hal {
      * BIT(3) - disable/enable reader
      * BIT(4) - disable/enable format checking
      */
-    Int_t fFormatOption;
+    Int_t fFormatOption = {0};
     enum eBitFormat { kCompression = 0, kSource = 1, kDirectAcesss = 2, kReader = 3, kChecking = 4 };
     /**
      * number of processed events
      */
-    UInt_t fProcessedEvents;
+    UInt_t fProcessedEvents = {0};
     /**
      * size of buffer for mixing (not used by event and track analysis
      */
-    Int_t fMixSize;
+    Int_t fMixSize = {1};
     /**
      * total number of event collections
      */
-    Int_t fEventCollectionsNo;
+    Int_t fEventCollectionsNo = {0};
     /**
      * point to current event collection number
      */
-    Int_t fCurrentEventCollectionID;
+    Int_t fCurrentEventCollectionID = {0};
     /**
      * number of tiers in CutContainer, used during creating first cut, if
      * number is too small some cut's will not be added and code my crash
@@ -71,19 +72,19 @@ namespace Hal {
     /**
      * pointer to instance of  TDatabasePDG
      */
-    TDatabasePDG* fPDG;
+    TDatabasePDG* fPDG = {nullptr};
     /**
      * hold information about all cuts and cut monitors
      */
-    CutContainer* fCutContainer;
+    CutContainer* fCutContainer = {nullptr};
     /**
      * hold all events and tracks
      */
-    MemoryMapManager* fMemoryMap;
+    MemoryMapManager* fMemoryMap = {nullptr};
     /**
      * currently processed event
      */
-    Event* fCurrentEvent;
+    Event* fCurrentEvent = {nullptr};
     /**
      * comment about this analysis
      */
@@ -91,7 +92,7 @@ namespace Hal {
     /**
      * true if object has been initialized
      */
-    Int_t fInit;
+    Int_t fInit = {kFALSE};
     /**
      *
      * @return name of input file
@@ -112,11 +113,11 @@ namespace Hal {
     /**
      * true if this task is in chain
      */
-    Bool_t fInChain;
+    Bool_t fInChain = {kFALSE};
     std::vector<TString> fTagList;
     Int_t fTaskID;
     TString fInFileName;
-    DataFormatManager* fDataFormatManager;  //->
+    DataFormatManager* fDataFormatManager = {nullptr};  //->
 #ifdef _HAL_CLEAR_BUFFER_
     Bool_t fIsLastTask;
 #endif
@@ -225,11 +226,11 @@ namespace Hal {
       /*!< do not use direct data */
       kReaderAccess,
       /*!< use reader acces (look for branch HalEvent.) */
-      kNoReaderAcces,
+      kNoReaderAccess,
       /*!< */
       kDisableChecking,
       /*!< dusable format checking*/
-      kStandardAcess /**!< standard acces */
+      kStandardAccess /**!< standard acces */
     };
     /**
      * basic constructor

@@ -59,7 +59,6 @@ namespace Hal {
   }
 
   void FemtoSerializationInterfaceSH::ConvertSlice(ECopyDir dir) {
-    int count = 0;
     ExpandArrayIfSerialize(2 + fMaxJM * 8 + fMaxJM * fMaxJM * 4, dir);
     CopyDataSingle(fSlice->fNum[fBinLow], dir);
     CopyDataSingle(fSlice->fDen[fBinLow], dir);

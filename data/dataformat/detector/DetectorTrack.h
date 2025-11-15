@@ -41,6 +41,9 @@ namespace Hal {
     inline void SetFlag(Int_t flag) { fFlag = flag; };
     inline void SetFlagGood() { fFlag = 1; };
     inline void SetFlagBad() { fFlag = 0; }
+    static Int_t FlagGood() { return 1; }
+    static Int_t FlagBad() { return 0; }
+    virtual void ResetToEmpty() { SetFlagBad(); };
     virtual ~DetectorTrack();
     ClassDef(DetectorTrack, 1)
   };

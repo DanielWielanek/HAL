@@ -57,7 +57,7 @@ namespace Hal {
   }
 
   ErrorCalc::ErrorCalc(TString name, Double_t val, Double_t err) {
-    SetName(name);
+    ErrorCalc::SetName(name);
     fMeasurement       = val;
     fStatisticalUncert = err;
   }
@@ -109,8 +109,7 @@ namespace Hal {
     return TMath::Sqrt(total);
   }
 
-  Double_t ErrorCalc::SumError(std::initializer_list<Double_t> errs) {
-    auto vec  = Hal::Std::GetVector(errs);
+  Double_t ErrorCalc::SumError(std::vector<Double_t> vec) {
     double sq = 0;
     for (auto el : vec) {
       sq += el * el;

@@ -14,20 +14,18 @@ namespace Hal {
   /**
    * monitor to plot rapidity vs pt
    */
-  class MonitorYPt : public PropertyMonitorXY {
+  class MonitorYPt : public TrackFieldMonitorXY {
   public:
     MonitorYPt();
-    virtual void Update(Bool_t passed, TObject* obj);
     virtual ~MonitorYPt() {};
     ClassDef(MonitorYPt, 1)
   };
   /**
    * monitor to plot pseudorapidity vs pt
    */
-  class MonitorEtaPt : public PropertyMonitorXY {
+  class MonitorEtaPt : public TrackFieldMonitorXY {
   public:
     MonitorEtaPt();
-    virtual void Update(Bool_t passed, TObject* obj);
     virtual ~MonitorEtaPt() {};
     ClassDef(MonitorEtaPt, 1)
   };

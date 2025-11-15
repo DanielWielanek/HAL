@@ -36,6 +36,8 @@ namespace Hal {
     Double_t fStart {0};
     Double_t fFitted {0};
     Double_t fError {0};
+    Double_t fAsymErrorLow {0};
+    Double_t fAsymErrorHigh {0};
     TString fName;
 
   public:
@@ -56,6 +58,11 @@ namespace Hal {
      * @return true if map is set
      */
     Bool_t IsMapSet() const { return fIsMapSet; }
+    /**
+     * true if have asymetric error
+     * @return
+     */
+    Bool_t HasAsymError() const;
     /**
      * recalculate limits according to map ranges etc.
      */
@@ -129,7 +136,13 @@ namespace Hal {
      * set uncertainty of fitted parameter
      * @param error
      */
-    void SetError(Double_t error) { fError = error; };
+    void SetError(Double_t error);
+    /**
+     * sets assymetric error
+     * @param low
+     * @param high
+     */
+    void SetAsymetricError(Double_t low, Double_t high);
     /**
      * set min and max to be the same as map range
      */
@@ -184,6 +197,16 @@ namespace Hal {
      */
     Double_t GetError() const { return fError; };
     /**
+     *
+     * @return asymetric error
+     */
+    Double_t GetErrorLow() const;
+    /**
+     *
+     * @return asymetric error
+     */
+    Double_t GetErrorHigh() const;
+    /**
      * return 1.0/GetStepSize()
      * @return
      */
@@ -200,9 +223,20 @@ namespace Hal {
      * returns min
      */
     const std::vector<Double_t> GetValuesArray() const;
+    /**
+     *
+     * @return allowed indexes if parameter is continous
+     */
+    const std::vector<Int_t> GetIndexesArray() const;
+    /**
+     *
+     * @param i bin numer
+     * @return
+     */
+    Double_t GetValueForBin(Int_t i) const;
     virtual void Print(Option_t* option = "") const;
     virtual ~FitParam();
-    ClassDef(FitParam, 1)
+    ClassDef(FitParam, 2)
   };
 }  // namespace Hal
 

@@ -132,7 +132,7 @@ namespace Hal {
      * @param
      */
     void CenterTitle(Bool_t center = kTRUE, Char_t = 'x');
-    /*
+    /**
      * apply setting to histogram
      * @param h
      * @param no - for multigraph of hall

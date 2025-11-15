@@ -13,10 +13,9 @@
 namespace Hal {
   class PairEtaPtCut : public TwoTrackCut {
   public:
+    enum ParID { Pt = 1, Eta = 0 };
     PairEtaPtCut();
     Bool_t Pass(TwoTrack* pair);
-    static Int_t Pt() { return 1; };
-    static Int_t Eta() { return 0; };
     virtual ~PairEtaPtCut();
     ClassDef(PairEtaPtCut, 1)
   };

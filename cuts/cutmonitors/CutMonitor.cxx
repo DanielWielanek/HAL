@@ -9,6 +9,7 @@
 
 #include "Cout.h"
 #include "Cut.h"
+#include "CutMonitorComplex.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "StdString.h"
@@ -28,7 +29,8 @@ namespace Hal {
       fAxisMax[opt]  = max;
       fAxisBins[opt] = bins;
     } else {
-      Cout::PrintInfo(Form("You cant configure more than %i axis in %s", fAxisNo + 1, this->ClassName()), EInfo::kLowWarning);
+      Cout::PrintInfo(Form("CutMonitor: You cant configure more than %i axis in %s", fAxisNo + 1, this->ClassName()),
+                      EInfo::kLowWarning);
     }
   }
 
@@ -42,22 +44,7 @@ namespace Hal {
     return fOptionAxis[i];
   }
 
-  CutMonitor::CutMonitor(Int_t size) :
-    TObject(),
-    fAxisNo(size),
-    fCuts(0),
-    fCollectionID(-1),
-    fAxisBins(NULL),
-    fOptionAxis(NULL),
-    fHistoPassed(NULL),
-    fHistoFailed(NULL),
-    fAxisMin(NULL),
-    fAxisMax(NULL),
-    fCut(NULL),
-    fCutNames(NULL) {
-    fInit     = kFALSE;
-    fExUpdate = kFALSE;
-    fCuts     = 0;
+  CutMonitor::CutMonitor(Int_t size) : TObject(), fAxisNo(size) {
     if (fAxisNo > 0) {
       fUpdateRatio = ECutUpdate::kNo;
       fCut         = new Cut*[fAxisNo];
@@ -76,10 +63,8 @@ namespace Hal {
     }
   }
 
-  CutMonitor::CutMonitor(const CutMonitor& other) :
-    TObject(other), fAxisNo(other.fAxisNo), fHistoPassed(NULL), fHistoFailed(NULL) {
-    fInit         = kFALSE;
-    fExUpdate     = other.fExUpdate;
+  CutMonitor::CutMonitor(const CutMonitor& other) : TObject(other), fAxisNo(other.fAxisNo) {
+    fFlags        = other.fFlags;
     fCuts         = other.fCuts;
     fUpdateRatio  = other.fUpdateRatio;
     fCut          = new Cut*[fAxisNo];
@@ -100,22 +85,22 @@ namespace Hal {
   }
 
   Bool_t CutMonitor::Init(Int_t /*task_id*/) {
-    if (fInit) {
+    if (IsInitialized()) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kDebugInfo);
+      Cout::PrintInfo(Form("CutMonitor: %s is initialized ", this->ClassName()), EInfo::kDebugInfo);
 #endif
       return kFALSE;
     }
     for (int i = 0; i < fAxisNo; i++) {
       if (fCut[i] == NULL) {
-        Cout::PrintInfo(Form("Missed cut %i %s in %s", i, fCutNames[i].Data(), this->ClassName()), EInfo::kError);
+        Cout::PrintInfo(Form("CutMonitor: Missed cut %i %s in %s", i, fCutNames[i].Data(), this->ClassName()), EInfo::kError);
         return kFALSE;
       }
     }
     for (int i = 0; i < fAxisNo; i++) {
       for (int j = i + 1; j < fAxisNo; j++) {
         if (fCut[i]->GetUpdateRatio() != fCut[j]->GetUpdateRatio()) {
-          Cout::PrintInfo("Not compatible update ratios this might cause wrong "
+          Cout::PrintInfo("CutMonitor: Not compatible update ratios this might cause wrong "
                           "results in CutMonitor",
                           EInfo::kLowWarning);
         }
@@ -124,7 +109,7 @@ namespace Hal {
     TH1::AddDirectory(kFALSE);
     CreateHistograms();
     TH1::AddDirectory(kTRUE);
-    fInit = kTRUE;
+    MarkAsInitialized();
     return kTRUE;
   }
 
@@ -156,13 +141,13 @@ namespace Hal {
 
   void CutMonitor::TrueUpdate(Bool_t /*passed*/) {}
 
-  void CutMonitor::EnableExclusiveUpdate() { fExUpdate = kTRUE; }
+  void CutMonitor::EnableExclusiveUpdate() { SETBIT(fFlags, EFlagBit::kExclusive); }
 
   void CutMonitor::CreateHistograms() {}
 
   void CutMonitor::AddCut(TString cut, Int_t parameter_no) {
     if (Hal::Std::FindParam(cut, "Cloned")) {
-      Cout::PrintInfo("You can't add Cloned Cuts to CutMonitor", EInfo::kLowWarning);
+      Cout::PrintInfo("CutMonitor: You can't add Cloned Cuts to CutMonitor", EInfo::kLowWarning);
       return;
     }
     TClass* classdata = NULL;
@@ -175,7 +160,7 @@ namespace Hal {
     ECutUpdate newUpd = ECutUpdate::kNo;
 
     if (classdata == nullptr) {
-      Cout::PrintInfo(Form("Cannot find class %s", cut.Data()), EInfo::kLowWarning);
+      Cout::PrintInfo(Form("CutMonitor: Cannot find class %s", cut.Data()), EInfo::kLowWarning);
     } else {
       if (classdata->InheritsFrom("Hal::EventCut")) newUpd = ECutUpdate::kEvent;
       if (classdata->InheritsFrom("Hal::TrackCut")) newUpd = ECutUpdate::kTrack;
@@ -199,7 +184,7 @@ namespace Hal {
     if (fAxisNo > 0) {
       SetAxis(bins, min, max, 0);
     } else {
-      Cout::PrintInfo("CutMonitor::X axis not found", EInfo::kLowWarning);
+      Cout::PrintInfo("CutMonitor: CutMonitor::X axis not found", EInfo::kLowWarning);
     }
   }
 
@@ -207,7 +192,7 @@ namespace Hal {
     if (fAxisNo > 1) {
       SetAxis(bins, min, max, 1);
     } else {
-      Cout::PrintInfo("CutMonitor::Y axis not found", EInfo::kLowWarning);
+      Cout::PrintInfo("CutMonitor: CutMonitor::Y axis not found", EInfo::kLowWarning);
     }
   }
 
@@ -215,7 +200,7 @@ namespace Hal {
     if (fAxisNo > 2) {
       SetAxis(bins, min, max, 2);
     } else {
-      Cout::PrintInfo("CutMonitor::Z axis not found", EInfo::kLowWarning);
+      Cout::PrintInfo("CutMonitor: CutMonitor::Z axis not found", EInfo::kLowWarning);
     }
   }
 
@@ -225,7 +210,12 @@ namespace Hal {
     }
   }
 
-  CutMonitor* CutMonitor::MakeCopy() const { return new CutMonitor(*this); }
+  CutMonitor* CutMonitor::MakeCopy(TString opt) const {
+    auto res = TryMakeComplexMonitor(opt);
+    if (!res) res = (CutMonitor*) this->Clone();
+    res->MakeComplexAxes(opt);
+    return res;
+  }
 
   CutMonitor::~CutMonitor() {
     delete[] fCut;
@@ -242,7 +232,7 @@ namespace Hal {
     if (this != &other) {
       fCuts         = other.fCuts;
       fCollectionID = other.fCollectionID;
-      if (fAxisNo != other.fAxisNo) { Cout::PrintInfo("Copy incompatible cut monitors", EInfo::kLowWarning); }
+      if (fAxisNo != other.fAxisNo) { Cout::PrintInfo("CutMonitor: Copy incompatible cut monitors", EInfo::kLowWarning); }
       for (int i = 0; i < fAxisNo; i++) {
         fAxisBins[i]   = other.fAxisBins[i];
         fOptionAxis[i] = other.fOptionAxis[i];
@@ -255,12 +245,11 @@ namespace Hal {
       fHistoFailed = nullptr;
       if (fHistoPassed) delete fHistoPassed;
       fHistoPassed = nullptr;
-      if (other.fInit) {
+      if (other.IsInitialized()) {
         fHistoPassed = (TH1*) other.fHistoPassed->Clone();
         fHistoFailed = (TH1*) other.fHistoFailed->Clone();
       }
-      fInit        = other.fInit;
-      fExUpdate    = other.fExUpdate;
+      fFlags       = other.fFlags;
       fUpdateRatio = other.fUpdateRatio;
     }
     return *this;
@@ -271,7 +260,7 @@ namespace Hal {
     pack->AddObject(new ParameterInt("Cuts", fCuts));
     pack->AddObject(new ParameterInt("CollectionID", fCollectionID));
     pack->AddObject(new ParameterInt("UpdateRatio", (Int_t) fUpdateRatio));
-    pack->AddObject(new ParameterInt("ExclusiveUpdate", (Int_t) fExUpdate));
+    pack->AddObject(new ParameterInt("ExclusiveUpdate", (Int_t) IsExclusive()));
 
     if (!ObjMonitor()) {
       TH1* hP = (TH1*) fHistoPassed->Clone();
@@ -283,9 +272,12 @@ namespace Hal {
         if (labels.size() > 0) {
           for (auto iLabel : labels) {
             Int_t bin = hP->GetXaxis()->FindBin(iLabel.second);
-            if (bin != 0) {
+            if (bin != 0 && bin <= hP->GetNbinsX()) {
               hP->GetXaxis()->SetBinLabel(bin, iLabel.first);
               hF->GetXaxis()->SetBinLabel(bin, iLabel.first);
+            } else {
+              Hal::Cout::PrintInfo(Form("Wrong bin for cut monitor from cut %s [X-axis]", fCut[0]->ClassName()),
+                                   EInfo::kLowWarning);
             }
           }
         }
@@ -301,9 +293,12 @@ namespace Hal {
         if (labels.size() > 0) {
           for (auto iLabel : labels) {
             Int_t bin = hP->GetYaxis()->FindBin(iLabel.second);
-            if (bin != 0) {
+            if (bin != 0 && bin <= hP->GetNbinsY()) {
               hP->GetYaxis()->SetBinLabel(bin, iLabel.first);
               hF->GetYaxis()->SetBinLabel(bin, iLabel.first);
+            } else {
+              Hal::Cout::PrintInfo(Form("Wrong bin for cut monitor from cut %s [Y-axis]", fCut[1]->ClassName()),
+                                   EInfo::kLowWarning);
             }
           }
         }
@@ -319,9 +314,12 @@ namespace Hal {
         if (labels.size() > 0) {
           for (auto iLabel : labels) {
             Int_t bin = hP->GetZaxis()->FindBin(iLabel.second);
-            if (bin != 0) {
+            if (bin != 0 && bin <= hP->GetNbinsZ()) {
               hP->GetZaxis()->SetBinLabel(bin, iLabel.first);
               hF->GetZaxis()->SetBinLabel(bin, iLabel.first);
+            } else {
+              Hal::Cout::PrintInfo(Form("Wrong bin for cut monitor from cut %s [Z-axis]", fCut[2]->ClassName()),
+                                   EInfo::kLowWarning);
             }
           }
         }
@@ -341,12 +339,12 @@ namespace Hal {
     return pack;
   }
 
-  Bool_t CutMonitor::AreSimilar(CutMonitor* other) const {
-    if (this->fAxisNo != other->fAxisNo) return kFALSE;
+  Bool_t CutMonitor::AreSimilar(const CutMonitor& other) const {
+    if (this->fAxisNo != other.fAxisNo) return kFALSE;
     for (int i = 0; i < fAxisNo; i++) {
-      if (!this->fCutNames[i].EqualTo(other->fCutNames[i])) { return kFALSE; }
-      if (fCut[i] != other->fCut[i]) return kFALSE;
-      if (fOptionAxis[i] != other->fOptionAxis[i]) return kFALSE;
+      if (!this->fCutNames[i].EqualTo(other.fCutNames[i])) { return kFALSE; }
+      if (fCut[i] != other.fCut[i]) return kFALSE;
+      if (fOptionAxis[i] != other.fOptionAxis[i]) return kFALSE;
     }
     return kTRUE;
   }
@@ -375,4 +373,88 @@ namespace Hal {
     }
   }
 
+  void CutMonitor::MakeComplexAxes(TString opt) {
+    if (ObjMonitor()) return;  // do not create magic flags from object monitors
+    Bool_t Re = kFALSE, Im = kFALSE;
+    if (Hal::Std::FindParam(opt, "re")) Re = kTRUE;
+    if (Hal::Std::FindParam(opt, "im")) Im = kTRUE;
+    if (Re == kFALSE && Im == kFALSE) return;
+    for (int axis = 0; axis < GetAxisNo(); axis++) {
+      TString cut_name = GetCutName(axis);
+      TClass* clas     = TClass::GetClass(cut_name, kTRUE, kTRUE);
+      if (!clas) {
+        Hal::Cout::PrintInfo(
+          Form("CutMonitor: Cannot find %s class for monitoring, probably you mixed options of adding/creating cut monitor e.g.,"
+               "you create cut monitor with im/re option and added with im/re options",
+               cut_name.Data()),
+          EInfo::kError);
+        return;
+      }
+      TString pattern = "";
+      if (clas->InheritsFrom("Hal::EventCut")) {
+        if (Im) {  // im
+          pattern = "Hal::EventImaginaryCut";
+        } else if (Re) {  // re
+          pattern = "Hal::EventRealCut";
+        }
+      } else if (clas->InheritsFrom("Hal::TrackCut")) {
+        if (Im) {  // im
+          pattern = "Hal::TrackImaginaryCut";
+        } else if (Re) {  // re
+          pattern = "Hal::TrackRealCut";
+        }
+      } else {
+        if (Im) {  // im
+          pattern = "Hal::TwoTrackImaginaryCut";
+        } else if (Re) {  // re
+          pattern = "Hal::TwoTrackRealCut";
+        }
+      }
+      fCutNames[axis] = Form("%s(%s)", pattern.Data(), GetCutName(axis).Data());
+    }
+  }
+
+  CutMonitor* CutMonitor::TryMakeComplexMonitor(TString opt) const {
+    if (!ObjMonitor()) return nullptr;
+    if (dynamic_cast<const ComplexMonitor*>(this)) return nullptr;
+    if (Hal::Std::FindParam(opt, "im")) {
+      switch (fUpdateRatio) {
+        case ECutUpdate::kEvent: {
+          return new Hal::EventCutMonitorImaginary((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTrack: {
+          return new Hal::TrackCutMonitorImaginary((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTwoTrack: {
+          return new Hal::TwoTrackCutMonitorImaginary((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTwoTrackBackground: {
+          return new Hal::TwoTrackCutMonitorImaginary((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kNo: {
+          return nullptr;
+        } break;
+      }
+    }
+    if (Hal::Std::FindParam(opt, "re")) {
+      switch (fUpdateRatio) {
+        case ECutUpdate::kEvent: {
+          return new Hal::EventCutMonitorReal((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTrack: {
+          return new Hal::TrackCutMonitorReal((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTwoTrack: {
+          return new Hal::TwoTrackCutMonitorReal((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kTwoTrackBackground: {
+          return new Hal::TwoTrackCutMonitorReal((CutMonitor*) this);
+        } break;
+        case ECutUpdate::kNo: {
+          return nullptr;
+        } break;
+      }
+    }
+    return nullptr;
+  }
 }  // namespace Hal

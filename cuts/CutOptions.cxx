@@ -53,63 +53,20 @@ namespace Hal {
 
   Hal::Cut* CutOptions::MakeCutCopy(const Hal::Cut& x) const {
     if (fRe) {
-      if (dynamic_cast<const Hal::EventBinningCut*>(&x)) {
-        Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with im flag", __FILE__, __LINE__), EInfo::kError);
-        return nullptr;
-      }
       return MakeCutCopy(x, "re", kFALSE);
     } else if (fIm) {
-      if (dynamic_cast<const Hal::EventBinningCut*>(&x)) {
-        Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with im flag", __FILE__, __LINE__), EInfo::kError);
-        return nullptr;
-      }
       return MakeCutCopy(x, "im", fAcceptNull);
     }
     return x.MakeCopy();
   }
 
   Hal::CutMonitor* CutOptions::MakeMonitorCopy(const Hal::CutMonitor& x) const {
-    auto MakeComplexAxis = [](CutMonitor* moni, const Int_t axis, const Int_t flag) {
-      if (flag == 0) return;
-      TString cut_name = moni->GetCutName(axis);
-      TClass* clas     = TClass::GetClass(cut_name, kTRUE, kTRUE);
-      if (!clas) {
-        Hal::Cout::PrintInfo(
-          Form("Cannot find %s class for monitoring, probably you mixed options of adding/creating cut monitor e.g.,"
-               "you create cut monitor with im/re option and added with im/re options",
-               cut_name.Data()),
-          EInfo::kError);
-        return;
-      }
-      TString pattern = "";
-      if (clas->InheritsFrom("Hal::EventCut")) {
-        if (flag == -1) {  // im
-          pattern = "Hal::EventImaginaryCut";
-        } else if (flag == 1) {  // re
-          pattern = "Hal::EventRealCut";
-        }
-      } else if (clas->InheritsFrom("Hal::TrackCut")) {
-        if (flag == -1) {  // im
-          pattern = "Hal::TrackImaginaryCut";
-        } else if (flag == 1) {  // re
-          pattern = "Hal::TrackRealCut";
-        }
-      } else {
-        if (flag == -1) {  // im
-          pattern = "Hal::TwoTrackImaginaryCut";
-        } else if (flag == 1) {  // re
-          pattern = "Hal::TwoTrackRealCut";
-        }
-      }
-      moni->fCutNames[axis] = Form("%s(%s)", pattern.Data(), moni->GetCutName(axis).Data());
-    };
-    Hal::CutMonitor* res = x.MakeCopy();
-    Int_t size           = res->GetAxisNo();
-    Int_t flag           = 0;
-    if (fRe) flag = 1;
-    if (fIm) flag = -1;
-    for (int i = 0; i < size; i++)
-      MakeComplexAxis(res, i, flag);
+    TString innerOpt = "";
+    if (fRe)
+      innerOpt = "re";
+    else if (fIm)
+      innerOpt = "im";
+    Hal::CutMonitor* res = x.MakeCopy(innerOpt);
     return res;
   }
   std::vector<Int_t> CutOptions::GetCollectionsFlags(Int_t startCol, TString option) const {
@@ -142,45 +99,9 @@ namespace Hal {
   }
 
   Hal::Cut* CutOptions::MakeCutCopy(const Hal::Cut& cut, TString flag, Bool_t acceptNulls) const {
-    Hal::Cut* res = nullptr;
-    auto upd      = cut.GetUpdateRatio();
-    if (flag == "re") {  // real stuff
-      switch (upd) {
-        case ECutUpdate::kEvent: {
-          res = new EventRealCut(static_cast<const EventCut&>(cut));
-        } break;
-        case ECutUpdate::kTrack: {
-          res = new TrackRealCut(static_cast<const TrackCut&>(cut));
-        } break;
-        case ECutUpdate::kTwoTrack: {
-          res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
-        } break;
-        case ECutUpdate::kTwoTrackBackground: {
-          res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(cut));
-        } break;
-        default: return nullptr; break;
-      }
-    } else {  // imaginary stuff
-      switch (upd) {
-        case ECutUpdate::kEvent: {
-          res = new EventImaginaryCut(static_cast<const EventCut&>(cut));
-          if (acceptNulls) static_cast<EventImaginaryCut*>(res)->AcceptNulls(kTRUE);
-        } break;
-        case ECutUpdate::kTrack: {
-          res = new TrackImaginaryCut(static_cast<const TrackCut&>(cut));
-          if (acceptNulls) static_cast<TrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
-        } break;
-        case ECutUpdate::kTwoTrack: {
-          res = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
-          if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
-        } break;
-        case ECutUpdate::kTwoTrackBackground: {
-          res = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(cut));
-          if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
-        } break;
-        default: return nullptr; break;
-      }
-    }
+    TString opt = flag;
+    if (acceptNulls) opt = opt + "+null";
+    Hal::Cut* res = cut.MakeCopy(opt);
     if (res) res->SetCollectionID(cut.GetCollectionID());
     return res;
   }
@@ -198,6 +119,5 @@ namespace Hal {
     }
     return update_ratio_name;
   }
-
 
 } /* namespace Hal */

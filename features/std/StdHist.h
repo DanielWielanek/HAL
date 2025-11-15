@@ -24,8 +24,12 @@ class TVirtualPad;
 namespace Hal {
   namespace Std {
     namespace {
+#if __cplusplus >= 201703L
+      [[maybe_unused]] int anonymCounter = {0};
+#else
       int anonymCounter = {0};
-    }
+#endif
+    }  // namespace
     /**
      * remove nans from histogram
      * @param h histogram to check
@@ -119,6 +123,13 @@ namespace Hal {
      * @return projection
      */
     TH2D* GetProjection2D(const TH3* histo, Double_t min, Double_t max, Option_t* opt);
+    /**
+     * extend this histogram by adding artificial overflow/underfow bin, NOTE: works correctly onlyy for histograms
+     * with same bin widht
+     * @param h
+     * @return
+     */
+    TH1* ExtendToUnderFlowOverFlow(const TH1& h);
     /**
      * set under/overflow bins along given egde
      * @param h histogram
@@ -298,6 +309,14 @@ namespace Hal {
                  Double_t minZ,
                  Double_t maxZ,
                  TString opt = "vals");
+    /**
+     *
+     * @param objName name of  the object
+     * @param className class name
+     * @param pad pointer to pad
+     * @return objects that are no pad and have  given name and objName, if not cassName is set all objects with given name are
+     * returned
+     */
     std::vector<TObject*> GetPadChildren(TString objName, TString className = "", TVirtualPad* pad = nullptr);
     /**
      * check if two histograms contain the same data (check only bin content not range etc.)
@@ -314,9 +333,49 @@ namespace Hal {
     /**
      * finds maximum in given histograms
      * @param
+     * @param underflow - include underflow bins
+     * @param overflow - inlcude overflow bins
      * @return
      */
-    Double_t GetMaximum(const std::vector<TH1*> histos);
+    Double_t GetMinimum(const std::vector<TH1*> histos, Bool_t underflow = kFALSE, Bool_t overflow = kFALSE);
+    /**
+     * finds maximum in given histograms
+     * @param
+     * @param underflow - include underflow bins
+     * @param overflow - inlcude overflow bins
+     * @return
+     */
+    Double_t GetMaximum(const std::vector<TH1*> histos, Bool_t underflow = kFALSE, Bool_t overflow = kFALSE);
+    /**
+     * hide labels on axis
+     * @param obj - object to hide labels it can be TH1, TGraph or TAxis (in a such case you do not have to set x,y or z in opt)
+     * @param opt - option - define axis you can set x,y,z etc. l - mean skip low value, h - high value e.g.
+     * you can also separate options eg.
+     * xyl - hide low values on x and y
+     * xl+yh - hide low values on x and high on y
+     *
+     */
+    void HideAxisLabel(TObject* obj, TString opt);
+    /**
+     *
+     * @param histo
+     * @param n - poly degree
+     * @param low - lower range
+     * @param high - upper range
+     * @return parameters of chebyshev polynomial [0]+x*[1]+...
+     */
+    std::vector<Double_t> ChebyshevInterpolation(const TH1D& histo, Int_t n, Double_t low = 0, Double_t high = 0);
+    /**
+     * draws square with diagonals
+     * @param sample sample histogram used to calculate points
+     * @param x center of bin
+     * @param y center of bin
+     * @param opt if "x" draw square with rectangle if opt="l" draw one diagonal, if "r" draw second diagonal if not specified
+     * draws only border
+     * @param color - line color
+     * @param width- line width
+     */
+    void DrawDiagonalBins(const TH2& sample, Double_t x, Double_t y, TString opt = "x", Color_t color = kBlack, Int_t width = 1);
 
   }  // namespace Std
 }  // namespace Hal

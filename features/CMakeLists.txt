@@ -3,7 +3,8 @@
 # The extension is already found.  Any number of sources could be listed here.
 
 Set(INCLUDE_DIRECTORIES
-${HAL_FEATURES}
+ ${HAL_FEATURES}
+ ${GSL_INCLUDE_DIRS}
 )
 
 Set(SYSTEM_INCLUDE_DIRECTORIES
@@ -16,7 +17,6 @@ Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 Set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}
   ${GSL_LIBRARY_DIRS} 
-  ${FAIRROOT_LIBRARY_DIR}
 )
 
 link_directories( ${LINK_DIRECTORIES})
@@ -77,6 +77,8 @@ phys/Helix.cxx
 phys/HelixBase.cxx
 phys/FastAxisCalc.cxx
 phys/ProfileAna2D.cxx
+phys/SmearAlgo.cxx
+phys/ParameterSolver.cxx
 
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx
@@ -93,8 +95,8 @@ install(FILES ${EXT_HEADERS}
 Set(HEADERS )
 Set(LINKDEF HalFeaturesLinkDef.h)
 Set(LIBRARY_NAME HalFeatures)
-Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO  EG )
-#Set(DEPENDENCIES XMLIO SQLIO FairTools)
+Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO EG gsl gslcblas )
+
 
 string(JOIN " " ROOTCLING_FLAGS "-I" ${HAL_FEATURES})
 
@@ -127,11 +129,7 @@ Set(Exe_Source
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    if(NOT DEFINED DISABLE_GSL)
-    	Set(DEPENDENCIES gsl gslcblas HalFeatures Tree HalAna HalFemto HalFlow HalSpectra )
-    else()
-    	Set(DEPENDENCIES HalFeatures Tree HalAna HalFemto HalFlow HalSpectra )
-    endif()
+    Set(DEPENDENCIES ${GSL_LIBRARIES} HalFeatures Tree HalAna HalFemto HalFlow HalSpectra )
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
 

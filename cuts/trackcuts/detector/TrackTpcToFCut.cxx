@@ -67,7 +67,7 @@ namespace Hal {
     for (int i = 0; i < fTpc->GetCutSize(); i++) {
       SetValue(fTpc->GetValue(i), i);
     }
-    SetValue(fToF->GetValue(), 7);
+    SetValue(fToF->GetValue(), M2);
     if (p > fThreshold) {
       if (tof_ok == kFALSE) good = kFALSE;
     } else if (fTofOpt) {

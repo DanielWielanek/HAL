@@ -19,12 +19,8 @@ namespace Hal {
     Track* fTrackIm;
 
   public:
+    enum ParID { P = 0, Pt = 1, Phi = 2, Theta = 3, Pz = 4 };
     TrackDeltaMomentumCut(Int_t params = 1);
-    static Int_t P() { return 0; }
-    static Int_t Pt() { return 1; };
-    static Int_t Phi() { return 2; }
-    static Int_t Theta() { return 3; };
-    static Int_t Pz() { return 4; }
     Bool_t Init(Int_t format_id = 0);
     virtual ~TrackDeltaMomentumCut();
     ClassDef(TrackDeltaMomentumCut, 1)

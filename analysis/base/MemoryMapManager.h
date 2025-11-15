@@ -62,6 +62,7 @@ namespace Hal {
     Bool_t fUseCompression;
     Bool_t fDirectAcces;
     Int_t fTrackMapSize, fFormatID;
+    Int_t fLastEventMemoryCollection;
     Int_t fEventCollectionsNo, fTrackCollectionsNo, fMixSize;
     Int_t* fEventToTrackNo;  //[fEventCollectionsNo]
     Int_t* fCounter;         //[fEventCollectionsNo]
@@ -145,6 +146,11 @@ namespace Hal {
      */
     void BufferEvent(Int_t collection);
     /**
+     * set last memory collection floag
+     * @param col
+     */
+    void SwitchToMemoryCollection(Int_t col) { fLastEventMemoryCollection = col; };
+    /**
      * return processed event (from buffer)
      * @param collection - event collection
      * @return event
@@ -205,6 +211,50 @@ namespace Hal {
      * @param collection event collection number
      */
     void ResetEventCollection(Int_t collection);
+    /**
+     * reject last event for buffer with id set by @see SwitchToMemoryCollection
+     */
+    void RejectLastEventAuto() { RejectLastEvent(fLastEventMemoryCollection); }
+    /**
+     * reset last event for buffer (set with @see SwitchToMemoryCollection)
+     */
+    void ResetEventCollectionAuto() { ResetEventCollection(fLastEventMemoryCollection); }
+    /**
+     * return track for last buffered event for colection set by @see SwitchToMemoryCollection
+     * @param trackCol
+     * @param counter
+     * @param index
+     * @return
+     */
+    inline Track* GetTrackAuto(Int_t trackCol, Int_t counter, Int_t index) const {
+      return GetTrack(fLastEventMemoryCollection, trackCol, counter, index);
+    }
+    /**
+     * return track for last buffered event for colection set by @see SwitchToMemoryCollection
+     * @param trackCol
+     * @param counter
+     * @param index
+     * @return
+     */
+    inline Track* GetTrackAuto(Int_t trackCol, Int_t index) const {
+      return GetTrack(fLastEventMemoryCollection, trackCol, index);
+    }
+    /**
+     * return number of tracks for event collection set by @see SwitchToMemoryCollection
+
+     * @param trackCol
+     * @param counter
+     * @return
+     */
+    inline Int_t GetTracksNoAuto(Int_t trackCol, Int_t counter) const {
+      return GetTracksNo(fLastEventMemoryCollection, trackCol, counter);
+    }
+    /**
+     * return number of tracks for event collection set by @see SwitchToMemoryCollection
+     * @param trackCol
+     * @return
+     */
+    inline Int_t GetTracksNoAuto(Int_t trackCol) const { return GetTracksNo(fLastEventMemoryCollection, trackCol); };
     /**
      * clear event stored in tree
      */

@@ -47,6 +47,7 @@
 #include "FemtoSourceModel.h"
 #include "FemtoWeightGenerator.h"
 #include "FemtoWeightGeneratorLednicky.h"
+#include "Std.h"
 #include "XMLNode.h"
 
 namespace Hal {
@@ -101,6 +102,15 @@ namespace Hal {
       TString label = dummy->GetLabel(0);
       kinem         = Femto::LabelToKinematics(label);
     }
+    Int_t nbins;
+    Double_t mini, maxi;
+    Hal::Std::GetAxisPar(*dummy->GetNum(), nbins, mini, maxi, "x");
+    fAxisConf[0].SetXYZ(nbins, mini, maxi);
+    Hal::Std::GetAxisPar(*dummy->GetNum(), nbins, mini, maxi, "y");
+    fAxisConf[1].SetXYZ(nbins, mini, maxi);
+    Hal::Std::GetAxisPar(*dummy->GetNum(), nbins, mini, maxi, "z");
+    fAxisConf[2].SetXYZ(nbins, mini, maxi);
+
     fPair = Femto::MakePair(kinem, fImgMom);
 
     if (fIgnoreSing) {
@@ -311,4 +321,32 @@ namespace Hal {
     Cout::Text("Weight Info", "M");
     if (fWeight) fWeight->Print();
   }
+
+  Int_t CorrFitDumpedPairAna::GetNBins(Char_t opt) const {
+    switch (opt) {
+      case 'x': return fAxisConf[0].X(); break;
+      case 'y': return fAxisConf[1].X(); break;
+      case 'z': return fAxisConf[2].X(); break;
+    }
+    return -1;
+  }
+
+  Double_t CorrFitDumpedPairAna::GetAxisMin(Char_t opt) const {
+    switch (opt) {
+      case 'x': return fAxisConf[0].Y(); break;
+      case 'y': return fAxisConf[1].Y(); break;
+      case 'z': return fAxisConf[2].Y(); break;
+    }
+    return -1;
+  }
+
+  Double_t CorrFitDumpedPairAna::GetAxisMax(Char_t opt) const {
+    switch (opt) {
+      case 'x': return fAxisConf[0].Z(); break;
+      case 'y': return fAxisConf[1].Z(); break;
+      case 'z': return fAxisConf[2].Z(); break;
+    }
+    return -1;
+  }
+
 }  // namespace Hal

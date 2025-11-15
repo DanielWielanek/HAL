@@ -11,7 +11,10 @@
 #include <TParticlePDG.h>
 
 #include "Cout.h"
+#include "Package.h"
+#include "Parameter.h"
 #include "V0Track.h"
+
 
 namespace Hal {
 
@@ -39,6 +42,13 @@ namespace Hal {
     fM2 = p2->Mass();
 
     return TrackV0Cut::Init(taskid);
+  }
+
+  Package* TrackV0MinvCut::TrackV0MinvCut::Report() const {
+    auto report = Hal::TrackV0Cut::Report();
+    report->AddObject(new Hal::ParameterInt("PDG1", fPid1));
+    report->AddObject(new Hal::ParameterInt("PDG2", fPid2));
+    return report;
   }
   //===========================================================================
 

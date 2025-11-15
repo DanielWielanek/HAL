@@ -11,6 +11,15 @@
 
 #include <TObject.h>
 namespace Hal {
+  /**
+   * namespace for data member current convention:
+   * 1M - flag for real data (img values are between 1M-2M)
+   * 2M - flag for imaginary data (real values are between 2M and 10M)
+   * 10M -flag that marks events
+   * therefore:
+   * for track variables use number between 1000 and 999 999
+   * for event variables use numbers between 1000 and 999 999
+   */
   namespace DataFieldID {
     const Int_t ReStep = 1000000;          // 1M
     const Int_t ImStep = 2000000;          // 2M
@@ -19,6 +28,23 @@ namespace Hal {
       const Int_t ReStepEvent = EventStart + ReStep;
       const Int_t ImStepEvent = EventStart + ImStep;
     }  // namespace Internal
+    /**
+     * @return true if this is event field
+     */
+    Bool_t IsEvent(Int_t field);
+    /**
+     *
+     * @param field
+     * @return true i real field
+     */
+    Bool_t IsRe(Int_t field);
+    /**
+     * true if imaginary field
+     * @param field
+     * @return
+     */
+    Bool_t IsIm(Int_t field);
+
     namespace Event {
       enum EBasic {
         kVertexX      = Hal::DataFieldID::Internal::EventStart + 1,

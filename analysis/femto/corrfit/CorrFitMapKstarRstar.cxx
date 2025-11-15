@@ -15,7 +15,7 @@
 namespace Hal {
   CorrFitMapKstarRstar::CorrFitMapKstarRstar(TString name) :
     fHisto2d(nullptr), fSplined(nullptr), fFrameScale(1), fFrame(Femto::EKinematics::kPRF) {
-    SetName(name);
+    CorrFitMapKstarRstar::SetName(name);
   }
 
   CorrFitMapKstarRstar::CorrFitMapKstarRstar(const TH2D& h, Femto::EKinematics kin) :
@@ -45,7 +45,7 @@ namespace Hal {
                                              Femto::EKinematics kin) :
     fSplined(nullptr), fFrameScale(1.0), fFrame(kin) {
     fHisto2d = new TH2D("CFMap", "CFMap", binsKstar, minKstar, maxKstar, binsR, minR, maxR);
-    SetName(name);
+    CorrFitMapKstarRstar::SetName(name);
   }
 
   void CorrFitMapKstarRstar::Recalc(TString extrOpt) {

@@ -15,20 +15,19 @@ namespace Hal {
 
   class TrackPrimaryFlagCut : public TrackCut {
   public:
+    enum ValID { Primary = 1, NonPrimary = 0 };
     TrackPrimaryFlagCut() : TrackCut(1) { SetUnitName("PrimaryFlag [AU]"); };
-    static Int_t Primary() { return 1; };
-    static Int_t NonPrimary() { return 0; };
     virtual Bool_t Pass(Track* track);
+    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
     virtual ~TrackPrimaryFlagCut() {};
     ClassDef(TrackPrimaryFlagCut, 1)
   };
 
   class TrackV0FlagCut : public TrackCut {
   public:
+    enum ValID { BadV0 = 1, GoodV0 = 2, NonV0 = 0 };
     TrackV0FlagCut() : TrackCut(1) { SetUnitName("V0Flag [AU]"); };
-    static Int_t BadV0() { return 1; };
-    static Int_t GoodV0() { return 2; };
-    static Int_t NonV0() { return 0; }
+    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
     virtual Bool_t Pass(Track* track);
     virtual ~TrackV0FlagCut() {};
     ClassDef(TrackV0FlagCut, 1)
@@ -37,9 +36,9 @@ namespace Hal {
 
   class TrackGoodSecondaryFlagCut : public TrackCut {
   public:
+    enum ValID { HasMother = 1, IsOrphan = 0 };
     TrackGoodSecondaryFlagCut() : TrackCut(1) { SetUnitName("MotherFlag [AU]"); };
-    static Int_t HasMother() { return 1; };
-    static Int_t IsOrphan() { return 0; }
+    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
     virtual Bool_t Pass(Track* track);
     virtual ~TrackGoodSecondaryFlagCut() {};
     ClassDef(TrackGoodSecondaryFlagCut, 1)
@@ -47,9 +46,9 @@ namespace Hal {
 
   class TrackGlobalFlagCut : public TrackCut {
   public:
+    enum ValID { GlobalTrack = 1, NonGlobalTrack = 0 };
     TrackGlobalFlagCut() : TrackCut(1) { SetUnitName("GlobalFlag [AU]"); };
-    static Int_t GlobalTrack() { return 1; }
-    static Int_t NonGlobalTrack() { return 0; }
+    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
     virtual Bool_t Pass(Track* track);
     virtual ~TrackGlobalFlagCut() {};
     ClassDef(TrackGlobalFlagCut, 1)

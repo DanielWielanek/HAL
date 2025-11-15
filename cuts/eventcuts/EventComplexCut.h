@@ -19,6 +19,9 @@ namespace Hal {
     ULong64_t fNullObjects;
     Bool_t fAcceptNulls;
 
+  protected:
+    virtual Hal::Cut* MakeInnerCopy() const;
+
   public:
     EventComplexCut();
     EventComplexCut(const EventCut* real, const EventCut* img);
@@ -38,6 +41,11 @@ namespace Hal {
   class EventRealCut : public EventCut {
     EventCut* fRealCut;
 
+  protected:
+    virtual Hal::Cut* MakeInnerCopy() const;
+    /** save copy ctor  for make inner copy*/
+    EventRealCut(const EventRealCut& other, Bool_t safe);
+
   public:
     EventRealCut();
     EventRealCut(const EventCut* real);
@@ -48,6 +56,7 @@ namespace Hal {
     virtual Package* Report() const;
     virtual TString CutName(Option_t* opt = "") const;
     EventCut* GetRealCut() const { return fRealCut; };
+    std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const { return fRealCut->GetBinLabels(par); }
     virtual ~EventRealCut();
     ClassDef(EventRealCut, 1)
   };
@@ -56,6 +65,11 @@ namespace Hal {
     EventCut* fImgCut;
     ULong64_t fNullObjects;
     Bool_t fAcceptNulls;
+
+  protected:
+    virtual Hal::Cut* MakeInnerCopy() const;
+    /** save copy ctor  for make inner copy*/
+    EventImaginaryCut(const EventImaginaryCut& other, Bool_t safe);
 
   public:
     EventImaginaryCut();
@@ -68,6 +82,7 @@ namespace Hal {
     virtual Package* Report() const;
     virtual TString CutName(Option_t* opt = "") const;
     EventCut* GetImgCut() const { return fImgCut; };
+    std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const { return fImgCut->GetBinLabels(par); }
     virtual ~EventImaginaryCut();
     ClassDef(EventImaginaryCut, 1)
   };

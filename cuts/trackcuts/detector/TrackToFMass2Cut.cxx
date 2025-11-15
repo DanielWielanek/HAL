@@ -25,23 +25,23 @@
 
 namespace Hal {
   TrackToFMass2Cut::TrackToFMass2Cut() : TrackExpCut(1) {
-    SetUnitName("ToF M^{2} A [GeV/c^2]", 0);
-    fLowLine[0]  = -1E+2;
-    fHighLine[0] = 1E+2;
-    for (int i = 1; i < 3; i++) {
+    SetUnitName("ToF M^{2} A [GeV^{2}/c^{4}]", 0);
+    for (int i = 0; i < 3; i++) {
       fLowLine[i]  = 0;
       fHighLine[i] = 0;
     }
+    fLowLine[2]  = -1E+2;
+    fHighLine[2] = 1E+2;
   }
 
   TrackToFMass2Cut::TrackToFMass2Cut(Int_t nParams) : TrackExpCut(nParams) {
-    SetUnitName("ToF M^{2} A [GeV/c^2]", 0);
-    fLowLine[0]  = -1E+2;
-    fHighLine[0] = 1E+2;
-    for (int i = 1; i < 3; i++) {
+    SetUnitName("ToF M^{2} A [GeV^{2}/c^{4}]", 0);
+    for (int i = 0; i < 3; i++) {
       fLowLine[i]  = 0;
       fHighLine[i] = 0;
     }
+    fLowLine[2]  = -1E+2;
+    fHighLine[2] = 1E+2;
   }
 
   void TrackToFMass2Cut::SetPolyLineDown(Double_t a, Double_t b, Double_t c) {
@@ -118,7 +118,7 @@ namespace Hal {
                                  Double_t x2,
                                  Double_t y2,
                                  Double_t x3,
-                                 Double_t y3) {
+                                 Double_t y3) const {
     TMatrixD A(3, 3);
     A[0][0] = x1 * x1;
     A[0][1] = x1;
@@ -135,10 +135,9 @@ namespace Hal {
     B[2][0] = y3;
     A.Invert();
     TMatrixD C = A * B;
-    c          = C[0][0];
+    a          = C[0][0];
     b          = C[1][0];
-    a          = C[2][0];
-    std::cout << a << " " << b << " " << c << std::endl;
+    c          = C[2][0];
   }
 
   void TrackToFMass2Cut::SetDownPoints(Double_t x1, Double_t y1, Double_t x2, Double_t y2, Double_t x3, Double_t y3) {
@@ -151,8 +150,8 @@ namespace Hal {
     Double_t p    = tr->GetMomentum().P();
     SetValue(m2, 0);
     if (m2 == 0) return ForcedUpdate(kFALSE);
-    Double_t min = fLowLine[0] + fLowLine[1] * p + fLowLine[2] * p * p;
-    Double_t max = fHighLine[0] + fHighLine[1] * p + fHighLine[2] * p * p;
+    Double_t min = fLowLine[0] * p * p + fLowLine[1] * p + fLowLine[2];
+    Double_t max = fHighLine[0] * p * p + fHighLine[1] * p + fHighLine[2];
     if (m2 > max || m2 < min) { return ForcedUpdate(kFALSE); }
     return Validate();
   }

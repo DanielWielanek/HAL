@@ -21,6 +21,9 @@ namespace Hal {
     ULong64_t fNullObjects;
     Bool_t fAcceptNulls;
 
+  protected:
+    virtual Hal::Cut* MakeInnerCopy() const;
+
   public:
     /**
      * dummy ct-ro only for ROOT
@@ -57,6 +60,11 @@ namespace Hal {
   class TrackRealCut : public TrackCut {
     TrackCut* fRealCut;
 
+  protected:
+    virtual Hal::Cut* MakeInnerCopy() const;
+    /** save copy ctor  for make inner copy*/
+    TrackRealCut(const TrackRealCut& other, Bool_t safe);
+
   public:
     TrackRealCut();
     TrackRealCut(const TrackCut* real);
@@ -67,6 +75,7 @@ namespace Hal {
     virtual Package* Report() const;
     virtual TString CutName(Option_t* opt = "") const;
     TrackCut* GetRealCut() const { return fRealCut; };
+    std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const { return fRealCut->GetBinLabels(par); }
     virtual ~TrackRealCut();
     ClassDef(TrackRealCut, 1)
   };
@@ -75,6 +84,11 @@ namespace Hal {
     TrackCut* fImgCut;
     ULong64_t fNullObjects;
     Bool_t fAcceptNulls;
+
+  protected:
+    virtual Hal::Cut* MakeInnerCopy() const;
+    /** save copy ctor  for make inner copy*/
+    TrackImaginaryCut(const TrackImaginaryCut& other, Bool_t safe);
 
   public:
     TrackImaginaryCut();
@@ -91,6 +105,7 @@ namespace Hal {
     virtual Package* Report() const;
     virtual TString CutName(Option_t* opt = "") const;
     TrackCut* GetImgCut() const { return fImgCut; };
+    std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const { return fImgCut->GetBinLabels(par); }
     virtual ~TrackImaginaryCut();
     ClassDef(TrackImaginaryCut, 1)
   };

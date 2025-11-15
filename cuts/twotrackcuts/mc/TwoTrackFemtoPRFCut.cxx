@@ -14,8 +14,8 @@
 #include "TwoTrack.h"
 namespace Hal {
   TwoTrackFemtoPRFCut::TwoTrackFemtoPRFCut() : TwoTrackCut(2) {
-    SetUnitName("k*", 0);
-    SetUnitName("r*", 1);
+    SetUnitName("k*", KStar);
+    SetUnitName("r*", RStar);
   }
 
   Bool_t TwoTrackFemtoPRFCut::Pass(TwoTrack* pair) {
@@ -90,16 +90,18 @@ namespace Hal {
   TwoTrackFemtoPRFCut::~TwoTrackFemtoPRFCut() {}
 
 
-  TwoTrackFemtoPRFCutFull::TwoTrackFemtoPRFCutFull() : TwoTrackCut(8) {
-    SetUnitName("k^{*}_{out} [GeV/c]", 0);
-    SetUnitName("k^{*}_{side} [GeV/c]", 1);
-    SetUnitName("k^{*}_{long} [GeV/c]", 2);
-    SetUnitName("k^{*}_{en} [GeV/c]", 3);
+  TwoTrackFemtoPRFCutFull::TwoTrackFemtoPRFCutFull() : TwoTrackCut(10) {
+    SetUnitName("k^{*}_{out} [GeV/c]", ParID::KStarOut);
+    SetUnitName("k^{*}_{side} [GeV/c]", ParID::KStarSide);
+    SetUnitName("k^{*}_{long} [GeV/c]", ParID::KStarLong);
+    SetUnitName("k^{*}_{en} [GeV/c]", ParID::KStarEn);
 
-    SetUnitName("r^{*}_{out} [fm/c]", 4);
-    SetUnitName("r^{*}_{side} [fm/c]", 5);
-    SetUnitName("r^{*}_{long} [fm/c]", 6);
-    SetUnitName("t^{*} [fm/c]", 7);
+    SetUnitName("r^{*}_{out} [fm/c]", ParID::RStarOut);
+    SetUnitName("r^{*}_{side} [fm/c]", ParID::RStarSide);
+    SetUnitName("r^{*}_{long} [fm/c]", ParID::RStarLong);
+    SetUnitName("t^{*} [fm/c]", ParID::TStar);
+    SetUnitName("k^{*} [GeV/c]", ParID::KStar);
+    SetUnitName("r^{*} [fm]", ParID::RStar);
   }
 
   Bool_t TwoTrackFemtoPRFCutFull::Pass(TwoTrack* pair) {
@@ -133,15 +135,17 @@ namespace Hal {
     z = fX1.Z() - fX2.Z();
     t = fX1.T() - fX2.T();
 
-    SetValue(x, RStarOut());
-    SetValue(y, RStarSide());
-    SetValue(z, RStarLong());
-    SetValue(t, TStar());
+    SetValue(x, RStarOut);
+    SetValue(y, RStarSide);
+    SetValue(z, RStarLong);
+    SetValue(t, TStar);
+    SetValue(TMath::Sqrt(x * x + y * y + z * z), RStar);
 
-    SetValue(fP1.X(), KStarOut());
-    SetValue(fP1.Y(), KStarSide());
-    SetValue(fP1.Z(), KStarLong());
-    SetValue(fP1.T(), KStarEn());
+    SetValue(fP1.X(), KStarOut);
+    SetValue(fP1.Y(), KStarSide);
+    SetValue(fP1.Z(), KStarLong);
+    SetValue(fP1.T(), KStarEn);
+    SetValue(fP1.P(), KStar);
     return Validate();
   }
 

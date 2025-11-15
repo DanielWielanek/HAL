@@ -9,6 +9,7 @@
 #ifndef HALPROPERTYMONITORXYZ_H_
 #define HALPROPERTYMONITORXYZ_H_
 
+#include "CutMonitorFieldIdTranslator.h"
 #include "CutMonitorXYZ.h"
 
 /**
@@ -45,9 +46,9 @@ namespace Hal {
     PropertyMonitorXYZ& operator=(const PropertyMonitorXYZ& other);
     virtual Bool_t Init(Int_t task_id);
     virtual Bool_t ObjMonitor() const { return kTRUE; };
+    virtual Bool_t AreSimilar(const CutMonitor& other) const;
     virtual Package* Report() const;
-    virtual CutMonitor* MakeCopy() const { return (CutMonitor*) this->Clone(); };
-    virtual ~PropertyMonitorXYZ();
+    virtual ~PropertyMonitorXYZ() {};
     ClassDef(PropertyMonitorXYZ, 1)
   };
 
@@ -55,9 +56,13 @@ namespace Hal {
    * class for monitoring properties of events by using field ID
    */
   class EventFieldMonitorXYZ : public PropertyMonitorXYZ {
-    const Int_t fFieldIDX;
-    const Int_t fFieldIDY;
-    const Int_t fFieldIDZ;
+    Int_t fFieldIDX;
+    Int_t fFieldIDY;
+    Int_t fFieldIDZ;
+    CutMonitorFieldIdTranslator fTranslator;
+
+  protected:
+    virtual void MakeComplexAxes(TString opt = "");
 
   public:
     /**
@@ -75,9 +80,8 @@ namespace Hal {
                          Int_t fieldDZ,
                          std::initializer_list<Double_t> zAxis);
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Bool_t AreSimilar(CutMonitor* other) const;
+    virtual Bool_t AreSimilar(const CutMonitor& other) const;
     virtual Bool_t Init(Int_t task_id);
-    virtual CutMonitor* MakeCopy() const { return new EventFieldMonitorXYZ(*this); }
     virtual ~EventFieldMonitorXYZ() {};
     ClassDef(EventFieldMonitorXYZ, 1)
   };
@@ -87,9 +91,13 @@ namespace Hal {
    * class for monitoring properties of tracks by using field ID
    */
   class TrackFieldMonitorXYZ : public PropertyMonitorXYZ {
-    const Int_t fFieldIDX;
-    const Int_t fFieldIDY;
-    const Int_t fFieldIDZ;
+    Int_t fFieldIDX;
+    Int_t fFieldIDY;
+    Int_t fFieldIDZ;
+    CutMonitorFieldIdTranslator fTranslator;
+
+  protected:
+    virtual void MakeComplexAxes(TString opt = "");
 
   public:
     /**
@@ -107,9 +115,8 @@ namespace Hal {
                          Int_t fieldDZ,
                          std::initializer_list<Double_t> zAxis);
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Bool_t AreSimilar(CutMonitor* other) const;
+    virtual Bool_t AreSimilar(const CutMonitor& other) const;
     virtual Bool_t Init(Int_t task_id);
-    virtual CutMonitor* MakeCopy() const { return new TrackFieldMonitorXYZ(*this); }
     virtual ~TrackFieldMonitorXYZ() {};
     ClassDef(TrackFieldMonitorXYZ, 1)
   };

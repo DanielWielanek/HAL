@@ -48,7 +48,7 @@ namespace HalOTF {
     }
 
     switch (fTranslate) {
-      case ETranslate::kMc: {
+      case Hal::EFormatType::kSim: {
         if (mng->GetObject("HalOTF::McEvent.")) {
           return Hal::Task::EInitFlag::kERROR;
         } else {
@@ -57,7 +57,7 @@ namespace HalOTF {
           fTranslateInterface = fHalMcEvent->CreateInterface();
         }
       } break;
-      case ETranslate::kReco: {
+      case Hal::EFormatType::kReco: {
         if (mng->GetObject("HalOTF::RecoEvent.")) {
           return Hal::Task::EInitFlag::kERROR;
         } else {
@@ -66,7 +66,7 @@ namespace HalOTF {
           fTranslateInterface = fHalRecoEvent->CreateInterface();
         }
       } break;
-      case ETranslate::kComplex: {
+      case Hal::EFormatType::kComplexReco: {
         if (mng->GetObject("HalOTF::ComplexEvent.")) {
           return Hal::Task::EInitFlag::kERROR;
         } else {
@@ -82,19 +82,18 @@ namespace HalOTF {
   }
 
   void Reader::Exec(Option_t* /*opt*/) {
-    if (fTranslate != ETranslate::kNone) {
-      switch (fTranslate) {
-        case ETranslate::kMc: {
-          fHalMcEvent->Update(fTranslateInterface);
-        } break;
-        case ETranslate::kReco: {
-          fHalRecoEvent->Update(fTranslateInterface);
-        } break;
-        case ETranslate::kComplex: {
-          fHalComplexEvent->Update(fTranslateInterface);
-        } break;
-        default: break;
-      }
+
+    switch (fTranslate) {
+      case Hal::EFormatType::kSim: {
+        fHalMcEvent->Update(fTranslateInterface);
+      } break;
+      case Hal::EFormatType::kReco: {
+        fHalRecoEvent->Update(fTranslateInterface);
+      } break;
+      case Hal::EFormatType::kComplexReco: {
+        fHalComplexEvent->Update(fTranslateInterface);
+      } break;
+      default: break;
     }
   }
 
@@ -105,10 +104,12 @@ namespace HalOTF {
     if (Hal::Std::FindParam(opt, "sim")) { flag = 1; }
     if (Hal::Std::FindParam(opt, "reco")) { flag += 2; }
     switch (flag) {
-      case 1: fTranslate = ETranslate::kMc; break;
-      case 2: fTranslate = ETranslate::kReco; break;
-      case 3: fTranslate = ETranslate::kComplex; break;
+      case 1: fTranslate = Hal::EFormatType::kSim; break;
+      case 2: fTranslate = Hal::EFormatType::kReco; break;
+      case 3: fTranslate = Hal::EFormatType::kComplexReco; break;
     }
   }
+
+  void Reader::Translate(Hal::EFormatType opt) { fTranslate = opt; }
 
 }  // namespace HalOTF

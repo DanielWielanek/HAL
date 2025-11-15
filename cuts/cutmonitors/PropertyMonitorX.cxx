@@ -12,6 +12,8 @@
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "Cout.h"
+#include "CutMonitorComplex.h"
+#include "DataFormat.h"
 #include "DataFormatManager.h"
 #include "Event.h"
 #include "Package.h"
@@ -52,8 +54,16 @@ namespace Hal {
     fFormatType = other.fFormatType;
   }
 
+  Bool_t PropertyMonitorX::AreSimilar(const CutMonitor& other) const {
+    auto conv = dynamic_cast<const PropertyMonitorX*>(&other);
+    if (!conv) return kFALSE;
+    if (fXaxisName != conv->fXaxisName) return kFALSE;
+    if (fYaxisName != conv->fYaxisName) return kFALSE;
+    return CutMonitorX::AreSimilar(other);
+  }
+
   Bool_t PropertyMonitorX::Init(Int_t task_id) {
-    if (fInit) {
+    if (IsInitialized()) {
 #ifdef HAL_DEBUG
       Cout::PrintInfo(Form("%s is initialized ", this->ClassName()), EInfo::kDebugInfo);
 #endif
@@ -64,7 +74,7 @@ namespace Hal {
     TH1::AddDirectory(kFALSE);
     CreateHistograms();
     TH1::AddDirectory(kTRUE);
-    fInit = kTRUE;
+    MarkAsInitialized();
     return kTRUE;
   }
 
@@ -89,11 +99,11 @@ namespace Hal {
     return *this;
   }
 
-  PropertyMonitorX::~PropertyMonitorX() {}
-
   //========================================================================
   EventFieldMonitorX::EventFieldMonitorX(Int_t fieldID) :
-    PropertyMonitorX("", "N_{events}", ECutUpdate::kEvent), fFieldID(fieldID) {}
+    PropertyMonitorX("", "N_{events}", ECutUpdate::kEvent), fFieldID(fieldID) {
+    fTranslator.SetFieldId(fFieldID, 0);
+  }
 
   EventFieldMonitorX::EventFieldMonitorX(Int_t fieldID, std::initializer_list<Double_t> xAxis) : EventFieldMonitorX(fieldID) {
     SetAxisList(xAxis, 'x');
@@ -110,12 +120,25 @@ namespace Hal {
 
   Bool_t EventFieldMonitorX::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    fXaxisName      = ev->GetFieldName(fFieldID);
+    fXaxisName      = ev->GetFieldName(fTranslator.GetFieldFull(0));
+    if (fXaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find event field for field X:ID = %i [%i]", fFieldID, fTranslator.GetFieldFull(0)),
+                           EInfo::kError);
+      return kFALSE;
+    }
     return PropertyMonitorX::Init(task_id);
   }
+
+  void EventFieldMonitorX::MakeComplexAxes(TString opt) {
+    if (Hal::Std::FindParam(opt, "re")) fTranslator.SwitchToRe();
+    if (Hal::Std::FindParam(opt, "im")) fTranslator.SwitchToIm();
+  }
+
   //========================================================================
   TrackFieldMonitorX::TrackFieldMonitorX(Int_t fieldID) :
-    PropertyMonitorX("", "N_{tracks}", ECutUpdate::kTrack), fFieldID(fieldID) {}
+    PropertyMonitorX("", "N_{tracks}", ECutUpdate::kTrack), fFieldID(fieldID) {
+    fTranslator.SetFieldId(fFieldID, 0);
+  }
 
   TrackFieldMonitorX::TrackFieldMonitorX(Int_t fieldID, std::initializer_list<Double_t> xAxis) : TrackFieldMonitorX(fieldID) {
     SetAxisList(xAxis, 'x');
@@ -132,33 +155,37 @@ namespace Hal {
 
   Bool_t TrackFieldMonitorX::Init(Int_t task_id) {
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
-    if (ev->InheritsFrom("Hal::ComplexEvent")) {
-      ComplexTrack* tr  = (ComplexTrack*) ev->GetNewTrack();
-      ComplexEvent* tev = (ComplexEvent*) ev->GetNewEvent();
-      tr->SetEvent(tev);
-      fXaxisName = tr->GetFieldName(fFieldID);
-      delete tr;
-      delete tev;
-    } else {
-      Track* tr  = ev->GetNewTrack();
-      fXaxisName = tr->GetFieldName(fFieldID);
-      delete tr;
+    auto tr         = std::unique_ptr<Track>(ev->GetNewTrack());
+    auto event      = std::unique_ptr<Event>(ev->GetNewEvent());
+    tr->SetEvent(event.get());
+    fXaxisName = tr->GetFieldName(fTranslator.GetFieldFull(0));
+    if (fXaxisName == "[]") {
+      Hal::Cout::PrintInfo(Form("Cannot find track field for field X:ID = %i [%i]", fFieldID, fTranslator.GetFieldFull(0)),
+                           EInfo::kError);
+      return kFALSE;
     }
+    return kFALSE;
+
     return PropertyMonitorX::Init(task_id);
   }
 
-  Bool_t EventFieldMonitorX::AreSimilar(CutMonitor* other) const {
-    auto monitor = dynamic_cast<EventFieldMonitorX*>(other);
+  Bool_t EventFieldMonitorX::AreSimilar(const CutMonitor& other) const {
+    auto monitor = dynamic_cast<const EventFieldMonitorX*>(&other);
     if (!monitor) return kFALSE;
-    if (fFieldID != monitor->fFieldID) return kFALSE;
+    if (fTranslator.GetFieldFull(0) != monitor->fTranslator.GetFieldFull(0)) return kFALSE;
     return CutMonitorX::AreSimilar(other);
   }
 
-  Bool_t TrackFieldMonitorX::AreSimilar(CutMonitor* other) const {
-    auto monitor = dynamic_cast<TrackFieldMonitorX*>(other);
+  Bool_t TrackFieldMonitorX::AreSimilar(const CutMonitor& other) const {
+    auto monitor = dynamic_cast<const TrackFieldMonitorX*>(&other);
     if (!monitor) return kFALSE;
-    if (fFieldID != monitor->fFieldID) return kFALSE;
+    if (fTranslator.GetFieldFull(0) != monitor->fTranslator.GetFieldFull(0)) return kFALSE;
     return CutMonitorX::AreSimilar(other);
+  }
+
+  void TrackFieldMonitorX::MakeComplexAxes(TString opt) {
+    if (Hal::Std::FindParam(opt, "re")) fTranslator.SwitchToRe();
+    if (Hal::Std::FindParam(opt, "im")) fTranslator.SwitchToIm();
   }
 
 }  // namespace Hal

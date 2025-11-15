@@ -142,7 +142,7 @@ namespace Hal {
     QAPlotReport(const QAPlotReport& other);
     QAPlotReport& operator=(const QAPlotReport& other);
     virtual TString HTMLExtract(Int_t no, TString dir = "") const;
-    virtual void HTMLExtractIntoTable(Int_t no, HtmlTable& obj, TString dir = "", TString rel_dir = "") const;
+    virtual void HTMLExtractIntoTable(Int_t no, Int_t no_ext, HtmlTable& obj, TString dir = "", TString rel_dir = "") const;
     virtual Bool_t CanBeTableElement() const { return kTRUE; };
     virtual void Print(Option_t* option = "") const;
     /**

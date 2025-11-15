@@ -15,8 +15,10 @@
 #include <TAxis.h>
 #include <TCollection.h>
 #include <TColor.h>
+#include <TDecompLU.h>
 #include <TDirectory.h>
 #include <TGaxis.h>
+#include <TGraph.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TH3.h>
@@ -33,6 +35,7 @@
 #include <TVirtualPad.h>
 #include <iostream>
 #include <utility>
+
 
 #include "Cout.h"
 #include "Splines.h"
@@ -548,6 +551,48 @@ NamespaceImp(Hal::Std)
           if (fill == kByNeighbour) { h->SetBinContent(h->GetNbinsX() + 1, h->GetBinContent(h->GetNbinsX())); }
         }
       }
+    }
+
+    TH1* ExtendToUnderFlowOverFlow(const TH1& h) {
+      TH1* res = nullptr;
+      Int_t binsX, binsY, binsZ;
+      Double_t minX, minY, minZ, maxX, maxY, maxZ;
+      Hal::Std::GetAxisPar(h, binsX, minX, maxX, "x");
+      Hal::Std::GetAxisPar(h, binsY, minY, maxY, "y");
+      Hal::Std::GetAxisPar(h, binsZ, minZ, maxZ, "z");
+      Double_t dx   = h.GetXaxis()->GetBinWidth(1);
+      Double_t dy   = h.GetYaxis()->GetBinWidth(1);
+      Double_t dz   = h.GetZaxis()->GetBinWidth(1);
+      TString title = h.GetTitle();
+      TString name  = h.GetName();
+
+      if (h.InheritsFrom("TH3")) {  // 3D histo
+        res = new TH3D(
+          name, title, binsX + 2, minX - dx, maxX + dx, binsY + 2, minY - dy, maxY + dy, binsZ + 2, minZ - dz, maxZ + dz);
+        for (int i = 0; i <= binsX + 1; i++) {
+          for (int j = 0; j <= binsY + 1; j++) {
+            for (int k = 0; k <= binsZ + 1; k++) {
+              res->SetBinContent(i + 1, j + 1, k + 1, h.GetBinContent(i, j, k));
+              res->SetBinError(i + 1, j + 1, k + 1, h.GetBinError(i, j, k));
+            }
+          }
+        }
+      } else if (h.InheritsFrom("TH2")) {
+        res = new TH2D(name, title, binsX + 2, minX - dx, maxX + dx, binsY + 2, minY - dy, maxY + dy);
+        for (int i = 0; i <= binsX + 1; i++) {
+          for (int j = 0; j <= binsY + 1; j++) {
+            res->SetBinContent(i + 1, j + 1, h.GetBinContent(i, j));
+            res->SetBinError(i + 1, j + 1, h.GetBinError(i, j));
+          }
+        }
+      } else {
+        res = new TH1D(name, title, binsX + 2, minX - dx, maxX + dx);
+        for (int i = 0; i <= binsX + 1; i++) {
+          res->SetBinContent(i + 1, h.GetBinContent(i));
+          res->SetBinError(i + 1, h.GetBinError(i));
+        }
+      }
+      return res;
     }
 
     void HistogramExtend(TH1* h, Char_t axis, Double_t factor) {
@@ -1089,6 +1134,7 @@ NamespaceImp(Hal::Std)
       }
       return nh;
     }
+
     std::vector<TObject*> GetPadChildren(TString objName, TString className, TVirtualPad* pad) {
       if (!pad) pad = gPad;
       std::vector<TObject*> list;
@@ -1104,6 +1150,7 @@ NamespaceImp(Hal::Std)
       }
       return list;
     }
+
     Bool_t CheckHistogramData(const TH1& h1, const TH1& h2, Double_t thres, Option_t* opt) {
       TString option  = opt;
       Bool_t debug    = Hal::Std::FindParam(option, "print", kTRUE);
@@ -1171,9 +1218,9 @@ NamespaceImp(Hal::Std)
       }
       return kTRUE;
     }
+
     void CopyHistProp(const TH1& from, TH1& to, TString opt) {
       auto d3 = static_cast<const TH3*>(&from);
-
       CopyAxisProp(from.GetXaxis(), to.GetXaxis(), opt);
       CopyAxisProp(from.GetYaxis(), to.GetYaxis(), opt);
       if (d3) CopyAxisProp(from.GetZaxis(), to.GetZaxis(), opt);
@@ -1187,35 +1234,191 @@ NamespaceImp(Hal::Std)
       to.SetFillStyle(from.GetFillStyle());
     }
 
-    Double_t GetMaximum(const std::vector<TH1*> histos) {
+    Double_t GetMinimum(const std::vector<TH1*> histos, Bool_t underflow, Bool_t overflow) {
+      Double_t minig = 1E+10;
+      auto findMin   = [](TH1* x, Bool_t underFlow, Bool_t overFlow) {
+        Double_t mini = 1E+10;
+        TH1* h1       = dynamic_cast<TH1*>(x);
+        TH1* h2       = dynamic_cast<TH2*>(x);
+        TH1* h3       = dynamic_cast<TH3*>(x);
+        int start     = 1;
+        if (underFlow) start = 0;
+        int endx = x->GetNbinsX();
+        int endy = x->GetNbinsY();
+        int endz = x->GetNbinsZ();
+        if (overFlow) {
+          endx++;
+          endy++;
+          endz++;
+        }
+        if (h3) {
+          for (int i = start; i <= endx; i++)
+            for (int j = start; j <= endy; j++)
+              for (int k = start; k <= endz; k++)
+                mini = TMath::Min(h3->GetBinContent(i, j, k), mini);
+        } else if (h2) {
+          for (int i = start; i <= endx; i++)
+            for (int j = start; j <= endy; j++)
+              mini = TMath::Min(h2->GetBinContent(i, j), mini);
+        } else {
+          for (int i = start; i <= endx; i++)
+            mini = TMath::Min(h1->GetBinContent(i), mini);
+        }
+        return mini;
+      };
+
+      for (auto x : histos) {
+        minig = TMath::Min(minig, findMin(x, underflow, overflow));
+      }
+      return minig;
+    }
+
+    Double_t GetMaximum(const std::vector<TH1*> histos, Bool_t underflow, Bool_t overflow) {
       Double_t maxig = -1E+10;
-      auto findMax   = [](TH1* x) {
+      auto findMax   = [](TH1* x, Bool_t underFlow, Bool_t overFlow) {
         Double_t maxi = -1E+10;
         TH1* h1       = dynamic_cast<TH1*>(x);
         TH1* h2       = dynamic_cast<TH2*>(x);
         TH1* h3       = dynamic_cast<TH3*>(x);
+        int start     = 1;
+        if (underFlow) start = 0;
+        int endx = x->GetNbinsX();
+        int endy = x->GetNbinsY();
+        int endz = x->GetNbinsZ();
+        if (overFlow) {
+          endx++;
+          endy++;
+          endz++;
+        }
         if (h3) {
-          for (int i = 1; i <= h3->GetNbinsX() + 1; i++)
-            for (int j = 1; j <= h3->GetNbinsY() + 1; j++)
-              for (int k = 1; k <= h3->GetNbinsZ() + 1; k++)
+          for (int i = start; i <= endx; i++)
+            for (int j = start; j <= endy; j++)
+              for (int k = start; k <= endz; k++)
                 maxi = TMath::Max(h3->GetBinContent(i, j, k), maxi);
         } else if (h2) {
-          for (int i = 1; i <= h2->GetNbinsX() + 1; i++)
-            for (int j = 1; j <= h2->GetNbinsY() + 1; j++)
+          for (int i = start; i <= endx; i++)
+            for (int j = start; j <= endy; j++)
               maxi = TMath::Max(h2->GetBinContent(i, j), maxi);
         } else {
-          for (int i = 1; i <= h1->GetNbinsX() + 1; i++)
+          for (int i = start; i <= endx; i++)
             maxi = TMath::Max(h1->GetBinContent(i), maxi);
         }
         return maxi;
       };
 
       for (auto x : histos) {
-        maxig = TMath::Max(maxig, findMax(x));
+        maxig = TMath::Max(maxig, findMax(x, underflow, overflow));
       }
       return maxig;
     }
 
+    void HideAxisLabel(TObject* obj, TString opt) {
+      opt.ToLower();
+      opt      = opt.ReplaceAll(" ", "");
+      auto vec = ExplodeString(opt, '+', kFALSE);
+      if (vec.size() > 1) {
+        for (auto str : vec) {
+          HideAxisLabel(obj, str);
+        }
+        return;
+      }
 
+      Bool_t xAx = opt.Contains("x");
+      Bool_t yAx = opt.Contains("y");
+      Bool_t zAx = opt.Contains("z");
+      std::vector<TAxis*> ax;
+      auto hist  = dynamic_cast<TH1*>(obj);
+      auto graph = dynamic_cast<TGraph*>(obj);
+      auto axis  = dynamic_cast<TAxis*>(obj);
+      if (!hist && !graph && !axis) {
+        Cout::PrintInfo("Hal::Std::HideAxisLabel - object is not a histo or a graph", EInfo::kWarning);
+        return;
+      }
+      if (hist) {
+        if (xAx) ax.push_back(hist->GetXaxis());
+        if (yAx) ax.push_back(hist->GetYaxis());
+        if (zAx && hist->GetZaxis()) ax.push_back(hist->GetZaxis());
+      } else if (graph) {
+        if (xAx) ax.push_back(graph->GetXaxis());
+        if (yAx) ax.push_back(graph->GetYaxis());
+      } else if (axis) {
+        ax.push_back(axis);
+      }
+      Bool_t low  = opt.Contains("l");
+      Bool_t high = opt.Contains("h");
+      for (auto iAxis : ax) {
+        if (low) { iAxis->ChangeLabel(1, -1, -1, -1, kWhite, 0, " "); }
+        if (high) { iAxis->ChangeLabel(-1, -1, -1, -1, kWhite, 0, " "); }
+      }
+    }
+
+    std::vector<Double_t> ChebyshevInterpolation(const TH1D& histo, Int_t n, Double_t low, Double_t high) {
+      if (low == high) {
+        low  = histo.GetXaxis()->GetBinLowEdge(0);
+        high = histo.GetXaxis()->GetBinUpEdge(histo.GetNbinsX());
+      }
+      TGraph* gr = new TGraph();
+      for (int i = 1; i <= histo.GetNbinsX(); i++) {
+        double x = histo.GetXaxis()->GetBinCenter(i);
+        double y = histo.GetBinContent(i);
+        gr->SetPoint(i - 1, x, y);
+      }
+
+      std::vector<double> nodes(n);
+      for (int k = 0; k < n; ++k) {
+        double x = TMath::Cos(TMath::Pi() * (2.0 * k + 1) / (2.0 * n));  // [-1,1]
+        nodes[k] = 0.5 * ((high - low) * x + (high + low));              // przeskaluj do [a,b]
+      }
+      TMatrixD A(n, n);
+      TVectorD b(n);
+
+      for (int i = 0; i < n; ++i) {
+        b[i]         = gr->Eval(nodes[i]);
+        double pow_x = 1.0;
+        for (int j = 0; j < n; ++j) {
+          A(i, j) = pow_x;
+          pow_x *= nodes[i];
+        }
+      }
+
+      TDecompLU lu(A);
+      Bool_t ok;
+      TVectorD coeffs = lu.Solve(b, ok);
+      std::vector<Double_t> res;
+      if (!ok) {
+        std::cerr << "Could't find solution in ChebyshevInterpolation!" << std::endl;
+        return res;
+      }
+      delete gr;
+      for (int i = 0; i < n; i++) {
+        res.push_back(coeffs[i]);
+      }
+      return res;
+    }
+
+    void DrawDiagonalBins(const TH2& sample, Double_t x, Double_t y, TString opt, Color_t color, Int_t width) {
+      Double_t x1 = sample.GetXaxis()->GetBinLowEdge(sample.GetXaxis()->FindBin(x));
+      Double_t y1 = sample.GetYaxis()->GetBinLowEdge(sample.GetYaxis()->FindBin(y));
+      Double_t x2 = sample.GetXaxis()->GetBinUpEdge(sample.GetXaxis()->FindBin(x));
+      Double_t y2 = sample.GetYaxis()->GetBinUpEdge(sample.GetYaxis()->FindBin(y));
+      std::vector<TLine*> lines;
+      lines.push_back(new TLine(x1, y1, x1, y2));
+      lines.push_back(new TLine(x2, y1, x2, y2));
+      lines.push_back(new TLine(x1, y1, x2, y1));
+      lines.push_back(new TLine(x1, y2, x2, y2));
+      if (Hal::Std::FindParam(opt, "x")) {
+        lines.push_back(new TLine(x1, y1, x2, y2));
+        lines.push_back(new TLine(x1, y2, x2, y1));
+      } else if (Hal::Std::FindParam(opt, "l")) {
+        lines.push_back(new TLine(x1, y1, x2, y2));
+      } else if (Hal::Std::FindParam(opt, "r")) {
+        lines.push_back(new TLine(x1, y2, x2, y1));
+      }
+      for (auto line : lines) {
+        line->SetLineColor(color);
+        line->SetLineWidth(width);
+        line->Draw("SAME");
+      }
+    }
   }  // namespace Std
 }  // namespace Hal

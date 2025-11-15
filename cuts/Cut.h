@@ -33,9 +33,25 @@ namespace Hal {
   class TwoTrackComplexCut;
   class TwoTrackImaginaryCut;
   class TwoTrackRealCut;
-
+  /**
+   * modifier for cut class if (necessary to modify something that is no public)+-
+   */
+  class CutBackdoor : public TObject {
+  public:
+    CutBackdoor() {};
+    void SetValue(Cut& cut, Double_t value, Int_t index) const;
+    void SetUnitName(Cut& cut, TString unitName, Int_t index) const;
+    virtual ~CutBackdoor() {};
+    ClassDef(CutBackdoor, 1)
+  };
   /**
    * basic abstract class for all cuts
+   * this classes can contain some additional enums, following convetion is used
+   * enum ParID - describe parameter ID
+   * enum ValID - describe value ID
+   * for example:
+   * SetMinMax(0,1,ParID::SomeValue) mean set accepted values of parameter SomeValue to be between o and 1
+   * SetMinMax(ValID::A, ValID::B,N) mean set accepted value os N-parameter to be between A and B
    */
   class Cut : public TNamed {
     friend class EventComplexCut;
@@ -49,6 +65,8 @@ namespace Hal {
     friend class TwoTrackComplexCut;
     friend class TwoTrackImaginaryCut;
     friend class TwoTrackRealCut;
+
+    friend class CutBackdoor;
 
   private:
     /**
@@ -150,9 +168,26 @@ namespace Hal {
     /**
      *
      * @param par parameter number
-     * @return true if prameter is outside limits
+     * @return true if parameter is outside limits
      */
     Bool_t OutLimits(Int_t par) const { return !InLimits(par); };
+    /**
+     * used by MakeCopy
+     * @return
+     */
+    virtual Cut* MakeInnerCopy() const;
+    /**
+     * set value of parameter (later used for veryfication
+     * @param val value of parameter
+     * @param i parameter number
+     */
+    inline void SetValue(Double_t val, Int_t i = 0) { fSubCut.SetValue(val, i); };
+    /**
+     * set unit name
+     * @param name unit name
+     * @param i parameter no
+     */
+    inline void SetUnitName(TString name, Int_t i = 0) { fSubCut.SetUnitName(name, i); };
 
   public:
     /** default constructor
@@ -171,7 +206,7 @@ namespace Hal {
      */
     Cut& operator=(const Cut& other);
     /**
-     * set label for this cut, labels are used to distninguish between cuts with the same name
+     * set label for this cut, labels are used to distinguish between cuts with the same name
      * that should be used in the same analysis
      * @param label
      */
@@ -227,18 +262,7 @@ namespace Hal {
      * @param i parameter number
      */
     inline void SetMaximum(Double_t max, Int_t i = 0) { fSubCut.SetMax(max, i); };
-    /**
-     * set value of parameter (later used for veryficatio
-     * @param val value of parameter
-     * @param i parameter number
-     */
-    inline void SetValue(Double_t val, Int_t i = 0) { fSubCut.SetValue(val, i); };
-    /**
-     * set unit name
-     * @param name unit name
-     * @param i parameter no
-     */
-    inline void SetUnitName(TString name, Int_t i = 0) { fSubCut.SetUnitName(name, i); };
+
     /**
      * set collection number for this cut, collection number define in witch cut
      * collection this cut will be stored
@@ -312,9 +336,10 @@ namespace Hal {
     /**
      * copy of this cut, can be implemented by CutDef macro (if cut don't have
      * dynamically allocated objects or have copy ctor
+     * @param opt - option of making cut, can be re or im
      * @return copy of this cut
      */
-    virtual Cut* MakeCopy() const { return (Cut*) this->Clone(); };
+    virtual Cut* MakeCopy(TString opt = "") const;
     /**
      *
      * @return report about this cut
@@ -364,5 +389,7 @@ namespace Hal {
     virtual ~Cut() {};
     ClassDef(Cut, 1)
   };
+
+
 }  // namespace Hal
 #endif /* HALCUT_H_ */

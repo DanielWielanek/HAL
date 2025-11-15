@@ -11,6 +11,7 @@
 
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
+#include "Cout.h"
 #include "Cut.h"
 #include "DataFormatManager.h"
 #include "Package.h"
@@ -315,4 +316,29 @@ namespace Hal {
     if (fImgCut) delete fImgCut;
     if (fPair) delete fPair;
   }
+
+  Hal::Cut* TwoTrackComplexCut::MakeInnerCopy() const { return new TwoTrackComplexCut(*this); }
+
+  Hal::Cut* TwoTrackRealCut::MakeInnerCopy() const { return new TwoTrackRealCut(*this, kTRUE); }
+
+  Hal::Cut* TwoTrackImaginaryCut::MakeInnerCopy() const { return new TwoTrackImaginaryCut(*this, kTRUE); }
+
+  TwoTrackRealCut::TwoTrackRealCut(const TwoTrackRealCut& other, Bool_t safe) : TwoTrackRealCut(other.GetRealCut()) {
+    TString className = other.ClassName();
+    if (className != "Hal::TwoTrackRealCut" && safe) {
+      Hal::Cout::PrintInfo(Form("Unsafe copying %s", ClassName()), EInfo::kDebugInfo);
+    }
+  }
+
+
+  TwoTrackImaginaryCut::TwoTrackImaginaryCut(const TwoTrackImaginaryCut& other, Bool_t safe) :
+    TwoTrackImaginaryCut(other.GetImgCut()) {
+    fNullObjects      = other.fNullObjects;
+    fAcceptNulls      = other.fAcceptNulls;
+    TString className = other.ClassName();
+    if (className != "Hal::TwoTrackImaginaryCut" && safe) {
+      Hal::Cout::PrintInfo(Form("Unsafe copying %s", ClassName()), EInfo::kDebugInfo);
+    }
+  }
+
 }  // namespace Hal

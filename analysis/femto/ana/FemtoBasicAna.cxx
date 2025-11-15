@@ -47,7 +47,7 @@ namespace Hal {
     fCFTemp(nullptr) {
     fMixSize        = 2;
     fBackgroundMode = kMixedPairs;
-    AddTags("femto hbt");
+    TwoTrackAna::AddTags("femto hbt");
   }
 
   FemtoBasicAna::FemtoBasicAna(const FemtoBasicAna& ana) :
@@ -115,6 +115,7 @@ namespace Hal {
     }
     if (fPdg1 != fPdg2) { EnableNonIdentical(); }
     Task::EInitFlag prev = TwoTrackAna::Init();
+    if (prev != Task::EInitFlag::kSUCCESS) return prev;
     if (fCutContainer->GetTwoTrackCollectionsNo() != fCutContainer->GetTwoTrackCollectionsBackgroundNo()) {
       Cout::PrintInfo("Two track collectionsNo in signal and background are different - this might result in crash",
                       EInfo::kWarning);
@@ -315,42 +316,6 @@ namespace Hal {
     if (fFreezeoutGenerator) delete fFreezeoutGenerator;
     delete fFemtoPair;
     if (fCFTemp) delete fCFTemp;
-  }
-
-  void FemtoBasicAna::ProcessEvent() {
-    fMemoryMap->PrepareMaps(fCurrentEventCollectionID);
-    CutCollection* cont = fCutContainer->GetEventCollection(fCurrentEventCollectionID);
-    for (fTrackIndex = 0; fTrackIndex < fMemoryMap->GetTemporaryTotalTracksNo(); fTrackIndex++) {
-      fCurrentTrack = fCurrentEvent->GetTrack(fTrackIndex);
-      for (int j = 0; j < cont->GetNextNo(); j++) {
-        fCurrentTrackCollectionID = cont->GetNextAddr(j);
-        if (fCutContainer->PassTrack(fCurrentTrack, fCurrentTrackCollectionID)) {
-          fMemoryMap->AddTrackToMapTrack(fCurrentEventCollectionID,
-                                         fCurrentTrackCollectionID,
-                                         fTrackIndex);  // load track into memory map - may be usefull at
-                                                        // finish event
-          ProcessTrack();
-        }
-      }
-    }
-    fMemoryMap->BufferEvent(fCurrentEventCollectionID);
-    fCurrentTrackCollectionID = 0;
-    if (IdenticalParticles()) {
-#ifdef HAL_DEBUG
-      Cout::PrintInfo(Form("Finish identical event with %i tracks ",
-                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID)),
-                      EInfo::kDebugInfo);
-#endif
-      FinishEventIdentical();
-    } else {
-#ifdef HAL_DEBUG
-      Cout::PrintInfo(Form("Finish identical event with %i  %itracks ",
-                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, fCurrentTrackCollectionID),
-                           fMemoryMap->GetTracksNo(fCurrentEventCollectionID, 1)),
-                      EInfo::kDebugInfo);
-#endif
-      FinishEventNonIdentical();
-    }
   }
 
   Bool_t FemtoBasicAna::InitArray() {

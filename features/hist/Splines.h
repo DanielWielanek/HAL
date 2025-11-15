@@ -23,7 +23,7 @@ class TH3;
 class TH3D;
 
 /**
- * class that intepolate 1D histogram by parabolic interpolation, interpolation
+ * class that interpolate 1D histogram by parabolic interpolation, interpolation
  * parameters are different fo each bin of this "pseudohistogram". Therefore on
  * bin edges interpolation is not continuous - this can be fixed by call Refit
  * method
@@ -113,15 +113,16 @@ namespace Hal {
    * method
    */
   class Spline2D : public TObject {
-    TAxis* fXaxis;
-    TAxis* fYaxis;
+    enum EInterpolation { kConst, kAverage, kLinear };
+    TAxis* fXaxis = {nullptr};
+    TAxis* fYaxis = {nullptr};
     Int_t fNbinsX;
     Int_t fNbinsY;
     Array_3<Double_t> fA;
-    Array_2<Double_t>* fAe;
+    Array_2<Double_t> fAe;
     void CalcParams(Double_t x[3], Double_t y[3], Double_t z[3][3], Double_t params[9]);
     void Extrapolate(TH2* h, Option_t* extraopolation_opt) const;
-    Double_t Extrapolate(TH2* h, Int_t ix1, Int_t ix2, Int_t x, Int_t iy1, Int_t iy2, Int_t y, Int_t opt) const;
+    void Extrapolate(const TH2* from, TH2* to, Int_t x, Int_t y, EInterpolation opt) const;
     // TODO default constructor & copy constructor
   public:
     /**
@@ -134,6 +135,7 @@ namespace Hal {
      * same as last bin
      */
     Spline2D(TH2* h = NULL, Option_t* interpolation = "");
+    Spline2D(const Spline2D& other);
     /**
      * smear this histogram
      */

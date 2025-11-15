@@ -18,7 +18,7 @@
 #include "Track.h"
 
 namespace Hal {
-  QAEventTask::QAEventTask() : fEventQA(nullptr), fTempEventPlot(nullptr) { AddTags("qa"); }
+  QAEventTask::QAEventTask() : fEventQA(nullptr), fTempEventPlot(nullptr) { EventAna::AddTags("qa"); }
 
   QAEventTask::~QAEventTask() {
     if (fEventQA) delete fEventQA;

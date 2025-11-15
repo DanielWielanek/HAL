@@ -14,6 +14,7 @@
 #include "CutMonitorRequest.h"
 
 #include <TLorentzVector.h>
+#include <TObjArray.h>
 #include <TString.h>
 
 
@@ -30,15 +31,12 @@ namespace Hal {
    * CutsAndMonitors::SetOptionForAllCuts("re") is equivalent of
    * EventAna::AddCut(some_cut,"{0}+re"), @see TrackKinematicsCutAndMonitor as and example of
    * this class
-   *
    */
-
-
   class CutsAndMonitors : public TObject {
-    TObjArray* fCuts;
-    TObjArray* fCutsOptions;
-    TObjArray* fCutMonitors;
-    TObjArray* fCutMonitorsOptions;
+    TObjArray fCuts;
+    std::vector<TString> fCutsOptions;
+    TObjArray fCutMonitors;
+    std::vector<TString> fCutMonitorsOptions;
     TString fGlobalOptionCuts;
     TString fGlobalOptionsCutMonitors;
     std::vector<CutMonitorRequest> fCutMonitorRequests;
@@ -70,13 +68,13 @@ namespace Hal {
      * @param cut
      * @param opt
      */
-    void AddRawCut(Cut* cut, TObjString* opt = nullptr);
+    void AddRawCut(Cut* cut, TString opt = "");
     /**
      * add cut monitor without copying, this monitor will be owned by this class
      * @param mon
      * @param opt
      */
-    void AddRawCutMonitor(CutMonitor* mon, TObjString* opt = nullptr);
+    void AddRawCutMonitor(CutMonitor* mon, TString opt = "");
     /**
      * add request to cut monitor, cuts must be present at this time
      * @param x configuration of x axis
@@ -99,7 +97,7 @@ namespace Hal {
      * add all cut monitor requests
      * @param option passed by @see MakeCutMonitors
      */
-    virtual void AddAllCutMonitorRequests(Option_t* opt) = 0;
+    virtual void AddAllCutMonitorRequests(Option_t* opt);
     /**
      * return cut monitor request
      * @param request_no
@@ -130,6 +128,14 @@ namespace Hal {
      */
     void SetOptionForAllMonitors(TString opt) { fGlobalOptionsCutMonitors = opt; }
     /**
+     * set option for all monitors and cuts
+     * @param opt
+     */
+    void SetOptionForEverything(TString opt) {
+      SetOptionForAllCuts(opt);
+      SetOptionForAllMonitors(opt);
+    }
+    /**
      * add cut to this container
      * @param cut
      * @param opt
@@ -144,6 +150,7 @@ namespace Hal {
     void AddCutMonitor(const CutMonitor& monitor, Option_t* opt = "");
     /**
      * set collection id to all cuts
+     * NOTE this might be overwriten if user add option for specify exact collection ID e.g. {0}
      * @param id
      */
     void SetCollectionID(Int_t id);

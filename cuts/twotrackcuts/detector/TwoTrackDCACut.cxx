@@ -24,9 +24,9 @@ namespace Hal {
     TVector3* point1 = tr1->GetDCA();
     TVector3* point2 = tr2->GetDCA();
     TVector3 dif     = *point1 - *point2;
-    SetValue(DCA(), dif.Mag());
-    SetValue(DCAxy(), dif.Pt());
-    SetValue(DCAz(), dif.Z());
+    SetValue(dif.Mag(), DCA);
+    SetValue(dif.Pt(), DCAxy);
+    SetValue(dif.Z(), DCAz);
     return Validate();
   }
 

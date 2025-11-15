@@ -14,14 +14,24 @@
 
 namespace Hal {
   class PdgBinPairCut : public TwoTrackCut {
-    Int_t PidToID(McTrack* tr) const;
+    std::unordered_map<int, int> fMap;
+    std::vector<TString> fNames;
+    std::vector<Int_t> fIndexes;
+
+    Int_t GetPid(Hal::Track* track);
 
   public:
-    PdgBinPairCut();
+    enum ParID { FirstParticle = 0, SecondParticle = 1 };
+    PdgBinPairCut(Bool_t autoload = kTRUE);
+    /**
+     * add new pid code
+     * @param pid pid code
+     * @param name name of particle (if not specified HAL will look in own PDG table)
+     */
+    void SafelyAddToMap(Int_t pid, TString name);
     virtual Bool_t Pass(TwoTrack* pair);
-    static Int_t FirstParticle() { return 0; }
-    static Int_t SecondParticle() { return 1; };
-    std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t i) const;
+    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
+    virtual Hal::Package* Report() const;
     virtual ~PdgBinPairCut();
     ClassDef(PdgBinPairCut, 1)
   };

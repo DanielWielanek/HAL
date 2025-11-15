@@ -14,9 +14,7 @@
 #include "ExpTrack.h"
 #include "ToFTrack.h"
 namespace Hal {
-  const Int_t TrackBasicToFCut::fgMass2 = 0;
-  const Int_t TrackBasicToFCut::fgBeta  = 1;
-  const Int_t TrackBasicToFCut::fgFlag  = 2;
+
   TrackBasicToFCut::TrackBasicToFCut() : TrackExpCut(3) {
     SetUnitName("m_{ToF}^{2} [GeV^{2}/c^{4}]", 0);
     SetUnitName("#beta_{ToF} [c]", 1);
@@ -35,9 +33,9 @@ namespace Hal {
 
   Bool_t TrackBasicToFCut::Pass(Track* tr) {
     ToFTrack* tof = (ToFTrack*) ((ExpTrack*) tr)->GetDetTrack(DetectorID::kTOF);
-    SetValue(tof->GetBeta(), fgBeta);
-    SetValue(tof->GetMass2(), fgMass2);
-    SetValue(tof->GetFlag(), fgFlag);
+    SetValue(tof->GetBeta(), Beta);
+    SetValue(tof->GetMass2(), Mass2);
+    SetValue(tof->GetFlag(), Flag);
     return Validate();
   }
 

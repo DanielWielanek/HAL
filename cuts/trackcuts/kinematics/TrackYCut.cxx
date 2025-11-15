@@ -9,6 +9,7 @@
 
 #include "TrackYCut.h"
 
+#include "Cout.h"
 #include "Cut.h"
 #include "Package.h"
 #include "Parameter.h"
@@ -35,9 +36,10 @@ namespace Hal {
   }
 
   Bool_t TrackYAssumedCut::Pass(Track* track) {
-    Double_t p = track->GetMomentum().P();
-    Double_t E = TMath::Sqrt(p * p + fMass);
-    Double_t y = 0.5 * TMath::Log((E + p) / (E - p));
+    Double_t p  = track->GetMomentum().P();
+    Double_t E  = TMath::Sqrt(p * p + fMass);
+    Double_t pz = track->GetPz();
+    Double_t y  = 0.5 * TMath::Log((E + pz) / (E - pz));
     SetValue(y);
     return Validate();
   }
@@ -55,7 +57,10 @@ namespace Hal {
   }
 
   Bool_t TrackYAssumedCut::Init(Int_t taskId) {
-    if (fMass < 0) return kFALSE;
+    if (fMass < 0) {
+      Hal::Cout::PrintInfo("TrackYAssumedCut mas not set, did you call SetPid?", EInfo::kWarning);
+      return kFALSE;
+    }
     return TrackCut::Init(taskId);
   }
 

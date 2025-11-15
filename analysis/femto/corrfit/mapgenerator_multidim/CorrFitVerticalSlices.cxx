@@ -92,43 +92,48 @@ namespace Hal {
   }
 
   void CorrFitVerticalSlicesSH::FillNumBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin) {
+    Double_t ws  = 0;
+    Double_t ws2 = 0;
+    for (auto w : weight) {
+      ws += w;
+      ws2 += w * w;
+    }
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
-      for (auto w : weight) {
-        Double_t wRe = real(shCoord[ilm]) * w;
-        Double_t wIm = imag(shCoord[ilm]) * w;
-        fShNumReal[paramBin][ilm] += wRe;
-        fShNumImag[paramBin][ilm] -= wIm;
-        fShNumRealE[paramBin][ilm] += wRe * wRe;
-        fShNumImagE[paramBin][ilm] += wIm * wIm;
-        fNum[paramBin] += w;
-      }
+      Double_t scaleRe = real(shCoord[ilm]);
+      Double_t scaleIm = imag(shCoord[ilm]);
+      fShNumReal[paramBin][ilm] += ws * scaleRe;
+      fShNumImag[paramBin][ilm] -= ws * scaleIm;
+      fShNumRealE[paramBin][ilm] += ws2 * scaleRe * scaleRe;
+      fShNumImagE[paramBin][ilm] += ws2 * scaleIm * scaleIm;
+      fNum[paramBin] += ws;
     }
     for (int ilmzero = 0; ilmzero < fMaxJM; ilmzero++) {
       const int twoilmzero = ilmzero * 2;
       for (int ilmprim = 0; ilmprim < fMaxJM; ilmprim++) {
         const int twoilmprim = ilmprim * 2;
-        for (auto w : weight) {
-          double w2 = w * w;
-          fCovMatrix[paramBin][twoilmzero][twoilmprim] += real(shCoord[ilmzero]) * real(shCoord[ilmprim]) * w2;
-          fCovMatrix[paramBin][twoilmzero][twoilmprim + 1] += real(shCoord[ilmzero]) * -imag(shCoord[ilmprim]) * w2;
-          fCovMatrix[paramBin][twoilmzero + 1][twoilmprim] -= imag(shCoord[ilmzero]) * real(shCoord[ilmprim]) * w2;
-          fCovMatrix[paramBin][twoilmzero + 1][twoilmprim + 1] -= imag(shCoord[ilmzero]) * -imag(shCoord[ilmprim]) * w2;
-        }
+        fCovMatrix[paramBin][twoilmzero][twoilmprim] += real(shCoord[ilmzero]) * real(shCoord[ilmprim]) * ws2;
+        fCovMatrix[paramBin][twoilmzero][twoilmprim + 1] += real(shCoord[ilmzero]) * -imag(shCoord[ilmprim]) * ws2;
+        fCovMatrix[paramBin][twoilmzero + 1][twoilmprim] -= imag(shCoord[ilmzero]) * real(shCoord[ilmprim]) * ws2;
+        fCovMatrix[paramBin][twoilmzero + 1][twoilmprim + 1] -= imag(shCoord[ilmzero]) * -imag(shCoord[ilmprim]) * ws2;
       }
     }
   }
 
   void CorrFitVerticalSlicesSH::FillDenBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin) {
+    Double_t ws  = 0;
+    Double_t ws2 = 0;
+    for (auto w : weight) {
+      ws += w;
+      ws2 += w * w;
+    }
     for (int ilm = 0; ilm < fMaxJM; ilm++) {
-      for (auto w : weight) {
-        Double_t wRe = real(shCoord[ilm]) * w;
-        Double_t wIm = imag(shCoord[ilm]) * w;
-        fShDenReal[paramBin][ilm] += wRe;
-        fShDenImag[paramBin][ilm] -= wIm;
-        fShDenRealE[paramBin][ilm] += wRe * wRe;
-        fShDenImagE[paramBin][ilm] += wIm * wIm;
-        fDen[paramBin] += w;
-      }
+      Double_t wRe = real(shCoord[ilm]);
+      Double_t wIm = imag(shCoord[ilm]);
+      fShDenReal[paramBin][ilm] += wRe * ws;
+      fShDenImag[paramBin][ilm] -= wIm * ws;
+      fShDenRealE[paramBin][ilm] += ws2 * wRe * wRe;
+      fShDenImagE[paramBin][ilm] += ws2 * wIm * wIm;
+      fDen[paramBin] += ws;
     }
   }
 
@@ -204,6 +209,11 @@ namespace Hal {
       printing(fShDenReal[pos], "DenRe");
       printing(fShDenImag[pos], "DenIm");
     }
+  }
+
+  void CorrFitVerticalSlicesSH::Debug() const {
+    std::cout << "NUMDEN[ " << fNum[0] << " " << fDen[0] << "]" << std::endl;
+    std::cout << "NUM 00" << fShNumReal[0][0] << " " << fShDenReal[0][0] << std::endl;
   }
 
 } /* namespace Hal */

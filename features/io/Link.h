@@ -35,7 +35,7 @@ namespace Hal {
      * @param link
      * @return
      */
-    Link operator=(const Link& link);
+    Link& operator=(const Link& link);
     /**
      * set id of linked object and clean "to" array, if you don't want to clean
      * "to" array @see OverwriteFrom

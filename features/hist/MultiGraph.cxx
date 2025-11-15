@@ -71,8 +71,9 @@ namespace Hal {
     if (fXaxis) Hal::Std::CopyAxisProp(fXaxis, fMultiGraph->GetXaxis());
     if (fYaxis) Hal::Std::CopyAxisProp(fYaxis, fMultiGraph->GetYaxis());
     if (fMin[0] != fMax[0]) {
-      fMultiGraph->GetXaxis()->SetRangeUser(fMin[0], fMax[0]);
+
       fMultiGraph->GetXaxis()->SetLimits(fMin[0], fMax[0]);  // why?
+      fMultiGraph->GetXaxis()->SetRangeUser(fMin[0], fMax[0]);
     }
     if (fMin[1] != fMax[1]) fMultiGraph->GetYaxis()->SetRangeUser(fMin[1], fMax[1]);
     gPad->Update();
@@ -317,6 +318,10 @@ namespace Hal {
       if (copyFillColor) sys->SetFillColor(stat->GetMarkerColor());
       if (clearFillStyle) { sys->SetFillStyle(-1); }
     }
+  }
+
+  void MultiGraph::SetDrawOption(Int_t no, Option_t* opt) {
+    if (no < fAddingOptions.size()) { fAddingOptions[no] = opt; }
   }
 
 }  // namespace Hal

@@ -89,14 +89,14 @@ namespace Hal {
   }
 
   Femto1DCF::Femto1DCF(TString name, Femto::EKinematics frame) : DividedHisto1D(name, 1), fFrame(frame) {
-    SetName(name);
+    Femto1DCF::SetName(name);
     AddLabel(Femto::KinematicsToLabel(fFrame));
   }
 
   Femto1DCF::Femto1DCF(TString name, Int_t bins, Double_t min, Double_t max, Femto::EKinematics frame) :
     DividedHisto1D(name, bins, min, max), fFrame(frame) {
-    SetAxisNames(fNum);
-    SetAxisNames(fDen);
+    Femto1DCF::SetAxisNames(fNum);
+    Femto1DCF::SetAxisNames(fDen);
     fNum->Sumw2();
     fDen->Sumw2();
     AddLabel(Femto::KinematicsToLabel(fFrame));

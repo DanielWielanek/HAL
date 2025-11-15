@@ -10,7 +10,11 @@
 #define HAL_ANALYSIS_BASE_HALRUNANA_H_
 
 #include <TObject.h>
+#include <TStopwatch.h>
 #include <TString.h>
+
+#include <atomic>
+#include <csignal>
 
 /**
  * represents analysis manager for data processing
@@ -24,9 +28,15 @@ namespace Hal {
   class TriggerTask;
   class Package;
   class AnalysisManager : public TObject {
+
+    static std::atomic<bool> fStopFlag;
+    TStopwatch fTimer;
+    Double_t fInitTime      = {0};
+    Double_t fFinishTime    = {0};
     UInt_t fProcessedEvents = {0};
     Bool_t fTriggersEnabled = {kFALSE};
     Bool_t fProgressBar     = {kFALSE};
+    Bool_t fFixRoot         = {kFALSE};
     MagField* fField        = {nullptr};
     Source* fSource         = {nullptr};
     TString fOutputFile;
@@ -40,6 +50,7 @@ namespace Hal {
     std::vector<Task*> fPassiveTasks;
     void Finish();
     void DoStep(Int_t entry);
+    static void HandleSignal(int signal);
 
   public:
     AnalysisManager();
@@ -88,6 +99,9 @@ namespace Hal {
      * @param field
      */
     void SetField(MagField* field) { fField = field; }
+    /** skip saving name of output macro - this is ROOT bug that should be fixed soon*/
+    void FixRoot() { fFixRoot = kTRUE; }
+    AnalysisManager operator=(const AnalysisManager& other) = delete;
     virtual ~AnalysisManager();
     ClassDef(AnalysisManager, 1)
   };

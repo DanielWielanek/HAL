@@ -21,6 +21,7 @@
 // #define DISABLE_TWO_TRACK_SWAPPING
 namespace Hal {
   class TwoTrackAnaChain;
+  class EventBinningCut;
   /**
    * basic class for making two track analysis
    */
@@ -55,14 +56,14 @@ namespace Hal {
     };
 
   private:
-    Bool_t fNonIdIsSet;
-    Bool_t fSignedBoth;
-    Bool_t fIdentical;
-    Bool_t fSwapPair;  // variable to swap identical particles
-    Bool_t fSkipEmpty;
-    Int_t fCurrentTrack2CollectionNo;
-    Int_t fCurrentTrack1CollectionNo;
-    Track *fCurrentTrack1, *fCurrentTrack2;
+    Bool_t fNonIdIsSet               = {kFALSE};
+    Bool_t fSignedBoth               = {kTRUE};
+    Bool_t fIdentical                = {kTRUE};
+    Bool_t fSwapPair                 = {kTRUE};  // variable to swap identical particles
+    Bool_t fSkipEmpty                = {kTRUE};
+    Int_t fCurrentTrack2CollectionNo = {0};
+    Int_t fCurrentTrack1CollectionNo = {0};
+    Track *fCurrentTrack1 = {nullptr}, *fCurrentTrack2 = {nullptr};
     /**
      * build swapped pair of tracks
      */
@@ -134,29 +135,46 @@ namespace Hal {
 
   protected:
     /**
+     * array with event bins cuts
+     */
+    std::vector<EventBinningCut*> fEventBinningCuts;
+    Int_t fEventBinsMax            = {1};
+    Int_t fEventMemoryCollectionId = {0};
+    /**
+     * if enabled then number of event collections is multiplied by fEventBinsMax
+     * in such case fCurrentEventCollectionID in PassEvent points to "event collectionid"
+     * whereas fEventMemoryCollectionId - points to physical event collection in memory map
+     * fFakeEventBinID
+     *
+     *
+     */
+    Bool_t fEventBinningEnabled = {kFALSE};
+    /**
      * background mode used in analysis
      */
-    EAnaMode fBackgroundMode;
+    EAnaMode fBackgroundMode = {EAnaMode::kNoBackground};
     /**
      * points to collection number of actually processed pair
      */
-    Int_t fCurrentPairCollectionID;
+    Int_t fCurrentPairCollectionID = {0};
     /**
      * total number of two track collections
      */
-    Int_t fTwoTrackCollectionsNo;
+    Int_t fTwoTrackCollectionsNo = {0};
     /**
      * total number of two track collections in background
      */
-    Int_t fTwoTrackCollectionsNoBackground;
+    Int_t fTwoTrackCollectionsNoBackground = {0};
     /**
      * currently processed pair
      */
-    TwoTrack* fCurrentSignalPair;
+    TwoTrack* fCurrentSignalPair = {nullptr};
     /**
      * currently processed background pair
      */
-    TwoTrack* fCurrentBackgroundPair;
+    TwoTrack* fCurrentBackgroundPair = {nullptr};
+
+    virtual void InitMemoryMap();
     /**
      * set some tags connected with used background
      */
@@ -258,6 +276,8 @@ namespace Hal {
      */
     virtual void FinishEventNonIdentical();
     virtual Task::EInitFlag Init();
+    virtual Int_t GetEventBin();
+    virtual Bool_t CheckBinningCuts();
 
   public:
     /**
@@ -303,6 +323,7 @@ namespace Hal {
      * set this analysis as non-identical analysis
      */
     void EnableNonIdentical() { SetOption("nonid"); };
+    virtual void AddCut(const Hal::Cut& cut, Option_t* opt = "");
     /**
      *
      * @return option to set mixed background

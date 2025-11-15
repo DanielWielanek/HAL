@@ -46,11 +46,17 @@ namespace HalOTF {
     EventGenerator();
     /**
      *
-     * @param h histogram x-axis eta, y-axis pt
+     * @param h - yield histogram, x-rapidity, y-pt
+     * @param pid - pdg of generated track
+     */
+    EventGenerator(const TH2D& h, Int_t pid) : EventGenerator() { SetSpecies(h, pid); }
+    /**
+     *
+     * @param h histogram x-axis rapidity, y-axis pt
      * @param pid pid of particle
      * @param m multiplicity
      */
-    void SetSpiecies(const TH2D& h, Int_t pid);
+    void SetSpecies(const TH2D& h, Int_t pid);
     /**
      * set multiplicity histogram
      * @param h
@@ -58,6 +64,9 @@ namespace HalOTF {
     void SetMultHisto(TH1D& h);
     /** fixes multiplicity  */
     void SetFixMult(Int_t mult);
+    /**
+     * set momentum smearing
+     */
     void SetSmear(Double_t smear) { fSmear = smear; }
     void SetEvents(OTF::McEvent* mc, OTF::RecoEvent* reco) {
       fRecoEvent = reco;

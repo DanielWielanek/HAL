@@ -15,8 +15,9 @@
 #include <TObject.h>
 
 // array that recognize labels
-/** base class for hold options in some arrays **/
+
 namespace Hal {
+  /** base class for hold options in some arrays **/
   class OptionArray : public TObject {
     std::vector<std::vector<TString>> fParameters;
     std::vector<TString> fLabels;
@@ -84,6 +85,49 @@ namespace Hal {
     virtual ~OptionConverter();
     ClassDef(OptionConverter, 1)
   };
+
+  /**
+   * class for parsing arguments of main
+   */
+  class MainOption : public TObject {
+    std::vector<TString> fArgs;
+    std::vector<std::pair<TString, TString>> fParams;
+
+  public:
+    /**
+     * default ctor, takes arguments from main
+     * @param argc
+     * @param argv
+     */
+    MainOption(int argc = 0, char* argv[] = nullptr);
+    /**
+     * return array of parameters par - first vale is parameter name, second is parameter value
+     * e.g. --n=5 means parameter name = "n", parameter value = "5"
+     * @return
+     */
+    std::vector<std::pair<TString, TString>> GetPars() const { return fParams; }
+    /**
+     *
+     * @return array of arguments, argument is everything that doesn't starts with "-"
+     */
+    std::vector<TString> GetArguments() const { return fArgs; }
+    /**
+     * return parameter value
+     * @param par parameter name
+     * @return
+     */
+    TString GetParameterValue(TString par) const;
+    /**
+     *
+     * @param opt
+     * @return true if parameter opt is present
+     */
+    Bool_t HaveParameter(TString opt) const;
+    virtual void Print(Option_t* option = "") const;
+    virtual ~MainOption() {};
+    ClassDef(MainOption, 1)
+  };
+
 }  // namespace Hal
 
 #endif /* HALOPTIONS_H_ */

@@ -12,13 +12,13 @@ class TVirtualPad;
 
 #define Draw_2D_option "colz"
 #define Draw_3D_option "box2"
-#define HAL_PHYSICALANALYSYS_VER "feb2025"
+#define HAL_PHYSICALANALYSYS_VER "nov2025"
 
 // some enums used almost everywhere
 
 namespace Hal {
   enum class EInfo { kDebugInfo = 0, kInfo = 1, kLowWarning = 2, kWarning = 3, kError = 4, kCriticalError = 5 };
-  enum class EFormatType { kSim = 0, kReco = 1, kComplexReco = 2, kComplexSim = 3 };
+  enum class EFormatType { kSim = 0, kReco = 1, kComplexReco = 2, kComplexSim = 3, kUnknown = 4 };
 
   enum class ERound { kSeparator, kPrefix };
   enum class ECutUpdate { kNo = -1, kEvent = 0, kTrack = 1, kTwoTrack = 2, kTwoTrackBackground = 3 };

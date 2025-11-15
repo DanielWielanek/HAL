@@ -22,17 +22,29 @@
 #include "Task.h"
 #include "TriggerTask.h"
 
+#include <atomic>
+#include <chrono>
+#include <csignal>
 #include <cstdlib>
+#include <thread>
 
 #include <RtypesCore.h>
 #include <TFile.h>
+#include <TInterpreter.h>
 
 namespace Hal {
-  AnalysisManager::AnalysisManager() {}
+
+  std::atomic<bool> AnalysisManager::fStopFlag = false;
+
+  AnalysisManager::AnalysisManager() { std::signal(SIGINT, Hal::AnalysisManager::HandleSignal); }
 
   Bool_t AnalysisManager::Init() {
     Cout::PrintInfo("=== AnalysisManager::Init ===", EInfo::kInfo);
-    if (fSource == nullptr) exit(0);
+    fTimer.Start();
+    if (fSource == nullptr) {
+      Cout::PrintInfo("No source exiting", EInfo::kCriticalError);
+      exit(0);
+    }
     Cout::PrintInfo("=== Source::Init ===", EInfo::kInfo);
     Bool_t initSource = fSource->Init();
     if (!initSource) { Cout::PrintInfo("Can't init source!", EInfo::kCriticalError); }
@@ -95,10 +107,14 @@ namespace Hal {
       Cout::PrintInfo("=== Manager status ===", EInfo::kDebugInfo);
       fManager->PrintInfo();
     }
+    fInitTime = fTimer.CpuTime();
+
     return kTRUE;
   }
 
   void AnalysisManager::Run(Int_t start, Int_t end) {
+    fTimer.Reset();
+    fTimer.Start();
     if (start == -1 && end == -1) {
       start = 0;
       end   = fManager->GetEntries();
@@ -116,7 +132,13 @@ namespace Hal {
       }
       DoStep(i);
       fManager->FillTree();
+      if (fStopFlag) {
+        Hal::Cout::PrintInfo("Stopped by user", EInfo::kWarning);
+        break;
+      }
     }
+    fTimer.Stop();
+    fFinishTime = fTimer.CpuTime();
     Finish();
   }
 
@@ -138,6 +160,16 @@ namespace Hal {
     metadata_new->AddObject(new ParameterString("Time", Hal::Std::GetTime(), 'f'));
     metadata_new->AddObject(new ParameterUInt("Processed_events", fProcessedEvents, '+'));
     metadata_new->AddObject(new ParameterString("Input file", DataManager::Instance()->GetSourceName(), 'f'));
+    if (!fFixRoot) {
+      if (gInterpreter->GetCurrentMacroName())
+        metadata_new->AddObject(new ParameterString("Input macro", gInterpreter->GetCurrentMacroName(), 'f'));
+      else
+        metadata_new->AddObject(new ParameterString("Input macro", "Loaded by user", 'f'));
+    } else {
+      metadata_new->AddObject(new ParameterString("Input macro", "Disabled by user", 'f'));
+    }
+    metadata_new->AddObject(new ParameterDouble("Initialization Time [s]", fInitTime, 'f'));
+    metadata_new->AddObject(new ParameterDouble("Processing time [s]", fFinishTime, 'f'));
     metadata_new->AddObject(fManager->GetBranchesList());
 
     TList* trigList = new TList();
@@ -217,6 +249,12 @@ namespace Hal {
     fManager->GetEntry(entry, 1);
     for (auto task : fActiveTasks) {
       task->Exec("");
+    }
+  }
+
+  void AnalysisManager::HandleSignal(int signal) {
+    {
+      if (signal == SIGINT) { fStopFlag = true; }
     }
   }
 

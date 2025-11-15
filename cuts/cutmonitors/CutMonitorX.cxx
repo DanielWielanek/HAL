@@ -44,14 +44,8 @@ namespace Hal {
 #endif
   }
 
-  CutMonitor* CutMonitorX::MakeCopy() const { return (CutMonitor*) new CutMonitorX(*this); }
-
-  CutMonitorX::CutMonitorX(const CutMonitorX& other) : CutMonitor(other) {}
-
-  CutMonitorX::~CutMonitorX() {}
-
   void CutMonitorX::Update(Bool_t passed, TObject* /*obj*/) {
-    if (fExUpdate) {
+    if (IsExclusive()) {
       TrueUpdate(fCut[0]->HasPassed());
     } else {
       TrueUpdate(passed);
@@ -75,7 +69,7 @@ namespace Hal {
   }
 
   Bool_t CutMonitorX::Init(Int_t task_id) {
-    if (fInit == kFALSE) { return CutMonitor::Init(task_id); }
+    if (IsInitialized() == kFALSE) { return CutMonitor::Init(task_id); }
     return kFALSE;
   }
 

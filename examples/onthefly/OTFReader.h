@@ -12,7 +12,9 @@
 #include "Reader.h"
 
 #include "OTFData.h"
+#include "Std.h"
 
+#include <set>
 #include <vector>
 
 #include <Rtypes.h>
@@ -31,8 +33,7 @@ namespace HalOTF {
 namespace HalOTF {
   class Reader : public Hal::Reader {
   protected:
-    enum class ETranslate { kNone, kMc, kReco, kComplex };
-    ETranslate fTranslate = {ETranslate::kComplex};
+    Hal::EFormatType fTranslate = {Hal::EFormatType::kUnknown};
     OTF::McEvent* fMcEvent;
     OTF::RecoEvent* fRecoEvent;
     HalOTF::ComplexEvent* fHalComplexEvent   = {nullptr};
@@ -47,7 +48,12 @@ namespace HalOTF {
      * @param opt reco - for reco translation, mc - for sim translatation, complex or mc+reco - for complex translation
      * note, last Reader task should translate events
      */
-    void Translate(TString opt);
+    [[deprecated]] void Translate(TString opt);
+    /**
+     * specify how to translate events (if want to use a direct access to data
+     * @param opt reco - specify is use simulated, reconstructed or comples data NOTE: kComplexSim is not supported yet
+     */
+    void Translate(Hal::EFormatType opt);
     virtual void Exec(Option_t* opt);
     virtual Hal::Task::EInitFlag Init();
     virtual ~Reader();

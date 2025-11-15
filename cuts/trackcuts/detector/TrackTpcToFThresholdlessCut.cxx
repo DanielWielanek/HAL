@@ -17,17 +17,17 @@ namespace Hal {
   Bool_t TrackTpcToFThresholdlessCut::Pass(Track* tr) {
     TpcTrack* track_tpc = (TpcTrack*) ((ExpTrack*) tr)->GetDetTrack(DetectorID::kTPC);
     ToFTrack* track_tof = (ToFTrack*) ((ExpTrack*) tr)->GetDetTrack(DetectorID::kTOF);
-    SetValue(track_tof->GetMass2(), 7);
-    SetValue(track_tpc->GetSigmaPion(), PionSigma());
-    SetValue(track_tpc->GetSigmaKaon(), KaonSigma());
-    SetValue(track_tpc->GetSigmaProton(), ProtonSigma());
-    SetValue(track_tpc->GetSigmaElectron(), ElectronSigma());
-    SetValue(track_tpc->GetDeDx(), DeDx());
-    SetValue(tr->GetCharge(), Charge());
-    SetValue(track_tpc->GetNHits(), TpcHits());
+    SetValue(track_tof->GetMass2(), M2);
+    SetValue(track_tpc->GetSigmaPion(), SigmaPion);
+    SetValue(track_tpc->GetSigmaKaon(), SigmaKaon);
+    SetValue(track_tpc->GetSigmaProton(), SigmaProton);
+    SetValue(track_tpc->GetSigmaElectron(), SigmaElectron);
+    SetValue(track_tpc->GetDeDx(), DeDx);
+    SetValue(tr->GetCharge(), Charge);
+    SetValue(track_tpc->GetNHits(), TpcHits);
     Bool_t require_tof = kFALSE;
     for (int i = 0; i < 4; i++) {
-      Int_t par      = i + PionSigma();
+      Int_t par      = i + SigmaPion;
       Double_t sigma = GetValue(par);
       if (par == fTpc->GetActiveSigma()) {  // active sigma veryfication
         if (sigma < GetMin(par)) return ForcedUpdate(kFALSE);

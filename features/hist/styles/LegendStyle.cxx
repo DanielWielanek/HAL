@@ -18,13 +18,6 @@
 namespace Hal {
   const unsigned short int LegendStyle::kFontSize  = 0;
   const unsigned short int LegendStyle::kFontStyle = 1;
-  LegendStyle LegendStyle::GetStyle(TString opt) {
-    LegendStyle style;
-    if (Hal::Std::FindParam(opt, "apollo", kTRUE)) { style.SetFont(82); }
-    if (Hal::Std::FindParam(opt, "05", kTRUE)) { style.SetFontSize(0.05); }
-    if (Hal::Std::FindParam(opt, "06", kTRUE)) { style.SetFontSize(0.06); }
-    return style;
-  }
 
   void LegendStyle::SetFontSize(Float_t size) { SetF(kFontSize, size); }
 
@@ -66,4 +59,12 @@ namespace Hal {
     if (auto child = node->GetChild("FillStyle")) { fFill.ImportFromXML(child); }
     if (auto child = node->GetChild("LineStyle")) { fLine.ImportFromXML(child); }
   }
+
+  LegendStyle::LegendStyle(TString style) {
+    if (style.Length() == 0) return;
+    if (Hal::Std::FindParam(style, "apollo", kTRUE)) { SetFont(82); }
+    if (Hal::Std::FindParam(style, "05", kTRUE)) { SetFontSize(0.05); }
+    if (Hal::Std::FindParam(style, "06", kTRUE)) { SetFontSize(0.06); }
+  }
+
 } /* namespace Hal */

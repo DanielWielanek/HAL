@@ -14,10 +14,10 @@
 
 namespace Hal {
   PairDeltaQinvCut::PairDeltaQinvCut() : TwoTrackCut(2) {
-    SetUnitName("#DeltaQ_{inv} [GeV.c]", Absolute());
-    SetUnitName("#DeltaQ_{inv} [%]", Relative());
-    SetMinMax(-1E+9, 1E+9, Absolute());
-    SetMinMax(-1000, 1000, Relative());
+    SetUnitName("#DeltaQ_{inv} [GeV.c]", Absolute);
+    SetUnitName("#DeltaQ_{inv} [%]", Relative);
+    SetMinMax(-1E+9, 1E+9, Absolute);
+    SetMinMax(-1000, 1000, Relative);
     fMass1 = fMass2 = 0.139;
   }
 
@@ -29,15 +29,15 @@ namespace Hal {
     Track* mc1       = z1->GetImgTrack();
     Track* mc2       = z2->GetImgTrack();
     if (mc1 == NULL || mc2 == NULL) {
-      SetValue(1E+9, Absolute());
-      SetValue(1E+9, Relative());
+      SetValue(1E+9, Absolute);
+      SetValue(1E+9, Relative);
       return ForcedUpdate(kFALSE);
     }
     Double_t q_im  = Q(mc1, mc2);
     Double_t q_re  = Q(re1, re2);
     Double_t delta = q_re - q_im;
-    SetValue(delta, Absolute());
-    SetValue(delta / q_im * 100.0, Relative());
+    SetValue(delta, Absolute);
+    SetValue(delta / q_im * 100.0, Relative);
     return Validate();
   }
 

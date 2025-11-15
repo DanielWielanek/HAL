@@ -47,7 +47,7 @@ namespace Hal {
       kV0          = 1,
       kXi          = 2,
       kGlobal      = 3,
-      kMother      = 4,  // set if mother is known (and its secondary)
+      kMotherKnown = 4,  // set if mother is known (and its secondary)
       kV0Daughters = 5,  // set if v0 and daughters are known
       kXiDaughters = 6,  // set if xi and daughters are known
       kBackground  = 7,  // set if background particle
@@ -171,7 +171,7 @@ namespace Hal {
      */
     inline void SetMotherIndex(Int_t index) {
       CLRBIT(fType, kPrimary);
-      if (index >= 0) SETBIT(fType, kMother);
+      if (index >= 0) SETBIT(fType, kMotherKnown);
       fMotherID = index;
     };
     /**
@@ -213,7 +213,7 @@ namespace Hal {
      *
      * @return true if particle is secondary and mother ID is known
      */
-    inline Bool_t IsGoodSecondary() const { return TESTBIT(fType, kMother); };
+    inline Bool_t IsGoodSecondary() const { return TESTBIT(fType, kMotherKnown); };
     /**
      *
      * @return true if particle is V0 and daughters ID's are known

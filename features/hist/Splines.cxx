@@ -14,6 +14,7 @@
 #include "StdString.h"
 
 #include <TAxis.h>
+#include <TFile.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TH3.h>
@@ -210,7 +211,7 @@ namespace Hal {
     }
   }
 
-  Spline2D::Spline2D(TH2* h, Option_t* opt_int) : fXaxis(NULL), fYaxis(NULL), fNbinsX(0), fNbinsY(0), fA(), fAe(NULL) {
+  Spline2D::Spline2D(TH2* h, Option_t* opt_int) : fXaxis(NULL), fYaxis(NULL), fNbinsX(0), fNbinsY(0), fA() {
     if (h == nullptr) {
       Hal::Cout::Text("making copy Spline with null histogram");
       return;
@@ -219,9 +220,8 @@ namespace Hal {
     fYaxis  = (TAxis*) h->GetYaxis()->Clone("Yspline");
     fNbinsX = fXaxis->GetNbins();
     fNbinsY = fYaxis->GetNbins();
-    fAe     = new Array_2<Double_t>();
     fA.MakeBigger(fXaxis->GetNbins() + 2, fYaxis->GetNbins() + 2, 9);
-    fAe->MakeBigger(fXaxis->GetNbins() + 2, fYaxis->GetNbins() + 2);
+    fAe.MakeBigger(fXaxis->GetNbins() + 2, fYaxis->GetNbins() + 2);
     if (fXaxis->IsVariableBinSize() && fYaxis->IsVariableBinSize()) {
       Cout::PrintInfo("Bot axes have non-fixed bin size 2dim interpolation will probably not "
                       "work",
@@ -245,7 +245,7 @@ namespace Hal {
           for (int b = -1; b < 2; b++)
             z[a + 1][b + 1] = temp_histo->GetBinContent(i + a, j + b);
         CalcParams(x, y, z, Params);
-        (*fAe)[i][j] = temp_histo->GetBinError(i, j);
+        fAe[i][j] = temp_histo->GetBinError(i, j);
         for (int p = 0; p < 9; p++)
           fA[i][j][p] = Params[p];
       }
@@ -253,22 +253,44 @@ namespace Hal {
     // "fix edges" (but no corners)
     for (int i = 1; i <= fNbinsX; i++) {
       for (int p = 1; p < 9; p++) {
-        fA[i][0][p]       = 0;
-        fA[i][fNbinsY][p] = 0;
+        fA[i][0][p]           = 0;
+        fA[i][fNbinsY + 1][p] = 0;
       }
-      fA[i][0][0]       = fA[i][1][0];
-      fA[i][fNbinsY][0] = fA[i][fNbinsY - 1][0];
+      for (int p = 0; p < 9; p++) {
+        fA[i][0][p]           = fA[i][1][p];
+        fA[i][fNbinsY + 1][p] = fA[i][fNbinsY][p];
+      }
     }
 
     for (int i = 1; i <= fNbinsY; i++) {
       for (int p = 1; p < 9; p++) {
-        fA[0][i][p]       = 0;
-        fA[fNbinsX][i][p] = 0;
+        fA[0][i][p]           = 0;
+        fA[fNbinsX + 1][i][p] = 0;
       }
-      fA[0][i][0]       = fA[1][i][0];
-      fA[fNbinsX][i][0] = fA[fNbinsX - 1][i][0];
+      fA[0][i][0]           = fA[1][i][0];
+      fA[fNbinsX + 1][i][0] = fA[fNbinsX][i][0];
+      for (int p = 0; p < 9; p++) {
+        fA[0][i][p]           = fA[1][i][p];
+        fA[fNbinsX + 1][i][p] = fA[fNbinsX][i][p];
+      }
     }
+    // fix conrners
+    for (int p = 0; p < 9; p++) {
+      fA[0][0][p]                 = fA[1][1][p];
+      fA[fNbinsX + 1][0][p]       = fA[fNbinsX][1][p];
+      fA[0][fNbinsY + 1][p]       = fA[1][fNbinsY][p];
+      fA[fNbinsX + 1][fNbinsY][p] = fA[fNbinsX][fNbinsY][p];
+    }
+
     delete temp_histo;
+  }
+  Spline2D::Spline2D(const Spline2D& other) {
+    if (other.fXaxis) fXaxis = (TAxis*) other.fXaxis->Clone();
+    if (other.fYaxis) fYaxis = (TAxis*) other.fYaxis->Clone();
+    fNbinsX = other.fNbinsX;
+    fNbinsY = other.fNbinsY;
+    fA      = other.fA;
+    fAe     = other.fAe;
   }
 
   void Spline2D::Refit() {
@@ -353,7 +375,7 @@ namespace Hal {
            + fA.Get(ix, iy, 5) * y2 + fA.Get(ix, iy, 6) * x2 * y + fA.Get(ix, iy, 7) * x * y2 + fA.Get(ix, iy, 8) * x2 * y2;
   }
 
-  Double_t Spline2D::ErrorBin(Int_t bin_x, Int_t bin_y) const { return fAe->Get(bin_x, bin_y); }
+  Double_t Spline2D::ErrorBin(Int_t bin_x, Int_t bin_y) const { return fAe.Get(bin_x, bin_y); }
 
   void Spline2D::Eval(Double_t x, Double_t y, Double_t& f, Double_t& error) const {
     Int_t ix    = fXaxis->FindFixBin(x);
@@ -362,7 +384,7 @@ namespace Hal {
     Double_t y2 = y * y;
     f = fA.Get(ix, iy, 0) + fA.Get(ix, iy, 1) * x + fA.Get(ix, iy, 2) * y + fA.Get(ix, iy, 3) * x * y + fA.Get(ix, iy, 4) * x2
         + fA.Get(ix, iy, 5) * y2 + fA.Get(ix, iy, 6) * x2 * y + fA.Get(ix, iy, 7) * x * y2 + fA.Get(ix, iy, 8) * x2 * y2;
-    error = fAe->Get(ix, iy);
+    error = fAe.Get(ix, iy);
   }
 
   void Spline2D::CalcParams(Double_t x[3], Double_t y[3], Double_t z[3][3], Double_t params[9]) {
@@ -406,40 +428,32 @@ namespace Hal {
   }
 
   void Spline2D::Extrapolate(TH2* h, Option_t* interpolation) const {
-    TString option          = interpolation;
-    Int_t interpolation_opt = 0;
+    TString option         = interpolation;
+    auto interpolation_opt = EInterpolation::kConst;
     if (option.EqualTo("linear")) {
-      interpolation_opt = 1;
+      interpolation_opt = EInterpolation::kLinear;
     } else if (option.EqualTo("const")) {
-      interpolation_opt = 2;
+      interpolation_opt = EInterpolation::kConst;
     } else {
       return;
     }
-    for (int i = 0; i <= fNbinsX + 1; i++) {  // last row & first
-      h->SetBinContent(i, 0, Extrapolate(h, i, i, i, 1, 2, 0, interpolation_opt));
-      h->SetBinError(i, 0, h->GetBinError(i, 1));
-      h->SetBinContent(i, fNbinsY + 1, Extrapolate(h, i, i, i, fNbinsY - 1, fNbinsY, fNbinsY + 1, interpolation_opt));
-      h->SetBinError(i, fNbinsY + 1, h->GetBinError(i, fNbinsY));
+    TH2* tempCopy = (TH2*) h->Clone("temp");
+    Int_t overX   = fNbinsX + 1;
+    Int_t overY   = fNbinsY + 1;
+    for (int i = 0; i <= overX; i++) {  // last row & first
+      Extrapolate(tempCopy, h, i, 0, interpolation_opt);
+      Extrapolate(tempCopy, h, i, overY, interpolation_opt);
     }
-    for (int i = 0; i <= fNbinsY + 1; i++) {  // last column & first
-      h->SetBinContent(0, i, Extrapolate(h, 1, 2, 0, i, i, i, interpolation_opt));
-      h->SetBinError(0, i, h->GetBinError(1, i));
-      h->SetBinContent(fNbinsX + 1, i, Extrapolate(h, fNbinsX - 1, fNbinsX, fNbinsX + 1, i, i, i, interpolation_opt));
-      h->SetBinError(fNbinsX + 1, i, h->GetBinError(fNbinsX, i));
+    for (int i = 0; i <= overY; i++) {  // last column & first
+      Extrapolate(tempCopy, h, 0, i, interpolation_opt);
+      Extrapolate(tempCopy, h, overX, i, interpolation_opt);
     }
-    h->SetBinContent(0, 0, Extrapolate(h, 1, 2, 0, 1, 2, 0, interpolation_opt));  //->00
-    h->SetBinError(0, 0, h->GetBinError(1, 1));
-    h->SetBinContent(fNbinsX + 1, 0, Extrapolate(h, fNbinsX - 1, fNbinsX, fNbinsX + 1, 1, 2, 0,
-                                                 interpolation_opt));  //->L0
-    h->SetBinError(fNbinsX + 1, 0, h->GetBinError(fNbinsX, 1));
-    h->SetBinContent(0, fNbinsY + 1, Extrapolate(h, 1, 2, 0, fNbinsY - 1, fNbinsY, fNbinsY + 1,
-                                                 interpolation_opt));  //->0L
-    h->SetBinError(0, fNbinsY + 1, h->GetBinError(1, fNbinsY));
-    h->SetBinContent(
-      fNbinsX + 1,
-      fNbinsY + 1,
-      Extrapolate(h, fNbinsX - 1, fNbinsX, fNbinsX + 1, fNbinsY - 1, fNbinsY, fNbinsY + 1, interpolation_opt));  //->LL
-    h->SetBinError(fNbinsX + 1, fNbinsY + 1, h->GetBinError(fNbinsX, fNbinsY));
+    Extrapolate(tempCopy, h, 0, 0, interpolation_opt);      //->00
+    Extrapolate(tempCopy, h, overX, 0, interpolation_opt);  //->L0
+    Extrapolate(tempCopy, h, 0, overY,
+                interpolation_opt);                             //-0L
+    Extrapolate(tempCopy, h, overX, overY, interpolation_opt);  //->LL
+    delete tempCopy;
   }
 
   Double_t Spline2D::GetExtrapolationParam(Double_t x, Double_t y, Int_t param) const {
@@ -448,40 +462,50 @@ namespace Hal {
     return fA.Get(ix, iy, param);
   }
 
-  Double_t Spline2D::Extrapolate(TH2* h, Int_t ix1, Int_t ix2, Int_t ix, Int_t iy1, Int_t iy2, Int_t iy, Int_t opt) const {
-    Double_t z1, z2, dS, dI, Z;
-    Double_t dX     = h->GetXaxis()->GetBinCenter(ix2) - h->GetXaxis()->GetBinCenter(ix1);
-    Double_t dY     = h->GetYaxis()->GetBinCenter(iy2) - h->GetYaxis()->GetBinCenter(iy1);
-    dS              = TMath::Sqrt(dX * dX + dY * dY);
-    Int_t closest_x = ix1;
-    Int_t closest_y = iy1;
-    if (TMath::Abs(ix1 - ix) > TMath::Abs(ix2 - ix)) closest_x = ix2;
-    if (TMath::Abs(iy1 - iy) > TMath::Abs(iy2 - iy)) closest_y = iy2;
-    dX = h->GetXaxis()->GetBinCenter(closest_x) - h->GetXaxis()->GetBinCenter(ix);
-    dY = h->GetYaxis()->GetBinCenter(closest_y) - h->GetYaxis()->GetBinCenter(iy);
-    dI = TMath::Sqrt(dX * dX + dY * dY);
-    z1 = h->GetBinContent(ix1, iy1);
-    z2 = h->GetBinContent(ix2, iy2);
-    switch (opt) {
-      case 1: {
-        Double_t dZ = (z2 - z1) * dI / dS;
-        if (ix < ix1 || iy < iy1) {
-          Z = h->GetBinContent(ix1, iy1);
-          return Z - dZ;
-        } else {
-          Z = h->GetBinContent(ix2, iy2);
-          return Z + dZ;
-        }
-      } break;
-      case 2: return h->GetBinContent(closest_x, closest_y); break;
-      default: return 0; break;
+  void Spline2D::Extrapolate(const TH2* from, TH2* to, Int_t ix, Int_t iy, EInterpolation opt) const {
+
+    Int_t fromX = ix, fromY = iy;
+    Int_t dirX = 0, dirY = 0;
+
+    if (ix == 0) {
+      fromX = 1;
+      dirX  = 1;
+    } else if (ix == fNbinsX + 1) {
+      fromX = fNbinsX;
+      dirX  = -1;
     }
+    if (iy == 0) {
+      fromY = 1;
+      dirY  = 1;
+    } else if (iy == fNbinsY + 1) {
+      fromY = fNbinsY;
+      dirY  = -1;
+    }
+
+    Double_t res = 0;
+    switch (opt) {
+      case EInterpolation::kLinear: {  // TODO FIXME
+        Double_t raw    = from->GetBinContent(fromX, fromY);
+        Double_t helper = from->GetBinContent(fromX + dirX, fromY + dirY);
+        from->GetBinContent(fromX + dirX, fromY + dirY);
+        Double_t delta = helper - raw;
+        res            = raw - delta;
+      } break;
+      case EInterpolation::kConst: {
+        res = from->GetBinContent(fromX, fromY);
+      } break;
+      case EInterpolation::kAverage: {
+        res = 0.5 * (from->GetBinContent(fromX, fromY) + from->GetBinContent(fromX + dirX, fromY + dirY));
+      } break;
+    }
+    to->SetBinContent(ix, iy, res);
+    to->SetBinError(ix, iy, from->GetBinError(fromX, fromY));
   }
 
   Double_t Spline2D::GetError(Double_t x, Double_t y) const {
     Int_t ix = fXaxis->FindFixBin(x);
     Int_t iy = fYaxis->FindFixBin(y);
-    return fAe->Get(ix, iy);
+    return fAe.Get(ix, iy);
   }
 
   Spline2D::~Spline2D() {}

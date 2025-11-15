@@ -16,12 +16,10 @@ namespace Hal {
     Float_t fM;
 
   public:
+    enum ParID { Rout = 0, Rside = 1, Rlong = 2 };
     TwoTrackLCMSCut();
     virtual Bool_t Pass(TwoTrack* pair);
     void SetMass(Double_t m) { fM = m * m; };
-    static Int_t Rout() { return 0; };
-    static Int_t Rside() { return 1; };
-    static Int_t Rlong() { return 2; };
     virtual ~TwoTrackLCMSCut();
     ClassDef(TwoTrackLCMSCut, 1)
   };

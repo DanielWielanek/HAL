@@ -24,8 +24,8 @@ namespace Hal {
     Double_t pz = pair->GetTrack1()->GetMomentum().Pz() + pair->GetTrack2()->GetMomentum().Pz();
     Double_t pt = TMath::Sqrt(px * px + py * py);
     Double_t p  = TMath::Sqrt(pt * pt + pz * pz);
-    SetValue(0.5 * TMath::Log((p + pz) / (p - pz)), 0);
-    SetValue(pt, 1);
+    SetValue(0.5 * TMath::Log((p + pz) / (p - pz)), Eta);
+    SetValue(pt, Pt);
     return Validate();
   }
 

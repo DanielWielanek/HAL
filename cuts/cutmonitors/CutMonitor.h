@@ -24,8 +24,10 @@ namespace Hal {
   class CutMonitor : public TObject {
     friend class CutContainer;
     friend class CutOptions;
+    friend class ComplexMonitor;
 
   protected:
+    enum EFlagBit { kInit = 0, kExclusive = 1 };
     /**
      * number of axis in cut monitor
      */
@@ -33,55 +35,51 @@ namespace Hal {
     /**
      * number of currently added cuts
      */
-    Int_t fCuts;
+    Int_t fCuts = {0};
     /**
      * collection number of this cut monitor
      */
-    Int_t fCollectionID;
+    Int_t fCollectionID = {-1};
     /**
      * array with numbers of axis bins
      */
-    Int_t* fAxisBins;  //[fAxisNo]
+    Int_t* fAxisBins = {nullptr};  //[fAxisNo]
     /**
      * array with parameters numbers used from cuts for all axes
      */
-    Int_t* fOptionAxis;  //[fAxisNo]
+    Int_t* fOptionAxis = {nullptr};  //[fAxisNo]
     /**
      * histogram with passed objects
      */
-    TH1* fHistoPassed;
+    TH1* fHistoPassed = {nullptr};
     /**
      * histogram with failed objects
      */
-    TH1* fHistoFailed;
+    TH1* fHistoFailed = {nullptr};
     /**
      * array with lower edges of axes
      */
-    Double_t* fAxisMin;  //[fAxisNo]
+    Double_t* fAxisMin = {nullptr};  //[fAxisNo]
     /**
      * array with upper edges of axes
      */
-    Double_t* fAxisMax;  //[fAxisNo]
+    Double_t* fAxisMax = {nullptr};  //[fAxisNo]
     /**
-     * init flag, true if monitor has been initialized
+     *  flag for holding informations
      */
-    Bool_t fInit;
-    /**
-     * exclusive flag, true if monitor works in exclusive mode
-     */
-    Bool_t fExUpdate;
+    Int_t fFlags = {0};
     /**
      * array with pointers to monitored cuts
      */
-    Cut** fCut;  //[fAxisNo]
+    Cut** fCut = {nullptr};  //[fAxisNo]
     /**
      * array with pointers to names of monitored cuts
      */
-    TString* fCutNames;  //[fAxisNo]
+    TString* fCutNames = {nullptr};  //[fAxisNo]
     /**
      * update ratio of this cut monitor
      */
-    ECutUpdate fUpdateRatio;
+    ECutUpdate fUpdateRatio = {ECutUpdate::kNo};
     /**
      * allocate histograms
      */
@@ -129,6 +127,32 @@ namespace Hal {
      * @param passed
      */
     void ManualFill3D(Double_t x, Double_t y, Double_t z, Bool_t passed);
+    /**
+     *
+     * @return true if initialized
+     */
+    Bool_t IsInitialized() const { return TESTBIT(fFlags, EFlagBit::kInit); }
+    /**
+     * marks as initialized
+     */
+    void MarkAsInitialized() { SETBIT(fFlags, EFlagBit::kInit); }
+    /**
+     *
+     * @return true if exclusive
+     */
+    inline Bool_t IsExclusive() const { return TESTBIT(fFlags, EFlagBit::kExclusive); }
+    /**
+     * make complex axes for cuts
+     * @param opt
+     */
+    virtual void MakeComplexAxes(TString opt = "");
+    /**
+     * tries to make an complex monitors, return nullptr if failed, moved only to avoid full
+     * declaration in hader
+     * @param opt
+     * @return
+     */
+    CutMonitor* TryMakeComplexMonitor(TString opt) const;
 
   public:
     /**
@@ -221,7 +245,7 @@ namespace Hal {
      * @param other
      * @return true if both monitors are similar
      */
-    virtual Bool_t AreSimilar(CutMonitor* other) const;
+    virtual Bool_t AreSimilar(const CutMonitor& other) const;
     /**
      *
      * @param i axes no
@@ -251,9 +275,10 @@ namespace Hal {
     virtual void Update(Bool_t passed, TObject* obj);
     /**
      * make copy of this object
+     * @param opt copy option, for some of the cut monitors "re" and "im" make real and imaginary copy of monitor
      * @return copy of this
      */
-    virtual CutMonitor* MakeCopy() const;
+    virtual CutMonitor* MakeCopy(TString opt = "") const;
     /**
      *
      * @return report from this cut monitor
@@ -266,7 +291,7 @@ namespace Hal {
      */
     Cut* GetCutLink(Int_t i) const { return fCut[i]; };
     virtual ~CutMonitor();
-    ClassDef(CutMonitor, 1)
+    ClassDef(CutMonitor, 2)
   };
 }  // namespace Hal
 #endif /* HALCUTMONITOR_H_ */

@@ -10,6 +10,7 @@
 #include "ChiSqMap2D.h"
 #include "Splines.h"
 
+#include "StdHist.h"
 #include "StdMath.h"
 #include <TAttLine.h>
 #include <TAxis.h>
@@ -75,33 +76,18 @@ namespace Hal {
       DrawLineY(fLineYhigh);
     }
     if (option.Contains("min")) {
-      Int_t xb = 1, yb = 1;
+      Double_t xb = 1, yb = 1;
       Double_t min = DBL_MAX;
       for (int i = 1; i <= fHist->GetNbinsX(); i++) {
         for (int j = 1; j <= fHist->GetNbinsY(); j++) {
           if (fHist->GetBinContent(i, j) < min) {
             min = fHist->GetBinContent(i, j);
-            xb  = i;
-            yb  = j;
+            xb  = fHist->GetXaxis()->GetBinCenter(i);
+            yb  = fHist->GetYaxis()->GetBinCenter(j);
           }
         }
       }
-      Double_t x1  = fHist->GetXaxis()->GetBinLowEdge(xb);
-      Double_t y1  = fHist->GetYaxis()->GetBinLowEdge(yb);
-      Double_t x2  = fHist->GetXaxis()->GetBinUpEdge(xb);
-      Double_t y2  = fHist->GetYaxis()->GetBinUpEdge(yb);
-      TLine** line = new TLine*[6];
-      line[0]      = new TLine(x1, y1, x1, y2);
-      line[1]      = new TLine(x2, y1, x2, y2);
-      line[2]      = new TLine(x1, y1, x2, y1);
-      line[3]      = new TLine(x1, y2, x2, y2);
-      line[4]      = new TLine(x1, y1, x2, y2);
-      line[5]      = new TLine(x2, y1, x1, y2);
-
-      for (int i = 0; i < 6; i++) {
-        line[i]->SetLineColor(kGray);
-        line[i]->Draw("SAME");
-      }
+      Hal::Std::DrawDiagonalBins(*fHist, xb, yb, "x", kGray, 1);
     }
     if (option.Contains("fit")) {
       Double_t x1  = fHist->GetXaxis()->GetBinLowEdge(1);
@@ -116,6 +102,20 @@ namespace Hal {
       for (int i = 0; i < 2; i++) {
         line[i]->SetLineColor(kGray + 2);
         line[i]->Draw("SAME");
+      }
+    }
+  }
+
+  void ChiSqMap2D::DrawContour(Int_t nFree, Double_t cL, Color_t col, Int_t width) {
+    Double_t xb = 1, yb = 1;
+    Double_t min        = Hal::Std::GetMinimum({fHist});
+    Double_t deltaChi   = TMath::ChisquareQuantile(cL, nFree);
+    Double_t deltaThres = min + deltaChi;
+    for (int i = 1; i <= fHist->GetNbinsX(); i++) {
+      xb = fHist->GetXaxis()->GetBinCenter(i);
+      for (int j = 1; j <= fHist->GetNbinsY(); j++) {
+        yb = fHist->GetYaxis()->GetBinCenter(j);
+        if (fHist->GetBinContent(i, j) < deltaThres) { Hal::Std::DrawDiagonalBins(*fHist, xb, yb, "x", col, width); }
       }
     }
   }
@@ -198,7 +198,7 @@ namespace Hal {
     if (CheckY(l->GetY1())) l->Draw("SAME");
   }
 
-  void ChiSqMap2D::GetMin(Double_t& x, Double_t& y) const {
+  Double_t ChiSqMap2D::GetMin(Double_t& x, Double_t& y) const {
     Int_t xb = 0, yb = 0;
     Double_t min = DBL_MAX;
     for (int i = 1; i <= fHist->GetNbinsX(); i++) {
@@ -212,6 +212,7 @@ namespace Hal {
     }
     x = fHist->GetXaxis()->GetBinCenter(xb);
     y = fHist->GetYaxis()->GetBinCenter(yb);
+    return min;
   }
 
   ChiSqMap2D::~ChiSqMap2D() {
@@ -224,7 +225,8 @@ namespace Hal {
     if (fLineYhigh) delete fLineYhigh;
   }
 
-  Double_t ChiSqMap2D::GetEstErrorX(Double_t thres, Bool_t around_fit) const {
+  std::pair<Double_t, Double_t> ChiSqMap2D::EstimateErrorX(Double_t thres, Bool_t around_fit) const {
+    std::pair<Double_t, Double_t> res(-1, -1);
     Int_t binX, binY;
     if (around_fit) {
       binX = fHist->GetXaxis()->FindBin(GetFitX());
@@ -235,7 +237,7 @@ namespace Hal {
       binX = fHist->GetXaxis()->FindBin(x);
       binY = fHist->GetYaxis()->FindBin(y);
     }
-    if (binX <= 1 || binX >= fHist->GetNbinsX()) return 0;
+    if (binX <= 1 || binX >= fHist->GetNbinsX()) return res;
     Double_t dX = fHist->GetXaxis()->GetBinWidth(binX);
     Double_t X  = fHist->GetXaxis()->GetBinCenter(binX);
     Double_t y1 = fHist->GetBinContent(binX - 1, binY);
@@ -247,12 +249,17 @@ namespace Hal {
     Double_t a, b, c;
     Hal::Std::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
     Double_t X1, X2;
-    if (thres <= 0) return 1.0 / TMath::Sqrt(a);
-    Hal::Std::SolveParabola(a, b, c - y2 * (1.0 + thres), X1, X2);
-    return TMath::Max(TMath::Abs(X1 - X), TMath::Abs(X2 - X));
+    if (thres <= 0) return res;
+    Hal::Std::SolveParabola(a, b, c - (y2 + thres), X1, X2);
+    double low  = TMath::Min(X1, X2);
+    double high = TMath::Max(X1, X2);
+    res.first   = X - low;
+    res.second  = high - X;
+    return res;
   }
 
-  Double_t ChiSqMap2D::GetEstErrorY(Double_t thres, Bool_t around_fit) const {
+  std::pair<Double_t, Double_t> ChiSqMap2D::EstimateErrorY(Double_t thres, Bool_t around_fit) const {
+    std::pair<Double_t, Double_t> res(-1, -1);
     Int_t binX, binY;
     if (around_fit) {
       binX = fHist->GetXaxis()->FindBin(GetFitX());
@@ -263,7 +270,7 @@ namespace Hal {
       binX = fHist->GetXaxis()->FindBin(x);
       binY = fHist->GetYaxis()->FindBin(y);
     }
-    if (binY <= 1 || binY >= fHist->GetNbinsY()) return 0;
+    if (binY <= 1 || binY >= fHist->GetNbinsY()) return res;
     Double_t dX = fHist->GetYaxis()->GetBinWidth(binY);
     Double_t X  = fHist->GetYaxis()->GetBinCenter(binY);
     Double_t y1 = fHist->GetBinContent(binX, binY - 1);
@@ -275,9 +282,13 @@ namespace Hal {
     Double_t a, b, c;
     Hal::Std::FitParabola(x1, x2, x3, y1, y2, y3, a, b, c);
     Double_t X1, X2;
-    if (thres <= 0) return 1.0 / TMath::Sqrt(a);
-    Hal::Std::SolveParabola(a, b, c - y2 * (1.0 + thres), X1, X2);
-    return TMath::Max(TMath::Abs(X1 - X), TMath::Abs(X2 - X));
+    if (thres <= 0) return res;
+    Hal::Std::SolveParabola(a, b, c - (y2 + thres), X1, X2);
+    double low  = TMath::Min(X1, X2);
+    double high = TMath::Max(X1, X2);
+    res.first   = X - low;
+    res.second  = high - X;
+    return res;
   }
 
   Double_t ChiSqMap2D::GetEstX() const {
@@ -363,4 +374,88 @@ namespace Hal {
     eX = TMath::Sqrt(inv[0][0]) * chi2ndf;
     eY = TMath::Sqrt(inv[1][1]) * chi2ndf;
   }
+
+  std::pair<Double_t, Double_t> ChiSqMap2D::GetEstErorX(EErrorAlgo algo, Double_t thres) {
+    std::pair<Double_t, Double_t> res;
+    switch (algo) {
+      case EErrorAlgo::kParabolaFit: {
+        return EstimateErrorX(thres, true);
+      } break;
+      case EErrorAlgo::kParabolaMin: {
+        return EstimateErrorX(thres, false);
+      } break;
+      case EErrorAlgo::kContourFit: {
+        return EstimateErrorXContour(thres, false);
+      } break;
+      case EErrorAlgo::kContourMin: {
+        return EstimateErrorXContour(thres, true);
+      } break;
+    }
+    return res;
+  }
+
+
+  std::pair<Double_t, Double_t> ChiSqMap2D::GetEstErorY(EErrorAlgo algo, Double_t thres) {
+    std::pair<Double_t, Double_t> res;
+    switch (algo) {
+      case EErrorAlgo::kParabolaFit: {
+        return EstimateErrorY(thres, true);
+      } break;
+      case EErrorAlgo::kParabolaMin: {
+        return EstimateErrorY(thres, false);
+      } break;
+      case EErrorAlgo::kContourFit: {
+        return EstimateErrorYContour(thres, false);
+      } break;
+      case EErrorAlgo::kContourMin: {
+        return EstimateErrorYContour(thres, true);
+      } break;
+    }
+    return res;
+  }
+
+  std::pair<Double_t, Double_t> ChiSqMap2D::EstimateErrorXContour(Double_t thres, Bool_t around_fit) const {
+    std::pair<Double_t, Double_t> res;
+    Double_t x_dummy, y_dummy;
+    double minimum = GetMin(x_dummy, y_dummy) + thres;
+    double x_min = x_dummy, x_max = x_dummy;
+    for (int i = 1; i <= fHist->GetNbinsX(); i++) {
+      double x = fHist->GetXaxis()->GetBinCenter(i);
+      for (int j = 1; j <= fHist->GetNbinsY(); j++) {
+        double val = fHist->GetBinContent(i, j);
+        if (val < minimum) {
+          x_min = TMath::Min(x, x_min);
+          x_max = TMath::Max(x, x_max);
+          fHist->SetBinContent(i, j, 1E+8);
+        }
+      }
+    }
+    if (around_fit) x_dummy = GetFitX();
+    res.first  = x_dummy - x_min;
+    res.second = x_max - x_dummy;
+    return res;
+  }
+
+
+  std::pair<Double_t, Double_t> ChiSqMap2D::EstimateErrorYContour(Double_t thres, Bool_t around_fit) const {
+    std::pair<Double_t, Double_t> res;
+    Double_t x_dummy, y_dummy;
+    double minimum = GetMin(x_dummy, y_dummy) + thres;
+    double y_min = y_dummy, y_max = y_dummy;
+    for (int i = 1; i <= fHist->GetNbinsX(); i++) {
+      for (int j = 1; j <= fHist->GetNbinsY(); j++) {
+        double y   = fHist->GetYaxis()->GetBinCenter(j);
+        double val = fHist->GetBinContent(i, j);
+        if (val < minimum) {
+          y_min = TMath::Min(y, y_min);
+          y_max = TMath::Max(y, y_max);
+        }
+      }
+    }
+    if (around_fit) y_dummy = GetFitY();
+    res.first  = y_dummy - y_min;
+    res.second = y_max - y_dummy;
+    return res;
+  }
+
 }  // namespace Hal

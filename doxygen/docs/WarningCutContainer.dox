@@ -1,0 +1,69 @@
+/** \page WarningCutContainer Warning Codes for Class CutContainer
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Unknown update ratio</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00042'>CutContainer.cxx, line: 42</a></span><br>
+ * <span style='color:black;'>Update ratio for this cut container is not specified</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: container already initialized</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00055'>CutContainer.cxx, line: 55</a></span><br>
+ * <span style='color:black;'>Container was initialized before</span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: You add cut monitor with both im and re flags, this is not supported now, only re flag will be used</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00132'>CutContainer.cxx, line: 132</a></span><br>
+ * <span style='color:black;'>Cut monitor was added with flag "im+re" this is not supported</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Wrong ECut Update in Link Collections</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00164'>CutContainer.cxx, line: 164</a></span><br>
+ * <span style='color:black;'>During linking attempt to link into wrong update happened</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Too big opt_high, link will be ingored</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00167'>CutContainer.cxx, line: 167</a></span><br>
+ * <span style='color:black;'>During linking wrong linkig flag was set (larger than size of containers)</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Too big opt_low, link will be ingored</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00169'>CutContainer.cxx, line: 169</a></span><br>
+ * <span style='color:black;'>During linking wrong linkig flag was set (larger than size of containers)</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Invalid opt_low argument in CutContainer::LinkCollections</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00178'>CutContainer.cxx, line: 178</a></span><br>
+ * <span style='color:black;'>Too low linking argument (not track, not event)</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Invalid opt_high argument in CutContainer::LinkCollections</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00186'>CutContainer.cxx, line: 186</a></span><br>
+ * <span style='color:black;'>Bad linking flag, (not track, not two-track)</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: Cant link some collections</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00190'>CutContainer.cxx, line: 190</a></span><br>
+ * <span style='color:black;'>Collections not found for given flags</span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: CutContainer has been initialized before</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00234'>CutContainer.cxx, line: 234</a></span><br>
+ * <span style='color:black;'>Container was initialized</span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>Initializing cut collection</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00260'>CutContainer.cxx, line: 260</a></span><br>
+ * <span style='color:black;'>Just info for debugging</span><br>
+
+ * <span style='color:blue; font-family: monospace; white-space: pre;'> [DEBUG INFO     ]</span> <span style='color:blue; font-weight:bold;'>Deleting temporary cut monitors</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00270'>CutContainer.cxx, line: 270</a></span><br>
+ * <span style='color:black;'>Just info for debugging</span><br>
+
+ * <span style='color:orange; font-family: monospace; white-space: pre;'> [LOW WARNING   ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: You can't copy sub containers from not initialized cut container to initialized cut container!! </span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00336'>CutContainer.cxx, line: 336</a></span><br>
+ * <span style='color:black;'></span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: EventAna::LinkCollections one-to-many too much first collections!</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00405'>CutContainer.cxx, line: 405</a></span><br>
+ * <span style='color:black;'>More than one container in lower layer</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: EventAna::LinkCollections equal link cannot group cuts!</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00417'>CutContainer.cxx, line: 417</a></span><br>
+ * <span style='color:black;'>Can't link according to policy kEqual - wrong number of collections. Try different number of collections in analysis.</span><br>
+
+ * <span style='color:red; font-family: monospace; white-space: pre;'> [ERROR         ]</span> <span style='color:blue; font-weight:bold;'>CutContainer: EventAna::LinkCollections equal link cannot group cuts!</span> <br>
+ * <span style='color:green;'>File: <a href='CutContainer_8cxx_source.html#l00429'>CutContainer.cxx, line: 429</a></span><br>
+ * <span style='color:black;'>Can't link according to policy kEqual - wrong number of collections. Try different number of collections in analysis.</span><br>
+
+
+
+
+ */

@@ -22,6 +22,7 @@ namespace Hal {
     TrackV0MinvCut();
     void SetDaughersPid(Int_t pos, Int_t neg);
     Bool_t Init(Int_t taskid);
+    virtual Hal::Package* Report() const;
     virtual ~TrackV0MinvCut() {};
     ClassDef(TrackV0MinvCut, 1)
   };

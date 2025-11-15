@@ -76,11 +76,6 @@ void printHelp() {
   std::cout << "\thal-jobs [file] where file is name of xml file with settings" << std::endl;
   std::cout << "\thal-jobs --debug=[file] where file is name of xml file with settings, submit commands are displayed"
             << std::endl;
-  std::cout << "hal-jobs --prepare=[X] where X" << std::endl;
-  std::cout << "\t pbs_single for torque" << std::endl;
-  std::cout << "\t pbs_array for torque array" << std::endl;
-  std::cout << "\t sbatch_single for sbatch" << std::endl;
-  std::cout << "\t sbatch_array for sbatch array" << std::endl;
   std::cout << "hal-jobs --submit=[Y] --stage=[X]    prepares jobs" << std::endl;
   std::cout << "\t Y - name of  the files with configured jobs " << std::endl;
   std::cout << "\t X stage of deploying:" << std::endl;
@@ -115,13 +110,6 @@ int main(int argc, char* argv[]) {
       jobs.DebugCommands();
       jobs.CreateJobs();
       jobs.SubmitJobs();
-    } else if (flag1 == "prepare") {
-      TString name = val1 + ".xml";
-      TString path = Hal::Std::GetHalrootPlus();
-      Hal::Std::CopyFiles(Form("%s/job_patterns/%s", path.Data(), name.Data()), name);
-      gSystem->mkdir("jobs");
-      gSystem->mkdir("logs");
-      gSystem->mkdir("errors");
       return 0;
     }
   } else if (nArgs == 2) {

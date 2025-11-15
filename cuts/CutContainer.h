@@ -19,10 +19,12 @@
 #include "Std.h"
 
 // #define SHOW_CUT_INIT
-/**
- * class for storing all cuts and cut monitors used in analysis
- */
+
 namespace Hal {
+  /**
+   * class for storing all cuts and cut monitors used in analysis
+   * See @ref WarningCutContainer for all possible warning codes used by this class.
+   */
   class CutContainer : public TObject {
     Bool_t fInit;
     Int_t fSize;

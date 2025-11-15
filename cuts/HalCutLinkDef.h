@@ -7,6 +7,7 @@
 
 #ifdef __MAKECINT__
 #pragma link C++ class Hal::Cut + ;
+#pragma link C++ class Hal::CutBackdoor + ;
 #pragma link C++ class Hal::SubCut + ;
 #pragma link C++ class Hal::SubCutHisto + ;
 #pragma link C++ class Hal::SubCutRectangle + ;
@@ -56,6 +57,21 @@
 #pragma link C++ class Hal::MonitorResoP + ;
 #pragma link C++ class Hal::MonitorResoPhi + ;
 #pragma link C++ class Hal::MonitorResoTheta + ;
+#pragma link C++ class Hal::CutMonitorFieldIdTranslator + ;
+
+#pragma link C++ class Hal::TrackFlagChecker + ;
+#pragma link C++ class Hal::TrackFlagMonitor1D + ;
+#pragma link C++ class Hal::TrackFlagMonitor2D + ;
+
+#pragma link C++ class Hal::MonitorComplexPair + ;
+#pragma link C++ class Hal::ComplexMonitor + ;
+#pragma link C++ class Hal::EventCutMonitorImaginary + ;
+#pragma link C++ class Hal::TrackCutMonitorImaginary + ;
+#pragma link C++ class Hal::TwoTrackCutMonitorImaginary + ;
+#pragma link C++ class Hal::EventCutMonitorReal + ;
+#pragma link C++ class Hal::TrackCutMonitorReal + ;
+#pragma link C++ class Hal::TwoTrackCutMonitorReal + ;
+
 // EventCut
 #pragma link C++ class Hal::EventMultiplicityCut + ;
 #pragma link C++ class Hal::EventMultiChargedCut + ;
@@ -86,6 +102,9 @@
 #pragma link C++ class Hal::TrackTpcToFThresholdlessCut + ;
 #pragma link C++ class Hal::TrackToFMass2Cut + ;
 #pragma link C++ class Hal::TrackTofMass2CutNoZeros + ;
+#pragma link C++ class Hal::TrackV0DaughterDistCut + ;
+#pragma link C++ class Hal::TrackV0MinvCut + ;
+#pragma link C++ class Hal::TrackV0DecLenCut + ;
 
 #pragma link C++ class Hal::TrackYAssumedCut + ;
 #pragma link C++ class Hal::TrackBetaCut + ;
@@ -181,6 +200,18 @@
 #pragma link C++ class Hal::TwoTrackRealCut + ;
 #pragma link C++ class Hal::TwoTrackImaginaryCut + ;
 #pragma link C++ class Hal::TwoTrackAntiSplittingCut + ;
+
+#pragma link C++ class Hal::MonitorYPt + ;
+#pragma link C++ class Hal::MonitorEtaPt + ;
+#pragma link C++ class Hal::MonitorTofM2 + ;
+#pragma link C++ class Hal::MonitorTofBeta + ;
+#pragma link C++ class Hal::MonitorResoP + ;
+#pragma link C++ class Hal::MonitorResoTheta + ;
+#pragma link C++ class Hal::MonitorResoPhi + ;
+#pragma link C++ class Hal::MonitorDcaRZ + ;
+#pragma link C++ class Hal::MonitorDcaXY + ;
+#pragma link C++ class Hal::MonitorEventVertexXY + ;
+#pragma link C++ class Hal::MonitorEventVertexRZ + ;
 /*
 #pragma link C++ class Hal::EventClonedCut+;
 #pragma link C++ class Hal::TrackClonedCut+;

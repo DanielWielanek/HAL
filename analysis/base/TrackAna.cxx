@@ -62,11 +62,11 @@ namespace Hal {
     Int_t eventCollections = fCutContainer->GetEventCollectionsNo();
     Int_t jump             = trackCollections / eventCollections;
     if (jump == 0) {
-      Cout::PrintInfo("Too many event collections, some of them will be ignored", EInfo::kLowWarning);
+      Cout::PrintInfo("TrackAna: Too many event collections, some of them will be ignored", EInfo::kLowWarning);
       jump++;
     }
     if (trackCollections != jump * eventCollections) {
-      Cout::PrintInfo("Some track collections will be ignored", EInfo::kLowWarning);
+      Cout::PrintInfo("TrackAna: Some track collections will be ignored", EInfo::kLowWarning);
     }
     for (int i = 0; i < eventCollections; i++) {
       for (int j = i * jump; j < (i + 1) * jump; j++) {
@@ -80,7 +80,7 @@ namespace Hal {
     Int_t trackCollections = fCutContainer->GetTrackCollectionsNo();
     if (trackCollections == 0) {
 #ifdef HAL_DEBUG
-      Cout::PrintInfo("No track collections, virtual will be added", EInfo::kDebugInfo);
+      Cout::PrintInfo("TrackAna: No track collections, virtual will be added", EInfo::kDebugInfo);
 #endif
       fCutContainer->AddCut(TrackVirtualCut(), "fast");
     }

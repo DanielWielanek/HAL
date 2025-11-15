@@ -51,6 +51,7 @@ namespace Hal {
      * skip numerical errrors during calculations
      */
     virtual void SkipNumErrors() { fSkipError = kTRUE; }
+    virtual void EnableNumErrors() { fSkipError = kFALSE; }
     /**
      * set map of CF
      * @param map

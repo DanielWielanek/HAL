@@ -22,33 +22,17 @@ namespace Hal {
 
   class FemtoEventBinsAna : public FemtoBasicAna {
   protected:
-    /**
-     * holds array of event cuts used for binning mixing
-     */
-    std::vector<EventBinningCut*> fEventBinningCuts;
-    Int_t fEventBinsMax;
-    Int_t fFakeEventBinID = {0};
-
-    virtual void ProcessEvent();
-    virtual Package* Report() const;
-    virtual Int_t GetEventBin();
     virtual Bool_t InitArray();
-    virtual Task::EInitFlag Init();
-    virtual void InitMemoryMap();
     virtual void ProcessFemtoPair();
     virtual void ProcessFemtoPair_Perfect();
     virtual void ProcessFemtoPair_Rotated();
     virtual void ProcessFemtoPair_Hemisphere();
     virtual void ProcessFemtoPair_Mixed();
     virtual void ProcessFemtoPair_Charged();
-    virtual Bool_t CheckBinningCuts();
 
   public:
     FemtoEventBinsAna();
     virtual ~FemtoEventBinsAna();
-    virtual void AddCut(const Hal::Cut& cut, Option_t* opt = "");
-    FemtoEventBinsAna(const FemtoEventBinsAna& other);
-    FemtoEventBinsAna& operator=(const FemtoEventBinsAna& other);
     ClassDef(FemtoEventBinsAna, 1)
   };
 }  // namespace Hal

@@ -8,6 +8,7 @@
  */
 #include "ComplexTrack.h"
 #include "ComplexEvent.h"
+#include "Cout.h"
 #include "DataFormat.h"
 
 #include <TVector2.h>
@@ -79,15 +80,16 @@ namespace Hal {
       ComplexEvent* ev = static_cast<ComplexEvent*>(GetEvent());
       Track* tr        = ev->GetImgEvent()->GetNewTrack();
       tr->SetEvent(ev->GetImgEvent());
-      TString name = tr->GetFieldName(fieldID - DataFieldID::ImStep) + " (im)";
-
+      TString name = tr->GetFieldName(fieldID - DataFieldID::ImStep);
+      name.ReplaceAll(" [", "_{im} [");
       delete tr;
       return name;
     } else if (fieldID >= DataFieldID::ReStep) {
       ComplexEvent* ev = static_cast<ComplexEvent*>(GetEvent());
       Track* tr        = ev->GetRealEvent()->GetNewTrack();
       tr->SetEvent(ev->GetRealEvent());
-      TString name = tr->GetFieldName(fieldID - DataFieldID::ReStep) + " (re)";
+      TString name = tr->GetFieldName(fieldID - DataFieldID::ReStep);
+      name.ReplaceAll(" [", "_{re} [");
       delete tr;
       return name;
     } else {

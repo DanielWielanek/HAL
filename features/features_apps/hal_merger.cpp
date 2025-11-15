@@ -8,6 +8,7 @@
  */
 
 #include "Cout.h"
+#include "Options.h"
 #include "Package.h"
 #include "Std.h"
 #include "XMLNode.h"
@@ -23,6 +24,8 @@
 #include <TObject.h>
 #include <TString.h>
 #include <TSystem.h>
+
+#include <iostream>
 
 
 /** \addtogroup hal-merger
@@ -40,6 +43,7 @@
  * specify how many files is merged by a single instance of this application,
  * useful to merging large datasets where memory leaks lead to problems
  */
+Bool_t gSkipBadFiles;
 Bool_t CheckPackagesList(TList* list) {
   for (int i = 0; i < list->GetEntries() / 2; i++) {
     if (list->At(i * 2)->InheritsFrom("Hal::Package") == kFALSE) { return kFALSE; }
@@ -81,13 +85,13 @@ Bool_t CheckAndMergeList(TList* prim, TList* sec) {
 
 TList* GetListObjects(TFile* file, TString dir_name, Bool_t must_be) {
   TDirectory* dir = (TDirectory*) file->Get(dir_name);
-  if (dir == NULL) {
+  if (dir == nullptr) {
     if (must_be == kTRUE) {
-      Hal::Cout::PrintInfo(Form("%s directory not found in file", dir_name.Data()), Hal::EInfo::kCriticalError);
+      Hal::Cout::PrintInfo(Form("%s directory not found in file", dir_name.Data()), Hal::EInfo::kDebugInfo);
     } else {
-      Hal::Cout::PrintInfo(Form("%s directory not found in file", dir_name.Data()), Hal::EInfo::kError);
+      Hal::Cout::PrintInfo(Form("%s directory not found in file", dir_name.Data()), Hal::EInfo::kDebugInfo);
     }
-    return NULL;
+    return nullptr;
   } else {
     TList* key_lists = dir->GetListOfKeys();
     key_lists->SetOwner(kTRUE);
@@ -104,98 +108,94 @@ TList* GetListObjects(TFile* file, TString dir_name, Bool_t must_be) {
   }
 }
 
-Int_t mergeAnaFiles(TString filename, TFile* file1, TString outFile, TList* list_files) {
-  TList *prim_ana = nullptr, *sec_ana = nullptr;
-  TList *prim_meta = nullptr, *sec_meta = nullptr;
-  prim_ana  = GetListObjects(file1, "HalPhysics", kTRUE);
-  prim_meta = GetListObjects(file1, "HalInfo", kFALSE);
-  if (prim_ana)
-    if (!CheckPackagesList(prim_ana)) {
-      Hal::Cout::PrintInfo("HalPhysics contain class that cannot be merged by hal-merger", Hal::EInfo::kCriticalError);
-      return 0;
-    }
-  if (prim_meta)
-    if (!CheckPackagesList(prim_meta)) {
-      Hal::Cout::PrintInfo("HalInfo contain classes that cannot be merged by hal-merger", Hal::EInfo::kError);
-      return 0;
-    }
-  file1->Close();
-  delete file1;
-  if (prim_ana == NULL || prim_meta == NULL) {
-    if (prim_ana) delete prim_ana;
-    if (prim_meta) delete prim_meta;
-    Hal::Cout::FailSucced(Form("Opening primary file: %s ", filename.Data()), " FAIL ", kRed);
-    return 0;
-  } else {
-    Hal::Cout::FailSucced(Form("Opening primary file: %s ", filename.Data()), " OK  ", kGreen);
+std::pair<TList*, TList*> OpenFirstFile(TString inFile) {
+  std::pair<TList*, TList*> res;
+  TList* prim_ana  = nullptr;
+  TList* prim_meta = nullptr;
+  TFile* firstFile = new TFile(inFile);
+  prim_ana         = GetListObjects(firstFile, "HalPhysics", kTRUE);
+  prim_meta        = GetListObjects(firstFile, "HalInfo", kFALSE);
+  if (!prim_ana) {
+    Hal::Cout::FailSucced(Form("Opening primary file: %s ", inFile.Data()), " FAIL ", kRed);
+    return res;
   }
+  if (!prim_meta) {
+    Hal::Cout::FailSucced(Form("Opening primary file: %s ", inFile.Data()), " FAIL ", kRed);
+    return res;
+  }
+  if (!CheckPackagesList(prim_ana)) {
+    Hal::Cout::PrintInfo("HalPhysics contains class that cannot be merged by hal-merger", Hal::EInfo::kCriticalError);
+    return res;
+  }
+  if (!CheckPackagesList(prim_meta)) {
+    Hal::Cout::PrintInfo("HalInfo contains classes that cannot be merged by hal-merger", Hal::EInfo::kCriticalError);
+    return res;
+  }
+  firstFile->Close();
+  delete firstFile;
+  res.first  = prim_ana;
+  res.second = prim_meta;
+  Hal::Cout::FailSucced(Form("Opening primary file: %s ", inFile.Data()), " OK  ", kGreen);
+  return res;
+}
 
-  for (int i = 1; i < list_files->GetEntries(); i++) {
-    filename    = ((TObjString*) list_files->At(i))->GetString();
-    TFile* file = new TFile(filename);
+Int_t mergeAnaFiles(TString filename, std::pair<TList*, TList*> res, TString outFile, std::vector<TString>& list_files) {
+  TList* prim_ana  = res.first;
+  TList* prim_meta = res.second;
+  if (list_files.size() == 0) Hal::Cout::PrintInfo("No good files to merge by hal-merger", Hal::EInfo::kCriticalError);
+  TList* sec_ana  = nullptr;
+  TList* sec_meta = nullptr;
+  TFile* file     = nullptr;
+  auto clean      = [&]() {
+    if (sec_ana) delete sec_ana;
+    if (sec_meta) delete sec_meta;
+    if (file) {
+      file->Close();
+      delete file;
+    }
+    sec_ana  = nullptr;
+    sec_meta = nullptr;
+    file     = nullptr;
+  };
+
+  auto printError = [&](TString message) {
+    Hal::Cout::FailSucced(Form("Error opening file %s (%s)", filename.Data(), message.Data()), "FATAL", kRed);
+    clean();
+    if (!gSkipBadFiles) { Hal::Cout::PrintInfo("Critical error", Hal::EInfo::kCriticalError); }
+  };
+
+  for (int i = 1; i < list_files.size(); i++) {
+    filename = list_files[i];
+    file     = new TFile(filename);
     if (file->IsZombie()) {
       Hal::Cout::FailSucced(Form("Zombie file %s", filename.Data()), "FATAL", kRed);
-      file->Close();
-      delete file;
+      clean();
       continue;
     }
-    sec_ana  = GetListObjects(file, "HalPhysics", kTRUE);
+    sec_ana  = GetListObjects(file, "HalPhysics", kFALSE);
     sec_meta = GetListObjects(file, "HalInfo", kFALSE);
-    if (sec_ana == NULL) {
-      Hal::Cout::PrintInfo(Form("No HalPhysics in %s", filename.Data()), Hal::EInfo::kError);
-      Hal::Cout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
-      file->Close();
-      delete file;
-      if (sec_meta) {
-        delete sec_meta;
-        sec_meta = NULL;
-      }
+    if (!sec_ana) {
+      printError("No HalPhysics");
       continue;
     }
-    if (sec_meta == NULL) {
-      Hal::Cout::PrintInfo(Form("No HalInfo in %s", filename.Data()), Hal::EInfo::kError);
-      Hal::Cout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
-      file->Close();
-      delete file;
-      if (sec_ana) {
-        delete sec_ana;
-        sec_ana = NULL;
-      }
+    if (!sec_meta) {
+      printError("No HalInfo");
       continue;
     }
     if (CheckAndMergeList(prim_ana, sec_ana) == kFALSE) {
-      Hal::Cout::PrintInfo("Cannot merge HalPhysisc directory, incompatible objects", Hal::EInfo::kError);
-      Hal::Cout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
-      file->Close();
-      delete file;
-      if (sec_ana) delete sec_ana;
-      if (sec_meta) delete sec_meta;
+      printError("Incompatible HalPhysics");
       continue;
     }
     if (CheckAndMergeList(prim_meta, sec_meta) == kFALSE) {
-      Hal::Cout::PrintInfo("Cannot merge HalInfo directory, incompatible objects", Hal::EInfo::kError);
-      Hal::Cout::FailSucced(Form("Error opening file %s", filename.Data()), "FATAL", kRed);
-      file->Close();
-      delete file;
-      if (sec_ana) {
-        delete sec_ana;
-        sec_ana = NULL;
-      }
-      if (sec_meta) {
-        delete sec_meta;
-        sec_meta = NULL;
-      }
+      printError("Incompatible HalInfo");
       continue;
     }
-    if (sec_ana) delete sec_ana;
-    if (sec_meta) delete sec_meta;
     Hal::Cout::FailSucced(Form("Closing added file: %s ", filename.Data()), " OK  ", kGreen);
-    file->Close();
-    delete file;
+    clean();
   }
   Hal::Cout::Text(Form("Saving file: %s", outFile.Data()), "L", kWhite);
-  TFile* file = new TFile(outFile, "recreate");
-  file->cd();
+  TFile* fileOut = new TFile(outFile, "recreate");
+  fileOut->cd();
   TDirectory* d = gDirectory;
   d->mkdir("HalInfo");
   d->cd("HalInfo");
@@ -207,49 +207,22 @@ Int_t mergeAnaFiles(TString filename, TFile* file1, TString outFile, TList* list
   for (int i = 0; i < prim_ana->GetEntries() / 2; i++) {
     prim_ana->At(i * 2)->Write(((TObjString*) prim_ana->At(i * 2 + 1))->GetString());
   }
-  file->Close();
+  fileOut->Close();
   return 0;
 }
-Int_t mergeQAFiles(TString filename, TFile* file1, TString outFile, TList* list_files) {
-  TList* histos = GetListObjects(file1, "HalQA", kTRUE);
-  file1->Close();
-  delete file1;
-  for (int i = 1; i < list_files->GetEntries(); i++) {
-    filename    = ((TObjString*) list_files->At(i))->GetString();
-    TFile* file = new TFile(filename);
-    if (file->IsZombie()) {
-      Hal::Cout::FailSucced(Form("Zombie file %s", filename.Data()), "FATAL", kRed);
-      file->Close();
-      delete file;
-      continue;
-    }
-    TList* histos2 = GetListObjects(file, "HalQA", kTRUE);
-    CheckAndMergeList(histos, histos2);
-    delete histos2;
-  }
-  TFile* file = new TFile(outFile, "recreate");
-  file->cd();
-  file->mkdir("HalQA");
-  file->cd("HalQA");
-  for (int i = 0; i < histos->GetEntries() / 2; i++) {
-    histos->At(i * 2)->Write(((TObjString*) histos->At(i * 2 + 1))->GetString());
-  }
-  file->Close();
-  delete file;
-  return 1;
-}
 
-Int_t mergeFiles(TString outFile, TList* list_files) {
-  TString filename = ((TObjString*) list_files->At(0))->GetString();
-  TFile* file1     = new TFile(filename);
-  TObject* qa      = file1->Get("HalQA");
-  if (qa != nullptr) {
-    return mergeQAFiles(filename, file1, outFile, list_files);
-  } else {
-    return mergeAnaFiles(filename, file1, outFile, list_files);
+Int_t mergeFiles(TString outFile, std::vector<TString>& list_files) {
+  TString filename = list_files[0];
+  auto firstFile   = OpenFirstFile(filename);
+  while (firstFile.first == nullptr) {
+    if (gSkipBadFiles)
+      list_files.erase(list_files.begin());
+    else { Hal::Cout::PrintInfo(Form("Cannot open file %s", filename.Data()), Hal::EInfo::kCriticalError); }
+    if (list_files.size() == 0) { Hal::Cout::PrintInfo("Cannot find any good file", Hal::EInfo::kCriticalError); }
+    firstFile = OpenFirstFile(list_files[0]);
   }
+  return mergeAnaFiles(filename, firstFile, outFile, list_files);
 }
-
 /**
  * Application for merging root files. This application don't merge all
  * structures in tree but only those in HalPhysics and HalInfo. User give one
@@ -264,17 +237,39 @@ Int_t mergeFiles(TString outFile, TList* list_files) {
  * @param argv
  * @return
  */
+
+std::vector<std::vector<TString>> Split(std::vector<TString> vec, Int_t chunk_size) {
+  std::vector<std::vector<TString>> bunches;
+  for (int i = 0; i < vec.size(); i += chunk_size) {
+    int last = TMath::Min((int) vec.size(), i + chunk_size);
+    std::vector<TString> chunk;
+    for (int j = i; j < last; ++j) {
+      chunk.push_back((TString) vec[j]);
+    }
+    bunches.push_back(chunk);  // prosto, bez emplace_back
+  }
+  return bunches;
+}
+
+TString Merge(std::vector<TString>& vec) {
+  if (vec.size() == 1) {
+    return vec[0];
+  } else {
+    TString res;
+    for (auto s : vec) {
+      res = res + s + " ";
+    }
+    auto x = res[res.Length() - 1];
+    //  if (x == ' ') res = res.Chop();  // remove last
+    return res;
+  }
+  return "";
+}
+
 int main(int argc, char* argv[]) {
+  gSkipBadFiles = kTRUE;
   if (argc < 2) {
-    Hal::Cout::PrintInfo("No arguments", Hal::EInfo::kError);
-    Hal::Cout::Text("You can use following arguments : ", "M");
-    Hal::Cout::Text("1) name of xml file (with .xml extension) with list of files to merge", "M");
-    Hal::Cout::Text("2) name of output root file and input root files (like for hadd: "
-                    "out.root input1.root input2.root ...)",
-                    "M");
-    Hal::Cout::Text("3) --n=X  + one of options above to specify maximum number of files "
-                    "merged at once",
-                    "M");
+    Hal::Cout::PrintInfo("No arguments use --help", Hal::EInfo::kError);
     return 0;
   } else {
     TString opt = argv[1];
@@ -289,69 +284,74 @@ int main(int argc, char* argv[]) {
       Hal::Cout::Text("3) --n=X  + one of options above to specify maximum number of files "
                       "merged at once",
                       "M");
+      Hal::Cout::Text("4) --noskip  do not stop when found faulty files", "M");
+      Hal::Cout::Text("4) --debug  enable debuggin info", "M");
     }
   }
   gSystem->Load("libTree");
   gErrorIgnoreLevel = kError;
   Hal::Cout::Stars(kWhite);
 
-  TList* list_files = new TList();
+  std::vector<TString> list_files;
+  Hal::MainOption opt(argc, argv);
   TString outputFile;
   TString argname = argv[1];
   Int_t split     = 0;
-  Int_t arg_pos   = 2;
-  if (argname.BeginsWith("--n=")) {
-    TString val(argname(4, argname.Length() - 4));
-    argname = argv[2];
-    split   = val.Atoi();
-    arg_pos = 3;
+  Int_t nCores    = 0;
+  if (opt.GetArguments().size() == 0) {
+    Hal::Cout::Text("Cannot find list of files !", "M", kRed);
+    return 0;
   }
-  if (argname.EndsWith(".xml")) {
+  TString file_pattern = opt.GetArguments()[0];
+
+  if (file_pattern.EndsWith(".xml")) {
     Hal::Cout::Text(Form("Opening XML file %s", argname.Data()), "L", kWhite);
     Hal::XMLFile parser(argname);
     Hal::XMLNode* root = parser.GetRootNode();
     outputFile         = root->GetAttrib("outfile")->GetValue();
     for (int i = 0; i < root->GetNChildren(); i++) {
-      list_files->AddLast(new TObjString(root->GetChild(i)->GetValue()));
+      list_files.push_back(root->GetChild(i)->GetValue());
     }
-  } else if (argname.EndsWith(".root") || argname.EndsWith(".root_t")) {
+  } else if (file_pattern.EndsWith(".root") || file_pattern.EndsWith(".root_t")) {
     Hal::Cout::Text("Using direct list of root files", "L", kWhite);
-    outputFile = argname;
-    for (int i = arg_pos; i < argc; i++) {
-      list_files->AddLast(new TObjString(argv[i]));
+    for (unsigned int i = 1; i < opt.GetArguments().size(); i++) {
+      list_files.push_back(opt.GetArguments()[i]);
     }
+    outputFile = opt.GetArguments()[0];
   } else {
     Hal::Cout::Text("wrong file extension !", "M", kRed);
     return 0;
   }
-  if (split < 2 || split >= list_files->GetEntries()) {
+  if (opt.HaveParameter("n")) { split = opt.GetParameterValue("n").Atoi(); }
+  if (opt.HaveParameter("noskip")) gSkipBadFiles = kFALSE;
+  if (opt.HaveParameter("cores")) nCores = opt.GetParameterValue("cores").Atoi();
+  Int_t hidden = 0;
+  if (opt.HaveParameter("hidden")) hidden = opt.GetParameterValue("hidden").Atoi();
+  if (opt.HaveParameter("debug")) Hal::Cout::SetVerboseMode(Hal::EInfo::kDebugInfo);
+
+  if (split < 2 || split >= list_files.size()) {
     mergeFiles(outputFile, list_files);
-  } else {
-    --split;
-    Int_t entries = list_files->GetEntries();
-    Int_t nSteps  = entries / split;
-    if (entries % split != 0) nSteps++;
-    TString file[2] = {"temp_1.root_t", "temp_2.root_t"};
-    for (int iStep = 0; iStep < nSteps; iStep++) {
-      Int_t record  = iStep * split;
-      Int_t j       = 0;
-      TString name  = "";
-      TString space = " ";
-      while (record + j < entries && j < split) {
-        name = name + space + ((TObjString*) list_files->At(record + j))->GetString();
-        j++;
-      }
-      TString outFile = file[iStep % 2];
-      if (iStep > 0) { name = Form("%s  %s", name.Data(), (file[(iStep + 1) % 2]).Data()); }
-      if (iStep + 1 == nSteps) { outFile = argname; }
-      gSystem->Exec(Form("hal-merger %s %s", outFile.Data(), name.Data()));
-      if (iStep + 1 == nSteps) {  // clean up temp files if present
-        if (Hal::Std::FileExists(file[0])) gSystem->Exec("rm temp_1.root_t ");
-        if (Hal::Std::FileExists(file[1])) gSystem->Exec("rm temp_2.root_t ");
-      }
+  } else if (nCores <= 1) {
+    auto lists = Split(list_files, split - 1);
+    std::pair<TString, TString> pair;
+    pair.first  = Form("temp_2_%i.root_t", hidden);
+    pair.second = Form("temp_1_%i.root_t", hidden);
+    bool first  = true;
+    for (auto sublist : lists) {
+      auto merged = Merge(sublist);
+      if (!first) merged = merged + " " + pair.first;
+      if (Hal::Std::FileExists(pair.second)) { gSystem->Exec(Form("rm %s", pair.second.Data())); }
+      gSystem->Exec(Form("hal-merger %s %s", pair.second.Data(), merged.Data()));
+      auto temp   = pair.first;
+      pair.first  = pair.second;
+      pair.second = temp;
+      first       = false;
     }
+    if (Hal::Std::FileExists(pair.second)) gSystem->Exec(Form("rm %s", pair.second.Data()));
+    gSystem->Exec(Form("mv %s %s", pair.first.Data(), outputFile.Data()));
+  } else {
+    // TODO wielowatkowey merge
   }
-  delete list_files;
 
   return 0;
 }

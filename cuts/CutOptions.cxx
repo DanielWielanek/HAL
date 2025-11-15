@@ -53,16 +53,8 @@ namespace Hal {
 
   Hal::Cut* CutOptions::MakeCutCopy(const Hal::Cut& x) const {
     if (fRe) {
-      if (dynamic_cast<const Hal::EventBinningCut*>(&x)) {
-        Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with im flag", __FILE__, __LINE__), EInfo::kError);
-        return nullptr;
-      }
       return MakeCutCopy(x, "re", kFALSE);
     } else if (fIm) {
-      if (dynamic_cast<const Hal::EventBinningCut*>(&x)) {
-        Hal::Cout::PrintInfo(Form("%s %i: cannot add binned cut with im flag", __FILE__, __LINE__), EInfo::kError);
-        return nullptr;
-      }
       return MakeCutCopy(x, "im", fAcceptNull);
     }
     return x.MakeCopy();

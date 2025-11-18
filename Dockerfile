@@ -1,5 +1,5 @@
 # Użyj Ubuntu jako bazowego obrazu
-FROM ubuntu:24.10
+FROM ubuntu:24.04
 
 LABEL maintainer="twoj.email@example.com"
 
@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y \
     apt-get clean
 
 # Pobranie i rozpakowanie ROOT-a CERN
-RUN wget --quiet https://root.cern/download/root_v6.34.02.Linux-ubuntu24.10-x86_64-gcc14.2.tar.gz && \
-    tar zxf root_v6.34.02.Linux-ubuntu24.10-x86_64-gcc14.2.tar.gz --directory /opt
+RUN wget --quiet https://root.cern/download/root_v6.34.02.Linux-ubuntu24.04-x86_64-gcc13.3.tar.gz && \
+    tar zxf root_v6.34.02.Linux-ubuntu24.04-x86_64-gcc13.3.tar.gz --directory /opt
 
 # Ustawienie zmiennych środowiskowych dla ROOT-a
 ENV ROOTSYS=/opt/root

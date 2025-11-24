@@ -36,6 +36,9 @@ namespace Hal {
      * @return
      */
     Double_t Extrapolate(const std::vector<Double_t>& pos) const;
+
+
+    Hal::MultiDimFile* GetMDimFIle() const { return fInFile; };
     /**
      *
      * @return correlation histogram for all entries

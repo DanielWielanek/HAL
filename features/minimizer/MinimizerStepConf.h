@@ -13,7 +13,9 @@
 #include <vector>
 
 namespace Hal {
-
+  /**
+   * configuration of discrete minimizer
+   */
   class MinimizerStepConf : public TObject {
     std::vector<FitParam> fParams;
 

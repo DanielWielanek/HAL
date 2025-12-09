@@ -328,7 +328,8 @@ namespace Hal {
     virtual void Add(const Object* pack);
     virtual Long64_t Merge(TCollection* collection);
     void MakeDummyCov();
-    Array_3<Double_t> GetCovNum() { return fCovNum; }
+    [[nodiscard]] Array_3<Double_t>& GetCovNum() { return fCovNum; }
+    [[nodiscard]] Array_3<Double_t>& GetCovDen() { return fCovDen; }
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual TObject* GetSpecial(TString opt) const;
     /**

@@ -11,6 +11,7 @@
 #include <TString.h>
 #include <TVirtualPad.h>
 
+#include "StdString.h"
 #include "XMLNode.h"
 
 namespace Hal {
@@ -27,7 +28,10 @@ namespace Hal {
   const unsigned short int PadStyle::kTickX        = 10;
   const unsigned short int PadStyle::kTickY        = 11;
 
-  PadStyle::PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2) {
+  const unsigned short int PadStyle::kFillColor = 12;
+  const unsigned short int PadStyle::kLineColor = 13;
+
+  PadStyle::PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2, TString style) : PadStyle(style) {
     SetLeftMargin(x1);
     SetRightMargin(x2);
     SetBottomMargin(y1);
@@ -82,7 +86,16 @@ namespace Hal {
 
   Int_t PadStyle::GetTicky(Int_t val) const { return GetI(kTickY); }
 
-  PadStyle::PadStyle() {}
+  Int_t PadStyle::GetFillColor() const { return GetI(kFillColor); }
+
+  Int_t PadStyle::GetLineColor() const { return GetI(kLineColor); }
+
+  PadStyle::PadStyle(TString style) {
+    if (Hal::Std::FindParam(style, "black")) {
+      SetFillColor(kBlack);
+      SetLineColor(kBlack);
+    }
+  }
 
   void PadStyle::Apply(TVirtualPad* obj) {
     if (!obj) return;
@@ -97,6 +110,8 @@ namespace Hal {
     if (Find(kGridy)) obj->SetGridy(GetI(kGridy));
     if (Find(kTickX)) obj->SetTickx(GetI(kTickX));
     if (Find(kTickY)) obj->SetTicky(GetI(kTickY));
+    if (Find(kFillColor)) obj->SetFillColor(GetI(kFillColor));
+    if (Find(kLineColor)) obj->SetLineColor(GetI(kLineColor));
   }
 
   void PadStyle::ExportToXML(XMLNode* node) const {
@@ -113,6 +128,8 @@ namespace Hal {
     if (Find(kGridz)) node->AddAttrib(new Hal::XMLAttrib("Gridz", Form("%i", GetI(kGridz))));
     if (Find(kTickX)) node->AddAttrib(new Hal::XMLAttrib("Tickx", Form("%i", GetI(kTickX))));
     if (Find(kTickY)) node->AddAttrib(new Hal::XMLAttrib("Ticky", Form("%i", GetI(kTickY))));
+    if (Find(kFillColor)) node->AddAttrib(new Hal::XMLAttrib("FillColor", Form("%i", GetI(kFillColor))));
+    if (Find(kLineColor)) node->AddAttrib(new Hal::XMLAttrib("LineColor", Form("%i", GetI(kLineColor))));
   }
 
   void PadStyle::ImportFromXML(XMLNode* node) {
@@ -165,6 +182,14 @@ namespace Hal {
       int x = atr->GetValue().Atoi();
       SetTicky(x);
     }
+    if (auto atr = node->GetAttrib("FillColor")) {
+      int x = atr->GetValue().Atoi();
+      SetFillColor(x);
+    }
+    if (auto atr = node->GetAttrib("LineColor")) {
+      int x = atr->GetValue().Atoi();
+      SetLineColor(x);
+    }
   }
 
   void PadStyle::Import(TVirtualPad& pad) {
@@ -179,6 +204,12 @@ namespace Hal {
     SetLogz(pad.GetLogz());
     SetTickx(pad.GetTickx());
     SetTicky(pad.GetTicky());
+    SetFillColor(pad.GetFillColor());
+    SetLineColor(pad.GetFrameLineColor());
   }
+
+  void PadStyle::SetFillColor(Int_t col) { SetI(kFillColor, col); }
+
+  void PadStyle::SetLineColor(Int_t col) { SetI(kLineColor, col); }
 
 } /* namespace Hal */

@@ -31,10 +31,12 @@ namespace Hal {
     static const unsigned short int kGridz;
     static const unsigned short int kTickX;
     static const unsigned short int kTickY;
+    static const unsigned short int kFillColor;
+    static const unsigned short int kLineColor;
 
-    PadStyle();
+    PadStyle(TString style = "");
     PadStyle(const PadStyle& other) = default;
-    PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
+    PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2, TString style = "");
     /**
      * apply setting to pad if pad is null apply to gPad
      */
@@ -62,6 +64,10 @@ namespace Hal {
 
     void SetTicky(Int_t val);
 
+    void SetLineColor(Int_t col);
+
+    void SetFillColor(Int_t col);
+
     Float_t GetBottomMargin() const;
 
     Float_t GetLeftMargin() const;
@@ -85,6 +91,10 @@ namespace Hal {
     Int_t GetTickx(Int_t val) const;
 
     Int_t GetTicky(Int_t val) const;
+
+    Int_t GetLineColor() const;
+
+    Int_t GetFillColor() const;
 
     void ExportToXML(XMLNode* node) const;
     void ImportFromXML(XMLNode* node);

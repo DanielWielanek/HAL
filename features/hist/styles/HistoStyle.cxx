@@ -274,6 +274,16 @@ namespace Hal {
       SetAxis(0.06, 0.8, 0.07, 0.005, 'y');
       SetAxis(0.06, 0.8, 0.07, 0.005, 'z');
     }
+    if (Hal::Std::FindParam(style, "black", kTRUE)) {
+      auto SetColor = [&](Char_t x, Color_t col) {
+        GetAxisStyle(x).SetLabelColor(kWhite);
+        GetAxisStyle(x).SetTitleColor(kWhite);
+        GetAxisStyle(x).SetAxisColor(kWhite);
+      };
+      SetColor('x', kWhite);
+      SetColor('y', kWhite);
+      SetColor('z', kWhite);
+    }
     if (Hal::Std::FindParam(style, "color", kTRUE)) SetColor(kRed);
   }
 

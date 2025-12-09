@@ -47,6 +47,7 @@ namespace Hal {
      * circle - set marker to full circle
      * center center axes
      * apollo - use tt fods
+     * black - reversed color
      * @return
      */
     HistoStyle(TString style = "");

@@ -48,6 +48,22 @@ namespace Hal {
     return Validate();
   }
 
+  Bool_t TrackEmbeddedFlagCut::Pass(Track* track) {
+    if (track->IsEmbedded())
+      SetValue(ValID::EmbeddedTrack);
+    else
+      SetValue(ValID::NonEmbeddedTrack);
+    return Validate();
+  }
+
+  Bool_t TrackBackgroundFlagCut::Pass(Track* track) {
+    if (track->IsBackground())
+      SetValue(ValID::BackgroundTrack);
+    else
+      SetValue(ValID::NonBackgroundTrack);
+    return Validate();
+  }
+
   std::vector<std::pair<TString, Double_t>> TrackPrimaryFlagCut::GetBinLabels(Int_t par) const {
     std::vector<std::pair<TString, Double_t>> res;
     res.push_back(std::pair<TString, Double_t>("NonPrimary", ValID::NonPrimary));
@@ -77,6 +93,20 @@ namespace Hal {
     std::vector<std::pair<TString, Double_t>> res;
     res.push_back(std::pair<TString, Double_t>("GlobalTrack", ValID::GlobalTrack));
     res.push_back(std::pair<TString, Double_t>("NonGlobalTrack", ValID::NonGlobalTrack));
+    return res;
+  }
+
+  std::vector<std::pair<TString, Double_t>> TrackEmbeddedFlagCut::GetBinLabels(Int_t par) const {
+    std::vector<std::pair<TString, Double_t>> res;
+    res.push_back(std::pair<TString, Double_t>("EmbeddedTrack", ValID::EmbeddedTrack));
+    res.push_back(std::pair<TString, Double_t>("NonEmbeddedTrack", ValID::NonEmbeddedTrack));
+    return res;
+  }
+
+  std::vector<std::pair<TString, Double_t>> TrackBackgroundFlagCut::GetBinLabels(Int_t par) const {
+    std::vector<std::pair<TString, Double_t>> res;
+    res.push_back(std::pair<TString, Double_t>("BackgroundTrack", ValID::BackgroundTrack));
+    res.push_back(std::pair<TString, Double_t>("NonBackgroundTrack", ValID::NonBackgroundTrack));
     return res;
   }
 

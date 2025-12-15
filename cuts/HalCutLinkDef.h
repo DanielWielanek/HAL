@@ -162,6 +162,8 @@
 #pragma link C++ class Hal::TrackImaginaryCut + ;
 #pragma link C++ class Hal::TrackStatusCut + ;
 #pragma link C++ class Hal::TrackOnlyPrimariesCut + ;
+#pragma link C++ class Hal::TrackEmbeddedFlagCut + ;
+#pragma link C++ class Hal::TrackBackgroundFlagCut + ;
 
 #pragma link C++ class Hal::TrackPrimaryFlagCut + ;
 #pragma link C++ class Hal::TrackV0FlagCut + ;

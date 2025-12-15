@@ -53,5 +53,27 @@ namespace Hal {
     virtual ~TrackGlobalFlagCut() {};
     ClassDef(TrackGlobalFlagCut, 1)
   };
+
+  class TrackEmbeddedFlagCut : public TrackCut {
+  public:
+    enum ValID { EmbeddedTrack = 1, NonEmbeddedTrack = 0 };
+    TrackEmbeddedFlagCut() : TrackCut(1) { SetUnitName("Embedded Flag [AU]"); };
+    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
+    virtual Bool_t Pass(Track* track);
+    virtual ~TrackEmbeddedFlagCut() {};
+    ClassDef(TrackEmbeddedFlagCut, 1)
+  };
+
+  class TrackBackgroundFlagCut : public TrackCut {
+  public:
+    enum ValID { BackgroundTrack = 1, NonBackgroundTrack = 0 };
+    TrackBackgroundFlagCut() : TrackCut(1) { SetUnitName("Background Flag [AU]"); };
+    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
+    virtual Bool_t Pass(Track* track);
+    virtual ~TrackBackgroundFlagCut() {};
+    ClassDef(TrackBackgroundFlagCut, 1)
+  };
+
+
 }  // namespace Hal
 #endif /* HALFEMTO_CUTS_TRACKCUTS_HALTRACKFLAGCUTS_H_ */

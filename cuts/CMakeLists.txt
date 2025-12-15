@@ -76,12 +76,13 @@ trackcuts/kinematics/TrackKinematicsCutAndMonitor.cxx
 trackcuts/monprop/DCAPropertyMonitor.cxx
 trackcuts/monprop/TofPropertyMonitor.cxx
 
-trackcuts/mc/TrackBasicMCCut.cxx
+trackcuts/mc/TrackBasicMcCut.cxx
 trackcuts/mc/TrackFreezeoutCut.cxx
-trackcuts/mc/TrackMCCut.cxx
+trackcuts/mc/TrackMcCut.cxx
 trackcuts/mc/TrackPdgCut.cxx
 trackcuts/mc/TrackStartPositionCut.cxx
 trackcuts/mc/TrackPdgBinCut.cxx
+trackcuts/mc/TrackMcParentCut.cxx
 
 trackcuts/resolution/TrackDeltaMomCut.cxx
 trackcuts/resolution/TrackDeltaMomentumCut.cxx

@@ -1,5 +1,5 @@
 /*
- * TrackMCCut.h
+ * TrackMcCut.h
  *
  *  Created on: 04-05-2022
  *      Author: Daniel Wielanek
@@ -13,12 +13,12 @@
 
 namespace Hal {
 
-  class TrackMCCut : public TrackCut {
+  class TrackMcCut : public TrackCut {
   public:
-    TrackMCCut(const Int_t size = 1);
+    TrackMcCut(const Int_t size = 1);
     virtual Bool_t Init(Int_t task_id);
-    virtual ~TrackMCCut();
-    ClassDef(TrackMCCut, 1)
+    virtual ~TrackMcCut();
+    ClassDef(TrackMcCut, 1)
   };
 }  // namespace Hal
 #endif /* HALTRACKMCCUT_H_ */

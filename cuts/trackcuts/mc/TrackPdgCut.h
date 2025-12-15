@@ -10,13 +10,13 @@
 #ifndef HALTRACKPDGCUT_H_
 #define HALTRACKPDGCUT_H_
 
-#include "TrackMCCut.h"
+#include "TrackMcCut.h"
 /**
  * check track pid
  */
 namespace Hal {
 
-  class TrackPdgCut : public TrackMCCut {
+  class TrackPdgCut : public TrackMcCut {
   protected:
   public:
     TrackPdgCut();
@@ -25,7 +25,7 @@ namespace Hal {
     ClassDef(TrackPdgCut, 1)
   };
 
-  class TrackPdgAbsCut : public TrackMCCut {
+  class TrackPdgAbsCut : public TrackMcCut {
   protected:
   public:
     TrackPdgAbsCut();

@@ -1,5 +1,5 @@
 /*
- * TrackBasicMCCut.h
+ * TrackBasicMcCut.h
  *
  *  Created on: 04-05-2022
  *      Author: Daniel Wielanek
@@ -9,20 +9,20 @@
 #ifndef HALTRACKBASICMCCUT_H_
 #define HALTRACKBASICMCCUT_H_
 
-#include "TrackMCCut.h"
+#include "TrackMcCut.h"
 /**
  * track for selection of tracks with only one cut
  */
 namespace Hal {
 
-  class TrackBasicMCCut : public TrackMCCut {
+  class TrackBasicMcCut : public TrackMcCut {
 
   public:
     enum ParID { Status = 0, Pdg = 1, Pt = 2, Eta = 3 };
     /**
      * default constructor
      */
-    TrackBasicMCCut();
+    TrackBasicMcCut();
     /**
      * set cut on status
      * @param stat status cut value
@@ -46,8 +46,8 @@ namespace Hal {
      */
     void SetEtaCut(Double_t min, Double_t max);
     Bool_t Pass(Track* track);
-    virtual ~TrackBasicMCCut();
-    ClassDef(TrackBasicMCCut, 1)
+    virtual ~TrackBasicMcCut();
+    ClassDef(TrackBasicMcCut, 1)
   };
 }  // namespace Hal
 #endif /* HALTRACKBASICMCCUT_H_ */

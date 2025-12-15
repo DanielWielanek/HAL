@@ -8,7 +8,7 @@
  */
 #ifndef HALTRACKFREEZEOUTCUT_H_
 #define HALTRACKFREEZEOUTCUT_H_
-#include "TrackMCCut.h"
+#include "TrackMcCut.h"
 
 #include "TrackCut.h"
 /**
@@ -16,7 +16,7 @@
  */
 namespace Hal {
 
-  class TrackFreezeoutCut : public TrackMCCut {
+  class TrackFreezeoutCut : public TrackMcCut {
   public:
     TrackFreezeoutCut();
     Bool_t Pass(Track* track);
@@ -27,7 +27,7 @@ namespace Hal {
   /**
    * check track freezout time
    */
-  class TrackTFreezCut : public TrackMCCut {
+  class TrackTFreezCut : public TrackMcCut {
   public:
     TrackTFreezCut();
     virtual Bool_t Pass(Track* track);
@@ -38,7 +38,7 @@ namespace Hal {
   /**
    * check freezout tau for track
    */
-  class TrackTauCut : public TrackMCCut {
+  class TrackTauCut : public TrackMcCut {
   public:
     TrackTauCut();
     virtual Bool_t Pass(Track* track);

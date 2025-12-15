@@ -13,7 +13,7 @@
 
 namespace Hal {
 
-  TrackStartPositionCut::TrackStartPositionCut() : TrackMCCut(4) {
+  TrackStartPositionCut::TrackStartPositionCut() : TrackMcCut(4) {
     SetUnitName("StartX [cm]", 0);
     SetUnitName("StartY [cm]", 1);
     SetUnitName("StartZ [cm]", 2);

@@ -14,7 +14,7 @@
 
 namespace Hal {
 
-  TrackPdgCut::TrackPdgCut() : TrackMCCut(1) { SetUnitName("Pdg code"); }
+  TrackPdgCut::TrackPdgCut() : TrackMcCut(1) { SetUnitName("Pdg code"); }
 
   TrackPdgCut::~TrackPdgCut() {
     // TODO Auto-generated destructor stub
@@ -25,7 +25,7 @@ namespace Hal {
     return Validate();
   }
 
-  TrackPdgAbsCut::TrackPdgAbsCut() : TrackMCCut(1) { SetUnitName("Pdg code"); }
+  TrackPdgAbsCut::TrackPdgAbsCut() : TrackMcCut(1) { SetUnitName("Pdg code"); }
 
   Bool_t TrackPdgAbsCut::Pass(Track* track) {
     SetValue(((McTrack*) track)->GetPdg());

@@ -9,11 +9,11 @@
 #ifndef HALTRACKSTARTPOSITIONCUT_H_
 #define HALTRACKSTARTPOSITIONCUT_H_
 
-#include "TrackMCCut.h"
+#include "TrackMcCut.h"
 
 namespace Hal {
 
-  class TrackStartPositionCut : public TrackMCCut {
+  class TrackStartPositionCut : public TrackMcCut {
   public:
     TrackStartPositionCut();
     virtual Bool_t Pass(Track* track);

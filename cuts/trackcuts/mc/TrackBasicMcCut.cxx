@@ -1,12 +1,12 @@
 /*
- * TrackBasicMCCut.cxx
+ * TrackBasicMcCut.cxx
  *
  *  Created on: 19 maj 2016
  *      Author: Daniel Wielanek
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
-#include "TrackBasicMCCut.h"
+#include "TrackBasicMcCut.h"
 
 #include "DataFormatManager.h"
 #include "McTrack.h"
@@ -14,7 +14,7 @@
 namespace Hal {
 
 
-  TrackBasicMCCut::TrackBasicMCCut() : TrackMCCut(4) {
+  TrackBasicMcCut::TrackBasicMcCut() : TrackMcCut(4) {
     SetUnitName("status", Status);
     SetUnitName("pdg", Pdg);
     SetUnitName("p_{T} [GeV/c]", Pt);
@@ -25,7 +25,7 @@ namespace Hal {
     SetMinMax(-1, 1, Eta);
   }
 
-  Bool_t TrackBasicMCCut::Pass(Track* track) {
+  Bool_t TrackBasicMcCut::Pass(Track* track) {
     McTrack* mc_track = (McTrack*) track;
     SetValue(mc_track->GetStatus(), Status);
     SetValue(mc_track->GetPdg(), Pdg);
@@ -43,13 +43,13 @@ namespace Hal {
     return Validate();
   }
 
-  void TrackBasicMCCut::SetStatusCut(Int_t stat) { SetMinAndMax(stat, Status); }
+  void TrackBasicMcCut::SetStatusCut(Int_t stat) { SetMinAndMax(stat, Status); }
 
-  void TrackBasicMCCut::SetPdgCut(Int_t pdg) { SetMinAndMax(pdg, Pdg); }
+  void TrackBasicMcCut::SetPdgCut(Int_t pdg) { SetMinAndMax(pdg, Pdg); }
 
-  void TrackBasicMCCut::SetPtCut(Double_t min, Double_t max) { SetMinMax(min, max, Pt); }
+  void TrackBasicMcCut::SetPtCut(Double_t min, Double_t max) { SetMinMax(min, max, Pt); }
 
-  void TrackBasicMCCut::SetEtaCut(Double_t min, Double_t max) { SetMinMax(min, max, Eta); }
+  void TrackBasicMcCut::SetEtaCut(Double_t min, Double_t max) { SetMinMax(min, max, Eta); }
 
-  TrackBasicMCCut::~TrackBasicMCCut() {}
+  TrackBasicMcCut::~TrackBasicMcCut() {}
 }  // namespace Hal

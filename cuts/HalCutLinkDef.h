@@ -126,13 +126,15 @@
 #pragma link C++ class Hal::TrackBoostedKinematcisCut + ;
 #pragma link C++ class Hal::TrackKinematicsCutAndMonitor + ;
 
-#pragma link C++ class Hal::TrackBasicMCCut + ;
+#pragma link C++ class Hal::TrackBasicMcCut + ;
 #pragma link C++ class Hal::TrackTFreezCut + ;
 #pragma link C++ class Hal::TrackFreezeoutCut + ;
 #pragma link C++ class Hal::TrackPdgCut + ;
 #pragma link C++ class Hal::TrackPdgAbsCut + ;
 #pragma link C++ class Hal::TrackStartPositionCut + ;
-#pragma link C++ class Hal::TrackMCCut + ;
+#pragma link C++ class Hal::TrackMcCut + ;
+#pragma link C++ class Hal::TrackMcParentCut + ;
+#pragma link C++ class Hal::TrackMcParentPdgCut + ;
 #pragma link C++ class Hal::TrackPdgBinCut + ;
 #pragma link C++ class Hal::TrackTpcHitCut + ;
 #pragma link C++ class Hal::TrackTpcToFCut + ;

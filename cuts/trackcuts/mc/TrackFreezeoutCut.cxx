@@ -13,7 +13,7 @@
 
 namespace Hal {
 
-  TrackFreezeoutCut::TrackFreezeoutCut() : TrackMCCut(4) {
+  TrackFreezeoutCut::TrackFreezeoutCut() : TrackMcCut(4) {
     SetUnitName("X [fm]", 0);
     SetUnitName("Y [fm]", 1);
     SetUnitName("Z [fm]", 2);
@@ -35,7 +35,7 @@ namespace Hal {
 
   TrackFreezeoutCut::~TrackFreezeoutCut() {}
 
-  TrackTFreezCut::TrackTFreezCut() : TrackMCCut(1) { SetUnitName("T_{freez} [fm]"); }
+  TrackTFreezCut::TrackTFreezCut() : TrackMcCut(1) { SetUnitName("T_{freez} [fm]"); }
 
   Bool_t TrackTFreezCut::Pass(Track* track) {
     SetValue(((McTrack*) track)->GetFreezeoutPosition().T());
@@ -44,7 +44,7 @@ namespace Hal {
 
   TrackTFreezCut::~TrackTFreezCut() {}
 
-  TrackTauCut::TrackTauCut() : TrackMCCut(1) { SetUnitName("#tau [fm/c]"); }
+  TrackTauCut::TrackTauCut() : TrackMcCut(1) { SetUnitName("#tau [fm/c]"); }
 
   Bool_t TrackTauCut::Pass(Track* track) {
     Double_t z, t;

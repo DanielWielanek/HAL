@@ -166,6 +166,26 @@ namespace Hal {
      */
     void EnableXi(Bool_t xi, Bool_t daughters = kTRUE);
     /**
+     * mark track as embedded
+     * @param embedded mark as embeded if true
+     */
+    void SetEmbedded(Bool_t embeded = kTRUE) {
+      if (embeded)
+        SETBIT(fType, kEmbedded);
+      else
+        CLRBIT(fType, kEmbedded);
+    }
+    /**
+     * mark track as background track
+     * @param embeded mark as background if true
+     */
+    void SetBackground(Bool_t embeded = kTRUE) {
+      if (embeded)
+        SETBIT(fType, kBackground);
+      else
+        CLRBIT(fType, kBackground);
+    }
+    /**
      * set particle mother index
      * @param index
      */

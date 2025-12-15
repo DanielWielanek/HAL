@@ -55,6 +55,15 @@ namespace Hal {
     }
   }
 
+  OptionConverter::OptionConverter(std::vector<TString> names, std::vector<Int_t> values) {
+    if (names.size() == values.size()) {
+      fNames  = names;
+      fValues = values;
+    } else {
+      std::cout << "OptionConverter::OptionConverter({}{}) incompatible option size" << std::endl;
+    }
+  }
+
   OptionConverter::~OptionConverter() {}
 
   //==================================================

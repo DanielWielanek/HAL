@@ -58,6 +58,12 @@ namespace Hal {
   public:
     OptionConverter();
     /**
+     * main c-tor
+     * @param names
+     * @param values
+     */
+    OptionConverter(std::vector<TString> names, std::vector<Int_t> values);
+    /**
      * convert option to int
      * @param val integer for option
      * @param option option

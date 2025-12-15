@@ -12,12 +12,9 @@
 #include <TH1.h>
 #include <TH2.h>
 #include <TMatrixD.h>
+#include <TRandom.h>
 #include <iostream>
 
-NamespaceImp(Hal::Std)
-
-
-  ;
 namespace Hal {
   namespace Std {
 

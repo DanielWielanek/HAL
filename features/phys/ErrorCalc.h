@@ -12,14 +12,20 @@
 #include "Std.h"
 #include <TNamed.h>
 namespace Hal {
+  class XMLNode;
   /**
    * class for manipulation of errors in principle it calculates the total systematical uncertainty and performs barlow test
    */
   class ErrorCalc : public TNamed {
     Double_t fMeasurement       = {0};
     Double_t fStatisticalUncert = {0};
+    Double_t fTotalSysError     = {0};
     std::vector<std::pair<TString, std::vector<std::pair<Double_t, Double_t>>>> fValues;
+    std::vector<Double_t> fUncertainties;
     std::vector<std::pair<Double_t, Double_t>> GetAllUncerts(TString name) const;
+
+    Double_t BarlowTestParameterMean(Int_t parId) const;
+    Double_t BarlowTestParameterMax(Int_t parId) const;
 
   public:
     /**
@@ -54,25 +60,54 @@ namespace Hal {
      */
     Double_t GetStatError() const;
     /**
-     * performs barlow test and print results
-     * @param prec precision of printing
+     *
+     * @param par
      * @return
      */
-    Double_t BarlowTest(Int_t prec = 4) const;
+    Double_t GetSysError(Int_t par) const;
     /**
-     * pefrom other test and print results in principle:
-     * - the uncertainty of measurement with single method is assued as max(X-xi)
-     * - then total uncertainty is sqrt(sum uncert_j)
-     * @param prec
+     *
+     * @param name
      * @return
      */
-    Double_t TotalSys(Int_t prec = 4) const;
+    Double_t GetSysError(TString name) const;
+    /**
+     *
+     * @return total sys error
+     */
+    Double_t GetTotalSysError() const;
+    /**
+     *
+     * @return measured value
+     */
+    Double_t GetMeasuredValue() const { return fMeasurement; }
+    /**
+     * performs barlow test and print results
+     * @param prec precision of printing if negative - do not print test
+     * @param opt = "mean" "max" and "max2"
+     *  - mean - takes RMS of different variants for given variable
+     *  - max - takes into computing maximal difference between measurement and variants
+     * @return total uncert
+     */
+    Double_t BarlowTest(Int_t prec = -4, TString opt = "max");
     /**
      * return
      * @param errs
      * @return error by eq = sqrt(err[0]^2+err[1]^2+...)
      */
     static Double_t SumError(std::vector<Double_t> errs);
+    /**
+     * export error report to xml
+     * @param name name of xml file
+     * @param prec precission if negative do not define precission
+     */
+    void ExportToXML(TString name, Int_t prec = -1);
+    /**
+     * export error report to xml-node
+     * @param name name of xml file
+     * @param prec precission if negative do not define precission
+     */
+    Hal::XMLNode* ExportToXMLNode(Int_t prec = -1);
     virtual ~ErrorCalc() = default;
     ClassDef(ErrorCalc, 0)
   };

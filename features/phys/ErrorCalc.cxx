@@ -196,7 +196,7 @@ namespace Hal {
       Hal::Cout::PrintInfo("ErrorCalc::ExportToXML - cannot get error lack of values/uncertainties !", EInfo::kError);
       return;
     }
-    TString precFlag = Form("\%4.%if", precision);
+    TString precFlag = Form("%%4.%if", precision);
     if (precision < 0) precFlag = "%f";
     Hal::XMLFile file(name, "recreate");
     file.CreateRootNode("sys_errors");
@@ -209,7 +209,7 @@ namespace Hal {
       Hal::Cout::PrintInfo("ErrorCalc::ExportToXMLNode - cannot get error lack of values/uncertainties !", EInfo::kError);
       return nullptr;
     }
-    TString precFlag = Form("%4.%if", prec);
+    TString precFlag = Form("%%4.%if", prec);
     if (prec < 0) precFlag = "%f";
 
     auto root = new Hal::XMLNode("parameter", "");

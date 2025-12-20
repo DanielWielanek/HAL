@@ -203,14 +203,14 @@ namespace Hal {
   }
 
   void Femto3DCFPainter::PrepareDiagonal1(TH1* h) {
-    TString options[7] = {"x", "y", "z", "xy++", "yz++", "xz++", "xyz+++"};
+    TString options[7] = {"x", "y", "z", "xy++", "xz++", "yz++", "xyz+++"};
     TString titles[7]  = {
       "out",
       "side",
       "long",
       "out+side+",
-      "side+long+",
       "out+long+",
+      "side+long+",
       "out+side+long+",
     };
     for (int i = 0; i < 7; i++) {

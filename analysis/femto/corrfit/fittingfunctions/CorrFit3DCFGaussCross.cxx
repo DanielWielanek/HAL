@@ -10,30 +10,31 @@
 #include "CorrFit3DCFGaussCross.h"
 
 #include <TMath.h>
+#include <iostream>
 
 namespace Hal {
   CorrFit3DCF_GaussCross::CorrFit3DCF_GaussCross() : CorrFit3DCF(e3DMode::kNormal6R, 8) {
-    SetParameterName(Routside(), "R_{out-side}");
-    FixParameter(Routside(), 0);
-    SetParameterName(Routlong(), "R_{out-long}");
-    FixParameter(Routlong(), 0);
-    SetParameterName(Rsidelong(), "R_{side-long}");
-    FixParameter(Rsidelong(), 0);
+    SetParameterName(RoutsideID(), "R_{out-side}");
+    FixParameter(RoutsideID(), 0);
+    SetParameterName(RoutlongID(), "R_{out-long}");
+    FixParameter(RoutlongID(), 0);
+    SetParameterName(RsidelongID(), "R_{side-long}");
+    FixParameter(RsidelongID(), 0);
   }
 
   CorrFit3DCF_GaussCross::~CorrFit3DCF_GaussCross() {}
   Double_t CorrFit3DCF_GaussCross::CalculateCF(const Double_t* x, const Double_t* params) const {
-    Double_t scale = 1;
-    if (fKinematics == Hal::Femto::EKinematics::kPRF) { scale = 4.0; }
+    Double_t scale = -25.76578;
+    if (fKinematics == Hal::Femto::EKinematics::kPRF) { scale = -25.76578 * 4.0; }
     return params[NormID()]
            * (1
               + params[LambdaID()]
-                  * TMath::Exp(-25.76578 * scale
+                  * TMath::Exp(scale
                                * (x[0] * x[0] * params[RoutID()] * params[RoutID()]
                                   + x[1] * x[1] * params[RsideID()] * params[RsideID()]
                                   + x[2] * x[2] * params[RlongID()] * params[RlongID()]
-                                  + 2.0 * x[0] * x[1] * TMath::Abs(params[Routside()]) * params[Routside()]
-                                  + 2.0 * x[0] * x[2] * TMath::Abs(params[Routlong()]) * params[Routlong()]
-                                  + 2.0 * x[1] * x[2] * TMath::Abs(params[Rsidelong()]) * params[Rsidelong()])));
+                                  + 2.0 * x[0] * x[1] * params[RoutsideID()]       //* params[RoutsideID()]
+                                  + 2.0 * x[0] * x[2] * params[RoutlongID()]       // * params[RoutlongID()]
+                                  + 2.0 * x[1] * x[2] * params[RsidelongID()])));  //* params[RsidelongID()])));
   }
 }  // namespace Hal

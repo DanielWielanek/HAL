@@ -11,6 +11,7 @@ set(HAL_FEATURES
 	${HAL_CORE}/features/std
 	${HAL_CORE}/features/minimizer
 	${HAL_CORE}/features/phys
+    ${HAL_CORE}/features/math
 	${HAL_CORE}/features
 )
 

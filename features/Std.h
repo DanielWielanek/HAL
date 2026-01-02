@@ -4,6 +4,7 @@
 #include "StdHist.h"
 #include "StdMath.h"
 #include "StdString.h"
+#include "StdTypes.h"
 
 #include <complex>
 #include <vector>
@@ -12,36 +13,13 @@ class TVirtualPad;
 
 #define Draw_2D_option "colz"
 #define Draw_3D_option "box2"
-#define HAL_PHYSICALANALYSYS_VER "nov2025"
+#define HAL_PHYSICALANALYSYS_VER "dec2025"
 
-// some enums used almost everywhere
-
-namespace Hal {
-  enum class EInfo { kDebugInfo = 0, kInfo = 1, kLowWarning = 2, kWarning = 3, kError = 4, kCriticalError = 5 };
-  enum class EFormatType { kSim = 0, kReco = 1, kComplexReco = 2, kComplexSim = 3, kUnknown = 4 };
-
-  enum class ERound { kSeparator, kPrefix };
-  enum class ECutUpdate { kNo = -1, kEvent = 0, kTrack = 1, kTwoTrack = 2, kTwoTrackBackground = 3 };
-
-  enum class EFormatDepth { kAll, kBuffered, kNonBuffered };
-
-}  // namespace Hal
 
 class TClonesArray;
 namespace Hal {
   class CompressionMap;
   namespace Std {
-    template<typename T>
-    struct Triplet {
-      T x, y, z;
-    };
-    typedef std::complex<double> DComplex;
-    /**
-     * conver enum to "human readable" update ratio description
-     * @param upd
-     * @return
-     */
-    TString UpdateEnumToString(Hal::ECutUpdate upd);
     /**
      * copy files
      * @param from path from

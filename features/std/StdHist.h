@@ -9,6 +9,8 @@
 #ifndef HALSTDHIST_H_
 #define HALSTDHIST_H_
 
+#include "Std.h"
+#include "StdTypes.h"
 #include <TString.h>
 #include <TVector3.h>
 
@@ -356,6 +358,20 @@ namespace Hal {
      *
      */
     void HideAxisLabel(TObject* obj, TString opt);
+    /**
+     *  convert histogram into vecto of triples = x - bin center value, y = bin content, z - bin error
+     * @param histo
+     * @return
+     */
+    std::vector<Hal::Std::Triplet<Double_t>> TH1ToTriplets(const TH1& histo);
+    /**
+     * convert histogram int vector of std pairs
+     * @param histo
+     * @param option - "xy"- set x as first set y as second
+     * option "ye" - set y as first, error as second, optional arguments "u" for underflow and "o" for overflow bins eg. xyu
+     * @return
+     */
+    std::vector<std::pair<Double_t, Double_t>> TH1ToPair(const TH1& histo, TString opt = "xy");
     /**
      *
      * @param histo

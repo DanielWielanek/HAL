@@ -137,17 +137,6 @@ namespace Hal::Std {
     return Form("%s_%i", name.Data(), id);
   }
 
-  TString UpdateEnumToString(Hal::ECutUpdate upd) {
-    switch (upd) {
-      case Hal::ECutUpdate::kNo: return ""; break;
-      case Hal::ECutUpdate::kEvent: return "Event"; break;
-      case Hal::ECutUpdate::kTrack: return "Track"; break;
-      case Hal::ECutUpdate::kTwoTrack: return "TwoTrack"; break;
-      case Hal::ECutUpdate::kTwoTrackBackground: return "TwoTrackBackground"; break;
-      default: return ""; break;
-    }
-  }
-
   TString GetConfigParameter(TString par_name) {
     TString home = gSystem->Getenv("HOME");
     Hal::XMLFile parser(Form("%s/.hal_config.xml", home.Data()));

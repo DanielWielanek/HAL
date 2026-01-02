@@ -1357,41 +1357,44 @@ NamespaceImp(Hal::Std)
         low  = histo.GetXaxis()->GetBinLowEdge(0);
         high = histo.GetXaxis()->GetBinUpEdge(histo.GetNbinsX());
       }
-      TGraph* gr = new TGraph();
+
+      auto vector = Hal::Std::TH1ToPair(histo);
+      return ChebyshevInterpolation(vector, n, low, high);
+    }
+
+    std::vector<Hal::Std::Triplet<Double_t>> TH1ToTriplets(const TH1& histo) {
+      std::vector<Triplet<Double_t>> res;
       for (int i = 1; i <= histo.GetNbinsX(); i++) {
-        double x = histo.GetXaxis()->GetBinCenter(i);
-        double y = histo.GetBinContent(i);
-        gr->SetPoint(i - 1, x, y);
+        Triplet<Double_t> triplet;
+        triplet.x = histo.GetXaxis()->GetBinCenter(i);
+        triplet.y = histo.GetBinContent(i);
+        triplet.z = histo.GetBinError(i);
+        res.push_back(triplet);
       }
+      return res;
+    }
 
-      std::vector<double> nodes(n);
-      for (int k = 0; k < n; ++k) {
-        double x = TMath::Cos(TMath::Pi() * (2.0 * k + 1) / (2.0 * n));  // [-1,1]
-        nodes[k] = 0.5 * ((high - low) * x + (high + low));              // przeskaluj do [a,b]
-      }
-      TMatrixD A(n, n);
-      TVectorD b(n);
-
-      for (int i = 0; i < n; ++i) {
-        b[i]         = gr->Eval(nodes[i]);
-        double pow_x = 1.0;
-        for (int j = 0; j < n; ++j) {
-          A(i, j) = pow_x;
-          pow_x *= nodes[i];
+    std::vector<std::pair<Double_t, Double_t>> TH1ToPair(const TH1& histo, TString opt) {
+      std::vector<std::pair<Double_t, Double_t>> res;
+      std::pair<Double_t, Double_t> el;
+      int binLo = 1;
+      int binHi = histo.GetNbinsX();
+      if (Hal::Std::FindParam(opt, "u")) { binLo = 0; }
+      if (Hal::Std::FindParam(opt, "o")) { binHi++; }
+      if (Hal::Std::FindParam(opt, "xy")) {
+        for (int i = binLo; i <= binHi; i++) {
+          el.first  = histo.GetXaxis()->GetBinCenter(i);
+          el.second = histo.GetBinContent(i);
+          res.push_back(el);
         }
-      }
-
-      TDecompLU lu(A);
-      Bool_t ok;
-      TVectorD coeffs = lu.Solve(b, ok);
-      std::vector<Double_t> res;
-      if (!ok) {
-        std::cerr << "Could't find solution in ChebyshevInterpolation!" << std::endl;
-        return res;
-      }
-      delete gr;
-      for (int i = 0; i < n; i++) {
-        res.push_back(coeffs[i]);
+      } else if (Hal::Std::FindParam(opt, "ye")) {
+        for (int i = binLo; i <= binHi; i++) {
+          el.first  = histo.GetBinContent(i);
+          el.second = histo.GetBinError(i);
+          res.push_back(el);
+        }
+      } else {
+        Hal::Cout::PrintInfo(Form("TH1ToPair cannot recognize option %s", opt.Data()), EInfo::kError);
       }
       return res;
     }

@@ -136,6 +136,17 @@ namespace Hal {
      * @return polynomial fitted to n-points p[0] is const term
      */
     std::vector<Double_t> LagrangeInterpol(const std::vector<Double_t>& x, const std::vector<Double_t>& y);
+    /**
+     * transform points into chebyshev polynomian
+     * @param x - values - first X, second Y
+     * @param n - degreen of polynominal
+     * @param low - lower range
+     * @param high - upper range
+     * @return
+     */
+    std::vector<Double_t>
+    ChebyshevInterpolation(const std::vector<std::pair<Double_t, Double_t>>& x, Int_t n, Double_t low, Double_t high);
+
   }  // namespace Std
 }  // namespace Hal
 #endif /* HAL_FEATURES_STD_HALSTDMATH_H_ */

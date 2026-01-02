@@ -9,6 +9,9 @@
 #include "StdMath.h"
 #include "Cout.h"
 
+#include <TGraph.h>
+
+#include <TDecompLU.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TMatrixD.h>
@@ -240,6 +243,50 @@ namespace Hal {
       }
       for (int i = 0; i < n; i++) {
         res[i] = S[n - i - 1][0];
+      }
+      return res;
+    }
+
+    std::vector<Double_t>
+    ChebyshevInterpolation(const std::vector<std::pair<Double_t, Double_t>>& x, Int_t n, Double_t low, Double_t high) {
+      if (low == high) {
+        low  = x[0].first;
+        high = x[x.size() - 1].second;
+      }
+      TGraph* gr = new TGraph();
+      for (int i = 0; i < x.size(); i++) {
+        double X = x[i].first;
+        double Y = x[i].second;
+        gr->SetPoint(i, X, Y);
+      }
+      std::vector<double> nodes(n);
+      for (int k = 0; k < n; ++k) {
+        double X = TMath::Cos(TMath::Pi() * (2.0 * k + 1) / (2.0 * n));  // [-1,1]
+        nodes[k] = 0.5 * ((high - low) * X + (high + low));              // przeskaluj do [a,b]
+      }
+      TMatrixD A(n, n);
+      TVectorD b(n);
+
+      for (int i = 0; i < n; ++i) {
+        b[i]         = gr->Eval(nodes[i]);
+        double pow_x = 1.0;
+        for (int j = 0; j < n; ++j) {
+          A(i, j) = pow_x;
+          pow_x *= nodes[i];
+        }
+      }
+
+      TDecompLU lu(A);
+      Bool_t ok;
+      TVectorD coeffs = lu.Solve(b, ok);
+      std::vector<Double_t> res;
+      if (!ok) {
+        std::cerr << "Could't find solution in ChebyshevInterpolation!" << std::endl;
+        return res;
+      }
+      delete gr;
+      for (int i = 0; i < n; i++) {
+        res.push_back(coeffs[i]);
       }
       return res;
     }

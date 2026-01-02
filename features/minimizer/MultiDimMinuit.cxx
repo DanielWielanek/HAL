@@ -13,6 +13,7 @@
 #include <TMathBase.h>
 
 #include "Cout.h"
+#include "MinimizerResult.h"
 #include "MultiDimDataManager.h"
 #include "MultiDimFile.h"
 #include "MultiDimInterpolator.h"
@@ -48,56 +49,16 @@ namespace Hal {
 
   MultiDimMinuit::MultiDimMinuit() {}
 
-  void MultiDimMinuit::OpenFile(TString file) {
-    if (fInit) {
-      Hal::Cout::PrintInfo("Cannot open two files in MultiDimMinuit", EInfo::kError);
-      return;
-    }
-    fFunc = new Hal::MultiDimInterpolator();
-    fFunc->OpenFile(file);
-    fParameters = fFunc->GetConfig()->GetParams();
-    for (auto& x : fParameters) {
-      x.SetStartVal(0.5 * (x.GetMapMax() + x.GetMapMin()));
-      Double_t mapLow  = x.GetMapMin();
-      Double_t mapHigh = x.GetMapMax();
-      if (mapLow == mapHigh) {
-        x.SetMin(mapLow);
-        x.SetMax(mapHigh);
-        x.SetIsFixed(true);
-      } else {
-        x.SetMin(mapLow);
-        x.SetMax(mapHigh);
-      }
-    }
-    fInit = true;
-  }
 
-  void MultiDimMinuit::SetParLimits(Int_t par, Double_t min, Double_t max) {
-    if (par < 0 || par >= fParameters.size()) return;
-    fParameters[par].SetMin(min);
-    fParameters[par].SetMax(max);
-    fParameters[par].SetStartVal(0.5 * (min + max));
-    if (min != max)
-      fParameters[par].SetIsFixed(kFALSE);
-    else
-      fParameters[par].SetIsFixed(kTRUE);
-  }
-
-  void MultiDimMinuit::FixParameter(Int_t par, Double_t val) {
-    if (par < 0 || par >= fParameters.size()) return;
-    fParameters[par].SetMin(val);
-    fParameters[par].SetMax(val);
-    fParameters[par].SetStartVal(val);
-    fParameters[par].SetIsFixed(true);
-  }
-
-  void MultiDimMinuit::Minimize() {
+  MinimizerResult MultiDimMinuit::Minimize() {
+    MinimizerResult result;
     auto algos = AlgoToOptions(fMinAlgo);
     if (algos.size() < 2) algos.push_back("");
     TString pat1 = algos[0];
     TString pat2 = algos[1];
     fMinimizer   = ROOT::Math::Factory::CreateMinimizer(pat1.Data(), pat2.Data());
     fValues.resize(fParameters.size());
+
     ROOT::Math::Functor f = ROOT::Math::Functor(this, &MultiDimMinuit::GetEval, fParameters.size());
     fMinimizer->SetFunction(f);
     for (int i = 0; i < fParameters.size(); i++) {
@@ -112,19 +73,19 @@ namespace Hal {
       }
     }
     fMinimizer->Minimize();
+    int count = 0;
+    for (auto par : fParameters) {
+      FittedParam parFited(par);
+      parFited.SetVal(fMinimizer->X()[count]);
+      parFited.SetLowError(fMinimizer->Errors()[count]);
+      parFited.SetHighError(fMinimizer->Errors()[count]);
+      count++;
+      result.AddParam(parFited);
+    }
+    return result;
   }
 
-  Double_t MultiDimMinuit::GetParameter(Int_t par) const {
-    if (fMinimizer) return fMinimizer->X()[par];
-    Hal::Cout::PrintInfo("Cannot get par MultiDimMinuit - no minimizer did you forget call Minimize?", EInfo::kError);
-    return -1;
-  }
-
-  Double_t MultiDimMinuit::GetParError(Int_t par) const {
-    if (fMinimizer) return fMinimizer->Errors()[par];
-    Hal::Cout::PrintInfo("Cannot get par MultiDimMinuit - no minimizer did you forget call Minimize?", EInfo::kError);
-    return -1;
-  }
+  MultiDimMinuit::~MultiDimMinuit() {}
 
   double MultiDimMinuit::GetEval(const double* params) {
     int i = -1;
@@ -132,20 +93,6 @@ namespace Hal {
       x = params[++i];
     }
     return fFunc->Extrapolate(fValues);
-  }
-
-  MultiDimMinuit::~MultiDimMinuit() {
-    if (fFunc) delete fFunc;
-  }
-
-  TString MultiDimMinuit::GetParameterName(Int_t par) const {
-    if (par < 0 || par >= fParameters.size()) return "";
-    return fParameters[par].GetParName();
-  }
-
-  void MultiDimMinuit::SetStarParam(Int_t par, Double_t start) {
-    if (par < 0 || par >= fParameters.size()) return;
-    fParameters[par].SetStartVal(start);
   }
 
 } /* namespace Hal */

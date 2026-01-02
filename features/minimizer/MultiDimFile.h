@@ -26,7 +26,8 @@ namespace Hal {
   class MultiDimFile : public Object {
     TFile* fFile;
     TTree* fTree;
-    std::vector<Float_t>* fValues     = {nullptr};
+    std::vector<Float_t>* fValues = {nullptr};
+    std::vector<Int_t> fMultiOffsets;
     MultiDimDataManager* fDataManager = {nullptr};
     Int_t fMode                       = {0};
     Bool_t Read() const { return (fMode == -1) ? kTRUE : kFALSE; };
@@ -71,6 +72,11 @@ namespace Hal {
      * @return configuration of file
      */
     MultiDimDataManager* GetConfig() const { return fDataManager; }
+    /**
+     *
+     * @return offsets to calculate entry number
+     */
+    std::vector<Int_t> GetMultiOffsets() const { return fMultiOffsets; }
     virtual ~MultiDimFile();
     ClassDef(MultiDimFile, 1)
   };

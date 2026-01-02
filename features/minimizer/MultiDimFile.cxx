@@ -36,6 +36,8 @@ namespace Hal {
       fDataManager = (MultiDimDataManager*) fFile->Get("info");
       fTree->SetBranchAddress("vec", &fValues);
       fTree->GetEntry(0);
+      fMultiOffsets = fDataManager->GetMultiFactors();
+
       if (fValues->size() != fDataManager->GetParametersNo() + 1) {
         Hal::Cout::PrintInfo(Form("Ooops, incompatible sizes in MultiDimFile expected %i found %i",
                                   fDataManager->GetParametersNo(),

@@ -40,16 +40,21 @@ namespace Hal {
   void MultiDimDataManager::Init() {
     for (auto& i : fParams)
       i.Init();
+    fMultiFactors = GetMultiFactors();
   }
 
   Int_t MultiDimDataManager::GetIndexInt(std::vector<int> paramsId) const {
     if (paramsId.size() != fParams.size()) return -1;
-    Int_t step = 1;
-    Int_t pos  = 0;
-    for (int i = fParams.size() - 1; i >= 0; i--) {
-      pos += paramsId[i] * step;
-      step *= fParams[i].GetNPoints();
+    Int_t step   = 1;
+    Int_t pos    = 0;
+    auto factors = GetMultiFactors();
+    for (int i = 0; i < fParams.size(); i++) {
+      pos += fMultiFactors[i] * paramsId[i];
     }
+    /*   for (int i = fParams.size() - 1; i >= 0; i--) {
+         pos += paramsId[i] * step;
+         step *= fParams[i].GetNPoints();
+       }*/
     return pos;
   }
 
@@ -57,23 +62,22 @@ namespace Hal {
     if (paramsVal.size() != fParams.size()) return -1;
     Int_t step = 1;
     Int_t pos  = 0;
-    for (int i = fParams.size() - 1; i >= 0; i--) {
-      Double_t par          = paramsVal[i];
-      Double_t dif          = par - fParams[i].GetMapMin();
+    for (int i = 0; i < fParams.size(); i++) {
+      Double_t dif          = paramsVal[i] - fParams[i].GetMapMin();
       Double_t overStepSize = fParams[i].GetOverStepSize();
-      Int_t bin             = dif * overStepSize;
-      pos += bin * step;
-      step *= fParams[i].GetNPoints();
+      Int_t bin             = TMath::Nint(dif * overStepSize);
+      pos += bin * fMultiFactors[i];
     }
     return pos;
   }
 
   std::vector<Double_t> MultiDimDataManager::GetValues(Int_t entry) const {
     std::vector<Double_t> res(fParams.size());
+    std::cout << " GET ENTRY " << entry << std::endl;
     for (int i = 0; i < fParams.size(); i++) {
-      res[i] = entry % fParams[i].GetNPoints();
-      res[i] = fParams[i].GetMapMin() + res[i] * fParams[i].GetStepSize();
-      entry /= fParams[i].GetNPoints();
+      int step = TMath::Nint(entry / fMultiFactors[i]);
+      entry -= fMultiFactors[i] * step;
+      res[i] = fParams[i].GetMapMin() + double(step) * fParams[i].GetStepSize();
     }
     return res;
   }
@@ -81,8 +85,8 @@ namespace Hal {
   std::vector<Int_t> MultiDimDataManager::GetIndexes(Int_t entry) const {
     std::vector<Int_t> res(fParams.size());
     for (int i = 0; i < fParams.size(); i++) {
-      res[i] = entry % fParams[i].GetNPoints();
-      entry /= fParams[i].GetNPoints();
+      res[i] = TMath::Nint(entry / fMultiFactors[i]);
+      entry -= res[i] * fParams[i].GetNPoints();
     }
     return res;
   }
@@ -97,6 +101,20 @@ namespace Hal {
                            Form("%d", i.GetNPoints()),
                            Form("%4.4f", i.GetStepSize())});
     }
+  }
+
+  std::vector<Int_t> MultiDimDataManager::GetMultiFactors() const {
+    const int params = fParams.size();
+    std::vector<Int_t> temp(params), res(params);
+    for (unsigned int i = 0; i < params; i++) {
+      temp[i] = fParams[i].GetNPoints();
+    }
+    res[res.size() - 1] = 1;
+    if (params > 1)
+      for (int i = params - 2; i >= 0; i--) {
+        res[i] = res[i + 1] * temp[i + 1];
+      }
+    return res;
   }
 
 } /* namespace Hal */

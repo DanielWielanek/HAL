@@ -17,6 +17,7 @@ namespace Hal {
   class MultiDimDataManager : public Object {
     std::vector<FitParam> fParams;
     std::vector<Int_t> fTempVec;
+    std::vector<Int_t> fMultiFactors;
 
   public:
     MultiDimDataManager() {};
@@ -77,6 +78,11 @@ namespace Hal {
      * @return
      */
     std::vector<FitParam> GetParams() const { return fParams; }
+    /**
+     *
+     * @return multiplication factors to calculate position in tree
+     */
+    std::vector<Int_t> GetMultiFactors() const;
     virtual void Print(Option_t* option = "") const;
     virtual ~MultiDimDataManager() {};
     ClassDef(MultiDimDataManager, 1)

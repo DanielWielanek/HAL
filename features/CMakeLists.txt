@@ -68,9 +68,14 @@ hist/styles/MarkerStyle.cxx
 hist/styles/PadStyle.cxx
 hist/styles/Style.cxx
 
+math/ManyPolynomialsX.cxx
+math/PeakFitterX.cxx
+
 std/StdHist.cxx
 std/StdString.cxx
 std/StdMath.cxx
+std/StdPhys.cxx
+std/StdTypes.cxx
 
 phys/ErrorCalc.cxx
 phys/Helix.cxx
@@ -82,11 +87,15 @@ phys/ParameterSolver.cxx
 
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx
+minimizer/MinimizerResult.cxx
 minimizer/MinimizerStepConf.cxx
 minimizer/MultiDimDataManager.cxx
-minimizer/MultiDimInterpolator.cxx
 minimizer/MultiDimFile.cxx
+minimizer/MultiDimInterpolator.cxx
+minimizer/MultiDimMinimizer.cxx
 minimizer/MultiDimMinuit.cxx
+minimizer/MultiDimMinimizerSquare.cxx
+
 )
 install(FILES ${EXT_HEADERS}
         DESTINATION include

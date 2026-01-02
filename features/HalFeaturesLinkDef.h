@@ -7,6 +7,7 @@
 
 #pragma link C++ namespace Hal;
 #pragma link C++ namespace Hal::Std;
+#pragma link C++ namespace Hal::Std::LorentzGenerator;
 #ifdef __MAKECINT__
 #endif
 
@@ -115,6 +116,8 @@
 #pragma link C++ class Hal::LegendStyle + ;
 #pragma link C++ class Hal::CorrelationHisto + ;
 #pragma link C++ class Hal::Painter + ;
+#pragma link C++ class Hal::ManyPolynomialsX + ;
+#pragma link C++ class Hal::PeakFitterX + ;
 
 #pragma link C++ class Hal::ErrorCalc + ;
 #pragma link C++ class Hal::FastAxisCalc + ;

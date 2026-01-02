@@ -9,6 +9,7 @@
 #include "Cout.h"
 #include "ErrorCalc.h"
 
+
 namespace Hal {
 
   CorrFitFunc3D::CorrFitFunc3D(e3DMode mode, Int_t par, Int_t dim) : CorrFitFunc(par, dim), fMode(mode) {

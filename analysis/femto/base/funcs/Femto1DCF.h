@@ -99,6 +99,19 @@ namespace Hal {
      * @param option
      */
     virtual void Draw(Option_t* option = "");
+    /**
+     * apply purity correction and recalculate errors
+     * @param h purity correction
+     * @param normalization if negative calculate own normalization
+     */
+    virtual void ApplyPurityCorrection(const TH1& h, Double_t normalization = -1);
+    /**
+     * apply purity correction and recalculate errors
+     * @param residual residual correlation
+     * @param fraction - fraction of residuals
+     * @param normalization if negative calculate own normalization
+     */
+    virtual void ApplyResidualCorrection(const TH1& residual, const TH1& fraction, Double_t normalization = -1);
     virtual FemtoCFPainter* GetPainter() const { return fPainter; }
     virtual ~Femto1DCF();
     ClassDef(Femto1DCF, 4)

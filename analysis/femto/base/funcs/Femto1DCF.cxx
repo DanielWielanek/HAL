@@ -16,6 +16,7 @@
 #include "FemtoSerializationInterface1D.h"
 #include "HtmlCore.h"
 #include "Std.h"
+#include "StdHist.h"
 
 #include <Rtypes.h>
 #include <RtypesCore.h>
@@ -178,6 +179,59 @@ namespace Hal {
       fPainter = new Hal::Femto1DCFPainter(this);
       fPainter->SetOption(option);
       fPainter->Paint();
+    }
+  }
+
+  void Femto1DCF::ApplyPurityCorrection(const TH1& h, Double_t normalization) {
+    Double_t mu = 0;
+    if (!Hal::Std::AreSimilar(fNum, &h, false)) {
+      Cout::PrintInfo("Femto1DCF::ApplyPurityCorrection not compatible histograms!", EInfo::kWarning);
+      return;
+    }
+    if (normalization < 0) {
+      mu = fScale;
+      if (mu == 0) mu = 1.0 / CalculateRawRatio(fNormMin[0], fNormMax[0], false);
+    } else
+      mu = 1.0 / normalization;
+    for (int i = 1; i <= fNum->GetNbinsX(); i++) {
+      const Double_t purity = h.GetBinContent(i);
+      const Double_t Dm     = fDen->GetBinContent(i);
+      const Double_t Nm     = fNum->GetBinContent(i);
+      const Double_t Dg     = Dm * purity;
+      const Double_t Ng     = Nm + (1.0 - 1.0 / purity) * purity * Dm / mu;
+      const Double_t Nbe    = fNum->GetBinError(i);
+      const Double_t Dbe    = fDen->GetBinError(i);
+      fDen->SetBinContent(i, Dg);
+      fNum->SetBinContent(i, Ng);
+      fDen->SetBinError(i, Dbe * purity);
+      fNum->SetBinError(i, Nbe * purity);
+    }
+  }
+
+  void Femto1DCF::ApplyResidualCorrection(const TH1& residual, const TH1& fraction, Double_t normalization) {
+    Double_t mu = 0;
+    if (!Hal::Std::AreSimilar(fNum, &residual, false) || !Hal::Std::AreSimilar(fNum, &fraction, false)) {
+      Cout::PrintInfo("Femto1DCF::ApplyResidualCorrection not compatible histograms!", EInfo::kWarning);
+      return;
+    }
+    if (normalization < 0) {
+      mu = fScale;
+      if (mu == 0) mu = 1.0 / CalculateRawRatio(fNormMin[0], fNormMax[0], false);
+    } else
+      mu = 1.0 / normalization;
+    for (int i = 1; i <= fNum->GetNbinsX(); i++) {
+      const Double_t purity = 1.0 - fraction.GetBinContent(i);
+      const Double_t lambda = residual.GetBinContent(i);
+      const Double_t Dm     = fDen->GetBinContent(i);
+      const Double_t Nm     = fNum->GetBinContent(i);
+      const Double_t Dg     = Dm * purity;
+      const Double_t Ng     = Nm - lambda * (1.0 - purity) * Dm / mu;
+      const Double_t Nbe    = fNum->GetBinError(i);
+      const Double_t Dbe    = fDen->GetBinError(i);
+      fDen->SetBinContent(i, Dg);
+      fNum->SetBinContent(i, Ng);
+      fDen->SetBinError(i, Dbe * purity);
+      fNum->SetBinError(i, Nbe * purity);
     }
   }
 

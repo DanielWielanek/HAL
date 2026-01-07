@@ -21,6 +21,7 @@ namespace Hal {
   const int FemtoCFPainter::kDenBit     = 9;
   const int FemtoCFPainter::kCFBit      = 10;
   const int FemtoCFPainter::kHideTitles = 11;
+  const int FemtoCFPainter::kScaled     = 12;
 
   void FemtoCFPainter::DeleteHistograms() {
     for (auto& x : fHistograms) {
@@ -29,7 +30,6 @@ namespace Hal {
     }
     fHistograms.clear();
   }
-
 
   void FemtoCFPainter::ScaleHistograms() {
     for (auto& x : fHistograms) {
@@ -113,6 +113,7 @@ namespace Hal {
       CLRBIT(newOpts, kDenBit);
       CLRBIT(newOpts, kNumBit);
     }
+    if (Hal::Std::FindParam(opt, "scale", kTRUE)) SETBIT(newOpts, kScaled);
     auto ranges = Hal::Std::FindBrackets(opt, kTRUE, kTRUE);
     for (auto range : ranges) {
       std::vector<double> res;

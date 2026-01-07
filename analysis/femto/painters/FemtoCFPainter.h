@@ -28,7 +28,7 @@ namespace Hal {
   protected:
     Double_t fRangeX[2] = {0, 0};
     Double_t fRangeY[2] = {0, 0};
-    static const int kNumBit, kDenBit, kCFBit, kHideTitles;
+    static const int kNumBit, kDenBit, kCFBit, kHideTitles, kScaled;
     Double_t fScale      = {1.0};
     Double_t fDrawScale  = {1.0};
     TString fDefDrawFlag = "SAME+P";

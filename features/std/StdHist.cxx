@@ -627,6 +627,10 @@ NamespaceImp(Hal::Std)
       TAxis default_axis = TAxis();
       if (default_axis.GetCenterTitle() != from->GetCenterTitle()) to->CenterTitle(from->GetCenterTitle());
       if (default_axis.GetNdivisions() != from->GetNdivisions()) to->SetNdivisions(from->GetNdivisions());
+      if (default_axis.GetDecimals() != from->GetDecimals()) to->SetDecimals(from->GetDecimals());
+      if (default_axis.GetCenterTitle() != from->GetCenterTitle()) to->CenterTitle(from->GetCenterTitle());
+      if (default_axis.GetTickLength() != from->GetTickLength()) to->SetTickLength(from->GetTickLength());
+      if (default_axis.GetAxisColor() != from->GetAxisColor()) to->SetAxisColor(from->GetAxisColor());
       if (default_axis.GetTitleColor() != from->GetTitleColor()) to->SetTitleColor(from->GetTitleColor());
       if (default_axis.GetTitleFont() != from->GetTitleFont()) to->SetTitleFont(from->GetTitleFont());
       if (default_axis.GetTitleOffset() != from->GetTitleOffset()) to->SetTitleOffset(from->GetTitleOffset());

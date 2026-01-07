@@ -67,7 +67,7 @@ namespace Hal {
     } else if (CheckOpt(kDenBit)) {
       h = (TH3*) fCF->GetDen()->Clone();
     } else {  // cf
-      h     = (TH3*) fCF->GetHist(kFALSE);
+      h     = (TH3*) fCF->GetHist(CheckOpt(kScaled));
       clean = true;
     }
     if (CheckOpt(kDiag1Bit)) {
@@ -143,6 +143,7 @@ namespace Hal {
       if (fRangeX[0] != fRangeX[1]) { histo->GetXaxis()->SetRangeUser(fRangeX[0], fRangeX[1]); }
       std::vector<TH1*> histVec;
       histVec.push_back(histo);
+      Hal::Std::CopyAxisProp(fCF->GetNum()->GetXaxis(), histo->GetYaxis(), "!tit");
       fHistograms.push_back(histVec);
     }
   }
@@ -198,6 +199,7 @@ namespace Hal {
       histo->GetYaxis()->SetTitle(titleY);
       std::vector<TH1*> histVec;
       histVec.push_back(histo);
+      Hal::Std::CopyAxisProp(fCF->GetNum()->GetXaxis(), histo->GetYaxis(), "!tit");
       fHistograms.push_back(histVec);
     }
   }

@@ -18,10 +18,12 @@
 
 #include <TCanvas.h>
 namespace Hal {
-  const int Painter::kHtmlBit = 0;
-  const int Painter::kGridBit = 1;
-  const int Painter::kPad     = 2;
-  const int Painter::kCanvas  = 3;
+  const int Painter::kHtmlBit                  = 0;
+  const int Painter::kGridBit                  = 1;
+  const int Painter::kPad                      = 2;
+  const int Painter::kCanvas                   = 3;
+  const int Painter::kSame                     = 4;
+  Painter::commonPointers Painter::gCommonData = commonPointers();
   Painter::Painter() {
     fCommonData.fCanvases = new std::vector<TCanvas*>();
     fCommonData.fPads     = new std::vector<std::vector<TVirtualPad*>>();
@@ -42,6 +44,8 @@ namespace Hal {
   }
 
   void Painter::Paint() {
+    if (CheckOpt(kSame)) { fCommonData = gCommonData; }
+    auto pad = gPad;
     if (!HasParent()) {
       if (!fPainted) {
         MakePadsAndCanvases();
@@ -60,6 +64,11 @@ namespace Hal {
         grand->Paint();
       }
     }
+    if (pad)
+      pad->cd();
+    else
+      gPad = nullptr;
+    gCommonData = this->fCommonData;
   }
 
   void Painter::SetFlag(Int_t bit, Bool_t state) {
@@ -94,7 +103,9 @@ namespace Hal {
       }
     };
     LockPad();
-    if (fCommonData.fCanvases->size() > canvasNo) {
+    if (CheckOpt(kSame)) {
+      // do nothing
+    } else if (fCommonData.fCanvases->size() > canvasNo) {
       dividePads();
     } else {
       for (int i = fCommonData.fCanvases->size(); i <= canvasNo; i++) {
@@ -174,11 +185,19 @@ namespace Hal {
       fOptionsChanged = kTRUE;
       SETBIT(defFlags, kCanvas);
       CLRBIT(defFlags, kPad);
+      CLRBIT(defFlags, kSame);
     }
     if (Hal::Std::FindParam(option, "pad", kTRUE)) {
       fOptionsChanged = kTRUE;
       SETBIT(defFlags, kPad);
       CLRBIT(defFlags, kCanvas);
+      CLRBIT(defFlags, kSame);
+    }
+    if (Hal::Std::FindParam(option, "same", kTRUE)) {
+      fOptionsChanged = kTRUE;
+      CLRBIT(defFlags, kPad);
+      CLRBIT(defFlags, kCanvas);
+      SETBIT(defFlags, kSame);
     }
     auto newOpt = SetOptionInternal(option, defFlags);
     if (newOpt != fDrawFlags) {

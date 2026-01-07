@@ -32,6 +32,7 @@ namespace Hal {
       std::vector<std::vector<TVirtualPad*>>* fPads = {nullptr};
     };
     commonPointers fCommonData;
+    static commonPointers gCommonData;
     Painter* fParent      = {nullptr};
     TVirtualPad* fTempPad = {nullptr};
     std::vector<Painter*> fSubPainters;
@@ -46,6 +47,7 @@ namespace Hal {
     static const int kGridBit;
     static const int kCanvas;
     static const int kPad;
+    static const int kSame;
     /**
      * set bit in drawing flag
      * @param bit
@@ -93,6 +95,12 @@ namespace Hal {
      *  - "keep" - keeps old flags, add only new flags
      *  - "skip" - ignore this method
      *  - "grid" - draw grid on all pads
+     *  - "same" - like in TH1D, note: this will not check if same objects have same number of pads. etc. ! also this will draw
+     * this object with the last object that was drawny by painter e.g.
+     * painter1->Draw();
+     * c->cd(1);
+     * th1d->Draw();
+     * painter2->Draw("same") // draw on top of painter1 not th1d!
      * @param prev the staring draw flag
      * @return new draw flag
      */
@@ -211,12 +219,12 @@ namespace Hal {
      * that requires single pad
      * pad - reuse canvas and pads
      * skip - ignore this method
+     * same - draw as "same"
      * @see SetOptionInternal:
      */
     virtual void SetOption(TString option);
     /**
-     * called when object needs to be draw (should be called only once), it try to paint object
-     * if object was painted calls repaint it
+     * called when object needs to be draw (should be called only once) or redraw
      */
     void Paint();
     /**

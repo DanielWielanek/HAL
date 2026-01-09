@@ -1427,5 +1427,231 @@ NamespaceImp(Hal::Std)
         line->Draw("SAME");
       }
     }
+
+    void NormalizeHistogram(TH1& h, TString option) {
+      enum class eCalcErrorMode { kSqrt, kNoRecalc, kScale };
+      eCalcErrorMode mode = eCalcErrorMode::kScale;
+      if (Hal::Std::FindParam(option, "keepe", kTRUE)) mode = eCalcErrorMode::kNoRecalc;
+      if (Hal::Std::FindParam(option, "sqrt", kTRUE)) mode = eCalcErrorMode::kSqrt;
+      const Int_t ndim          = h.InheritsFrom("TH3") ? 3 : h.InheritsFrom("TH2") ? 2 : 1;
+      const Bool_t useUnderFlow = Hal::Std::FindParam(option, "u", kTRUE);
+      const Bool_t useOverFlow  = Hal::Std::FindParam(option, "o", kTRUE);
+
+      auto CalcParams = [&](std::pair<Double_t, Double_t>& res, Double_t invsum) {
+        res.first = res.first * invsum;
+        switch (mode) {
+          case eCalcErrorMode::kNoRecalc: {  // do nothing
+            return;
+          } break;
+          case eCalcErrorMode::kSqrt: {
+            res.second = TMath::Sqrt(res.first);
+          } break;
+          case eCalcErrorMode::kScale: {
+            res.second = res.second * invsum;
+          } break;
+        }
+      };
+
+      auto GetSetBinContent1d = [&](Double_t invsum, int x) {
+        std::pair<Double_t, Double_t> res;
+        res.first  = h.GetBinContent(x);
+        res.second = h.GetBinError(x);
+        CalcParams(res, invsum);
+        h.SetBinContent(x, res.first);
+        h.SetBinError(x, res.second);
+      };
+      auto GetSetBinContent2d = [&](Double_t invsum, int x, int y) {
+        std::pair<Double_t, Double_t> res;
+        res.first  = h.GetBinContent(x, y);
+        res.second = h.GetBinError(x, y);
+        CalcParams(res, invsum);
+        h.SetBinContent(x, y, res.first);
+        h.SetBinError(x, y, res.second);
+      };
+
+      auto GetSetBinContent3d = [&](Double_t invsum, int x, int y, int z) {
+        std::pair<Double_t, Double_t> res;
+        res.first  = h.GetBinContent(x, y, z);
+        res.second = h.GetBinError(x, y, z);
+        CalcParams(res, invsum);
+        h.SetBinContent(x, y, z, res.first);
+        h.SetBinError(x, y, z, res.second);
+      };
+
+
+      const Int_t start[] = {useUnderFlow ? 0 : 1, useUnderFlow ? 0 : 1, useUnderFlow ? 0 : 1};
+      const Int_t end[]   = {useUnderFlow ? h.GetXaxis()->GetNbins() + 1 : h.GetXaxis()->GetNbins(),
+                           useUnderFlow ? h.GetYaxis()->GetNbins() + 1 : h.GetYaxis()->GetNbins(),
+                           useUnderFlow ? h.GetZaxis()->GetNbins() + 1 : h.GetZaxis()->GetNbins()};
+      switch (ndim) {
+        case 1: {
+          Double_t sum = GetSumByBin(h, start[0], end[0]);
+          if (sum == 0) return;
+          const Double_t invSum = 1.0 / sum;
+          for (int x = start[0]; x <= end[0]; x++)
+            GetSetBinContent1d(invSum, x);
+        } break;
+        case 2: {
+          if (Hal::Std::FindParam(option, "x", true)) {
+            for (int y = 0; y <= h.GetNbinsY() + 1; y++) {
+              Double_t sum = GetSumByBin(h, start[0], end[0], y, y);
+              if (sum == 0) continue;  // do not normalize
+              const Double_t invSum = 1.0 / sum;
+              for (int x = start[0]; x <= end[0]; x++) {
+                GetSetBinContent2d(invSum, x, y);
+              }
+            }
+
+          } else if (Hal::Std::FindParam(option, "y", true)) {
+            for (int x = 0; x <= h.GetNbinsX() + 1; x++) {
+              Double_t sum = GetSumByBin(h, x, x, start[1], end[1]);
+              if (sum == 0) continue;  // do not normalize
+              const Double_t invSum = 1.0 / sum;
+              for (int y = start[1]; y <= end[1]; y++) {
+                GetSetBinContent2d(invSum, x, y);
+              }
+            }
+          } else if (Hal::Std::FindParam(option, "xy", true)) {
+            Double_t sum = GetSumByBin(h, start[0], end[0], start[1], end[1]);
+            if (sum == 0) return;  // do not normalize
+            const Double_t invSum = 1.0 / sum;
+            for (int x = start[0]; x <= start[0]; x++) {
+              for (int y = start[1]; y <= start[1]; y++) {
+                GetSetBinContent2d(invSum, x, y);
+              }
+            }
+          }
+        } break;
+        case 3: {
+          if (Hal::Std::FindParam(option, "xyz", true)) {
+            Double_t sum = GetSumByBin(h, start[0], end[0], start[1], end[1], start[2], end[2]);
+            if (sum == 0) return;
+            const Double_t invSum = 1.0 / sum;
+            for (int x = start[0]; x <= end[0]; x++) {
+              for (int y = start[1]; y <= end[1]; y++) {
+                for (int z = start[2]; z <= end[2]; z++) {
+                  GetSetBinContent3d(invSum, x, y, z);
+                }
+              }
+            }
+
+          } else if (Hal::Std::FindParam(option, "xy", true) || Hal::Std::FindParam(option, "yx", true)) {
+            for (int z = 0; z <= h.GetNbinsZ(); z++) {
+              Double_t sum = GetSumByBin(h, start[0], end[0], start[1], end[1], z, z);
+              if (sum == 0) continue;
+              const Double_t invSum = 1.0 / sum;
+              for (int x = start[0]; x <= end[0]; x++) {
+                for (int y = start[1]; y <= end[1]; y++) {
+                  GetSetBinContent3d(invSum, x, y, z);
+                }
+              }
+            }
+          } else if (Hal::Std::FindParam(option, "xz", true) || Hal::Std::FindParam(option, "zx", true)) {
+            for (int y = 0; y <= h.GetNbinsY(); y++) {
+              Double_t sum = GetSumByBin(h, start[0], end[0], y, y, start[2], end[2]);
+              if (sum == 0) continue;
+              const Double_t invSum = 1.0 / sum;
+              for (int x = start[0]; x <= end[0]; x++) {
+                for (int z = start[2]; z <= end[2]; z++) {
+                  GetSetBinContent3d(invSum, x, y, z);
+                }
+              }
+            }
+
+          } else if (Hal::Std::FindParam(option, "yz", true) || Hal::Std::FindParam(option, "yz", true)) {
+            for (int x = 0; x <= h.GetNbinsX(); x++) {
+              Double_t sum = GetSumByBin(h, x, x, start[1], end[1], start[2], end[2]);
+              if (sum == 0) continue;
+              const Double_t invSum = 1.0 / sum;
+              for (int y = start[1]; y <= end[1]; y++) {
+                for (int z = start[2]; z < end[2]; z++) {
+                  GetSetBinContent3d(invSum, x, y, z);
+                }
+              }
+            }
+          } else if (Hal::Std::FindParam(option, "x", true)) {
+            for (int y = 0; y <= h.GetNbinsY(); y++) {
+              for (int z = 0; z <= h.GetNbinsZ(); z++) {
+                Double_t sum = GetSumByBin(h, start[0], end[0], y, y, z, z);
+                if (sum == 0) continue;
+                const Double_t invSum = 1.0 / sum;
+                for (int x = start[0]; x <= end[0]; x++) {
+                  GetSetBinContent3d(invSum, x, y, z);
+                }
+              }
+            }
+          } else if (Hal::Std::FindParam(option, "y", true)) {
+            for (int x = 0; x <= h.GetNbinsX(); x++) {
+              for (int z = 0; z <= h.GetNbinsZ(); z++) {
+                Double_t sum = GetSumByBin(h, x, x, start[1], end[1], z, z);
+                if (sum == 0) continue;
+                const Double_t invSum = 1.0 / sum;
+                for (int y = start[1]; y <= end[1]; y++) {
+                  GetSetBinContent3d(invSum, x, y, z);
+                }
+              }
+            }
+
+          } else if (Hal::Std::FindParam(option, "z", true)) {
+            for (int x = 0; x <= h.GetNbinsX(); x++) {
+              for (int y = 0; y <= h.GetNbinsY(); y++) {
+                Double_t sum = GetSumByBin(h, x, y, start[2], end[2]);
+                if (sum == 0) continue;
+                const Double_t invSum = 1.0 / sum;
+                for (int z = start[2]; z <= end[2]; z++) {
+                  GetSetBinContent3d(invSum, x, y, z);
+                }
+              }
+            }
+          }
+        } break;
+      }
+    }
+
+    Double_t GetSumByBin(const TH1& x, Int_t start_x, Int_t end_x, Int_t start_y, Int_t end_y, Int_t start_z, Int_t end_z) {
+      const Int_t ndim = dynamic_cast<const TH3*>(&x) ? 3 : dynamic_cast<const TH2*>(&x) ? 2 : 1;
+      Double_t sum     = 0;
+      switch (ndim) {
+        case 1: {
+          for (int ix = start_x; ix <= end_x; ix++) {
+            sum += x.GetBinContent(ix);
+          }
+        } break;
+        case 2: {
+          for (int ix = start_x; ix <= end_x; ix++) {
+            for (int iy = start_y; iy <= end_y; iy++) {
+              sum += x.GetBinContent(ix, iy);
+            }
+          }
+        } break;
+        case 3: {
+          for (int ix = start_x; ix <= end_x; ix++) {
+            for (int iy = start_y; iy <= end_y; iy++) {
+              for (int iz = start_z; iz <= end_z; iz++) {
+                sum += x.GetBinContent(ix, iy, iz);
+              }
+            }
+          }
+        } break;
+        default: sum = -1; break;
+      }
+      return sum;
+    }
+
+    Double_t GetSumByVals(const TH1& x, Double_t sx, Double_t ex, Double_t sy, Double_t ey, Double_t sz, Double_t ez) {
+      const Int_t ndim = dynamic_cast<const TH3*>(&x) ? 3 : dynamic_cast<const TH2*>(&x) ? 2 : 1;
+      TAxis* X         = x.GetXaxis();
+      TAxis* Y         = x.GetYaxis();
+      TAxis* Z         = x.GetZaxis();
+      switch (ndim) {
+        case 1: return GetSumByBin(x, X->FindBin(sx), X->FindBin(ex)); break;
+        case 2: return GetSumByBin(x, X->FindBin(sz), X->FindBin(ex), Y->FindBin(sy), Y->FindBin(ey)); break;
+        case 3:
+          return GetSumByBin(x, X->FindBin(sx), X->FindBin(ex), Y->FindBin(sy), Y->FindBin(ey), Z->FindBin(sz), Z->FindBin(ez));
+          break;
+      }
+      return -1;
+    }
+
   }  // namespace Std
 }  // namespace Hal

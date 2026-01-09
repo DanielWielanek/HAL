@@ -392,6 +392,55 @@ namespace Hal {
      * @param width- line width
      */
     void DrawDiagonalBins(const TH2& sample, Double_t x, Double_t y, TString opt = "x", Color_t color = kBlack, Int_t width = 1);
+    /**
+     * normalize histogram
+     * @param h
+     * @param option "x" -normalize in a way that sum along x-axis is 1
+     * "y" - along-y axis, etc.
+     * "xy" - normalize that sum in yx plane is equal to 1 - supported only in 2D and 1d histograms
+     * "xyz" - normalize whole histogram to 1 (in case of 3) - supported only 3D histograms
+     * "keepe" - do not scale errors
+     * "sqrt" -set errors as sqrt of scale number of entries (do not use with "e")
+     * "u" - use underflow bin
+     * "o" - use overflow bin
+     */
+    void NormalizeHistogram(TH1& h, TString option);
+    /**
+     * return sum for bins between the ranges e.g [start_x, start_y] if negative - all bins
+     * @param x
+     * @param startx
+     * @param end_x
+     * @param start_y
+     * @param end_y
+     * @param start_z
+     * @param end_z
+     * @return sum of bins by using bins, returns -1 if cannot recognize histogram
+     */
+    Double_t GetSumByBin(const TH1& x,
+                         Int_t start_x = -1,
+                         Int_t end_x   = -1,
+                         Int_t start_y = -1,
+                         Int_t end_y   = -1,
+                         Int_t start_z = -1,
+                         Int_t end_z   = -1);
+    /**
+     *
+     * @param x
+     * @param start_x
+     * @param end_x
+     * @param start_y
+     * @param end_y
+     * @param start_z
+     * @param end_z
+     * @return sum of bins by using values, returns -1 if cannot recognize histogram
+     */
+    Double_t GetSumByVals(const TH1& x,
+                          Double_t start_x,
+                          Double_t end_x,
+                          Double_t start_y,
+                          Double_t end_y,
+                          Double_t start_z,
+                          Double_t end_z);
 
   }  // namespace Std
 }  // namespace Hal

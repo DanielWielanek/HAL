@@ -244,6 +244,10 @@ namespace Hal {
      * @return
      */
     TVirtualPad* GetPad(Int_t index, Int_t canvasNo = 0) const;
+    /**
+     * switch common data to current data, useful when draw "same" is used
+     */
+    virtual void cd() { gCommonData = fCommonData; }
     void SetGlobalPadStyle(Hal::PadStyle& pad);
     virtual ~Painter();
     ClassDef(Painter, 0)

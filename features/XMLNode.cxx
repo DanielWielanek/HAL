@@ -81,6 +81,8 @@ namespace Hal {
     fAttrib.AddLast(attrib);
   }
 
+  void XMLNode::AddAttrib(TString name, TString value) { fAttrib.AddLast(new XMLAttrib(name, value)); }
+
   Int_t XMLNode::GetNChildren(TString name) const {
     Int_t counter = 0;
     for (int i = 0; i < GetNChildren(); i++) {

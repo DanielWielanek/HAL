@@ -98,6 +98,12 @@ namespace Hal {
      */
     void AddAttrib(XMLAttrib* attrib);
     /**
+     * another method to add attribute
+     * @param name
+     * @param value
+     */
+    void AddAttrib(TString name, TString value);
+    /**
      *
      * @return number of childen nodes
      */

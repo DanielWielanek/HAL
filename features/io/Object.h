@@ -78,6 +78,9 @@ namespace Hal {
     ClassDef(Object, 1)
   };
 
+  /**
+   * class that is  drawn by Painter objects
+   */
   class DrawableObject : public Object {
   protected:
     /**
@@ -103,6 +106,7 @@ namespace Hal {
      * set this painter as common (use like gPad when draw few objects with 'same' flag
      */
     virtual void cd();
+    virtual void Browse(TBrowser* b);
     virtual void Draw(Option_t* option = "");
     virtual ~DrawableObject();
     ClassDef(DrawableObject, 1)

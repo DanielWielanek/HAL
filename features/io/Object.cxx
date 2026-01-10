@@ -12,7 +12,9 @@
 
 #include <iostream>
 
+#include <TBrowser.h>
 #include <TCollection.h>
+#include <TVirtualPad.h>
 
 namespace Hal {
 
@@ -60,6 +62,14 @@ namespace Hal {
     TNamed::operator=(b);
     fPainter = nullptr;
     return *this;
+  }
+
+  void DrawableObject::Browse(TBrowser* b) {
+    TVirtualPad* c1 = gPad;
+    if (gPad == nullptr) { new TCanvas(); }
+    gPad->Clear();
+    Draw("browser");
+    gPad = c1;
   }
 
   DrawableObject::~DrawableObject() {

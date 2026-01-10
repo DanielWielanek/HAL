@@ -332,8 +332,6 @@ namespace Hal {
     return nullptr;
   }
 
-  Painter* Femto3DCF::MakePainter() {
-    return new Hal::Femto3DCFPainter(this);
-  }
+  Painter* Femto3DCF::MakePainter() { return new Hal::Femto3DCFPainter(this); }
 
 }  // namespace Hal

@@ -75,6 +75,11 @@ namespace Hal {
      */
     void Browse(TBrowser* b);
     /**
+     * print info about this object
+     * @param option
+     */
+    virtual void Print(Option_t* option = "") const;
+    /**
      * extract this into HTML by return formated value of parameter
      * @param counter - not used
      * @param dir - not used

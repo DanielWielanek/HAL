@@ -12,6 +12,7 @@
 #include <TNamed.h>
 #include <TPaveText.h>
 #include <TVirtualPad.h>
+#include <iostream>
 
 #include "Parameter.h"
 #include "StdString.h"
@@ -442,4 +443,23 @@ namespace Hal {
     }
     return 1;
   }
+
+  void Parameter::Print(Option_t* option) const {
+    std::cout << "====================================" << std::endl;
+    std::cout << ClassName() << ": " << GetName() << std::endl;
+    std::cout << "Value:" << HTMLExtract() << std::endl;
+    Char_t mode = ' ';
+    switch (fMergeMode) {
+      case EParameterMerge::kPlus: mode = '+'; break;
+      case EParameterMerge::kEqual: mode = '='; break;
+      case EParameterMerge::kMultiply: mode = '*'; break;
+      case EParameterMerge::kFirst: mode = 'f'; break;
+      case EParameterMerge::kLast: mode = 'l'; break;
+      case EParameterMerge::kMaximum: mode = 'M'; break;
+      case EParameterMerge::kMinimum: mode = 'n'; break;
+      case EParameterMerge::kAverage: mode = 'a'; break;
+    }
+    std::cout << "Merge mode " << mode << std::endl;
+  }
+
 }  // namespace Hal

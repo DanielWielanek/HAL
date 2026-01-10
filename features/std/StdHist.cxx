@@ -1640,9 +1640,9 @@ NamespaceImp(Hal::Std)
 
     Double_t GetSumByVals(const TH1& x, Double_t sx, Double_t ex, Double_t sy, Double_t ey, Double_t sz, Double_t ez) {
       const Int_t ndim = dynamic_cast<const TH3*>(&x) ? 3 : dynamic_cast<const TH2*>(&x) ? 2 : 1;
-      TAxis* X         = x.GetXaxis();
-      TAxis* Y         = x.GetYaxis();
-      TAxis* Z         = x.GetZaxis();
+      const TAxis* X   = x.GetXaxis();
+      const TAxis* Y   = x.GetYaxis();
+      const TAxis* Z   = x.GetZaxis();
       switch (ndim) {
         case 1: return GetSumByBin(x, X->FindBin(sx), X->FindBin(ex)); break;
         case 2: return GetSumByBin(x, X->FindBin(sz), X->FindBin(ex), Y->FindBin(sy), Y->FindBin(ey)); break;

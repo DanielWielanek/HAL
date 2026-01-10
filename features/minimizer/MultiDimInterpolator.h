@@ -8,7 +8,7 @@
 #ifndef HAL_FEATURES_MINIMIZER_MULTIDIMINTERPOLATOR_H_
 #define HAL_FEATURES_MINIMIZER_MULTIDIMINTERPOLATOR_H_
 
-#include "Object.h"
+#include <TObject.h>
 
 #include "MultiDimDataManager.h"
 
@@ -20,7 +20,7 @@ namespace Hal {
   /**
    * class for interpolation of multimensional data
    */
-  class MultiDimInterpolator : public Object {
+  class MultiDimInterpolator : public TObject {
     MultiDimFile* fInFile = {nullptr};
 
   public:

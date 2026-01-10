@@ -8,7 +8,7 @@
 #ifndef HAL_FEATURES_HIST_MANYPOLYNOMIALSX_H_
 #define HAL_FEATURES_HIST_MANYPOLYNOMIALSX_H_
 
-#include "Object.h"
+#include <TObject.h>
 
 class TF1;
 
@@ -16,7 +16,7 @@ namespace Hal {
   /**
    * represents the multiple polynomial fuctions
    */
-  class ManyPolynomialsX : public Object {
+  class ManyPolynomialsX : public TObject {
     std::vector<std::vector<double>> fTerms;
     std::vector<double> fRanges;
     TF1* fFunc         = {nullptr};

@@ -11,7 +11,9 @@
 #include <iostream>
 #include <vector>
 
-#include "Object.h"
+#include <TObject.h>
+#include <TString.h>
+
 #ifndef __CLANG__
 #include <gsl/gsl_multiroots.h>
 #endif
@@ -22,7 +24,7 @@ namespace Hal {
    * class that solves non-linear equations. Thank to this function user can find a values of parameters for a function in a such
    * a way that they goes through points x,y
    */
-  class ParameterSolver : public Object {
+  class ParameterSolver : public TObject {
     std::vector<Double_t> fX;
     std::vector<Double_t> fY;
     TF1* fFunc = {nullptr};

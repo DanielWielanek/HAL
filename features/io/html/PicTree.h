@@ -8,14 +8,14 @@
 #ifndef HAL_FEATURES_IO_HTML_PICTREE_H_
 #define HAL_FEATURES_IO_HTML_PICTREE_H_
 
-#include "Object.h"
+#include <TObject.h>
 
 /**
  * generate picture with flow of data in task
  */
 namespace Hal {
 
-  class PicTree : public Object {
+  class PicTree : public TObject {
     struct circle {
       Int_t sDepth;
       Int_t sNumber;

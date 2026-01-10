@@ -8,13 +8,15 @@
 #ifndef HAL_FEATURES_MINIMIZER_MULTIDIMDATAMANAGER_H_
 #define HAL_FEATURES_MINIMIZER_MULTIDIMDATAMANAGER_H_
 
+#include <TObject.h>
+
 #include "FitParam.h"
-#include "Object.h"
+
 namespace Hal {
   /**
    * class that handles file with multidimensional data
    */
-  class MultiDimDataManager : public Object {
+  class MultiDimDataManager : public TObject {
     std::vector<FitParam> fParams;
     std::vector<Int_t> fTempVec;
     std::vector<Int_t> fMultiFactors;

@@ -9,9 +9,8 @@
 #define HAL_FEATURES_MATH_PEAKFITTERX_H_
 
 #include <TGraphErrors.h>
+#include <TObject.h>
 #include <vector>
-
-#include "Object.h"
 
 class TGraphErrors;
 class TF1;
@@ -26,7 +25,7 @@ namespace Hal {
    * if peak option is used data
    *
    */
-  class PeakFitterX : public Object {
+  class PeakFitterX : public TObject {
     TF1* fBackgroundFunction    = {nullptr};
     TF1* fSignalFunction        = {nullptr};
     TF1* fTotalFunction         = {nullptr};
@@ -132,6 +131,7 @@ namespace Hal {
      */
     void Draw(Option_t* option = "autocolor+data+sig+bckg+tot");
     virtual ~PeakFitterX();
+    ClassDef(PeakFitterX, 1)
   };
 
 } /* namespace Hal */

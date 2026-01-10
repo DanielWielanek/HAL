@@ -10,10 +10,9 @@
 
 #include <Rtypes.h>
 #include <RtypesCore.h>
+#include <TObject.h>
 #include <TString.h>
 #include <vector>
-
-#include "Object.h"
 
 class TFile;
 class TTree;
@@ -23,7 +22,7 @@ namespace Hal {
   /**
    * class for storing/reading files with multidimensional data
    */
-  class MultiDimFile : public Object {
+  class MultiDimFile : public TObject {
     TFile* fFile;
     TTree* fTree;
     std::vector<Float_t>* fValues = {nullptr};

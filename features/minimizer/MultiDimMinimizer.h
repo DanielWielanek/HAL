@@ -9,10 +9,10 @@
 #define HAL_FEATURES_MINIMIZER_MULTIDIMMINIMIZER_H_
 
 #include <RtypesCore.h>
+#include <TObject.h>
 #include <TString.h>
 #include <vector>
 
-#include "../io/Object.h"
 #include "FitParam.h"
 
 namespace Hal {
@@ -24,7 +24,7 @@ namespace Hal {
 
 namespace Hal {
 
-  class MultiDimMinimizer : public Object {
+  class MultiDimMinimizer : public TObject {
   protected:
     MultiDimInterpolator* fFunc = {nullptr};
     std::vector<FitParam> fParameters;

@@ -17,19 +17,7 @@
 #include <TH2.h>
 
 namespace Hal {
-  const int FemtoCFPainter::kNumBit     = 8;
-  const int FemtoCFPainter::kDenBit     = 9;
-  const int FemtoCFPainter::kCFBit      = 10;
-  const int FemtoCFPainter::kHideTitles = 11;
-  const int FemtoCFPainter::kScaled     = 12;
-
-  void FemtoCFPainter::DeleteHistograms() {
-    for (auto& x : fHistograms) {
-      for (auto y : x)
-        if (y) delete y;
-    }
-    fHistograms.clear();
-  }
+  const int FemtoCFPainter::kCFBit = DividedHistoPainter::LastBinPainter() + 1;
 
   void FemtoCFPainter::ScaleHistograms() {
     for (auto& x : fHistograms) {
@@ -44,34 +32,8 @@ namespace Hal {
     fScale = newScale / fDrawScale;
   }
 
-  void FemtoCFPainter::DrawHistograms() {
-    LockPad();
-    int count = 0;
-    for (auto i : fHistograms) {
-      GotoPad(++count);
-      for (auto j : i) {
-        if (j) {
-          if (CheckOpt(kHideTitles)) j->SetTitle("");
-          j->SetStats(0);
-          j->Draw(fDefDrawFlag);
-        }
-      }
-    }
-    UnlockPad();
-  }
 
-  FemtoCFPainter::~FemtoCFPainter() { DeleteHistograms(); }
-
-  void FemtoCFPainter::InnerPaint() {
-    LockPad();
-    DeleteHistograms();
-    MakeHistograms();
-    ScaleHistograms();
-    DrawHistograms();
-    Painter::InnerPaint();
-    OptionsApplied();
-    UnlockPad();
-  }
+  FemtoCFPainter::~FemtoCFPainter() {}
 
   void FemtoCFPainter::InnerRepaint() {
     LockPad();
@@ -79,20 +41,11 @@ namespace Hal {
       DeleteHistograms();
       MakeHistograms();
       ScaleHistograms();
-    } else if (fScale != 1)
+    } else if (fScale != 1) {
       ScaleHistograms();
-    Painter::InnerRepaint();
+    }
     OptionsApplied();
     UnlockPad();
-  }
-
-  TH1* FemtoCFPainter::CloneHist(TH1* h) const {
-    TH1* copy = (TH1*) h->Clone();
-    h->SetName(Form("%i", Hal::Std::anonymCounter++));
-    copy->SetDirectory(nullptr);
-    copy->SetStats(0);
-    copy->SetObjectStat(kFALSE);
-    return copy;
   }
 
   ULong64_t FemtoCFPainter::PrepBitTemplate(std::initializer_list<int> temps) const {
@@ -106,14 +59,16 @@ namespace Hal {
   Bool_t FemtoCFPainter::AreSimiliar(ULong64_t current, ULong64_t pattern) const { return (pattern == current) & pattern; }
 
   ULong64_t FemtoCFPainter::SetOptionInternal(TString opt, ULong64_t newOpts) {
-    if (Hal::Std::FindParam(opt, "num", kTRUE)) { SETBIT(newOpts, kNumBit); }
-    if (Hal::Std::FindParam(opt, "den", kTRUE)) { SETBIT(newOpts, kDenBit); }
-    if (Hal::Std::FindParam(opt, "tit", kTRUE)) { SETBIT(newOpts, kHideTitles); }
+    newOpts = Hal::DividedHistoPainter::SetOptionInternal(opt, newOpts);
     if (Hal::Std::FindParam(opt, "fit", kTRUE)) {
       CLRBIT(newOpts, kDenBit);
       CLRBIT(newOpts, kNumBit);
     }
-    if (Hal::Std::FindParam(opt, "scale", kTRUE)) SETBIT(newOpts, kScaled);
+    if (Hal::Std::FindParam(opt, "cf", kTRUE)) {
+      CLRBIT(newOpts, kDenBit);
+      CLRBIT(newOpts, kNumBit);
+      SETBIT(newOpts, kCFBit);
+    }
     auto ranges = Hal::Std::FindBrackets(opt, kTRUE, kTRUE);
     for (auto range : ranges) {
       std::vector<double> res;

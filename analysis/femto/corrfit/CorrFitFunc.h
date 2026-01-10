@@ -403,6 +403,20 @@ namespace Hal {
      * @param max
      */
     void SetNormLimits(Double_t min, Double_t max) { SetParLimits(NormID(), min, max); }
+    /**
+     * draw function
+     * @param option
+     * NOTE - this class use pads from fitted correlation function, therefore you should always call:
+     * cf->Fit(fit) or cf->FitDummy(fit) before call fit->Draw(); You cannot draw "raw" function.
+     * Supported options:
+     * - "norm" - automatic scale of this function (and fitted)
+     * - "chi2" - draw chi2 on legend (including total value of chi2 and NDF)
+     * - "chi2s " - draw chi2 on legend
+     * - "legend" - draw legend
+     * - "th1" - use TH1 instead of TF1 for drawing
+     * - "th1c" - same as th1 but uses "same+c" for drawing CF's
+     * @see ULong64_t CorrFitPainter::SetOptionInternal(TString opt, ULong64_t prev = 0)
+     */
     virtual void Draw(Option_t* option = "");
     virtual void Repaint();
     /**

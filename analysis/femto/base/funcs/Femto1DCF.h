@@ -36,6 +36,7 @@ namespace Hal {
      * @param h - adress of numerator or denominator
      */
     virtual void SetAxisNames(TH1* h);
+    virtual Painter* MakePainter();
 
   public:
     Femto1DCF();
@@ -98,7 +99,7 @@ namespace Hal {
      * see @see #Hal::Femto1DCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
      * @param option
      */
-    virtual void Draw(Option_t* option = "");
+    virtual void Draw(Option_t* option = "") { DividedHisto1D::Draw(option); };
     /**
      * apply purity correction and recalculate errors
      * @param h purity correction

@@ -25,7 +25,6 @@ namespace Hal {
    */
   class Femto3DCF : public DividedHisto3D {
     friend class FemtoSerializationInterface3D;
-    FemtoCFPainter* fPainter = {nullptr};  //!
     /**
      * frame of pairs in CF
      */
@@ -35,6 +34,9 @@ namespace Hal {
      * @param h - adress of numerator or denominator
      */
     virtual void SetAxisNames(TH1* h);
+
+  protected:
+    virtual Painter* MakePainter();
 
   public:
     /**
@@ -84,7 +86,7 @@ namespace Hal {
      * see @see #Hal::Femto3DCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
      * @param option
      */
-    virtual void Draw(Option_t* opt = "cf+rgb+norm");
+    virtual void Draw(Option_t* opt = "cf+rgb+norm") { Hal::DividedHisto3D::Draw(opt); };
     /**
      * draw scaled projection of CF
      * @param scale scale (norm)
@@ -94,7 +96,7 @@ namespace Hal {
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual TH1D** GetDiagProj(Option_t* opt = "diag1", Bool_t normalized = kTRUE) const;
     virtual void Print(Option_t* opt = "") const;
-    virtual FemtoCFPainter* GetPainter() const { return fPainter; }
+    virtual FemtoCFPainter* GetPainter() const { return (FemtoCFPainter*) fPainter; }
     virtual TObject* GetSpecial(TString opt) const;
     virtual ~Femto3DCF();
     ClassDef(Femto3DCF, 4)

@@ -128,22 +128,10 @@ namespace Hal {
     TVirtualPad* c1 = gPad;
     if (gPad == nullptr) { new TCanvas(); }
     gPad->Clear();
-    Draw("all");
+    Draw("browser+all");
     gPad = c1;
     b->Add(fNum);
     b->Add(fDen);
-  }
-
-  void Femto3DCF::Draw(Option_t* opt) {
-    TString options = opt;
-    if (fPainter) {
-      fPainter->SetOption(options);
-      fPainter->Paint();
-    } else {
-      fPainter = new Hal::Femto3DCFPainter(this);
-      fPainter->SetOption(options);
-      fPainter->Paint();
-    }
   }
 
   void Femto3DCF::DrawScaled(Double_t /*scale*/, Option_t* opt) {
@@ -342,6 +330,10 @@ namespace Hal {
     if (opt == "serialization") return new FemtoSerializationInterface3D();
     if (opt == "painter") return fPainter;
     return nullptr;
+  }
+
+  Painter* Femto3DCF::MakePainter() {
+    return new Hal::Femto3DCFPainter(this);
   }
 
 }  // namespace Hal

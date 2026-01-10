@@ -59,6 +59,7 @@ hist/ChiSqMap2D.cxx
 hist/FastHist.cxx
 hist/CorrelationHisto.cxx
 hist/Painter.cxx
+hist/HistoPainter.cxx
 hist/styles/AxisStyle.cxx
 hist/styles/FillStyle.cxx
 hist/styles/HistoStyle.cxx

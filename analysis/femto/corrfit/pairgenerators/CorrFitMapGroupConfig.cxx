@@ -15,7 +15,7 @@ namespace Hal {
   CorrFitMapGroupConfig::CorrFitMapGroupConfig() : fBins(100), fMin(0), fMax(100) {
     fStep = (fMax - fMin) / Double_t(fBins);
     fStep = 1.0 / fStep;
-    SetName("CorrFitMapGroup");
+    Object::SetName("CorrFitMapGroup");
   }
 
   void CorrFitMapGroupConfig::SetAxis(Int_t bins, Double_t min, Double_t max) {

@@ -17,16 +17,21 @@
 #include "Style.h"
 
 #include <TCanvas.h>
+#include <TROOT.h>
+
 namespace Hal {
   const int Painter::kHtmlBit                  = 0;
-  const int Painter::kGridBit                  = 1;
-  const int Painter::kPad                      = 2;
-  const int Painter::kCanvas                   = 3;
-  const int Painter::kSame                     = 4;
+  const int Painter::kPadBit                   = 1;
+  const int Painter::kCanvasBit                = 2;
+  const int Painter::kSameBit                  = 3;
+  const int Painter::kBrowserBit               = 4;
+  const int Painter::kLastBitPainter           = 4;
   Painter::commonPointers Painter::gCommonData = commonPointers();
+
   Painter::Painter() {
     fCommonData.fCanvases = new std::vector<TCanvas*>();
     fCommonData.fPads     = new std::vector<std::vector<TVirtualPad*>>();
+    fCommonData.fParent   = this;
   }
 
   Painter::~Painter() {
@@ -37,20 +42,34 @@ namespace Hal {
 
   void Painter::AddPainter(Painter* painter) {
     painter->CleanCommonData();
-    painter->fOwnPad     = kFALSE;
-    painter->fParent     = this;
     painter->fCommonData = fCommonData;
-    fSubPainters.push_back(painter);
+    Bool_t replicate     = kFALSE;
+    for (auto i : fSubPainters) {
+      if (i == painter) replicate = kTRUE;
+    }
+    if (!replicate) fSubPainters.push_back(painter);
+  }
+
+  void Painter::AddAsSubPainter() {
+    auto parent = GetAncestor();
+    if (!parent) return;
+    for (auto i : parent->fSubPainters) {
+      if (i == this) return;
+    }
+    parent->fSubPainters.push_back(this);
   }
 
   void Painter::Paint() {
-    if (CheckOpt(kSame)) { fCommonData = gCommonData; }
+    if (CheckOpt(kSameBit)) {
+      fCommonData = gCommonData;
+      auto parent = fCommonData.fParent;
+      if (parent != this) { AddAsSubPainter(); }
+    }
+    Bool_t batch = gROOT->IsBatch();
+    if (CheckOpt(kHtmlBit)) gROOT->SetBatch(kTRUE);
     auto pad = gPad;
     if (!HasParent()) {
-      if (!fPainted) {
-        MakePadsAndCanvases();
-        fOwnPad = kTRUE;
-      }
+      if (!fPainted) { MakePadsAndCanvases(); }
       LockPad();
       TryPaint();
       UpdateAllPads();
@@ -69,6 +88,7 @@ namespace Hal {
     else
       gPad = nullptr;
     gCommonData = this->fCommonData;
+    if (CheckOpt(kHtmlBit)) gROOT->SetBatch(batch);
   }
 
   void Painter::SetFlag(Int_t bit, Bool_t state) {
@@ -78,12 +98,16 @@ namespace Hal {
       CLRBIT(fDrawFlags, bit);
   }
 
+  void Painter::InnerRepaint() { std::cout << ClassName() << " does not support repaint" << std::endl; }
+
+  void Painter::OwnCanvasDivide(TCanvas* c, Int_t x, Int_t y, Int_t canvasNo) { c->Divide(x, y); }
+
   void Painter::MakeCanvasPads(Int_t x, Int_t y, Int_t canvasNo) {
     auto dividePads = [&]() {
       auto canva = GetCanvas(canvasNo);
       int count  = 0;
-      if (!TESTBIT(fDrawFlags, kPad)) {
-        canva->Divide(x, y);
+      if (!CheckOpt(kPadBit)) {
+        OwnCanvasDivide(canva, x, y, canvasNo);
       } else {  // reuse pads
         bool cont = true;
         auto gpad = gPad;
@@ -103,14 +127,20 @@ namespace Hal {
       }
     };
     LockPad();
-    if (CheckOpt(kSame)) {
-      // do nothing
+    if (CheckOpt(kSameBit)) {
     } else if (fCommonData.fCanvases->size() > canvasNo) {
+      dividePads();
+    } else if (CheckOpt(kBrowserBit) && canvasNo == 0) {
+      TCanvas* newCanv = dynamic_cast<TCanvas*>(gPad);
+      fCommonData.fCanvases->push_back(newCanv);
+      std::vector<TVirtualPad*> pads;
+      pads.push_back(newCanv);
+      fCommonData.fPads->push_back(pads);
       dividePads();
     } else {
       for (int i = fCommonData.fCanvases->size(); i <= canvasNo; i++) {
         TCanvas* newCanv = nullptr;
-        if (TESTBIT(fDrawFlags, kPad) || TESTBIT(fDrawFlags, kCanvas)) {
+        if (CheckOpt(kPadBit) || CheckOpt(kCanvasBit)) {
           newCanv = dynamic_cast<TCanvas*>(gPad);
           if (!newCanv) {
             auto pad = gPad;
@@ -130,7 +160,7 @@ namespace Hal {
   }
 
   void Painter::UpdateAllPads() {
-    if (!fOwnPad) return;
+    if (HasParent()) return;
     for (auto pads : *fCommonData.fPads) {
       for (unsigned int i = 1; i < pads.size(); i++) {
         auto pad = pads[i];
@@ -168,6 +198,22 @@ namespace Hal {
       style.SetGridy(1);
       SetGlobalPadStyle(style);
     }
+    Bool_t logs[] = {kFALSE, kFALSE, kFALSE};
+    if (Hal::Std::FindParam(option, "logx", true)) logs[0] = kTRUE;
+    if (Hal::Std::FindParam(option, "logy", true)) logs[1] = kTRUE;
+    if (Hal::Std::FindParam(option, "logy", true)) logs[2] = kTRUE;
+    for (int i = 0; i < 3; i++) {
+      if (logs[i] == kFALSE) continue;
+      if (!fPadStyle) {
+        Hal::PadStyle style;
+        SetGlobalPadStyle(style);
+      }
+      if (i == 0) fPadStyle->SetLogx(1);
+      if (i == 1) fPadStyle->SetLogy(1);
+      if (i == 2) fPadStyle->SetLogz(1);
+    }
+
+
     if (Hal::Std::FindParam(option, "default")) { SetDefaultFlag(); }
     ULong64_t defFlags = 0;
     if (Hal::Std::FindParam(option, "keep", kTRUE)) { defFlags = fDrawFlags; }
@@ -183,21 +229,28 @@ namespace Hal {
     }
     if (Hal::Std::FindParam(option, "canvas", kTRUE)) {
       fOptionsChanged = kTRUE;
-      SETBIT(defFlags, kCanvas);
-      CLRBIT(defFlags, kPad);
-      CLRBIT(defFlags, kSame);
+      SETBIT(defFlags, kCanvasBit);
+      CLRBIT(defFlags, kPadBit);
+      CLRBIT(defFlags, kSameBit);
     }
     if (Hal::Std::FindParam(option, "pad", kTRUE)) {
       fOptionsChanged = kTRUE;
-      SETBIT(defFlags, kPad);
-      CLRBIT(defFlags, kCanvas);
-      CLRBIT(defFlags, kSame);
+      SETBIT(defFlags, kPadBit);
+      CLRBIT(defFlags, kCanvasBit);
+      CLRBIT(defFlags, kSameBit);
     }
     if (Hal::Std::FindParam(option, "same", kTRUE)) {
       fOptionsChanged = kTRUE;
-      CLRBIT(defFlags, kPad);
-      CLRBIT(defFlags, kCanvas);
-      SETBIT(defFlags, kSame);
+      CLRBIT(defFlags, kPadBit);
+      CLRBIT(defFlags, kCanvasBit);
+      SETBIT(defFlags, kSameBit);
+    }
+    if (Hal::Std::FindParam(option, "browser", kTRUE)) {
+      CLRBIT(defFlags, kPadBit);
+      CLRBIT(defFlags, kCanvasBit);
+      CLRBIT(defFlags, kSameBit);
+      CLRBIT(defFlags, kHtmlBit);
+      SETBIT(defFlags, kBrowserBit);
     }
     auto newOpt = SetOptionInternal(option, defFlags);
     if (newOpt != fDrawFlags) {
@@ -207,7 +260,7 @@ namespace Hal {
   }
 
   Bool_t Painter::HasParent() const {
-    if (fParent) return kTRUE;
+    if (fCommonData.fParent != this) return kTRUE;
     return kFALSE;
   }
 
@@ -251,9 +304,9 @@ namespace Hal {
     return (*fCommonData.fPads)[canvasNo][index];
   }
 
-  Painter* Painter::GetAncestor() const {
-    if (HasParent()) { return GetParent(); }
-    return GetAncestor();
+  Painter* Painter::GetAncestor() {
+    if (HasParent()) { return GetParent()->GetAncestor(); }
+    return this;
   }
 
   void Painter::SetGlobalPadStyle(Hal::PadStyle& pad) { fPadStyle = new Hal::PadStyle(pad); }
@@ -264,7 +317,7 @@ namespace Hal {
   }
 
   void Painter::CleanCommonData() {
-    if (!fOwnPad) return;
+    if (HasParent()) return;
     if (fCommonData.fCanvases) {
       for (auto canv : *fCommonData.fCanvases)
         delete canv;
@@ -277,12 +330,16 @@ namespace Hal {
     }
   }
 
-
   void Painter::ResetFewBits(ULong64_t& flag, std::initializer_list<Int_t> bits, Int_t set) const {
     for (auto ibit : bits)
       CLRBIT(flag, ibit);
     if (set >= 0) SETBIT(flag, set);
   }
 
+  void SimplePainter::MakePadsAndCanvases() { MakeCanvasPads(1, 1, 0); }
+
+  void Painter::ApplyGlobalPadStyle() const {
+    if (gPad && fPadStyle) fPadStyle->Apply(gPad);
+  }
 
 } /* namespace Hal */

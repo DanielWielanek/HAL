@@ -35,6 +35,7 @@
 #pragma link C++ class Hal::MainOption + ;
 #pragma link C++ class Hal::PackageSql + ;
 #pragma link C++ class Hal::Object + ;
+#pragma link C++ class Hal::DrawableObject + ;
 #pragma link C++ class Hal::MultiGraph + ;
 #pragma link C++ class Hal::Cout + ;
 #pragma link C++ class Hal::Pointer < TObject> + ;
@@ -57,6 +58,8 @@
 #pragma link C++ class Hal::DividedHisto1D + ;
 #pragma link C++ class Hal::DividedHisto2D + ;
 #pragma link C++ class Hal::DividedHisto3D + ;
+#pragma link C++ class Hal::HistoPainter + ;
+#pragma link C++ class Hal::DividedHistoPainter + ;
 
 #pragma link C++ class Hal::ChiSqMap2D + ;
 
@@ -115,7 +118,9 @@
 #pragma link C++ class Hal::HistoStyle + ;
 #pragma link C++ class Hal::LegendStyle + ;
 #pragma link C++ class Hal::CorrelationHisto + ;
+#pragma link C++ class Hal::CorrelationHistoPainter + ;
 #pragma link C++ class Hal::Painter + ;
+#pragma link C++ class Hal::SimplePainter + ;
 #pragma link C++ class Hal::ManyPolynomialsX + ;
 #pragma link C++ class Hal::PeakFitterX + ;
 
@@ -164,7 +169,6 @@
 #pragma link C++ class Hal::XMLAttrib + ;
 #pragma link C++ class Hal::XMLNode + ;
 #pragma link C++ class Hal::XMLFile + ;
-
 
 #pragma link C++ class Hal::Minimizer + ;
 #pragma link C++ class Hal::MultiDimFile + ;

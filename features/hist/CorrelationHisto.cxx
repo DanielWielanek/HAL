@@ -212,36 +212,6 @@ namespace Hal {
     }
   }
 
-  void CorrelationHisto::Draw(Option_t* opt) {
-    TString option   = opt;
-    Bool_t logx      = Hal::Std::FindParam(option, "logx", kTRUE);
-    Bool_t logy      = Hal::Std::FindParam(option, "logy", kTRUE);
-    Bool_t logz      = Hal::Std::FindParam(option, "logz", kTRUE);
-    Bool_t gridx     = Hal::Std::FindParam(option, "gridx", kTRUE);
-    Bool_t gridy     = Hal::Std::FindParam(option, "gridy", kTRUE);
-    TString otherOpt = option;
-    auto pads        = Hal::Std::GetGridPad(fNParams, fNParams, 0.124, 0.124);
-    int count        = 0;
-    for (int i = 0; i < fNParams; i++) {
-      for (int j = i; j < fNParams; j++) {
-        pads[i][j]->cd();
-        if (otherOpt.Length() == 0)
-          fHistograms[count++]->Draw("col");
-        else
-          fHistograms[count++]->Draw(otherOpt);
-        if (logx) gPad->SetLogx();
-        if (i != j) {
-          if (logy) gPad->SetLogy();
-          if (logz) gPad->SetLogz();
-        } else {
-          if (logz) gPad->SetLogy();
-        }
-        if (gridx) gPad->SetGridx();
-        if (gridy) gPad->SetGridy();
-      }
-    }
-  }
-
   CorrelationHisto::~CorrelationHisto() {
     if (fHistograms.size()) {
       for (int i = 0; i < fNHistograms; i++) {
@@ -249,6 +219,8 @@ namespace Hal {
       }
     }
   }
+
+  Painter* CorrelationHisto::MakePainter() { return new CorrelationHistoPainter(this); }
 
   Bool_t CorrelationHisto::CanBeTableElement() const { return kFALSE; }
 
@@ -365,6 +337,34 @@ namespace Hal {
     for (int i = 0; i < fNHistograms; i++) {
       fHistograms[i]->Add(copy->fHistograms[i]);
     }
+  }
+
+  void CorrelationHistoPainter::MakeHistograms() {
+    for (int i = 0; i < fHisto->GetNParams(); i++) {
+      for (int j = i; j < fHisto->GetNParams(); j++) {
+        fPads[i][j]->cd();
+        fHisto->GetCorrelationHisto(i, j)->Draw("colz");
+        ApplyGlobalPadStyle();
+      }
+    }
+  }
+
+  void CorrelationHistoPainter::MakePadsAndCanvases() {
+    MakeCanvasPads(fHisto->GetNParams(), fHisto->GetNParams(), 1);
+    GetCanvas(0)->cd();
+  }
+
+  void CorrelationHistoPainter::OwnCanvasDivide(TCanvas* c, Int_t x, Int_t y, Int_t canvasNo) {
+    c->cd();
+    fPads = Hal::Std::GetGridPad(fHisto->GetNParams(), fHisto->GetNParams(), 0.124, 0.124);
+  }
+
+  void CorrelationHistoPainter::InnerRepaint() { std::cout << fHisto->ClassName() << " does not support redraw" << std::endl; }
+
+
+  void CorrelationHistoPainter::InnerPaint() {
+    MakePadsAndCanvases();
+    MakeHistograms();
   }
 
 }  // namespace Hal

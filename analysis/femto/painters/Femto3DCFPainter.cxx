@@ -17,13 +17,14 @@
 #include <TVirtualPad.h>
 
 namespace Hal {
-  const int Femto3DCFPainter::kRgbBit        = 16;
-  const int Femto3DCFPainter::kRawBit        = 17;
-  const int Femto3DCFPainter::kDiag1Bit      = 18;
-  const int Femto3DCFPainter::kDiag2Bit      = 19;
-  const int Femto3DCFPainter::kTwoDimBit     = 20;
-  const int Femto3DCFPainter::kTwoDimPlusBit = 21;
-  const int Femto3DCFPainter::kAngles        = 22;
+  const int Femto3DCFPainter::kRgbBit        = FemtoCFPainter::LastBitPainter() + 1;
+  const int Femto3DCFPainter::kRawBit        = FemtoCFPainter::LastBitPainter() + 2;
+  const int Femto3DCFPainter::kDiag1Bit      = FemtoCFPainter::LastBitPainter() + 3;
+  const int Femto3DCFPainter::kDiag2Bit      = FemtoCFPainter::LastBitPainter() + 4;
+  const int Femto3DCFPainter::kTwoDimBit     = FemtoCFPainter::LastBitPainter() + 5;
+  const int Femto3DCFPainter::kTwoDimPlusBit = FemtoCFPainter::LastBitPainter() + 6;
+  const int Femto3DCFPainter::kAngles        = FemtoCFPainter::LastBitPainter() + 7;
+
   ULong64_t Femto3DCFPainter::SetOptionInternal(TString opt, ULong64_t newFlags) {
     newFlags        = FemtoCFPainter::SetOptionInternal(opt, newFlags);
     auto cleanFlags = [&](int setbit) { ResetFewBits(newFlags, {kDiag1Bit, kDiag2Bit, kTwoDimBit, kTwoDimPlusBit}, setbit); };
@@ -55,7 +56,7 @@ namespace Hal {
       }
     };
 
-    ContitionalPattern(opt, "hidetitles", newFlags, kHideTitles);
+    ContitionalPattern(opt, "hidetitles", newFlags, kHideTitlesBit);
     return newFlags;
   }
 
@@ -67,7 +68,7 @@ namespace Hal {
     } else if (CheckOpt(kDenBit)) {
       h = (TH3*) fCF->GetDen()->Clone();
     } else {  // cf
-      h     = (TH3*) fCF->GetHist(CheckOpt(kScaled));
+      h     = (TH3*) fCF->GetHist(CheckOpt(kScaleBit));
       clean = true;
     }
     if (CheckOpt(kDiag1Bit)) {

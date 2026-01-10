@@ -25,10 +25,10 @@
 #include "StdString.h"
 
 namespace Hal {
-  const int FemtoSHCFPainter::kReBit    = 16;
-  const int FemtoSHCFPainter::kImBit    = 17;
-  const int FemtoSHCFPainter::kShortBit = 18;
-  const int FemtoSHCFPainter::kSepBit   = 19;
+  const int FemtoSHCFPainter::kReBit    = FemtoCFPainter::LastBitPainter() + 1;
+  const int FemtoSHCFPainter::kImBit    = FemtoCFPainter::LastBitPainter() + 2;
+  const int FemtoSHCFPainter::kShortBit = FemtoCFPainter::LastBitPainter() + 3;
+  const int FemtoSHCFPainter::kSepBit   = FemtoCFPainter::LastBitPainter() + 4;
 
   ULong64_t FemtoSHCFPainter::SetOptionInternal(TString opts, ULong64_t newFlags) {
     newFlags = FemtoCFPainter::SetOptionInternal(opts, newFlags);

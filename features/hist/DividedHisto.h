@@ -28,7 +28,7 @@
 namespace Hal {
   class HistoStyle;
   class HistogramAxisConf;
-  class DividedHisto1D : public Object {
+  class DividedHisto1D : public DrawableObject {
     friend class HistoStyle;
 
   private:
@@ -116,6 +116,7 @@ namespace Hal {
     virtual TString GetPic() const;
     /**apply style for this object **/
     virtual void ApplyStyle(const HistoStyle& h);
+    virtual Painter* MakePainter();
 
   public:
     /**
@@ -389,9 +390,9 @@ namespace Hal {
     /**
      * draw this object
      * @param opt if "num" then only numerator is drawn, in "den" if "all" draw
-     * all histograms m, otherwise draw divided histogram
+     * all histograms, otherwise draw divided histogram
      */
-    virtual void Draw(Option_t* opt = "all");
+    virtual void Draw(Option_t* opt = "all") { DrawableObject::Draw(opt); };
     /**
      * crates htm repot
      * @param counter counter of this object
@@ -406,7 +407,7 @@ namespace Hal {
      */
     virtual TObject* GetSpecial(TString opt) const { return nullptr; }
     virtual ~DividedHisto1D();
-    ClassDef(DividedHisto1D, 4)
+    ClassDef(DividedHisto1D, 5)
   };
   /**
    * class for storing divided 2-dim histograms
@@ -551,7 +552,7 @@ namespace Hal {
      */
     DividedHisto2D& operator=(const DividedHisto2D& other);
     ~DividedHisto2D();
-    ClassDef(DividedHisto2D, 2)
+    ClassDef(DividedHisto2D, 3)
   };
   /**
    * array for storing divided 3-dim histograms
@@ -723,7 +724,7 @@ namespace Hal {
     DividedHisto3D& operator=(const DividedHisto3D& other);
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     ~DividedHisto3D();
-    ClassDef(DividedHisto3D, 3)
+    ClassDef(DividedHisto3D, 4)
   };
 }  // namespace Hal
 #endif /* HALDIVIDEDHISTO1D_H_ */

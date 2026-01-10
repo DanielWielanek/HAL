@@ -10,6 +10,7 @@
 #include "DividedHisto.h"
 
 #include "Cout.h"
+#include "HistoPainter.h"
 #include "HistoStyle.h"
 #include "HistogramManager.h"
 #include "HtmlCore.h"
@@ -37,6 +38,7 @@
 #include <TSystem.h>
 #include <TVirtualPad.h>
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 namespace Hal {
@@ -213,6 +215,8 @@ namespace Hal {
     }
   }
 
+  Painter* DividedHisto1D::MakePainter() { return new Hal::DividedHistoPainter(this); }
+
   void DividedHisto1D::ApplyStyle(const HistoStyle& h) {
     h.Apply(*fNum);
     h.Apply(*fDen);
@@ -281,10 +285,7 @@ namespace Hal {
   void DividedHisto1D::SetAxisName(TString name) { fAxisName = name; }
 
   void DividedHisto1D::Browse(TBrowser* b) {
-    gPad->Clear();
-    TVirtualPad* c1 = gPad;
-    Draw();
-    gPad = c1;
+    DrawableObject::Browse(b);
     b->Add(fNum);
     b->Add(fDen);
   }
@@ -368,48 +369,6 @@ namespace Hal {
   }
 
   void DividedHisto1D::AddLabel(TString label) { fLabels->AddLast(new TObjString(label)); }
-
-  void DividedHisto1D::Draw(Option_t* opt) {
-    if (gPad == NULL) new TCanvas();
-    TString option = opt;
-    if (Hal::Std::FindParam(option, "num", kTRUE)) {
-      fNum->Draw(option);
-    } else if (Hal::Std::FindParam(option, "den", kTRUE)) {
-      fDen->Draw(option);
-    } else if (Hal::Std::FindParam(option, "all", kTRUE)) {
-      TVirtualPad* c1 = gPad;
-      if (gPad->GetListOfPrimitives()->GetEntries() < 4) gPad->Divide(2, 2);
-      c1->cd(1);
-      fNum->Draw(option);
-      c1->cd(2);
-      fDen->Draw(option);
-      c1->cd(3);
-      TH1* h = this->GetHist(kTRUE);
-      h->SetTitle(fComment);
-      h->Draw(option);
-      c1->cd(4);
-      TH1* num_copy = (TH1*) fNum->Clone("temp_num");
-      TH1* den_copy = (TH1*) fDen->Clone("temp_den");
-      num_copy->GetYaxis()->SetTitle(Form("%s (scaled)", fNum->GetYaxis()->GetTitle()));
-      num_copy->SetLineColor(kRed + 1);
-      den_copy->SetLineColor(kGreen + 1);
-      Double_t num_scale = 1.0 / num_copy->GetEntries();
-      Double_t den_scale = 1.0 / den_copy->GetEntries();
-      num_copy->Scale(num_scale);
-      den_copy->Scale(den_scale);
-      num_copy->SetStats(kFALSE);
-      TLegend* leg = new TLegend(0.4, 0.8, 0.9, 0.9);
-      leg->AddEntry(num_copy, Form("Numerator x %E", num_scale), "LPM");
-      leg->AddEntry(den_copy, Form("Denominator x %E", den_scale), "LPM");
-      num_copy->Draw(option);
-      den_copy->Draw("SAME");
-      leg->SetFillStyle(3002);
-      leg->Draw("SAME");
-      gPad = c1;
-    } else {
-      GetHist(kTRUE)->Draw(opt);
-    }
-  }
 
   Double_t DividedHisto1D::GetNormMin(Int_t no) const {
     if (no >= 0 && no < fDim) { return fNormMin[no]; }

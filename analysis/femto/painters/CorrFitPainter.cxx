@@ -19,12 +19,13 @@
 #include "StdString.h"
 
 namespace Hal {
-  const int CorrFitPainter::kAutoNormBit   = 8;
-  const int CorrFitPainter::kLegendBit     = 9;
-  const int CorrFitPainter::kChi2          = 10;
-  const int CorrFitPainter::kChi2Short     = 11;
-  const int CorrFitPainter::kTH1Draw       = 12;
-  const int CorrFitPainter::kTH1DrawSmooth = 13;
+  const int CorrFitPainter::kAutoNormBit   = Painter::LastBitPainter() + 1;
+  const int CorrFitPainter::kLegendBit     = Painter::LastBitPainter() + 2;
+  const int CorrFitPainter::kChi2          = Painter::LastBitPainter() + 3;
+  const int CorrFitPainter::kChi2Short     = Painter::LastBitPainter() + 4;
+  const int CorrFitPainter::kTH1Draw       = Painter::LastBitPainter() + 5;
+  const int CorrFitPainter::kTH1DrawSmooth = Painter::LastBitPainter() + 6;
+
   CorrFitPainter::CorrFitPainter(CorrFitFunc* func) : Painter(), fFittedFunc(func) {
     fNormIndex = fFittedFunc->GetParameterIndex("N");
   }
@@ -138,7 +139,6 @@ namespace Hal {
       fLegendPad->cd();
       fLegend->Draw("SAME");
     }
-    Painter::InnerPaint();
     OptionsApplied();
   }
 
@@ -148,7 +148,6 @@ namespace Hal {
     ScaleHistograms();
     DrawFunctions();
     UpdateLegend();
-    Painter::InnerRepaint();
     OptionsApplied();
   }
 

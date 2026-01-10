@@ -85,7 +85,6 @@ namespace Hal {
   Femto1DCF::Femto1DCF(const Femto1DCF& other) : DividedHisto1D(other), fFrame(other.fFrame) {}
 
   Femto1DCF::~Femto1DCF() {
-    if (fPainter) delete fPainter;
     // TODO Auto-generated destructor stub
   }
 
@@ -148,7 +147,7 @@ namespace Hal {
   void Femto1DCF::Browse(TBrowser* b) {
     gPad->Clear();
     TVirtualPad* c1 = gPad;
-    Draw("all");
+    Draw("all+browser");
     gPad = c1;
     b->Add(fNum);
     b->Add(fDen);
@@ -168,18 +167,6 @@ namespace Hal {
     if (opt == "serialization") return new FemtoSerializationInterface1D();
     if (opt == "painter") return fPainter;
     return nullptr;
-  }
-
-  void Femto1DCF::Draw(Option_t* option) {
-    TString options = option;
-    if (fPainter) {
-      fPainter->SetOption(option);
-      fPainter->Paint();
-    } else {
-      fPainter = new Hal::Femto1DCFPainter(this);
-      fPainter->SetOption(option);
-      fPainter->Paint();
-    }
   }
 
   void Femto1DCF::ApplyPurityCorrection(const TH1& h, Double_t normalization) {
@@ -234,5 +221,7 @@ namespace Hal {
       fNum->SetBinError(i, Nbe * purity);
     }
   }
+
+  Painter* Femto1DCF::MakePainter() { return new Hal::Femto1DCFPainter(this); }
 
 }  // namespace Hal

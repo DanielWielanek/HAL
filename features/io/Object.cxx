@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include <TBrowser.h>
+#include <TCanvas.h>
 #include <TCollection.h>
 #include <TVirtualPad.h>
 

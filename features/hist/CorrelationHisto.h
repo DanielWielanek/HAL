@@ -15,6 +15,7 @@
 
 #include "HistogramManager.h"
 #include "Object.h"
+#include "Painter.h"
 
 class TH1;
 
@@ -22,7 +23,7 @@ namespace Hal {
   /**
    * class for plotting correlations betwen pais of parameters
    */
-  class CorrelationHisto : public Object {
+  class CorrelationHisto : public DrawableObject {
     std::vector<HistogramAxisConf> fAxesConf;
     std::vector<std::vector<double>> fTestValues;
     Int_t fNHistograms = {0};
@@ -33,6 +34,9 @@ namespace Hal {
 
     void Initialize();
     void AutoInitialize();
+
+  protected:
+    virtual Painter* MakePainter();
 
   public:
     /**
@@ -79,13 +83,6 @@ namespace Hal {
      * @param params
      */
     void FillUnchecked(std::vector<Double_t> params, Double_t weight);
-    /**
-     *
-     * @param opt additional draw options avaiable logz logx and logy
-     * and gridx grid, note - because 1d histograms are kind of projections using logy will not be used here, use logz instead
-     * you can also pass other options directly to histogram
-     */
-    void Draw(Option_t* opt = "");
     /**use to initialize histogram
      * user must call Config params before calling this method
      * later fill unchecked can be used
@@ -103,6 +100,7 @@ namespace Hal {
      * @return number of histograms
      */
     Int_t GetEntries() const { return fNHistograms; }
+    Int_t GetNParams() const { return fNParams; }
     virtual Bool_t CanBeTableElement() const;
     virtual Long64_t Merge(TCollection* collection);
     virtual TString GetExtractType() const;
@@ -115,6 +113,25 @@ namespace Hal {
     std::vector<TH1*> GetHistograms() const { return fHistograms; }
     virtual ~CorrelationHisto();
     ClassDef(CorrelationHisto, 2)
+  };
+
+
+  class CorrelationHistoPainter : public Painter {
+  protected:
+    CorrelationHisto* fHisto = {nullptr};
+    std::vector<std::vector<TVirtualPad*>> fPads;
+    virtual void MakeHistograms();
+    virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0) { return prev; };
+    virtual void MakePadsAndCanvases();
+    virtual void OwnCanvasDivide(TCanvas* c, Int_t x, Int_t y, Int_t canvasNo);
+    virtual void InnerRepaint();
+    virtual void InnerPaint();
+
+  public:
+    CorrelationHistoPainter() {};
+    CorrelationHistoPainter(CorrelationHisto* h) { fHisto = h; };
+    virtual ~CorrelationHistoPainter() {};
+    ClassDef(CorrelationHistoPainter, 1)
   };
 
 }  // namespace Hal

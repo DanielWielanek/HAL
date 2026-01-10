@@ -9,18 +9,17 @@
 #define HAL_CUTS_CUTOPTIONS_H_
 
 #include <Rtypes.h>
-#include <RtypesCore.h>
+#include <TObject.h>
 #include <TString.h>
 #include <vector>
 
-#include "Object.h"
 #include "Std.h"
 
 namespace Hal {
   class Cut;
   class CutMonitor;
 
-  class CutOptions : public Object {
+  class CutOptions : public TObject {
     std::vector<Int_t> fCollections;
     Bool_t fRe           = {kFALSE};
     Bool_t fIm           = {kFALSE};

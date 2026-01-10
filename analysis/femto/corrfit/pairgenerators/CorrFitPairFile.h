@@ -9,7 +9,7 @@
 #define HAL_ANALYSIS_FEMTO_CORRFIT_PAIRGENERATORS_CORRFITPAIRFILE_H_
 
 #include "FemtoConst.h"
-#include "Object.h"
+#include <TObject.h>
 
 class TTree;
 class TFile;
@@ -18,7 +18,7 @@ class TClonesArray;
 namespace Hal {
   class FemtoMicroPair;
   class CorrFitMapGroupConfig;
-  class CorrFitPairFile : public Object {
+  class CorrFitPairFile : public TObject {
     TFile* fFile = {nullptr};
     TTree* fTree = {nullptr};
     TString fFileName;

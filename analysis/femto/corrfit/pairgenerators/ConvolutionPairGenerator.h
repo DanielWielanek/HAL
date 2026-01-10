@@ -22,7 +22,7 @@ namespace Hal {
   /**
    * stand alone generator that uses convolution method
    */
-  class ConvolutionPairGenerator : public Object {
+  class ConvolutionPairGenerator : public TObject {
     TH2D fHist1, fHist2;
     TH3D fConvolution;
     Double_t fX = {0}, fY = {0}, fZ = {0};

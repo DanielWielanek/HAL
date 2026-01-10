@@ -8,7 +8,7 @@
 #ifndef HAL_FEATURES_IO_OBJECTVOID_H_
 #define HAL_FEATURES_IO_OBJECTVOID_H_
 
-#include "Object.h"
+#include <TObject.h>
 /**
  * because ROOT likes TObjects and do nasty things with pointers connected with TTree
  * I created this wrappers
@@ -16,7 +16,7 @@
  */
 namespace Hal {
   template<class T>
-  class Pointer : public Object {
+  class Pointer : public TObject {
     T* fPointer   = {nullptr};
     Bool_t fOwner = {kFALSE};
 
@@ -35,7 +35,7 @@ namespace Hal {
    * @tparam T
    */
   template<class T>
-  class DoublePointer : public Object {
+  class DoublePointer : public TObject {
     T** fPointer  = {nullptr};
     Bool_t fOwner = {kFALSE};
 

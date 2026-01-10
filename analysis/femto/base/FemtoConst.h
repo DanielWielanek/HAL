@@ -12,7 +12,9 @@
 
 #include "Array.h"
 #include "Object.h"
-#include "TString.h"
+
+#include <TObject.h>
+#include <TString.h>
 /**
  * femtoscopic kinematics mode
  */
@@ -184,7 +186,7 @@ namespace Hal {
     /**
      * calculate of k* for different pairs, assuming momentum conservation
      */
-    class CorrFitGammaCalc : public Object {
+    class CorrFitGammaCalc : public TObject {
       Double_t fA2    = {0};
       Double_t fB2    = {0};
       Double_t fConsA = {0};

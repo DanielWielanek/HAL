@@ -8,6 +8,9 @@
  */
 
 #include "Object.h"
+#include "Painter.h"
+
+#include <iostream>
 
 #include <TCollection.h>
 
@@ -33,4 +36,34 @@ namespace Hal {
     }
     return 1;
   }
+
+  void DrawableObject::Draw(Option_t* option) {
+    if (!fPainter) fPainter = MakePainter();  // try to make a painter
+    if (fPainter) {
+      TString options = option;
+      fPainter->SetOption(options);
+      fPainter->Paint();
+    }
+  }
+
+  void DrawableObject::cd() {
+    if (!fPainter) {
+      std::cout << ClassName() << " has no painter " << std::endl;
+    } else
+      fPainter->cd();
+  }
+
+  DrawableObject::DrawableObject(const DrawableObject& other) : Object(other) { fPainter = nullptr; }
+
+  DrawableObject& DrawableObject::operator=(const DrawableObject& b) {
+    if (this == &b) return *this;
+    TNamed::operator=(b);
+    fPainter = nullptr;
+    return *this;
+  }
+
+  DrawableObject::~DrawableObject() {
+    if (fPainter) delete fPainter;
+  }
+
 }  // namespace Hal

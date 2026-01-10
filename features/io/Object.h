@@ -16,14 +16,15 @@ class HtmlTable;
 
 
 /**
- * Class for objects that can be extracted by HTML extractor. In contrast to
+ * Class for objects that can be extracted by HTML extractor and merged by HAL In contrast to
  * HalPackage HalPack usually store object that should be treated as single
- * object e.g. parameter. In some rare cases it migth contain more objects if
- * they are connecte. Example of such object are HalDIvidedHisto-based classes
+ * object e.g. parameter. In some rare cases it might contain more objects if
+ * they are connected. Example of such object are HalDIvidedHisto-based classes
  * * that store two histograms (numerator and denominator).
  */
 
 namespace Hal {
+  class Painter;
 
   class Object : public TNamed {
   public:
@@ -76,5 +77,36 @@ namespace Hal {
     virtual ~Object();
     ClassDef(Object, 1)
   };
+
+  class DrawableObject : public Object {
+  protected:
+    /**
+     * painter used to draw this object
+     */
+    Painter* fPainter              = {nullptr};  //!
+    virtual Painter* MakePainter() = 0;
+
+  public:
+    DrawableObject() {};
+    /**
+     * copy constructor
+     * @param other
+     */
+    DrawableObject(const DrawableObject& other);
+    /**
+     * assignement operator
+     * @param b
+     * @return
+     */
+    DrawableObject& operator=(const DrawableObject& b);
+    /**
+     * set this painter as common (use like gPad when draw few objects with 'same' flag
+     */
+    virtual void cd();
+    virtual void Draw(Option_t* option = "");
+    virtual ~DrawableObject();
+    ClassDef(DrawableObject, 1)
+  };
+
 }  // namespace Hal
 #endif /* HALPACK_H_ */

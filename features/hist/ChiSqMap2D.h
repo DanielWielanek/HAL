@@ -9,15 +9,14 @@
 #ifndef HALCHISQMAP2D_H_
 #define HALCHISQMAP2D_H_
 
-#include "Object.h"
-
+#include <TObject.h>
 #include <TString.h>
 
 
 class TH2D;
 class TLine;
 namespace Hal {
-  class ChiSqMap2D : public Object {
+  class ChiSqMap2D : public TObject {
     TH2D* fHist;
     TLine* fLineX;
     TLine* fLineY;

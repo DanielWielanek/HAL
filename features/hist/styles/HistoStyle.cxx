@@ -204,6 +204,10 @@ namespace Hal {
     if (xax) fXAxis.Apply(*xax);
     auto yax = object.GetYaxis();
     if (yax) fYAxis.Apply(*yax);
+    if constexpr (!std::is_same_v<T, TGraphAsymmErrors> && !std::is_same_v<T, TGraph>) {
+      auto zax = object.GetZaxis();
+      if (zax) fZAxis.Apply(*zax);
+    }
   }
 
   void HistoStyle::ImportFromXML(XMLNode* node) {

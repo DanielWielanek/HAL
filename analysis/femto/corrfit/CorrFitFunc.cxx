@@ -554,10 +554,8 @@ namespace Hal {
   }
 
   void CorrFitFunc::Draw(Option_t* option) {
-    bool painter_set = true;
     if (!fPainter) {
       MakePainter(option);
-      painter_set = false;
       if (fCF) {  // we have our CF, and it was painted, let's link painter
                   /* HalCoutDebug("LINKING TO CF");
                    auto div     = (Hal::DividedHisto1D*) fCF;

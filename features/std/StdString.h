@@ -191,6 +191,15 @@ namespace Hal {
      *@param remove - if true remove pattern
      */
     Bool_t FindExpressionTwoFloats(TString& expression, Double_t& val1, Double_t& val2, Bool_t remove);
+    /**
+     * find the pattern type "word=option" where word is the key e.g. "A+b+c+d=e+f" return e
+     * @param option
+     * @param pattern
+     * @param val - return word after "key"
+     * @param remove
+     * @return
+     */
+    Bool_t FindExpressionEqual(TString& option, TString pattern, TString& val, Bool_t remove = kFALSE);
   }  // namespace Std
 }  // namespace Hal
 #endif /* HALSTDSTRING_H_ */

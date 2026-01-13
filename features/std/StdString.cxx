@@ -482,5 +482,23 @@ namespace Hal {
         return kFALSE;
       }
     }
+
+    Bool_t FindExpressionEqual(TString& option, TString pattern, TString& val, Bool_t remove) {
+      TString pat = Form("%s=[^+\\s]+", pattern.Data());
+      TRegexp regexp(pat);
+      TString expr = option(regexp);
+      if (expr.Length() <= 0) { return kFALSE; }
+      auto vec = ExplodeString(expr, '=');
+      if (vec.size() == 2) {
+        if (vec[0] != pattern) return kFALSE;
+        if (remove) {
+          option = option.ReplaceAll(expr, "");
+          option = option.ReplaceAll("++", "");
+        }
+        val = vec[1];
+        return kTRUE;
+      }
+      return kFALSE;
+    }
   }  // namespace Std
 }  // namespace Hal

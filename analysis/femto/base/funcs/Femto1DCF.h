@@ -29,7 +29,6 @@ namespace Hal {
     friend class FemtoSerializationInterface1D;
 
   protected:
-    FemtoCFPainter* fPainter = {nullptr};  //!
     virtual TString GetPic() const;
     /**
      * set assumed names of axes
@@ -113,7 +112,7 @@ namespace Hal {
      * @param normalization if negative calculate own normalization
      */
     virtual void ApplyResidualCorrection(const TH1& residual, const TH1& fraction, Double_t normalization = -1);
-    virtual FemtoCFPainter* GetPainter() const { return fPainter; }
+    virtual FemtoCFPainter* GetPainter() const { return (FemtoCFPainter*) fPainter; }
     virtual ~Femto1DCF();
     ClassDef(Femto1DCF, 4)
   };

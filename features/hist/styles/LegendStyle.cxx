@@ -16,55 +16,46 @@
 #include "XMLNode.h"
 
 namespace Hal {
-  const unsigned short int LegendStyle::kFontSize  = 0;
-  const unsigned short int LegendStyle::kFontStyle = 1;
-
-  void LegendStyle::SetFontSize(Float_t size) { SetF(kFontSize, size); }
-
-  void LegendStyle::SetFont(Int_t style) { SetI(kFontStyle, style); }
-
-  Float_t LegendStyle::GetFontSize() const { return GetF(kFontSize); }
-
-  Int_t LegendStyle::GetFont() const { return GetI(kFontStyle); }
 
   void LegendStyle::Apply(TLegend& leg) const {
-    if (Find(kFontSize)) leg.SetTextSize(GetFontSize());
-    if (Find(kFontStyle)) leg.SetTextFont(GetFont());
     fFill.Apply(leg);
     fLine.Apply(leg);
+    fText.Apply(leg);
   }
 
   void LegendStyle::ExportToXML(XMLNode* node) const {
-    if (Find(kFontSize)) node->AddAttrib(new Hal::XMLAttrib("FontSize", Form("%4.4f", GetF(kFontSize))));
-    if (Find(kFontStyle)) node->AddAttrib(new Hal::XMLAttrib("FontStyle", Form("%i", GetI(kFontStyle))));
     XMLNode* fillStyle = new XMLNode("FillStyle");
     fFill.ExportToXML(fillStyle);
     XMLNode* lineStyle = new XMLNode("LineStyle");
     fLine.ExportToXML(fillStyle);
+    XMLNode* textStyle = new XMLNode("TextStyle");
     node->AddChild(fillStyle);
     node->AddChild(lineStyle);
+    node->AddChild(textStyle);
   }
 
   void LegendStyle::Import(const TLegend& x) {
     TLegend dummy;
-    if (dummy.GetTextFont() != x.GetTextFont()) SetFont(x.GetTextFont());
-    if (dummy.GetTextSize() != x.GetTextSize()) SetFontSize(x.GetTextSize());
+    fText.Import(x);
     fLine.Import(x);
     fFill.Import(x);
   }
 
   void LegendStyle::ImportFromXML(XMLNode* node) {
-    if (auto child = node->GetAttrib("FontSize")) SetFontSize(child->GetValue().Atof());
-    if (auto child = node->GetAttrib("FontStyle")) SetFont(child->GetValue().Atoi());
     if (auto child = node->GetChild("FillStyle")) { fFill.ImportFromXML(child); }
     if (auto child = node->GetChild("LineStyle")) { fLine.ImportFromXML(child); }
+    if (auto child = node->GetChild("TextStyle")) { fText.ImportFromXML(child); }
   }
 
   LegendStyle::LegendStyle(TString style) {
     if (style.Length() == 0) return;
-    if (Hal::Std::FindParam(style, "apollo", kTRUE)) { SetFont(82); }
-    if (Hal::Std::FindParam(style, "05", kTRUE)) { SetFontSize(0.05); }
-    if (Hal::Std::FindParam(style, "06", kTRUE)) { SetFontSize(0.06); }
+    if (Hal::Std::FindParam(style, "apollo", kTRUE)) { fText.SetFont(82); }
+    if (Hal::Std::FindParam(style, "05", kTRUE)) { fText.SetSize(0.05); }
+    if (Hal::Std::FindParam(style, "06", kTRUE)) { fText.SetSize(0.06); }
+    if (Hal::Std::FindParam(style, "black", kTRUE)) {
+      GetFillStyle().SetColor(kBlack);
+      GetTextStyle().SetColor(kWhite);
+    }
   }
 
 } /* namespace Hal */

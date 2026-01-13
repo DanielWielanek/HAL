@@ -13,6 +13,7 @@
 
 #include "FillStyle.h"
 #include "LineStyle.h"
+#include "TextStyle.h"
 
 class TLegend;
 
@@ -21,18 +22,14 @@ namespace Hal {
   class LegendStyle : public Style {
     FillStyle fFill;
     LineStyle fLine;
-    static const unsigned short int kFontSize;
-    static const unsigned short int kFontStyle;
+    TextStyle fText;
 
   public:
     LegendStyle(TString style = "");
-    void SetFontSize(Float_t size);
-    void SetFont(Int_t style);
     void Import(const TLegend& x);
-    Float_t GetFontSize() const;
-    Int_t GetFont() const;
     FillStyle& GetFillStyle() { return fFill; }
     LineStyle& GetLineStyle() { return fLine; }
+    TextStyle& GetTextStyle() { return fText; }
     void Apply(TLegend& leg) const;
     void ExportToXML(XMLNode* node) const;
     void ImportFromXML(XMLNode* node);

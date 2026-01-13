@@ -47,7 +47,7 @@ namespace Hal {
     for (auto i : fSubPainters) {
       if (i == painter) replicate = kTRUE;
     }
-    if (!replicate) fSubPainters.push_back(painter);
+    if (!replicate) { fSubPainters.push_back(painter); }
   }
 
   void Painter::AddAsSubPainter() {
@@ -123,6 +123,7 @@ namespace Hal {
       for (int i = 0; i < x; i++) {
         for (int j = 0; j < y; j++) {
           (*fCommonData.fPads)[canvasNo].push_back(canva->cd(++count));
+          if (fPadStyle) fPadStyle->Apply(gPad);
         }
       }
     };
@@ -187,6 +188,12 @@ namespace Hal {
   }
 
   void Painter::SetOption(TString option) {
+    TString styleName;
+    if (Hal::Std::FindExpressionEqual(option, "style", styleName, kTRUE)) {
+      fPredefinedStyle = styleName;
+      fPredefinedStyle = fPredefinedStyle.ReplaceAll("&", "+");
+    }
+    if (fPredefinedStyle.Length()) { fPadStyle = new Hal::PadStyle(fPredefinedStyle); }
     if (Hal::Std::FindParam(option, "skip")) return;
     if (Hal::Std::FindParam(option, "default!")) {
       SetDefaultFlag();
@@ -213,7 +220,6 @@ namespace Hal {
       if (i == 2) fPadStyle->SetLogz(1);
     }
 
-
     if (Hal::Std::FindParam(option, "default")) { SetDefaultFlag(); }
     ULong64_t defFlags = 0;
     if (Hal::Std::FindParam(option, "keep", kTRUE)) { defFlags = fDrawFlags; }
@@ -232,6 +238,21 @@ namespace Hal {
       SETBIT(defFlags, kCanvasBit);
       CLRBIT(defFlags, kPadBit);
       CLRBIT(defFlags, kSameBit);
+    }
+    auto ranges = Hal::Std::FindBrackets(option, kTRUE, kTRUE);
+    for (auto range : ranges) {
+      std::vector<double> res;
+      auto foundx = GetPatterns(range, "margin", res);
+      if (res.size() == 4 && foundx)
+        if (!fPadStyle) {
+          Hal::PadStyle style(res[0], res[1], res[2], res[3]);
+          SetGlobalPadStyle(style);
+        } else {
+          fPadStyle->SetLeftMargin(res[0]);
+          fPadStyle->SetBottomMargin(res[1]);
+          fPadStyle->SetRightMargin(res[2]);
+          fPadStyle->SetTopMargin(res[3]);
+        }
     }
     if (Hal::Std::FindParam(option, "pad", kTRUE)) {
       fOptionsChanged = kTRUE;
@@ -252,6 +273,7 @@ namespace Hal {
       CLRBIT(defFlags, kHtmlBit);
       SETBIT(defFlags, kBrowserBit);
     }
+
     auto newOpt = SetOptionInternal(option, defFlags);
     if (newOpt != fDrawFlags) {
       fOptionsChanged = kTRUE;

@@ -45,6 +45,7 @@ namespace Hal {
     Hal::PadStyle* fPadStyle = {nullptr};
     Bool_t fPainted          = {kFALSE};
     ULong64_t fDrawFlags     = {0};
+
     void TryPaint();
 
   protected:
@@ -58,6 +59,10 @@ namespace Hal {
      * this should be true if draw flags were changed
      */
     Bool_t fOptionsChanged = {kFALSE};
+    /**
+     * define predefined style (applied only to pads)
+     */
+    TString fPredefinedStyle;
     /**
      * set bit in drawing flag
      * @param bit
@@ -103,6 +108,8 @@ namespace Hal {
      *  - "grid" - draw grid on all pads there is option "gdrix" and "gridy"
      *  - "logx", "logy", "logz" - draw logs on all pads
      *  - "same" - like in TH1D, note: this will not check if same objects have same number of pads. etc.
+     *  - "{margin=x1,y1,x2,y2} - set pad margins (note might not work correctly with all classes
+     *  = "style=somestyle" - define style for object, note to use two styles use "style=styleA&styleB"
      *  proper way to use same:
      *  painter1->Draw();
      *  painter2->Draw("same");
@@ -229,6 +236,10 @@ namespace Hal {
      * @return
      */
     Bool_t HasParent() const;
+    /**
+     * do not use copy c-tor
+     * @param other
+     */
     Painter(const Painter& other) = delete;
     /**
      * adds painter to the paintes
@@ -238,15 +249,6 @@ namespace Hal {
     /**
      * set options for drawing:
      * @param option options:
-     * html - for drawing in HTML mode NOTE - might not be implemented for all objects
-     * default - reset flags to default and add additional flags from option
-     * default! -reset flags to default and ignore rest of the option
-     * keep - keeps old flags, add only new flags
-     * canvas - reuse canvas do not create pads
-     * that requires single pad
-     * pad - reuse canvas and pads
-     * skip - ignore this method
-     * same - draw as "same"
      * @see SetOptionInternal:
      */
     virtual void SetOption(TString option);
@@ -280,8 +282,21 @@ namespace Hal {
      * switch common data to current data, useful when draw "same" is used
      */
     virtual void cd() { gCommonData = fCommonData; }
+    /**
+     * set global pad style useful for drawing on many pads
+     * @param pad
+     */
     void SetGlobalPadStyle(Hal::PadStyle& pad);
+    /**
+     *
+     * @return predefined style
+     */
+    TString GetStyle() const { return fPredefinedStyle; }
     virtual ~Painter();
+    /**
+     *
+     * @return last bit used by this class
+     */
     static int LastBitPainter() { return 4; }
     ClassDef(Painter, 0)
   };
@@ -295,7 +310,13 @@ namespace Hal {
     virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0) { return prev; };
 
   public:
+    /**
+     *
+     */
     SimplePainter() {};
+    /**
+     *
+     */
     virtual ~SimplePainter() {};
     ClassDef(SimplePainter, 1)
   };

@@ -53,6 +53,12 @@ namespace Hal {
 
   void AxisStyle::SetAxisColor(Int_t val) { SetI(kAxisColor, val); }
 
+  void AxisStyle::SetColor(Int_t col) {
+    SetAxisColor(col);
+    SetLabelColor(col);
+    SetTitleColor(col);
+  }
+
   void AxisStyle::SetLabelColor(Int_t val) { SetI(kLabelColor, val); }
 
   void AxisStyle::SetTitleColor(Int_t val) { SetI(kTitleColor, val); }

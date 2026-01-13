@@ -60,6 +60,8 @@ namespace Hal {
 
     void SetAxisColor(Int_t val);
 
+    void SetColor(Int_t col);
+
     void SetLabelColor(Int_t val);
 
     void SetTitleColor(Int_t val);

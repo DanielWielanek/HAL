@@ -625,6 +625,9 @@ NamespaceImp(Hal::Std)
 
     void CopyAxisProp(const TAxis* from, TAxis* to, TString option) {
       TAxis default_axis = TAxis();
+      default_axis.SetAxisColor(kBlack);
+      default_axis.SetTitleColor(kBlack);
+      default_axis.SetLabelColor(kBlack);
       if (default_axis.GetCenterTitle() != from->GetCenterTitle()) to->CenterTitle(from->GetCenterTitle());
       if (default_axis.GetNdivisions() != from->GetNdivisions()) to->SetNdivisions(from->GetNdivisions());
       if (default_axis.GetDecimals() != from->GetDecimals()) to->SetDecimals(from->GetDecimals());

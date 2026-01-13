@@ -20,8 +20,7 @@ namespace Hal {
 
   protected:
     Femto3DCF* fCF;
-    Double_t fThetaPad = {30.};
-    Double_t fPhiPad   = {30.};
+    Int_t fDrawDim = {1};
     virtual void MakePadsAndCanvases();
     Int_t GetPadsRequired() const;
     /**

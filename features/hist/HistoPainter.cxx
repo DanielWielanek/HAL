@@ -92,11 +92,11 @@ namespace Hal {
   DividedHistoPainter::DividedHistoPainter() {}
 
   ULong64_t DividedHistoPainter::SetOptionInternal(TString opt, ULong64_t newOpts) {
+    newOpts = HistoPainter::SetOptionInternal(opt, newOpts);
     if (Hal::Std::FindParam(opt, "num", kTRUE)) SETBIT(newOpts, kNumBit);
     if (Hal::Std::FindParam(opt, "den", kTRUE)) SETBIT(newOpts, kDenBit);
     if (Hal::Std::FindParam(opt, "all", kTRUE)) SETBIT(newOpts, kAllBit);
     if (Hal::Std::FindParam(opt, "scale", kTRUE)) SETBIT(newOpts, kScaleBit);
-    if (Hal::Std::FindParam(opt, "!tit", kTRUE)) SETBIT(newOpts, kHideTitlesBit);
     return newOpts;
   }
 
@@ -141,5 +141,33 @@ namespace Hal {
     // TODO Auto-generated destructor stub
   }
 
+  ULong64_t HistoPainter::SetOptionInternal(TString opt, ULong64_t newFlags) {
+    if (Hal::Std::FindParam(opt, "!tit", kTRUE)) SETBIT(newFlags, kHideTitlesBit);
+    auto ranges = Hal::Std::FindBrackets(opt, kTRUE, kTRUE);
+    for (auto range : ranges) {
+      std::vector<double> res;
+      auto foundx = GetPatterns(range, "x", res);
+      if (res.size() == 2 && foundx) {
+        fRangeX[0] = res[0];
+        fRangeX[1] = res[1];
+      }
+      auto foundy = GetPatterns(range, "y", res);
+      if (res.size() == 2 && foundy) {
+        fRangeY[0] = res[0];
+        fRangeY[1] = res[1];
+      }
+      auto foundz = GetPatterns(range, "z", res);
+      if (res.size() == 2 && foundz) {
+        fRangeZ[0] = res[0];
+        fRangeZ[1] = res[1];
+      }
+      auto foundt = GetPatterns(range, "t", res);
+      if (res.size() == 2 && foundt) {
+        fRangeT[0] = res[0];
+        fRangeT[1] = res[1];
+      }
+    }
+    return newFlags;
+  }
 
 } /* namespace Hal */

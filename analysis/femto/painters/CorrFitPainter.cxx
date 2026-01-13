@@ -15,6 +15,7 @@
 #include "CorrFitFunc.h"
 #include "Cout.h"
 #include "FemtoCFPainter.h"
+#include "LegendStyle.h"
 #include "Std.h"
 #include "StdString.h"
 
@@ -99,6 +100,10 @@ namespace Hal {
     fLegendPad->cd();
     fLegend = new TLegend(fLegendPos[0], fLegendPos[1], fLegendPos[2], fLegendPos[3]);
     fLegend->SetHeader(GetName());
+    if (fPredefinedStyle.Length()) {
+      Hal::LegendStyle leg(fPredefinedStyle);
+      leg.Apply(*fLegend);
+    }
     if (fFittedFunc) { fLegend->SetHeader(fFittedFunc->GetName()); }
     auto label = GetLegendLabels();
     for (auto str : label) {

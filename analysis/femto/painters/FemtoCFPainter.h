@@ -20,15 +20,13 @@ namespace Hal {
   /**
    * base class for drawing correlation functions
    * to check available option of drawing look @see #Hal::FemtoSHCFPainter#SetOptionInternal
-   * @see #Hal::Femto1DCFPainter#SetOptionInternal @see
-   * #Hal::Femto3DCFPainter#SetOptionInternal
+   * @see Hal::Femto1DCFPainter::SetOptionInternal @see
+   * Hal::Femto3DCFPainter::SetOptionInternal
    */
   class FemtoCFPainter : public DividedHistoPainter {
     friend class CorrFitPainter;
 
   protected:
-    Double_t fRangeX[2] = {0, 0};
-    Double_t fRangeY[2] = {0, 0};
     static const int kCFBit;
     Double_t fScale     = {1.0};
     Double_t fDrawScale = {1.0};
@@ -59,6 +57,10 @@ namespace Hal {
      * @return min and max value of draw histogram x, y, if no histogram was drawn or x/y are too big returns 0,0
      */
     std::pair<Double_t, Double_t> GetMinMax(Int_t x = 0, Int_t y = 0) const;
+    /**
+     * rescale hisgorams used by corrfits
+     * @param newScale
+     */
     virtual void Rescale(Double_t newScale);
     /**
      *

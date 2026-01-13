@@ -78,6 +78,7 @@ namespace Hal {
     } else if (CheckOpt(kHtmlBit)) {
       PrepareHtml(h);
     } else if (CheckOpt(kTwoDimBit) || CheckOpt(kTwoDimPlusBit)) {
+      fDrawDim = 2;
       PrepareTwoDim(h);
     } else {  // standard
       if (AreSimiliar(GetDrawFlags(), PrepBitTemplate({kNumBit, kDenBit, kCFBit}))) {
@@ -184,8 +185,8 @@ namespace Hal {
       auto histo = GetProjection1D(h, mxxLow[i], mxxHi[i], myyLow[i], myyHi[i], dirs[i] + "+scale+bins");
       histo->SetTitle(names[i]);
       if (fRangeY[0] != fRangeY[1]) {
-        histo->SetMaximum(fRangeY[1]);
-        histo->SetMinimum(fRangeY[0]);
+        //   histo->SetMaximum(fRangeY[1]);
+        //   histo->SetMinimum(fRangeY[0]);
       }
       TString titleY = "";
       if (CheckOpt(kNumBit) || CheckOpt(kDenBit)) {
@@ -283,9 +284,11 @@ namespace Hal {
     TString opts[] = {"xy", "xz", "yz"};
     for (int i = 0; i < 3; i++) {
       auto out_side = Hal::Std::GetProjection2D((TH3*) h, 0, 0, opts[i]);
-      if (fRangeY[0] != fRangeY[1]) {
-        out_side->SetMaximum(fRangeY[1]);
-        out_side->SetMinimum(fRangeY[0]);
+      if (fRangeX[0] != fRangeX[1]) { out_side->GetXaxis()->SetRangeUser(fRangeX[0], fRangeX[1]); }
+      if (fRangeY[0] != fRangeY[1]) { out_side->GetYaxis()->SetRangeUser(fRangeY[0], fRangeY[1]); }
+      if (fRangeZ[0] != fRangeZ[1]) {
+        out_side->SetMaximum(fRangeZ[1]);
+        out_side->SetMinimum(fRangeZ[0]);
       }
       std::vector<TH1*> histVec;
       histVec.push_back(out_side);
@@ -378,12 +381,22 @@ namespace Hal {
 
   void Femto3DCFPainter::ScaleHistograms() {
     FemtoCFPainter::ScaleHistograms();
-    if (fRangeY[0] != fRangeY[1])
+    Double_t minDraw, maxDraw;
+    if (fDrawDim == 1) {
+      minDraw = fRangeY[0];
+      maxDraw = fRangeY[1];
+    }
+    if (fDrawDim == 2) {
+      minDraw = fRangeZ[0];
+      maxDraw = fRangeZ[1];
+    }
+
+    if (minDraw != maxDraw)
       for (auto& x : fHistograms) {
         for (auto y : x) {
           if (y) {
-            y->SetMinimum(fRangeY[0]);
-            y->SetMaximum(fRangeY[1]);
+            y->SetMinimum(minDraw);
+            y->SetMaximum(maxDraw);
           }
         }
       }

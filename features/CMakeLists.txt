@@ -68,6 +68,7 @@ hist/styles/LegendStyle.cxx
 hist/styles/MarkerStyle.cxx
 hist/styles/PadStyle.cxx
 hist/styles/Style.cxx
+hist/styles/TextStyle.cxx
 
 math/ManyPolynomialsX.cxx
 math/PeakFitterX.cxx

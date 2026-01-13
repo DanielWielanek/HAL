@@ -69,20 +69,7 @@ namespace Hal {
       CLRBIT(newOpts, kNumBit);
       SETBIT(newOpts, kCFBit);
     }
-    auto ranges = Hal::Std::FindBrackets(opt, kTRUE, kTRUE);
-    for (auto range : ranges) {
-      std::vector<double> res;
-      auto foundx = GetPatterns(range, "x", res);
-      auto foundy = GetPatterns(range, "y", res);
-      if (res.size() == 2 && foundx) {
-        fRangeX[0] = res[0];
-        fRangeX[1] = res[1];
-      }
-      if (res.size() == 2 && foundy) {
-        fRangeY[0] = res[0];
-        fRangeY[1] = res[1];
-      }
-    }
+
     if (!TESTBIT(newOpts, kNumBit) && !TESTBIT(newOpts, kDenBit)) { SETBIT(newOpts, kCFBit); }
     return newOpts;
   }

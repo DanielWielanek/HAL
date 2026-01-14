@@ -219,7 +219,6 @@ namespace Hal {
       if (i == 1) fPadStyle->SetLogy(1);
       if (i == 2) fPadStyle->SetLogz(1);
     }
-
     if (Hal::Std::FindParam(option, "default")) { SetDefaultFlag(); }
     ULong64_t defFlags = 0;
     if (Hal::Std::FindParam(option, "keep", kTRUE)) { defFlags = fDrawFlags; }
@@ -243,6 +242,7 @@ namespace Hal {
     for (auto range : ranges) {
       std::vector<double> res;
       auto foundx = GetPatterns(range, "margin", res);
+      if (!foundx) option = option + "+{" + range + "}";
       if (res.size() == 4 && foundx)
         if (!fPadStyle) {
           Hal::PadStyle style(res[0], res[1], res[2], res[3]);
@@ -273,7 +273,6 @@ namespace Hal {
       CLRBIT(defFlags, kHtmlBit);
       SETBIT(defFlags, kBrowserBit);
     }
-
     auto newOpt = SetOptionInternal(option, defFlags);
     if (newOpt != fDrawFlags) {
       fOptionsChanged = kTRUE;

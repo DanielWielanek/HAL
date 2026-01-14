@@ -166,6 +166,7 @@ namespace Hal {
         fRangeT[0] = res[0];
         fRangeT[1] = res[1];
       }
+      if (!foundx && !foundy && foundz && !foundt) { opt = opt + "+{" + range + "}"; }
     }
     return newFlags;
   }

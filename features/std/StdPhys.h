@@ -23,7 +23,7 @@ namespace Hal {
        * @param phi - azimuthal angle if -100 generate random <-phi,phi>
        * @return
        */
-      TLorentzVector YPt(Double_t pt, Double_t y, Int_t pid, Double_t phi = -100);
+      TLorentzVector PtY(Double_t pt, Double_t y, Int_t pid, Double_t phi = -100);
     }  // namespace LorentzGenerator
   }    // namespace Std
 }  // namespace Hal

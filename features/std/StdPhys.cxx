@@ -19,7 +19,7 @@
 namespace Hal {
   namespace Std {
     namespace LorentzGenerator {
-      TLorentzVector YPt(Double_t pt, Double_t y, Int_t pid, Double_t phi) {
+      TLorentzVector PtY(Double_t pt, Double_t y, Int_t pid, Double_t phi) {
         if (phi == -100) { phi = gRandom->Uniform(-TMath::Pi(), TMath::Pi()); }
         double px     = pt * TMath::Cos(phi);
         double py     = pt * TMath::Sin(phi);

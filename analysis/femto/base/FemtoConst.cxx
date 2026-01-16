@@ -441,42 +441,42 @@ namespace Hal {
       return EKinematics::kLCMS;
     }
 
-    DividedHisto1D* GetHistoFromXML(XMLNode* nod) {
-      if (nod == nullptr) return nullptr;
-      XMLNode* frame = nod->GetChild("Frame");
-      XMLNode* name  = nod->GetChild("Name");
-      XMLNode* type  = nod->GetChild("Type");
+    DividedHisto1D* GetHistoFromXML(const XMLNode& nod) {
+      if (nod.IsNull()) return nullptr;
+      const XMLNode& frame = nod.GetChild("Frame");
+      const XMLNode& name  = nod.GetChild("Name");
+      const XMLNode& type  = nod.GetChild("Type");
 
       Int_t bins[3]   = {100, 100, 100};
       Double_t min[3] = {0, 0, 0}, max[3] = {1, 1, 1};
       TString axes[3] = {"Xaxis", "Xaxis", "Zaxis"};
       for (int i = 0; i < 3; i++) {
-        XMLNode* xaxis = nod->GetChild(axes[i]);
-        if (xaxis != nullptr) {
-          XMLAttrib* binsXml = xaxis->GetAttrib("bins");
-          XMLAttrib* minXml  = xaxis->GetAttrib("min");
-          XMLAttrib* maxXml  = xaxis->GetAttrib("max");
-          if (binsXml) bins[i] = binsXml->GetValue().Atoi();
-          if (minXml) min[i] = minXml->GetValue().Atof();
-          if (maxXml) max[i] = maxXml->GetValue().Atof();
+        const XMLNode& xaxis = nod.GetChild(axes[i]);
+        if (!xaxis.IsNull()) {
+          const XMLAttrib& binsXml = xaxis.GetAttrib("bins");
+          const XMLAttrib& minXml  = xaxis.GetAttrib("min");
+          const XMLAttrib& maxXml  = xaxis.GetAttrib("max");
+          if (!binsXml.IsNull()) bins[i] = binsXml.GetValue().Atoi();
+          if (!minXml.IsNull()) min[i] = minXml.GetValue().Atof();
+          if (!maxXml.IsNull()) max[i] = maxXml.GetValue().Atof();
         }
       }
 
       EKinematics Frame = EKinematics::kLCMS;
-      if (frame) Frame = CodeLabelToKinematics(frame->GetValue());
+      if (frame) Frame = CodeLabelToKinematics(frame.GetValue());
 
       TString cfName = "cf";
-      if (name != nullptr) cfName = name->GetValue();
-      if (type == nullptr) return nullptr;
-      TString classType = type->GetValue();
+      if (!name.IsNull()) cfName = name.GetValue();
+      if (type.IsNull()) return nullptr;
+      TString classType = type.GetValue();
       if (classType.EqualTo("Femto1DCF")) {
         return new Femto1DCF(cfName, bins[0], min[0], max[0], Frame);
       } else if (classType.EqualTo("Femto3DCF")) {
         return new Femto3DCF(cfName, bins[0], min[0], max[0], bins[1], min[1], max[1], bins[2], min[2], max[2], Frame);
       } else if (classType.EqualTo("FemtoSHCF")) {
-        XMLNode* lXml = nod->GetChild("L");
-        Int_t L       = 3;
-        if (lXml) L = lXml->GetValue().Atoi();
+        const XMLNode& lXml = nod.GetChild("L");
+        Int_t L             = 3;
+        if (lXml) L = lXml.GetValue().Atoi();
         return new FemtoSHCF(cfName, L, bins[0], min[0], max[0], Frame);
       } else if (classType.EqualTo("FemtoDPhiDEta")) {
         return new FemtoDPhiDEta(cfName, bins[0], bins[1], min[1], max[1]);
@@ -660,14 +660,14 @@ namespace Hal {
       return ECFType::kUnkown;
     }
 
-    FemtoWeightGenerator* GetWeightGeneratorFromXLM(XMLNode* nod) {
-      XMLNode* weightType = nod->GetChild("Type");
+    FemtoWeightGenerator* GetWeightGeneratorFromXLM(const XMLNode& nod) {
+      const XMLNode& weightType = nod.GetChild("Type");
       if (!weightType) return nullptr;
-      TClass* weightClass     = TClass::GetClass(weightType->GetValue(), 1, 0);
+      TClass* weightClass     = TClass::GetClass(weightType.GetValue(), 1, 0);
       FemtoWeightGenerator* w = static_cast<FemtoWeightGenerator*>(weightClass->New());
       if (!w) return nullptr;
-      XMLNode* pairType        = nod->GetChild("PairType");
-      TString val              = pairType->GetValue();
+      const XMLNode& pairType  = nod.GetChild("PairType");
+      TString val              = pairType.GetValue();
       std::vector<TString> str = Hal::Std::ExplodeString(val, ';');
       if (str.size() == 2) {
         Int_t pid1 = str[0].Atoi();
@@ -680,17 +680,17 @@ namespace Hal {
         lednicky->SetCoulOff();
         lednicky->SetQuantumOff();
 
-        XMLNode* quantum = nod->GetChild("QuantumOn");
-        XMLNode* strong  = nod->GetChild("StrongOn");
-        XMLNode* coul    = nod->GetChild("CoulombOn");
+        const XMLNode& quantum = nod.GetChild("QuantumOn");
+        const XMLNode& strong  = nod.GetChild("StrongOn");
+        const XMLNode& coul    = nod.GetChild("CoulombOn");
         if (quantum) {
-          if (quantum->GetValue() == "kTRUE") lednicky->SetQuantumOn();
+          if (quantum.GetValue() == "kTRUE") lednicky->SetQuantumOn();
         }
         if (strong) {
-          if (strong->GetValue() == "kTRUE") lednicky->SetStrongOn();
+          if (strong.GetValue() == "kTRUE") lednicky->SetStrongOn();
         }
         if (coul) {
-          if (coul->GetValue() == "kTRUE") lednicky->SetCoulOn();
+          if (coul.GetValue() == "kTRUE") lednicky->SetCoulOn();
         }
       }
       return w;

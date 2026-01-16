@@ -96,8 +96,8 @@ namespace Hal {
 
     Int_t GetFillColor() const;
 
-    void ExportToXML(XMLNode* node) const;
-    void ImportFromXML(XMLNode* node);
+    void ExportToXML(XMLNode& node) const;
+    void ImportFromXML(const XMLNode& node);
     void Import(TVirtualPad& pad);
     void Apply(TVirtualPad* pad = nullptr);
     virtual ~PadStyle() {}

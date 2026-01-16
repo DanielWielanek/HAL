@@ -23,18 +23,24 @@ class TXMLNode;
  * class for representing node attributes
  */
 namespace Hal {
+  class XMLNode;
   class XMLAttrib : public TNamed {
+    const Bool_t fNull;
+    friend class XMLNode;
+    TString GetStrName() const { return GetName(); }
+    XMLAttrib(Bool_t null, Int_t /*dummy*/) : fNull(null) {}
+
   public:
     /**
      * default constructor
      */
-    XMLAttrib() : TNamed() {}
+    XMLAttrib() : TNamed(), fNull(kFALSE) {}
     /**
      * default constructor
      * @param name name of attribute
      * @param value value of attribute
      */
-    XMLAttrib(TString name, TString value) {
+    XMLAttrib(TString name, TString value) : fNull(kFALSE) {
       XMLAttrib::SetName(name);
       XMLAttrib::SetTitle(value);
     }
@@ -48,6 +54,20 @@ namespace Hal {
      * @param val value of node to se
      */
     void SetValue(TString val) { SetTitle(val); };
+    /**
+     *
+     * @return
+     */
+    static XMLAttrib& NullAttrib() {
+      static XMLAttrib nullattrib(true, 0);
+      return nullattrib;
+    }
+    operator bool() const { return !fNull; }
+    /**
+     *
+     * @return
+     */
+    Bool_t IsNull() const { return fNull; }
     virtual ~XMLAttrib() {};
     ClassDef(XMLAttrib, 1);
   };
@@ -55,8 +75,12 @@ namespace Hal {
    * class for representing XML node
    */
   class XMLNode : public TNamed {
-    TList fChildren;
-    TList fAttrib;
+    std::vector<XMLNode> fChildren;
+    std::vector<XMLAttrib> fAttrib;
+    const Bool_t fNull;
+
+    TString GetStrName() const { return GetName(); }
+    explicit XMLNode(Bool_t null, Int_t /*dummy*/) : fNull(null) {};
 
   public:
     /**
@@ -77,6 +101,30 @@ namespace Hal {
      */
     XMLNode& operator=(const XMLNode& other);
     /**
+     * unsafe getter or i-th element
+     * @param i
+     * @return
+     */
+    XMLNode& operator[](int i);
+    /**
+     * unsafe getter of node with given key
+     * @param key
+     * @return if not found key returns new node with key name
+     */
+    XMLNode& operator[](const TString key);
+    /**
+     * unsafe getter or i-th element
+     * @param i
+     * @return
+     */
+    const XMLNode& operator[](int i) const;
+    /**
+     * unsafe getter of node with given key
+     * @param key
+     * @return if not found key returns new node with key name
+     */
+    const XMLNode& operator[](const TString key) const;
+    /**
      * copy data for node to this
      * @param node
      */
@@ -91,12 +139,12 @@ namespace Hal {
      *  parent node
      * @param node node to add
      */
-    void AddChild(XMLNode* node) { fChildren.AddLast(node); };
+    void AddChild(const XMLNode& node);
     /**
      * add attribute to this class
      * @param attrib
      */
-    void AddAttrib(XMLAttrib* attrib);
+    void AddAttrib(const XMLAttrib& attrib);
     /**
      * another method to add attribute
      * @param name
@@ -107,12 +155,12 @@ namespace Hal {
      *
      * @return number of childen nodes
      */
-    Int_t GetNChildren() const { return fChildren.GetEntries(); };
+    Int_t GetNChildren() const { return fChildren.size(); };
     /**
      *
      * @return number of attributes
      */
-    Int_t GetNAttributes() const { return fAttrib.GetEntries(); };
+    Int_t GetNAttributes() const { return fAttrib.size(); };
     /**
      *  search for child with given name
      * @param name name of node
@@ -126,29 +174,68 @@ namespace Hal {
     TString GetValue() const { return GetTitle(); };
     /**
      *
-     * @param name name of atribute
+     * @param name name of attribute
      * @return
      */
-    XMLAttrib* GetAttrib(TString name) const;
+    const XMLAttrib& GetAttrib(TString name) const;
     /**
      *
-     * @param index index of atrribute
+     * @param index index of attribute
      * @return
      */
-    XMLAttrib* GetAttrib(Int_t index) const;
+    const XMLAttrib& GetAttrib(Int_t index) const;
     /**
      *  search for node with given name
      * @param name name of node
      * @param count number of node (if more than one with given name exist)
      * @return node
      */
-    XMLNode* GetChild(TString name, Int_t count = 0) const;
+    const XMLNode& GetChild(TString name, Int_t count = 0) const;
     /**
      *
      * @param index child number
      * @return child at given position
      */
-    XMLNode* GetChild(Int_t index) const;
+    const XMLNode& GetChild(Int_t index) const;
+    /**
+     *
+     * @param name name of attribute
+     * @return
+     */
+    XMLAttrib& GetAttrib(TString name);
+    /**
+     *
+     * @param index index of attribute
+     * @return
+     */
+    XMLAttrib& GetAttrib(Int_t index);
+    /**
+     *  search for node with given name
+     * @param name name of node
+     * @param count number of node (if more than one with given name exist)
+     * @return node
+     */
+    XMLNode& GetChild(TString name, Int_t count = 0);
+    /**
+     *
+     * @param index child number
+     * @return child at given position
+     */
+    XMLNode& GetChild(Int_t index);
+    /**
+     *
+     * @return null node
+     */
+    static XMLNode& NullNode();
+    /**
+     * convertions operator
+     */
+    operator bool() const { return !fNull; }
+    /**
+     *
+     * @return
+     */
+    Bool_t IsNull() const { return fNull; }
     virtual ~XMLNode();
     ClassDef(XMLNode, 1);
   };

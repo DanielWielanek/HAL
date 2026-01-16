@@ -60,12 +60,12 @@ namespace Hal {
      * values are exported
      * @param node
      */
-    virtual void ExportToXML(XMLNode* node) const = 0;
+    virtual void ExportToXML(XMLNode& node) const = 0;
     /**
      * this should import configuration from xml
      * @param node
      */
-    virtual void ImportFromXML(XMLNode* node) = 0;
+    virtual void ImportFromXML(const XMLNode& node) = 0;
     /**
      * import directly from file
      * @param filename - name of the xml-file

@@ -23,20 +23,20 @@ namespace Hal {
 
   Int_t FillStyle::GetStyle() const { return GetI(kStyle); }
 
-  void FillStyle::ExportToXML(XMLNode* node) const {
+  void FillStyle::ExportToXML(XMLNode& node) const {
 
-    if (Find(kColor)) node->AddAttrib(new Hal::XMLAttrib("Color", Form("%i", GetI(kColor))));
-    if (Find(kStyle)) node->AddAttrib(new Hal::XMLAttrib("Style", Form("%i", GetI(kStyle))));
+    if (Find(kColor)) node.AddAttrib("Color", Form("%i", GetI(kColor)));
+    if (Find(kStyle)) node.AddAttrib("Style", Form("%i", GetI(kStyle)));
   }
 
-  void FillStyle::ImportFromXML(XMLNode* node) {
+  void FillStyle::ImportFromXML(const XMLNode& node) {
 
-    if (auto atr = node->GetAttrib("Color")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Color"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetColor(x);
     }
-    if (auto atr = node->GetAttrib("Style")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Style"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetStyle(x);
     }
   }

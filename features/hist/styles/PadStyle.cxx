@@ -114,80 +114,80 @@ namespace Hal {
     if (Find(kLineColor)) obj->SetLineColor(GetI(kLineColor));
   }
 
-  void PadStyle::ExportToXML(XMLNode* node) const {
+  void PadStyle::ExportToXML(XMLNode& node) const {
 
-    if (Find(kBottomMargin)) node->AddAttrib(new Hal::XMLAttrib("BottomMargin", Form("%4.4f", GetF(kBottomMargin))));
-    if (Find(kLeftMargin)) node->AddAttrib(new Hal::XMLAttrib("LeftMargin", Form("%4.4f", GetF(kLeftMargin))));
-    if (Find(kTopMargin)) node->AddAttrib(new Hal::XMLAttrib("TopMargin", Form("%4.4f", GetF(kTopMargin))));
-    if (Find(kRightMargin)) node->AddAttrib(new Hal::XMLAttrib("RightMargin", Form("%4.4f", GetF(kRightMargin))));
-    if (Find(kLogx)) node->AddAttrib(new Hal::XMLAttrib("Logx", Form("%i", GetI(kLogx))));
-    if (Find(kLogy)) node->AddAttrib(new Hal::XMLAttrib("Logy", Form("%i", GetI(kLogy))));
-    if (Find(kLogz)) node->AddAttrib(new Hal::XMLAttrib("Logz", Form("%i", GetI(kLogz))));
-    if (Find(kGridx)) node->AddAttrib(new Hal::XMLAttrib("Gridx", Form("%i", GetI(kGridx))));
-    if (Find(kGridy)) node->AddAttrib(new Hal::XMLAttrib("Gridy", Form("%i", GetI(kGridy))));
-    if (Find(kGridz)) node->AddAttrib(new Hal::XMLAttrib("Gridz", Form("%i", GetI(kGridz))));
-    if (Find(kTickX)) node->AddAttrib(new Hal::XMLAttrib("Tickx", Form("%i", GetI(kTickX))));
-    if (Find(kTickY)) node->AddAttrib(new Hal::XMLAttrib("Ticky", Form("%i", GetI(kTickY))));
-    if (Find(kFillColor)) node->AddAttrib(new Hal::XMLAttrib("FillColor", Form("%i", GetI(kFillColor))));
-    if (Find(kLineColor)) node->AddAttrib(new Hal::XMLAttrib("LineColor", Form("%i", GetI(kLineColor))));
+    if (Find(kBottomMargin)) node.AddAttrib("BottomMargin", Form("%4.4f", GetF(kBottomMargin)));
+    if (Find(kLeftMargin)) node.AddAttrib("LeftMargin", Form("%4.4f", GetF(kLeftMargin)));
+    if (Find(kTopMargin)) node.AddAttrib("TopMargin", Form("%4.4f", GetF(kTopMargin)));
+    if (Find(kRightMargin)) node.AddAttrib("RightMargin", Form("%4.4f", GetF(kRightMargin)));
+    if (Find(kLogx)) node.AddAttrib("Logx", Form("%i", GetI(kLogx)));
+    if (Find(kLogy)) node.AddAttrib("Logy", Form("%i", GetI(kLogy)));
+    if (Find(kLogz)) node.AddAttrib("Logz", Form("%i", GetI(kLogz)));
+    if (Find(kGridx)) node.AddAttrib("Gridx", Form("%i", GetI(kGridx)));
+    if (Find(kGridy)) node.AddAttrib("Gridy", Form("%i", GetI(kGridy)));
+    if (Find(kGridz)) node.AddAttrib("Gridz", Form("%i", GetI(kGridz)));
+    if (Find(kTickX)) node.AddAttrib("Tickx", Form("%i", GetI(kTickX)));
+    if (Find(kTickY)) node.AddAttrib("Ticky", Form("%i", GetI(kTickY)));
+    if (Find(kFillColor)) node.AddAttrib("FillColor", Form("%i", GetI(kFillColor)));
+    if (Find(kLineColor)) node.AddAttrib("LineColor", Form("%i", GetI(kLineColor)));
   }
 
-  void PadStyle::ImportFromXML(XMLNode* node) {
+  void PadStyle::ImportFromXML(const XMLNode& node) {
 
-    if (auto atr = node->GetAttrib("BottomMargin")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("BottomMargin"); !atr.IsNull()) {
+      float x = atr.GetValue().Atof();
       SetBottomMargin(x);
     }
-    if (auto atr = node->GetAttrib("LeftMargin")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("LeftMargin"); !atr.IsNull()) {
+      float x = atr.GetValue().Atof();
       SetLeftMargin(x);
     }
-    if (auto atr = node->GetAttrib("TopMargin")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("TopMargin"); !atr.IsNull()) {
+      float x = atr.GetValue().Atof();
       SetTopMargin(x);
     }
-    if (auto atr = node->GetAttrib("RightMargin")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("RightMargin"); !atr.IsNull()) {
+      float x = atr.GetValue().Atof();
       SetRightMargin(x);
     }
-    if (auto atr = node->GetAttrib("Logx")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Logx"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetLogx(x);
     }
-    if (auto atr = node->GetAttrib("Logy")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Logy"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetLogy(x);
     }
-    if (auto atr = node->GetAttrib("Logz")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Logz"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetLogz(x);
     }
-    if (auto atr = node->GetAttrib("Gridx")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Gridx"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetGridx(x);
     }
-    if (auto atr = node->GetAttrib("Gridy")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Gridy"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetGridy(x);
     }
-    if (auto atr = node->GetAttrib("Gridz")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Gridz"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetGridz(x);
     }
-    if (auto atr = node->GetAttrib("Tickx")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Tickx"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetTickx(x);
     }
-    if (auto atr = node->GetAttrib("Ticky")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Ticky"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetTicky(x);
     }
-    if (auto atr = node->GetAttrib("FillColor")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("FillColor"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetFillColor(x);
     }
-    if (auto atr = node->GetAttrib("LineColor")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("LineColor"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetLineColor(x);
     }
   }

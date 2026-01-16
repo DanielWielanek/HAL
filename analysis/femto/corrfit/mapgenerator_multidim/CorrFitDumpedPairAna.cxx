@@ -193,22 +193,22 @@ namespace Hal {
     for (int i = 0; i < parNo; i++) {
       fTotalNumberOfPoints = fTotalNumberOfPoints * setup.GetNPoints(i);
     }
-    XMLNode* root        = file.GetRootNode();
-    TString pairFileName = root->GetChild("PairFile")->GetValue();
-    fPairFile            = new Hal::CorrFitPairFile(pairFileName, "read");
-    XMLNode* parameters  = root->GetChild("Parameters");
-    XMLNode* dumpAna     = root->GetChild("DumpAnalysisConf");
+    XMLNode* root             = file.GetRootNode();
+    TString pairFileName      = root->GetChild("PairFile").GetValue();
+    fPairFile                 = new Hal::CorrFitPairFile(pairFileName, "read");
+    const XMLNode& parameters = root->GetChild("Parameters");
+    const XMLNode& dumpAna    = root->GetChild("DumpAnalysisConf");
     if (!dumpAna) return printErr("DumpAnalysisConf");
 
     if (!parameters) return printErr("Parameters");
 
-    XMLNode* freezXml  = dumpAna->GetChild("FreezeoutGenerator");
-    XMLNode* sourceXml = dumpAna->GetChild("SourceModel");
+    auto freezXml  = dumpAna.GetChild("FreezeoutGenerator");
+    auto sourceXml = dumpAna.GetChild("SourceModel");
     if (!freezXml) return printErr("FreezeoutGenerator");
 
     if (!sourceXml) return printErr("SourceModel");
-    TClass* freezoutClass              = TClass::GetClass(freezXml->GetValue(), 1, 0);
-    TClass* sourceClass                = TClass::GetClass(sourceXml->GetValue(), 1, 0);
+    TClass* freezoutClass              = TClass::GetClass(freezXml.GetValue(), 1, 0);
+    TClass* sourceClass                = TClass::GetClass(sourceXml.GetValue(), 1, 0);
     FemtoFreezeoutGenerator* generator = static_cast<FemtoFreezeoutGenerator*>(freezoutClass->New());
     FemtoSourceModel* source           = static_cast<FemtoSourceModel*>(sourceClass->New());
     if (source && generator) {
@@ -220,15 +220,15 @@ namespace Hal {
     }
     if (source) delete source;
     if (generator) delete generator;
-    XMLNode* calcOpts = dumpAna->GetChild("CalcOptions");
+    auto calcOpts = dumpAna.GetChild("CalcOptions");
     if (calcOpts) {
-      XMLNode* pairCut = calcOpts->GetChild("NoPairCut");
-      if (pairCut) { fPairThreshold = pairCut->GetValue().Atoi(); }
+      auto pairCut = calcOpts.GetChild("NoPairCut");
+      if (pairCut) { fPairThreshold = pairCut.GetValue().Atoi(); }
       Hal::Cout::PrintInfo("Pair threshold detected", EInfo::kInfo);
     }
-    XMLNode* multiJobs = calcOpts->GetChild("JobMultiplyFactor");
+    auto multiJobs = calcOpts.GetChild("JobMultiplyFactor");
     if (multiJobs) {
-      if (multiJobs->GetValue().Length() > 0 && fMultiplyJobs <= 0) { fMultiplyJobs = multiJobs->GetValue().Atoi(); }
+      if (multiJobs.GetValue().Length() > 0 && fMultiplyJobs <= 0) { fMultiplyJobs = multiJobs.GetValue().Atoi(); }
     }
     if (fMultiplyJobs <= 0) fMultiplyJobs = 1;
     std::vector<int> dims = setup.GetDimensions();
@@ -237,26 +237,26 @@ namespace Hal {
       return kFALSE;
     }
     if (calcOpts) {
-      XMLNode* multiplyXmlWeight = calcOpts->GetChild("WeightMultiplyFactor");
-      if (multiplyXmlWeight) SetMultiplyFactorWeight(multiplyXmlWeight->GetValue().Atoi());
+      auto multiplyXmlWeight = calcOpts.GetChild("WeightMultiplyFactor");
+      if (multiplyXmlWeight) SetMultiplyFactorWeight(multiplyXmlWeight.GetValue().Atoi());
 
-      XMLNode* multiplyXmlPreproc = calcOpts->GetChild("PreprocessMultiplyFactor");
-      if (multiplyXmlPreproc) SetMultiplyFactorPreprocess(multiplyXmlPreproc->GetValue().Atoi());
+      auto multiplyXmlPreproc = calcOpts.GetChild("PreprocessMultiplyFactor");
+      if (multiplyXmlPreproc) SetMultiplyFactorPreprocess(multiplyXmlPreproc.GetValue().Atoi());
 
-      XMLNode* calcXml = calcOpts->GetChild("CalcMode");
+      auto calcXml = calcOpts.GetChild("CalcMode");
       if (calcXml) {
-        TString opt = calcXml->GetValue();
+        TString opt = calcXml.GetValue();
         if (opt == "S") fMode = eDumpCalcMode::kSignalPairs;
         if (opt == "S+B") fMode = eDumpCalcMode::kSignalBackgroundPairs;  // UseMixed
         if (opt == "B") fMode = eDumpCalcMode::kBackgroundPairsOnly;      // UseMixedOnly
       }
-      XMLNode* ignore = calcOpts->GetChild("IgnoreSign");
+      auto ignore = calcOpts.GetChild("IgnoreSign");
       if (ignore) {
-        if (ignore->GetValue() == "kTRUE") this->IgnoreSign();
+        if (ignore.GetValue() == "kTRUE") this->IgnoreSign();
       }
     }
 
-    XMLNode* weight = dumpAna->GetChild("WeightConf");
+    auto weight = dumpAna.GetChild("WeightConf");
     if (weight) {
       auto w = Hal::Femto::GetWeightGeneratorFromXLM(weight);
       if (!w) {
@@ -266,7 +266,7 @@ namespace Hal {
       this->SetWeightGenerator(*w);
       delete w;
     }
-    XMLNode* cfXml     = dumpAna->GetChild("CorrelationFunction");
+    auto cfXml         = dumpAna.GetChild("CorrelationFunction");
     DividedHisto1D* cf = Femto::GetHistoFromXML(cfXml);
     if (cf) {
       FemtoCorrFuncSimple corrFunc(*cf);

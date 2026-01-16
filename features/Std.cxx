@@ -142,15 +142,15 @@ namespace Hal::Std {
     Hal::XMLFile parser(Form("%s/.hal_config.xml", home.Data()));
     Hal::XMLNode* root       = parser.GetRootNode();
     std::vector<TString> arr = Hal::Std::ExplodeString(par_name, '/');
-    Hal::XMLNode* node       = root->GetChild(arr[0]);
+    Hal::XMLNode& node       = root->GetChild(arr[0]);
     for (int i = 1; i < (int) arr.size(); i++) {
-      node = node->GetChild(arr[i]);
+      node = node.GetChild(arr[i]);
     }
-    if (node == nullptr) {
+    if (node.IsNull()) {
       Hal::Cout::PrintInfo(Form("Node %s not found in hal configuration file", par_name.Data()), Hal::EInfo::kLowWarning);
       return "";
     }
-    TString value = node->GetValue();
+    TString value = node.GetValue();
     return value;
   }
 

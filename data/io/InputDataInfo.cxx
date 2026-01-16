@@ -33,13 +33,13 @@ namespace Hal {
       fFileNames.push_back(vec);
     } else if (file.EndsWith(".xml")) {  // xml file
       XMLFile xmlFile(file);
-      auto root  = xmlFile.GetRootNode();
-      auto files = root->GetChild("files");
-      for (int i = 0; i < files->GetNChildren(); i++) {
-        auto list = files->GetChild(i);
+      auto root   = xmlFile.GetRootNode();
+      auto& files = root->GetChild("files");
+      for (int i = 0; i < files.GetNChildren(); i++) {
+        auto list = files.GetChild(i);
         fFileNames.push_back(std::vector<TString>());
-        for (int j = 0; j < list->GetNChildren(); i++) {
-          fFileNames[i].push_back(list->GetChild(j)->GetValue());
+        for (int j = 0; j < list.GetNChildren(); i++) {
+          fFileNames[i].push_back(list.GetChild(j).GetValue());
         }
       }
     } else if (file.EndsWith("/")) {  // directory
@@ -129,12 +129,12 @@ namespace Hal {
     }
     if (file.EndsWith(".xml")) {
       XMLFile xmlFile(file);
-      auto root      = xmlFile.GetRootNode();
-      auto files     = root->GetChild("files");
-      auto treenames = root->GetChild("treenames");
+      auto root       = xmlFile.GetRootNode();
+      auto& files     = root->GetChild("files");
+      auto& treenames = root->GetChild("treenames");
       if (treenames) {
-        for (int i = 0; i < treenames->GetNChildren(); i++) {
-          fTreeNames.push_back(treenames->GetChild(i)->GetValue());
+        for (int i = 0; i < treenames.GetNChildren(); i++) {
+          fTreeNames.push_back(treenames.GetChild(i).GetValue());
         }
       }
     }

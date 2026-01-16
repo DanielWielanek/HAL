@@ -16,17 +16,14 @@
 #include <iostream>
 
 namespace Hal {
-  XMLNode::XMLNode(TString name, TString value) : TNamed(name, value) {
-    fChildren.SetOwner(kTRUE);
-    fAttrib.SetOwner(kTRUE);
-  }
+  XMLNode::XMLNode(TString name, TString value) : TNamed(name, value), fNull(kFALSE) {}
 
   XMLNode::XMLNode(const XMLNode& other) : XMLNode(other.GetName(), other.GetValue()) {
-    for (int i = 0; i < other.fChildren.GetEntries(); i++) {
-      fChildren.Add(new XMLNode(*other.GetChild(i)));
+    for (int i = 0; i < other.fChildren.size(); i++) {
+      fChildren.push_back(XMLNode(other.GetChild(i)));
     }
-    for (int i = 0; i < other.fAttrib.GetEntries(); i++) {
-      fAttrib.Add(new XMLAttrib(*other.GetAttrib(i)));
+    for (int i = 0; i < other.fAttrib.size(); i++) {
+      fAttrib.push_back(XMLAttrib(other.GetAttrib(i)));
     }
   }
 
@@ -34,20 +31,38 @@ namespace Hal {
     if (&other == this) return *this;
     SetName(other.GetName());
     SetValue(other.GetValue());
-    fChildren.Clear();
-    fAttrib.Clear();
-    for (int i = 0; i < other.fChildren.GetEntries(); i++) {
-      fChildren.Add(new XMLNode(*other.GetChild(i)));
+    fChildren.clear();
+    fAttrib.clear();
+    for (int i = 0; i < other.fChildren.size(); i++) {
+      fChildren.push_back(XMLNode(other.GetChild(i)));
     }
-    for (int i = 0; i < other.fAttrib.GetEntries(); i++) {
-      fAttrib.Add(new XMLAttrib(*other.GetAttrib(i)));
+    for (int i = 0; i < other.fAttrib.size(); i++) {
+      fAttrib.push_back(XMLAttrib(other.GetAttrib(i)));
     }
     return *this;
   }
 
+  XMLNode& XMLNode::operator[](int i) { return fChildren[i]; }
+
+  XMLNode& XMLNode::operator[](const TString key) {
+    for (auto& i : fChildren) {
+      if (i.GetStrName() == key) return i;
+    }
+    return NullNode();  // just to be compatible
+  }
+
+  const XMLNode& XMLNode::operator[](int i) const { return fChildren[i]; }
+
+  const XMLNode& XMLNode::operator[](const TString key) const {
+    for (auto& i : fChildren) {
+      if (i.GetStrName() == key) return i;
+    }
+
+    return NullNode();  // just to be compatible
+  }
   void XMLNode::Copy(TXMLNode* node) {
-    fChildren.Clear();
-    fAttrib.Clear();
+    fChildren.clear();
+    fAttrib.clear();
     SetName(node->GetNodeName());
     SetTitle(node->GetText());
     if (node->HasChildren()) {
@@ -56,9 +71,9 @@ namespace Hal {
         if (child == nullptr) break;
         TString name = child->GetNodeName();
         if (name != "text") {  // skip "text" nodes
-          XMLNode* tempnode = new XMLNode();
-          tempnode->Copy(child);
-          fChildren.Add(tempnode);
+          XMLNode tempnode;
+          tempnode.Copy(child);
+          fChildren.push_back(tempnode);
         }
         if (child->HasNextNode()) child = child->GetNextNode();
       } while (child->HasNextNode());
@@ -67,47 +82,70 @@ namespace Hal {
       TList* atr_list = node->GetAttributes();
       for (int i = 0; i < atr_list->GetEntries(); i++) {
         TXMLAttr* atrib = (TXMLAttr*) atr_list->At(i);
-        fAttrib.Add(new XMLAttrib(atrib->GetName(), atrib->GetValue()));
+        fAttrib.push_back(XMLAttrib(atrib->GetName(), atrib->GetValue()));
       }
     }
   }
 
-  void XMLNode::AddAttrib(XMLAttrib* attrib) {
-    TString new_atr = attrib->GetName();
-    if (GetAttrib(new_atr) != nullptr) {
-      std::cout << "XMLNode::AddAttrib Can't have two attributes with the same name!" << std::endl;
-      return;
-    }
-    fAttrib.AddLast(attrib);
-  }
+  void XMLNode::AddChild(const XMLNode& node) { fChildren.push_back(node); }
 
-  void XMLNode::AddAttrib(TString name, TString value) { fAttrib.AddLast(new XMLAttrib(name, value)); }
+  void XMLNode::AddAttrib(const XMLAttrib& attrib) { fAttrib.push_back(attrib); }
+
+  void XMLNode::AddAttrib(TString name, TString value) { fAttrib.push_back(XMLAttrib(name, value)); }
 
   Int_t XMLNode::GetNChildren(TString name) const {
-    Int_t counter = 0;
-    for (int i = 0; i < GetNChildren(); i++) {
-      TString name_temp = GetChild(i)->GetName();
-      if (name_temp == name) { counter++; }
+    int count = 0;
+    for (auto i : fChildren) {
+      if (i.GetStrName() == name) count++;
     }
-    return counter;
+    return count;
   }
 
-  XMLNode* XMLNode::GetChild(TString name, Int_t count) const {
-    Int_t control_index = 0;
-    for (int i = 0; i < fChildren.GetEntries(); i++) {
-      XMLNode* node = GetChild(i);
-      TString temp  = node->GetName();
-      if (temp == name) { control_index++; }
-      if (control_index > count) return node;
+  const XMLAttrib& XMLNode::GetAttrib(TString name) const {
+    for (auto& i : fAttrib) {
+      if (i.GetStrName() == name) return i;
     }
-    return nullptr;
+    const XMLAttrib& x = XMLAttrib::NullAttrib();
+    return x;
   }
 
-  XMLAttrib* XMLNode::GetAttrib(TString name) const { return static_cast<XMLAttrib*>(fAttrib.FindObject(name)); }
+  const XMLAttrib& XMLNode::GetAttrib(Int_t index) const { return fAttrib[index]; }
 
-  XMLNode* XMLNode::GetChild(Int_t index) const { return static_cast<XMLNode*>(fChildren.At(index)); }
+  const XMLNode& XMLNode::GetChild(TString name, Int_t count) const {
+    int counter = -1;
+    for (auto& i : fChildren) {
+      if (i.GetStrName() == name) counter++;
+      if (counter == count) return i;
+    }
+    return NullNode();
+  }
 
-  XMLAttrib* XMLNode::GetAttrib(Int_t index) const { return static_cast<XMLAttrib*>(fAttrib.At(index)); }
+  const XMLNode& XMLNode::GetChild(Int_t index) const { return fChildren[index]; }
+
+  XMLAttrib& XMLNode::GetAttrib(TString name) {
+    for (auto& i : fAttrib) {
+      if (i.GetStrName() == name) return i;
+    }
+    return XMLAttrib::NullAttrib();
+  }
+
+  XMLAttrib& XMLNode::GetAttrib(Int_t index) { return fAttrib[index]; }
+
+  XMLNode& XMLNode::GetChild(TString name, Int_t count) {
+    int counter = -1;
+    for (auto& i : fChildren) {
+      if (i.GetStrName() == name) counter++;
+      if (counter == count) return i;
+    }
+    return NullNode();
+  }
+
+  XMLNode& XMLNode::GetChild(Int_t index) { return fChildren[index]; }
+
+  XMLNode& XMLNode::NullNode() {
+    static XMLNode nullnode(true, 0);
+    return nullnode;
+  }
 
   XMLNode::~XMLNode() {}
 
@@ -149,15 +187,17 @@ namespace Hal {
 
   void XMLFile::ExportNode(XMLNodePointer_t& nodePointer, TXMLEngine& engine, const XMLNode& node) const {
     for (int i = 0; i < node.GetNChildren(); i++) {
-      XMLNodePointer_t child = engine.NewChild(nodePointer, 0, node.GetChild(i)->GetName(), node.GetChild(i)->GetValue());
-      for (int j = 0; j < node.GetChild(i)->GetNAttributes(); j++) {
-        engine.NewAttr(child, 0, node.GetChild(i)->GetAttrib(j)->GetName(), node.GetChild(i)->GetAttrib(j)->GetValue());
+      XMLNodePointer_t child = engine.NewChild(nodePointer, 0, node.GetChild(i).GetName(), node.GetChild(i).GetValue());
+      for (int j = 0; j < node.GetChild(i).GetNAttributes(); j++) {
+        engine.NewAttr(child, 0, node.GetChild(i).GetAttrib(j).GetName(), node.GetChild(i).GetAttrib(j).GetValue());
       }
-      ExportNode(child, engine, *node.GetChild(i));
+      ExportNode(child, engine, node.GetChild(i));
     }
   }
 
   XMLFile::~XMLFile() {
     if (fRootNode && fOverwrite) Close();
   }
+
+
 }  // namespace Hal

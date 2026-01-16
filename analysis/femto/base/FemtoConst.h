@@ -139,13 +139,13 @@ namespace Hal {
      * @param nod
      * @return
      */
-    DividedHisto1D* GetHistoFromXML(XMLNode* nod);
+    DividedHisto1D* GetHistoFromXML(const XMLNode& nod);
     /**
      * create weight algo from xml node
      * @param nod
      * @return
      */
-    FemtoWeightGenerator* GetWeightGeneratorFromXLM(XMLNode* nod);
+    FemtoWeightGenerator* GetWeightGeneratorFromXLM(const XMLNode& nod);
     /**
      * convert kinematic type to label used to description of DividedHisto
      * @param kin

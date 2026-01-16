@@ -38,28 +38,28 @@ namespace Hal {
     return fXAxis;
   }
 
-  void HistoStyle::ExportToXML(XMLNode* node) const {
-    if (Find(kTitle)) node->AddAttrib(new Hal::XMLAttrib("Title", fTitle));
-    if (Find(kMin)) node->AddAttrib(new Hal::XMLAttrib("Min", Form("%4.4f", GetF(kMin))));
-    if (Find(kMax)) node->AddAttrib(new Hal::XMLAttrib("Max", Form("%4.4f", GetF(kMax))));
-    XMLNode* xAxis  = new XMLNode("XAxis");
-    XMLNode* yAxis  = new XMLNode("YAxis");
-    XMLNode* zAxis  = new XMLNode("ZAxis");
-    XMLNode* fill   = new XMLNode("Fill");
-    XMLNode* marker = new XMLNode("Marker");
-    XMLNode* line   = new XMLNode("Line");
+  void HistoStyle::ExportToXML(XMLNode& node) const {
+    if (Find(kTitle)) node.AddAttrib("Title", fTitle);
+    if (Find(kMin)) node.AddAttrib("Min", Form("%4.4f", GetF(kMin)));
+    if (Find(kMax)) node.AddAttrib("Max", Form("%4.4f", GetF(kMax)));
+    XMLNode xAxis("XAxis");
+    XMLNode yAxis("YAxis");
+    XMLNode zAxis("ZAxis");
+    XMLNode fill("Fill");
+    XMLNode marker("Marker");
+    XMLNode line("Line");
     fXAxis.ExportToXML(xAxis);
     fYAxis.ExportToXML(yAxis);
     fZAxis.ExportToXML(zAxis);
     fMarker.ExportToXML(marker);
     fLine.ExportToXML(line);
     fFill.ExportToXML(fill);
-    node->AddChild(xAxis);
-    node->AddChild(yAxis);
-    node->AddChild(zAxis);
-    node->AddChild(fill);
-    node->AddChild(marker);
-    node->AddChild(line);
+    node.AddChild(xAxis);
+    node.AddChild(yAxis);
+    node.AddChild(zAxis);
+    node.AddChild(fill);
+    node.AddChild(marker);
+    node.AddChild(line);
   }
 
   HistoStyle HistoStyle::GetStyle(TString style) {
@@ -210,25 +210,25 @@ namespace Hal {
     }
   }
 
-  void HistoStyle::ImportFromXML(XMLNode* node) {
-    if (auto atr = node->GetAttrib("Title")) {
-      TString x = atr->GetValue();
+  void HistoStyle::ImportFromXML(const XMLNode& node) {
+    if (auto& atr = node.GetAttrib("Title"); !atr.IsNull()) {
+      TString x = atr.GetValue();
       SetTitle(x);
     }
-    if (auto atr = node->GetAttrib("Min")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("Min")) {
+      float x = atr.GetValue().Atof();
       SetMin(x);
     }
-    if (auto atr = node->GetAttrib("Max")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("Max")) {
+      float x = atr.GetValue().Atof();
       SetMax(x);
     }
-    if (auto xAxis = node->GetChild("XAxis")) { fXAxis.ImportFromXML(xAxis); }
-    if (auto yAxis = node->GetChild("YAxis")) { fYAxis.ImportFromXML(yAxis); }
-    if (auto zAxis = node->GetChild("ZAxis")) { fZAxis.ImportFromXML(zAxis); }
-    if (auto xAxis = node->GetChild("Fill")) { fFill.ImportFromXML(xAxis); }
-    if (auto xAxis = node->GetChild("Marker")) { fMarker.ImportFromXML(xAxis); }
-    if (auto line = node->GetChild("Line")) { fLine.ImportFromXML(line); }
+    if (auto xAxis = node.GetChild("XAxis")) { fXAxis.ImportFromXML(xAxis); }
+    if (auto yAxis = node.GetChild("YAxis")) { fYAxis.ImportFromXML(yAxis); }
+    if (auto zAxis = node.GetChild("ZAxis")) { fZAxis.ImportFromXML(zAxis); }
+    if (auto xAxis = node.GetChild("Fill")) { fFill.ImportFromXML(xAxis); }
+    if (auto xAxis = node.GetChild("Marker")) { fMarker.ImportFromXML(xAxis); }
+    if (auto line = node.GetChild("Line")) { fLine.ImportFromXML(line); }
   }
 
   void HistoStyle::Import(const TObject& obj) {

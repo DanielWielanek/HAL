@@ -82,7 +82,7 @@ namespace Hal {
     /**
      * init  generators - for vertical init all generators for horizontal init generators x multiplicity
      */
-    virtual Bool_t InitGenerators(const std::vector<int>& dims, XMLNode* parameters, const CorrFitParamsSetup& setup) = 0;
+    virtual Bool_t InitGenerators(const std::vector<int>& dims, const XMLNode& parameters, const CorrFitParamsSetup& setup) = 0;
     /**
      * set freezout generator
      * @param gen

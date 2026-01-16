@@ -184,14 +184,14 @@ namespace Hal {
   }
 
   Bool_t CorrFitDumpedPairAnaHorizontal::InitGenerators(const std::vector<int>& dims,
-                                                        XMLNode* parameters,
+                                                        const XMLNode& parameters,
                                                         const CorrFitParamsSetup& setup) {
     fGenerator.clear();
     for (int j = 0; j < fMultiplyJobs; j++) {
       fGenerator.push_back(fTempGenerator->MakeCopy());
       FemtoSourceModel* freez = fGenerator[j]->GetSourceModel();
       std::vector<int> arPos  = Hal::Std::OneToMultiDimIndex(dims, fJobId * fMultiplyJobs + j);
-      for (int i = 0; i < parameters->GetNChildren(); i++) {
+      for (int i = 0; i < parameters.GetNChildren(); i++) {
         // XMLNode* parameter = parameters->GetChild(i);
         Double_t val = setup.GetMin(i) + setup.GetStepSize(i) * ((Double_t) arPos[i]);
         freez->SetParameterByName(setup.GetParName(i), val);

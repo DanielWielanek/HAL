@@ -107,7 +107,7 @@ namespace Hal {
      * @param name name of xml file
      * @param prec precission if negative do not define precission
      */
-    Hal::XMLNode* ExportToXMLNode(Int_t prec = -1);
+    Hal::XMLNode ExportToXMLNode(Int_t prec = -1);
     virtual ~ErrorCalc() = default;
     ClassDef(ErrorCalc, 0)
   };

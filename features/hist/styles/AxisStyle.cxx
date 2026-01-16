@@ -147,28 +147,28 @@ namespace Hal {
     fTitle = val;
   }
 
-  void AxisStyle::ExportToXML(XMLNode* node) const {
-    if (Find(kTitleOffset)) node->AddAttrib(new Hal::XMLAttrib("TitleOffset", Form("%4.4f", GetF(kTitleOffset))));
-    if (Find(kLabelOffset)) node->AddAttrib(new Hal::XMLAttrib("LabelOffset", Form("%4.4f", GetF(kLabelOffset))));
-    if (Find(kTitleSize)) node->AddAttrib(new Hal::XMLAttrib("TitleSize", Form("%4.4f", GetF(kTitleSize))));
-    if (Find(kLabelSize)) node->AddAttrib(new Hal::XMLAttrib("LabelSize", Form("%4.4f", GetF(kLabelSize))));
-    if (Find(kTickLength)) node->AddAttrib(new Hal::XMLAttrib("TickLength", Form("%4.4f", GetF(kTickLength))));
-    if (Find(kNdivisions)) node->AddAttrib(new Hal::XMLAttrib("Ndivisions", Form("%i", GetI(kNdivisions))));
-    if (Find(kAxisColor)) node->AddAttrib(new Hal::XMLAttrib("AxisColor", Form("%i", GetI(kAxisColor))));
-    if (Find(kLabelColor)) node->AddAttrib(new Hal::XMLAttrib("LabelColor", Form("%i", GetI(kLabelColor))));
-    if (Find(kTitleColor)) node->AddAttrib(new Hal::XMLAttrib("TitleColor", Form("%i", GetI(kTitleColor))));
-    if (Find(kTitleFont)) node->AddAttrib(new Hal::XMLAttrib("TitleFont", Form("%i", GetI(kTitleFont))));
-    if (Find(kCenterTitle)) node->AddAttrib(new Hal::XMLAttrib("CenterTitle", Form("%i", GetI(kCenterTitle))));
+  void AxisStyle::ExportToXML(XMLNode& node) const {
+    if (Find(kTitleOffset)) node.AddAttrib("TitleOffset", Form("%4.4f", GetF(kTitleOffset)));
+    if (Find(kLabelOffset)) node.AddAttrib("LabelOffset", Form("%4.4f", GetF(kLabelOffset)));
+    if (Find(kTitleSize)) node.AddAttrib("TitleSize", Form("%4.4f", GetF(kTitleSize)));
+    if (Find(kLabelSize)) node.AddAttrib("LabelSize", Form("%4.4f", GetF(kLabelSize)));
+    if (Find(kTickLength)) node.AddAttrib("TickLength", Form("%4.4f", GetF(kTickLength)));
+    if (Find(kNdivisions)) node.AddAttrib("Ndivisions", Form("%i", GetI(kNdivisions)));
+    if (Find(kAxisColor)) node.AddAttrib("AxisColor", Form("%i", GetI(kAxisColor)));
+    if (Find(kLabelColor)) node.AddAttrib("LabelColor", Form("%i", GetI(kLabelColor)));
+    if (Find(kTitleColor)) node.AddAttrib("TitleColor", Form("%i", GetI(kTitleColor)));
+    if (Find(kTitleFont)) node.AddAttrib("TitleFont", Form("%i", GetI(kTitleFont)));
+    if (Find(kCenterTitle)) node.AddAttrib("CenterTitle", Form("%i", GetI(kCenterTitle)));
     if (!fSkipTitle)
-      if (Find(kTitle)) node->AddAttrib(new Hal::XMLAttrib("Title", fTitle));
-    if (Find(kRangeMin)) node->AddAttrib(new Hal::XMLAttrib("RangeMin", Form("%4.4f", GetF(kRangeMin))));
-    if (Find(kRangeMax)) node->AddAttrib(new Hal::XMLAttrib("RangeMax", Form("%4.4f", GetF(kRangeMax))));
-    if (Find(kTicksOpt)) node->AddAttrib(new Hal::XMLAttrib("TicksOpt", GetTicks()));
-    if (Find(kMoreLog)) node->AddAttrib(new Hal::XMLAttrib("MoreLog", Form("%i", (int) GetI(kMoreLog))));
-    if (Find(kRotatedTitle)) node->AddAttrib(new Hal::XMLAttrib("RotatedTitle", Form("%i", (int) GetI(kRotatedTitle))));
-    if (Find(kFontStyleLabel)) node->AddAttrib(new Hal::XMLAttrib("LabelFont", Form("%i", (int) GetI(kFontStyleLabel))));
-    if (Find(kDecimal)) node->AddAttrib(new Hal::XMLAttrib("Decimal", Form("%i", (int) GetI(kDecimal))));
-    if (Find(kNoExp)) node->AddAttrib(new Hal::XMLAttrib("NoExp", Form("%i", (int) GetI(kNoExp))));
+      if (Find(kTitle)) node.AddAttrib("Title", fTitle);
+    if (Find(kRangeMin)) node.AddAttrib("RangeMin", Form("%4.4f", GetF(kRangeMin)));
+    if (Find(kRangeMax)) node.AddAttrib("RangeMax", Form("%4.4f", GetF(kRangeMax)));
+    if (Find(kTicksOpt)) node.AddAttrib("TicksOpt", GetTicks());
+    if (Find(kMoreLog)) node.AddAttrib("MoreLog", Form("%i", (int) GetI(kMoreLog)));
+    if (Find(kRotatedTitle)) node.AddAttrib("RotatedTitle", Form("%i", (int) GetI(kRotatedTitle)));
+    if (Find(kFontStyleLabel)) node.AddAttrib("LabelFont", Form("%i", (int) GetI(kFontStyleLabel)));
+    if (Find(kDecimal)) node.AddAttrib("Decimal", Form("%i", (int) GetI(kDecimal)));
+    if (Find(kNoExp)) node.AddAttrib("NoExp", Form("%i", (int) GetI(kNoExp)));
   }
 
   void AxisStyle::SetRangeUser(Float_t min, Float_t max) {
@@ -176,99 +176,99 @@ namespace Hal {
     SetF(kRangeMax, max);
   }
 
-  void AxisStyle::ImportFromXML(XMLNode* node) {
+  void AxisStyle::ImportFromXML(const XMLNode& node) {
 
-    if (auto atr = node->GetAttrib("TitleOffset")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("TitleOffset"); !atr.IsNull()) {
+      float x = atr.GetValue().Atof();
       SetTitleOffset(x);
     }
-    if (auto atr = node->GetAttrib("LabelOffset")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("LabelOffset"); !atr.IsNull()) {
+      float x = atr.GetValue().Atof();
       SetLabelOffset(x);
     }
-    if (auto atr = node->GetAttrib("TitleSize")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("TitleSize"); !atr.IsNull()) {
+      float x = atr.GetValue().Atof();
       SetTitleSize(x);
     }
-    if (auto atr = node->GetAttrib("LabelSize")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("LabelSize"); !atr.IsNull()) {
+      float x = atr.GetValue().Atof();
       SetLabelSize(x);
     }
-    if (auto atr = node->GetAttrib("TickLength")) {
-      float x = atr->GetValue().Atof();
+    if (auto& atr = node.GetAttrib("TickLength"); !atr.IsNull()) {
+      float x = atr.GetValue().Atof();
       SetTickLength(x);
     }
-    if (auto atr = node->GetAttrib("Ndivisions")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Ndivisions"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       if (x >= 0)
         SetNdivisions(x, true);
       else
         SetNdivisions(x, false);
     }
-    if (auto atr = node->GetAttrib("AxisColor")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("AxisColor"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetAxisColor(x);
     }
-    if (auto atr = node->GetAttrib("LabelColor")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("LabelColor"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetLabelColor(x);
     }
-    if (auto atr = node->GetAttrib("TitleColor")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("TitleColor"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetTitleColor(x);
     }
-    if (auto atr = node->GetAttrib("TitleFont")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("TitleFont"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetTitleFont(x);
     }
-    if (auto atr = node->GetAttrib("CenterTitle")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("CenterTitle"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetCenterTitle(x);
     }
 
-    if (node->GetAttrib("RangeMin") && node->GetAttrib("RangeMin")) {
-      auto atr1  = node->GetAttrib("RangeMin");
-      auto atr2  = node->GetAttrib("RangeMax");
-      float mini = atr1->GetValue().Atof();
-      float maxi = atr2->GetValue().Atof();
+    if (!node.GetAttrib("RangeMin").IsNull() && !node.GetAttrib("RangeMin").IsNull()) {
+      auto atr1  = node.GetAttrib("RangeMin");
+      auto atr2  = node.GetAttrib("RangeMax");
+      float mini = atr1.GetValue().Atof();
+      float maxi = atr2.GetValue().Atof();
       SetRangeUser(mini, maxi);
     }
 
-    if (auto atr = node->GetAttrib("CenterTitle")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("CenterTitle"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetCenterTitle(x);
     }
-    if (auto atr = node->GetAttrib("Title")) {
-      TString x = atr->GetValue();
+    if (auto& atr = node.GetAttrib("Title"); !atr.IsNull()) {
+      TString x = atr.GetValue();
       if (!fSkipTitle) SetTitle(x);
     }
-    if (auto atr = node->GetAttrib("TicksOpt")) {
-      TString x = atr->GetValue();
+    if (auto& atr = node.GetAttrib("TicksOpt"); !atr.IsNull()) {
+      TString x = atr.GetValue();
       SetTicks(x);
     }
 
-    if (auto atr = node->GetAttrib("MoreLog")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("MoreLog"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetMoreLogLabels(x);
     }
 
-    if (auto atr = node->GetAttrib("RotatedTitle")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("RotatedTitle"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetRotateTitle(x);
     }
 
-    if (auto atr = node->GetAttrib("LabelFont")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("LabelFont"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetLabelFont(x);
     }
 
-    if (auto atr = node->GetAttrib("Decimal")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Decimal"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetDecimals(x);
     }
 
-    if (auto atr = node->GetAttrib("NoExp")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("NoExp"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetNoExponent(x);
     }
   }

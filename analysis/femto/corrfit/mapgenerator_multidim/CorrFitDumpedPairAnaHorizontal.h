@@ -22,7 +22,7 @@ namespace Hal {
     /**
      * init  generators - for vertical init all generators for horizontal init generators x multiplicity
      */
-    Bool_t InitGenerators(const std::vector<int>& dims, XMLNode* parameters, const CorrFitParamsSetup& setup);
+    Bool_t InitGenerators(const std::vector<int>& dims, const XMLNode& parameters, const CorrFitParamsSetup& setup);
     Bool_t InitCFs();
 
   public:

@@ -33,30 +33,30 @@ namespace Hal {
 
   Int_t MarkerStyle::GetSize() const { return GetI(kSize); }
 
-  void MarkerStyle::ExportToXML(XMLNode* node) const {
+  void MarkerStyle::ExportToXML(XMLNode& node) const {
 
-    if (Find(kColor)) node->AddAttrib(new Hal::XMLAttrib("Color", Form("%i", GetI(kColor))));
-    if (Find(kStyle)) node->AddAttrib(new Hal::XMLAttrib("Style", Form("%i", GetI(kStyle))));
-    //  if (Find(kLineWidth)) node->AddAttrib(new Hal::XMLAttrib("LineWidth", Form("%i", GetI(kLineWidth))));
-    if (Find(kSize)) node->AddAttrib(new Hal::XMLAttrib("Size", Form("%i", GetI(kSize))));
+    if (Find(kColor)) node.AddAttrib("Color", Form("%i", GetI(kColor)));
+    if (Find(kStyle)) node.AddAttrib("Style", Form("%i", GetI(kStyle)));
+    //  if (Find(kLineWidth)) node.AddAttrib(new Hal::XMLAttrib("LineWidth", Form("%i", GetI(kLineWidth))));
+    if (Find(kSize)) node.AddAttrib("Size", Form("%i", GetI(kSize)));
   }
 
-  void MarkerStyle::ImportFromXML(XMLNode* node) {
+  void MarkerStyle::ImportFromXML(const XMLNode& node) {
 
-    if (auto atr = node->GetAttrib("Color")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Color"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetColor(x);
     }
-    if (auto atr = node->GetAttrib("Style")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Style"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetStyle(x);
     }
-    /*  if (auto atr = node->GetAttrib("LineWidth")) {
+    /*  if (auto atr = node.GetAttrib("LineWidth")) {
         int x = atr->GetValue().Atoi();
         SetLineWidth(x);
       }*/
-    if (auto atr = node->GetAttrib("Size")) {
-      int x = atr->GetValue().Atoi();
+    if (auto& atr = node.GetAttrib("Size"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
       SetSize(x);
     }
   }

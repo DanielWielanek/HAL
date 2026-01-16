@@ -124,9 +124,9 @@ namespace Hal {
 
     TString GetTitle() const { return fTitle; };
 
-    void ExportToXML(XMLNode* node) const;
+    void ExportToXML(XMLNode& node) const;
 
-    void ImportFromXML(XMLNode* node);
+    void ImportFromXML(const XMLNode& node);
 
     void Apply(TAxis& x) const;
 

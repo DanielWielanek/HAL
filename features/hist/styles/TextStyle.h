@@ -32,8 +32,8 @@ namespace Hal {
     Float_t GetAngle() const;
     Float_t GetSize() const;
     Float_t GetFont() const;
-    void ExportToXML(XMLNode* node) const;
-    void ImportFromXML(XMLNode* node);
+    void ExportToXML(XMLNode& node) const;
+    void ImportFromXML(const XMLNode& node);
     void Import(const TAttText& text);
     virtual ~TextStyle();
     ClassDef(TextStyle, 1);

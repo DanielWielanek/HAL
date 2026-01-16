@@ -23,15 +23,15 @@ namespace Hal {
     fText.Apply(leg);
   }
 
-  void LegendStyle::ExportToXML(XMLNode* node) const {
-    XMLNode* fillStyle = new XMLNode("FillStyle");
+  void LegendStyle::ExportToXML(XMLNode& node) const {
+    XMLNode fillStyle("FillStyle");
     fFill.ExportToXML(fillStyle);
-    XMLNode* lineStyle = new XMLNode("LineStyle");
+    XMLNode lineStyle("LineStyle");
     fLine.ExportToXML(fillStyle);
-    XMLNode* textStyle = new XMLNode("TextStyle");
-    node->AddChild(fillStyle);
-    node->AddChild(lineStyle);
-    node->AddChild(textStyle);
+    XMLNode textStyle("TextStyle");
+    node.AddChild(fillStyle);
+    node.AddChild(lineStyle);
+    node.AddChild(textStyle);
   }
 
   void LegendStyle::Import(const TLegend& x) {
@@ -41,10 +41,10 @@ namespace Hal {
     fFill.Import(x);
   }
 
-  void LegendStyle::ImportFromXML(XMLNode* node) {
-    if (auto child = node->GetChild("FillStyle")) { fFill.ImportFromXML(child); }
-    if (auto child = node->GetChild("LineStyle")) { fLine.ImportFromXML(child); }
-    if (auto child = node->GetChild("TextStyle")) { fText.ImportFromXML(child); }
+  void LegendStyle::ImportFromXML(const XMLNode& node) {
+    if (auto child = node.GetChild("FillStyle"); !child.IsNull()) { fFill.ImportFromXML(child); }
+    if (auto child = node.GetChild("LineStyle"); !child.IsNull()) { fLine.ImportFromXML(child); }
+    if (auto child = node.GetChild("TextStyle"); !child.IsNull()) { fText.ImportFromXML(child); }
   }
 
   LegendStyle::LegendStyle(TString style) {

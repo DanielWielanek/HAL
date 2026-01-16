@@ -30,9 +30,9 @@ namespace Hal {
 
     Int_t GetStyle() const;
 
-    void ExportToXML(XMLNode* node) const;
+    void ExportToXML(XMLNode& node) const;
 
-    void ImportFromXML(XMLNode* node);
+    void ImportFromXML(const XMLNode& node);
 
     template<class T>
     void Apply(T& x) const;

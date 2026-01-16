@@ -44,21 +44,21 @@ namespace Hal {
 
   CorrFitParamsSetup::CorrFitParamsSetup(TString xmlFile) {
     XMLFile file(xmlFile);
-    XMLNode* root       = file.GetRootNode();
-    XMLNode* parameters = root->GetChild("Parameters");
-    fSize               = parameters->GetNChildren();
+    XMLNode* root             = file.GetRootNode();
+    const XMLNode& parameters = root->GetChild("Parameters");
+    fSize                     = parameters.GetNChildren();
     fMin.MakeBigger(fSize);
     fMax.MakeBigger(fSize);
     fNpoints.MakeBigger(fSize);
     fNames = new TString[fSize];
     for (int i = 0; i < fSize; i++) {
-      XMLNode* par = parameters->GetChild(i);
-      fMin[i]      = par->GetAttrib("min")->GetValue().Atof();
-      fMax[i]      = par->GetAttrib("max")->GetValue().Atof();
-      double step  = par->GetAttrib("step")->GetValue().Atof();
-      fNpoints[i]  = TMath::Ceil((fMax[i] - fMin[i]) / double(step)) + 1;
-      fMax[i]      = fMin[i] + double(fNpoints[i] - 1) * step;
-      fNames[i]    = par->GetAttrib("name")->GetValue();
+      auto par    = parameters.GetChild(i);
+      fMin[i]     = par.GetAttrib("min").GetValue().Atof();
+      fMax[i]     = par.GetAttrib("max").GetValue().Atof();
+      double step = par.GetAttrib("step").GetValue().Atof();
+      fNpoints[i] = TMath::Ceil((fMax[i] - fMin[i]) / double(step)) + 1;
+      fMax[i]     = fMin[i] + double(fNpoints[i] - 1) * step;
+      fNames[i]   = par.GetAttrib("name").GetValue();
     }
   }
 

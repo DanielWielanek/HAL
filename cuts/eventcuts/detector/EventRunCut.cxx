@@ -38,8 +38,8 @@ namespace Hal {
       XMLFile xml(fListFile);
       XMLNode* root = xml.GetRootNode();
       if (fLabel.Length() > 0) {
-        root = root->GetChild(fLabel);
-        if (root == nullptr) {
+        auto& node = root->GetChild(fLabel);
+        if (node.IsNull()) {
           Cout::PrintInfo(Form("Lack of runs %s in file %s", fLabel.Data(), fListFile.Data()), EInfo::kWarning);
           return kFALSE;
         }
@@ -47,13 +47,13 @@ namespace Hal {
       TString name = "bad_runs";
       if (fMode == EMode::kGood) { name = "good_runs"; }
 
-      XMLNode* xmlRuns = root->GetChild(name);
-      if (xmlRuns == nullptr) {
+      XMLNode& xmlRuns = root->GetChild(name);
+      if (xmlRuns.IsNull()) {
         Cout::PrintInfo(Form("Lack of run list in file %s", fListFile.Data()), EInfo::kWarning);
         return kFALSE;
       }
-      for (int i = 0; i < xmlRuns->GetNChildren(); i++) {
-        TString val = xmlRuns->GetChild(i)->GetValue();
+      for (int i = 0; i < xmlRuns.GetNChildren(); i++) {
+        TString val = xmlRuns.GetChild(i).GetValue();
         runs.push_back(val.Atoi());
       }
 

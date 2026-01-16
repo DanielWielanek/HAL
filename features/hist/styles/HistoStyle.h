@@ -150,8 +150,8 @@ namespace Hal {
     LineStyle& GetLineStyle() { return fLine; }
     MarkerStyle& GetMarkerStyle() { return fMarker; }
     TString GetTitle() const { return fTitle; };
-    void ExportToXML(XMLNode* node) const;
-    void ImportFromXML(XMLNode* node);
+    void ExportToXML(XMLNode& node) const;
+    void ImportFromXML(const XMLNode& node);
     void Import(const TObject& obj);
     virtual ~HistoStyle() {};
     ClassDef(HistoStyle, 1);

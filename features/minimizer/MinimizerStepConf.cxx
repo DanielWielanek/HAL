@@ -87,18 +87,18 @@ namespace Hal {
     auto root = file.GetRootNode();
     for (int i = 0; i < root->GetNChildren(); i++) {
       auto child   = root->GetChild(i);
-      TString name = child->GetName();
+      TString name = child.GetName();
       name.ToLower();
       if (name == "param") {
-        auto minim     = child->GetAttrib("min");
-        auto maxim     = child->GetAttrib("max");
-        auto step      = child->GetAttrib("step");
-        auto paramname = child->GetAttrib("name");
+        auto minim     = child.GetAttrib("min");
+        auto maxim     = child.GetAttrib("max");
+        auto step      = child.GetAttrib("step");
+        auto paramname = child.GetAttrib("name");
         if (minim && maxim && name && step) {
-          double min_val  = minim->GetValue().Atof();
-          double max_val  = maxim->GetValue().Atof();
-          double dx       = step->GetValue().Atof();
-          TString parname = paramname->GetValue();
+          double min_val  = minim.GetValue().Atof();
+          double max_val  = maxim.GetValue().Atof();
+          double dx       = step.GetValue().Atof();
+          TString parname = paramname.GetValue();
           ConfigureParameter(parname, dx, min_val, max_val, "");
         }
       }

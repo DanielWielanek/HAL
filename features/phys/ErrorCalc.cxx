@@ -204,28 +204,29 @@ namespace Hal {
     root->AddChild(ExportToXMLNode(precision));
   }
 
-  Hal::XMLNode* ErrorCalc::ExportToXMLNode(Int_t prec) {
+  Hal::XMLNode ErrorCalc::ExportToXMLNode(Int_t prec) {
     if (fUncertainties.size() == 0 || fValues.size() == 0 || fUncertainties.size() != fValues.size()) {
       Hal::Cout::PrintInfo("ErrorCalc::ExportToXMLNode - cannot get error lack of values/uncertainties !", EInfo::kError);
-      return nullptr;
+      return XMLNode::NullNode();
     }
     TString precFlag = Form("%%4.%if", prec);
     if (prec < 0) precFlag = "%f";
 
-    auto root = new Hal::XMLNode("parameter", "");
-    root->AddAttrib(new Hal::XMLAttrib("parName", GetName()));
+    Hal::XMLNode root("parameter", "");
+    root.AddAttrib("parName", GetName());
     for (int i = 0; i < fValues.size(); i++) {
-      auto errorNode = new Hal::XMLNode("SysError", fValues[i].first);
-
-      errorNode->AddAttrib(new Hal::XMLAttrib("Value", Form(precFlag, GetSysError(i))));
-      root->AddChild(errorNode);
+      Hal::XMLNode errorNode("SysError", fValues[i].first);
+      errorNode.AddAttrib("Value", Form(precFlag, GetSysError(i)));
+      root.AddChild(errorNode);
     }
-    auto errorNode = new Hal::XMLNode("TotalSysError", Form(precFlag, GetTotalSysError()));
-    auto statNode  = new Hal::XMLNode("StatError", Form(precFlag, GetStatError()));
-    auto value     = new Hal::XMLNode("Measured", Form(precFlag, GetMeasuredValue()));
-    root->AddChild(errorNode);
-    root->AddChild(statNode);
-    root->AddChild(value);
+    Hal::XMLNode errorNode("TotalSysError", Form(precFlag, GetTotalSysError()));
+    Hal::XMLNode statNode("StatError", Form(precFlag, GetStatError()));
+    Hal::XMLNode value("Measured", Form(precFlag, GetMeasuredValue()));
+
+
+    root.AddChild(errorNode);
+    root.AddChild(statNode);
+    root.AddChild(value);
     return root;
   }
 

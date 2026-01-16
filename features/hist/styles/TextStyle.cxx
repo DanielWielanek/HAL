@@ -46,20 +46,20 @@ namespace Hal {
     if (Find(kFont)) obj.SetTextFont(GetF(kFont));
   }
 
-  void TextStyle::ExportToXML(XMLNode* node) const {
-    if (Find(kAling)) node->AddAttrib(new Hal::XMLAttrib("Align", Form("%i", GetI(kAling))));
-    if (Find(kColor)) node->AddAttrib(new Hal::XMLAttrib("Color", Form("%i", GetI(kColor))));
-    if (Find(kAngle)) node->AddAttrib(new Hal::XMLAttrib("Angle", Form("%4.4f", GetF(kAngle))));
-    if (Find(kSize)) node->AddAttrib(new Hal::XMLAttrib("Size", Form("%4.4f", GetF(kSize))));
-    if (Find(kFont)) node->AddAttrib(new Hal::XMLAttrib("Font", Form("%4.4f", GetF(kFont))));
+  void TextStyle::ExportToXML(XMLNode& node) const {
+    if (Find(kAling)) node.AddAttrib("Align", Form("%i", GetI(kAling)));
+    if (Find(kColor)) node.AddAttrib("Color", Form("%i", GetI(kColor)));
+    if (Find(kAngle)) node.AddAttrib("Angle", Form("%4.4f", GetF(kAngle)));
+    if (Find(kSize)) node.AddAttrib("Size", Form("%4.4f", GetF(kSize)));
+    if (Find(kFont)) node.AddAttrib("Font", Form("%4.4f", GetF(kFont)));
   }
 
-  void TextStyle::ImportFromXML(XMLNode* node) {
-    if (auto child = node->GetAttrib("Size")) SetSize(child->GetValue().Atof());
-    if (auto child = node->GetAttrib("Font")) SetFont(child->GetValue().Atof());
-    if (auto child = node->GetAttrib("Angle")) SetAngle(child->GetValue().Atof());
-    if (auto child = node->GetAttrib("Color")) { SetColor(child->GetValue().Atoi()); }
-    if (auto child = node->GetAttrib("Align")) { SetAlign(child->GetValue().Atoi()); }
+  void TextStyle::ImportFromXML(const XMLNode& node) {
+    if (auto child = node.GetAttrib("Size"); !child.IsNull()) SetSize(child.GetValue().Atof());
+    if (auto child = node.GetAttrib("Font"); !child.IsNull()) SetFont(child.GetValue().Atof());
+    if (auto child = node.GetAttrib("Angle"); !child.IsNull()) SetAngle(child.GetValue().Atof());
+    if (auto child = node.GetAttrib("Color"); !child.IsNull()) { SetColor(child.GetValue().Atoi()); }
+    if (auto child = node.GetAttrib("Align"); !child.IsNull()) { SetAlign(child.GetValue().Atoi()); }
   }
 
   void TextStyle::Import(const TAttText& text) {

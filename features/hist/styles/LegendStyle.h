@@ -31,8 +31,8 @@ namespace Hal {
     LineStyle& GetLineStyle() { return fLine; }
     TextStyle& GetTextStyle() { return fText; }
     void Apply(TLegend& leg) const;
-    void ExportToXML(XMLNode* node) const;
-    void ImportFromXML(XMLNode* node);
+    void ExportToXML(XMLNode& node) const;
+    void ImportFromXML(const XMLNode& node);
     virtual ~LegendStyle() {};
     ClassDef(LegendStyle, 0);
   };

@@ -20,29 +20,29 @@ namespace Hal {
     XMLFile file(fFile);
     XMLNode* root = file.GetRootNode();
 
-    XMLNode* settings = root->GetChild("settings");
-    fSubmitCommand    = settings->GetAttrib("submit")->GetValue();
+    XMLNode& settings = root->GetChild("settings");
+    fSubmitCommand    = settings.GetAttrib("submit").GetValue();
 
-    TString Shell = settings->GetAttrib("shell")->GetValue();
+    TString Shell = settings.GetAttrib("shell").GetValue();
     TString array = "yes";
-    if (settings->GetAttrib("array")) array = settings->GetAttrib("array")->GetValue();
-    if (settings->GetAttrib("debug")) {
-      if (settings->GetAttrib("debug")->GetValue().EqualTo("yes")) fDebugCommands = kTRUE;
+    if (settings.GetAttrib("array")) array = settings.GetAttrib("array").GetValue();
+    if (settings.GetAttrib("debug")) {
+      if (settings.GetAttrib("debug").GetValue().EqualTo("yes")) fDebugCommands = kTRUE;
     }
     array.ToLower();
     if (array.EqualTo("yes")) fArray = kTRUE;
-    if (settings->GetAttrib("start")) fStartJob = settings->GetAttrib("start")->GetValue().Atoi();
-    if (settings->GetAttrib("end")->GetValue().Atoi()) fEndJob = settings->GetAttrib("end")->GetValue().Atoi();
-    if (settings->GetAttrib("dir")->GetValue()) fDir = settings->GetAttrib("dir")->GetValue();
+    if (settings.GetAttrib("start")) fStartJob = settings.GetAttrib("start").GetValue().Atoi();
+    if (settings.GetAttrib("end").GetValue().Atoi()) fEndJob = settings.GetAttrib("end").GetValue().Atoi();
+    if (settings.GetAttrib("dir").GetValue()) fDir = settings.GetAttrib("dir").GetValue();
     gSystem->mkdir(fDir);
 
-    XMLNode* parameters = root->GetChild("parameters");
+    XMLNode& parameters = root->GetChild("parameters");
     if (parameters) {
-      const Int_t nPar = parameters->GetNChildren("parameter");
+      const Int_t nPar = parameters.GetNChildren("parameter");
       for (int i = 0; i < nPar; i++) {
-        XMLNode* param   = parameters->GetChild("parameter", i);
-        TString parname  = param->GetAttrib("name")->GetValue();
-        TString parvalue = param->GetAttrib("value")->GetValue();
+        XMLNode& param   = parameters.GetChild("parameter", i);
+        TString parname  = param.GetAttrib("name").GetValue();
+        TString parvalue = param.GetAttrib("value").GetValue();
         fParameters.push_back(std::pair<TString, TString>(parname, parvalue));
       }
     }
@@ -51,11 +51,11 @@ namespace Hal {
     fParameters.push_back(std::pair<TString, TString>("HAL::CONST::END", Form("%i", fEndJob)));
 
     fCommands.push_back(Shell);
-    XMLNode* commands     = root->GetChild("commands");
-    const Int_t nCommands = commands->GetNChildren("command");
+    XMLNode& commands     = root->GetChild("commands");
+    const Int_t nCommands = commands.GetNChildren("command");
     for (int i = 0; i < nCommands; i++) {
-      XMLNode* command = commands->GetChild("command", i);
-      fCommands.push_back(command->GetValue());
+      XMLNode& command = commands.GetChild("command", i);
+      fCommands.push_back(command.GetValue());
     }
 
 
@@ -181,7 +181,7 @@ namespace Hal {
   Int_t Jobs::GetNVariablesXML(TString xmlfile) {
     XMLFile file(xmlfile);
     XMLNode* root = file.GetRootNode();
-    return root->GetChild(0)->GetNAttributes();
+    return root->GetChild(0).GetNAttributes();
   }
 
   TString Jobs::GetParameterTxt(TString textfile, Int_t job, Int_t var) {
@@ -210,8 +210,8 @@ namespace Hal {
   TString Jobs::GetParameterXml(TString xmlfile, Int_t job, Int_t var) {
     XMLFile p(xmlfile);
     XMLNode* root = p.GetRootNode();
-    XMLNode* nod  = root->GetChild(job);
-    TString val   = nod->GetAttrib(var)->GetValue();
+    XMLNode& nod  = root->GetChild(job);
+    TString val   = nod.GetAttrib(var).GetValue();
     return val;
   }
 
@@ -220,9 +220,9 @@ namespace Hal {
     file.CreateRootNode("jobs");
     XMLNode* node = file.GetRootNode();
     for (int iJobs = 0; iJobs < jobs; iJobs++) {
-      XMLNode* job = new XMLNode("job", Form("job%iJobs", iJobs));
+      XMLNode job("job", Form("job%iJobs", iJobs));
       for (int iAttrib = 0; iAttrib < vars; iAttrib++) {
-        job->AddAttrib(new XMLAttrib(Form("par_%i", iAttrib), Form("job_%i_var_%i", iJobs, iAttrib)));
+        job.AddAttrib(Form("par_%i", iAttrib), Form("job_%i_var_%i", iJobs, iAttrib));
       }
       node->AddChild(job);
     }

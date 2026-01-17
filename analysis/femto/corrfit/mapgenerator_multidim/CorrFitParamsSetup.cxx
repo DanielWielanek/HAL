@@ -44,8 +44,8 @@ namespace Hal {
 
   CorrFitParamsSetup::CorrFitParamsSetup(TString xmlFile) {
     XMLFile file(xmlFile);
-    XMLNode* root             = file.GetRootNode();
-    const XMLNode& parameters = root->GetChild("Parameters");
+    XMLNode& root             = file.GetRootNode();
+    const XMLNode& parameters = root.GetChild("Parameters");
     fSize                     = parameters.GetNChildren();
     fMin.MakeBigger(fSize);
     fMax.MakeBigger(fSize);

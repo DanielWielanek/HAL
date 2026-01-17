@@ -84,9 +84,9 @@ namespace Hal {
 
   void MinimizerStepConf::LoadFromXML(TString xmlFile) {
     XMLFile file(xmlFile);
-    auto root = file.GetRootNode();
-    for (int i = 0; i < root->GetNChildren(); i++) {
-      auto child   = root->GetChild(i);
+    auto& root = file.GetRootNode();
+    for (int i = 0; i < root.GetNChildren(); i++) {
+      auto child   = root.GetChild(i);
       TString name = child.GetName();
       name.ToLower();
       if (name == "param") {

@@ -38,7 +38,7 @@ namespace Hal {
 
   void Style::LoadFromXML(TString filename, TString nodeName) {
     Hal::XMLFile file(filename);
-    auto node = file.GetRootNode()->GetChild(nodeName);
+    auto node = file.GetRootNode().GetChild(nodeName);
     if (node) ImportFromXML(node);
   }
 

@@ -18,7 +18,9 @@
 namespace Hal {
   XMLNode::XMLNode(TString name, TString value) : TNamed(name, value), fNull(kFALSE) {}
 
-  XMLNode::XMLNode(const XMLNode& other) : XMLNode(other.GetName(), other.GetValue()) {
+  XMLNode::XMLNode(TString name, TString value, Bool_t null) : TNamed(name, value), fNull(null) {}
+
+  XMLNode::XMLNode(const XMLNode& other) : XMLNode(other.GetName(), other.GetValue(), other.fNull) {
     for (int i = 0; i < other.fChildren.size(); i++) {
       fChildren.push_back(XMLNode(other.GetChild(i)));
     }
@@ -42,22 +44,26 @@ namespace Hal {
     return *this;
   }
 
-  XMLNode& XMLNode::operator[](int i) { return fChildren[i]; }
+  XMLNode& XMLNode::operator[](int i) {
+    if (i < fChildren.size()) return fChildren[i];
+    return NullNode();
+  }
 
-  XMLNode& XMLNode::operator[](const TString key) {
+  XMLNode& XMLNode::operator[](const char* key) {
+    TString keys = key;
     for (auto& i : fChildren) {
-      if (i.GetStrName() == key) return i;
+      if (i.GetStrName() == keys) return i;
     }
     return NullNode();  // just to be compatible
   }
 
   const XMLNode& XMLNode::operator[](int i) const { return fChildren[i]; }
 
-  const XMLNode& XMLNode::operator[](const TString key) const {
+  const XMLNode& XMLNode::operator[](const char* key) const {
+    TString keys = key;
     for (auto& i : fChildren) {
-      if (i.GetStrName() == key) return i;
+      if (i.GetStrName() == keys) return i;
     }
-
     return NullNode();  // just to be compatible
   }
   void XMLNode::Copy(TXMLNode* node) {
@@ -92,6 +98,12 @@ namespace Hal {
   void XMLNode::AddAttrib(const XMLAttrib& attrib) { fAttrib.push_back(attrib); }
 
   void XMLNode::AddAttrib(TString name, TString value) { fAttrib.push_back(XMLAttrib(name, value)); }
+
+  void XMLNode::AddAttribs(const std::vector<std::vector<TString>> attribs) {
+    for (auto x : attribs) {
+      if (x.size() == 2) { AddAttrib(x[0], x[1]); }
+    }
+  }
 
   Int_t XMLNode::GetNChildren(TString name) const {
     int count = 0;
@@ -143,7 +155,7 @@ namespace Hal {
   XMLNode& XMLNode::GetChild(Int_t index) { return fChildren[index]; }
 
   XMLNode& XMLNode::NullNode() {
-    static XMLNode nullnode(true, 0);
+    static XMLNode nullnode("", "", true);
     return nullnode;
   }
 
@@ -158,16 +170,16 @@ namespace Hal {
       Parser.SetValidate(kFALSE);
       Parser.ParseFile(name);
       TXMLNode* MainNode = Parser.GetXMLDocument()->GetRootNode();
-      fRootNode.reset(new XMLNode());
-      fRootNode->Copy(MainNode);
+      fRootNode.Copy(MainNode);
     } else {
+      fRootNode  = XMLNode::NullNode();
       fOverwrite = kTRUE;
     }
   }
 
-  void XMLFile::CreateRootNode(TString name) { fRootNode.reset(new XMLNode(name)); }
+  void XMLFile::CreateRootNode(TString name) { fRootNode = XMLNode(name); }
 
-  void XMLFile::SetRootNode(XMLNode* node) { fRootNode.reset(node); }
+  void XMLFile::SetRootNode(const XMLNode& node) { fRootNode = node; }
 
   void XMLFile::Close() {
     if (fOverwrite) {
@@ -176,8 +188,8 @@ namespace Hal {
         return;
       }
       TXMLEngine engine;
-      XMLNodePointer_t mainnode = engine.NewChild(0, 0, fRootNode->GetName());
-      ExportNode(mainnode, engine, *fRootNode.get());
+      XMLNodePointer_t mainnode = engine.NewChild(0, 0, fRootNode.GetName());
+      ExportNode(mainnode, engine, fRootNode);
       XMLDocPointer_t xmldoc = engine.NewDoc();
       engine.DocSetRootElement(xmldoc, mainnode);
       engine.SaveDoc(xmldoc, fName);
@@ -196,7 +208,7 @@ namespace Hal {
   }
 
   XMLFile::~XMLFile() {
-    if (fRootNode && fOverwrite) Close();
+    if (!fRootNode.IsNull() && fOverwrite) Close();
   }
 
 

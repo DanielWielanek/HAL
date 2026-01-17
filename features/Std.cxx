@@ -140,9 +140,9 @@ namespace Hal::Std {
   TString GetConfigParameter(TString par_name) {
     TString home = gSystem->Getenv("HOME");
     Hal::XMLFile parser(Form("%s/.hal_config.xml", home.Data()));
-    Hal::XMLNode* root       = parser.GetRootNode();
+    Hal::XMLNode& root       = parser.GetRootNode();
     std::vector<TString> arr = Hal::Std::ExplodeString(par_name, '/');
-    Hal::XMLNode& node       = root->GetChild(arr[0]);
+    Hal::XMLNode& node       = root.GetChild(arr[0]);
     for (int i = 1; i < (int) arr.size(); i++) {
       node = node.GetChild(arr[i]);
     }

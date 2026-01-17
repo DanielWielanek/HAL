@@ -80,7 +80,7 @@ namespace Hal {
     const Bool_t fNull;
 
     TString GetStrName() const { return GetName(); }
-    explicit XMLNode(Bool_t null, Int_t /*dummy*/) : fNull(null) {};
+    XMLNode(TString name, TString value, Bool_t null);
 
   public:
     /**
@@ -111,7 +111,7 @@ namespace Hal {
      * @param key
      * @return if not found key returns new node with key name
      */
-    XMLNode& operator[](const TString key);
+    XMLNode& operator[](const char* key);
     /**
      * unsafe getter or i-th element
      * @param i
@@ -123,7 +123,7 @@ namespace Hal {
      * @param key
      * @return if not found key returns new node with key name
      */
-    const XMLNode& operator[](const TString key) const;
+    const XMLNode& operator[](const char* key) const;
     /**
      * copy data for node to this
      * @param node
@@ -151,6 +151,11 @@ namespace Hal {
      * @param value
      */
     void AddAttrib(TString name, TString value);
+    /**
+     * add atribs like {{"name1","value1"},{"name2","value2"}}
+     * @param attribs
+     */
+    void AddAttribs(const std::vector<std::vector<TString>> attribs);
     /**
      *
      * @return number of childen nodes
@@ -244,7 +249,7 @@ namespace Hal {
    * class for opening XML files
    */
   class XMLFile : public TObject {
-    std::unique_ptr<XMLNode> fRootNode;
+    XMLNode fRootNode;
     TString fName;
     Bool_t fOverwrite;
     void ExportNode(XMLNodePointer_t& nodePointer, TXMLEngine& engine, const XMLNode& node) const;
@@ -265,12 +270,17 @@ namespace Hal {
      * set new root node, old node will be overwritten
      * @param node root node
      */
-    void SetRootNode(XMLNode* node);
+    void SetRootNode(const XMLNode& node);
+    /**
+     *
+     * @return
+     */
+    const XMLNode& GetRootNode() const { return fRootNode; };
     /**
      *
      * @return root node
      */
-    XMLNode* GetRootNode() const { return fRootNode.get(); };
+    XMLNode& GetRootNode() { return fRootNode; };
     /**
      * close and write xml (if needed)
      */

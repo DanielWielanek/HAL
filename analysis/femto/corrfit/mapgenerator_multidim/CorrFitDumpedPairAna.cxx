@@ -193,17 +193,17 @@ namespace Hal {
     for (int i = 0; i < parNo; i++) {
       fTotalNumberOfPoints = fTotalNumberOfPoints * setup.GetNPoints(i);
     }
-    XMLNode* root             = file.GetRootNode();
-    TString pairFileName      = root->GetChild("PairFile").GetValue();
+    XMLNode& root             = file.GetRootNode();
+    TString pairFileName      = root["PairFile"].GetValue();
     fPairFile                 = new Hal::CorrFitPairFile(pairFileName, "read");
-    const XMLNode& parameters = root->GetChild("Parameters");
-    const XMLNode& dumpAna    = root->GetChild("DumpAnalysisConf");
+    const XMLNode& parameters = root["Parameters"];
+    const XMLNode& dumpAna    = root["DumpAnalysisConf"];
     if (!dumpAna) return printErr("DumpAnalysisConf");
 
     if (!parameters) return printErr("Parameters");
 
-    auto freezXml  = dumpAna.GetChild("FreezeoutGenerator");
-    auto sourceXml = dumpAna.GetChild("SourceModel");
+    auto& freezXml  = dumpAna["FreezeoutGenerator"];
+    auto& sourceXml = dumpAna["SourceModel"];
     if (!freezXml) return printErr("FreezeoutGenerator");
 
     if (!sourceXml) return printErr("SourceModel");
@@ -220,13 +220,13 @@ namespace Hal {
     }
     if (source) delete source;
     if (generator) delete generator;
-    auto calcOpts = dumpAna.GetChild("CalcOptions");
+    auto calcOpts = dumpAna["CalcOptions"];
     if (calcOpts) {
-      auto pairCut = calcOpts.GetChild("NoPairCut");
+      auto pairCut = calcOpts["NoPairCut"];
       if (pairCut) { fPairThreshold = pairCut.GetValue().Atoi(); }
       Hal::Cout::PrintInfo("Pair threshold detected", EInfo::kInfo);
     }
-    auto multiJobs = calcOpts.GetChild("JobMultiplyFactor");
+    auto multiJobs = calcOpts["JobMultiplyFactor"];
     if (multiJobs) {
       if (multiJobs.GetValue().Length() > 0 && fMultiplyJobs <= 0) { fMultiplyJobs = multiJobs.GetValue().Atoi(); }
     }

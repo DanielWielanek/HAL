@@ -36,9 +36,9 @@ namespace Hal {
 
     if (fListFile.EndsWith(".xml")) {
       XMLFile xml(fListFile);
-      XMLNode* root = xml.GetRootNode();
+      XMLNode& root = xml.GetRootNode();
       if (fLabel.Length() > 0) {
-        auto& node = root->GetChild(fLabel);
+        auto& node = root.GetChild(fLabel);
         if (node.IsNull()) {
           Cout::PrintInfo(Form("Lack of runs %s in file %s", fLabel.Data(), fListFile.Data()), EInfo::kWarning);
           return kFALSE;
@@ -47,7 +47,7 @@ namespace Hal {
       TString name = "bad_runs";
       if (fMode == EMode::kGood) { name = "good_runs"; }
 
-      XMLNode& xmlRuns = root->GetChild(name);
+      XMLNode& xmlRuns = root.GetChild(name);
       if (xmlRuns.IsNull()) {
         Cout::PrintInfo(Form("Lack of run list in file %s", fListFile.Data()), EInfo::kWarning);
         return kFALSE;

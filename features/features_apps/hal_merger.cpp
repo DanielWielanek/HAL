@@ -307,10 +307,10 @@ int main(int argc, char* argv[]) {
   if (file_pattern.EndsWith(".xml")) {
     Hal::Cout::Text(Form("Opening XML file %s", argname.Data()), "L", kWhite);
     Hal::XMLFile parser(argname);
-    Hal::XMLNode* root = parser.GetRootNode();
-    outputFile         = root->GetAttrib("outfile").GetValue();
-    for (int i = 0; i < root->GetNChildren(); i++) {
-      list_files.push_back(root->GetChild(i).GetValue());
+    Hal::XMLNode& root = parser.GetRootNode();
+    outputFile         = root.GetAttrib("outfile").GetValue();
+    for (int i = 0; i < root.GetNChildren(); i++) {
+      list_files.push_back(root.GetChild(i).GetValue());
     }
   } else if (file_pattern.EndsWith(".root") || file_pattern.EndsWith(".root_t")) {
     Hal::Cout::Text("Using direct list of root files", "L", kWhite);

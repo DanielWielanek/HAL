@@ -200,8 +200,8 @@ namespace Hal {
     if (precision < 0) precFlag = "%f";
     Hal::XMLFile file(name, "recreate");
     file.CreateRootNode("sys_errors");
-    auto root = file.GetRootNode();
-    root->AddChild(ExportToXMLNode(precision));
+    auto& root = file.GetRootNode();
+    root.AddChild(ExportToXMLNode(precision));
   }
 
   Hal::XMLNode ErrorCalc::ExportToXMLNode(Int_t prec) {

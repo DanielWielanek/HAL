@@ -43,7 +43,10 @@
 
 #pragma link C++ class Hal::Link + ;
 #pragma link C++ class Hal::Const + ;
-#pragma link C++ class Hal::Jobs + ;
+#pragma link C++ class Hal::JobQueue + ;
+#pragma link C++ class Hal::JobTorque + ;
+#pragma link C++ class Hal::JobSbatch + ;
+
 
 #pragma link C++ class Hal::HtmlCore + ;
 #pragma link C++ class Hal::HtmlDiv + ;

@@ -8,6 +8,7 @@ set(HAL_FEATURES
 	${HAL_CORE}/features/hist/styles
 	${HAL_CORE}/features/io
 	${HAL_CORE}/features/io/html
+    ${HAL_CORE}/features/io/schedulers
 	${HAL_CORE}/features/std
 	${HAL_CORE}/features/minimizer
 	${HAL_CORE}/features/phys

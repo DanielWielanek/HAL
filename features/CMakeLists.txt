@@ -35,7 +35,6 @@ UniqueOptions.cxx
 
 
 io/Link.cxx
-io/Jobs.cxx
 io/Object.cxx
 io/Package.cxx
 io/AnaFile.cxx
@@ -50,6 +49,9 @@ io/html/HtmlObject.cxx
 io/html/HtmlTable.cxx
 io/html/PackageTable.cxx
 io/html/PicTree.cxx
+io/schedulers/JobQueue.cxx
+io/schedulers/JobSbatch.cxx
+io/schedulers/JobTorque.cxx
 
 hist/DividedHisto.cxx
 hist/HistogramManager.cxx

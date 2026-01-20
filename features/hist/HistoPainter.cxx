@@ -12,6 +12,7 @@
 #include <RtypesCore.h>
 #include <TH1.h>
 #include <TString.h>
+#include <TVirtualPad.h>
 #include <iostream>
 
 #include "Std.h"

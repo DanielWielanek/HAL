@@ -22,8 +22,8 @@
 #include <TString.h>
 namespace Hal {
   PdgBinPairCut::PdgBinPairCut(Bool_t autoload) : TwoTrackCut(2) {
-    SetUnitName("First paritcle [AU]", 0);
-    SetUnitName("Second paritcle [AU]", 1);
+    SetUnitName("First particle [AU]", 0);
+    SetUnitName("Second particle [AU]", 1);
     SafelyAddToMap(81, "other neutral");
     SafelyAddToMap(82, "other positive");
     SafelyAddToMap(83, "other negative");

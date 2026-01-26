@@ -12,7 +12,7 @@
 #include "FemtoWeightGenerator.h"
 
 /**
- * class for setting weight with supression factor (1-lambda)
+ * class for setting weight with supression factor (1-lambda) by randomized skipping hbt weights
  */
 namespace Hal {
   class FemtoWeightGeneratorSupressed : public FemtoWeightGenerator {

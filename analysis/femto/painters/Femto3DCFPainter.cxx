@@ -138,7 +138,7 @@ namespace Hal {
       auto histo = GetProjection1D(h, mxxLow[flagDir], mxxHi[flagDir], myyLow[flagDir], myyHi[flagDir], optLoc);
       histo->SetTitle(Form("%s %s", names[flagDir].Data(), titles[optId].Data()));
       histo->SetMinimum(0);
-      if (fRangeY[0] != fRangeY[1]) {
+      if (fRangeY[0] != fRangeY[1] && optId == 0) {
         histo->SetMaximum(fRangeY[1]);
         histo->SetMinimum(fRangeY[0]);
       }
@@ -184,15 +184,15 @@ namespace Hal {
     for (int i = 0; i < 3; i++) {
       auto histo = GetProjection1D(h, mxxLow[i], mxxHi[i], myyLow[i], myyHi[i], dirs[i] + "+scale+bins");
       histo->SetTitle(names[i]);
-      if (fRangeY[0] != fRangeY[1]) {
-        //   histo->SetMaximum(fRangeY[1]);
-        //   histo->SetMinimum(fRangeY[0]);
-      }
       TString titleY = "";
       if (CheckOpt(kNumBit) || CheckOpt(kDenBit)) {
         titleY = "dN_{pairs}/d%s";
       } else {
         titleY = "CF(%s)";
+        if (fRangeY[0] != fRangeY[1]) {
+          histo->SetMaximum(fRangeY[1]);
+          histo->SetMinimum(fRangeY[0]);
+        }
       }
       TString axisTitle = Femto::KinematicsToAxisLabel(fCF->GetFrame(), i, 3);
       axisTitle         = Hal::Std::RemoveUnits(axisTitle);
@@ -202,6 +202,7 @@ namespace Hal {
       std::vector<TH1*> histVec;
       histVec.push_back(histo);
       Hal::Std::CopyAxisProp(fCF->GetNum()->GetXaxis(), histo->GetYaxis(), "!tit");
+      if (fRangeX[0] != fRangeX[1]) { histo->GetXaxis()->SetRangeUser(fRangeX[0], fRangeX[1]); }
       fHistograms.push_back(histVec);
     }
   }

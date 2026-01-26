@@ -22,7 +22,7 @@ namespace Hal {
   Double_t ErrorCalc::BarlowTest(Int_t prec, TString opt) {
     Double_t totalErr = 0;
     fUncertainties.resize(fValues.size());
-    if (prec >= 0) Hal::Cout::Database({"Name", "Value"});
+    if (prec >= 0) Hal::Cout::Database({"Name", "Value", "Percent"});
     TString flag = Form("%%4.%if", prec);
     auto getForm = [&](Double_t val) { return TString(Form(flag, val)); };
     enum class option { kMean = 0, kMax = 1 };
@@ -39,13 +39,13 @@ namespace Hal {
         totalErr += uncert * uncert;
         if (prec >= 0) {
           std::cout << Hal::Cout::GetColor(kGreen);
-          Hal::Cout::Database({fValues[i].first, getForm(uncert)});
+          Hal::Cout::Database({fValues[i].first, getForm(uncert), getForm(100. * uncert / GetMeasuredValue())});
           std::cout << Hal::Cout::GetDisableColor();
         }
       } else {
         if (prec >= 0) {
           std::cout << Hal::Cout::GetColor(kRed);
-          Hal::Cout::Database({fValues[i].first, getForm(uncert)});
+          Hal::Cout::Database({fValues[i].first, getForm(uncert), "-"});
           std::cout << Hal::Cout::GetDisableColor();
         }
       }
@@ -54,9 +54,9 @@ namespace Hal {
     fTotalSysError = TMath::Sqrt(totalErr);
     if (prec >= 0) {
       std::cout << Hal::Cout::GetColor(kBlue);
-      Hal::Cout::Database({"Total", getForm(fTotalSysError)});
-      Hal::Cout::Database({"Statistical", getForm(GetStatError())});
-      Hal::Cout::Database({"Value", getForm(GetMeasuredValue())});
+      Hal::Cout::Database({"Total Sys", getForm(fTotalSysError), getForm(100.0 * fTotalSysError / GetMeasuredValue())});
+      Hal::Cout::Database({"Statistical", getForm(GetStatError()), getForm(100. * GetStatError() / GetMeasuredValue())});
+      Hal::Cout::Database({"Value", getForm(GetMeasuredValue()), " "});
       std::cout << Hal::Cout::GetDisableColor();
     }
     return totalErr;

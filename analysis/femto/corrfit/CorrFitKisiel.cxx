@@ -172,5 +172,11 @@ if (refresh) {
     fMaps.push_back(map);
   }
 
-  void CorrFitKisiel::AddMap(CorrFitMapKstarRstar* map) { fMaps.push_back(map); }
+  void CorrFitKisiel::AddMap(CorrFitMapKstarRstar* map) {
+    if (map == nullptr) {
+      Hal::Cout::PrintInfo("CorrFitKisiel::AddMap - null map", EInfo::kError);
+      return;
+    }
+    fMaps.push_back(map);
+  }
 }  // namespace Hal

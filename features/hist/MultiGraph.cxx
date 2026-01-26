@@ -167,12 +167,16 @@ namespace Hal {
   TAxis* MultiGraph::GetXaxis() {
     if (fXaxis) return fXaxis;
     fXaxis = new TAxis();
+    fXaxis->SetAxisColor(kBlack);
+    fXaxis->SetLabelColor(kBlack);
     return fXaxis;
   }
 
   TAxis* MultiGraph::GetYaxis() {
     if (fYaxis) return fYaxis;
     fYaxis = new TAxis();
+    fYaxis->SetAxisColor(kBlack);
+    fYaxis->SetLabelColor(kBlack);
     return fYaxis;
   }
 

@@ -527,6 +527,12 @@ namespace Hal {
     return obj_str->GetString();
   }
 
+  Painter* DividedHisto1D::GetPainter() const {
+    if (fPainter) return fPainter;
+    std::cout << "No painter for class " << ClassName() << std::endl;
+    return nullptr;
+  }
+
   Long64_t DividedHisto1D::Merge(TCollection* collection) {
     if (collection) {
       DividedHisto1D* pack = NULL;

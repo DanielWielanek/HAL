@@ -406,6 +406,11 @@ namespace Hal {
      * @return
      */
     virtual TObject* GetSpecial(TString opt) const { return nullptr; }
+    /**
+     *
+     * @return painter if avaiable
+     */
+    Painter* GetPainter() const;
     virtual ~DividedHisto1D();
     ClassDef(DividedHisto1D, 5)
   };

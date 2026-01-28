@@ -9,6 +9,7 @@
 
 #include <RtypesCore.h>
 #include <TAxis.h>
+#include <TMath.h>
 #include <TString.h>
 
 #include "XMLNode.h"

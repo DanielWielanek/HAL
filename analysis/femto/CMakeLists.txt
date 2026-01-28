@@ -38,7 +38,7 @@ set(SRCS
 
 ana/FemtoBasicAna.cxx
 ana/FemtoFreezeoutsAna.cxx
-ana/FemtoDumpPairAna.cxx
+
 ana/FemtoEventBinsAna.cxx
 
 base/FemtoFastCut.cxx
@@ -59,21 +59,24 @@ base/shmath/FemtoYlmIndexes.cxx
 base/shmath/FemtoYlmMath.cxx
 base/shmath/FemtoYlmSolver.cxx
 
-corrfit/CorrFit.cxx
-corrfit/CorrFitMask.cxx
+corrfit/base/CorrFit.cxx
+corrfit/base/CorrFitMask.cxx
 
-corrfit/CorrFitFunc.cxx
-corrfit/CorrFitFunc3D.cxx
-corrfit/CorrFitMath1DCF.cxx
-corrfit/CorrFitMath3DCF.cxx
-corrfit/CorrFit1DCF.cxx
-corrfit/CorrFit3DCF.cxx
-corrfit/CorrFitKisiel.cxx
-corrfit/CorrFitWielanek.cxx
-corrfit/CorrFitGUI.cxx
-corrfit/CorrFitHDFunc.cxx
-corrfit/CorrFitSmear1DCF.cxx
-corrfit/CorrFitMapKstarRstar.cxx
+corrfit/base/CorrFitFunc.cxx
+corrfit/base/CorrFitFunc3D.cxx
+corrfit/base/CorrFitMath1DCF.cxx
+corrfit/base/CorrFitMath3DCF.cxx
+corrfit/base/CorrFit1DCF.cxx
+corrfit/base/CorrFit3DCF.cxx
+corrfit/base/CorrFitKisiel.cxx
+corrfit/base/CorrFitWielanek.cxx
+corrfit/base/CorrFitGUI.cxx
+corrfit/base/CorrFitHDFunc.cxx
+corrfit/base/CorrFitSmear1DCF.cxx
+corrfit/maps_1d/CorrFitMapKstarRstar.cxx
+corrfit/maps_1d/CorrFitMapKstarRstarSmearingCorrection.cxx
+corrfit/maps_1d/CorrFitSmearingMatrixCalculator.cxx
+corrfit/base/CorrFitConst.cxx
 corrfit/mapgenerators/Femto1DCFAnaMap.cxx
 corrfit/roco/Femto1DCFAnaMapMCRoco.cxx
 corrfit/mapgenerators/Femto1DMapGenerator.cxx
@@ -88,6 +91,7 @@ corrfit/pairgenerators/CorrFitPairGeneratorYPtKtStubborn.cxx
 corrfit/pairgenerators/CorrFitPairGeneratorConvolutionYPt.cxx
 corrfit/pairgenerators/CorrFitPairFile.cxx
 corrfit/pairgenerators/ConvolutionPairGenerator.cxx
+corrfit/pairgenerators/FemtoDumpPairAna.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAna.cxx
 corrfit/mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
 corrfit/mapgenerator_multidim/CorrFitFunctor.cxx
@@ -96,7 +100,6 @@ corrfit/mapgenerator_multidim/CorrFitMapRebin.cxx
 corrfit/mapgenerator_multidim/CorrFitParamsSetup.cxx
 corrfit/mapgenerator_multidim/CorrFitVerticalSlices.cxx
 corrfit/mapgenerator_multidim/CorrFit3DCFMultiDim.cxx
-corrfit/CorrFitConst.cxx
 
 corrfit/fittingfunctions/CorrFit1DCFSquare.cxx
 corrfit/fittingfunctions/CorrFit1DCFLorentz.cxx
@@ -150,17 +153,19 @@ base/corrfunc/FemtoCorrFunc0D.cxx
 base/corrfunc/FemtoCorrFunc1D.cxx
 base/corrfunc/FemtoCorrFunc2D.cxx
 
-imaging/FemtoImaging.cxx
-imaging/FemtoImaging1D.cxx
-imaging/FemtoImaging3D.cxx
-
 painters/FemtoCFPainter.cxx
 painters/Femto1DCFPainter.cxx
 painters/Femto3DCFPainter.cxx
 painters/FemtoSHCFPainter.cxx
-painters/CorrFitPainter.cxx
-painters/CorrFit1DCFPainter.cxx
-painters/CorrFit3DCFPainter.cxx
+
+
+corrfit/imaging/FemtoImaging.cxx
+corrfit/imaging/FemtoImaging1D.cxx
+corrfit/imaging/FemtoImaging3D.cxx
+
+corrfit/painters/CorrFitPainter.cxx
+corrfit/painters/CorrFit1DCFPainter.cxx
+corrfit/painters/CorrFit3DCFPainter.cxx
 
 )
 
@@ -170,21 +175,21 @@ if(DEFINED CIA)
         ${INCLUDE_DIRECTORIES} top_secret
     )
     set(SRCS ${SRCS}
-        top_secret/CorrFitSHCF.cxx
-        top_secret/CorrFitSHFrom3D.cxx
-        top_secret/FemtoSHArray.cxx
-        top_secret/CorrFitSHCFMultiDim.cxx
-        top_secret/CorrFitMaskSH.cxx
-        top_secret/CorrFitHDFuncSH.cxx
-        top_secret/CorrFitDumpedPairAnaVertical.cxx
-        top_secret/BattlestarGalactica.cxx
-        top_secret/BattlestarGalactica10.cxx
-        top_secret/BattlestarPegasus.cxx
-        top_secret/BattlestarValkyria.cxx
-        top_secret/CorrFitSHCFPainter.cxx
-        top_secret/BattlestarAtlantia.cxx
-        top_secret/BattlestarSolaria.cxx
-        top_secret/GausianSourceDenstityFastCalc.cxx
+        corrfit/top_secret/CorrFitSHCF.cxx
+        corrfit/top_secret/CorrFitSHFrom3D.cxx
+        corrfit/top_secret/FemtoSHArray.cxx
+        corrfit/top_secret/CorrFitSHCFMultiDim.cxx
+        corrfit/top_secret/CorrFitMaskSH.cxx
+        corrfit/top_secret/CorrFitHDFuncSH.cxx
+        corrfit/top_secret/CorrFitDumpedPairAnaVertical.cxx
+        corrfit/top_secret/BattlestarGalactica.cxx
+        corrfit/top_secret/BattlestarGalactica10.cxx
+        corrfit/top_secret/BattlestarPegasus.cxx
+        corrfit/top_secret/BattlestarValkyria.cxx
+        corrfit/top_secret/CorrFitSHCFPainter.cxx
+        corrfit/top_secret/BattlestarAtlantia.cxx
+        corrfit/top_secret/BattlestarSolaria.cxx
+        corrfit/top_secret/GausianSourceDenstityFastCalc.cxx
     )
 endif()
 

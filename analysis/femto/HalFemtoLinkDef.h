@@ -194,6 +194,10 @@
 #pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Femto3DCF, CorrFitVerticalSlices3D> + ;
 //
 
+
+#pragma link C++ class Hal::CorrFitMapKstarRstarSmearingCorrection + ;
+#pragma link C++ class Hal::CorrFitSmearingMatrixCalculator + ;
+
 #endif
 
 // #pragma link C++ class Led+;

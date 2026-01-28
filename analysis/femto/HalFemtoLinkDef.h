@@ -50,77 +50,14 @@
 #pragma link C++ class Hal::FemtoSourceDensityGaus1d + ;
 #pragma link C++ class Hal::FemtoSourceDensityGaus3d + ;
 #pragma link C++ class Hal::FemtoSourceDensityNumerical1D + ;
-#pragma link C++ class Hal::CorrFitMapGroupConfig + ;
+#pragma link C++ class Hal::CorrFitBaseFunc + ;
 
-#pragma link C++ class Hal::CorrFitPairFile + ;
-#pragma link C++ class Hal::CorrFitPairGenerator + ;
-#pragma link C++ class Hal::CorrFitPairGeneratorSimple + ;
-#pragma link C++ class Hal::CorrFitPairGeneratorYPtKt + ;
-#pragma link C++ class Hal::CorrFitPairGeneratorYPtKtStubborn + ;
-#pragma link C++ class Hal::CorrFitPairGeneratorConvolutionYPt + ;
-#pragma link C++ class Hal::ConvolutionPairGenerator + ;
 
 #pragma link C++ class Hal::Femto1DCF + ;
 #pragma link C++ class Hal::Femto3DCF + ;
 #pragma link C++ class Hal::Femto3DCFQinv + ;
 #pragma link C++ class Hal::FemtoDPhiDEta + ;
 #pragma link C++ class Hal::FemtoDebug2DCF + ;
-
-#pragma link C++ class Hal::CorrFit + ;
-#pragma link C++ class Hal::CorrFitFunc + ;
-#pragma link C++ class Hal::CorrFitFunc3D + ;
-#pragma link C++ class Hal::CorrFitMath1DCF + ;
-#pragma link C++ class Hal::CorrFit1DCF_Sum + ;
-#pragma link C++ class Hal::CorrFit1DCF_SumRsame + ;
-#pragma link C++ class Hal::CorrFit1DCF_Multi + ;
-#pragma link C++ class Hal::CorrFit1DCF_Poly + ;
-#pragma link C++ class Hal::CorrFit1DCF_Poly2 + ;
-#pragma link C++ class Hal::CorrFitMath3DCF + ;;
-#pragma link C++ class Hal::CorrFit3DCF_Sum + ;
-#pragma link C++ class Hal::CorrFit1DCF_Square + ;
-#pragma link C++ class Hal::CorrFit3DCF_Square + ;
-#pragma link C++ class Hal::CorrFit3DCF_Lorentz + ;
-#pragma link C++ class Hal::CorrFit1DCF_Lorentz + ;
-#pragma link C++ class Hal::CorrFit1DCFCumac + ;
-#pragma link C++ class Hal::CorrFIt1DCFCumacLamLam + ;
-#pragma link C++ class Hal::CorrFit1DCFCumacPLam + ;
-#pragma link C++ class Hal::CorrFit1DCFCumacK0K0 + ;
-#pragma link C++ class Hal::CorrFit1DCFCumacK0Kch + ;
-#pragma link C++ class Hal::CorrFit1DCFCumacDLam + ;
-#pragma link C++ class Hal::CorrFit1DCFCumacStrong + ;
-
-
-#pragma link C++ class Hal::CorrFitParamsSetup + ;
-#pragma link C++ class Hal::CorrFit3DCFMultiDim + ;
-#pragma link C++ class Hal::CorrFitFunctor + ;
-#pragma link C++ class Hal::CorrFitInfo + ;
-#pragma link C++ class Hal::CorrFitMapRebin + ;
-#pragma link C++ class Hal::CorrFitGUI + ;
-#pragma link C++ class Hal::CorrFitParButton + ;
-#pragma link C++ class Hal::CorrFitChiSelector + ;
-#pragma link C++ class Hal::CorrFitHDFunc + ;
-#pragma link C++ class Hal::CorrFitHDFunc1D + ;
-#pragma link C++ class Hal::CorrFitHDFunc3D + ;
-
-
-#pragma link C++ class Hal::CorrFit1DCF + ;
-#pragma link C++ class Hal::CorrFit3DCF + ;
-#pragma link C++ class Hal::CorrFitKisiel + ;
-#pragma link C++ class Hal::CorrFitSmear1DCF + ;
-#pragma link C++ class Hal::CorrFitMapKstarRstar + ;
-#pragma link C++ class Hal::CorrFitMapKstarRstarDiv + ;
-#pragma link C++ class Hal::FemtoWielanekMapGenerator + ;
-#pragma link C++ class Hal::Femto1DMapGenerator + ;
-#pragma link C++ class Hal::Femto1DCFAnaMapMC + ;
-#pragma link C++ class Hal::Femto1DCFAnaMapMCRoco + ;
-#pragma link C++ class Hal::Femto1DCFAnaMapPairsDumped + ;
-#pragma link C++ class Hal::FemtoCorrFuncMap + ;
-#pragma link C++ class Hal::CorrFitWielanek + ;
-#pragma link C++ class Hal::CorrFit3DCFBowlerSinyukov + ;
-#pragma link C++ class Hal::CorrFit3DCFBowlerSinyukovEllipse + ;
-#pragma link C++ class Hal::CorrFit3DCFBowlerSinyukovClassic + ;
-
-#pragma link C++ class Hal::Femto1DCFAnaMap + ;
 
 #pragma link C++ class Hal::FemtoCorrFunc + ;
 #pragma link C++ class Hal::FemtoCorrFunc0D + ;
@@ -131,12 +68,6 @@
 #pragma link C++ class Hal::FemtoCorrFuncAzimuthalKt + ;
 #pragma link C++ class Hal::FemtoCorrFuncSimple + ;
 
-#pragma link C++ class Hal::CorrFit1DCF_Exp + ;
-#pragma link C++ class Hal::CorrFit1DCF_Gauss + ;
-
-#pragma link C++ class Hal::CorrFit3DCF_Gauss + ;
-#pragma link C++ class Hal::CorrFit3DCF_Gauss2 + ;
-#pragma link C++ class Hal::CorrFit3DCF_GaussCross + ;
 
 #pragma link C++ class Hal::FemtoWeightGenerator + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorBasic + ;
@@ -152,23 +83,14 @@
 #pragma link C++ class Hal::CorrFitVerticalSlices1D + ;
 #pragma link C++ class Hal::CorrFitVerticalSlices3D + ;
 #pragma link C++ class Hal::CorrFitVerticalSlicesSH + ;
-#pragma link C++ class Hal::CorrFitInfo + ;
-#pragma link C++ class Hal::CorrFitDumpedPairAnaHorizontal + ;
-#pragma link C++ class Hal::CorrFitDumpedPairAna + ;
 
 #pragma link C++ class Hal::FemtoCFPainter + ;
 #pragma link C++ class Hal::Femto1DCFPainter + ;
 #pragma link C++ class Hal::Femto3DCFPainter + ;
 #pragma link C++ class Hal::FemtoSHCFPainter + ;
-#pragma link C++ class Hal::CorrFitPainter + ;
-#pragma link C++ class Hal::CorrFit3DCFPainter + ;
-#pragma link C++ class Hal::CorrFit1DCFPainter + ;
 
 
 #ifndef GSL_DISABLE
-#pragma link C++ class Hal::FemtoImaging + ;
-#pragma link C++ class Hal::FemtoImaging1D + ;
-#pragma link C++ class Hal::FemtoImaging3D + ;
 
 
 #pragma link C++ class Hal::FemtoYlmIndexes + ;
@@ -179,12 +101,6 @@
 #pragma link C++ class Hal::FemtoYlmMath + ;
 #pragma link C++ class Hal::FemtoYlmSolver + ;
 
-#pragma link C++ class Hal::CorrFitMask + ;
-#pragma link C++ class Hal::CorrFitMask1D + ;
-#pragma link C++ class Hal::CorrFitMask3D + ;
-#pragma link C++ class Hal::CorrFitMaskSH + ;
-
-
 #pragma link C++ class Hal::FemtoSerializationInterface + ;
 #pragma link C++ class Hal::FemtoSerializationInterface1D + ;
 #pragma link C++ class Hal::FemtoSerializationInterface3D + ;
@@ -193,10 +109,6 @@
 #pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Femto1DCF, CorrFitVerticalSlices1D> + ;
 #pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Femto3DCF, CorrFitVerticalSlices3D> + ;
 //
-
-
-#pragma link C++ class Hal::CorrFitMapKstarRstarSmearingCorrection + ;
-#pragma link C++ class Hal::CorrFitSmearingMatrixCalculator + ;
 
 #endif
 

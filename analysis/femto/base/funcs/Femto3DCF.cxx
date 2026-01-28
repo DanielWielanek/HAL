@@ -30,7 +30,7 @@
 #include <TSystem.h>
 #include <iostream>
 
-#include "CorrFit3DCF.h"
+#include "CorrFitBaseFunc.h"
 #include "Femto3DCFPainter.h"
 #include "StdString.h"
 
@@ -120,9 +120,9 @@ namespace Hal {
     DividedHisto3D::AddDen(h, opt);
   }
 
-  void Femto3DCF::Fit(CorrFit3DCF* fit) { fit->Fit(this); }
+  void Femto3DCF::Fit(CorrFitBaseFunc* fit) { fit->Fit(this); }
 
-  void Femto3DCF::FitDummy(CorrFit3DCF* fit) { fit->FitDummy(this); }
+  void Femto3DCF::FitDummy(CorrFitBaseFunc* fit) { fit->FitDummy(this); }
 
   void Femto3DCF::Browse(TBrowser* b) {
     TVirtualPad* c1 = gPad;

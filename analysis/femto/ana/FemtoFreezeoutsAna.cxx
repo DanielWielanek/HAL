@@ -56,7 +56,7 @@ namespace Hal {
       fHistoMin[i] = -100;
       fHistoMax[i] = 100;
     }
-    AddTags("freezeouts");
+    FemtoFreezeoutsAna::AddTags("freezeouts");
   }
 
   FemtoFreezeoutsAna::FemtoFreezeoutsAna(const FemtoFreezeoutsAna& ana) :

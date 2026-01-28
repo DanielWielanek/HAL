@@ -19,7 +19,7 @@
 #include <TString.h>
 
 namespace Hal {
-  class CorrFit1DCF;
+  class CorrFitBaseFunc;
   class FemtoCFPainter;
   /**
    * basic class for storing 1-dim correlation functions
@@ -71,13 +71,13 @@ namespace Hal {
     /**
      * fit this function
      */
-    void Fit(CorrFit1DCF* fit);
+    void Fit(CorrFitBaseFunc* fit);
     /**
      * make "dummy fit" (allow to draw function )
      * does not perform any fit
      * @param fit
      */
-    void FitDummy(CorrFit1DCF* fit);
+    void FitDummy(CorrFitBaseFunc* fit);
     virtual void Browse(TBrowser* b);
     /**
      * draw scaled C-f
@@ -112,7 +112,6 @@ namespace Hal {
      * @param normalization if negative calculate own normalization
      */
     virtual void ApplyResidualCorrection(const TH1& residual, const TH1& fraction, Double_t normalization = -1);
-    virtual FemtoCFPainter* GetPainter() const { return (FemtoCFPainter*) fPainter; }
     virtual ~Femto1DCF();
     ClassDef(Femto1DCF, 4)
   };

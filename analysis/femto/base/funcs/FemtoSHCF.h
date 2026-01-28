@@ -13,9 +13,6 @@
 
 #include <initializer_list>
 
-#ifdef __CIA__
-#include "CorrFitMaskSH.h"
-#endif
 #include "Array.h"
 #include "DividedHisto.h"
 #include "FemtoYlmIndexes.h"
@@ -31,9 +28,7 @@
  */
 
 namespace Hal {
-#ifdef __CIA__
-  class CorrFitSHCF;
-#endif
+  class CorrFitBaseFunc;
   class FemtoSHSlice;
   class FemtoYlmSolver;
   class FemtoCFPainter;
@@ -42,9 +37,7 @@ namespace Hal {
    * class for storing sphercial harmonics correlation functions
    */
   class FemtoSHCF : public DividedHisto1D {
-#ifdef __CIA__
-    friend class CorrFitSCHF;
-#endif
+    friend class CorrFitBaseFunc;
     friend class FemtoSerializationInterfaceSH;
     friend class FemtoSHSlice;
     friend class FemtoYlmSolver;
@@ -221,18 +214,16 @@ namespace Hal {
      * @param b
      */
     void Browse(TBrowser* b);
-#ifdef __CIA__
     /**
      * fit this function
      */
-    void Fit(CorrFitSHCF* fit);
+    void Fit(CorrFitBaseFunc* fit);
     /**
      * make "dummy fit" (allows to draw function)
      * does not perform any fit
      * @param fit
      */
-    void FitDummy(CorrFitSHCF* fit);
-#endif
+    void FitDummy(CorrFitBaseFunc* fit);
     /**
      * fast direct acess to real CF
      * @param pos
@@ -306,24 +297,14 @@ namespace Hal {
     Int_t GetLMax() const { return TMath::Sqrt(fMaxJM - 1); };
     void Rebin(Int_t ngroup, Option_t* opt = "");
     TH2D* GetMaskDraw() const;
-#ifdef __CIA__
-    /**
-     *
-     * @return empty mask for fitting
-     */
-    CorrFitMaskSH MakeEmptyMask() const;
-#endif
     Array_1<Float_t>* ExportToFlatNum() const;
     void ExportIntoToFlatNum(Array_1<Float_t>* output) const;
     void ExportIntoToFlatNumValkyria(Array_1<Float_t>* output) const;
-#ifdef __CIA__
     /**
      * import into this CF a flat array
      * @param array
      * @param bin
      */
-
-#endif
     virtual void ImportSlice(Array_1<Float_t>* array, Int_t bin);
     virtual void Add(const Object* pack);
     virtual Long64_t Merge(TCollection* collection);
@@ -332,11 +313,6 @@ namespace Hal {
     [[nodiscard]] Array_3<Double_t>& GetCovDen() { return fCovDen; }
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual TObject* GetSpecial(TString opt) const;
-    /**
-     *
-     * @return painter (if exists)
-     */
-    FemtoCFPainter* GetPainter() const { return fPainter; }  // KURWA
     virtual ~FemtoSHCF();
     ClassDef(FemtoSHCF, 6)
   };

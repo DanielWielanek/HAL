@@ -29,10 +29,7 @@
 #include <gsl/gsl_matrix_double.h>
 #include <gsl/gsl_vector_double.h>
 #endif
-#include <iostream>
-#ifdef __CIA__
-#include "CorrFitSHCF.h"
-#endif
+#include "CorrFitBaseFunc.h"
 #include "Cout.h"
 #include "FemtoPair.h"
 #include "FemtoSHCF.h"
@@ -52,6 +49,7 @@
 #include "StdHist.h"
 #include "StdString.h"
 #include "Style.h"
+#include <iostream>
 
 // #define FULL_CALC
 // #define _FINISH_DEBUG_
@@ -1009,17 +1007,10 @@ namespace Hal {
     fCovCf  = CovCf;
     if (fCFReal[0]) { RecalculateCF(); }
   }
-#ifdef __CIA__
-  void FemtoSHCF::Fit(CorrFitSHCF* fit) { fit->Fit(this); }
 
-  void FemtoSHCF::FitDummy(CorrFitSHCF* fit) { fit->FitDummy(this); }
+  void FemtoSHCF::Fit(CorrFitBaseFunc* fit) { fit->Fit(this); }
 
-  CorrFitMaskSH FemtoSHCF::MakeEmptyMask() const {
-    CorrFitMaskSH mask;
-    mask.Build(*this);
-    return mask;
-  }
-#endif
+  void FemtoSHCF::FitDummy(CorrFitBaseFunc* fit) { fit->FitDummy(this); }
 
   void FemtoSHCF::ImportSlice(Array_1<Float_t>* array, Int_t bin) {
     if (bin < 0) {

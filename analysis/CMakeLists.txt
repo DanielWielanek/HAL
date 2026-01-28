@@ -1,5 +1,6 @@
 add_subdirectory (base)
 add_subdirectory (femto)	
+add_subdirectory (femto_corrfit)	
 add_subdirectory (flow)
 add_subdirectory (spectra)
 add_subdirectory (fluctuations)

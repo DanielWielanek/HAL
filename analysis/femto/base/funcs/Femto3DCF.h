@@ -18,7 +18,7 @@
 #include <TString.h>
 
 namespace Hal {
-  class CorrFit3DCF;
+  class CorrFitBaseFunc;
   class FemtoCFPainter;
   /**
    * basic class for storing 3-dim correlation functions
@@ -74,13 +74,13 @@ namespace Hal {
     /**
      * fit this function
      */
-    void Fit(CorrFit3DCF* fit);
+    void Fit(CorrFitBaseFunc* fit);
     /**
      * make "dummy fit" (allow to draw function )
      * does not perform any fit
      * @param fit
      */
-    void FitDummy(CorrFit3DCF* fit);
+    void FitDummy(CorrFitBaseFunc* fit);
     virtual void Browse(TBrowser* b);
     /**
      * see @see #Hal::Femto3DCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
@@ -96,7 +96,6 @@ namespace Hal {
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual TH1D** GetDiagProj(Option_t* opt = "diag1", Bool_t normalized = kTRUE) const;
     virtual void Print(Option_t* opt = "") const;
-    virtual FemtoCFPainter* GetPainter() const { return (FemtoCFPainter*) fPainter; }
     virtual TObject* GetSpecial(TString opt) const;
     virtual ~Femto3DCF();
     ClassDef(Femto3DCF, 4)

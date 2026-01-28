@@ -60,25 +60,29 @@ set(HAL_HBT
 	${HAL_CORE}/analysis/femto/ana
 	${HAL_CORE}/analysis/femto/base
 	${HAL_CORE}/analysis/femto/weights
-	${HAL_CORE}/analysis/femto/corrfit/base
-	${HAL_CORE}/analysis/femto/corrfit/corrfitopt
-	${HAL_CORE}/analysis/femto/corrfit/fittingfunctions  
-	${HAL_CORE}/analysis/femto/corrfit/mapgenerator_multidim
-	${HAL_CORE}/analysis/femto/corrfit/mapgenerators
-	${HAL_CORE}/analysis/femto/corrfit/pairgenerators
-	${HAL_CORE}/analysis/femto/corrfit/serialization
-    ${HAL_CORE}/analysis/femto/corrfit/roco
-    ${HAL_CORE}/analysis/femto/corrfit/maps_1d
-    ${HAL_CORE}/analysis/femto/corrfit/imaging
-    ${HAL_CORE}/analysis/femto/corrfit/painters
     ${HAL_CORE}/analysis/femto/painters
-
 	${HAL_CORE}/analysis/femto/base/source_models
 	${HAL_CORE}/analysis/femto/base/corrfunc
 	${HAL_CORE}/analysis/femto/base/shmath
 	${HAL_CORE}/analysis/femto/base/funcs
+	${HAL_CORE}/analysis/femto/base/funcs_serialization
 	${HAL_CORE}/analysis/femto
 	
+)
+set(HAL_HBT_FIT
+    ${HAL_CORE}/analysis/femto_corrfit/
+	${HAL_CORE}/analysis/femto_corrfit/base
+	${HAL_CORE}/analysis/femto_corrfit/corrfitopt
+	${HAL_CORE}/analysis/femto_corrfit/fittingfunctions  
+	${HAL_CORE}/analysis/femto_corrfit/mapgenerator_multidim
+	${HAL_CORE}/analysis/femto_corrfit/mapgenerators
+	${HAL_CORE}/analysis/femto_corrfit/pairgenerators
+	${HAL_CORE}/analysis/femto_corrfit/serialization
+    ${HAL_CORE}/analysis/femto_corrfit/roco
+    ${HAL_CORE}/analysis/femto_corrfit/maps_1d
+    ${HAL_CORE}/analysis/femto_corrfit/imaging
+    ${HAL_CORE}/analysis/femto_corrfit/painters
+
 )
 set(HAL_QA
     ${HAL_CORE}/analysis/qa
@@ -94,7 +98,7 @@ set(HAL_FLUCTUATIONS
 _)
 if(DEFINED CIA)
     add_compile_definitions(__CIA__)
-    Set(HAL_HBT ${HAL_HBT} ${HAL_CORE}/analysis/femto/corrfit/top_secret)
+    Set(HAL_HBT_FIT ${HAL_HBT_FIT} ${HAL_CORE}/analysis/femto_corrfit/top_secret)
 endif()
 
 EndMacro(SetHeaderVariables)

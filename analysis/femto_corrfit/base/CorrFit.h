@@ -10,6 +10,7 @@
 #define HALCORRFIT_H_
 
 #include "Array.h"
+#include "CorrFitBaseFunc.h"
 #include "FitParam.h"
 
 #include <Rtypes.h>
@@ -30,7 +31,7 @@ class TVirtualPad;
 namespace Hal {
   class CorrFitGUI;
   class CorrFitPainter;
-  class CorrFit : public TObject {
+  class CorrFit : public CorrFitBaseFunc {
     friend class CorrFitGUI;
 
   private:

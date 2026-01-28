@@ -9,7 +9,7 @@
 
 #include "Femto1DCF.h"
 
-#include "CorrFit1DCF.h"
+#include "CorrFitBaseFunc.h"
 #include "Cout.h"
 #include "Femto1DCFPainter.h"
 #include "FemtoPair.h"
@@ -159,9 +159,9 @@ namespace Hal {
     Cout::Text(text, "L", kWhite);
   }
 
-  void Femto1DCF::Fit(CorrFit1DCF* fit) { fit->Fit(this); }
+  void Femto1DCF::Fit(CorrFitBaseFunc* fit) { fit->Fit(this); }
 
-  void Femto1DCF::FitDummy(CorrFit1DCF* fit) { fit->FitDummy(this); }
+  void Femto1DCF::FitDummy(CorrFitBaseFunc* fit) { fit->FitDummy(this); }
 
   TObject* Femto1DCF::GetSpecial(TString opt) const {
     if (opt == "serialization") return new FemtoSerializationInterface1D();

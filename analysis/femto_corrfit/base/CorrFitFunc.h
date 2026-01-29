@@ -203,10 +203,6 @@ namespace Hal {
      */
     virtual void PrepareRaw() = 0;
     /**
-     * makes parent for this objec
-     */
-    virtual void MakePainter(TString options) = 0;
-    /**
      * fit funcion by steps, usefull only for 1D fits
      * @param step - step of fitting
      */

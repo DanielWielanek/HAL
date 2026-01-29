@@ -116,7 +116,8 @@ namespace Hal {
     virtual TString GetPic() const;
     /**apply style for this object **/
     virtual void ApplyStyle(const HistoStyle& h);
-    virtual Painter* MakePainter();
+    virtual void MakePainter(TString opt = "");
+
 
   public:
     /**
@@ -406,11 +407,6 @@ namespace Hal {
      * @return
      */
     virtual TObject* GetSpecial(TString opt) const { return nullptr; }
-    /**
-     *
-     * @return painter if avaiable
-     */
-    Painter* GetPainter() const;
     virtual ~DividedHisto1D();
     ClassDef(DividedHisto1D, 5)
   };

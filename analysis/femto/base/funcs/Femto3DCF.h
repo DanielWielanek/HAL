@@ -36,7 +36,7 @@ namespace Hal {
     virtual void SetAxisNames(TH1* h);
 
   protected:
-    virtual Painter* MakePainter();
+    virtual void MakePainter(TString opt = "");
 
   public:
     /**

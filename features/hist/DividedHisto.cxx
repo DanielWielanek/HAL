@@ -215,7 +215,7 @@ namespace Hal {
     }
   }
 
-  Painter* DividedHisto1D::MakePainter() { return new Hal::DividedHistoPainter(this); }
+  void DividedHisto1D::MakePainter(TString /*opt*/) { fPainter = new Hal::DividedHistoPainter(this); }
 
   void DividedHisto1D::ApplyStyle(const HistoStyle& h) {
     h.Apply(*fNum);
@@ -525,12 +525,6 @@ namespace Hal {
     TObjString* obj_str = (TObjString*) fLabels->At(i);
     if (obj_str == NULL) return "";
     return obj_str->GetString();
-  }
-
-  Painter* DividedHisto1D::GetPainter() const {
-    if (fPainter) return fPainter;
-    std::cout << "No painter for class " << ClassName() << std::endl;
-    return nullptr;
   }
 
   Long64_t DividedHisto1D::Merge(TCollection* collection) {

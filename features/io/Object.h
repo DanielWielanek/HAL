@@ -86,8 +86,13 @@ namespace Hal {
     /**
      * painter used to draw this object
      */
-    Painter* fPainter              = {nullptr};  //!
-    virtual Painter* MakePainter() = 0;
+    Painter* fPainter = {nullptr};  //! do not stream
+                                    /**
+                                     * create painter for this object
+                                     * @param option
+                                     * @return
+                                     */
+    virtual void MakePainter(TString option = "") = 0;
 
   public:
     DrawableObject() {};
@@ -108,6 +113,7 @@ namespace Hal {
     virtual void cd();
     virtual void Browse(TBrowser* b);
     virtual void Draw(Option_t* option = "");
+    Painter* GetPainter() const;
     virtual ~DrawableObject();
     ClassDef(DrawableObject, 1)
   };

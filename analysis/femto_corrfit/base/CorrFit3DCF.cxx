@@ -44,7 +44,8 @@ namespace Hal {
       fRange[2 * i + 1] = 1.0;
     }
     if (parameters < 4) {
-      Cout::PrintInfo(Form("%s must have at least 3 parameters", this->ClassName()), EInfo::kWarning);
+      Cout::PrintInfo(Form("%s (and derived classes) must have at least 3 parameters", CorrFit3DCF::ClassName()),
+                      EInfo::kWarning);
       return;
     }
     fXbins.Resize(1);

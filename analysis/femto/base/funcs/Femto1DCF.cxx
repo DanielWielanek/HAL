@@ -222,6 +222,6 @@ namespace Hal {
     }
   }
 
-  Painter* Femto1DCF::MakePainter() { return new Hal::Femto1DCFPainter(this); }
+  void Femto1DCF::MakePainter(TString /*opt*/) { fPainter = new Hal::Femto1DCFPainter(this); }
 
 }  // namespace Hal

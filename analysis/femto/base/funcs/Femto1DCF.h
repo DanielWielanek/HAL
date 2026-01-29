@@ -35,7 +35,7 @@ namespace Hal {
      * @param h - adress of numerator or denominator
      */
     virtual void SetAxisNames(TH1* h);
-    virtual Painter* MakePainter();
+    virtual void MakePainter(TString opt = "");
 
   public:
     Femto1DCF();

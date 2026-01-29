@@ -36,7 +36,7 @@ namespace Hal {
     void AutoInitialize();
 
   protected:
-    virtual Painter* MakePainter();
+    virtual void MakePainter(TString opt = "");
 
   public:
     /**

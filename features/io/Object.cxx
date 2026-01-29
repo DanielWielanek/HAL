@@ -41,12 +41,20 @@ namespace Hal {
   }
 
   void DrawableObject::Draw(Option_t* option) {
-    if (!fPainter) fPainter = MakePainter();  // try to make a painter
+    if (!fPainter) MakePainter();  // try to make a painter
     if (fPainter) {
       TString options = option;
       fPainter->SetOption(options);
       fPainter->Paint();
     }
+  }
+
+  Painter* DrawableObject::GetPainter() const {
+    if (!fPainter) {
+      std::cout << ClassName() << " has no painter " << std::endl;
+      return nullptr;
+    }
+    return fPainter;
   }
 
   void DrawableObject::cd() {

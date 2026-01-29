@@ -220,7 +220,7 @@ namespace Hal {
     }
   }
 
-  Painter* CorrelationHisto::MakePainter() { return new CorrelationHistoPainter(this); }
+  void CorrelationHisto::MakePainter(TString /*opt*/) { fPainter = new CorrelationHistoPainter(this); }
 
   Bool_t CorrelationHisto::CanBeTableElement() const { return kFALSE; }
 

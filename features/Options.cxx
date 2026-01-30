@@ -71,9 +71,7 @@ namespace Hal {
     for (auto label : fLabeledArray) {
       if (label.name == name) return label;
     }
-    Options::LabeledArray dummy;
-    dummy.name == "";
-    return dummy;
+    return Options::LabeledArray();
   }
 
   TString Options::GetFlagValue(TString flag) const {

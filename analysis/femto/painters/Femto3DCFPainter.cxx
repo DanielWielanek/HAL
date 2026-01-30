@@ -56,6 +56,13 @@ namespace Hal {
   }
 
   void Femto3DCFPainter::MakeHistograms() {
+    auto copyMarkerSize = [](TH1* cf, std::vector<std::vector<TH1*>>& arr) {
+      for (auto& i : arr) {
+        for (auto& j : i) {
+          j->SetMarkerSize(cf->GetMarkerSize());
+        }
+      }
+    };
     TH3* h     = nullptr;
     bool clean = false;
     if (CheckOpt(kNumBit)) {
@@ -68,18 +75,23 @@ namespace Hal {
     }
     if (CheckOpt(kDiag1Bit)) {
       PrepareDiagonal1(h);
+      copyMarkerSize(fCF->GetNum(), fHistograms);
     } else if (CheckOpt(kDiag2Bit)) {
       PrepareDiagonal2(h);
+      copyMarkerSize(fCF->GetNum(), fHistograms);
     } else if (CheckOpt(kHtmlBit)) {
       PrepareHtml(h);
+      copyMarkerSize(fCF->GetNum(), fHistograms);
     } else if (CheckOpt(kTwoDimBit) || CheckOpt(kTwoDimPlusBit)) {
       fDrawDim = 2;
       PrepareTwoDim(h);
     } else {  // standard
       if (AreSimiliar(GetDrawFlags(), PrepBitTemplate({kNumBit, kDenBit, kCFBit}))) {
         Prepare3DFull(h);
+        copyMarkerSize(fCF->GetNum(), fHistograms);
       } else {
         Prepare3D(h);
+        copyMarkerSize(fCF->GetNum(), fHistograms);
       }
     }
     if (clean) delete h;

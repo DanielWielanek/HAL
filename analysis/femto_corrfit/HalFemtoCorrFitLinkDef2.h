@@ -114,8 +114,8 @@
 #pragma link C++ class Hal::BattlestarSolaria + ;
 //
 
-#pragma link C++ class Hal::CorrFitMapKstarRstarSmearingCorrection + ;
-#pragma link C++ class Hal::CorrFitSmearingMatrixCalculator + ;
+#pragma link C++ class Hal::CorrFitSmearingMath + ;
+#pragma link C++ class Hal::CorrFit1DSmearing + ;
 
 #endif
 

@@ -5,7 +5,7 @@
  *      Author: daniel
  */
 
-#include "CorrFitSmearingMatrixCalculator.h"
+#include "CorrFitSmearingMath.h"
 
 #include <TAxis.h>
 #include <TDatabasePDG.h>
@@ -25,7 +25,7 @@
 
 namespace Hal {
 
-  CorrFitSmearingMatrixCalculator::CorrFitSmearingMatrixCalculator(Int_t tracks) : fNtracks(tracks) {
+  CorrFitSmearingMath::CorrFitSmearingMath(Int_t tracks) : fNtracks(tracks) {
     fResoP2d        = new TH2D*[2];
     fResoPhi2d      = new TH2D*[2];
     fResoTheta2d    = new TH2D*[2];
@@ -37,13 +37,13 @@ namespace Hal {
     fResoTheta2d[1] = nullptr;
   }
 
-  void CorrFitSmearingMatrixCalculator::SetAxis(Int_t bins, Double_t lo, Double_t hi) {
+  void CorrFitSmearingMath::SetAxis(Int_t bins, Double_t lo, Double_t hi) {
     fBins = bins;
     fLow  = lo;
     fHigh = hi;
   }
 
-  void CorrFitSmearingMatrixCalculator::SetYield(TH2D& yield, Int_t pid, Int_t type) {
+  void CorrFitSmearingMath::SetYield(TH2D& yield, Int_t pid, Int_t type) {
     if (type == 0) {
       fYield1 = (TH2D*) yield.Clone();
       fPdg1   = pid;
@@ -55,7 +55,7 @@ namespace Hal {
     }
   }
 
-  void CorrFitSmearingMatrixCalculator::Calculate(Int_t nEvents) {
+  void CorrFitSmearingMath::Calculate(Int_t nEvents) {
     fOutput =
       new TH2D("smearing_matrix", "smearing_matrix;k*_{sim} [GeV/c];k*_{reco} [GeV/c]", fBins, fLow, fHigh, fBins, fLow, fHigh);
     auto pair_re = std::unique_ptr<Hal::FemtoPair>(Hal::Femto::MakePair(Hal::Femto::EKinematics::kPRF, false));
@@ -139,7 +139,7 @@ namespace Hal {
     fPRec2 = nullptr;
   }
 
-  void CorrFitSmearingMatrixCalculator::GenerateTracks(TLorentzVector* tracks, Int_t pid) {
+  void CorrFitSmearingMath::GenerateTracks(TLorentzVector* tracks, Int_t pid) {
     Double_t m = 0;
     TH2D* h;
     switch (pid) {
@@ -170,7 +170,7 @@ namespace Hal {
     }
   }
 
-  Bool_t CorrFitSmearingMatrixCalculator::CheckPair(Hal::FemtoPair* pair) const {
+  Bool_t CorrFitSmearingMath::CheckPair(Hal::FemtoPair* pair) const {
     Double_t pxT = pair->GetPx1() + pair->GetPx2();
     Double_t pyT = pair->GetPy1() + pair->GetPy2();
     Double_t kt  = TMath::Sqrt(pxT * pxT + pyT * pyT) * 0.5;
@@ -179,7 +179,7 @@ namespace Hal {
     return true;
   }
 
-  void CorrFitSmearingMatrixCalculator::MakeSmearTracksTH(TLorentzVector* smeared_tracks,
+  void CorrFitSmearingMath::MakeSmearTracksTH(TLorentzVector* smeared_tracks,
                                                           TLorentzVector* unsmeared_tracks,
                                                           Int_t type) {
     Double_t m = fM1;
@@ -201,7 +201,7 @@ namespace Hal {
     }
   }
 
-  void CorrFitSmearingMatrixCalculator::MakeSmearTracksTF(TLorentzVector* smeared_tracks,
+  void CorrFitSmearingMath::MakeSmearTracksTF(TLorentzVector* smeared_tracks,
                                                           TLorentzVector* unsmeared_tracks,
                                                           Int_t type) {
     Double_t m = fM1;
@@ -223,7 +223,7 @@ namespace Hal {
   }
 
 
-  void CorrFitSmearingMatrixCalculator::SetResolution(const TH2D& p, const TH2D& phi, const TH2D& theta, Int_t pid) {
+  void CorrFitSmearingMath::SetResolution(const TH2D& p, const TH2D& phi, const TH2D& theta, Int_t pid) {
     if (pid < 0 || pid > 1) return;
     if (fResoP2d[pid]) Clean(pid);
     fResoP2d[pid]     = (TH2D*) p.Clone();
@@ -240,7 +240,7 @@ namespace Hal {
     fUseFunc = kFALSE;
   }
 
-  void CorrFitSmearingMatrixCalculator::Clean(Int_t type) {
+  void CorrFitSmearingMath::Clean(Int_t type) {
     if (fResoP2d[type]) delete fResoP2d[type];
     if (fResoPhi2d[type]) delete fResoPhi2d[type];
     if (fResoTheta2d[type]) delete fResoTheta2d[type];
@@ -258,7 +258,7 @@ namespace Hal {
     fResoPhi2d[type]   = nullptr;
   }
 
-  void CorrFitSmearingMatrixCalculator::SetResolution(const TF1& p, const TF1& phi, const TF1& theta, Int_t type) {
+  void CorrFitSmearingMath::SetResolution(const TF1& p, const TF1& phi, const TF1& theta, Int_t type) {
     if (type < 0 || type > 1) return;
     if (fFuncP[type]) {
       delete fFuncP[type];
@@ -271,7 +271,7 @@ namespace Hal {
     fUseFunc         = kTRUE;
   }
 
-  CorrFitSmearingMatrixCalculator::~CorrFitSmearingMatrixCalculator() {
+  CorrFitSmearingMath::~CorrFitSmearingMath() {
     Clean(0);
     Clean(1);
 

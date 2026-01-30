@@ -5,8 +5,8 @@
  *      Author: daniel
  */
 
-#ifndef HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITSMEARINGMATRIXCALCULATOR_H_
-#define HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITSMEARINGMATRIXCALCULATOR_H_
+#ifndef HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITSMEARINGMATH_H_
+#define HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITSMEARINGMATH_H_
 
 #include <RtypesCore.h>
 #include <TH2.h>
@@ -24,7 +24,7 @@ class TH2D;
 
 namespace Hal {
 
-  class CorrFitSmearingMatrixCalculator : public Object {
+  class CorrFitSmearingMath : public Object {
     TH2D* fYield1 = {nullptr};
     TH2D* fYield2 = {nullptr};
     TH2D* fOutput = {nullptr};
@@ -85,7 +85,7 @@ namespace Hal {
     virtual void MakeSmearTracksTF(TLorentzVector* smeared_tracks, TLorentzVector* unsmeared_tracks, Int_t type);
 
   public:
-    CorrFitSmearingMatrixCalculator(Int_t tracks = 5000);
+    CorrFitSmearingMath(Int_t tracks = 5000);
     /**
      * set kT cut
      * @param lo
@@ -147,10 +147,10 @@ namespace Hal {
      * assume that measured yields are reconstructed
      */
     void UseExpFiels() { fExpYields = kTRUE; }
-    virtual ~CorrFitSmearingMatrixCalculator();
-    ClassDef(CorrFitSmearingMatrixCalculator, 0)
+    virtual ~CorrFitSmearingMath();
+    ClassDef(CorrFitSmearingMath, 0)
   };
 
 } /* namespace Hal */
 
-#endif /* HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITSMEARINGMATRIXCALCULATOR_H_ */
+#endif /* HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITSMEARINGMATH_H_ */

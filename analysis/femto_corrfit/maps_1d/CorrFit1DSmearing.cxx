@@ -5,7 +5,7 @@
  *      Author: daniel
  */
 
-#include "CorrFitMapKstarRstarSmearingCorrection.h"
+#include "CorrFit1DSmearing.h"
 
 #include <RtypesCore.h>
 #include <TH1.h>
@@ -20,15 +20,15 @@
 
 namespace Hal {
 
-  void CorrFitMapKstarRstarSmearingCorrection::SetCorrelationFunction(const Hal::Femto1DCF& cf) {
+  void CorrFit1DSmearing::SetCorrelationFunction(const Hal::Femto1DCF& cf) {
     fCF = (Hal::Femto1DCF*) cf.Clone();
   }
 
-  void CorrFitMapKstarRstarSmearingCorrection::SetCorrFitMap(const Hal::CorrFitMapKstarRstar& map) {
+  void CorrFit1DSmearing::SetCorrFitMap(const Hal::CorrFitMapKstarRstar& map) {
     fInputMap = (Hal::CorrFitMapKstarRstar*) map.Clone();
   }
 
-  void CorrFitMapKstarRstarSmearingCorrection::Calculate() {
+  void CorrFit1DSmearing::Calculate() {
 
 
     auto CF_unsmeared    = fInputMap->GetHisto();
@@ -89,7 +89,7 @@ namespace Hal {
     delete rawDenominator;
   }
 
-  void CorrFitMapKstarRstarSmearingCorrection::SetSmearingMap(TH2D& smearing, ESmearInput opt) {
+  void CorrFit1DSmearing::SetSmearingMap(TH2D& smearing, ESmearInput opt) {
     if (opt == ESmearInput::kXsimYreco) {
       fSmearingMap = (TH2D*) smearing.Clone();
     } else if (opt == ESmearInput::kXrecoYsim) {
@@ -97,7 +97,7 @@ namespace Hal {
     }
   }
 
-  TH2D* CorrFitMapKstarRstarSmearingCorrection::DoInversion(TH2D* h) const {
+  TH2D* CorrFit1DSmearing::DoInversion(TH2D* h) const {
     auto hx = (TH2D*) h->Clone();
     for (int i = 0; i <= h->GetNbinsX(); i++) {
       for (int j = 0; j <= h->GetNbinsY(); j++) {
@@ -107,7 +107,7 @@ namespace Hal {
     return hx;
   }
 
-  CorrFitMapKstarRstarSmearingCorrection::~CorrFitMapKstarRstarSmearingCorrection() {
+  CorrFit1DSmearing::~CorrFit1DSmearing() {
     // TODO Auto-generated destructor stub
   }
 

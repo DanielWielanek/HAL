@@ -97,8 +97,8 @@
 #pragma link C++ class Hal::CorrFitMask3D + ;
 #pragma link C++ class Hal::CorrFitMaskSH + ;
 
-#pragma link C++ class Hal::CorrFitMapKstarRstarSmearingCorrection + ;
-#pragma link C++ class Hal::CorrFitSmearingMatrixCalculator + ;
+#pragma link C++ class Hal::CorrFitSmearingMath + ;
+#pragma link C++ class Hal::CorrFit1DSmearing + ;
 
 #endif
 

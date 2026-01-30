@@ -52,16 +52,13 @@ base/CorrFitWielanek.cxx
 base/CorrFitGUI.cxx
 base/CorrFitHDFunc.cxx
 base/CorrFitSmear1DCF.cxx
-maps_1d/CorrFitMapKstarRstar.cxx
-maps_1d/CorrFitMapKstarRstarSmearingCorrection.cxx
-maps_1d/CorrFitSmearingMatrixCalculator.cxx
 base/CorrFitConst.cxx
-mapgenerators/Femto1DCFAnaMap.cxx
-roco/Femto1DCFAnaMapMCRoco.cxx
-mapgenerators/Femto1DMapGenerator.cxx
-mapgenerators/Femto1DCFAnaMapMC.cxx
-mapgenerators/FemtoWielanekMapGenerator.cxx
-mapgenerators/Femto1DCFAnaMapPairsDumped.cxx
+
+maps_1d/CorrFitMapKstarRstar.cxx
+maps_1d/CorrFit1DSmearing.cxx
+maps_1d/CorrFitSmearingMath.cxx
+maps_1d/Femto1DCFAnaMapMCRoco.cxx
+
 pairgenerators/CorrFitMapGroupConfig.cxx
 pairgenerators/CorrFitPairGenerator.cxx
 pairgenerators/CorrFitPairGeneratorSimple.cxx
@@ -71,6 +68,12 @@ pairgenerators/CorrFitPairGeneratorConvolutionYPt.cxx
 pairgenerators/CorrFitPairFile.cxx
 pairgenerators/ConvolutionPairGenerator.cxx
 pairgenerators/FemtoDumpPairAna.cxx
+
+mapgenerators/Femto1DCFAnaMap.cxx
+mapgenerators/Femto1DMapGenerator.cxx
+mapgenerators/Femto1DCFAnaMapMC.cxx
+mapgenerators/FemtoWielanekMapGenerator.cxx
+mapgenerators/Femto1DCFAnaMapPairsDumped.cxx
 mapgenerator_multidim/CorrFitDumpedPairAna.cxx
 mapgenerator_multidim/CorrFitDumpedPairAnaHorizontal.cxx
 mapgenerator_multidim/CorrFitFunctor.cxx
@@ -98,7 +101,6 @@ corrfitopt/CorrFitHDFunc3D.cxx
 
 corrfitopt/CorrFitMask1D.cxx
 corrfitopt/CorrFitMask3D.cxx
-
 
 imaging/FemtoImaging.cxx
 imaging/FemtoImaging1D.cxx

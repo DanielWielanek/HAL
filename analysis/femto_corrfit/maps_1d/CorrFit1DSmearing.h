@@ -5,8 +5,8 @@
  *      Author: daniel
  */
 
-#ifndef HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITMAPKSTARRSTARSMEARINGCORRECTION_H_
-#define HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITMAPKSTARRSTARSMEARINGCORRECTION_H_
+#ifndef HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFIT1DSMEARING_H_
+#define HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFIT1DSMEARING_H_
 
 #include <TObject.h>
 class TH2D;
@@ -17,7 +17,7 @@ namespace Hal {
   /**
    * smeared map in PRF frame
    */
-  class CorrFitMapKstarRstarSmearingCorrection : public TObject {
+  class CorrFit1DSmearing : public TObject {
     Hal::Femto1DCF* fCF                    = {nullptr};
     Hal::CorrFitMapKstarRstar* fInputMap   = {nullptr};
     Hal::CorrFitMapKstarRstar* fSmearedMap = {nullptr};
@@ -27,7 +27,7 @@ namespace Hal {
 
   public:
     enum class ESmearInput { kXsimYreco, kXrecoYsim };
-    CorrFitMapKstarRstarSmearingCorrection() {};
+    CorrFit1DSmearing() {};
     /**
      * set smearing map - the correlation between reconstruced and simulated k*
      * @param smearing
@@ -58,9 +58,9 @@ namespace Hal {
      * @return correction C_unsmeared/C_smeared
      */
     TH2D* GetCorrection() const { return fRatio; };
-    virtual ~CorrFitMapKstarRstarSmearingCorrection();
-    ClassDef(CorrFitMapKstarRstarSmearingCorrection, 0)
+    virtual ~CorrFit1DSmearing();
+    ClassDef(CorrFit1DSmearing, 0)
   };
 } /* namespace Hal */
 
-#endif /* HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITMAPKSTARRSTARSMEARINGCORRECTION_H_ */
+#endif /* HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFIT1DSMEARING_H_ */

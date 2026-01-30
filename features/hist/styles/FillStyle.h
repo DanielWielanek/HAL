@@ -18,8 +18,7 @@ namespace Hal {
    */
   class FillStyle : public Style {
   public:
-    static const unsigned short int kColor;
-    static const unsigned short int kStyle;
+    enum class EBitFlag : Int_t { kColor, kStyle };
     FillStyle() {};
 
     void SetColor(Int_t val);
@@ -48,8 +47,8 @@ namespace Hal {
 
 template<class T>
 inline void Hal::FillStyle::Apply(T& x) const {
-  if (Find(kColor)) x.SetFillColor(GetI(kColor));
-  if (Find(kStyle)) x.SetFillStyle(GetI(kStyle));
+  if (Find(EBitFlag::kColor)) x.SetFillColor(GetI(EBitFlag::kColor));
+  if (Find(EBitFlag::kStyle)) x.SetFillStyle(GetI(EBitFlag::kStyle));
 }
 
 template<class T>

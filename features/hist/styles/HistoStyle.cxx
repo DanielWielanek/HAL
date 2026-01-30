@@ -24,11 +24,8 @@
 #include <type_traits>
 
 namespace Hal {
-  const unsigned short int HistoStyle::kTitle = 0;
-  const unsigned short int HistoStyle::kMin   = 1;
-  const unsigned short int HistoStyle::kMax   = 2;
   void HistoStyle::SetTitle(TString title) {
-    SetI(kTitle, 0);
+    SetI(EBitFlag::kTitle, 0);
     fTitle = title;
   }
 
@@ -39,9 +36,9 @@ namespace Hal {
   }
 
   void HistoStyle::ExportToXML(XMLNode& node) const {
-    if (Find(kTitle)) node.AddAttrib("Title", fTitle);
-    if (Find(kMin)) node.AddAttrib("Min", Form("%4.4f", GetF(kMin)));
-    if (Find(kMax)) node.AddAttrib("Max", Form("%4.4f", GetF(kMax)));
+    if (Find(EBitFlag::kTitle)) node.AddAttrib("Title", fTitle);
+    if (Find(EBitFlag::kMin)) node.AddAttrib("Min", Form("%4.4f", GetF(EBitFlag::kMin)));
+    if (Find(EBitFlag::kMax)) node.AddAttrib("Max", Form("%4.4f", GetF(EBitFlag::kMax)));
     XMLNode xAxis("XAxis");
     XMLNode yAxis("YAxis");
     XMLNode zAxis("ZAxis");
@@ -95,9 +92,9 @@ namespace Hal {
     return res;
   }
 
-  void HistoStyle::SetMin(Double_t val) { SetF(kMin, val); }
+  void HistoStyle::SetMin(Double_t val) { SetF(EBitFlag::kMin, val); }
 
-  void HistoStyle::SetMax(Double_t val) { SetF(kMax, val); }
+  void HistoStyle::SetMax(Double_t val) { SetF(EBitFlag::kMax, val); }
 
   void HistoStyle::SetMinMax(Double_t minVal, Double_t maxVal) {
     SetMin(minVal);
@@ -193,9 +190,9 @@ namespace Hal {
   template<class T>
   void Hal::HistoStyle::ApplyInternal(T& object) const {
 
-    if (Find(kTitle)) object.SetTitle(fTitle);
-    if (Find(kMin)) object.SetMinimum(GetF(kMin));
-    if (Find(kMax)) object.SetMaximum(GetF(kMax));
+    if (Find(EBitFlag::kTitle)) object.SetTitle(fTitle);
+    if (Find(EBitFlag::kMin)) object.SetMinimum(GetF(EBitFlag::kMin));
+    if (Find(EBitFlag::kMax)) object.SetMaximum(GetF(EBitFlag::kMax));
 
     fMarker.Apply(object);
     fLine.Apply(object);

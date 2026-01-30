@@ -15,12 +15,8 @@ namespace Hal {
    * contains information about line style
    */
   class LineStyle : public Style {
-
-
   public:
-    static const unsigned short int kColor;
-    static const unsigned short int kWidth;
-    static const unsigned short int kStyle;
+    enum class EBitFlag : Int_t { kColor, kWidth, kStyle };
     LineStyle() {};
 
     void SetColor(Int_t val);
@@ -53,9 +49,9 @@ namespace Hal {
 
 template<class T>
 inline void Hal::LineStyle::Apply(T& obj) const {
-  if (Find(kWidth)) obj.SetLineWidth(GetI(kWidth));
-  if (Find(kColor)) obj.SetLineColor(GetI(kColor));
-  if (Find(kStyle)) obj.SetLineStyle(GetI(kStyle));
+  if (Find(EBitFlag::kWidth)) obj.SetLineWidth(GetI(EBitFlag::kWidth));
+  if (Find(EBitFlag::kColor)) obj.SetLineColor(GetI(EBitFlag::kColor));
+  if (Find(EBitFlag::kStyle)) obj.SetLineStyle(GetI(EBitFlag::kStyle));
 }
 template<class T>
 inline void Hal::LineStyle::Import(const T& obj) {

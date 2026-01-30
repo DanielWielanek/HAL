@@ -15,13 +15,8 @@ namespace Hal {
    * constains informations about marker style
    */
   class MarkerStyle : public Style {
-
-
   public:
-    static const unsigned short int kColor;
-    static const unsigned short int kStyle;
-    static const unsigned short int kLineWidth;
-    static const unsigned short int kSize;
+    enum class EBitFlag : Int_t { kColor, kStyle, kLineWidth, kSize };
 
     MarkerStyle() {};
 
@@ -59,10 +54,10 @@ namespace Hal {
 
 template<class T>
 inline void Hal::MarkerStyle::Apply(T& obj) const {
-  if (Find(kColor)) obj.SetMarkerColor(GetI(kColor));
-  if (Find(kSize)) obj.SetMarkerSize(GetI(kSize));
-  // if (Find(kLineWidth)) obj.SetMarkerLineWidth(GetI(kLineWidth));
-  if (Find(kStyle)) obj.SetMarkerStyle(GetI(kStyle));
+  if (Find(EBitFlag::kColor)) obj.SetMarkerColor(GetI(EBitFlag::kColor));
+  if (Find(EBitFlag::kSize)) obj.SetMarkerSize(GetI(EBitFlag::kSize));
+  // if (Find(EBitFlag::kLineWidth)) obj.SetMarkerLineWidth(GetI(EBitFlag::kLineWidth));
+  if (Find(EBitFlag::kStyle)) obj.SetMarkerStyle(GetI(EBitFlag::kStyle));
 }
 
 template<class T>

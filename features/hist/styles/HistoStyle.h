@@ -35,9 +35,7 @@ namespace Hal {
     void ApplyInternal(T& object) const;
 
   public:
-    static const unsigned short int kTitle;
-    static const unsigned short int kMin;
-    static const unsigned short int kMax;
+    enum class EBitFlag : Int_t { kTitle, kMin, kMax };
     /**
      * return predefined style for 1d histogram
      * @param style options:

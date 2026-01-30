@@ -13,27 +13,24 @@
 #include "XMLNode.h"
 
 namespace Hal {
-  const unsigned short int LineStyle::kColor = 0;
-  const unsigned short int LineStyle::kWidth = 1;
-  const unsigned short int LineStyle::kStyle = 2;
 
-  void LineStyle::SetColor(Int_t val) { SetI(kColor, val); }
+  void LineStyle::SetColor(Int_t val) { SetI(EBitFlag::kColor, val); }
 
-  void LineStyle::SetWidth(Int_t val) { SetI(kWidth, val); }
+  void LineStyle::SetWidth(Int_t val) { SetI(EBitFlag::kWidth, val); }
 
-  void LineStyle::SetStyle(Int_t val) { SetI(kStyle, val); }
+  void LineStyle::SetStyle(Int_t val) { SetI(EBitFlag::kStyle, val); }
 
-  Int_t LineStyle::GetColor() const { return GetI(kColor); }
+  Int_t LineStyle::GetColor() const { return GetI(EBitFlag::kColor); }
 
-  Int_t LineStyle::GetWidth() const { return GetI(kWidth); }
+  Int_t LineStyle::GetWidth() const { return GetI(EBitFlag::kWidth); }
 
-  Int_t LineStyle::GetStyle() const { return GetI(kStyle); }
+  Int_t LineStyle::GetStyle() const { return GetI(EBitFlag::kStyle); }
 
   void LineStyle::ExportToXML(XMLNode& node) const {
 
-    if (Find(kColor)) node.AddAttrib("Color", Form("%i", GetI(kColor)));
-    if (Find(kWidth)) node.AddAttrib("Width", Form("%i", GetI(kWidth)));
-    if (Find(kStyle)) node.AddAttrib("Style", Form("%i", GetI(kStyle)));
+    if (Find(EBitFlag::kColor)) node.AddAttrib("Color", Form("%i", GetI(EBitFlag::kColor)));
+    if (Find(EBitFlag::kWidth)) node.AddAttrib("Width", Form("%i", GetI(EBitFlag::kWidth)));
+    if (Find(EBitFlag::kStyle)) node.AddAttrib("Style", Form("%i", GetI(EBitFlag::kStyle)));
   }
 
   void LineStyle::ImportFromXML(const XMLNode& node) {

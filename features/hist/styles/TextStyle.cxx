@@ -10,48 +10,43 @@
 #include "XMLNode.h"
 
 namespace Hal {
-  const unsigned short int TextStyle::kColor = 0;
-  const unsigned short int TextStyle::kAngle = 1;
-  const unsigned short int TextStyle::kFont  = 2;
-  const unsigned short int TextStyle::kSize  = 3;
-  const unsigned short int TextStyle::kAling = 4;
 
   TextStyle::TextStyle() {}
 
-  void TextStyle::SetAlign(Int_t align) { SetI(kAling, align); }
+  void TextStyle::SetAlign(Int_t align) { SetI(BitFlag::kAlign, align); }
 
-  void TextStyle::SetColor(Int_t color) { SetI(kColor, color); }
+  void TextStyle::SetColor(Int_t color) { SetI(BitFlag::kColor, color); }
 
-  void TextStyle::SetAngle(Float_t angle) { SetF(kAngle, angle); }
+  void TextStyle::SetAngle(Float_t angle) { SetF(BitFlag::kAngle, angle); }
 
-  void TextStyle::SetSize(Float_t size) { SetF(kSize, size); }
+  void TextStyle::SetSize(Float_t size) { SetF(BitFlag::kSize, size); }
 
-  void TextStyle::SetFont(Float_t font) { SetF(kFont, font); }
+  void TextStyle::SetFont(Float_t font) { SetF(BitFlag::kFont, font); }
 
-  Int_t TextStyle::GetAlign() const { return GetI(kAling); }
+  Int_t TextStyle::GetAlign() const { return GetI(BitFlag::kAlign); }
 
-  Int_t TextStyle::GetColor() const { return GetI(kColor); }
+  Int_t TextStyle::GetColor() const { return GetI(BitFlag::kColor); }
 
-  Float_t TextStyle::GetAngle() const { return GetF(kAngle); }
+  Float_t TextStyle::GetAngle() const { return GetF(BitFlag::kAngle); }
 
-  Float_t TextStyle::GetSize() const { return GetF(kSize); }
+  Float_t TextStyle::GetSize() const { return GetF(BitFlag::kSize); }
 
-  Float_t TextStyle::GetFont() const { return GetF(kFont); }
+  Float_t TextStyle::GetFont() const { return GetF(BitFlag::kFont); }
 
   void TextStyle::Apply(TAttText& obj) const {
-    if (Find(kAling)) obj.SetTextAlign(GetI(kAling));
-    if (Find(kColor)) obj.SetTextColor(GetI(kColor));
-    if (Find(kAngle)) obj.SetTextAngle(GetF(kAngle));
-    if (Find(kSize)) obj.SetTextSize(GetF(kSize));
-    if (Find(kFont)) obj.SetTextFont(GetF(kFont));
+    if (Find(BitFlag::kAlign)) obj.SetTextAlign(GetI(BitFlag::kAlign));
+    if (Find(BitFlag::kColor)) obj.SetTextColor(GetI(BitFlag::kColor));
+    if (Find(BitFlag::kAngle)) obj.SetTextAngle(GetF(BitFlag::kAngle));
+    if (Find(BitFlag::kSize)) obj.SetTextSize(GetF(BitFlag::kSize));
+    if (Find(BitFlag::kFont)) obj.SetTextFont(GetF(BitFlag::kFont));
   }
 
   void TextStyle::ExportToXML(XMLNode& node) const {
-    if (Find(kAling)) node.AddAttrib("Align", Form("%i", GetI(kAling)));
-    if (Find(kColor)) node.AddAttrib("Color", Form("%i", GetI(kColor)));
-    if (Find(kAngle)) node.AddAttrib("Angle", Form("%4.4f", GetF(kAngle)));
-    if (Find(kSize)) node.AddAttrib("Size", Form("%4.4f", GetF(kSize)));
-    if (Find(kFont)) node.AddAttrib("Font", Form("%4.4f", GetF(kFont)));
+    if (Find(BitFlag::kAlign)) node.AddAttrib("Align", Form("%i", GetI(BitFlag::kAlign)));
+    if (Find(BitFlag::kColor)) node.AddAttrib("Color", Form("%i", GetI(BitFlag::kColor)));
+    if (Find(BitFlag::kAngle)) node.AddAttrib("Angle", Form("%4.4f", GetF(BitFlag::kAngle)));
+    if (Find(BitFlag::kSize)) node.AddAttrib("Size", Form("%4.4f", GetF(BitFlag::kSize)));
+    if (Find(BitFlag::kFont)) node.AddAttrib("Font", Form("%4.4f", GetF(BitFlag::kFont)));
   }
 
   void TextStyle::ImportFromXML(const XMLNode& node) {

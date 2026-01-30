@@ -15,11 +15,7 @@ namespace Hal {
 
   class TextStyle : public Style {
   public:
-    static const unsigned short int kColor;
-    static const unsigned short int kAngle;
-    static const unsigned short int kFont;
-    static const unsigned short int kSize;
-    static const unsigned short int kAling;
+    enum class BitFlag : Int_t { kColor, kAngle, kFont, kSize, kAlign };
     TextStyle();
     void Apply(TAttText& st) const;
     void SetAlign(Int_t align);

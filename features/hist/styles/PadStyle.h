@@ -17,24 +17,24 @@ namespace Hal {
    * contains information about pad style
    */
   class PadStyle : public Style {
-
   public:
-    static const unsigned short int kBottomMargin;
-    static const unsigned short int kLeftMargin;
-    static const unsigned short int kTopMargin;
-    static const unsigned short int kRightMargin;
-    static const unsigned short int kLogx;
-    static const unsigned short int kLogy;
-    static const unsigned short int kLogz;
-    static const unsigned short int kGridx;
-    static const unsigned short int kGridy;
-    static const unsigned short int kGridz;
-    static const unsigned short int kTickX;
-    static const unsigned short int kTickY;
-    static const unsigned short int kFillColor;
-    static const unsigned short int kLineColor;
-    static const unsigned short int kFrameLineColor;
-
+    enum class EBitFlag : Int_t {
+      kBottomMargin,
+      kLeftMargin,
+      kTopMargin,
+      kRightMargin,
+      kLogx,
+      kLogy,
+      kLogz,
+      kGridx,
+      kGridy,
+      kGridz,
+      kTickX,
+      kTickY,
+      kFillColor,
+      kLineColor,
+      kFrameLineColor
+    };
     PadStyle(TString style = "");
     PadStyle(const PadStyle& other) = default;
     PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2, TString style = "");

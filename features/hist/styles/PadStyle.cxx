@@ -15,22 +15,6 @@
 #include "XMLNode.h"
 
 namespace Hal {
-  const unsigned short int PadStyle::kBottomMargin = 0;
-  const unsigned short int PadStyle::kLeftMargin   = 1;
-  const unsigned short int PadStyle::kTopMargin    = 2;
-  const unsigned short int PadStyle::kRightMargin  = 3;
-  const unsigned short int PadStyle::kLogx         = 4;
-  const unsigned short int PadStyle::kLogy         = 5;
-  const unsigned short int PadStyle::kLogz         = 6;
-  const unsigned short int PadStyle::kGridx        = 7;
-  const unsigned short int PadStyle::kGridy        = 8;
-  const unsigned short int PadStyle::kGridz        = 9;
-  const unsigned short int PadStyle::kTickX        = 10;
-  const unsigned short int PadStyle::kTickY        = 11;
-
-  const unsigned short int PadStyle::kFillColor      = 12;
-  const unsigned short int PadStyle::kLineColor      = 13;
-  const unsigned short int PadStyle::kFrameLineColor = 14;
 
   PadStyle::PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2, TString style) : PadStyle(style) {
     SetLeftMargin(x1);
@@ -39,59 +23,59 @@ namespace Hal {
     SetTopMargin(y2);
   }
 
-  void PadStyle::SetBottomMargin(Float_t val) { SetF(kBottomMargin, val); }
+  void PadStyle::SetBottomMargin(Float_t val) { SetF(EBitFlag::kBottomMargin, val); }
 
-  void PadStyle::SetLeftMargin(Float_t val) { SetF(kLeftMargin, val); }
+  void PadStyle::SetLeftMargin(Float_t val) { SetF(EBitFlag::kLeftMargin, val); }
 
-  void PadStyle::SetTopMargin(Float_t val) { SetF(kTopMargin, val); }
+  void PadStyle::SetTopMargin(Float_t val) { SetF(EBitFlag::kTopMargin, val); }
 
-  void PadStyle::SetRightMargin(Float_t val) { SetF(kRightMargin, val); }
+  void PadStyle::SetRightMargin(Float_t val) { SetF(EBitFlag::kRightMargin, val); }
 
-  void PadStyle::SetLogx(Int_t val) { SetI(kLogx, val); }
+  void PadStyle::SetLogx(Int_t val) { SetI(EBitFlag::kLogx, val); }
 
-  void PadStyle::SetLogy(Int_t val) { SetI(kLogy, val); }
+  void PadStyle::SetLogy(Int_t val) { SetI(EBitFlag::kLogy, val); }
 
-  void PadStyle::SetLogz(Int_t val) { SetI(kLogz, val); }
+  void PadStyle::SetLogz(Int_t val) { SetI(EBitFlag::kLogz, val); }
 
-  void PadStyle::SetGridx(Int_t val) { SetI(kGridx, val); }
+  void PadStyle::SetGridx(Int_t val) { SetI(EBitFlag::kGridx, val); }
 
-  void PadStyle::SetGridy(Int_t val) { SetI(kGridy, val); }
+  void PadStyle::SetGridy(Int_t val) { SetI(EBitFlag::kGridy, val); }
 
-  void PadStyle::SetGridz(Int_t val) { SetI(kGridz, val); }
+  void PadStyle::SetGridz(Int_t val) { SetI(EBitFlag::kGridz, val); }
 
-  void PadStyle::SetTickx(Int_t val) { SetI(kTickX, val); }
+  void PadStyle::SetTickx(Int_t val) { SetI(EBitFlag::kTickX, val); }
 
-  void PadStyle::SetTicky(Int_t val) { SetI(kTickY, val); }
+  void PadStyle::SetTicky(Int_t val) { SetI(EBitFlag::kTickY, val); }
 
-  Float_t PadStyle::GetBottomMargin() const { return GetF(kBottomMargin); }
+  Float_t PadStyle::GetBottomMargin() const { return GetF(EBitFlag::kBottomMargin); }
 
-  Float_t PadStyle::GetLeftMargin() const { return GetF(kLeftMargin); }
+  Float_t PadStyle::GetLeftMargin() const { return GetF(EBitFlag::kLeftMargin); }
 
-  Float_t PadStyle::GetTopMargin() const { return GetF(kTopMargin); }
+  Float_t PadStyle::GetTopMargin() const { return GetF(EBitFlag::kTopMargin); }
 
-  Float_t PadStyle::GetRightMargin() const { return GetF(kRightMargin); }
+  Float_t PadStyle::GetRightMargin() const { return GetF(EBitFlag::kRightMargin); }
 
-  Int_t PadStyle::GetLogx(Int_t val) const { return GetI(kLogx); }
+  Int_t PadStyle::GetLogx(Int_t val) const { return GetI(EBitFlag::kLogx); }
 
-  Int_t PadStyle::GetLogy(Int_t val) const { return GetI(kLogy); }
+  Int_t PadStyle::GetLogy(Int_t val) const { return GetI(EBitFlag::kLogy); }
 
-  Int_t PadStyle::GetLogz(Int_t val) const { return GetI(kLogz); }
+  Int_t PadStyle::GetLogz(Int_t val) const { return GetI(EBitFlag::kLogz); }
 
-  Int_t PadStyle::GetGridx(Int_t val) const { return GetI(kGridx); }
+  Int_t PadStyle::GetGridx(Int_t val) const { return GetI(EBitFlag::kGridx); }
 
-  Int_t PadStyle::GetGridy(Int_t val) const { return GetI(kGridy); }
+  Int_t PadStyle::GetGridy(Int_t val) const { return GetI(EBitFlag::kGridy); }
 
-  Int_t PadStyle::GetGridz(Int_t val) const { return GetI(kGridz); }
+  Int_t PadStyle::GetGridz(Int_t val) const { return GetI(EBitFlag::kGridz); }
 
-  Int_t PadStyle::GetTickx(Int_t val) const { return GetI(kTickX); }
+  Int_t PadStyle::GetTickx(Int_t val) const { return GetI(EBitFlag::kTickX); }
 
-  Int_t PadStyle::GetTicky(Int_t val) const { return GetI(kTickY); }
+  Int_t PadStyle::GetTicky(Int_t val) const { return GetI(EBitFlag::kTickY); }
 
-  Int_t PadStyle::GetFillColor() const { return GetI(kFillColor); }
+  Int_t PadStyle::GetFillColor() const { return GetI(EBitFlag::kFillColor); }
 
-  Int_t PadStyle::GetLineColor() const { return GetI(kLineColor); }
+  Int_t PadStyle::GetLineColor() const { return GetI(EBitFlag::kLineColor); }
 
-  Int_t PadStyle::GetFrameLineColor() const { return GetI(kFrameLineColor); }
+  Int_t PadStyle::GetFrameLineColor() const { return GetI(EBitFlag::kFrameLineColor); }
 
   PadStyle::PadStyle(TString style) {
     if (Hal::Std::FindParam(style, "black")) {
@@ -103,39 +87,39 @@ namespace Hal {
 
   void PadStyle::Apply(TVirtualPad* obj) {
     if (!obj) return;
-    if (Find(kBottomMargin)) obj->SetBottomMargin(GetF(kBottomMargin));
-    if (Find(kLeftMargin)) obj->SetLeftMargin(GetF(kLeftMargin));
-    if (Find(kTopMargin)) obj->SetTopMargin(GetF(kTopMargin));
-    if (Find(kRightMargin)) obj->SetRightMargin(GetF(kRightMargin));
-    if (Find(kLogx)) obj->SetLogx(GetI(kLogx));
-    if (Find(kLogy)) obj->SetLogy(GetI(kLogy));
-    if (Find(kLogz)) obj->SetLogz(GetI(kLogz));
-    if (Find(kGridx)) obj->SetGridx(GetI(kGridx));
-    if (Find(kGridy)) obj->SetGridy(GetI(kGridy));
-    if (Find(kTickX)) obj->SetTickx(GetI(kTickX));
-    if (Find(kTickY)) obj->SetTicky(GetI(kTickY));
-    if (Find(kFillColor)) obj->SetFillColor(GetI(kFillColor));
-    if (Find(kLineColor)) obj->SetLineColor(GetI(kLineColor));
-    if (Find(kFrameLineColor)) obj->SetFrameLineColor(GetI(kFrameLineColor));
+    if (Find(EBitFlag::kBottomMargin)) obj->SetBottomMargin(GetF(EBitFlag::kBottomMargin));
+    if (Find(EBitFlag::kLeftMargin)) obj->SetLeftMargin(GetF(EBitFlag::kLeftMargin));
+    if (Find(EBitFlag::kTopMargin)) obj->SetTopMargin(GetF(EBitFlag::kTopMargin));
+    if (Find(EBitFlag::kRightMargin)) obj->SetRightMargin(GetF(EBitFlag::kRightMargin));
+    if (Find(EBitFlag::kLogx)) obj->SetLogx(GetI(EBitFlag::kLogx));
+    if (Find(EBitFlag::kLogy)) obj->SetLogy(GetI(EBitFlag::kLogy));
+    if (Find(EBitFlag::kLogz)) obj->SetLogz(GetI(EBitFlag::kLogz));
+    if (Find(EBitFlag::kGridx)) obj->SetGridx(GetI(EBitFlag::kGridx));
+    if (Find(EBitFlag::kGridy)) obj->SetGridy(GetI(EBitFlag::kGridy));
+    if (Find(EBitFlag::kTickX)) obj->SetTickx(GetI(EBitFlag::kTickX));
+    if (Find(EBitFlag::kTickY)) obj->SetTicky(GetI(EBitFlag::kTickY));
+    if (Find(EBitFlag::kFillColor)) obj->SetFillColor(GetI(EBitFlag::kFillColor));
+    if (Find(EBitFlag::kLineColor)) obj->SetLineColor(GetI(EBitFlag::kLineColor));
+    if (Find(EBitFlag::kFrameLineColor)) obj->SetFrameLineColor(GetI(EBitFlag::kFrameLineColor));
   }
 
   void PadStyle::ExportToXML(XMLNode& node) const {
 
-    if (Find(kBottomMargin)) node.AddAttrib("BottomMargin", Form("%4.4f", GetF(kBottomMargin)));
-    if (Find(kLeftMargin)) node.AddAttrib("LeftMargin", Form("%4.4f", GetF(kLeftMargin)));
-    if (Find(kTopMargin)) node.AddAttrib("TopMargin", Form("%4.4f", GetF(kTopMargin)));
-    if (Find(kRightMargin)) node.AddAttrib("RightMargin", Form("%4.4f", GetF(kRightMargin)));
-    if (Find(kLogx)) node.AddAttrib("Logx", Form("%i", GetI(kLogx)));
-    if (Find(kLogy)) node.AddAttrib("Logy", Form("%i", GetI(kLogy)));
-    if (Find(kLogz)) node.AddAttrib("Logz", Form("%i", GetI(kLogz)));
-    if (Find(kGridx)) node.AddAttrib("Gridx", Form("%i", GetI(kGridx)));
-    if (Find(kGridy)) node.AddAttrib("Gridy", Form("%i", GetI(kGridy)));
-    if (Find(kGridz)) node.AddAttrib("Gridz", Form("%i", GetI(kGridz)));
-    if (Find(kTickX)) node.AddAttrib("Tickx", Form("%i", GetI(kTickX)));
-    if (Find(kTickY)) node.AddAttrib("Ticky", Form("%i", GetI(kTickY)));
-    if (Find(kFillColor)) node.AddAttrib("FillColor", Form("%i", GetI(kFillColor)));
-    if (Find(kLineColor)) node.AddAttrib("LineColor", Form("%i", GetI(kLineColor)));
-    if (Find(kFrameLineColor)) node.AddAttrib("FrameLineColor", Form("%i", GetI(kFrameLineColor)));
+    if (Find(EBitFlag::kBottomMargin)) node.AddAttrib("BottomMargin", Form("%4.4f", GetF(EBitFlag::kBottomMargin)));
+    if (Find(EBitFlag::kLeftMargin)) node.AddAttrib("LeftMargin", Form("%4.4f", GetF(EBitFlag::kLeftMargin)));
+    if (Find(EBitFlag::kTopMargin)) node.AddAttrib("TopMargin", Form("%4.4f", GetF(EBitFlag::kTopMargin)));
+    if (Find(EBitFlag::kRightMargin)) node.AddAttrib("RightMargin", Form("%4.4f", GetF(EBitFlag::kRightMargin)));
+    if (Find(EBitFlag::kLogx)) node.AddAttrib("Logx", Form("%i", GetI(EBitFlag::kLogx)));
+    if (Find(EBitFlag::kLogy)) node.AddAttrib("Logy", Form("%i", GetI(EBitFlag::kLogy)));
+    if (Find(EBitFlag::kLogz)) node.AddAttrib("Logz", Form("%i", GetI(EBitFlag::kLogz)));
+    if (Find(EBitFlag::kGridx)) node.AddAttrib("Gridx", Form("%i", GetI(EBitFlag::kGridx)));
+    if (Find(EBitFlag::kGridy)) node.AddAttrib("Gridy", Form("%i", GetI(EBitFlag::kGridy)));
+    if (Find(EBitFlag::kGridz)) node.AddAttrib("Gridz", Form("%i", GetI(EBitFlag::kGridz)));
+    if (Find(EBitFlag::kTickX)) node.AddAttrib("Tickx", Form("%i", GetI(EBitFlag::kTickX)));
+    if (Find(EBitFlag::kTickY)) node.AddAttrib("Ticky", Form("%i", GetI(EBitFlag::kTickY)));
+    if (Find(EBitFlag::kFillColor)) node.AddAttrib("FillColor", Form("%i", GetI(EBitFlag::kFillColor)));
+    if (Find(EBitFlag::kLineColor)) node.AddAttrib("LineColor", Form("%i", GetI(EBitFlag::kLineColor)));
+    if (Find(EBitFlag::kFrameLineColor)) node.AddAttrib("FrameLineColor", Form("%i", GetI(EBitFlag::kFrameLineColor)));
   }
 
   void PadStyle::ImportFromXML(const XMLNode& node) {
@@ -219,10 +203,10 @@ namespace Hal {
     SetFrameLineColor(pad.GetFrameLineColor());
   }
 
-  void PadStyle::SetFillColor(Int_t col) { SetI(kFillColor, col); }
+  void PadStyle::SetFillColor(Int_t col) { SetI(EBitFlag::kFillColor, col); }
 
-  void PadStyle::SetLineColor(Int_t col) { SetI(kLineColor, col); }
+  void PadStyle::SetLineColor(Int_t col) { SetI(EBitFlag::kLineColor, col); }
 
-  void PadStyle::SetFrameLineColor(Int_t col) { SetI(kFrameLineColor, col); }
+  void PadStyle::SetFrameLineColor(Int_t col) { SetI(EBitFlag::kFrameLineColor, col); }
 
 } /* namespace Hal */

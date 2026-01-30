@@ -1046,8 +1046,9 @@ namespace Hal {
       if (fCFReal[i]) h.Apply(*fCFReal[i]);
       if (fCFImag[i]) anti.Apply(*fCFImag[i]);
       if (i == 0
-          && (copy.GetMarkerStyle().Find(Hal::MarkerStyle::kColor)
-              || copy.GetLineStyle().Find(Hal::LineStyle::kColor))) {  // cols set by style, overwrite colz that are use by draw
+          && (copy.GetMarkerStyle().Find(Hal::MarkerStyle::EBitFlag::kColor)
+              || copy.GetLineStyle().Find(
+                Hal::LineStyle::EBitFlag::kColor))) {  // cols set by style, overwrite colz that are use by draw
         fColzSet = kTRUE;
         fColRe   = fCFReal[i]->GetMarkerColor();
         fColIm   = fCFImag[i]->GetMarkerColor();

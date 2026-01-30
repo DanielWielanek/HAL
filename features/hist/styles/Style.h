@@ -39,12 +39,57 @@ namespace Hal {
     };
     std::array<Hal::Style::value, 64> fValues;
     ULong64_t fFlags = {0};
+    void SetFloatInner(Int_t bit, Float_t val);
+    void SetIntInner(Int_t bit, Int_t val);
+    Float_t GetFloatInner(Int_t bit) const { return fValues[bit].sFval; }
+    Int_t GetIntInner(Int_t bit) const { return fValues[bit].sIval; }
+    Bool_t FindInner(Int_t bit) const { return TESTBIT(fFlags, bit); }
 
   protected:
-    void SetF(Int_t bit, Float_t val);
-    void SetI(Int_t bit, Int_t val);
-    Float_t GetF(Int_t bit) const { return fValues[bit].sFval; }
-    Int_t GetI(Int_t bit) const { return fValues[bit].sIval; }
+    /**
+     * set float
+     * @tparam TEnum
+     * @tparam
+     * @param bit
+     * @param val
+     */
+    template<typename TEnum, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
+    void SetF(TEnum bit, Float_t val) {
+      SetFloatInner(static_cast<Int_t>(bit), val);
+    };
+    /**
+     * set integer
+     * @tparam TEnum
+     * @tparam
+     * @param bit
+     * @param val
+     */
+    template<typename TEnum, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
+    void SetI(TEnum bit, Int_t val) {
+      SetIntInner(static_cast<Int_t>(bit), val);
+    }
+    /**
+     * return float
+     * @tparam TEnum
+     * @tparam
+     * @param bit
+     * @return
+     */
+    template<typename TEnum, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
+    Float_t GetF(TEnum bit) const {
+      return GetFloatInner(static_cast<Int_t>(bit));
+    }
+    /**
+     * set integer
+     * @tparam TEnum
+     * @tparam
+     * @param bit
+     * @return
+     */
+    template<typename TEnum, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
+    Int_t GetI(TEnum bit) const {
+      return GetIntInner(static_cast<Int_t>(bit));
+    }
 
   public:
     Style() {};
@@ -53,7 +98,10 @@ namespace Hal {
      * @param bit
      * @return
      */
-    Bool_t Find(Int_t bit) const { return TESTBIT(fFlags, bit); }
+    template<typename TEnum, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
+    Bool_t Find(TEnum bit) const {
+      return FindInner(static_cast<Int_t>(bit));
+    }
     Style& operator=(const Style& style) = default;
     /**
      * this method should export configuration to xml - note only changed

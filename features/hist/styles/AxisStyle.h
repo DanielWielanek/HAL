@@ -20,27 +20,28 @@ namespace Hal {
     Bool_t fSkipTitle;
 
   public:
-    static const unsigned short int kTitleOffset;
-    static const unsigned short int kLabelOffset;
-    static const unsigned short int kTitleSize;
-    static const unsigned short int kLabelSize;
-    static const unsigned short int kTickLength;
-    static const unsigned short int kNdivisions;
-    static const unsigned short int kAxisColor;
-    static const unsigned short int kLabelColor;
-    static const unsigned short int kTitleColor;
-    static const unsigned short int kTitleFont;
-    static const unsigned short int kCenterTitle;
-    static const unsigned short int kTitle;
-    static const unsigned short int kRangeMin;
-    static const unsigned short int kRangeMax;
-    static const unsigned short int kTicksOpt;
-    static const unsigned short int kMoreLog;
-
-    static const unsigned short int kRotatedTitle;
-    static const unsigned short int kFontStyleLabel;
-    static const unsigned short int kDecimal;
-    static const unsigned short int kNoExp;
+    enum class EBitFlag {
+      kTitleOffset,
+      kLabelOffset,
+      kTitleSize,
+      kLabelSize,
+      kTickLength,
+      kNdivisions,
+      kAxisColor,
+      kLabelColor,
+      kTitleColor,
+      kTitleFont,
+      kCenterTitle,
+      kTitle,
+      kRangeMin,
+      kRangeMax,
+      kTicksOpt,
+      kMoreLog,
+      kRotatedTitle,
+      kFontStyleLabel,
+      kDecimal,
+      kNoExp
+    };
 
     AxisStyle(Bool_t skipTitle = kTRUE);
 

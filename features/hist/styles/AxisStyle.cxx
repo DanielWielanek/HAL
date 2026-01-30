@@ -15,44 +15,24 @@
 #include "XMLNode.h"
 
 namespace Hal {
-  const unsigned short int AxisStyle::kTitleOffset    = 0;
-  const unsigned short int AxisStyle::kLabelOffset    = 1;
-  const unsigned short int AxisStyle::kTitleSize      = 2;
-  const unsigned short int AxisStyle::kLabelSize      = 3;
-  const unsigned short int AxisStyle::kTickLength     = 4;
-  const unsigned short int AxisStyle::kNdivisions     = 5;
-  const unsigned short int AxisStyle::kAxisColor      = 6;
-  const unsigned short int AxisStyle::kLabelColor     = 7;
-  const unsigned short int AxisStyle::kTitleColor     = 8;
-  const unsigned short int AxisStyle::kTitleFont      = 9;
-  const unsigned short int AxisStyle::kCenterTitle    = 10;
-  const unsigned short int AxisStyle::kRangeMin       = 11;
-  const unsigned short int AxisStyle::kRangeMax       = 12;
-  const unsigned short int AxisStyle::kTitle          = 13;
-  const unsigned short int AxisStyle::kTicksOpt       = 14;
-  const unsigned short int AxisStyle::kMoreLog        = 15;
-  const unsigned short int AxisStyle::kRotatedTitle   = 16;
-  const unsigned short int AxisStyle::kFontStyleLabel = 17;
-  const unsigned short int AxisStyle::kDecimal        = 18;
-  const unsigned short int AxisStyle::kNoExp          = 19;
 
-  void AxisStyle::SetTitleOffset(Float_t val) { SetF(kTitleOffset, val); }
+  void AxisStyle::SetTitleOffset(Float_t val) { SetF(EBitFlag::kTitleOffset, val); }
 
-  void AxisStyle::SetLabelOffset(Float_t val) { SetF(kLabelOffset, val); }
+  void AxisStyle::SetLabelOffset(Float_t val) { SetF(EBitFlag::kLabelOffset, val); }
 
-  void AxisStyle::SetTitleSize(Float_t val) { SetF(kTitleSize, val); }
+  void AxisStyle::SetTitleSize(Float_t val) { SetF(EBitFlag::kTitleSize, val); }
 
-  void AxisStyle::SetLabelSize(Float_t val) { SetF(kLabelSize, val); }
+  void AxisStyle::SetLabelSize(Float_t val) { SetF(EBitFlag::kLabelSize, val); }
 
-  void AxisStyle::SetTickLength(Float_t val) { SetF(kTickLength, val); }
+  void AxisStyle::SetTickLength(Float_t val) { SetF(EBitFlag::kTickLength, val); }
 
   void AxisStyle::SetNdivisions(Int_t val, Bool_t optim) {
     val = TMath::Abs(val);
     if (!optim) val = -val;
-    SetI(kNdivisions, val);
+    SetI(EBitFlag::kNdivisions, val);
   }
 
-  void AxisStyle::SetAxisColor(Int_t val) { SetI(kAxisColor, val); }
+  void AxisStyle::SetAxisColor(Int_t val) { SetI(EBitFlag::kAxisColor, val); }
 
   void AxisStyle::SetColor(Int_t col) {
     SetAxisColor(col);
@@ -60,121 +40,122 @@ namespace Hal {
     SetTitleColor(col);
   }
 
-  void AxisStyle::SetLabelColor(Int_t val) { SetI(kLabelColor, val); }
+  void AxisStyle::SetLabelColor(Int_t val) { SetI(EBitFlag::kLabelColor, val); }
 
-  void AxisStyle::SetTitleColor(Int_t val) { SetI(kTitleColor, val); }
+  void AxisStyle::SetTitleColor(Int_t val) { SetI(EBitFlag::kTitleColor, val); }
 
-  void AxisStyle::SetTitleFont(Int_t val) { SetI(kTitleFont, val); }
+  void AxisStyle::SetTitleFont(Int_t val) { SetI(EBitFlag::kTitleFont, val); }
 
-  void AxisStyle::SetCenterTitle(Int_t val) { SetI(kCenterTitle, val); }
+  void AxisStyle::SetCenterTitle(Int_t val) { SetI(EBitFlag::kCenterTitle, val); }
 
-  void AxisStyle::SetLabelFont(Int_t font) { SetI(kFontStyleLabel, font); };
+  void AxisStyle::SetLabelFont(Int_t font) { SetI(EBitFlag::kFontStyleLabel, font); };
 
-  void AxisStyle::SetRotateTitle(Bool_t rot) { SetI(kRotatedTitle, rot); };
+  void AxisStyle::SetRotateTitle(Bool_t rot) { SetI(EBitFlag::kRotatedTitle, rot); };
 
-  void AxisStyle::SetNoExponent(Bool_t rot) { SetI(kNoExp, rot); };
+  void AxisStyle::SetNoExponent(Bool_t rot) { SetI(EBitFlag::kNoExp, rot); };
 
-  void AxisStyle::SetDecimals(Bool_t opt) { SetI(kDecimal, opt); };
+  void AxisStyle::SetDecimals(Bool_t opt) { SetI(EBitFlag::kDecimal, opt); };
 
-  Float_t AxisStyle::GetTitleOffset() const { return GetF(kTitleOffset); }
+  Float_t AxisStyle::GetTitleOffset() const { return GetF(EBitFlag::kTitleOffset); }
 
-  Float_t AxisStyle::GetLabelOffset() const { return GetF(kLabelOffset); }
+  Float_t AxisStyle::GetLabelOffset() const { return GetF(EBitFlag::kLabelOffset); }
 
-  Float_t AxisStyle::GetTitleSize() const { return GetF(kTitleSize); }
+  Float_t AxisStyle::GetTitleSize() const { return GetF(EBitFlag::kTitleSize); }
 
-  Float_t AxisStyle::GetLabelSize() const { return GetF(kLabelSize); }
+  Float_t AxisStyle::GetLabelSize() const { return GetF(EBitFlag::kLabelSize); }
 
-  Float_t AxisStyle::GetTickLength() const { return GetF(kTickLength); }
+  Float_t AxisStyle::GetTickLength() const { return GetF(EBitFlag::kTickLength); }
 
-  Int_t AxisStyle::GetNDivisions() const { return TMath::Abs(GetI(kNdivisions)); }
+  Int_t AxisStyle::GetNDivisions() const { return TMath::Abs(GetI(EBitFlag::kNdivisions)); }
 
-  Int_t AxisStyle::GetAxisColor() const { return GetI(kAxisColor); }
+  Int_t AxisStyle::GetAxisColor() const { return GetI(EBitFlag::kAxisColor); }
 
-  Int_t AxisStyle::GetLabelColor() const { return GetI(kLabelColor); }
+  Int_t AxisStyle::GetLabelColor() const { return GetI(EBitFlag::kLabelColor); }
 
-  Int_t AxisStyle::GetTitleColor() const { return GetI(kTitleColor); }
+  Int_t AxisStyle::GetTitleColor() const { return GetI(EBitFlag::kTitleColor); }
 
-  Int_t AxisStyle::GetTitleFont() const { return GetI(kTitleFont); }
+  Int_t AxisStyle::GetTitleFont() const { return GetI(EBitFlag::kTitleFont); }
 
-  Int_t AxisStyle::GetCenterTitle() const { return GetI(kCenterTitle); }
+  Int_t AxisStyle::GetCenterTitle() const { return GetI(EBitFlag::kCenterTitle); }
 
-  Int_t AxisStyle::GetLabelFont() const { return GetI(kFontStyleLabel); };
+  Int_t AxisStyle::GetLabelFont() const { return GetI(EBitFlag::kFontStyleLabel); };
 
-  Bool_t AxisStyle::GetRotatedTitle() const { return GetI(kRotatedTitle); };
+  Bool_t AxisStyle::GetRotatedTitle() const { return GetI(EBitFlag::kRotatedTitle); };
 
-  Bool_t AxisStyle::GetDecimal() const { return GetI(kDecimal); };
+  Bool_t AxisStyle::GetDecimal() const { return GetI(EBitFlag::kDecimal); };
 
-  Bool_t AxisStyle::GetMoreLogLabels() const { return GetI(kMoreLog); };
+  Bool_t AxisStyle::GetMoreLogLabels() const { return GetI(EBitFlag::kMoreLog); };
 
-  Bool_t AxisStyle::GetNoExponent() const { return GetI(kNoExp); }
+  Bool_t AxisStyle::GetNoExponent() const { return GetI(EBitFlag::kNoExp); }
 
   Bool_t AxisStyle::NDivisionsOptimized() const {
-    int div = GetI(kNdivisions);
+    int div = GetI(EBitFlag::kNdivisions);
     if (div >= 0) return kTRUE;
     return kFALSE;
   }
 
   void AxisStyle::Apply(TAxis& obj) const {
-    if (Find(kTitleOffset)) obj.SetTitleOffset(GetF(kTitleOffset));
-    if (Find(kLabelOffset)) obj.SetLabelOffset(GetF(kLabelOffset));
-    if (Find(kTitleSize)) obj.SetTitleSize(GetF(kTitleSize));
-    if (Find(kLabelSize)) obj.SetLabelSize(GetF(kLabelSize));
-    if (Find(kTickLength)) obj.SetTickLength(GetF(kTickLength));
-    if (Find(kNdivisions)) {
-      int div = GetI(kNdivisions);
+    if (Find(EBitFlag::kTitleOffset)) obj.SetTitleOffset(GetF(EBitFlag::kTitleOffset));
+    if (Find(EBitFlag::kLabelOffset)) obj.SetLabelOffset(GetF(EBitFlag::kLabelOffset));
+    if (Find(EBitFlag::kTitleSize)) obj.SetTitleSize(GetF(EBitFlag::kTitleSize));
+    if (Find(EBitFlag::kLabelSize)) obj.SetLabelSize(GetF(EBitFlag::kLabelSize));
+    if (Find(EBitFlag::kTickLength)) obj.SetTickLength(GetF(EBitFlag::kTickLength));
+    if (Find(EBitFlag::kNdivisions)) {
+      int div = GetI(EBitFlag::kNdivisions);
       if (div >= 0)
         obj.SetNdivisions(div, true);
       else
         obj.SetNdivisions(-div, false);
     }
-    if (Find(kAxisColor)) obj.SetAxisColor(GetI(kAxisColor));
-    if (Find(kLabelColor)) obj.SetLabelColor(GetI(kLabelColor));
-    if (Find(kTitleColor)) obj.SetTitleColor(GetI(kTitleColor));
-    if (Find(kTitleFont)) obj.SetTitleFont(GetI(kTitleFont));
-    if (Find(kCenterTitle)) obj.CenterTitle(GetI(kCenterTitle));
+    if (Find(EBitFlag::kAxisColor)) obj.SetAxisColor(GetI(EBitFlag::kAxisColor));
+    if (Find(EBitFlag::kLabelColor)) obj.SetLabelColor(GetI(EBitFlag::kLabelColor));
+    if (Find(EBitFlag::kTitleColor)) obj.SetTitleColor(GetI(EBitFlag::kTitleColor));
+    if (Find(EBitFlag::kTitleFont)) obj.SetTitleFont(GetI(EBitFlag::kTitleFont));
+    if (Find(EBitFlag::kCenterTitle)) obj.CenterTitle(GetI(EBitFlag::kCenterTitle));
     if (!fSkipTitle)
-      if (Find(kTitle)) obj.SetTitle(fTitle);
-    if (Find(kRangeMin) && Find(kRangeMin)) obj.SetRangeUser(GetF(kRangeMin), GetF(kRangeMax));
-    if (Find(kTicksOpt)) obj.SetTicks(GetTicks());
-    if (Find(kMoreLog)) obj.SetMoreLogLabels(GetI(kMoreLog));
-    if (Find(kFontStyleLabel)) obj.SetLabelFont(GetI(kFontStyleLabel));
-    if (Find(kRotatedTitle)) { obj.RotateTitle(GetI(kRotatedTitle)); }
-    if (Find(kDecimal)) obj.SetDecimals(GetI(kDecimal));
-    if (Find(kNoExp)) obj.SetNoExponent(GetI(kNoExp));
+      if (Find(EBitFlag::kTitle)) obj.SetTitle(fTitle);
+    if (Find(EBitFlag::kRangeMin) && Find(EBitFlag::kRangeMin))
+      obj.SetRangeUser(GetF(EBitFlag::kRangeMin), GetF(EBitFlag::kRangeMax));
+    if (Find(EBitFlag::kTicksOpt)) obj.SetTicks(GetTicks());
+    if (Find(EBitFlag::kMoreLog)) obj.SetMoreLogLabels(GetI(EBitFlag::kMoreLog));
+    if (Find(EBitFlag::kFontStyleLabel)) obj.SetLabelFont(GetI(EBitFlag::kFontStyleLabel));
+    if (Find(EBitFlag::kRotatedTitle)) { obj.RotateTitle(GetI(EBitFlag::kRotatedTitle)); }
+    if (Find(EBitFlag::kDecimal)) obj.SetDecimals(GetI(EBitFlag::kDecimal));
+    if (Find(EBitFlag::kNoExp)) obj.SetNoExponent(GetI(EBitFlag::kNoExp));
   };
 
   void AxisStyle::SetTitle(TString val) {
-    SetI(kTitle, 0);
+    SetI(EBitFlag::kTitle, 0);
     fTitle = val;
   }
 
   void AxisStyle::ExportToXML(XMLNode& node) const {
-    if (Find(kTitleOffset)) node.AddAttrib("TitleOffset", Form("%4.4f", GetF(kTitleOffset)));
-    if (Find(kLabelOffset)) node.AddAttrib("LabelOffset", Form("%4.4f", GetF(kLabelOffset)));
-    if (Find(kTitleSize)) node.AddAttrib("TitleSize", Form("%4.4f", GetF(kTitleSize)));
-    if (Find(kLabelSize)) node.AddAttrib("LabelSize", Form("%4.4f", GetF(kLabelSize)));
-    if (Find(kTickLength)) node.AddAttrib("TickLength", Form("%4.4f", GetF(kTickLength)));
-    if (Find(kNdivisions)) node.AddAttrib("Ndivisions", Form("%i", GetI(kNdivisions)));
-    if (Find(kAxisColor)) node.AddAttrib("AxisColor", Form("%i", GetI(kAxisColor)));
-    if (Find(kLabelColor)) node.AddAttrib("LabelColor", Form("%i", GetI(kLabelColor)));
-    if (Find(kTitleColor)) node.AddAttrib("TitleColor", Form("%i", GetI(kTitleColor)));
-    if (Find(kTitleFont)) node.AddAttrib("TitleFont", Form("%i", GetI(kTitleFont)));
-    if (Find(kCenterTitle)) node.AddAttrib("CenterTitle", Form("%i", GetI(kCenterTitle)));
+    if (Find(EBitFlag::kTitleOffset)) node.AddAttrib("TitleOffset", Form("%4.4f", GetF(EBitFlag::kTitleOffset)));
+    if (Find(EBitFlag::kLabelOffset)) node.AddAttrib("LabelOffset", Form("%4.4f", GetF(EBitFlag::kLabelOffset)));
+    if (Find(EBitFlag::kTitleSize)) node.AddAttrib("TitleSize", Form("%4.4f", GetF(EBitFlag::kTitleSize)));
+    if (Find(EBitFlag::kLabelSize)) node.AddAttrib("LabelSize", Form("%4.4f", GetF(EBitFlag::kLabelSize)));
+    if (Find(EBitFlag::kTickLength)) node.AddAttrib("TickLength", Form("%4.4f", GetF(EBitFlag::kTickLength)));
+    if (Find(EBitFlag::kNdivisions)) node.AddAttrib("Ndivisions", Form("%i", GetI(EBitFlag::kNdivisions)));
+    if (Find(EBitFlag::kAxisColor)) node.AddAttrib("AxisColor", Form("%i", GetI(EBitFlag::kAxisColor)));
+    if (Find(EBitFlag::kLabelColor)) node.AddAttrib("LabelColor", Form("%i", GetI(EBitFlag::kLabelColor)));
+    if (Find(EBitFlag::kTitleColor)) node.AddAttrib("TitleColor", Form("%i", GetI(EBitFlag::kTitleColor)));
+    if (Find(EBitFlag::kTitleFont)) node.AddAttrib("TitleFont", Form("%i", GetI(EBitFlag::kTitleFont)));
+    if (Find(EBitFlag::kCenterTitle)) node.AddAttrib("CenterTitle", Form("%i", GetI(EBitFlag::kCenterTitle)));
     if (!fSkipTitle)
-      if (Find(kTitle)) node.AddAttrib("Title", fTitle);
-    if (Find(kRangeMin)) node.AddAttrib("RangeMin", Form("%4.4f", GetF(kRangeMin)));
-    if (Find(kRangeMax)) node.AddAttrib("RangeMax", Form("%4.4f", GetF(kRangeMax)));
-    if (Find(kTicksOpt)) node.AddAttrib("TicksOpt", GetTicks());
-    if (Find(kMoreLog)) node.AddAttrib("MoreLog", Form("%i", (int) GetI(kMoreLog)));
-    if (Find(kRotatedTitle)) node.AddAttrib("RotatedTitle", Form("%i", (int) GetI(kRotatedTitle)));
-    if (Find(kFontStyleLabel)) node.AddAttrib("LabelFont", Form("%i", (int) GetI(kFontStyleLabel)));
-    if (Find(kDecimal)) node.AddAttrib("Decimal", Form("%i", (int) GetI(kDecimal)));
-    if (Find(kNoExp)) node.AddAttrib("NoExp", Form("%i", (int) GetI(kNoExp)));
+      if (Find(EBitFlag::kTitle)) node.AddAttrib("Title", fTitle);
+    if (Find(EBitFlag::kRangeMin)) node.AddAttrib("RangeMin", Form("%4.4f", GetF(EBitFlag::kRangeMin)));
+    if (Find(EBitFlag::kRangeMax)) node.AddAttrib("RangeMax", Form("%4.4f", GetF(EBitFlag::kRangeMax)));
+    if (Find(EBitFlag::kTicksOpt)) node.AddAttrib("TicksOpt", GetTicks());
+    if (Find(EBitFlag::kMoreLog)) node.AddAttrib("MoreLog", Form("%i", (int) GetI(EBitFlag::kMoreLog)));
+    if (Find(EBitFlag::kRotatedTitle)) node.AddAttrib("RotatedTitle", Form("%i", (int) GetI(EBitFlag::kRotatedTitle)));
+    if (Find(EBitFlag::kFontStyleLabel)) node.AddAttrib("LabelFont", Form("%i", (int) GetI(EBitFlag::kFontStyleLabel)));
+    if (Find(EBitFlag::kDecimal)) node.AddAttrib("Decimal", Form("%i", (int) GetI(EBitFlag::kDecimal)));
+    if (Find(EBitFlag::kNoExp)) node.AddAttrib("NoExp", Form("%i", (int) GetI(EBitFlag::kNoExp)));
   }
 
   void AxisStyle::SetRangeUser(Float_t min, Float_t max) {
-    SetF(kRangeMin, min);
-    SetF(kRangeMax, max);
+    SetF(EBitFlag::kRangeMin, min);
+    SetF(EBitFlag::kRangeMax, max);
   }
 
   void AxisStyle::ImportFromXML(const XMLNode& node) {
@@ -284,7 +265,7 @@ namespace Hal {
   }
 
 
-  void AxisStyle::SetMoreLogLabels(Bool_t val) { SetI(kMoreLog, val); }
+  void AxisStyle::SetMoreLogLabels(Bool_t val) { SetI(EBitFlag::kMoreLog, val); }
 
   void AxisStyle::Import(const TAxis& x) {
     TAxis dummy;
@@ -317,15 +298,15 @@ namespace Hal {
   }
 
   void AxisStyle::SetTicks(TString opt) {
-    if (opt == "+") SetI(kTicksOpt, 1);
-    if (opt == "-") SetI(kTicksOpt, 2);
-    if (opt == "") SetI(kTicksOpt, 0);
-    if (opt == "+-") SetI(kTicksOpt, 3);
+    if (opt == "+") SetI(EBitFlag::kTicksOpt, 1);
+    if (opt == "-") SetI(EBitFlag::kTicksOpt, 2);
+    if (opt == "") SetI(EBitFlag::kTicksOpt, 0);
+    if (opt == "+-") SetI(EBitFlag::kTicksOpt, 3);
   }
 
   TString AxisStyle::GetTicks() const {
-    if (!Find(kTicksOpt)) return "";
-    Int_t val = GetI(kTicksOpt);
+    if (!Find(EBitFlag::kTicksOpt)) return "";
+    Int_t val = GetI(EBitFlag::kTicksOpt);
     switch (val) {
       case 1: return "+"; break;
       case 2: return "-"; break;

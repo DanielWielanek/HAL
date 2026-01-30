@@ -13,32 +13,28 @@
 #include "XMLNode.h"
 
 namespace Hal {
-  const unsigned short int MarkerStyle::kColor     = 0;
-  const unsigned short int MarkerStyle::kStyle     = 1;
-  const unsigned short int MarkerStyle::kLineWidth = 2;
-  const unsigned short int MarkerStyle::kSize      = 3;
-  void MarkerStyle::SetColor(Int_t val) { SetI(kColor, val); }
+  void MarkerStyle::SetColor(Int_t val) { SetI(EBitFlag::kColor, val); }
 
-  void MarkerStyle::SetStyle(Int_t val) { SetI(kStyle, val); }
+  void MarkerStyle::SetStyle(Int_t val) { SetI(EBitFlag::kStyle, val); }
 
-  // void MarkerStyle::SetLineWidth(Int_t val) { SetI(kLineWidth, val); }
+  // void MarkerStyle::SetLineWidth(Int_t val) { SetI(EBitFlag::kLineWidth, val); }
 
-  void MarkerStyle::SetSize(Int_t val) { SetI(kSize, val); }
+  void MarkerStyle::SetSize(Int_t val) { SetI(EBitFlag::kSize, val); }
 
-  Int_t MarkerStyle::GetColor() const { return GetI(kColor); }
+  Int_t MarkerStyle::GetColor() const { return GetI(EBitFlag::kColor); }
 
-  Int_t MarkerStyle::GetStyle() const { return GetI(kStyle); }
+  Int_t MarkerStyle::GetStyle() const { return GetI(EBitFlag::kStyle); }
 
-  // Int_t MarkerStyle::GetLineWidth() const { return GetI(kLineWidth); }
+  // Int_t MarkerStyle::GetLineWidth() const { return GetI(EBitFlag::kLineWidth); }
 
-  Int_t MarkerStyle::GetSize() const { return GetI(kSize); }
+  Int_t MarkerStyle::GetSize() const { return GetI(EBitFlag::kSize); }
 
   void MarkerStyle::ExportToXML(XMLNode& node) const {
 
-    if (Find(kColor)) node.AddAttrib("Color", Form("%i", GetI(kColor)));
-    if (Find(kStyle)) node.AddAttrib("Style", Form("%i", GetI(kStyle)));
-    //  if (Find(kLineWidth)) node.AddAttrib(new Hal::XMLAttrib("LineWidth", Form("%i", GetI(kLineWidth))));
-    if (Find(kSize)) node.AddAttrib("Size", Form("%i", GetI(kSize)));
+    if (Find(EBitFlag::kColor)) node.AddAttrib("Color", Form("%i", GetI(EBitFlag::kColor)));
+    if (Find(EBitFlag::kStyle)) node.AddAttrib("Style", Form("%i", GetI(EBitFlag::kStyle)));
+    //  if (Find(EBitFlag::kLineWidth)) node.AddAttrib(new Hal::XMLAttrib("LineWidth", Form("%i", GetI(EBitFlag::kLineWidth))));
+    if (Find(EBitFlag::kSize)) node.AddAttrib("Size", Form("%i", GetI(EBitFlag::kSize)));
   }
 
   void MarkerStyle::ImportFromXML(const XMLNode& node) {

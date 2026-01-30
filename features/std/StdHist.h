@@ -260,6 +260,13 @@ namespace Hal {
      */
     void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2);
     /**
+     * makes empty pad with histo with dimensions 0-1,0-1
+     * @param fill fill color - pad color
+     * @param line color of frame around pad
+     * @param pad - if nullptr use gPad
+     */
+    void MakeEmptyPad(Color_t fill = kWhite, Color_t line = kWhite, TVirtualPad* pad = nullptr);
+    /**
      * get index of oposite color
      * @param col
      * @return

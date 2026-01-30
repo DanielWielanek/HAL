@@ -1023,6 +1023,24 @@ NamespaceImp(Hal::Std)
       gPad->Update();
     }
 
+    void MakeEmptyPad(Color_t fill, Color_t line, TVirtualPad* pad) {
+      if (!pad) pad = gPad;
+      if (!pad) return;
+      TH1D* h = new TH1D("dummy_empty", "", 1, 0, 1);
+      h->SetMinimum(0);
+      h->SetMaximum(0);
+      gPad->SetFillColor(fill);
+      gPad->SetFrameLineColor(fill);
+      h->GetXaxis()->SetLabelColor(fill);
+      h->GetXaxis()->SetTitleColor(fill);
+      h->GetXaxis()->SetAxisColor(fill);
+      h->GetYaxis()->SetLabelColor(fill);
+      h->GetYaxis()->SetTitleColor(fill);
+      h->GetYaxis()->SetAxisColor(fill);
+      gPad->SetLineColor(line);
+      h->Draw();
+    }
+
     Int_t GetAntiColor(Int_t col) {
       if (col < 0) return -1;
 

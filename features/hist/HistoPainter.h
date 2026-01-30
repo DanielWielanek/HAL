@@ -78,7 +78,7 @@ namespace Hal {
      * @param newFlags
      * @return
      */
-    ULong64_t SetOptionInternal(TString opt, ULong64_t newFlags);
+    ULong64_t SetOptionInternal(const Options& opt, ULong64_t newFlags);
     /**
      * clone new histograms, clone is not owned by gDirectory
      * @param h
@@ -126,7 +126,7 @@ namespace Hal {
      * @param prev
      * @return
      */
-    virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0);
+    virtual ULong64_t SetOptionInternal(const Options&, ULong64_t prev = 0);
     virtual void MakePadsAndCanvases();
     virtual void MakeHistograms();
     Hal::DividedHisto1D* fHisto = {nullptr};

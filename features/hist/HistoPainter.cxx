@@ -15,6 +15,7 @@
 #include <TVirtualPad.h>
 #include <iostream>
 
+#include "Options.h"
 #include "Std.h"
 
 namespace Hal {
@@ -92,12 +93,12 @@ namespace Hal {
 
   DividedHistoPainter::DividedHistoPainter() {}
 
-  ULong64_t DividedHistoPainter::SetOptionInternal(TString opt, ULong64_t newOpts) {
+  ULong64_t DividedHistoPainter::SetOptionInternal(const Options& opt, ULong64_t newOpts) {
     newOpts = HistoPainter::SetOptionInternal(opt, newOpts);
-    if (Hal::Std::FindParam(opt, "num", kTRUE)) SETBIT(newOpts, kNumBit);
-    if (Hal::Std::FindParam(opt, "den", kTRUE)) SETBIT(newOpts, kDenBit);
-    if (Hal::Std::FindParam(opt, "all", kTRUE)) SETBIT(newOpts, kAllBit);
-    if (Hal::Std::FindParam(opt, "scale", kTRUE)) SETBIT(newOpts, kScaleBit);
+    if (opt.HasOption("num")) SETBIT(newOpts, kNumBit);
+    if (opt.HasOption("den")) SETBIT(newOpts, kDenBit);
+    if (opt.HasOption("all")) SETBIT(newOpts, kAllBit);
+    if (opt.HasOption("scale")) SETBIT(newOpts, kScaleBit);
     return newOpts;
   }
 
@@ -142,32 +143,27 @@ namespace Hal {
     // TODO Auto-generated destructor stub
   }
 
-  ULong64_t HistoPainter::SetOptionInternal(TString opt, ULong64_t newFlags) {
-    if (Hal::Std::FindParam(opt, "!tit", kTRUE)) SETBIT(newFlags, kHideTitlesBit);
-    auto ranges = Hal::Std::FindBrackets(opt, kTRUE, kTRUE);
-    for (auto range : ranges) {
-      std::vector<double> res;
-      auto foundx = GetPatterns(range, "x", res);
-      if (res.size() == 2 && foundx) {
-        fRangeX[0] = res[0];
-        fRangeX[1] = res[1];
-      }
-      auto foundy = GetPatterns(range, "y", res);
-      if (res.size() == 2 && foundy) {
-        fRangeY[0] = res[0];
-        fRangeY[1] = res[1];
-      }
-      auto foundz = GetPatterns(range, "z", res);
-      if (res.size() == 2 && foundz) {
-        fRangeZ[0] = res[0];
-        fRangeZ[1] = res[1];
-      }
-      auto foundt = GetPatterns(range, "t", res);
-      if (res.size() == 2 && foundt) {
-        fRangeT[0] = res[0];
-        fRangeT[1] = res[1];
-      }
-      if (!foundx && !foundy && foundz && !foundt) { opt = opt + "+{" + range + "}"; }
+  ULong64_t HistoPainter::SetOptionInternal(const Options& opt, ULong64_t newFlags) {
+    if (opt.HasOption("!tit")) SETBIT(newFlags, kHideTitlesBit);
+    auto foundx = opt.GetLabeledArray("x");
+    auto foundy = opt.GetLabeledArray("y");
+    auto foundz = opt.GetLabeledArray("z");
+    auto foundt = opt.GetLabeledArray("t");
+    if(foundx.values.size()==2){
+        fRangeX[0] = foundx.values[0];
+        fRangeX[1] = foundx.values[1];
+    }
+    if(foundy.values.size()==2){
+        fRangeY[0] = foundy.values[0];
+        fRangeY[1] = foundy.values[1];
+    }
+    if(foundz.values.size()==2){
+        fRangeZ[0] = foundz.values[0];
+        fRangeZ[1] = foundz.values[1];
+    }
+    if(foundt.values.size()==2){
+        fRangeT[0] = foundt.values[0];
+        fRangeT[1] = foundt.values[1];
     }
     return newFlags;
   }

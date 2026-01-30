@@ -33,7 +33,7 @@ namespace Hal {
      * @param prev
      * @return
      */
-    virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0);
+    virtual ULong64_t SetOptionInternal(const Options& opt, ULong64_t prev = 0);
     virtual void MakeHistograms();
     virtual void ScaleHistograms();
     virtual void PrepareHtml(TH1* h);

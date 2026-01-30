@@ -44,7 +44,7 @@ namespace Hal {
      * - short - draw only chosen components of cf
      * - neg - skip drawing the negative components of CF
      */
-    virtual ULong64_t SetOptionInternal(TString opts, ULong64_t prev = 0);
+    virtual ULong64_t SetOptionInternal(const Options& opts, ULong64_t prev = 0);
     virtual void ScaleHistograms();
     virtual void MakePadsAndCanvases();
 

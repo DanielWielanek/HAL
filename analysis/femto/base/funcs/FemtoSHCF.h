@@ -192,8 +192,17 @@ namespace Hal {
      */
     void SetDenIm(TH1D** histograms, Bool_t clone = kTRUE);
     /**
-     * see @see #Hal::FemtoSHCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
-     * @param option
+     * see @see #Hal::Options
+     * @param option of drawing, additional options (to divided histo):
+     * options:
+     * fit - draw optimized to fit (no numerators, no denominators)
+     * cf - draw CF (no numerators, no denominators)
+     * sep - draw separate imaginary/real parts
+     * short - draw without multiplying imaginary/real parts
+     * arrays:
+     * y - note in this case following convention is used:
+     * first two y describe min-max on Y axis of C00
+     * next two y describe min-max on Y axis of other components
      */
     void Draw(Option_t* opt = "");
     /**

@@ -9,12 +9,14 @@
 
 #include "Cout.h"
 #include "Femto3DCF.h"
+#include "Options.h"
 #include "Std.h"
 #include "StdHist.h"
 #include "StdString.h"
 
 #include <TH3D.h>
 #include <TVirtualPad.h>
+
 
 namespace Hal {
   const int Femto3DCFPainter::kRgbBit        = FemtoCFPainter::LastBitPainter() + 1;
@@ -25,34 +27,27 @@ namespace Hal {
   const int Femto3DCFPainter::kTwoDimPlusBit = FemtoCFPainter::LastBitPainter() + 6;
   const int Femto3DCFPainter::kAngles        = FemtoCFPainter::LastBitPainter() + 7;
 
-  ULong64_t Femto3DCFPainter::SetOptionInternal(TString opt, ULong64_t newFlags) {
+  ULong64_t Femto3DCFPainter::SetOptionInternal(const Options& opt, ULong64_t newFlags) {
     newFlags        = FemtoCFPainter::SetOptionInternal(opt, newFlags);
     auto cleanFlags = [&](int setbit) { ResetFewBits(newFlags, {kDiag1Bit, kDiag2Bit, kTwoDimBit, kTwoDimPlusBit}, setbit); };
-    if (Hal::Std::FindParam(opt, "diag1")) {
+    if (opt.HasOption("diag1")) {
       cleanFlags(kDiag1Bit);
       fDefDrawFlag = "SAME+P";
     };
-    if (Hal::Std::FindParam(opt, "diag2")) {
+    if (opt.HasOption("diag2")) {
       cleanFlags(kDiag2Bit);
       fDefDrawFlag = "SAME+P";
     };
-    if (Hal::Std::FindParam(opt, "2d")) {
+    if (opt.HasOption("2d")) {
       cleanFlags(kTwoDimBit);
       fDefDrawFlag = "SAME+colz";
     };
-    if (Hal::Std::FindParam(opt, "3d")) {
+    if (opt.HasOption("3d")) {
       cleanFlags(kTwoDimPlusBit);
       fDefDrawFlag = "SAME+surf1";
-      auto bra     = Hal::Std::FindBrackets(opt, kTRUE, kTRUE);
-      for (auto pat : bra) {
-        std::vector<Double_t> vals;
-        if (GetPatterns(pat, "ang", vals)) {
-          SETBIT(newFlags, kAngles);
-          if (vals.size() == 2) {
-            fThetaPad = vals[0];
-            fPhiPad   = vals[0];
-          }
-        }
+      if(auto angles = opt.GetLabeledArray("ang");angles.values.size()==2){
+          fThetaPad = angles.values[0];
+          fPhiPad   = angles.values[0];
       }
     };
 

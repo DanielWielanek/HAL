@@ -31,7 +31,7 @@ namespace Hal {
     Double_t fScale     = {1.0};
     Double_t fDrawScale = {1.0};
 
-    virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0);
+    virtual ULong64_t SetOptionInternal(const Options& opt, ULong64_t prev = 0);
     virtual void ScaleHistograms();
     ULong64_t PrepBitTemplate(std::initializer_list<int> temps) const;
     /**

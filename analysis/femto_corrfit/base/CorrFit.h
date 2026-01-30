@@ -298,6 +298,21 @@ namespace Hal {
      */
     void SetCalculationOption(ECalcOption f) { fBinCalc = f; }
     /**
+     * @see #Hal::Options
+     * @param option draw options
+     * options:
+     * norm - draw normalized to 1 (also scales the fitted histogram)
+     * chi2s - draw chi2
+     * chi2 - draw chi + ndf
+     * th1c - draw fitted function as smooth TH1 not TF1
+     * th1 - draw fitted function as TH1 not TF1
+     * leg - draw legend
+     * npx - set number of points in all TF1
+     * arrays:
+     * leg - position of legend (4-values)
+     */
+    virtual void Draw(Option_t* option = "") { CorrFitBaseFunc::Draw(option); }
+    /**
      *
      * @return painter for this class (if exists)
      */

@@ -16,6 +16,7 @@
 #include "Cout.h"
 #include "FemtoCFPainter.h"
 #include "LegendStyle.h"
+#include "Options.h"
 #include "Std.h"
 #include "StdString.h"
 
@@ -187,40 +188,36 @@ namespace Hal {
 
   Bool_t CorrFitPainter::AreSimiliar(ULong64_t current, ULong64_t pattern) const { return (pattern == current) & pattern; }
 
-  ULong64_t CorrFitPainter::SetOptionInternal(TString opt, ULong64_t newFlag) {
+  ULong64_t CorrFitPainter::SetOptionInternal(const Options& opt, ULong64_t newFlag) {
     ContitionalPattern(opt, "norm", newFlag, kAutoNormBit, kTRUE);
-    if (Hal::Std::FindParam(opt, "chi2s", kTRUE)) {
+    if (opt.HasOption("chi2s")) {
       CLRBIT(newFlag, kChi2Short);
       SETBIT(newFlag, kChi2);
     }
-    if (Hal::Std::FindParam(opt, "chi2", kTRUE)) {
+    if (opt.HasOption("chi2")) {
       SETBIT(newFlag, kChi2);
       SETBIT(newFlag, kChi2Short);
     }
-    if (Hal::Std::FindParam(opt, "th1c", kTRUE)) {
+    if (opt.HasOption("th1c")) {
       SETBIT(newFlag, kTH1DrawSmooth);
       SETBIT(newFlag, kTH1Draw);
       fDefFuncDrawOpt = "SAME+C";
     }
-    if (Hal::Std::FindParam(opt, "th1", kTRUE)) SETBIT(newFlag, kTH1Draw);
-    if (Hal::Std::FindParam(opt, "legend", kTRUE)) {
+    if (opt.HasOption("th1")) SETBIT(newFlag, kTH1Draw);
+    if (opt.HasOption("leg")) SETBIT(newFlag, kLegendBit);
+    if (auto legset = opt.GetLabeledArray("leg"); legset.values.size() > 0) {
       SETBIT(newFlag, kLegendBit);
-      auto bra = Hal::Std::FindBrackets(opt, kTRUE, kTRUE);
-      for (auto pat : bra) {
-        std::vector<Double_t> vals;
-        if (GetPatterns(pat, "leg", vals)) {
-          if (vals.size() == 4) {
-            for (int i = 0; i < 4; i++)
-              fLegendPos[i] = vals[i];
-          }
-          if (vals.size() == 5) {
-            for (int i = 0; i < 4; i++)
-              fLegendPos[i] = vals[i];
-            fLegendFontSize = vals[4];
-          }
-        }
+      if (legset.values.size() == 4) {
+        for (int i = 0; i < 4; i++)
+          fLegendPos[i] = legset.values[i];
+      }
+      if (legset.values.size() == 5) {
+        for (int i = 0; i < 4; i++)
+          fLegendPos[i] = legset.values[i];
+        fLegendFontSize = legset.values[4];
       }
     }
+    if (auto npx = opt.GetFlagValue("npx"); npx.Length() > 0) { fDrawPoints = npx.Atoi(); }
     return newFlag;
   }
 

@@ -8,6 +8,7 @@
 #include "FemtoCFPainter.h"
 
 #include "Cout.h"
+#include "Options.h"
 #include "Std.h"
 
 #include <iostream>
@@ -58,13 +59,13 @@ namespace Hal {
 
   Bool_t FemtoCFPainter::AreSimiliar(ULong64_t current, ULong64_t pattern) const { return (pattern == current) & pattern; }
 
-  ULong64_t FemtoCFPainter::SetOptionInternal(TString opt, ULong64_t newOpts) {
+  ULong64_t FemtoCFPainter::SetOptionInternal(const Options& opt, ULong64_t newOpts) {
     newOpts = Hal::DividedHistoPainter::SetOptionInternal(opt, newOpts);
-    if (Hal::Std::FindParam(opt, "fit", kTRUE)) {
+    if (opt.HasOption("fit")) {
       CLRBIT(newOpts, kDenBit);
       CLRBIT(newOpts, kNumBit);
     }
-    if (Hal::Std::FindParam(opt, "cf", kTRUE)) {
+    if (opt.HasOption("cf")) {
       CLRBIT(newOpts, kDenBit);
       CLRBIT(newOpts, kNumBit);
       SETBIT(newOpts, kCFBit);

@@ -50,6 +50,7 @@ namespace Hal {
         return vec;
       }
       auto th = GetDrawableFunc(opt);
+      if (fDrawPoints > 0) { th->SetNpx(fDrawPoints); }
       vec.push_back(th);
       return vec;
     };

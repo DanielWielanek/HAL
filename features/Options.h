@@ -17,25 +17,39 @@
 // array that recognize labels
 
 namespace Hal {
+  /**
+   * class for handling options (except cut options)
+   */
   class Options : public TObject {
   public:
     struct LabeledArray {
       TString name = {""};
       std::vector<double> values;
     };
-    struct EqualExpr {
+    struct Flag {
       TString flag  = {""};
       TString value = {""};
     };
 
   private:
     std::vector<LabeledArray> fLabeledArray;
-    std::vector<EqualExpr> fEqualExpr;
+    std::vector<Flag> fEqualExpr;
     std::vector<TString> fOptions;
     TString fOriginalOpt;
     void ParseBrackets(TString bracket);
 
   public:
+    /**
+     * default constructor
+     * convetion:
+     * options are separeted by + sign, there are following options:
+     * * pure options e.g. "a+b" are two pure options "a" and "b"
+     * * flag options e.g. "a=b" is a flag with value "b"
+     * * labeled array e.g. "leg={0,0,3,4}" or "{leg=0,0,3,4} are two "leg" arrays with values 0,0,3,4
+     * Note: this class parse all options but when use gettero to check option - only first option is set therefore e.g.
+     * "a=b+a=c" return flag "a" equal to "b"
+     * @param option
+     */
     Options(TString option = "");
     /**
      *
@@ -62,8 +76,12 @@ namespace Hal {
      */
     LabeledArray GetLabeledArray(TString name) const;
     virtual void Print(Option_t* option = "") const;
-    TString GetOption() const { return fOriginalOpt; }
-    virtual ~Options();
+    /**
+     *
+     * @return original option created in constructor
+     */
+    TString GetOriginalOption() const { return fOriginalOpt; }
+    virtual ~Options() {};
     ClassDef(Options, 0)
   };
 

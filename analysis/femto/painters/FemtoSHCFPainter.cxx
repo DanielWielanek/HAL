@@ -19,6 +19,7 @@
 #include "Cout.h"
 #include "FemtoSHCF.h"
 #include "HistoStyle.h"
+#include "Options.h"
 #include "PadStyle.h"
 #include "Std.h"
 #include "StdHist.h"
@@ -30,25 +31,24 @@ namespace Hal {
   const int FemtoSHCFPainter::kShortBit = FemtoCFPainter::LastBitPainter() + 3;
   const int FemtoSHCFPainter::kSepBit   = FemtoCFPainter::LastBitPainter() + 4;
 
-  ULong64_t FemtoSHCFPainter::SetOptionInternal(TString opts, ULong64_t newFlags) {
+  ULong64_t FemtoSHCFPainter::SetOptionInternal(const Options& opts, ULong64_t newFlags) {
     newFlags = FemtoCFPainter::SetOptionInternal(opts, newFlags);
     ContitionalPattern(opts, "re", newFlags, kReBit, kTRUE);
     ContitionalPattern(opts, "im", newFlags, kImBit, kTRUE);
-    std::vector<double> yrange;
-    GetPatterns(opts, "y", yrange);
-    fRangesYY = yrange;
+    if (auto ylabel = opts.GetLabeledArray("y"); ylabel.values.size() > 0) fRangesYY = ylabel.values;
+
     if (!TESTBIT(newFlags, kNumBit) && TESTBIT(newFlags, kDenBit)) { SETBIT(newFlags, kCFBit); }
-    if (Hal::Std::FindParam(opts, "fit", kTRUE)) {
+    if (opts.HasOption("fit")) {
       SETBIT(newFlags, kCFBit);
       CLRBIT(newFlags, kDenBit);
       CLRBIT(newFlags, kNumBit);
     }
-    if (Hal::Std::FindParam(opts, "sep", kTRUE)) SETBIT(newFlags, kSepBit);
+    if (opts.HasOption("sep")) SETBIT(newFlags, kSepBit);
     if (!CheckOpt(kReBit) && !CheckOpt(kImBit)) {
       SETBIT(newFlags, kReBit);
       SETBIT(newFlags, kImBit);
     }
-    if (Hal::Std::FindParam(opts, "short", kTRUE)) SETBIT(newFlags, kShortBit);
+    if (opts.HasOption("short")) SETBIT(newFlags, kShortBit);
     return newFlags;
   }
 

@@ -34,6 +34,7 @@ namespace Hal {
   class CorrFitPainter : public Painter {
   protected:
     Int_t fNormIndex                   = {-1};
+    Int_t fDrawPoints                  = {-1};
     TLegend* fLegend                   = {nullptr};
     TVirtualPad* fLegendPad            = {nullptr};
     TString fDefFuncDrawOpt            = {"SAME"};
@@ -52,7 +53,7 @@ namespace Hal {
      * @param prev
      * @return
      */
-    virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0);
+    virtual ULong64_t SetOptionInternal(const Options& opt, ULong64_t prev = 0);
     std::vector<std::vector<TF1*>> fFunctions;
     std::vector<std::vector<TH1*>> fPSeudoFunctions;
     CorrFitFunc* fFittedFunc   = {nullptr};  //!

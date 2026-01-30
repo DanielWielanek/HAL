@@ -95,8 +95,10 @@ namespace Hal {
     virtual void Print(Option_t* opt = "") const;
     virtual TObject* GetSpecial(TString opt) const;
     /**
-     * see @see #Hal::Femto1DCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
-     * @param option
+     * see @see #Hal::Options
+     * @param option of drawing, additional options (to divided histo):
+     * fit - draw optimized to fit (no numerators, no denominators)
+     * cf - draw CF (no numerators, no denominators)
      */
     virtual void Draw(Option_t* option = "") { DividedHisto1D::Draw(option); };
     /**

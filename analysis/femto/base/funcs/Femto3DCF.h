@@ -83,8 +83,17 @@ namespace Hal {
     void FitDummy(CorrFitBaseFunc* fit);
     virtual void Browse(TBrowser* b);
     /**
-     * see @see #Hal::Femto3DCFPainter#SetOptionInternal @see #Hal::FemtoCFPainter#SetOptionInternal
-     * @param option
+     * see @see #Hal::Options
+     * @param option of drawing, additional options (to divided histo):
+     * options:
+     * fit - draw optimized to fit (no numerators, no denominators)
+     * cf - draw CF (no numerators, no denominators)
+     * rgb - each function is in different color
+     * 2d - draw slices 2D
+     * diag1 - draw diagonals
+     * diag2 - draw more diagonals
+     * 3d - draw 3D viev
+     * hidetitles like !tit
      */
     virtual void Draw(Option_t* opt = "cf+rgb+norm") { Hal::DividedHisto3D::Draw(opt); };
     /**

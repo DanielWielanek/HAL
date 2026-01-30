@@ -27,7 +27,7 @@ namespace Hal {
       } else if (word.Contains("=")) {
         auto pair = Hal::Std::ExplodeString(word, '=', kTRUE);
         if (pair.size() == 2) {
-          EqualExpr expr;
+          Flag expr;
           expr.flag  = pair[0];
           expr.value = pair[1];
           fEqualExpr.push_back(expr);
@@ -104,9 +104,6 @@ namespace Hal {
     }
   }
 
-  Options::~Options() {
-    // TODO Auto-generated destructor stub
-  }
   //================================================================
 
   MainOption::MainOption(int argc, char* argv[]) {

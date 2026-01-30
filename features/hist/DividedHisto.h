@@ -390,8 +390,18 @@ namespace Hal {
     TString GetComment() const { return fComment; };
     /**
      * draw this object
-     * @param opt if "num" then only numerator is drawn, in "den" if "all" draw
-     * all histograms, otherwise draw divided histogram
+     * @param opt drawing option: @see Hal::Options
+     * options:
+     * num - draw numerator only
+     * den - draw denominator only
+     * all - draw everything
+     * scale - draw according to scale
+     * !tit - hide titles
+     * arrays:
+     * x - x range (two values)
+     * y - y range (two values)
+     * z - z range (two values)
+     * t - t range (two values)
      */
     virtual void Draw(Option_t* opt = "all") { DrawableObject::Draw(opt); };
     /**

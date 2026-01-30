@@ -149,21 +149,21 @@ namespace Hal {
     auto foundy = opt.GetLabeledArray("y");
     auto foundz = opt.GetLabeledArray("z");
     auto foundt = opt.GetLabeledArray("t");
-    if(foundx.values.size()==2){
-        fRangeX[0] = foundx.values[0];
-        fRangeX[1] = foundx.values[1];
+    if (foundx.values.size() == 2) {
+      fRangeX[0] = foundx.values[0];
+      fRangeX[1] = foundx.values[1];
     }
-    if(foundy.values.size()==2){
-        fRangeY[0] = foundy.values[0];
-        fRangeY[1] = foundy.values[1];
+    if (foundy.values.size() == 2) {
+      fRangeY[0] = foundy.values[0];
+      fRangeY[1] = foundy.values[1];
     }
-    if(foundz.values.size()==2){
-        fRangeZ[0] = foundz.values[0];
-        fRangeZ[1] = foundz.values[1];
+    if (foundz.values.size() == 2) {
+      fRangeZ[0] = foundz.values[0];
+      fRangeZ[1] = foundz.values[1];
     }
-    if(foundt.values.size()==2){
-        fRangeT[0] = foundt.values[0];
-        fRangeT[1] = foundt.values[1];
+    if (foundt.values.size() == 2) {
+      fRangeT[0] = foundt.values[0];
+      fRangeT[1] = foundt.values[1];
     }
     return newFlags;
   }

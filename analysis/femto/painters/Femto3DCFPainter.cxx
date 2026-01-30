@@ -45,9 +45,9 @@ namespace Hal {
     if (opt.HasOption("3d")) {
       cleanFlags(kTwoDimPlusBit);
       fDefDrawFlag = "SAME+surf1";
-      if(auto angles = opt.GetLabeledArray("ang");angles.values.size()==2){
-          fThetaPad = angles.values[0];
-          fPhiPad   = angles.values[0];
+      if (auto angles = opt.GetLabeledArray("ang"); angles.values.size() == 2) {
+        fThetaPad = angles.values[0];
+        fPhiPad   = angles.values[0];
       }
     };
 

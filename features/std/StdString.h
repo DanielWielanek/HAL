@@ -165,7 +165,7 @@ namespace Hal {
      * @param remove
      * @return 0 if param not found -1 if negation found e.g., "!pattern" return 1 if pattern found
      */
-    Int_t FindParam2(TString& option, TString pattern, Bool_t remove = kFALSE);
+    [[deprecated]] Int_t FindParam2(TString& option, TString pattern, Bool_t remove = kFALSE);
     /**
      * find number in exression like *{A}*
      * @param expression
@@ -173,7 +173,7 @@ namespace Hal {
      * @param remove remove from expression
      * @return true if expression found
      */
-    Bool_t FindExpressionSingleValue(TString& expression, Int_t& val, Bool_t remove);
+    [[deprecated]] Bool_t FindExpressionSingleValue(TString& expression, Int_t& val, Bool_t remove);
     /**
      * find pair of numbers in expression like *{AxB}*
      * @param expression
@@ -182,7 +182,7 @@ namespace Hal {
      * @param remove remove from expression
      * @return true if expression found
      */
-    Bool_t FindExpressionTwoValues(TString& expression, Int_t& val1, Int_t& val2, Bool_t remove);
+    [[deprecated]] Bool_t FindExpressionTwoValues(TString& expression, Int_t& val1, Int_t& val2, Bool_t remove);
     /**
      * find pair of numbers line *{X,Y}* where X and Y are floats
      *@param expression
@@ -190,7 +190,7 @@ namespace Hal {
      *@param val2 - Y
      *@param remove - if true remove pattern
      */
-    Bool_t FindExpressionTwoFloats(TString& expression, Double_t& val1, Double_t& val2, Bool_t remove);
+    [[deprecated]] Bool_t FindExpressionTwoFloats(TString& expression, Double_t& val1, Double_t& val2, Bool_t remove);
     /**
      * find the pattern type "word=option" where word is the key e.g. "A+b+c+d=e+f" return e
      * @param option
@@ -199,7 +199,7 @@ namespace Hal {
      * @param remove
      * @return
      */
-    Bool_t FindExpressionEqual(TString& option, TString pattern, TString& val, Bool_t remove = kFALSE);
+    [[deprecated]] Bool_t FindExpressionEqual(TString& option, TString pattern, TString& val, Bool_t remove = kFALSE);
   }  // namespace Std
 }  // namespace Hal
 #endif /* HALSTDSTRING_H_ */

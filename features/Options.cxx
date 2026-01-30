@@ -14,137 +14,99 @@
 #include <iostream>
 
 namespace Hal {
-  OptionConverter::OptionConverter() {}
+  Options::Options(TString option) : fOriginalOpt(option) {
+    option = option.ReplaceAll(" ", "+");
+    option.ToLower();
+    while (option.Contains("++"))
+      option = option.ReplaceAll("++", "+");
+    auto vector = Hal::Std::ExplodeString(option, '+', kFALSE);
 
-  Bool_t OptionConverter::GetOptionInt(Int_t& val, TString option) const {
-    int i = 0;
-    for (auto strval : fNames) {
-      i++;
-      if (strval.EqualTo(option)) {
-        val = fValues[i];
-        return kTRUE;
+    for (auto word : vector) {
+      if (word.Contains("{")) {
+        ParseBrackets(word);
+      } else if (word.Contains("=")) {
+        auto pair = Hal::Std::ExplodeString(word, '=', kTRUE);
+        if (pair.size() == 2) {
+          EqualExpr expr;
+          expr.flag  = pair[0];
+          expr.value = pair[1];
+          fEqualExpr.push_back(expr);
+        }
+      } else {
+        fOptions.push_back(word);
       }
     }
-    if (Hal::Std::FindParam(option, "forced:")) {
-      Cout::PrintInfo("replacing HalFastCut by force !", Hal::EInfo::kLowWarning);
-      TRegexp reg("[9-0]+");
-      option = option(reg);
-      val    = option.Atoi();
-      return kTRUE;
-    }
+  }
 
+  void Options::ParseBrackets(TString bracket) {
+    bracket.ReplaceAll("}", "");
+    bracket.ReplaceAll("{", "");
+    if (bracket.Contains("=")) {  // expression like {A=0,0,0}
+      LabeledArray res;
+      auto parsed = Hal::Std::ExplodeString(bracket, '=', false);
+      if (parsed.size() < 1) return;
+      res.name           = parsed[0];
+      auto numberscommas = parsed[1];
+      auto numbers       = Hal::Std::ExplodeString(numberscommas, ',', false);
+      for (auto number : numbers) {
+        res.values.push_back(number.Atof());
+      }
+      fLabeledArray.push_back(res);
+    }
+  }
+
+  Bool_t Options::HasOption(TString flag) const {
+    for (auto i : fOptions) {
+      if (i == flag) return kTRUE;
+    }
     return kFALSE;
   }
 
-  void OptionConverter::RegisterOption(TString option) {
-    fNames.push_back(option);
-    fValues.push_back(fValues.size());
+  Bool_t Options::HasNotOption(TString flag) const {
+    flag = "!" + flag;
+    return HasOption(flag);
   }
 
-  void OptionConverter::RegisterOption(TString option, Int_t no) {
-    fNames.push_back(option);
-    fValues.push_back(no);
-  }
-
-  Bool_t OptionConverter::GetString(TString& string, Int_t value) const {
-    if (value > 0 && value < (int) fNames.size()) {
-      string = fNames[value];
-      return kTRUE;
-    } else {
-      return kFALSE;
+  Options::LabeledArray Options::GetLabeledArray(TString name) const {
+    for (auto label : fLabeledArray) {
+      if (label.name == name) return label;
     }
+    Options::LabeledArray dummy;
+    dummy.name == "";
+    return dummy;
   }
 
-  OptionConverter::OptionConverter(std::vector<TString> names, std::vector<Int_t> values) {
-    if (names.size() == values.size()) {
-      fNames  = names;
-      fValues = values;
-    } else {
-      std::cout << "OptionConverter::OptionConverter({}{}) incompatible option size" << std::endl;
+  TString Options::GetFlagValue(TString flag) const {
+    for (auto label : fEqualExpr) {
+      if (label.flag == flag) return label.value;
     }
+    return "";
   }
 
-  OptionConverter::~OptionConverter() {}
+  void Options::Print(Option_t* option) const {
+    std::cout << "== " << ClassName() << " ==" << std::endl;
+    std::cout << "Options:" << std::endl;
+    for (auto opt : fOptions) {
+      std::cout << "\t" << opt << std::endl;
+    }
+    std::cout << "Flags: flag [value]" << std::endl;
+    for (auto flag : fEqualExpr) {
+      std::cout << flag.flag << " [" << flag.value << "]" << std::endl;
+    }
 
-  //==================================================
-
-  OptionArray::OptionArray() {}
-
-  void OptionArray::RegisterLabel(TString label) {
-    for (unsigned int i = 0; i < fLabels.size(); i++) {
-      TString tmp = fLabels[i];
-      if (tmp == label) {
-        Cout::PrintInfo(Form("Label %s already registered", label.Data()), Hal::EInfo::kLowWarning);
-        return;
+    std::cout << "ArraysL: name [values]" << std::endl;
+    for (auto flag : fLabeledArray) {
+      std::cout << "\t" << flag.name << " [";
+      for (auto val : flag.values) {
+        std::cout << Form("%4.2f ", val);
       }
-    }
-    if (label.Contains(":") || label.Contains("NULL")) {
-      Cout::PrintInfo("Label can't contain ':' or NULL", Hal::EInfo::kError);
-      return;
-    }
-    // to be sure that all arrays exist
-    fLabels.push_back(label);
-    fParameters.push_back(std::vector<TString>());
-  }
-
-  Bool_t OptionArray::Add(TString option) {
-    TRegexp regexp("[0-9a-zA-Z]+:");
-    TRegexp regexp2(":.[0-9a-zA-Z]+");
-    TString label = option(regexp);
-    label.Remove(label.Length() - 1);
-    TString value = option(regexp2);
-    value.Remove(0, 1);
-    Int_t label_no = -1;
-    for (unsigned int i = 0; i < fLabels.size(); i++) {
-      if (GetLabel(i).EqualTo(label)) {
-        label_no = i;
-        break;
-      }
-    }
-    if (label_no == -1) {
-      Cout::PrintInfo(Form("Can't add string %s because there is no label ", label.Data()), Hal::EInfo::kWarning);
-      return kFALSE;
-    }
-    fParameters[label_no].push_back(value);
-    return kTRUE;
-  }
-
-  TString OptionArray::GetByLabel(TString label, Int_t no) const {
-    for (unsigned int i = 0; i < fLabels.size(); i++) {
-      if (GetLabel(i).EqualTo(label)) {
-        Int_t entries = fParameters[i].size();
-        if (entries == 0 || entries <= no) {
-          if (entries == 0) Cout::PrintInfo(Form("No entries for label %s", label.Data()), Hal::EInfo::kLowWarning);
-          if (entries < no) Cout::PrintInfo(Form("Not enough entries for label %s", label.Data()), Hal::EInfo::kLowWarning);
-          return "NULL";
-        }
-        return fParameters[i][no];
-      }
-    }
-    return "NULL";
-  }
-
-  Int_t OptionArray::GetByLabelNo(TString label) const {
-    for (unsigned int i = 0; i < fLabels.size(); i++) {
-      if (GetLabel(i).EqualTo(label)) { return fParameters[i].size(); }
-    }
-    return 0;
-  }
-
-  TString OptionArray::GetLabel(Int_t i) const { return fLabels[i]; }
-
-  void OptionArray::Print(Option_t* /*opt*/) const {
-    for (unsigned int i = 0; i < fLabels.size(); i++) {
-      Cout::Text(Form("Label %s", fLabels[i].Data()), "L", kYellow);
-      for (unsigned int j = 0; j < fParameters[i].size(); j++) {
-        TString val = fParameters[i][j];
-        Cout::Text(val, "R", kGreen);
-      }
+      std::cout << "]" << std::endl;
     }
   }
 
-  OptionArray::~OptionArray() {}
-
+  Options::~Options() {
+    // TODO Auto-generated destructor stub
+  }
   //================================================================
 
   MainOption::MainOption(int argc, char* argv[]) {

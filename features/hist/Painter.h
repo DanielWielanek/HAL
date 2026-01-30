@@ -24,6 +24,7 @@ namespace Hal {
   class Style;
   class PadStyle;
   class HistoStyle;
+  class Options;
   /**
    * class for drawing objects, contains pads, and copies of drawn objects
    * user have to overwrite at least those methods:
@@ -121,7 +122,7 @@ namespace Hal {
      * @param prev the staring draw flag
      * @return new draw flag
      */
-    virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0) = 0;
+    virtual ULong64_t SetOptionInternal(const Options& opt, ULong64_t prev = 0) = 0;
     /**
      * options of drawing were aplied so  reset options
      */
@@ -177,7 +178,7 @@ namespace Hal {
      * @param remove if true remowe pattern from string
      * @return
      */
-    void ContitionalPattern(TString& option, TString pattern, ULong64_t& drawOpt, Int_t bit, Bool_t remove = kTRUE) const;
+    void ContitionalPattern(const Options& option, TString pattern, ULong64_t& drawOpt, Int_t bit, Bool_t remove = kTRUE) const;
     /**
      * keep a current gPad
      */
@@ -307,7 +308,7 @@ namespace Hal {
   class SimplePainter : public Painter {
   protected:
     virtual void MakePadsAndCanvases();
-    virtual ULong64_t SetOptionInternal(TString opt, ULong64_t prev = 0) { return prev; };
+    virtual ULong64_t SetOptionInternal(const Options& opt, ULong64_t prev = 0) { return prev; };
 
   public:
     /**

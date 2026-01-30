@@ -17,79 +17,54 @@
 // array that recognize labels
 
 namespace Hal {
-  /** base class for hold options in some arrays **/
-  class OptionArray : public TObject {
-    std::vector<std::vector<TString>> fParameters;
-    std::vector<TString> fLabels;
-    TString GetLabel(Int_t i) const;
+  class Options : public TObject {
+  public:
+    struct LabeledArray {
+      TString name = {""};
+      std::vector<double> values;
+    };
+    struct EqualExpr {
+      TString flag  = {""};
+      TString value = {""};
+    };
+
+  private:
+    std::vector<LabeledArray> fLabeledArray;
+    std::vector<EqualExpr> fEqualExpr;
+    std::vector<TString> fOptions;
+    TString fOriginalOpt;
+    void ParseBrackets(TString bracket);
 
   public:
-    OptionArray();
-    /** register label
-     * @param label - label name
-     */
-    void RegisterLabel(TString label);
-    /** add option to array
-     * @param option - option to add
-     */
-    Bool_t Add(TString option);
-    /** get label for give option e.g for data:format - return data
-     * @param label - label for given option
-     * @param no - number of option with given label
-     */
-    TString GetByLabel(TString label, Int_t no = 0) const;
-    /** get label by number e.g if registered labes "A" and "B" GetByLabelNo("B")
-     * return 1
-     * @param label - label
-     * */
-    Int_t GetByLabelNo(TString label) const;
-    /** default destructor */
-    void Print(Option_t* /*opt*/ = "") const;
-    virtual ~OptionArray();
-    ClassDef(OptionArray, 1)
-  };
-  /**
-   * convert option to int
-   */
-  class OptionConverter : public TObject {
-    std::vector<TString> fNames;
-    std::vector<Int_t> fValues;
-
-  public:
-    OptionConverter();
+    Options(TString option = "");
     /**
-     * main c-tor
-     * @param names
-     * @param values
+     *
+     * @param flag
+     * @return true if option is present
      */
-    OptionConverter(std::vector<TString> names, std::vector<Int_t> values);
+    Bool_t HasOption(TString flag) const;
     /**
-     * convert option to int
-     * @param val integer for option
-     * @param option option
-     * @return true if object found
+     *
+     * @param flag
+     * @return true if !option is present
      */
-    Bool_t GetOptionInt(Int_t& val, TString option) const;
+    Bool_t HasNotOption(TString flag) const;
     /**
-     * find string for given int
-     * @param val string
-     * @param value integer
-     * @return true if found
+     * return flag value e.g. for word=val return val
+     * @param flag
+     * @return "" if flag not found
      */
-    Bool_t GetString(TString& val, Int_t value) const;
+    TString GetFlagValue(TString flag) const;
     /**
-     * register option
-     * @param option option
+     * return labeled array if found
+     * @param name
+     * @return emtpy arrray if not found
      */
-    void RegisterOption(TString option);
-    /**
-     * register option with given int
-     * @param option option
-     * @param no number
-     */
-    void RegisterOption(TString option, Int_t no);
-    virtual ~OptionConverter();
-    ClassDef(OptionConverter, 1)
+    LabeledArray GetLabeledArray(TString name) const;
+    virtual void Print(Option_t* option = "") const;
+    TString GetOption() const { return fOriginalOpt; }
+    virtual ~Options();
+    ClassDef(Options, 0)
   };
 
   /**
@@ -131,7 +106,7 @@ namespace Hal {
     Bool_t HaveParameter(TString opt) const;
     virtual void Print(Option_t* option = "") const;
     virtual ~MainOption() {};
-    ClassDef(MainOption, 1)
+    ClassDef(MainOption, 0)
   };
 
 }  // namespace Hal

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "Cout.h"  //KURWA
+#include "Options.h"
 #include "PadStyle.h"
 #include "StdString.h"
 #include "Style.h"
@@ -188,27 +189,30 @@ namespace Hal {
   }
 
   void Painter::SetOption(TString option) {
-    TString styleName;
-    if (Hal::Std::FindExpressionEqual(option, "style", styleName, kTRUE)) {
-      fPredefinedStyle = styleName;
+    Hal::Options opt(option);
+    if (auto flag = opt.GetFlagValue("style"); flag.Length() > 0) {
+      fPredefinedStyle = flag;
       fPredefinedStyle = fPredefinedStyle.ReplaceAll("&", "+");
     }
+
     if (fPredefinedStyle.Length()) { fPadStyle = new Hal::PadStyle(fPredefinedStyle); }
-    if (Hal::Std::FindParam(option, "skip")) return;
-    if (Hal::Std::FindParam(option, "default!")) {
+    if (opt.HasOption("skip")) return;
+    if (opt.HasOption("default!")) {
       SetDefaultFlag();
       return;
     }
-    if (Hal::Std::FindParam(option, "grid")) {
+
+
+    if (opt.HasOption("grid")) {
       Hal::PadStyle style;
       style.SetGridx(1);
       style.SetGridy(1);
       SetGlobalPadStyle(style);
     }
     Bool_t logs[] = {kFALSE, kFALSE, kFALSE};
-    if (Hal::Std::FindParam(option, "logx", true)) logs[0] = kTRUE;
-    if (Hal::Std::FindParam(option, "logy", true)) logs[1] = kTRUE;
-    if (Hal::Std::FindParam(option, "logy", true)) logs[2] = kTRUE;
+    if (opt.HasOption("logx")) logs[0] = kTRUE;
+    if (opt.HasOption("logy")) logs[1] = kTRUE;
+    if (opt.HasOption("logz")) logs[2] = kTRUE;
     for (int i = 0; i < 3; i++) {
       if (logs[i] == kFALSE) continue;
       if (!fPadStyle) {
@@ -219,10 +223,10 @@ namespace Hal {
       if (i == 1) fPadStyle->SetLogy(1);
       if (i == 2) fPadStyle->SetLogz(1);
     }
-    if (Hal::Std::FindParam(option, "default")) { SetDefaultFlag(); }
+    if (opt.HasOption("default")) { SetDefaultFlag(); }
     ULong64_t defFlags = 0;
-    if (Hal::Std::FindParam(option, "keep", kTRUE)) { defFlags = fDrawFlags; }
-    if (Hal::Std::FindParam(option, "html", kTRUE)) {
+    if (opt.HasOption("keep")) { defFlags = fDrawFlags; }
+    if (opt.HasOption("html")) {
       SETBIT(defFlags, kHtmlBit);
       if (defFlags != fDrawFlags) {
         fOptionsChanged = kTRUE;
@@ -232,48 +236,44 @@ namespace Hal {
     } else {
       CLRBIT(defFlags, kHtmlBit);
     }
-    if (Hal::Std::FindParam(option, "canvas", kTRUE)) {
+    if (opt.HasOption("canvas")) {
       fOptionsChanged = kTRUE;
       SETBIT(defFlags, kCanvasBit);
       CLRBIT(defFlags, kPadBit);
       CLRBIT(defFlags, kSameBit);
     }
-    auto ranges = Hal::Std::FindBrackets(option, kTRUE, kTRUE);
-    for (auto range : ranges) {
-      std::vector<double> res;
-      auto foundx = GetPatterns(range, "margin", res);
-      if (!foundx) option = option + "+{" + range + "}";
-      if (res.size() == 4 && foundx)
-        if (!fPadStyle) {
-          Hal::PadStyle style(res[0], res[1], res[2], res[3]);
-          SetGlobalPadStyle(style);
-        } else {
-          fPadStyle->SetLeftMargin(res[0]);
-          fPadStyle->SetBottomMargin(res[1]);
-          fPadStyle->SetRightMargin(res[2]);
-          fPadStyle->SetTopMargin(res[3]);
-        }
+    auto margin = opt.GetLabeledArray("margin");
+    if (margin.values.size() == 4) {
+      if (!fPadStyle) {
+        Hal::PadStyle style(margin.values[0], margin.values[1], margin.values[2], margin.values[3]);
+        SetGlobalPadStyle(style);
+      } else {
+        fPadStyle->SetLeftMargin(margin.values[0]);
+        fPadStyle->SetBottomMargin(margin.values[1]);
+        fPadStyle->SetRightMargin(margin.values[2]);
+        fPadStyle->SetTopMargin(margin.values[3]);
+      }
     }
-    if (Hal::Std::FindParam(option, "pad", kTRUE)) {
+    if (opt.HasOption("pad")) {
       fOptionsChanged = kTRUE;
       SETBIT(defFlags, kPadBit);
       CLRBIT(defFlags, kCanvasBit);
       CLRBIT(defFlags, kSameBit);
     }
-    if (Hal::Std::FindParam(option, "same", kTRUE)) {
+    if (opt.HasOption("same")) {
       fOptionsChanged = kTRUE;
       CLRBIT(defFlags, kPadBit);
       CLRBIT(defFlags, kCanvasBit);
       SETBIT(defFlags, kSameBit);
     }
-    if (Hal::Std::FindParam(option, "browser", kTRUE)) {
+    if (opt.HasOption("browser")) {
       CLRBIT(defFlags, kPadBit);
       CLRBIT(defFlags, kCanvasBit);
       CLRBIT(defFlags, kSameBit);
       CLRBIT(defFlags, kHtmlBit);
       SETBIT(defFlags, kBrowserBit);
     }
-    auto newOpt = SetOptionInternal(option, defFlags);
+    auto newOpt = SetOptionInternal(opt, defFlags);
     if (newOpt != fDrawFlags) {
       fOptionsChanged = kTRUE;
       fDrawFlags      = newOpt;
@@ -298,10 +298,9 @@ namespace Hal {
     return kTRUE;
   }
 
-  void Painter::ContitionalPattern(TString& option, TString pattern, ULong64_t& drawOpt, Int_t bit, Bool_t remove) const {
-    Int_t flag = Hal::Std::FindParam2(option, pattern, remove);
-    if (flag == 1) SETBIT(drawOpt, bit);
-    if (flag == -1) CLRBIT(drawOpt, bit);
+  void Painter::ContitionalPattern(const Options& option, TString pattern, ULong64_t& drawOpt, Int_t bit, Bool_t remove) const {
+    if (option.HasOption(pattern)) SETBIT(drawOpt, bit);
+    if (option.HasNotOption(pattern)) CLRBIT(drawOpt, bit);
   }
 
   void Painter::LockPad() { fTempPad = gPad; }

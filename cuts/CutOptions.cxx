@@ -72,9 +72,9 @@ namespace Hal {
   std::vector<Int_t> CutOptions::GetCollectionsFlags(Int_t startCol, TString option) const {
     std::vector<Int_t> res;
     Int_t single      = -2;
-    Bool_t single_exp = Hal::Std::FindExpressionSingleValue(option, single, kTRUE);
+    Bool_t single_exp = FindExpressionSingleValue(option, single, kTRUE);
     Int_t n, jump;
-    Bool_t two_exp = Hal::Std::FindExpressionTwoValues(option, n, jump, kTRUE);
+    Bool_t two_exp = FindExpressionTwoValues(option, n, jump, kTRUE);
     if (single_exp && two_exp) {  // found {}+{x}
       for (int i = 0; i < n; i++) {
         res.push_back(single);
@@ -91,7 +91,7 @@ namespace Hal {
       return res;
     }
     if (single_exp) res.push_back(single);
-    while (Hal::Std::FindExpressionSingleValue(option, single, kTRUE)) {
+    while (FindExpressionSingleValue(option, single, kTRUE)) {
       res.push_back(single);
     }
     if (res.size() == 0) res.push_back(startCol);
@@ -118,6 +118,43 @@ namespace Hal {
         break;
     }
     return update_ratio_name;
+  }
+
+  Bool_t CutOptions::FindExpressionSingleValue(TString& expression, Int_t& val, Bool_t remove) const {
+    TString option = expression;
+    TRegexp regexp("{[0-9]+}");
+    TString expr = option(regexp);
+    if (expr.Length() <= 0) { return kFALSE; }
+    // found regular exprestion like {number}
+    option.Remove(option.Index(regexp),
+                  expr.Length());  // remove exprestion from string
+    TRegexp number_expr("{[0-9]+}");
+    TString first      = expr(number_expr);
+    TString number_str = first(TRegexp("[0-9]+"));
+    val                = number_str.Atoi();
+    if (remove) { expression = option; }
+    return kTRUE;
+  }
+
+
+  Bool_t CutOptions::FindExpressionTwoValues(TString& expression, Int_t& val1, Int_t& val2, Bool_t remove) const {
+    TString option = expression;
+    TRegexp regexp("{[0-9]+x[0-9]+}");
+    TString expr = option(regexp);
+    if (expr.Length() <= 0) { return kFALSE; }
+    // found regular exprestion like {number x number}
+    option.Remove(option.Index(regexp),
+                  expr.Length());  // remove exprestion from string
+    TRegexp number_expr("{[0-9]+x");
+    TRegexp jump_expr("x[0-9]+}");
+    TString first      = expr(number_expr);
+    TString sec        = expr(jump_expr);
+    TString number_str = first(TRegexp("[0-9]+"));
+    TString jump_str   = sec(TRegexp("[0-9]+"));
+    val1               = number_str.Atoi();
+    val2               = jump_str.Atoi();
+    if (remove) { expression = option; }
+    return kTRUE;
   }
 
 } /* namespace Hal */

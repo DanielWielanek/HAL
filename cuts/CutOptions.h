@@ -29,6 +29,23 @@ namespace Hal {
     Bool_t fAcceptNull   = {kFALSE};
     Bool_t fAcceptDouble = {kFALSE};
     Int_t fDefCol        = {-1};
+    /**
+     * find number in exression like *{A}*
+     * @param expression
+     * @param val value found
+     * @param remove remove from expression
+     * @return true if expression found
+     */
+    Bool_t FindExpressionSingleValue(TString& expression, Int_t& val, Bool_t remove) const;
+    /**
+     * find pair of numbers in expression like *{AxB}*
+     * @param expression
+     * @param val1 first found value
+     * @param va2 second found value
+     * @param remove remove from expression
+     * @return true if expression found
+     */
+    Bool_t FindExpressionTwoValues(TString& expression, Int_t& val1, Int_t& val2, Bool_t remove) const;
 
   protected:
     /**

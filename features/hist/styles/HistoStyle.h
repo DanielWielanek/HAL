@@ -144,11 +144,57 @@ namespace Hal {
      * @param safe - check if color is not to bright (currenty not used)
      */
     void SetAntiColor(Bool_t safe = kFALSE);
+    /**
+     * set title of histogram
+     * @param title
+     */
     void SetTitle(TString title);
+    /**
+     * set marker size
+     * @param size
+     */
+    void SetMarkerSize(Int_t size) { fMarker.SetSize(size); }
+    /**
+     * set marker color
+     * @param style
+     */
+    void SetMarkerStyle(Int_t style) { fMarker.SetStyle(style); };
+    /**
+     * set marker color
+     * @param color
+     */
+    void SetMarkerColor(Int_t color) { fMarker.SetColor(color); };
+    /**
+     * copy axis configuration from "from" to "to"
+     * @param from
+     * @param to
+     */
+    void CopyAxisProperties(Char_t from, Char_t to);
+    /**
+     *
+     * @param x  x,y or z
+     * @return axis style
+     */
     AxisStyle& GetAxisStyle(Char_t x);
+    /**
+     * return fill style
+     * @return
+     */
     FillStyle& GetFillStyle() { return fFill; };
+    /**
+     * return line style
+     * @return
+     */
     LineStyle& GetLineStyle() { return fLine; }
+    /**
+     *
+     * @return marker style
+     */
     MarkerStyle& GetMarkerStyle() { return fMarker; }
+    /**
+     *
+     * @return title
+     */
     TString GetTitle() const { return fTitle; };
     void ExportToXML(XMLNode& node) const;
     void ImportFromXML(const XMLNode& node);

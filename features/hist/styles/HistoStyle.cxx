@@ -291,4 +291,6 @@ namespace Hal {
     if (Hal::Std::FindParam(style, "color", kTRUE)) SetColor(kRed);
   }
 
+  void HistoStyle::CopyAxisProperties(Char_t from, Char_t to) { GetAxisStyle(to) = GetAxisStyle(from); }
+
 } /* namespace Hal */

@@ -33,6 +33,7 @@ namespace Hal {
     static const unsigned short int kTickY;
     static const unsigned short int kFillColor;
     static const unsigned short int kLineColor;
+    static const unsigned short int kFrameLineColor;
 
     PadStyle(TString style = "");
     PadStyle(const PadStyle& other) = default;
@@ -68,6 +69,8 @@ namespace Hal {
 
     void SetFillColor(Int_t col);
 
+    void SetFrameLineColor(Int_t col);
+
     Float_t GetBottomMargin() const;
 
     Float_t GetLeftMargin() const;
@@ -95,6 +98,8 @@ namespace Hal {
     Int_t GetLineColor() const;
 
     Int_t GetFillColor() const;
+
+    Int_t GetFrameLineColor() const;
 
     void ExportToXML(XMLNode& node) const;
     void ImportFromXML(const XMLNode& node);

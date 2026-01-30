@@ -28,8 +28,9 @@ namespace Hal {
   const unsigned short int PadStyle::kTickX        = 10;
   const unsigned short int PadStyle::kTickY        = 11;
 
-  const unsigned short int PadStyle::kFillColor = 12;
-  const unsigned short int PadStyle::kLineColor = 13;
+  const unsigned short int PadStyle::kFillColor      = 12;
+  const unsigned short int PadStyle::kLineColor      = 13;
+  const unsigned short int PadStyle::kFrameLineColor = 14;
 
   PadStyle::PadStyle(Double_t x1, Double_t y1, Double_t x2, Double_t y2, TString style) : PadStyle(style) {
     SetLeftMargin(x1);
@@ -90,10 +91,13 @@ namespace Hal {
 
   Int_t PadStyle::GetLineColor() const { return GetI(kLineColor); }
 
+  Int_t PadStyle::GetFrameLineColor() const { return GetI(kFrameLineColor); }
+
   PadStyle::PadStyle(TString style) {
     if (Hal::Std::FindParam(style, "black")) {
       SetFillColor(kBlack);
       SetLineColor(kBlack);
+      SetFrameLineColor(kBlack);
     }
   }
 
@@ -112,6 +116,7 @@ namespace Hal {
     if (Find(kTickY)) obj->SetTicky(GetI(kTickY));
     if (Find(kFillColor)) obj->SetFillColor(GetI(kFillColor));
     if (Find(kLineColor)) obj->SetLineColor(GetI(kLineColor));
+    if (Find(kFrameLineColor)) obj->SetFrameLineColor(GetI(kFrameLineColor));
   }
 
   void PadStyle::ExportToXML(XMLNode& node) const {
@@ -130,6 +135,7 @@ namespace Hal {
     if (Find(kTickY)) node.AddAttrib("Ticky", Form("%i", GetI(kTickY)));
     if (Find(kFillColor)) node.AddAttrib("FillColor", Form("%i", GetI(kFillColor)));
     if (Find(kLineColor)) node.AddAttrib("LineColor", Form("%i", GetI(kLineColor)));
+    if (Find(kFrameLineColor)) node.AddAttrib("FrameLineColor", Form("%i", GetI(kFrameLineColor)));
   }
 
   void PadStyle::ImportFromXML(const XMLNode& node) {
@@ -190,6 +196,10 @@ namespace Hal {
       int x = atr.GetValue().Atoi();
       SetLineColor(x);
     }
+    if (auto& atr = node.GetAttrib("FrameLineColor"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
+      SetFrameLineColor(x);
+    }
   }
 
   void PadStyle::Import(TVirtualPad& pad) {
@@ -206,10 +216,13 @@ namespace Hal {
     SetTicky(pad.GetTicky());
     SetFillColor(pad.GetFillColor());
     SetLineColor(pad.GetFrameLineColor());
+    SetFrameLineColor(pad.GetFrameLineColor());
   }
 
   void PadStyle::SetFillColor(Int_t col) { SetI(kFillColor, col); }
 
   void PadStyle::SetLineColor(Int_t col) { SetI(kLineColor, col); }
+
+  void PadStyle::SetFrameLineColor(Int_t col) { SetI(kFrameLineColor, col); }
 
 } /* namespace Hal */

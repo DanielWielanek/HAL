@@ -56,7 +56,7 @@ namespace Hal {
 
     void SetTickLength(Float_t val);
 
-    void SetNdivisions(Int_t val, Bool_t optim);
+    void SetNdivisions(Int_t val, Bool_t optim = true);
 
     void SetAxisColor(Int_t val);
 

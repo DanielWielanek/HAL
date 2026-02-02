@@ -20,9 +20,7 @@
 
 namespace Hal {
 
-  void CorrFit1DSmearing::SetCorrelationFunction(const Hal::Femto1DCF& cf) {
-    fCF = (Hal::Femto1DCF*) cf.Clone();
-  }
+  void CorrFit1DSmearing::SetCorrelationFunction(const Hal::Femto1DCF& cf) { fCF = (Hal::Femto1DCF*) cf.Clone(); }
 
   void CorrFit1DSmearing::SetCorrFitMap(const Hal::CorrFitMapKstarRstar& map) {
     fInputMap = (Hal::CorrFitMapKstarRstar*) map.Clone();

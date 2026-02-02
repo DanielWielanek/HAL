@@ -179,9 +179,7 @@ namespace Hal {
     return true;
   }
 
-  void CorrFitSmearingMath::MakeSmearTracksTH(TLorentzVector* smeared_tracks,
-                                                          TLorentzVector* unsmeared_tracks,
-                                                          Int_t type) {
+  void CorrFitSmearingMath::MakeSmearTracksTH(TLorentzVector* smeared_tracks, TLorentzVector* unsmeared_tracks, Int_t type) {
     Double_t m = fM1;
     if (type == 1) m = fM2;
     for (int i = 0; i < fNtracks; i++) {
@@ -201,9 +199,7 @@ namespace Hal {
     }
   }
 
-  void CorrFitSmearingMath::MakeSmearTracksTF(TLorentzVector* smeared_tracks,
-                                                          TLorentzVector* unsmeared_tracks,
-                                                          Int_t type) {
+  void CorrFitSmearingMath::MakeSmearTracksTF(TLorentzVector* smeared_tracks, TLorentzVector* unsmeared_tracks, Int_t type) {
     Double_t m = fM1;
     if (type == 1) m = fM2;
     for (int i = 0; i < fNtracks; i++) {

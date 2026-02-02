@@ -94,6 +94,7 @@
 
 
 #pragma link C++ class Hal::FemtoYlmIndexes + ;
+#pragma link C++ class Hal::FemtoYlmIndexesShort + ;
 #pragma link C++ class Hal::FemtoSHCF + ;
 
 

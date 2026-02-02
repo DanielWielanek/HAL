@@ -246,14 +246,9 @@ namespace Hal {
 
   void FemtoSHCF::Draw(Option_t* opt) {
     TString option = opt;
-    if (fPainter) {
-      fPainter->SetOption(option);
-      fPainter->Paint();
-    } else {
-      fPainter = new Hal::FemtoSHCFPainter(this);
-      fPainter->SetOption(option);
-      fPainter->Paint();
-    }
+    if (!fPainter) MakePainter();
+    fPainter->SetOption(option);
+    fPainter->Paint();
   }
 
   void FemtoSHCF::PackCfcCovariance() {
@@ -1061,5 +1056,7 @@ namespace Hal {
     if (opt == "painter") return fPainter;
     return nullptr;
   }
+
+  void FemtoSHCF::MakePainter(TString option) { fPainter = new FemtoSHCFPainter(this); }
 
 }  // namespace Hal

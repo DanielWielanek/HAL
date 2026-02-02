@@ -113,4 +113,81 @@ namespace Hal {
     std::cout << "------------" << std::endl;
   }
 
+  //==================================================================================
+  FemtoYlmIndexesShort::~FemtoYlmIndexesShort() {
+    if (fEls) delete[] fEls;
+    if (fEms) delete[] fEms;
+    if (fElsi) delete[] fElsi;
+    if (fEmsi) delete[] fEmsi;
+  }
+
+  FemtoYlmIndexesShort& FemtoYlmIndexesShort::operator=(const FemtoYlmIndexesShort& other) {
+    if (this == &other) return *this;
+    if (this->fL == other.fL) return *this;
+    Resize(other.fL);
+    return *this;
+  }
+
+  FemtoYlmIndexesShort::FemtoYlmIndexesShort(Int_t L) :
+    fL(L), fMaxJM(0.5 * ((L + 1) * (L + 1) + L + 1)), fEls(nullptr), fEms(nullptr), fElsi(nullptr), fEmsi(nullptr) {
+    Resize(L);
+  }
+
+  void FemtoYlmIndexesShort::Resize(Int_t newL) {
+    if (fEls) {
+      delete[] fEls;
+      delete[] fEms;
+      delete[] fElsi;
+      delete[] fEmsi;
+      fEls  = nullptr;
+      fEms  = nullptr;
+      fElsi = nullptr;
+      fEmsi = nullptr;
+    }
+    fL = newL;
+    if (fL == 0) return;
+    if (fL > 6) { Cout::PrintInfo("Creating YLM for L>6!", EInfo::kError); }
+    fMaxJM = 0.5 * ((fL + 1) * (fL + 1) + fL + 1);
+    if (fL > 0) {
+      fEls     = new Double_t[fMaxJM];
+      fEms     = new Double_t[fMaxJM];
+      fElsi    = new Int_t[fMaxJM];
+      fEmsi    = new Int_t[fMaxJM];
+      fIndexes = Array_2<Int_t>(fL + 1, fL + 1);
+      for (int i = 0; i <= fL; i++) {
+        for (int j = 0; j < fL + 1; j++) {
+          fIndexes[i][j] = -1;
+        }
+      }
+    }
+    int el = 0;
+    int em = 0;
+    int il = 0;
+    do {
+      fEls[il]              = el;
+      fEms[il]              = em;
+      fElsi[il]             = (int) el;
+      fEmsi[il]             = (int) em;
+      fIndexes[el][fL + em] = il;
+      em++;
+      il++;
+      if (em > el) {
+        el++;
+        em = 0;
+      }
+    } while (el <= fL);
+  }
+
+  FemtoYlmIndexesShort::FemtoYlmIndexesShort(const FemtoYlmIndexesShort& other) : FemtoYlmIndexesShort(other.fL) {}
+
+  void FemtoYlmIndexesShort::Print(Option_t* /*option*/) const {
+    std::cout << ClassName() << std::endl;
+    std::cout << Form("   l   m   index") << std::endl;
+    for (int i = 0; i < fMaxJM; i++) {
+      std::cout << Form("%4i%4i%4i", fElsi[i], fEmsi[i], i) << std::endl;
+    }
+    std::cout << "------------" << std::endl;
+  }
+
+
 } /* namespace Hal */

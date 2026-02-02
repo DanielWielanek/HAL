@@ -117,6 +117,17 @@
 #pragma link C++ class Hal::CorrFitSmearingMath + ;
 #pragma link C++ class Hal::CorrFit1DSmearing + ;
 
+#pragma link C++ class Hal::CorrFitSHCFOTF + ;
+#pragma link C++ class Hal::CorrFitSHGauss + ;
+#pragma link C++ class Hal::CorrFitSHGaussGSL + ;
+
+#pragma link C++ class Hal::FemtoSHDecomposerFunc + ;
+#pragma link C++ class Hal::FemtoSHDecomposerFuncGausLCMS + ;
+#pragma link C++ class Hal::FemtoSHCFDecomposer + ;
+#pragma link C++ class Hal::FemtoSHDecomposerFuncGausPRF + ;
+#pragma link C++ class Hal::FemtoSHCFDecomposerGSL + ;
+#pragma link C++ class Hal::FemtoSHCFDecomposerGSLVc + ;
+
 #endif
 
 // #pragma link C++ class Led+;

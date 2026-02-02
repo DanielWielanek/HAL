@@ -118,6 +118,7 @@ if(DEFINED CIA)
         ${INCLUDE_DIRECTORIES} top_secret
     )
     set(SRCS ${SRCS}
+        top_secret/CorrFitSHCFOTF.cxx
         top_secret/CorrFitSHCF.cxx
         top_secret/CorrFitSHFrom3D.cxx
         top_secret/FemtoSHArray.cxx
@@ -133,6 +134,7 @@ if(DEFINED CIA)
         top_secret/BattlestarAtlantia.cxx
         top_secret/BattlestarSolaria.cxx
         top_secret/GausianSourceDenstityFastCalc.cxx
+        top_secret/FemtoSHCFDecomposer.cxx
     )
 endif()
 

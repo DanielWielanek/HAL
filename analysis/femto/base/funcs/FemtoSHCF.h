@@ -54,11 +54,10 @@ namespace Hal {
     Array_3<Double_t> fCovNum;
     Array_3<Double_t> fCovDen;
     Array_3<Double_t> fCovCf;
-    Double_t fNormPurity;                  //
-    Double_t fNormRadius;                  //
-    Double_t fNormBohr;                    //
-    TH3D* fCfcov             = {nullptr};  //
-    FemtoCFPainter* fPainter = {nullptr};  //!
+    Double_t fNormPurity;      //
+    Double_t fNormRadius;      //
+    Double_t fNormBohr;        //
+    TH3D* fCfcov = {nullptr};  //
     FemtoYlmIndexes fLmVals;
     FemtoYlmMath fLmMath;
     Bool_t fColzSet = {kFALSE};
@@ -91,6 +90,7 @@ namespace Hal {
      */
     virtual void FastAdd(const FemtoSHCF* obj);
     virtual void ApplyStyle(const Hal::HistoStyle& h);
+    virtual void MakePainter(TString option = "");
 
   public:
     /** default constructor for streamer

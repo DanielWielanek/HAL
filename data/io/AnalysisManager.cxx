@@ -143,6 +143,7 @@ namespace Hal {
   }
 
   void AnalysisManager::Finish() {
+    Cout::PrintInfo(Form("=== Writing data to %s ===", fOutputFile.Data()), EInfo::kInfo);
     auto GoToDir = [](TString name) {
       TDirectory* dir            = (TDirectory*) gFile;
       std::vector<TString> array = Hal::Std::ExplodeString(name, '/');
@@ -209,7 +210,7 @@ namespace Hal {
     for (auto task : fActiveTasks) {
       task->FinishTask();
     }
-    Cout::PrintInfo("Analysis completed", EInfo::kInfo);
+    Cout::PrintInfo("=== Analysis completed ===", EInfo::kInfo);
     fManager->CloseManager();
   }
 

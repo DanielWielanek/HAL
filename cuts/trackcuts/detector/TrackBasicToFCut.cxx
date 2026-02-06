@@ -19,9 +19,9 @@ namespace Hal {
     SetUnitName("m_{ToF}^{2} [GeV^{2}/c^{4}]", 0);
     SetUnitName("#beta_{ToF} [c]", 1);
     SetUnitName("flag_{ToF} [AU]", 2);
-    SetMinMax(0, 1E+9, 0);
-    SetMinMax(0, 1E+9, 1);
-    SetMinMax(0, 1E+9, 2);
+    SetMinMax(-1E+9, 1E+9, 0);
+    SetMinMax(-1E+9, 1E+9, 1);
+    SetMinMax(-1E+9, 1E+9, 2);
   }
 
   Bool_t TrackBasicToFCut::Init(Int_t formad_id) {

@@ -26,7 +26,7 @@ namespace Hal {
 
     //  void SetLineWidth(Int_t val);
 
-    void SetSize(Int_t val);
+    void SetSize(Double_t val);
 
     Int_t GetColor() const;
 
@@ -34,7 +34,7 @@ namespace Hal {
 
     // Int_t GetLineWidth() const;
 
-    Int_t GetSize() const;
+    Double_t GetSize() const;
 
     void ExportToXML(XMLNode& node) const;
 
@@ -55,7 +55,7 @@ namespace Hal {
 template<class T>
 inline void Hal::MarkerStyle::Apply(T& obj) const {
   if (Find(EBitFlag::kColor)) obj.SetMarkerColor(GetI(EBitFlag::kColor));
-  if (Find(EBitFlag::kSize)) obj.SetMarkerSize(GetI(EBitFlag::kSize));
+  if (Find(EBitFlag::kSize)) obj.SetMarkerSize(GetF(EBitFlag::kSize));
   // if (Find(EBitFlag::kLineWidth)) obj.SetMarkerLineWidth(GetI(EBitFlag::kLineWidth));
   if (Find(EBitFlag::kStyle)) obj.SetMarkerStyle(GetI(EBitFlag::kStyle));
 }

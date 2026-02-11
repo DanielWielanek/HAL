@@ -378,13 +378,18 @@ namespace Hal {
   }
 
   void Cout::FailSucced(TString value, TString flag, Color_t color) {
-    Int_t total     = value.Length() + flag.Length();
-    Int_t nr_spaces = (fgLineLength - 4) - total - 2;
-    if (nr_spaces < 0) nr_spaces = 0;
-    TString spaces(' ', nr_spaces);
-    spaces = value + spaces;
-    std::cout << GetColor(kWhite) << "* " << spaces << "[" << GetColor(color) << flag << GetColor(kWhite) << "] *"
-              << GetDisableColor() << std::endl;
+    auto words        = Hal::Std::SmartTextSplit(value, fgLineLength - flag.Length() - 6, kTRUE, kFALSE);
+    TString emptyFlag = TString(' ', flag.Length());
+    std::cout << GetColor(kWhite);
+    for (int i = 0; i < words.size(); i++) {
+      std::cout << "* " << words[i];
+      if (i == 0) {
+        std::cout << "[" << GetColor(color) << flag << GetColor(kWhite) << "] *" << std::endl;
+      } else {
+        std::cout << " " << emptyFlag << "  *" << std::endl;
+      }
+    }
+    std::cout << GetDisableColor();
   }
 
   Cout::Cout() {

@@ -200,6 +200,15 @@ namespace Hal {
      * @return
      */
     [[deprecated]] Bool_t FindExpressionEqual(TString& option, TString pattern, TString& val, Bool_t remove = kFALSE);
+    /**
+     * split long string into many lines
+     * @param text
+     * @param max_length max lenght of line
+     * @param insert_spaces if true insert spaces to have strings with max_length
+     * @param split_word if true split word otherwise avoid spliting words
+     * @return
+     */
+    std::vector<TString> SmartTextSplit(TString text, Int_t max_length, Bool_t insert_spaces, Bool_t split_word);
   }  // namespace Std
 }  // namespace Hal
 #endif /* HALSTDSTRING_H_ */

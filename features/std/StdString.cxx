@@ -500,5 +500,43 @@ namespace Hal {
       }
       return kFALSE;
     }
+
+    std::vector<TString> SmartTextSplit(TString text, Int_t max_length, Bool_t insert_spaces, Bool_t split_word) {
+      std::vector<TString> result;
+      if (max_length <= 0) return result;
+      while (text.Length() > 0) {
+        if (text.Length() <= max_length) {
+          TString line = text;
+          if (insert_spaces && line.Length() < max_length) line += TString(' ', max_length - line.Length());
+          result.push_back(line);
+          break;
+        }
+        Int_t breakPos = max_length;
+        if (!split_word) {
+          breakPos = -1;
+          for (Int_t i = max_length; i >= 0; --i) {
+            if (text[i] == ' ') {
+              breakPos = i;
+              break;
+            }
+          }
+          if (breakPos <= 0) {
+            Int_t firstSpace = text.First(' ');
+            if (firstSpace == -1) {
+              breakPos = max_length;
+            } else {
+              breakPos = firstSpace;
+            }
+          }
+        }
+        TString line = text(0, breakPos);
+        if (insert_spaces && line.Length() < max_length) line += TString(' ', max_length - line.Length());
+        result.push_back(line);
+        text.Remove(0, breakPos);
+        while (text.Length() > 0 && text[0] == ' ')
+          text.Remove(0, 1);
+      }
+      return result;
+    }
   }  // namespace Std
 }  // namespace Hal

@@ -67,7 +67,10 @@ namespace HalOTF {
       pz         = pz + gRandom->Gaus(0, fSmear) * pz;
       Double_t e = TMath::Sqrt(px * px + py * py + pz * pz + fMass * fMass);
       rtr.SetMom(px, py, pz, e);
-      rtr.SetNHits(5);
+      rtr.SetNHitsA(2);
+      rtr.SetNHitsB(2);
+      rtr.SetNHitsC(2);
+      rtr.SetPidHypo(tr.GetPdgCode());
 
       auto pid = db->GetParticle(tr.GetPdgCode());
       if (pid) {
@@ -101,9 +104,15 @@ namespace HalOTF {
         auto dau = fDaughters[j];
         dau->SetMotherIndex(i);
         auto daughter = makeSim(*dau);
+        daughter.SetGeneratorId(track->GetGeneratorId());
         fMcEvent->AddTrack(daughter);
         auto reco = makeReco(daughter);
+        reco.SetGeneratorId(track->GetGeneratorId());
         reco.SetMcIndex(fMcEvent->GetNTracks() - 1);
+        reco.SetPidHypo(dau->GetPdg());
+        reco.SetNHitsA(2);
+        reco.SetNHitsB(2);
+        reco.SetNHitsC(2);
         fRecoEvent->AddTrack(reco);
       }
     }

@@ -36,6 +36,7 @@ namespace HalOTF {
     Int_t fPids                = {211};
     Int_t fCharge              = {1};
     Int_t fCurrrentMult        = {0};
+    Int_t fGeneratorId         = {0};
     Double_t fMass             = {0};
     Double_t fSmear            = {0};
     OTF::McEvent* fMcEvent     = {nullptr};
@@ -57,6 +58,11 @@ namespace HalOTF {
      * @param m multiplicity
      */
     void SetSpecies(const TH2D& h, Int_t pid);
+    /**
+     * set generator id, it will be passed to track as track
+     * @param id
+     */
+    void SetGeneratorId(Int_t id) { fGeneratorId = id; }
     /**
      * set multiplicity histogram
      * @param h

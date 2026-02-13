@@ -43,6 +43,7 @@ namespace HalOTF { /* namespace Hal */
       tr.SetPdgCode(fPids);
       TLorentzVector xr(gRandom->Gaus(0, 1), gRandom->Gaus(0, 1), gRandom->Gaus(0), 0);
       tr.SetFreezeout(xr);
+      tr.SetGeneratorId(fGeneratorId);
       fMcEvent->AddTrack(tr);
 
       OTF::RecoTrack rtr;
@@ -51,9 +52,13 @@ namespace HalOTF { /* namespace Hal */
       pz         = pz + gRandom->Gaus(0, fSmear) * pz;
       Double_t e = TMath::Sqrt(px * px + py * py + pz * pz + fMass * fMass);
       rtr.SetMom(px, py, pz, e);
-      rtr.SetNHits(5);
+      rtr.SetNHitsA(2);
+      rtr.SetNHitsB(2);
+      rtr.SetNHitsC(2);
       rtr.SetCharge(fCharge);
       rtr.SetMcIndex(i + shift);
+      rtr.SetGeneratorId(fGeneratorId);
+      rtr.SetPidHypo(tr.GetPdgCode());
       fRecoEvent->AddTrack(rtr);
     }
   }

@@ -51,7 +51,8 @@ namespace Hal {
       kV0Daughters = 5,  // set if v0 and daughters are known
       kXiDaughters = 6,  // set if xi and daughters are known
       kBackground  = 7,  // set if background particle
-      kEmbedded    = 8   // set if embedded particle
+      kEmbedded    = 8,  // set if embedded particle
+      kPileUp      = 9   // set if particle is from different event/pile up event
     };
     /**
      * returns v0 value if vo is not null
@@ -153,6 +154,11 @@ namespace Hal {
      */
     inline void SetMomentum(Double_t px, Double_t py, Double_t pz, Double_t e) { fP.SetPxPyPzE(px, py, pz, e); }
     /**
+     * set momentum
+     * @param mom
+     */
+    inline void SetMomentum(const TLorentzVector& mom) { fP = mom; }
+    /**
      *
      * @param v0 if true mark particle as V0, otherwise mark as normal particle
      * @param daughters  - true if daughters ID's are known
@@ -184,6 +190,16 @@ namespace Hal {
         SETBIT(fType, kBackground);
       else
         CLRBIT(fType, kBackground);
+    }
+    /**
+     * set if particle is pile up
+     * @param pile_up
+     */
+    void SetPileUp(Bool_t pile_up = kTRUE) {
+      if (pile_up)
+        SETBIT(fType, kPileUp);
+      else
+        CLRBIT(fType, kPileUp);
     }
     /**
      * set particle mother index
@@ -260,6 +276,11 @@ namespace Hal {
      * @return true if track is embedded
      */
     inline Bool_t IsEmbedded() const { return TESTBIT(fType, kEmbedded); }
+    /**
+     *
+     * @return true if particle is pile up track
+     */
+    inline Bool_t IsPileUp() const { return TESTBIT(fType, kPileUp); }
     /**
      *
      * @return pointer to standard hidden info

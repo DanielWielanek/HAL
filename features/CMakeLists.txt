@@ -88,6 +88,7 @@ phys/FastAxisCalc.cxx
 phys/ProfileAna2D.cxx
 phys/SmearAlgo.cxx
 phys/ParameterSolver.cxx
+phys/LorentzSmearing.cxx
 
 minimizer/FitParam.cxx
 minimizer/Minimizer.cxx

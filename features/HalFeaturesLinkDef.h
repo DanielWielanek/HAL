@@ -132,6 +132,10 @@
 #pragma link C++ class Hal::ProfileAna2D + ;
 #pragma link C++ class Hal::SmearAlgo + ;
 #pragma link C++ class Hal::SmearAlgoMatrix + ;
+#pragma link C++ class Hal::LorentzSmearing + ;
+#pragma link C++ class Hal::LorentzSmearingTF1 + ;
+#pragma link C++ class Hal::LorentzSmearingTH2 + ;
+#pragma link C++ class Hal::LorentzSmearingPercent + ;
 
 //=============================
 #pragma link C++ class Hal::ObjectMatrix_1 + ;

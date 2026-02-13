@@ -21,15 +21,20 @@ namespace OTF {
   class RecoTrack : public TObject {
     TLorentzVector fMomentum;
     Int_t fIndexMc;
-    Int_t fNHits;
+    Int_t fNHitsA, fNHitsB, fNHitsC;
     Int_t fCharge;
     Int_t fDaugthers[2] = {-1, -1};
+    Int_t fGeneratorId  = {0};
+    Int_t fPidHypo      = {-1};
 
   public:
-    RecoTrack() : fIndexMc(-1), fNHits(0), fCharge(0) {};
+    RecoTrack() : fIndexMc(-1), fNHitsA(0), fNHitsB(0), fNHitsC(0), fCharge(0) {};
     Int_t GetMcIndex() const { return fIndexMc; }
-    Int_t GetNHits() const { return fNHits; }
+    Int_t GetNHitsA() const { return fNHitsA; }
+    Int_t GetNHitsB() const { return fNHitsB; }
+    Int_t GetNHitsC() const { return fNHitsC; }
     Int_t GetCharge() const { return fCharge; }
+    Int_t GetGeneratorId() const { return fGeneratorId; }
     void SetDaughers(Int_t a, Int_t b) {
       fDaugthers[0] = a;
       fDaugthers[1] = b;
@@ -38,22 +43,28 @@ namespace OTF {
       a = fDaugthers[0];
       b = fDaugthers[1];
     }
+    void SetPidHypo(Int_t pid) { fPidHypo = pid; }
     void SetCharge(Int_t ch) { fCharge = ch; }
     void SetMom(TLorentzVector mom) { fMomentum = mom; }
-    void SetNHits(Int_t nHits) { fNHits = nHits; }
+    void SetNHitsA(Int_t nHits) { fNHitsA = nHits; }
+    void SetNHitsB(Int_t nHits) { fNHitsB = nHits; }
+    void SetNHitsC(Int_t nHits) { fNHitsC = nHits; }
     void SetMcIndex(Int_t index) { fIndexMc = index; }
     void SetMom(Double_t px, Double_t py, Double_t pz, Double_t e) { fMomentum.SetXYZT(px, py, pz, e); }
+    void SetGeneratorId(Int_t type) { fGeneratorId = type; }
     void Clear(Option_t* /*opt*/ = "") { fDaugthers[0] = fDaugthers[1] = -1; }
+    Int_t GetPidHypo() const { return fPidHypo; }
     const TLorentzVector& GetMom() const { return fMomentum; }
     virtual ~RecoTrack() {};
     ClassDef(RecoTrack, 1)
-  };
+  };  // namespace OTF
 
   class McTrack : public TObject {
     TLorentzVector fMomentum;
     TLorentzVector fFreezeout;
     Int_t fPdgCode;
     Int_t fMotherIdx;
+    Int_t fGeneratorId = {0};
 
   public:
     McTrack() : fPdgCode(0), fMotherIdx(-1) {};
@@ -61,8 +72,10 @@ namespace OTF {
     void SetPdgCode(Int_t pdgCode) { fPdgCode = pdgCode; }
     void SetFreezeout(const TLorentzVector& freezout) { fFreezeout = freezout; }
     void SetMomentum(const TLorentzVector& momentum) { fMomentum = momentum; }
+    void SetGeneratorId(Int_t type) { fGeneratorId = type; }
     Int_t GetMotherId() const { return fMotherIdx; }
     Int_t GetPdgCode() const { return fPdgCode; }
+    Int_t GetGeneratorId() const { return fGeneratorId; }
     const TLorentzVector& GetFreezeout() const { return fFreezeout; }
     const TLorentzVector& GetMomentum() const { return fMomentum; }
     virtual ~McTrack() {};

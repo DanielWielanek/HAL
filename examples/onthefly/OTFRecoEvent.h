@@ -30,11 +30,26 @@ namespace HalOTF {
 
   class RecoTrack : public Hal::ExpTrack {
     Int_t fMatchIdx;
+    Int_t fGeneratorId = {-1};
+    Int_t fPidHypo     = {-1};
+    Int_t fNHitsA      = {0};
+    Int_t fNHitsB      = {0};
+    Int_t fNHitsC      = {0};
 
   public:
     RecoTrack() : fMatchIdx(-1) {};
     Int_t GetMatch() const { return fMatchIdx; };
+    Int_t GetGeneratorId() const { return fGeneratorId; }
+    Int_t GetPidHypo() const { return fPidHypo; }
+    Int_t GetNHitsA() const { return fNHitsA; }
+    Int_t GetNHitsB() const { return fNHitsB; }
+    Int_t GetNHitsC() const { return fNHitsC; }
+    void SetNHitsA(Int_t hits) { fNHitsA = hits; };
+    void SetNHitsB(Int_t hits) { fNHitsB = hits; };
+    void SetNHitsC(Int_t hits) { fNHitsC = hits; };
+    void SetGeneratorId(Int_t id) { fGeneratorId = id; }
     void SetMatch(Int_t idx) { fMatchIdx = idx; };
+    void SetPidHypo(Int_t pid) { fPidHypo = pid; }
     virtual ~RecoTrack() {};
     ClassDef(RecoTrack, 1);
   };

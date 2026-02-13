@@ -43,6 +43,11 @@ namespace HalOTF {
       track->SetMomentum(mc->GetMom().Px(), mc->GetMom().Py(), mc->GetMom().Pz(), mc->GetMom().E());
       track->SetMotherIndex(-1);
       track->SetMatch(mc->GetMcIndex());
+      track->SetGeneratorId(mc->GetGeneratorId());
+      track->SetPidHypo(mc->GetPidHypo());
+      track->SetNHitsA(mc->GetNHitsA());
+      track->SetNHitsB(mc->GetNHitsB());
+      track->SetNHitsC(mc->GetNHitsC());
       Int_t dau1, dau2;
       mc->GetDaughters(dau1, dau2);
       if (dau1 != -1) {

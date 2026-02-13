@@ -25,8 +25,12 @@ namespace HalOTF {
   };
 
   class McTrack : public Hal::McTrack {
+    Int_t fGeneratorId = {-1};
+
   public:
     McTrack() {};
+    Int_t GetGeneratorId() const { return fGeneratorId; }
+    void SetGeneratorId(Int_t id) { fGeneratorId = id; }
     virtual ~McTrack() {};
     ClassDef(McTrack, 1)
   };

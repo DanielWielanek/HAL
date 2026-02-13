@@ -41,6 +41,7 @@ namespace HalOTF {
       track->SetFreezeoutPosition(mc->GetFreezeout().X(), mc->GetFreezeout().Y(), mc->GetFreezeout().Z(), mc->GetFreezeout().T());
       track->SetMotherIndex(mc->GetMotherId());
       track->SetPdg(mc->GetPdgCode());
+      track->SetGeneratorId(mc->GetGeneratorId());
     }
   }
 

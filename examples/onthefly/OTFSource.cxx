@@ -27,7 +27,9 @@ namespace HalOTF {
 
   Bool_t Source::Init() {
     if (fGenerators.size() == 0) return kFALSE;
+    int id = 0;
     for (auto& gen : fGenerators) {
+      gen->SetGeneratorId(id++);
       if (!gen->Init()) return kFALSE;
     }
     return kTRUE;

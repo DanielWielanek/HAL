@@ -40,7 +40,9 @@ namespace Hal {
       kRotatedTitle,
       kFontStyleLabel,
       kDecimal,
-      kNoExp
+      kNoExp,
+      kHideLow,
+      kHideHigh
     };
 
     AxisStyle(Bool_t skipTitle = kTRUE);
@@ -87,6 +89,10 @@ namespace Hal {
 
     void SetDecimals(Bool_t opt);
 
+    void SetHideLowLabel(Bool_t hide = kTRUE);
+
+    void SetHideHighLabel(Bool_t hide = kTRUE);
+
     Float_t GetTitleOffset() const;
 
     Float_t GetLabelOffset() const;
@@ -120,6 +126,10 @@ namespace Hal {
     Bool_t GetNoExponent() const;
 
     Bool_t NDivisionsOptimized() const;
+
+    Bool_t IsHighLabelHidden() const;
+
+    Bool_t IsLowLabelHidden() const;
 
     TString GetTicks() const;
 

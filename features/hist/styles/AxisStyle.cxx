@@ -56,6 +56,10 @@ namespace Hal {
 
   void AxisStyle::SetDecimals(Bool_t opt) { SetI(EBitFlag::kDecimal, opt); };
 
+  void AxisStyle::SetHideLowLabel(Bool_t hide) { SetI(EBitFlag::kHideLow, hide); };
+
+  void AxisStyle::SetHideHighLabel(Bool_t hide) { SetI(EBitFlag::kHideHigh, hide); };
+
   Float_t AxisStyle::GetTitleOffset() const { return GetF(EBitFlag::kTitleOffset); }
 
   Float_t AxisStyle::GetLabelOffset() const { return GetF(EBitFlag::kLabelOffset); }
@@ -94,6 +98,18 @@ namespace Hal {
     return kFALSE;
   }
 
+  Bool_t AxisStyle::IsHighLabelHidden() const {
+    int div = GetI(EBitFlag::kHideHigh);
+    if (div >= 0) return kTRUE;
+    return kFALSE;
+  }
+
+  Bool_t AxisStyle::IsLowLabelHidden() const {
+    int div = GetI(EBitFlag::kHideLow);
+    if (div >= 0) return kTRUE;
+    return kFALSE;
+  }
+
   void AxisStyle::Apply(TAxis& obj) const {
     if (Find(EBitFlag::kTitleOffset)) obj.SetTitleOffset(GetF(EBitFlag::kTitleOffset));
     if (Find(EBitFlag::kLabelOffset)) obj.SetLabelOffset(GetF(EBitFlag::kLabelOffset));
@@ -122,6 +138,14 @@ namespace Hal {
     if (Find(EBitFlag::kRotatedTitle)) { obj.RotateTitle(GetI(EBitFlag::kRotatedTitle)); }
     if (Find(EBitFlag::kDecimal)) obj.SetDecimals(GetI(EBitFlag::kDecimal));
     if (Find(EBitFlag::kNoExp)) obj.SetNoExponent(GetI(EBitFlag::kNoExp));
+    if (Find(EBitFlag::kHideLow) && GetI(EBitFlag::kHideLow)) {
+      int last = 1;
+      obj.ChangeLabel(1, -1, -1, -1, kWhite, 0, " ");
+    }
+    if (Find(EBitFlag::kHideHigh) && GetI(EBitFlag::kHideHigh)) {
+      int last = obj.GetNbins();
+      obj.ChangeLabel(1, -1, -1, -1, kWhite, 0, " ");
+    }
   };
 
   void AxisStyle::SetTitle(TString val) {
@@ -151,6 +175,8 @@ namespace Hal {
     if (Find(EBitFlag::kFontStyleLabel)) node.AddAttrib("LabelFont", Form("%i", (int) GetI(EBitFlag::kFontStyleLabel)));
     if (Find(EBitFlag::kDecimal)) node.AddAttrib("Decimal", Form("%i", (int) GetI(EBitFlag::kDecimal)));
     if (Find(EBitFlag::kNoExp)) node.AddAttrib("NoExp", Form("%i", (int) GetI(EBitFlag::kNoExp)));
+    if (Find(EBitFlag::kHideLow)) node.AddAttrib("HideLow", Form("%i", (int) GetI(EBitFlag::kHideLow)));
+    if (Find(EBitFlag::kHideHigh)) node.AddAttrib("HideHigh", Form("%i", (int) GetI(EBitFlag::kHideHigh)));
   }
 
   void AxisStyle::SetRangeUser(Float_t min, Float_t max) {
@@ -252,6 +278,16 @@ namespace Hal {
     if (auto& atr = node.GetAttrib("NoExp"); !atr.IsNull()) {
       int x = atr.GetValue().Atoi();
       SetNoExponent(x);
+    }
+
+    if (auto& atr = node.GetAttrib("HideLow"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
+      SetHideLowLabel(x);
+    }
+
+    if (auto& atr = node.GetAttrib("HideHigh"); !atr.IsNull()) {
+      int x = atr.GetValue().Atoi();
+      SetHideLowLabel(x);
     }
   }
 

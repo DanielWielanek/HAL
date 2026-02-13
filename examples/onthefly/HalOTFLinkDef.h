@@ -28,4 +28,19 @@
 #pragma link C++ class HalOTF::RecoEventInterface + ;
 #pragma link C++ class HalOTF::Source + ;
 #pragma link C++ class HalOTF::EventGeneratorDecayer + ;
+
+#pragma link C++ class HalOTF::DetectorHits + ;
+#pragma link C++ class HalOTF::DetectorHitsA + ;
+#pragma link C++ class HalOTF::DetectorHitsB + ;
+#pragma link C++ class HalOTF::DetectorHitsC + ;
+#pragma link C++ class HalOTF::DetectorHitsABCSum + ;
+#pragma link C++ class HalOTF::EfficientyKin + ;
+#pragma link C++ class HalOTF::EfficiencyYPt + ;
+#pragma link C++ class HalOTF::EfficiencyEtaPt + ;
+#pragma link C++ class HalOTF::Experiment + ;
+#pragma link C++ class HalOTF::ExperimentSubTask + ;
+#pragma link C++ class HalOTF::MisidentificationKin + ;
+#pragma link C++ class HalOTF::MisidentificationYPt + ;
+#pragma link C++ class HalOTF::MisidentificationEtaPt + ;
+#pragma link C++ class HalOTF::MomentumSmearing + ;
 #endif

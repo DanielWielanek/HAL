@@ -8,12 +8,16 @@
 #ifndef HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITSMEARINGMATH_H_
 #define HAL_ANALYSIS_FEMTO_CORRFIT_MAPS_1D_CORRFITSMEARINGMATH_H_
 
+#include <Rtypes.h>
 #include <RtypesCore.h>
 #include <TH2.h>
-#include <TLorentzVector.h>
-#include <array>
 
 #include "Object.h"
+
+class TLorentzVector;
+namespace Hal {
+  class LorentzSmearing;
+} /* namespace Hal */
 
 namespace Hal {
   class FemtoPair;
@@ -23,36 +27,27 @@ class TH2D;
 
 
 namespace Hal {
-
+  /**
+   * class for calculation smearing map
+   * requires
+   * - yields (pt-y or pt-eta)
+   * - smearing algo
+   */
   class CorrFitSmearingMath : public Object {
     TH2D* fYield1 = {nullptr};
     TH2D* fYield2 = {nullptr};
     TH2D* fOutput = {nullptr};
-    std::vector<TH1D*> fResoP[2];
-    std::vector<TH1D*> fResoPhi[2];
-    std::vector<TH1D*> fResoTheta[2];
-    TH2D** fResoP2d        = {nullptr};
-    TH2D** fResoPhi2d      = {nullptr};
-    TH2D** fResoTheta2d    = {nullptr};
-    TLorentzVector* fPSim1 = {nullptr};
-    TLorentzVector* fPSim2 = {nullptr};
-    TLorentzVector* fPRec1 = {nullptr};
-    TLorentzVector* fPRec2 = {nullptr};
-    TF1* fFuncP[2]         = {nullptr, nullptr};
-    TF1* fFuncPhi[2]       = {nullptr, nullptr};
-    TF1* fFuncTheta[2]     = {nullptr, nullptr};
     const Int_t fNtracks;
 
-    Int_t fPdg1        = {211};
-    Int_t fPdg2        = {211};
-    Int_t fBins        = {100};
-    Bool_t fUseFunc    = {kFALSE};
-    Bool_t fExpYields  = {kFALSE};
-    Double_t fLow      = {0};
-    Double_t fHigh     = {1};
-    Double_t fM1       = {0};
-    Double_t fM2       = {0};
-    Double_t fKtCut[2] = {0, 1};
+    Int_t fPdg1                 = {211};
+    Int_t fPdg2                 = {211};
+    Int_t fBins                 = {100};
+    Bool_t fExpYields           = {kFALSE};
+    Double_t fLow               = {0};
+    Double_t fHigh              = {1};
+    Double_t fKtCut[2]          = {0, 1};
+    LorentzSmearing* fSmearing1 = {nullptr};
+    LorentzSmearing* fSmearing2 = {nullptr};
     enum class EMode {
       kEtaPt,
       kYPt,
@@ -69,20 +64,6 @@ namespace Hal {
      * @return
      */
     virtual Bool_t CheckPair(Hal::FemtoPair* pair) const;
-    /**
-     * make smearing
-     * @param sim_tracks
-     * @param reco_tracks
-     * @param type
-     */
-    virtual void MakeSmearTracksTH(TLorentzVector* smeared_tracks, TLorentzVector* unsmeared_tracks, Int_t type);
-    /**
-     * make smearing according to function
-     * @param sim_tracks
-     * @param reco_tracks
-     * @param type
-     */
-    virtual void MakeSmearTracksTF(TLorentzVector* smeared_tracks, TLorentzVector* unsmeared_tracks, Int_t type);
 
   public:
     CorrFitSmearingMath(Int_t tracks = 5000);
@@ -96,21 +77,11 @@ namespace Hal {
       fKtCut[1] = hi;
     }
     /**
-     * set resolutions NOTE - on X axis there is p_reco, all histograms should have the same ranges and number of bins on X-axis
-     * @param p p_reco vs dp (sim-reco)
-     * @param phi phi_reco (sim-reco)
-     * @param theta theta reco (sim-reco)
-     * @param type 0 or 1 (for non-id)
-     */
-    void SetResolution(const TH2D& p, const TH2D& phi, const TH2D& theta, Int_t type);
-    /**
-     * set sigma of momentum ,phi ,theta as function of reconstructed momentum
-     * @param p
-     * @param phi
-     * @param theta
+     * sets smear algo
+     * @param smear
      * @param type
      */
-    void SetResolution(const TF1& p, const TF1& phi, const TF1& theta, Int_t type);
+    void SetSmearingAlgo(const Hal::LorentzSmearing& smear, Int_t type);
     /**
      * set smearing matrix histogram parameters
      * @param bins
@@ -129,10 +100,9 @@ namespace Hal {
     /**
      * set yields
      * @param yield
-     * @param pdg code of firs track
      * @param type - 0 or 1
      */
-    void SetYield(TH2D& yield, Int_t pdg, Int_t type);
+    void SetYield(TH2D& yield, Int_t type);
     /**
      * do the calculations
      * @param nEvents

@@ -320,4 +320,16 @@ namespace Hal {
 
   void CutBackdoor::SetUnitName(Cut& cut, TString unitName, Int_t index) const { cut.SetUnitName(unitName, index); }
 
+  Hal::Std::Triplet<Double_t> Cut::GetRecomenedAxisPar(Int_t par) const {
+    auto res = GetBinLabels(par);
+    Hal::Std::Triplet<Double_t> trio;
+    if (res.size() <= 1) return trio;
+    Double_t low  = res[0].second;
+    Double_t high = res[res.size() - 1].second;
+    trio.x        = res.size();
+    trio.y        = low - 0.5;
+    trio.z        = high + 0.5;
+    return trio;
+  }
+
 }  // namespace Hal

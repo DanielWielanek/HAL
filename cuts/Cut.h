@@ -386,6 +386,18 @@ namespace Hal {
      * @return vector of names used in cut histogram first parameter is name of bin, second is value of bin center
      */
     virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
+    /**
+     *
+     * @param par parameter id
+     * @return true if parameter have some recommended axis settings
+     */
+    Bool_t HasRecomendedAxisPar(Int_t par) const { return !GetBinLabels(par).empty(); }
+    /**
+     * @param par parameter id
+     * @return recommended parameters for axis of cut monitor (bins, low, up range) works correctly for most "flag like
+     * parameters"
+     */
+    virtual Hal::Std::Triplet<Double_t> GetRecomenedAxisPar(Int_t par) const;
     virtual ~Cut() {};
     ClassDef(Cut, 1)
   };

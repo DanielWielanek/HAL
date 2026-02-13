@@ -23,6 +23,10 @@ namespace Hal {
         PDG->AddParticle("Deuteron", "Deuteron", Const::DeuteronMass(), kTRUE, 0, 1, "Ion", Const::DeuteronPID(), 0);
         PDG->AddParticle("Anti-Deuteron", "Anti-Deuteron", Const::DeuteronMass(), kTRUE, 0, -1, "Ion", -Const::DeuteronPID(), 1);
       }
+      if (!PDG->GetParticle(Const::DummyPID())) {
+        PDG->AddParticle("DummyParticle", "DummyParticle", 0, kTRUE, 0, 1, "Ion", Const::DummyPID(), 0);
+        PDG->AddParticle("Anti-DummyParticle", "Anti-DummyParticle", 0, kTRUE, 0, -1, "Ion", -Const::DummyPID(), 1);
+      }
     }
   }
 
@@ -59,7 +63,7 @@ namespace Hal {
     if (apdg == SigmaMinusPID()) return isAnti ? "#bar{#Sigma^{-}}" : "#Sigma^{-}";
     if (apdg == XiZeroPID()) return isAnti ? "#bar{#Xi^{0}}" : "#Xi^{0}";
     if (apdg == XiMinusPID()) return isAnti ? "#bar{#Xi^{-}" : "#Xi^{-}";
-
+    if (apdg == DummyPID()) return isAnti ? "#bar{#aleph}" : "#aleph";
     return "unknown";
   }
 

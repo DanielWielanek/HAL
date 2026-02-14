@@ -28,6 +28,7 @@ namespace Hal {
     static void InStars(Int_t shift, TString text, Color_t color);
     static void PrintWarning(TString warning);
     static void PrintError(TString error);
+    static TString Align(TString word, Int_t lenght, TString alignement);
 
   public:
     Cout();
@@ -71,8 +72,16 @@ namespace Hal {
     /**
      * print strings in database format
      * @param list
+     * @param alignement - R or L
      */
-    static void Database(const std::vector<TString>& list);
+    static void Database(const std::vector<TString>& list, TString alignement = "R");
+    /**
+     * print strings in database format
+     * @param list
+     * @param size of colum (last if fitted to match the line width
+     * @param alignement - R or L
+     */
+    static void Database(const std::vector<TString>& list, std::vector<int> size, TString alignement = "R");
     /**
      * print shifted database
      * @param shift number of empty places

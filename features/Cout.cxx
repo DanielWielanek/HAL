@@ -51,7 +51,7 @@ namespace Hal {
     Database(strings);
   }
 
-  void Cout::Database(const std::vector<TString>& list) {
+  void Cout::Database(const std::vector<TString>& list, TString alignement) {
     TString begin;
     TString capt;
     TString line;
@@ -64,9 +64,11 @@ namespace Hal {
       line     = " ";
       line     = line + capt;
       act_wide = wide - line.Length();
-      for (Int_t j = 0; j < act_wide - 1; j++) {
-        line = " " + line;
-      }
+      TString spaces(' ', act_wide - 1);
+
+      if (alignement == "R")
+        line = spaces + line;
+      else { line = line + spaces; }
       total += act_wide;
       if (i < (unsigned int) (no - 1)) line = line + "|";
       begin = begin + line;
@@ -74,14 +76,40 @@ namespace Hal {
     Text(begin, "R");
   }
 
+  TString Cout::Align(TString word, Int_t lenght, TString alignement) {
+    Int_t len     = word.Length();
+    Int_t spaceNo = lenght - len;
+    TString spaces;
+    if (spaceNo > 0) spaces = TString(' ', spaceNo);
+    if (alignement == "R") return spaces + word;
+    return word + spaces;
+  }
+
+  void Cout::Database(const std::vector<TString>& list, std::vector<int> size, TString alignement) {
+    if ((list.size() == size.size()) || (list.size() == size.size() + 1)) {  /// draw
+      if (size.size() != list.size()) size.push_back(0);
+      int sum = 0;
+      TString text;
+      for (int i = 0; i < list.size() - 1; i++) {
+        TString word = Align(list[i], size[i], alignement);
+        sum += word.Length() + 1;
+        text = text + word + "|";
+      }
+      Int_t total_wide = fgLineLength - 4 - sum;
+      TString word     = Align(list[list.size() - 1], total_wide, alignement);
+      text             = text + word;
+      Text(text, "R");
+    } else {
+      Database(list, alignement);
+    }
+  }
+
   void Cout::InStars(TString text, Color_t color) {
     TString Header = "******";
     Header         = Header + text;
     Int_t dlugosc  = Header.Length();
     Int_t spacji   = (fgLineLength - dlugosc);
-    for (Int_t i = 0; i < spacji; i++) {
-      Header = Header + "*";
-    }
+    Header         = Header + TString('*', spacji);
     if ((Int_t) color == -1) {
       std::cout << Header << std::endl;
     } else {

@@ -41,8 +41,8 @@ namespace HalOTF {
     for (size_t i = 1; i < fHypos.size(); i++) {
       sum->Add(fHypos[i]);
     }
-    for (int i = 1; i <= sum->GetNbinsX(); i++) {
-      for (int j = 1; j <= sum->GetNbinsY(); j++) {
+    for (int i = 0; i <= sum->GetNbinsX() + 1; i++) {
+      for (int j = 0; j <= sum->GetNbinsY() + 1; j++) {
         if (sum->GetBinContent(i, j) == 0) sum->SetBinContent(i, j, 1);  // to avoid division by zero
       }
     }
@@ -53,8 +53,8 @@ namespace HalOTF {
       fHypos[i]->Add(fHypos[i - 1]);
     }
     int last = fHypos.size() - 1;
-    for (int i = 1; i <= fHypos[last]->GetNbinsX(); i++) {
-      for (int j = 1; j <= fHypos[last]->GetNbinsY(); j++) {
+    for (int i = 0; i <= fHypos[last]->GetNbinsX() + 1; i++) {
+      for (int j = 0; j <= fHypos[last]->GetNbinsY() + 1; j++) {
         fHypos[last]->SetBinContent(i, j, 2);
       }
     }
@@ -69,8 +69,8 @@ namespace HalOTF {
     }
     auto contamination = (TH2D*) fHypos[0]->Clone();
     contamination->Reset();
-    for (int i = 1; i <= sum->GetNbinsX(); i++) {
-      for (int j = 1; j <= sum->GetNbinsY(); j++) {
+    for (int i = 0; i <= sum->GetNbinsX() + 1; i++) {
+      for (int j = 0; j <= sum->GetNbinsY() + 1; j++) {
         contamination->SetBinContent(i, j, 1.0 - sum->GetBinContent(i, j));
       }
     }

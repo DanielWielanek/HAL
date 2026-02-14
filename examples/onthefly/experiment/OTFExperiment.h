@@ -26,6 +26,7 @@ namespace HalOTF {
   public:
     Experiment();
     virtual ~Experiment();
+    void AddEffect(HalOTF::ExperimentSubTask* task) { fSubTasks.push_back(task); }
     virtual Hal::Task::EInitFlag Init();
     virtual void Exec(Option_t* option);
     virtual void FinishTask();

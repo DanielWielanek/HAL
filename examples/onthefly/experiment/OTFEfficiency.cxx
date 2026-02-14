@@ -29,22 +29,13 @@ namespace HalOTF {
     return kTRUE;
   }
 
-  void EfficientyKin::SetHistogramSim(const TH2D& histo) {
-    fMode       = eMode::kSim;
-    fAcceptance = (TH2D*) histo.Clone();
-  }
-
-  void EfficientyKin::SetHistogramReco(const TH2D& histo) {
-    fMode       = eMode::kReco;
-    fAcceptance = (TH2D*) histo.Clone();
-  }
+  void EfficientyKin::SetHistogram(const TH2D& histo) { fAcceptance = (TH2D*) histo.Clone(); }
 
   Hal::Package* EfficientyKin::Report() const {
     auto report = ExperimentSubTask::Report();
     report->AddObject(fAcceptance->Clone());
     return report;
   }
-
 
   void EfficiencyYPt::ProcessTrack(Hal::ComplexTrack* track) {
     Double_t pt, y;

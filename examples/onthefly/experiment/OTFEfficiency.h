@@ -27,8 +27,7 @@ namespace HalOTF {
 
   public:
     EfficientyKin(std::vector<int> vec = {0}) : ExperimentSubTask(vec) {};
-    void SetHistogramSim(const TH2D& histo);
-    void SetHistogramReco(const TH2D& histo);
+    void SetHistogram(const TH2D& histo);
     void SetDetectorType(Char_t type) { fDetType = type; }
     virtual Bool_t Init();
     Hal::Package* Report() const;

@@ -8,6 +8,7 @@
 #include "OTFExperiment.h"
 
 #include <Rtypes.h>
+#include <iostream>
 
 #include "ComplexEvent.h"
 #include "Cout.h"
@@ -39,30 +40,37 @@ namespace HalOTF {
     std::vector<TString> legendLine;
     legendLine.push_back("TaskNo");
     legendLine.push_back("ClassName");
-    for (int i = 0; i < maxId; i++) {
-      legendLine.push_back(Form("%i", i));
-    }
-    Hal::Cout::Database(legendLine);
+    TString links;
+    for (int i = 0; i <= maxId; i++)
+      links = links + Form("%2d ", i);
+    legendLine.push_back(links);
+    std::cout << Hal::Cout::GetColor(kWhite);
+    Hal::Cout::Database(legendLine, {7, 50}, "R");
     int count = 0;
     for (auto i : fSubTasks) {
       auto vec = i->GetGeneratorsId();
       std::vector<TString> line;
       line.push_back(Form("%i", count++));
       line.push_back(i->ClassName());
-      for (int a = 0; a < maxId; a++) {
+      TString innerlinks;
+      for (int a = 0; a <= maxId; a++) {
         Bool_t active = false;
         for (auto el : vec) {
-          if (el == a) active = true;
-          break;
+          if (el == a) {
+            active = true;
+            break;
+          }
         }
         if (active) {
-          line.push_back("Active");
+          innerlinks = innerlinks + " + ";
         } else {
-          line.push_back("Passive");
+          innerlinks = innerlinks + " - ";
         }
       }
-      Hal::Cout::Database(line);
+      line.push_back(innerlinks);
+      Hal::Cout::Database(line, {7, 50}, "R");
     }
+    std::cout << Hal::Cout::GetDisableColor();
     return Hal::Task::EInitFlag::kSUCCESS;
   }
 

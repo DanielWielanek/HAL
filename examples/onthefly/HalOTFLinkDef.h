@@ -29,11 +29,13 @@
 #pragma link C++ class HalOTF::Source + ;
 #pragma link C++ class HalOTF::EventGeneratorDecayer + ;
 
-#pragma link C++ class HalOTF::DetectorHits + ;
-#pragma link C++ class HalOTF::DetectorHitsA + ;
-#pragma link C++ class HalOTF::DetectorHitsB + ;
-#pragma link C++ class HalOTF::DetectorHitsC + ;
-#pragma link C++ class HalOTF::DetectorHitsABCSum + ;
+#pragma link C++ class HalOTF::DetectorHitsCut + ;
+#pragma link C++ class HalOTF::DetectorHitsACut + ;
+#pragma link C++ class HalOTF::DetectorHitsBCut + ;
+#pragma link C++ class HalOTF::DetectorHitsCCut + ;
+#pragma link C++ class HalOTF::DetectorHitsCCut + ;
+#pragma link C++ class HalOTF::DetectorHitsABCSumCut + ;
+#pragma link C++ class HalOTF::PidHypoCut + ;
 #pragma link C++ class HalOTF::EfficientyKin + ;
 #pragma link C++ class HalOTF::EfficiencyYPt + ;
 #pragma link C++ class HalOTF::EfficiencyEtaPt + ;

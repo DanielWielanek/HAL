@@ -41,7 +41,8 @@ OTFSource.cxx
 generators/OTFEventGenerator.cxx
 generators/OTFEventGeneratorDecay.cxx
 generators/OTFEventGeneratorDecayer.cxx
-cuts/OTFDetectorHits.cxx
+cuts/OTFDetectorHitsCut.cxx
+cuts/OTFPidHypoCut.cxx
 experiment/OTFEfficiency.cxx
 experiment/OTFExperiment.cxx
 experiment/OTFExperimentSubTask.cxx

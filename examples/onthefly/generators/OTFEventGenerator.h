@@ -38,7 +38,6 @@ namespace HalOTF {
     Int_t fCurrrentMult        = {0};
     Int_t fGeneratorId         = {0};
     Double_t fMass             = {0};
-    Double_t fSmear            = {0};
     OTF::McEvent* fMcEvent     = {nullptr};
     OTF::RecoEvent* fRecoEvent = {nullptr};
     virtual void GenerateEvent();
@@ -70,10 +69,6 @@ namespace HalOTF {
     void SetMultHisto(TH1D& h);
     /** fixes multiplicity  */
     void SetFixMult(Int_t mult);
-    /**
-     * set momentum smearing
-     */
-    void SetSmear(Double_t smear) { fSmear = smear; }
     void SetEvents(OTF::McEvent* mc, OTF::RecoEvent* reco) {
       fRecoEvent = reco;
       fMcEvent   = mc;

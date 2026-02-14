@@ -47,9 +47,6 @@ namespace HalOTF { /* namespace Hal */
       fMcEvent->AddTrack(tr);
 
       OTF::RecoTrack rtr;
-      px         = px + gRandom->Gaus(0, fSmear) * px;
-      py         = py + gRandom->Gaus(0, fSmear) * py;
-      pz         = pz + gRandom->Gaus(0, fSmear) * pz;
       Double_t e = TMath::Sqrt(px * px + py * py + pz * pz + fMass * fMass);
       rtr.SetMom(px, py, pz, e);
       rtr.SetNHitsA(2);
@@ -77,7 +74,7 @@ namespace HalOTF { /* namespace Hal */
     fSpectras = copy;
     fPids     = pid;
     fMass     = part->Mass();
-    fCharge   = part->Charge() * 3;
+    fCharge   = part->Charge() / 3;
   }
 
   void EventGenerator::SetMultHisto(TH1D& h) {

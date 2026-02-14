@@ -62,9 +62,6 @@ namespace HalOTF {
       double px  = tr.GetMomentum().Px();
       double py  = tr.GetMomentum().Py();
       double pz  = tr.GetMomentum().Pz();
-      px         = px + gRandom->Gaus(0, fSmear) * px;
-      py         = py + gRandom->Gaus(0, fSmear) * py;
-      pz         = pz + gRandom->Gaus(0, fSmear) * pz;
       Double_t e = TMath::Sqrt(px * px + py * py + pz * pz + fMass * fMass);
       rtr.SetMom(px, py, pz, e);
       rtr.SetNHitsA(2);

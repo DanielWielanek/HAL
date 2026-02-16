@@ -139,12 +139,12 @@ namespace Hal {
     if (Find(EBitFlag::kDecimal)) obj.SetDecimals(GetI(EBitFlag::kDecimal));
     if (Find(EBitFlag::kNoExp)) obj.SetNoExponent(GetI(EBitFlag::kNoExp));
     if (Find(EBitFlag::kHideLow) && GetI(EBitFlag::kHideLow)) {
-      int last = 1;
-      obj.ChangeLabel(1, -1, -1, -1, kWhite, 0, " ");
+      int last = obj.GetFirst();
+      obj.ChangeLabel(last, -1, -1, -1, kWhite, 0, " ");
     }
     if (Find(EBitFlag::kHideHigh) && GetI(EBitFlag::kHideHigh)) {
-      int last = obj.GetNbins();
-      obj.ChangeLabel(1, -1, -1, -1, kWhite, 0, " ");
+      int last = obj.GetLast();
+      obj.ChangeLabel(last, -1, -1, -1, kWhite, 0, " ");
     }
   };
 

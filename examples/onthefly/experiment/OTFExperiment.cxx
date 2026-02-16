@@ -26,7 +26,7 @@ namespace HalOTF {
 
   Hal::Task::EInitFlag Experiment::Init() {
     auto datamanager = Hal::DataManager::Instance();
-    fCurrentEvent    = dynamic_cast<Hal::ComplexEvent*>(datamanager->GetObject("HalEvent."));
+    fCurrentEvent    = dynamic_cast<Hal::ComplexEvent*>(datamanager->GetObject(Hal::Const::DefaultBranchName()));
     if (!fCurrentEvent) return Hal::Task::EInitFlag::kERROR;
     for (auto i : fSubTasks) {
       if (i->Init() == false) return Hal::Task::EInitFlag::kERROR;

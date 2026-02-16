@@ -72,6 +72,11 @@ namespace Hal {
     inline static Double_t Sqrt3Over() { return 0.57735026918962584208117050366127; };
     inline static Double_t SqrtPi() { return 1.77245385090551588191942755656783; };
     inline static Double_t DummyVal() { return -9999999; }
+    /**
+     * Default branch name for readers
+     * @return
+     */
+    inline static TString DefaultBranchName() { return "HalEvent."; }
     virtual ~Const();
     ClassDef(Const, 1)
   };

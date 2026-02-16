@@ -38,7 +38,7 @@ namespace Hal {
     fInterface = fEvent->CreateInterface();
     fInterface->ConnectToTree(EventInterface::eMode::kRead);
     DataManager* manager = DataManager::Instance();
-    manager->Register("HalEvent.", "HalEvents", fEvent, kFALSE);
+    manager->Register(Hal::Const::DefaultBranchName(), "HalEvents", fEvent, kFALSE);
     Cout::PrintInfo(Form("Register branch from reader called %s", fEvent->ClassName()), EInfo::kInfo);
     return Task::EInitFlag::kSUCCESS;
   }

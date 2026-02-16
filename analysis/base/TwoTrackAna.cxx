@@ -906,7 +906,7 @@ namespace Hal {
     std::vector<TString> brName;
     if (TESTBIT(fFormatOption, eBitFormat::kReader)) {
       Hal::Cout::PrintInfo("EventAna: InitMemoryMap - push to reader mode", EInfo::kDebugInfo);
-      brName.push_back("HalEvent.");
+      brName.push_back(Hal::Const::DefaultBranchName());
     } else if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {
       TString evName = DataFormatManager::Instance()->GetFormat(GetTaskID())->ClassName();
       brName.push_back(Form("%s.", evName.Data()));

@@ -90,7 +90,7 @@ namespace Hal {
   Event* DataFormatManager::FindReaderFormat() {
     DataManager* datamanager = DataManager::Instance();
     Event* event             = nullptr;
-    event                    = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent."));
+    event                    = dynamic_cast<Hal::Event*>(datamanager->GetObject(Hal::Const::DefaultBranchName()));
     if (event != nullptr) return event;
     auto branchList = datamanager->GetBranchNameList();
     for (auto branch : branchList) {

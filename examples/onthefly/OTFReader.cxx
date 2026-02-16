@@ -53,7 +53,7 @@ namespace HalOTF {
           return Hal::Task::EInitFlag::kERROR;
         } else {
           fHalMcEvent = new HalOTF::McEvent();
-          mng->Register("HalEvent.", "HalEvents", fHalMcEvent, kFALSE);
+          mng->Register(Hal::Const::DefaultBranchName(), "HalEvents", fHalMcEvent, kFALSE);
           fTranslateInterface = fHalMcEvent->CreateInterface();
         }
       } break;
@@ -62,7 +62,7 @@ namespace HalOTF {
           return Hal::Task::EInitFlag::kERROR;
         } else {
           fHalRecoEvent = new HalOTF::RecoEvent();
-          mng->Register("HalEvent.", "HalEvents", fHalRecoEvent, kFALSE);
+          mng->Register(Hal::Const::DefaultBranchName(), "HalEvents", fHalRecoEvent, kFALSE);
           fTranslateInterface = fHalRecoEvent->CreateInterface();
         }
       } break;
@@ -71,7 +71,7 @@ namespace HalOTF {
           return Hal::Task::EInitFlag::kERROR;
         } else {
           fHalComplexEvent = new HalOTF::ComplexEvent();
-          mng->Register("HalEvent.", "HalEvents", fHalComplexEvent, kFALSE);
+          mng->Register(Hal::Const::DefaultBranchName(), "HalEvents", fHalComplexEvent, kFALSE);
           fTranslateInterface = fHalComplexEvent->CreateInterface();
         }
       } break;

@@ -23,7 +23,7 @@ namespace HalUni {
     fInterface = (UnigenEventInterface*) fUniEvent->CreateInterface();
     fInterface->ConnectToTree(Hal::EventInterface::eMode::kRead);
     Hal::DataManager* mng = Hal::DataManager::Instance();
-    mng->Register("HalEvent.", "HalEvents", fUniEvent, kFALSE);
+    mng->Register(Hal::Const::DefaultBranchName(), "HalEvents", fUniEvent, kFALSE);
     if (!fUniEvent->ExistInTree()) { return Hal::Task::EInitFlag::kFATAL; }
 
     return Hal::Task::EInitFlag::kSUCCESS;

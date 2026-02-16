@@ -349,7 +349,7 @@ namespace Hal {
     }
     if (TESTBIT(fFormatOption, eBitFormat::kReader)) {  // use reader data
       Event* event = nullptr;
-      event        = dynamic_cast<Hal::Event*>(datamanager->GetObject("HalEvent."));
+      event        = dynamic_cast<Hal::Event*>(datamanager->GetObject(Hal::Const::DefaultBranchName()));
       if (event) {
         Cout::PrintInfo("EventAna: L1 format from reader has been found", EInfo::kInfo);
         formatManager->SetFormat(event->GetNewEvent(), GetTaskID(), EFormatDepth::kNonBuffered, kTRUE);
@@ -401,7 +401,7 @@ namespace Hal {
     std::vector<TString> brName;
     if (TESTBIT(fFormatOption, eBitFormat::kReader)) {
       Hal::Cout::PrintInfo("EventAna: InitMemoryMap - push to reader mode", EInfo::kDebugInfo);
-      brName.push_back("HalEvent.");
+      brName.push_back(Hal::Const::DefaultBranchName());
     } else if (TESTBIT(fFormatOption, eBitFormat::kDirectAcesss)) {
       TString evName = DataFormatManager::Instance()->GetFormat(GetTaskID())->ClassName();
       brName.push_back(Form("%s.", evName.Data()));

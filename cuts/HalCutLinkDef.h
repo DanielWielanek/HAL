@@ -207,6 +207,10 @@
 
 #pragma link C++ class Hal::MonitorYPt + ;
 #pragma link C++ class Hal::MonitorEtaPt + ;
+#pragma link C++ class Hal::MonitorYPtReco + ;
+#pragma link C++ class Hal::MonitorEtaPtReco + ;
+#pragma link C++ class Hal::MonitorYPtMc + ;
+#pragma link C++ class Hal::MonitorEtaPtMc + ;
 #pragma link C++ class Hal::MonitorTofM2 + ;
 #pragma link C++ class Hal::MonitorTofBeta + ;
 #pragma link C++ class Hal::MonitorResoP + ;

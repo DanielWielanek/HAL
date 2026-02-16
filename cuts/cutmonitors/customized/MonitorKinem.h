@@ -29,7 +29,43 @@ namespace Hal {
     virtual ~MonitorEtaPt() {};
     ClassDef(MonitorEtaPt, 1)
   };
+  /**
+   * monitor to plot rapidity vs pt - reconstructed, requires complex format
+   */
+  class MonitorYPtReco : public TrackFieldMonitorXY {
+  public:
+    MonitorYPtReco();
+    virtual ~MonitorYPtReco() {};
+    ClassDef(MonitorYPtReco, 1)
+  };
+  /**
+   * monitor to plot pseudorapidity vs pt - reconstructed, requires complex format
+   */
+  class MonitorEtaPtReco : public TrackFieldMonitorXY {
+  public:
+    MonitorEtaPtReco();
+    virtual ~MonitorEtaPtReco() {};
+    ClassDef(MonitorEtaPtReco, 1)
+  };
 
+  /**
+   * monitor to plot rapidity vs pt - simulated, requires complex format
+   */
+  class MonitorYPtMc : public TrackFieldMonitorXY {
+  public:
+    MonitorYPtMc();
+    virtual ~MonitorYPtMc() {};
+    ClassDef(MonitorYPtMc, 1)
+  };
+  /**
+   * monitor to plot pseudorapidity vs pt - simulated, requires complex format
+   */
+  class MonitorEtaPtMc : public TrackFieldMonitorXY {
+  public:
+    MonitorEtaPtMc();
+    virtual ~MonitorEtaPtMc() {};
+    ClassDef(MonitorEtaPtMc, 1)
+  };
 } /* namespace Hal */
 
 #endif /* HAL_CUTS_CUTMONITORS_CUSTOMIZED_MONITORTRACKKINEM_H_ */

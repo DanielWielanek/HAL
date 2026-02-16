@@ -33,4 +33,34 @@ namespace Hal {
     SetYaxis(200, 0, 4);
   }
 
+  MonitorEtaPtReco::MonitorEtaPtReco() :
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kEta + Hal::DataFieldID::ReStep,
+                        Hal::DataFieldID::Track::EBasic::kPt + Hal::DataFieldID::ReStep) {
+    SetXaxis(200, -2, 2);
+    SetYaxis(200, 0, 4);
+  }
+
+
+  MonitorYPtReco::MonitorYPtReco() :
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kRapidity + Hal::DataFieldID::ReStep,
+                        Hal::DataFieldID::Track::EBasic::kPt + Hal::DataFieldID::ReStep) {
+    SetXaxis(200, -2, 2);
+    SetYaxis(200, 0, 4);
+  }
+
+  MonitorEtaPtMc::MonitorEtaPtMc() :
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kEta + Hal::DataFieldID::ImStep,
+                        Hal::DataFieldID::Track::EBasic::kPt + Hal::DataFieldID::ImStep) {
+    SetXaxis(200, -2, 2);
+    SetYaxis(200, 0, 4);
+  }
+
+
+  MonitorYPtMc::MonitorYPtMc() :
+    TrackFieldMonitorXY(Hal::DataFieldID::Track::EBasic::kRapidity + Hal::DataFieldID::ImStep,
+                        Hal::DataFieldID::Track::EBasic::kPt + Hal::DataFieldID::ImStep) {
+    SetXaxis(200, -2, 2);
+    SetYaxis(200, 0, 4);
+  }
+
 } /* namespace Hal */

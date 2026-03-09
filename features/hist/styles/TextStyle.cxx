@@ -11,7 +11,14 @@
 
 namespace Hal {
 
-  TextStyle::TextStyle() {}
+  TextStyle::TextStyle(TString style) {
+    if (style.Contains("black")) { SetColor(kWhite); }
+    if (style.Contains("apollo")) { SetFont(82); }
+    if (style.Contains("08")) { SetSize(0.08); }
+    if (style.Contains("07")) { SetSize(0.07); }
+    if (style.Contains("06")) { SetSize(0.06); }
+    if (style.Contains("05")) { SetSize(0.05); }
+  }
 
   void TextStyle::SetAlign(Int_t align) { SetI(BitFlag::kAlign, align); }
 

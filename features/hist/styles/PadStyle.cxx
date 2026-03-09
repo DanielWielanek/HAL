@@ -77,11 +77,11 @@ namespace Hal {
 
   Int_t PadStyle::GetFrameLineColor() const { return GetI(EBitFlag::kFrameLineColor); }
 
-  PadStyle::PadStyle(TString style) {
+  PadStyle::PadStyle(TString style) : Style(style) {
     if (Hal::Std::FindParam(style, "black")) {
       SetFillColor(kBlack);
       SetLineColor(kBlack);
-      SetFrameLineColor(kBlack);
+      SetFrameLineColor(kWhite);
     }
   }
 

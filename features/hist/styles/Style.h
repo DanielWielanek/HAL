@@ -39,6 +39,7 @@ namespace Hal {
     };
     std::array<Hal::Style::value, 64> fValues;
     ULong64_t fFlags = {0};
+    TString fName;
     void SetFloatInner(Int_t bit, Float_t val);
     void SetIntInner(Int_t bit, Int_t val);
     Float_t GetFloatInner(Int_t bit) const { return fValues[bit].sFval; }
@@ -93,6 +94,7 @@ namespace Hal {
 
   public:
     Style() {};
+    Style(TString name) : fName(name) {}
     /**
      * return true if value was set
      * @param bit
@@ -120,8 +122,38 @@ namespace Hal {
      * @param nodeName - name of node with configuration (child of root node)
      */
     void LoadFromXML(TString filename, TString nodeName);
+    TString GetName() const { return fName; }
+    void Rename(TString name) { fName = name; }
     virtual ~Style() {};
     ClassDef(Style, 1);
+  };
+
+
+  class HistoStyle;
+  class LegendStyle;
+  class PadStyle;
+  class TextStyle;
+  /**
+   * holds histogram, pad and legend style used by drawers
+   */
+  class Styles {
+    std::vector<Hal::HistoStyle*> fStyleHisto;
+    std::vector<Hal::LegendStyle*> fStyleLegend;
+    std::vector<Hal::PadStyle*> fStylePad;
+    std::vector<Hal::TextStyle*> fStyleText;
+
+  public:
+    Styles() {};
+    Styles(const Styles& other)      = delete;
+    Styles& operator=(const Styles&) = delete;
+    static Styles& Instance();
+    void RegisterStyle(const Hal::Style& style);
+    Hal::HistoStyle* GetHistoStyle(TString name) const;
+    Hal::LegendStyle* GetLegendStyle(TString name) const;
+    Hal::PadStyle* GetPadStyle(TString name) const;
+    Hal::TextStyle* GetTextStyle(TString name) const;
+    virtual ~Styles();
+    ClassDef(Styles, 1)
   };
 
 

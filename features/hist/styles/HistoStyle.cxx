@@ -241,7 +241,7 @@ namespace Hal {
     }
   }
 
-  HistoStyle::HistoStyle(TString style) {
+  HistoStyle::HistoStyle(TString style) : Style(style) {
     if (style.Length() == 0) return;
     if (Hal::Std::FindParam(style, "circle", kTRUE)) GetMarkerStyle().SetStyle(kFullCircle);
     if (Hal::Std::FindParam(style, "center", kTRUE)) {

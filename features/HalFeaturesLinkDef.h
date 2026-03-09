@@ -112,6 +112,7 @@
 #pragma link C++ class Hal::FastHist2D + ;
 #pragma link C++ class Hal::FastHist3D + ;
 #pragma link C++ class Hal::Style + ;
+#pragma link C++ class Hal::Styles + ;
 #pragma link C++ class Hal::PadStyle + ;
 #pragma link C++ class Hal::MarkerStyle + ;
 #pragma link C++ class Hal::LineStyle + ;

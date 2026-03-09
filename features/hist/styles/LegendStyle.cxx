@@ -47,7 +47,7 @@ namespace Hal {
     if (auto child = node.GetChild("TextStyle"); !child.IsNull()) { fText.ImportFromXML(child); }
   }
 
-  LegendStyle::LegendStyle(TString style) {
+  LegendStyle::LegendStyle(TString style) : Style(style) {
     if (style.Length() == 0) return;
     if (Hal::Std::FindParam(style, "apollo", kTRUE)) { fText.SetFont(82); }
     if (Hal::Std::FindParam(style, "05", kTRUE)) { fText.SetSize(0.05); }

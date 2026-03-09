@@ -16,7 +16,7 @@ namespace Hal {
   class TextStyle : public Style {
   public:
     enum class BitFlag : Int_t { kColor, kAngle, kFont, kSize, kAlign };
-    TextStyle();
+    TextStyle(TString style = "");
     void Apply(TAttText& st) const;
     void SetAlign(Int_t align);
     void SetAngle(Float_t angle);

@@ -15,6 +15,7 @@
 #include <TVirtualPad.h>
 #include <iostream>
 
+#include "HistoStyle.h"
 #include "Options.h"
 #include "Std.h"
 
@@ -121,20 +122,30 @@ namespace Hal {
       fHistograms.push_back({CloneHist(fHisto->GetDen())});
       fHistograms.push_back({CloneHist(fHisto->GetHist(CheckOpt(kScaleBit)))});
       auto num = CloneHist(CloneHist(fHisto->GetNum()));
+      auto den = CloneHist(CloneHist(fHisto->GetDen()));
+      if (GetHistoStyle()) {
+        GetHistoStyle()->Apply(*num);
+        GetHistoStyle()->Apply(*den);
+      }
       num->SetLineColor(kGreen);
       num->SetMarkerColor(kGreen);
-      auto den = CloneHist(CloneHist(fHisto->GetDen()));
       den->SetLineColor(kRed);
       den->SetMarkerColor(kRed);
       fHistograms.push_back({num, den});
     } else if (CheckOpt(kDenBit)) {
-      row1.push_back(CloneHist(fHisto->GetDen()));
+      auto x = CloneHist(fHisto->GetDen());
+      if (GetHistoStyle()) GetHistoStyle()->Apply(*x);
+      row1.push_back(x);
       fHistograms.push_back(row1);
     } else if (CheckOpt(kNumBit)) {
-      row1.push_back(CloneHist(fHisto->GetNum()));
+      auto x = CloneHist(fHisto->GetNum());
+      if (GetHistoStyle()) GetHistoStyle()->Apply(*x);
+      row1.push_back(x);
       fHistograms.push_back(row1);
     } else {
-      row1.push_back(CloneHist(fHisto->GetHist(CheckOpt(kScaleBit))));
+      auto x = CloneHist(fHisto->GetHist(CheckOpt(kScaleBit)));
+      if (GetHistoStyle()) GetHistoStyle()->Apply(*x);
+      row1.push_back(x);
       fHistograms.push_back(row1);
     }
   }

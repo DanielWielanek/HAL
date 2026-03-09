@@ -23,6 +23,7 @@ class TVirtualPad;
 namespace Hal {
   class Style;
   class PadStyle;
+  class LegendStyle;
   class HistoStyle;
   class Options;
   /**
@@ -43,9 +44,11 @@ namespace Hal {
     static commonPointers gCommonData;
     TVirtualPad* fTempPad = {nullptr};
     std::vector<Painter*> fSubPainters;
-    Hal::PadStyle* fPadStyle = {nullptr};
-    Bool_t fPainted          = {kFALSE};
-    ULong64_t fDrawFlags     = {0};
+    Hal::PadStyle* fPadStyle       = {nullptr};
+    Hal::HistoStyle* fHistoStyle   = {nullptr};
+    Hal::LegendStyle* fLegendStyle = {nullptr};
+    Bool_t fPainted                = {kFALSE};
+    ULong64_t fDrawFlags           = {0};
 
     void TryPaint();
 
@@ -56,6 +59,9 @@ namespace Hal {
     static const int kSameBit;
     static const int kBrowserBit;
     static const int kLastBitPainter;
+    Hal::HistoStyle* GetHistoStyle() const { return fHistoStyle; }
+    Hal::LegendStyle* GetLegendStyle() const { return fLegendStyle; }
+    Hal::PadStyle* GetPadStyle() const { return fPadStyle; }
     /**
      * this should be true if draw flags were changed
      */

@@ -9,6 +9,7 @@
 
 #include "Cout.h"
 #include "Femto3DCF.h"
+#include "HistoStyle.h"
 #include "Options.h"
 #include "Std.h"
 #include "StdHist.h"
@@ -153,6 +154,7 @@ namespace Hal {
       std::vector<TH1*> histVec;
       histVec.push_back(histo);
       Hal::Std::CopyAxisProp(fCF->GetNum()->GetXaxis(), histo->GetYaxis(), "!tit");
+      if (GetHistoStyle()) GetHistoStyle()->Apply(*histo);
       fHistograms.push_back(histVec);
     }
   }
@@ -209,6 +211,7 @@ namespace Hal {
       std::vector<TH1*> histVec;
       histVec.push_back(histo);
       Hal::Std::CopyAxisProp(fCF->GetNum()->GetXaxis(), histo->GetYaxis(), "!tit");
+      if (GetHistoStyle()) GetHistoStyle()->Apply(*histo);
       if (fRangeX[0] != fRangeX[1]) { histo->GetXaxis()->SetRangeUser(fRangeX[0], fRangeX[1]); }
       fHistograms.push_back(histVec);
     }
@@ -233,6 +236,7 @@ namespace Hal {
       xTitle         = xTitle.ReplaceAll("[GeV/c]", "");
       hist->SetYTitle(Form("C(%s)", xTitle.Data()));
       hist->SetXTitle(Form("%s [GeV/c]", xTitle.Data()));
+      if (GetHistoStyle()) GetHistoStyle()->Apply(*hist);
       std::vector<TH1*> histVec;
       histVec.push_back(hist);
       if (fRangeY[0] != fRangeY[1]) {
@@ -276,6 +280,7 @@ namespace Hal {
         xTitle         = xTitle.ReplaceAll("[GeV/c]", "");
         histo->SetYTitle(Form("C(%s)", xTitle.Data()));
         histo->SetXTitle(Form("%s [GeV/c]", xTitle.Data()));
+        if (GetHistoStyle()) GetHistoStyle()->Apply(*histo);
         if (fRangeY[0] != fRangeY[1]) {
           histo->SetMaximum(fRangeY[1]);
           histo->SetMinimum(fRangeY[0]);
@@ -298,6 +303,7 @@ namespace Hal {
         out_side->SetMaximum(fRangeZ[1]);
         out_side->SetMinimum(fRangeZ[0]);
       }
+      if (GetHistoStyle()) GetHistoStyle()->Apply(*out_side);
       std::vector<TH1*> histVec;
       histVec.push_back(out_side);
       fHistograms.push_back(histVec);

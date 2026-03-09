@@ -6,19 +6,24 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
+
 #include "Painter.h"
 
+#include <Rtypes.h>
+#include <RtypesCore.h>
+#include <TCanvas.h>
+#include <TROOT.h>
+#include <TVirtualPad.h>
+#include <initializer_list>
 #include <iostream>
-#include <vector>
 
 #include "Cout.h"  //KURWA
+#include "HistoStyle.h"
+#include "LegendStyle.h"
 #include "Options.h"
 #include "PadStyle.h"
 #include "StdString.h"
 #include "Style.h"
-
-#include <TCanvas.h>
-#include <TROOT.h>
 
 namespace Hal {
   const int Painter::kHtmlBit                  = 0;
@@ -39,6 +44,9 @@ namespace Hal {
     CleanCommonData();
     for (auto x : fSubPainters)
       delete x;
+    if (fPadStyle) delete fPadStyle;
+    if (fHistoStyle) delete fHistoStyle;
+    if (fLegendStyle) delete fLegendStyle;
   }
 
   void Painter::AddPainter(Painter* painter) {
@@ -195,7 +203,15 @@ namespace Hal {
       fPredefinedStyle = fPredefinedStyle.ReplaceAll("&", "+");
     }
 
-    if (fPredefinedStyle.Length()) { fPadStyle = new Hal::PadStyle(fPredefinedStyle); }
+    if (fPredefinedStyle.Length()) {
+      auto pad = Hal::Styles::Instance().GetPadStyle(fPredefinedStyle);
+      if (pad) fPadStyle = new Hal::PadStyle(*pad);  // make copy pad style
+      if (!fPadStyle) fPadStyle = new Hal::PadStyle(fPredefinedStyle);
+      auto legend = Hal::Styles::Instance().GetLegendStyle(fPredefinedStyle);
+      if (legend) fLegendStyle = new Hal::LegendStyle(*legend);
+      auto histo = Hal::Styles::Instance().GetHistoStyle(fPredefinedStyle);
+      if (histo) fHistoStyle = new Hal::HistoStyle(*histo);
+    }
     if (opt.HasOption("skip")) return;
     if (opt.HasOption("default!")) {
       SetDefaultFlag();
@@ -203,11 +219,16 @@ namespace Hal {
     }
 
 
-    if (opt.HasOption("grid")) {
-      Hal::PadStyle style;
-      style.SetGridx(1);
-      style.SetGridy(1);
-      SetGlobalPadStyle(style);
+    if (opt.HasOption("grid") && !fPadStyle) {
+      if (!fPadStyle) {
+        Hal::PadStyle style;
+        style.SetGridx(1);
+        style.SetGridy(1);
+        SetGlobalPadStyle(style);
+      } else {
+        fPadStyle->SetGridx(1);
+        fPadStyle->SetGridy(1);
+      }
     }
     Bool_t logs[] = {kFALSE, kFALSE, kFALSE};
     if (opt.HasOption("logx")) logs[0] = kTRUE;

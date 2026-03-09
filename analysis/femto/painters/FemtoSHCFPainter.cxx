@@ -90,11 +90,13 @@ namespace Hal {
     if (res.first) {
       res.first = CloneHist(res.first);
       Hal::Std::CopyHistProp(*fSHCF->GetNum(), *res.first, "!tit");
+      if (GetHistoStyle()) { GetHistoStyle()->Apply(*res.first); }
       if (res.first) SetHistRanges(res.first, l);
     }
     if (res.second) {
       res.second = CloneHist(res.second);
       Hal::Std::CopyHistProp(*fSHCF->GetNum(), *res.second, "!tit");
+      if (GetHistoStyle()) { GetHistoStyle()->Apply(*res.second); }
       if (res.second) SetHistRanges(res.second, l);
     }
     // fix colors

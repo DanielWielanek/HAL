@@ -12,6 +12,7 @@
 #include <TString.h>
 
 #include "Femto1DCF.h"
+#include "HistoStyle.h"
 #include "StdHist.h"
 #include "StdString.h"
 
@@ -24,6 +25,11 @@ namespace Hal {
     if (CheckOpt(kDenBit)) { hist.push_back(CloneHist(fCF->GetDen())); }
     if (CheckOpt(kNumBit)) { hist.push_back(CloneHist(fCF->GetNum())); }
     if (CheckOpt(kCFBit)) { hist.push_back(fCF->GetHist(false)); }
+    if (GetHistoStyle()) {
+      for (auto x : hist) {
+        GetHistoStyle()->Apply(*x);
+      }
+    }
     if (hist.size() == 2) {
       Hal::Std::SetColor(*hist[0], kGreen);
       Hal::Std::SetColor(*hist[1], kRed);

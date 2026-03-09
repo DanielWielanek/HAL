@@ -23,7 +23,7 @@ namespace HalOTF {
   std::vector<std::pair<TString, Double_t>> DetectorHitsCut::GetBinLabels(Int_t par) const {
     std::vector<std::pair<TString, Double_t>> res;
     std::pair<TString, Double_t> data;
-    data.first  = "Undected";
+    data.first  = "Undetected";
     data.second = 0;
     res.push_back(data);
     data.first  = "Modified";
@@ -57,7 +57,7 @@ namespace HalOTF {
     return Validate();
   }
 
-  DetectorHitsCCut::DetectorHitsCCut() : DetectorHitsCut(1) { SetUnitName("NHits_{A} [AU]"); }
+  DetectorHitsCCut::DetectorHitsCCut() : DetectorHitsCut(1) { SetUnitName("NHits_{C} [AU]"); }
 
   Bool_t DetectorHitsCCut::Pass(Hal::Track* track) {
     auto tr = (HalOTF::RecoTrack*) track;

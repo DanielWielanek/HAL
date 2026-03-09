@@ -25,58 +25,21 @@ namespace HalOTF {
 
   void EventGeneratorDecayer::GenerateEvent() {
     TDatabasePDG* db = TDatabasePDG::Instance();
-    auto makeReco    = [&](OTF::McTrack& tr) {
-      OTF::RecoTrack rtr;
-      double px  = tr.GetMomentum().Px();
-      double py  = tr.GetMomentum().Py();
-      double pz  = tr.GetMomentum().Pz();
-      Double_t e = TMath::Sqrt(px * px + py * py + pz * pz + fMass * fMass);
-      rtr.SetMom(px, py, pz, e);
-      rtr.SetNHitsA(2);
-      rtr.SetNHitsB(2);
-      rtr.SetNHitsC(2);
-      rtr.SetPidHypo(tr.GetPdgCode());
-
-      auto pid = db->GetParticle(tr.GetPdgCode());
-      if (pid) {
-        rtr.SetCharge(pid->Charge() / 3.0);
-      } else {
-        rtr.SetCharge(0);
-      }
-      return rtr;
-    };
-    auto makeSim = [](Hal::McTrack tr) {
-      OTF::McTrack trx;
-      trx.SetMomentum(tr.GetMomentum());
-      trx.SetFreezeout(tr.GetFreezeoutPosition());
-      trx.SetPdgCode(tr.GetPdg());
-      trx.SetMotherId(tr.GetMotherIndex());
-      return trx;
-    };
-    int tracks = fMcEvent->GetNTracks();
+    int tracks       = fMcEvent->GetNTracks();
     for (int i = 0; i < tracks; i++) {
       auto track = fMcEvent->GetTrack(i);
       if (track->GetPdgCode() != fDecayer->GetMotherPdg()) continue;  // stable particle
-      Hal::McTrack mommy;
-      mommy.SetMomentum(track->GetMomentum().X(), track->GetMomentum().Y(), track->GetMomentum().Z(), track->GetMomentum().T());
-      mommy.SetFreezeoutPosition(
-        track->GetFreezeout().X(), track->GetFreezeout().Y(), track->GetFreezeout().Z(), track->GetFreezeout().T());
-      mommy.SetPdg(track->GetPdgCode());
-      int nDau = fDecayer->DecayParticle(mommy, fDaughters, kFALSE);
+      Hal::McTrack mommy = OTF::Std::OTFMcToHalMc(*track);
+      int nDau           = fDecayer->DecayParticle(mommy, fDaughters, kFALSE);
 
       for (int j = 0; j < nDau; j++) {
         auto dau = fDaughters[j];
         dau->SetMotherIndex(i);
-        auto daughter = makeSim(*dau);
+        auto daughter = OTF::Std::HalMcToOTFMc(*dau);
         daughter.SetGeneratorId(track->GetGeneratorId());
         fMcEvent->AddTrack(daughter);
-        auto reco = makeReco(daughter);
+        auto reco = OTF::Std::HalMcToOTFReco(daughter);
         reco.SetMcIndex(fMcEvent->GetNTracks() - 1);
-        reco.SetGeneratorId(track->GetGeneratorId());
-        reco.SetPidHypo(dau->GetPdg());
-        reco.SetNHitsA(2);
-        reco.SetNHitsB(2);
-        reco.SetNHitsC(2);
         fRecoEvent->AddTrack(reco);
       }
     }

@@ -51,8 +51,9 @@ namespace Hal {
     Hal::CorrFitMapKstarRstar* GetMap() { return fSmearedMap; };
     /**
      * do mathematical calculations to get smearing map
+     * @param unsmear - try to unsmear denominator to have more reliable weights
      */
-    void Calculate();
+    void Calculate(Bool_t unsmear = false);
     /**
      *
      * @return correction C_unsmeared/C_smeared

@@ -13,10 +13,13 @@
 
 #include "CorrFitMapKstarRstar.h"
 #include "Cout.h"
+#include "DividedHisto.h"
 #include "Femto1DCF.h"
 #include "SmearAlgo.h"
 #include "StdHist.h"
 #include "StdTypes.h"
+
+#include <iostream>
 
 namespace Hal {
 
@@ -26,7 +29,7 @@ namespace Hal {
     fInputMap = (Hal::CorrFitMapKstarRstar*) map.Clone();
   }
 
-  void CorrFit1DSmearing::Calculate() {
+  void CorrFit1DSmearing::Calculate(Bool_t unsmear) {
 
 
     auto CF_unsmeared    = fInputMap->GetHisto();
@@ -53,7 +56,14 @@ namespace Hal {
 
     Hal::SmearAlgoMatrix Algo;
     Algo.SetSmearMatrix(*fSmearingMap);
-
+    if (unsmear) {
+      auto prev      = rawDenominator;
+      rawDenominator = Algo.GetUnsmeared(*rawDenominator);
+      delete prev;
+    }
+    auto div                    = dynamic_cast<Hal::CorrFitMapKstarRstarDiv*>(fSmearedMap);
+    Hal::DividedHisto2D* ratioH = nullptr;
+    if (div) { ratioH = (Hal::DividedHisto2D*) div->GetDividedHisto(); }
     for (int i = 1; i <= CF_unsmeared->GetNbinsY(); i++) {
       TH1D* sliceNum = Hal::Std::GetProjection1D(CF_unsmeared, i, i, "bins+x");
       TH1D* sliceDen = Hal::Std::GetProjection1D(CF_unsmeared, i, i, "bins+x");
@@ -71,11 +81,13 @@ namespace Hal {
         if (DenVal == 0) {
           C_smeared->SetBinContent(j, i, OriVal);
           fRatio->SetBinContent(j, i, 1);
+          if (ratioH) { ratioH->GetNum()->SetBinContent(j, i, ratioH->GetDen()->GetBinContent(j, i) * OriVal); }
         } else {
           double smearedVal = NumVal / DenVal;
           double ratio      = OriVal / smearedVal;
           C_smeared->SetBinContent(j, i, smearedVal);
           fRatio->SetBinContent(j, i, ratio);
+          if (ratioH) { ratioH->GetNum()->SetBinContent(j, i, ratioH->GetDen()->GetBinContent(j, i) * smearedVal); }
         }
       }
       delete sliceNum;

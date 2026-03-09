@@ -1004,7 +1004,7 @@ NamespaceImp(Hal::Std)
       }
     }
 
-    void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2) {
+    void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2, TString opt) {
       if (!gPad) {
         Hal::Cout::PrintInfo("Hal::Std::SetRainbow, pad not found, did you forgot to draw histogram before? ", EInfo::kError);
         return;
@@ -1015,10 +1015,17 @@ NamespaceImp(Hal::Std)
         Hal::Cout::PrintInfo("Hal::Std::SetRainbow, palette not found, did you forgot to draw histogram before?", EInfo::kError);
         return;
       }
-      palette->SetX1NDC(x1);
-      palette->SetX2NDC(x2);
-      palette->SetY1NDC(y1);
-      palette->SetY2NDC(y2);
+      if (Hal::Std::FindParam(opt, "nc")) {
+        palette->SetX1NDC(x1);
+        palette->SetX2NDC(x2);
+        palette->SetY1NDC(y1);
+        palette->SetY2NDC(y2);
+      } else {
+        palette->SetX1(x1);
+        palette->SetX2(x2);
+        palette->SetY1(y1);
+        palette->SetY2(y2);
+      }
       gPad->Modified();
       gPad->Update();
     }

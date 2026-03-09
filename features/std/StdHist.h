@@ -257,8 +257,9 @@ namespace Hal {
      * @param y1
      * @param x2
      * @param y2
+     * @param opt "ndc" - use normalize coordinates, otherwise relative
      */
-    void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2);
+    void SetRainbow(TH2& h, Double_t x1, Double_t y1, Double_t x2, Double_t y2, TString opt = "ndc");
     /**
      * makes empty pad with histo with dimensions 0-1,0-1
      * @param fill fill color - pad color

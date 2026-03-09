@@ -23,9 +23,10 @@ namespace Hal {
    */
   class LorentzSmearing : public TObject {
   protected:
-    Int_t fPid     = {81};
-    Double_t fMass = {0};
-    Bool_t fKeepE  = {kFALSE};
+    Int_t fPid      = {81};
+    Double_t fMass  = {0};
+    Bool_t fKeepE   = {kFALSE};
+    Double_t fScale = {1.};
 
   public:
     /**
@@ -39,6 +40,11 @@ namespace Hal {
      * @param flag
      */
     void KeepEnergy(Bool_t flag) { fKeepE = flag; };
+    /**
+     * additional smearing scale
+     * @param scale
+     */
+    void SetScale(Double_t scale) { fScale = scale; }
     /**
      * smear momenta
      * @param smeared smeared momenta

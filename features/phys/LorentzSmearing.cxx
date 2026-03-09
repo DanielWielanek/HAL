@@ -61,9 +61,9 @@ namespace Hal {
     Double_t p         = unsmeared.P();
     Double_t phi       = unsmeared.Phi();
     Double_t theta     = unsmeared.Theta();
-    Double_t p_sim     = p + gRandom->Gaus(0, fFuncP->Eval(p));
-    Double_t phi_sim   = phi + gRandom->Gaus(0, fFuncPhi->Eval(p));
-    Double_t theta_sim = theta + gRandom->Gaus(0, fFuncTheta->Eval(p));
+    Double_t p_sim     = p + fScale * gRandom->Gaus(0, fFuncP->Eval(p));
+    Double_t phi_sim   = phi + fScale * gRandom->Gaus(0, fFuncPhi->Eval(p));
+    Double_t theta_sim = theta + fScale * gRandom->Gaus(0, fFuncTheta->Eval(p));
     double pt_sim      = p_sim * TMath::Sin(theta_sim);
     double px_sim      = pt_sim * TMath::Cos(phi_sim);
     double py_sim      = pt_sim * TMath::Sin(phi_sim);
@@ -113,9 +113,9 @@ namespace Hal {
     Double_t phi       = unsmeared.Phi();
     Double_t theta     = unsmeared.Theta();
     Int_t pBin         = fResoP2d->GetXaxis()->FindBin(p);
-    Double_t p_sim     = p + fResoP[pBin]->GetRandom();
-    Double_t phi_sim   = phi + fResoPhi[pBin]->GetRandom();
-    Double_t theta_sim = theta + fResoTheta[pBin]->GetRandom();
+    Double_t p_sim     = p + fScale * fResoP[pBin]->GetRandom();
+    Double_t phi_sim   = phi + fScale * fResoPhi[pBin]->GetRandom();
+    Double_t theta_sim = theta + fScale * fResoTheta[pBin]->GetRandom();
     double pt_sim      = p_sim * TMath::Sin(theta_sim);
     double px_sim      = pt_sim * TMath::Cos(phi_sim);
     double py_sim      = pt_sim * TMath::Sin(phi_sim);
@@ -156,9 +156,9 @@ namespace Hal {
     double px     = unsmeared.X();
     double py     = unsmeared.Y();
     double pz     = unsmeared.Z();
-    double px_sim = gRandom->Gaus(px, px * fPerc);
-    double py_sim = gRandom->Gaus(py, py * fPerc);
-    double pz_sim = gRandom->Gaus(pz, pz * fPerc);
+    double px_sim = gRandom->Gaus(px, fScale * px * fPerc);
+    double py_sim = gRandom->Gaus(py, fScale * py * fPerc);
+    double pz_sim = gRandom->Gaus(pz, fScale * pz * fPerc);
     if (fKeepE) {
       smeared.SetX(px_sim);
       smeared.SetY(py_sim);

@@ -40,21 +40,7 @@ namespace HalOTF {
       RecoTrack* track   = (RecoTrack*) fTracks->UncheckedAt(i);
       OTF::RecoTrack* mc = (OTF::RecoTrack*) ev->GetTrack(i);
       track->ResetTrack(i, this);
-      track->SetMomentum(mc->GetMom().Px(), mc->GetMom().Py(), mc->GetMom().Pz(), mc->GetMom().E());
-      track->SetMotherIndex(-1);
-      track->SetMatch(mc->GetMcIndex());
-      track->SetGeneratorId(mc->GetGeneratorId());
-      track->SetPidHypo(mc->GetPidHypo());
-      track->SetNHitsA(mc->GetNHitsA());
-      track->SetNHitsB(mc->GetNHitsB());
-      track->SetNHitsC(mc->GetNHitsC());
-      Int_t dau1, dau2;
-      mc->GetDaughters(dau1, dau2);
-      if (dau1 != -1) {
-        track->EnableV0(1, 1);
-        track->GetV0Info()->SetPosId(dau1);
-        track->GetV0Info()->SetNegId(dau2);
-      }
+      *track = *mc;
     }
   }
 
@@ -63,4 +49,24 @@ namespace HalOTF {
     if (manager->CheckBranch("OTF::RecoEvent.")) { return kTRUE; }
     return kFALSE;
   }
+
+  RecoTrack& RecoTrack::operator=(const OTF::RecoTrack& other) {
+    SetMomentum(other.GetMom());
+    fMatchIdx    = other.GetMcIndex();
+    fNHitsA      = other.GetNHitsA();
+    fNHitsB      = other.GetNHitsB();
+    fNHitsC      = other.GetNHitsC();
+    fCharge      = other.GetCharge();
+    fGeneratorId = other.GetGeneratorId();
+    fPidHypo     = other.GetPidHypo();
+    Int_t dau1, dau2;
+    other.GetDaughters(dau1, dau2);
+    if (dau1 != -1) {
+      EnableV0(1, 1);
+      GetV0Info()->SetPosId(dau1);
+      GetV0Info()->SetNegId(dau2);
+    }
+    return *this;
+  }
+
 }  // namespace HalOTF

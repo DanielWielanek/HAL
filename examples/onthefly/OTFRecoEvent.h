@@ -16,6 +16,9 @@
 #include <RtypesCore.h>
 #include <TString.h>
 
+namespace OTF {
+  class RecoTrack;
+}  // namespace OTF
 namespace HalOTF {
   class RecoEvent : public Hal::ExpEvent {
   public:
@@ -38,6 +41,7 @@ namespace HalOTF {
 
   public:
     RecoTrack() : fMatchIdx(-1) {};
+    RecoTrack& operator=(const OTF::RecoTrack& other);
     Int_t GetMatch() const { return fMatchIdx; };
     Int_t GetGeneratorId() const { return fGeneratorId; }
     Int_t GetPidHypo() const { return fPidHypo; }

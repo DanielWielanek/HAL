@@ -17,6 +17,8 @@
 #include <TObjArray.h>
 #include <TVector3.h>
 
+#include "McTrack.h"
+
 namespace OTF {
   class RecoTrack : public TObject {
     TLorentzVector fMomentum;
@@ -39,7 +41,7 @@ namespace OTF {
       fDaugthers[0] = a;
       fDaugthers[1] = b;
     }
-    void GetDaughters(Int_t& a, Int_t& b) {
+    void GetDaughters(Int_t& a, Int_t& b) const {
       a = fDaugthers[0];
       b = fDaugthers[1];
     }
@@ -121,6 +123,23 @@ namespace OTF {
     ClassDef(McEvent, 1)
   };
 
+  namespace Std {
+    /**
+     * converts otf-mc track to hal-mc track
+     */
+    Hal::McTrack OTFMcToHalMc(OTF::McTrack& other);
+    /**
+     * converts otf mctrack to reco track
+     * @param tr
+     * @param mass
+     * @return
+     */
+    OTF::RecoTrack HalMcToOTFReco(OTF::McTrack& tr);
+    /**
+     * converts mctrack to otf-mctrack
+     */
+    OTF::McTrack HalMcToOTFMc(Hal::McTrack& tr);
+  }  // namespace Std
 
 }  // namespace OTF
 

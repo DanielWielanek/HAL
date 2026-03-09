@@ -37,11 +37,7 @@ namespace HalOTF {
       McTrack* track   = (McTrack*) fTracks->UncheckedAt(i);
       OTF::McTrack* mc = (OTF::McTrack*) ev->GetTrack(i);
       track->ResetTrack(i, this);
-      track->SetMomentum(mc->GetMomentum().Px(), mc->GetMomentum().Py(), mc->GetMomentum().Pz(), mc->GetMomentum().E());
-      track->SetFreezeoutPosition(mc->GetFreezeout().X(), mc->GetFreezeout().Y(), mc->GetFreezeout().Z(), mc->GetFreezeout().T());
-      track->SetMotherIndex(mc->GetMotherId());
-      track->SetPdg(mc->GetPdgCode());
-      track->SetGeneratorId(mc->GetGeneratorId());
+      *track = *mc;
     }
   }
 
@@ -52,4 +48,13 @@ namespace HalOTF {
   }
 
   McEvent::~McEvent() {}
+
+  McTrack& McTrack::operator=(const OTF::McTrack& other) {
+    SetMomentum(other.GetMomentum());
+    SetFreezeoutPosition(other.GetFreezeout().X(), other.GetFreezeout().Y(), other.GetFreezeout().Z(), other.GetFreezeout().T());
+    SetPdg(other.GetPdgCode());
+    SetMotherIndex(other.GetMotherId());
+    SetGeneratorId(other.GetGeneratorId());
+    return *this;
+  }
 }  // namespace HalOTF

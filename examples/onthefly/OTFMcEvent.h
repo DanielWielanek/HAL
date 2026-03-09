@@ -12,6 +12,10 @@
 #include "McEvent.h"
 #include "McTrack.h"
 
+namespace OTF {
+  class McTrack;
+}  // namespace OTF
+
 namespace HalOTF {
   class McEvent : public Hal::McEvent {
   public:
@@ -29,6 +33,7 @@ namespace HalOTF {
 
   public:
     McTrack() {};
+    McTrack& operator=(const OTF::McTrack& other);
     Int_t GetGeneratorId() const { return fGeneratorId; }
     void SetGeneratorId(Int_t id) { fGeneratorId = id; }
     virtual ~McTrack() {};

@@ -127,3 +127,6 @@ This software includes several helper tools:
     Page @subpage subpage_2
 
     Page @subpage subpage_3
+    
+## Acknowledgments   
+This project is supported by the National Science Centre, Poland (NCN), grant no. 2023/49/B/ST2/03509

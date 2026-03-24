@@ -12,6 +12,7 @@
 #include "Cout.h"
 #include "McEvent.h"
 #include "McTrack.h"
+#include "Units.h"
 
 #include <Rtypes.h>
 #include <RtypesCore.h>
@@ -78,7 +79,7 @@ namespace Hal {
     if (fGamma == 0) { return 1E+10; }
     double tTau0 = mP.E() / (mass * fGamma);
     // When it decays
-    return -tTau0 * TMath::Log(gRandom->Rndm());
+    return -tTau0 * TMath::Log(gRandom->Rndm()) * 0.1973;
   }
 
   void Decay::Decay2Body(McTrack& mother, std::vector<McTrack*>& daughters, const DecayChannel& channel) const {
@@ -281,4 +282,14 @@ namespace Hal {
     fMotherMass = pidpart->Mass();
     return kTRUE;
   }
+
+  void Decay::SetHalfLife(Double_t time) {
+    const double hbar_GeVs = 6.582119569e-25;
+    const double ln2       = std::log(2.0);
+    if (time <= 0.0) return;
+    fGamma = (hbar_GeVs * ln2) / time;
+  }
+
+  void Decay::SetMeanTime(Double_t time) { SetHalfLife(TMath::Log(2.) * time); }
+
 }  // namespace Hal

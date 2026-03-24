@@ -124,6 +124,16 @@ namespace Hal {
      */
     void SetGamma(Double_t gamma) { fGamma = gamma; };
     /**
+     * set halflifetime
+     * @param time half lifetime [s]
+     */
+    void SetHalfLife(Double_t time);
+    /**
+     * set mean time
+     * @param time
+     */
+    void SetMeanTime(Double_t time);
+    /**
      * add decay channel
      * @param decay
      */

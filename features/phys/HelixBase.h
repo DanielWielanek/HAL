@@ -187,7 +187,7 @@ namespace Hal {
      *
      * @return curvature of helix
      */
-    inline Double_t GetCurv() const { return fCurv; };
+    inline Double_t GetCurv() const { return fCurv * 0.01; };  // converted in cm^[-1]
     /**
      *
      * @return phase 0

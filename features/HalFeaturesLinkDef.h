@@ -7,6 +7,7 @@
 
 #pragma link C++ namespace Hal;
 #pragma link C++ namespace Hal::Std;
+#pragma link C++ namespace Hal::Units;
 #pragma link C++ namespace Hal::Std::LorentzGenerator;
 #ifdef __MAKECINT__
 #endif

@@ -62,6 +62,11 @@ namespace Hal {
     static Double_t DeuteronMass() { return 1.875; };
     static Double_t JPsiMass() { return 3.096916; };
     /**
+     * speed of light in cm/s
+     * @return
+     */
+    static Double_t c() { return 29979245800; }
+    /**
      * add new particles to PDG database
      * @param inFile file with additional particles - TODO implement this function, now only deuteron is added
      */

@@ -14,6 +14,7 @@
 
 
 namespace HalOTF {
+  class RecoTrack;
   /**
    * simulate efficiency of detector modify number of hits for given detector:
    * 0 - particle not detected
@@ -24,6 +25,12 @@ namespace HalOTF {
   protected:
     TH2D* fAcceptance = {nullptr};
     Char_t fDetType   = {'A'};
+    /**
+     * changes number of hits
+     * @param tr track
+     * @param flag new number of hits
+     */
+    void ChangeHits(HalOTF::RecoTrack* tr, Int_t flag) const;
 
   public:
     EfficientyKin(std::vector<int> vec = {0}) : ExperimentSubTask(vec) {};

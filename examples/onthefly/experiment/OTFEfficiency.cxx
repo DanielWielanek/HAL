@@ -29,6 +29,23 @@ namespace HalOTF {
     return kTRUE;
   }
 
+  void EfficientyKin::ChangeHits(HalOTF::RecoTrack* reco, Int_t flag) const {
+    switch (fDetType) {
+      case 'A': {
+        reco->SetNHitsA(flag);
+      } break;
+      case 'B': {
+        reco->SetNHitsB(flag);
+      } break;
+      case 'C': {
+        reco->SetNHitsC(flag);
+      } break;
+      case ' ': {
+        reco->SetNHits(flag);
+      } break;
+    }
+  }
+
   void EfficientyKin::SetHistogram(const TH2D& histo) { fAcceptance = (TH2D*) histo.Clone(); }
 
   Hal::Package* EfficientyKin::Report() const {
@@ -52,36 +69,9 @@ namespace HalOTF {
     Double_t prob = fAcceptance->GetBinContent(binx, biny);
     Double_t test = gRandom->Uniform();
     if (test <= prob) {
-      switch (fDetType) {
-        case 'A': {
-          reco->SetNHitsA(1);
-        } break;
-        case 'B': {
-          reco->SetNHitsB(1);
-        } break;
-        case 'C': {
-          reco->SetNHitsC(1);
-        } break;
-        case ' ': {
-          reco->SetNHits(1);
-        } break;
-      }
+      ChangeHits(reco, 1);
     } else {
-      reco->SetNHits(0);
-      switch (fDetType) {
-        case 'A': {
-          reco->SetNHitsA(0);
-        } break;
-        case 'B': {
-          reco->SetNHitsB(0);
-        } break;
-        case 'C': {
-          reco->SetNHitsC(0);
-        } break;
-        case ' ': {
-          reco->SetNHits(0);
-        } break;
-      }
+      ChangeHits(reco, 0);
     }
   }
 
@@ -100,36 +90,9 @@ namespace HalOTF {
     Double_t prob = fAcceptance->GetBinContent(binx, biny);
     Double_t test = gRandom->Uniform();
     if (test <= prob) {
-      switch (fDetType) {
-        case 'A': {
-          reco->SetNHitsA(1);
-        } break;
-        case 'B': {
-          reco->SetNHitsB(1);
-        } break;
-        case 'C': {
-          reco->SetNHitsC(1);
-        } break;
-        case ' ': {
-          reco->SetNHits(1);
-        } break;
-      }
+      ChangeHits(reco, 1);
     } else {
-      reco->SetNHits(0);
-      switch (fDetType) {
-        case 'A': {
-          reco->SetNHitsA(0);
-        } break;
-        case 'B': {
-          reco->SetNHitsB(0);
-        } break;
-        case 'C': {
-          reco->SetNHitsC(0);
-        } break;
-        case ' ': {
-          reco->SetNHits(0);
-        } break;
-      }
+      ChangeHits(reco, 0);
     }
   }
 

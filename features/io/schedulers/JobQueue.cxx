@@ -196,11 +196,11 @@ namespace Hal {
     std::vector<XMLNode> res;
     res.push_back(addParameter("queue", "long"));
     res.push_back(addParameter("error", "/dev/null"));
-    res.push_back(addParameter("logca", "/dev/null"));
+    res.push_back(addParameter("log", "/dev/null"));
     res.push_back(addParameter("shell", "#!/bin/bash"));
     res.push_back(addParameter("start", "0"));
     res.push_back(addParameter("end", "10"));
-    res.push_back(addParameter("name", "bes"));
+    res.push_back(addParameter("name", ""));
     res.push_back(addParameter("array", ""));
     res.push_back(addParameter("time", "1:2:2:22"));
     res.push_back(addParameter("ram", "10G"));

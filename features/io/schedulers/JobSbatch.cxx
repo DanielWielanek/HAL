@@ -65,6 +65,8 @@ namespace Hal {
       if (!IsArray()) {
         copyL.name = copyL.name.ReplaceAll("%x_%j", Form("%i", jobid));
         copyE.name = copyE.name.ReplaceAll("%x_%j", Form("%i", jobid));
+      } else {
+        plik << "#SBATCH --array=" << GetStart() << "-" << GetEnd() << std::endl;
       }
       addLine("output", copyL);
       addLine("error", copyE);

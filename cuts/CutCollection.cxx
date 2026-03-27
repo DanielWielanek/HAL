@@ -150,48 +150,38 @@ namespace Hal {
       for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
         Bool_t ok = ((Cut*) fCuts->UncheckedAt(i))->Init(task_id);
         if (!ok) {
-#ifdef HAL_DEBUG
           Cout::PrintInfo(Form("CutCollection: Failed to init %s in cut collection %i",
                                ((Cut*) fCuts->UncheckedAt(i))->CutName().Data(),
                                GetCollectionID()),
                           EInfo::kDebugInfo);
-#endif
           fCuts->RemoveAt(i);
           fCuts->Compress();
           i--;
         } else {
-#ifdef HAL_DEBUG
           Cout::PrintInfo(Form("CutCollection: Succesfully  inited %s in cut collection %i",
                                ((Cut*) fCuts->UncheckedAt(i))->CutName().Data(),
                                GetCollectionID()),
                           EInfo::kDebugInfo);
-#endif
         }
       }
       for (int i = 0; i < fFastCuts->GetEntriesFast(); i++) {
         Bool_t ok = ((Cut*) fFastCuts->UncheckedAt(i))->Init(task_id);
         if (!ok) {
-#ifdef HAL_DEBUG
-          Cout::PrintInfo(Form("CutCollection: Failed to init %s in cut collection %i",
+          Cout::PrintInfo(Form("Fast CutCollection: Failed to init %s in cut collection %i",
                                ((Cut*) fFastCuts->UncheckedAt(i))->CutName().Data(),
                                GetCollectionID()),
                           EInfo::kDebugInfo);
-#endif
           fFastCuts->RemoveAt(i);
           fFastCuts->Compress();
           i--;
         } else {
-#ifdef HAL_DEBUG
-          Cout::PrintInfo(Form("CutCollection: Succesfully inited %s in cut collection %i",
+          Cout::PrintInfo(Form("Fast CutCollection: Succesfully inited %s in cut collection %i",
                                ((Cut*) fFastCuts->UncheckedAt(i))->CutName().Data(),
                                GetCollectionID()),
                           EInfo::kDebugInfo);
-#endif
         }
       }
-#ifdef HAL_DEBUG
       Cout::PrintInfo("CutCollection: Initializing cut monitors", EInfo::kDebugInfo);
-#endif
       AdvancedMonitorInitialization(task_id);
       fInit = kTRUE;
       if (fNext.GetSize() == 0) {

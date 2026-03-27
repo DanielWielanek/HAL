@@ -256,13 +256,10 @@ namespace Hal {
           }
         }
       }
-#ifdef HAL_DEBUG
       Cout::PrintInfo("Initializing cut collection", EInfo::kDebugInfo);
-#endif
       for (int i = 0; i < fCutContainers[k]->GetEntriesFast(); i++) {
-#ifdef HAL_DEBUG
         Cout::PrintInfo(Form("Initializing cut collection at %i", k), EInfo::kDebugInfo);
-#endif
+
         ((CutCollection*) (fCutContainers[k]->UncheckedAt(i)))->Init(task_id);
       }
     }

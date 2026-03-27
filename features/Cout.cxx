@@ -396,7 +396,7 @@ namespace Hal {
   void Cout::PrintInfo(TString text, Hal::EInfo status) {
     if (status < fgVerboseMode) { return; }
     switch (status) {
-      case Hal::EInfo::kDebugInfo: FailSucced(text, "DEBUG   ", kCyan); break;
+      case Hal::EInfo::kDebugInfo: FailSucced(text, "DEBUG   ", kBlue); break;
       case Hal::EInfo::kInfo: FailSucced(text, "INFO    ", kCyan); break;
       case Hal::EInfo::kLowWarning: FailSucced(text, "WARNING ", kOrange); break;
       case Hal::EInfo::kWarning: PrintWarning(text); break;

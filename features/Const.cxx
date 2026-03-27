@@ -62,7 +62,8 @@ namespace Hal {
     if (apdg == SigmaPlusPID()) return isAnti ? "#bar{#Sigma^{+}}" : "#Sigma^{+}";
     if (apdg == SigmaMinusPID()) return isAnti ? "#bar{#Sigma^{-}}" : "#Sigma^{-}";
     if (apdg == XiZeroPID()) return isAnti ? "#bar{#Xi^{0}}" : "#Xi^{0}";
-    if (apdg == XiMinusPID()) return isAnti ? "#bar{#Xi^{-}" : "#Xi^{-}";
+    if (apdg == XiMinusPID()) return isAnti ? "#bar{#Xi^{-}}" : "#Xi^{-}";
+    if (apdg == JPsiPID()) return isAnti ? "#bar{J/#Psi}" : "J/#Psi";
     if (apdg == DummyPID()) return isAnti ? "#bar{#aleph}" : "#aleph";
     return "unknown";
   }

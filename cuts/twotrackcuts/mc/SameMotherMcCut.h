@@ -8,13 +8,12 @@
 #ifndef HAL_CUTS_TWOTRACKCUTS_MC_SAMEMOTHERMCCUT_H_
 #define HAL_CUTS_TWOTRACKCUTS_MC_SAMEMOTHERMCCUT_H_
 
-#include "TwoTrackCut.h"
+#include "TwoTrackMcCut.h"
 namespace Hal {
 
-  class SameMotherMcCut : public TwoTrackCut {
+  class SameMotherMcCut : public TwoTrackMcCut {
   public:
     SameMotherMcCut();
-    virtual Bool_t Init(Int_t);
     virtual Bool_t Pass(TwoTrack* pair);
     virtual ~SameMotherMcCut() {};
     ClassDef(SameMotherMcCut, 1)

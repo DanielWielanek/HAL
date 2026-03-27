@@ -105,6 +105,7 @@
 #pragma link C++ class Hal::TrackV0DaughterDistCut + ;
 #pragma link C++ class Hal::TrackV0MinvCut + ;
 #pragma link C++ class Hal::TrackV0DecLenCut + ;
+#pragma link C++ class Hal::TrackAncestorPdgBinCut + ;
 
 #pragma link C++ class Hal::TrackYAssumedCut + ;
 #pragma link C++ class Hal::TrackBetaCut + ;
@@ -125,6 +126,9 @@
 #pragma link C++ class Hal::TrackBoostedDeltaPCut + ;
 #pragma link C++ class Hal::TrackBoostedKinematcisCut + ;
 #pragma link C++ class Hal::TrackKinematicsCutAndMonitor + ;
+#pragma link C++ class Hal::TrackPtYCut + ;
+#pragma link C++ class Hal::TrackPtYAssumedCut + ;
+#pragma link C++ class Hal::TrackPtEtaCut + ;
 
 #pragma link C++ class Hal::TrackBasicMcCut + ;
 #pragma link C++ class Hal::TrackTFreezCut + ;
@@ -185,6 +189,7 @@
 #pragma link C++ class Hal::TwoTrackRapidityCut + ;
 #pragma link C++ class Hal::TwoTrackLCMSCut + ;
 
+#pragma link C++ class Hal::TwoTrackMcCut + ;
 #pragma link C++ class Hal::TwoTrackDphistarDetaCut + ;
 #pragma link C++ class Hal::TwoTrackDphiDetaCut + ;
 #pragma link C++ class Hal::TwoTrackRadialDistanceCut + ;
@@ -196,6 +201,7 @@
 #pragma link C++ class Hal::PairDeltaQinvCut + ;
 #pragma link C++ class Hal::PdgBinPairCut + ;
 #pragma link C++ class Hal::SameMotherMcCut + ;
+#pragma link C++ class Hal::TwoTrackAncestorPdgBinCut + ;
 // Virtual cut
 #pragma link C++ class Hal::EventVirtualCut + ;
 #pragma link C++ class Hal::TrackVirtualCut + ;

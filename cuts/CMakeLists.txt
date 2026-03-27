@@ -59,6 +59,7 @@ trackcuts/detector/TrackDCAPipeCut.cxx
 trackcuts/detector/TrackTpcToFThresholdlessCut.cxx
 trackcuts/detector/TrackChi2Cut.cxx
 
+trackcuts/kinematics/TrackBasicKinematicsCut.cxx
 trackcuts/kinematics/TrackBetaCut.cxx
 trackcuts/kinematics/TrackEtaCut.cxx
 trackcuts/kinematics/TrackMassCut.cxx
@@ -83,6 +84,7 @@ trackcuts/mc/TrackPdgCut.cxx
 trackcuts/mc/TrackStartPositionCut.cxx
 trackcuts/mc/TrackPdgBinCut.cxx
 trackcuts/mc/TrackMcParentCut.cxx
+trackcuts/mc/TrackAncestorPdgBinCut.cxx
 
 trackcuts/resolution/TrackDeltaMomCut.cxx
 trackcuts/resolution/TrackDeltaMomentumCut.cxx
@@ -123,6 +125,8 @@ twotrackcuts/TwoTrackDebugCut.cxx
 twotrackcuts/mc/TwoTrackFemtoPRFCut.cxx
 twotrackcuts/mc/PdgBinPairCut.cxx
 twotrackcuts/mc/SameMotherMcCut.cxx
+twotrackcuts/mc/TwoTrackAncestorPdgBinCut.cxx
+twotrackcuts/mc/TwoTrackMcCut.cxx
 twotrackcuts/TwoTrackVirtualCut.cxx
 #CUT MONITORS
 cutmonitors/CutMonitorFieldIdTranslator.cxx

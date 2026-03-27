@@ -164,7 +164,6 @@ namespace Hal {
      * @param daughters  - true if daughters ID's are known
      */
     void EnableV0(Bool_t v0, Bool_t daughters = kTRUE);
-
     /**
      *
      * @param xi if true mark particle as Xi, otherwise mark as normal particle

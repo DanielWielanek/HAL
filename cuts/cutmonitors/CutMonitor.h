@@ -153,6 +153,11 @@ namespace Hal {
      * @return
      */
     CutMonitor* TryMakeComplexMonitor(TString opt) const;
+    /**
+     * make simple copy, overwrite in custom classes
+     * @return
+     */
+    virtual CutMonitor* MakeInnerCopy() const { return (CutMonitor*) this->Clone(); };
 
   public:
     /**

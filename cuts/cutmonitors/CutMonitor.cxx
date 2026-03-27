@@ -212,7 +212,7 @@ namespace Hal {
 
   CutMonitor* CutMonitor::MakeCopy(TString opt) const {
     auto res = TryMakeComplexMonitor(opt);
-    if (!res) res = (CutMonitor*) this->Clone();
+    if (!res) res = (CutMonitor*) this->MakeInnerCopy();
     res->MakeComplexAxes(opt);
     return res;
   }

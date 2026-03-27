@@ -6,7 +6,6 @@
 
 #pragma link C++ class Hal::FemtoDumpPairAna + ;
 #pragma link C++ class Hal::CorrFitMapGroupConfig + ;
-#pragma link C++ class Hal::CorrFitBaseFunc + ;
 
 #pragma link C++ class Hal::CorrFitPairFile + ;
 #pragma link C++ class Hal::CorrFitPairGenerator + ;

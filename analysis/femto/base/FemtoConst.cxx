@@ -660,6 +660,62 @@ namespace Hal {
       return ECFType::kUnkown;
     }
 
+    Int_t PairTypeToNextInt(EPairType type) {
+      switch (type) {
+        case EPairType::kUnknown: return 0;
+        case EPairType::kPionPlusPionPlus: return 1;
+        case EPairType::kPionPlusPionMinus: return 2;
+        case EPairType::kKaonPlusKaonPlus: return 3;
+        case EPairType::kKaonPlusKaonMinus: return 4;
+
+        case EPairType::kProtonProton: return 5;
+        case EPairType::kProtonAntiproton: return 6;
+        case EPairType::kPionPlusKaonPlus: return 7;
+        case EPairType::kPionPlusKaonMinus: return 8;
+
+        case EPairType::kPionPlusProton: return 9;
+        case EPairType::kPionPlusAntiproton: return 10;
+        case EPairType::kKaonPlusProton: return 11;
+        case EPairType::kKaonPlusAntiproton: return 12;
+
+        case EPairType::kProtonLambda: return 13;
+        case EPairType::kLambdaLambda: return 14;
+        case EPairType::kKaonZeroKaonZero: return 15;
+        case EPairType::kKaonZeroKaonZeroBar: return 16;
+
+        case EPairType::kNeutronNeutron: return 17;
+        case EPairType::kNeutronProton: return 18;
+        case EPairType::kPionZeroPionZero: return 19;
+        case EPairType::kNeutronLambda: return 20;
+
+        case EPairType::kProtonSigmaPlus: return 21;
+        case EPairType::kProtonAntiSigmaPlus: return 22;
+        case EPairType::kProtonAntiLambda: return 23;
+        case EPairType::kSigmaPlusSigmaPlus: return 24;
+
+        case EPairType::kSigmaPlusAntiSigmaPlus: return 25;
+        case EPairType::kProtonXiZero: return 26;
+        case EPairType::kNeutronXiMinus: return 27;
+        case EPairType::kProtonXIMInus: return 28;
+
+        case EPairType::kNeutronXiZero: return 29;
+        case EPairType::kProtonSigmaZero: return 30;
+        case EPairType::kSigmaZeroSigmaZero: return 31;
+        case EPairType::kLambdaSigmaZero: return 32;
+
+        case EPairType::kLambdaAntiLambda: return 33;
+      }
+
+#if defined(__GNUC__) || defined(__clang__)
+      __builtin_unreachable();
+#else
+      std::abort();
+#endif
+      return -1;
+    }
+
+    Int_t GetWeightPairSupportedNo() { return 1 + PairTypeToNextInt(EPairType::kLambdaAntiLambda); }
+
     FemtoWeightGenerator* GetWeightGeneratorFromXLM(const XMLNode& nod) {
       const XMLNode& weightType = nod.GetChild("Type");
       if (!weightType) return nullptr;

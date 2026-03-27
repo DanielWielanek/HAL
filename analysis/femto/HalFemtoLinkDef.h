@@ -78,6 +78,8 @@
 #pragma link C++ class Hal::FemtoWeightGeneratorSupressed + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorKisiel + ;
 #pragma link C++ class Hal::FemtoWeightGeneratorK0K0 + ;
+#pragma link C++ class Hal::FemtoWeightGeneratorTF1 + ;
+#pragma link C++ class Hal::FemtoWeightGeneratorTF3 + ;
 
 #pragma link C++ class Hal::CorrFitVerticalSlices + ;
 #pragma link C++ class Hal::CorrFitVerticalSlices1D + ;

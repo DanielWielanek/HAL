@@ -184,6 +184,17 @@ namespace Hal {
      */
     ECFType GetCFType(TObject* obj);
     /**
+     * convert pair type to next integer
+     * @param type
+     * @return
+     */
+    Int_t PairTypeToNextInt(EPairType type);
+    /**
+     *
+     * @return number of suppported pairs
+     */
+    Int_t GetWeightPairSupportedNo();
+    /**
      * calculate of k* for different pairs, assuming momentum conservation
      */
     class CorrFitGammaCalc : public TObject {

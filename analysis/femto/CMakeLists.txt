@@ -74,6 +74,7 @@ weights/FemtoWeightGeneratorResidual.cxx
 weights/FemtoWeightGeneratorSupressed.cxx
 weights/FemtoWeightGeneratorKisiel.cxx
 weights/FemtoWeightGeneratorDummy.cxx
+weights/FemtoWeightGeneratorTF.cxx
 
 base/funcs/FemtoSHCF.cxx
 base/funcs/FemtoDPhiDEta.cxx

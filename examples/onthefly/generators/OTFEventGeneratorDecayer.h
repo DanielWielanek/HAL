@@ -10,6 +10,8 @@
 
 #include <RtypesCore.h>
 
+#include <vector>
+
 #include "Decay.h"
 #include "OTFEventGenerator.h"
 
@@ -19,9 +21,10 @@ namespace HalOTF {
    */
   class EventGeneratorDecayer : public EventGenerator {
   protected:
-    Hal::Decay* fDecayer = {nullptr};
+    std::vector<Hal::Decay*> fDecays;
     std::vector<Hal::McTrack*> fDaughters;
     virtual void GenerateEvent();
+    void SortDecays();
 
   public:
     EventGeneratorDecayer() {}

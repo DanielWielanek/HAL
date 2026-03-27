@@ -143,6 +143,11 @@ namespace Hal {
      * @return
      */
     virtual Bool_t Init();
+    /**
+     *
+     * @return all direct codes of daughers in all channels
+     */
+    std::vector<int> GetAllDecayDaughters() const;
     virtual ~Decay() {};
     ClassDef(Decay, 1)
   };

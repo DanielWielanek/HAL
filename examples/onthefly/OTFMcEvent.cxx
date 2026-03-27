@@ -55,6 +55,8 @@ namespace HalOTF {
     SetPdg(other.GetPdgCode());
     SetMotherIndex(other.GetMotherId());
     SetGeneratorId(other.GetGeneratorId());
+    if (other.GetMotherId() == -1) SetPrimary();
+    if (other.GetMotherId() < -1) SetSecondary(kFALSE);
     return *this;
   }
 }  // namespace HalOTF

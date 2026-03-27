@@ -292,4 +292,15 @@ namespace Hal {
 
   void Decay::SetMeanTime(Double_t time) { SetHalfLife(TMath::Log(2.) * time); }
 
+  std::vector<int> Decay::GetAllDecayDaughters() const {
+    std::vector<int> res;
+    for (auto& i : fDecayChannels) {
+      for (int j = 0; j < i.GetDaughtersNo(); j++)
+        res.push_back(i.GetDaughterPdg(j));
+    }
+    std::sort(res.begin(), res.end());
+    res.erase(std::unique(res.begin(), res.end()), res.end());
+    return res;
+  }
+
 }  // namespace Hal

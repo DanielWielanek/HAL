@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HAL XML Generator</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 30px;
+  background: #0b0f14;
+  color: #4da6ff;
+}
+
+.container {
+  background: #111821;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+  max-width: 900px;
+}
+
+h2, h3 {
+  color: #66b3ff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.row-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 13px;
+  margin-bottom: 3px;
+  color: #3399ff;
+}
+
+input, select, textarea {
+  padding: 7px;
+  border-radius: 6px;
+  border: 1px solid #1f2a36;
+  background: #0f141b;
+  color: #66b3ff;
+  transition: all 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #3399ff;
+  box-shadow: 0 0 6px #3399ff55;
+}
+
+textarea {
+  height: 120px;
+  font-family: monospace;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #0066cc;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  background: #0052a3;
+  box-shadow: 0 0 10px #0066cc88;
+}
+
+pre {
+  background: #000;
+  padding: 15px;
+  border-radius: 10px;
+  overflow-x: auto;
+  font-family: monospace;
+  color: #00ff88;
+}
+
+#commands {
+  width: 100%;
+  min-height: 280px;
+  resize: vertical;
+}
+
+.warning {
+  color: #ff6666;
+  font-size: 13px;
+  margin-top: 5px;
+}
+.tag { color: #ff0000; }
+.attr { color: #66aaff; }
+.text { color: #00ff88; }
+
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>HAL Scheduler XML Generator</h2>
+
+<div class="grid">
+
+<div class="field">
+<label>Queue</label>
+<input id="queue" value="long">
+</div>
+
+<div class="field">
+<label>Shell</label>
+<select id="shell">
+  <option value="#!/bin/bash">bash</option>
+  <option value="#!/bin/zsh">zsh</option>
+  <option value="#!/bin/sh">sh</option>
+</select>
+</div>
+
+<div class="field">
+<label>Log file</label>
+<input id="log" placeholder="/dev/null">
+</div>
+
+<div class="field">
+<label>Error file</label>
+<input id="error" placeholder="/dev/null">
+</div>
+
+<div class="field">
+<label>Start</label>
+<input id="start" type="number" value="0">
+</div>
+
+<div class="field">
+<label>End</label>
+<input id="end" type="number" value="10">
+</div>
+
+<div class="field">
+<label>Array</label>
+<select id="array">
+  <option value="yes">yes</option>
+  <option value="no">no</option>
+</select>
+</div>
+
+<div class="field">
+<label>Direct</label>
+<select id="direct">
+  <option value="yes">yes</option>
+  <option value="no">no</option>
+</select>
+</div>
+
+</div>
+
+<h3>Time (d:h:m:s)</h3>
+<div class="row-4">
+  <input id="days" type="number" value="0" placeholder="days">
+  <input id="hours" type="number" value="6" placeholder="hours">
+  <input id="minutes" type="number" value="2" placeholder="minutes">
+  <input id="seconds" type="number" value="22" placeholder="seconds">
+</div>
+
+<h3>Other</h3>
+
+<div class="grid">
+<div class="field">
+<label>Name</label>
+<input id="name" value="mass_prod">
+</div>
+
+<div class="field">
+<label>Extra</label>
+<input id="extra" value="test">
+</div>
+
+<div class="field">
+<label>Tmpfile</label>
+<input id="tmpfile" value="prop">
+</div>
+
+<div class="field">
+<label>Queue Directives</label>
+<input id="directives">
+</div>
+</div>
+
+<h3>Commands</h3>
+<textarea id="commands" oninput="checkCommands()">source /path/to/config.sh
+root -b -q macro.C</textarea>
+<div id="warn" class="warning"></div>
+
+<button onclick="generateXML()">Generate XML</button>
+
+<h3>Output</h3>
+<pre id="out"></pre>
+
+</div>
+
+<script>
+function val(id) {
+  return document.getElementById(id).value;
+}
+
+function checkCommands() {
+  let text = val("commands");
+  let warn = document.getElementById("warn");
+
+  if (!text.includes("source")) {
+    warn.textContent = "⚠ Warning: no 'source' command detected (env may not be initialized)";
+  } else {
+    warn.textContent = "";
+  }
+}
+
+function highlightXML(xml) {
+
+  let escaped = xml
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  escaped = escaped.replace(/"([^"]*)"/g,
+    '"<span class="attr">$1</span>"'
+  );
+
+  const tags = ["hal-merger", "scheduler", "aliases", "command", "commands" ,"parameter","parameters"];
+
+  tags.forEach(tag => {
+    let regex = new RegExp(`(&lt;/?)(` + tag + `)`, "g");
+    escaped = escaped.replace(regex,
+      `$1<span class="tag">$2</span>`
+    );
+  });
+
+  // <, </, />, >
+  escaped = escaped.replace(/(&lt;\/?|\/?&gt;)/g,
+    '<span class="tag">$1</span>'
+  );
+
+  return escaped;
+}
+
+function generateXML() {
+
+  let log = val("log") || "/dev/null";
+  let error = val("error") || "/dev/null";
+
+  let time =
+    val("days") + ":" +
+    val("hours") + ":" +
+    val("minutes") + ":" +
+    val("seconds");
+
+  let cmds = val("commands")
+    .split("\n")
+    .map(c => c.trim())
+    .filter(c => c.length > 0)
+    .map(c => `    <command>${c}</command>`)
+    .join("\n");
+
+  let xml =
+`<?xml version="1.0"?>
+<hal-merger>
+  <scheduler>sbatch</scheduler>
+  <aliases/>
+  <parameters>
+    <parameter name="queue" value="${val("queue")}"/>
+    <parameter name="error" value="${error}"/>
+    <parameter name="log" value="${log}"/>
+    <parameter name="shell" value="${val("shell")}"/>
+    <parameter name="start" value="${val("start")}"/>
+    <parameter name="end" value="${val("end")}"/>
+    <parameter name="name" value="${val("name")}"/>
+    <parameter name="array" value="${val("array")}"/>
+    <parameter name="time" value="${time}"/>
+    <parameter name="direct" value="${val("direct")}"/>
+    <parameter name="extra" value="${val("extra")}"/>
+    <parameter name="tmpfile" value="${val("tmpfile")}"/>
+  </parameters>
+  <commands>
+${cmds}
+  </commands>
+</hal-merger>`;
+
+let escaped = xml
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;");
+
+document.getElementById("out").innerHTML = highlightXML(escaped);
+}
+</script>
+
+</body>
+</html>

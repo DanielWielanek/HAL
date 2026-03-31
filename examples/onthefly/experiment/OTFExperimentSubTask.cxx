@@ -22,6 +22,10 @@ namespace HalOTF {
     ids.erase(std::remove_if(ids.begin(), ids.end(), [](int x) { return x < 0; }), ids.end());
     std::sort(ids.begin(), ids.end());
     ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
+    if (ids.size() == 0 || ids[0] == -1) {
+      fAll = kTRUE;
+      return;
+    }
     fGeneratorIds = ids;
   }
 
@@ -31,13 +35,21 @@ namespace HalOTF {
   }
 
   void ExperimentSubTask::Exec(Hal::ComplexEvent* event) {
-    for (auto idx : fGeneratorIds) {
+    if (fAll) {
       for (int i = 0; i < event->GetTotalTrackNo(); i++) {
         auto z_track      = (Hal::ComplexTrack*) event->GetTrack(i);
         auto reco_track   = (HalOTF::RecoTrack*) z_track->GetRealTrack();
         Int_t generatorId = reco_track->GetGeneratorId();
-        if (generatorId == idx) { ProcessTrack(z_track); }
+        ProcessTrack(z_track);
       }
-    }
+    } else
+      for (auto idx : fGeneratorIds) {
+        for (int i = 0; i < event->GetTotalTrackNo(); i++) {
+          auto z_track      = (Hal::ComplexTrack*) event->GetTrack(i);
+          auto reco_track   = (HalOTF::RecoTrack*) z_track->GetRealTrack();
+          Int_t generatorId = reco_track->GetGeneratorId();
+          if (generatorId == idx) { ProcessTrack(z_track); }
+        }
+      }
   }
 } /* namespace HalOTF */

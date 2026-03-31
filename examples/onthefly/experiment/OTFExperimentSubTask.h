@@ -25,6 +25,7 @@ namespace HalOTF {
    */
   class ExperimentSubTask : public TObject {
     std::vector<int> fGeneratorIds;
+    Bool_t fAll = {kFALSE};
 
   protected:
     enum class eMode { kSim, kReco };
@@ -34,9 +35,9 @@ namespace HalOTF {
   public:
     /**
      * Experiment subtask
-     * @param ids ids of generators that are modified
+     * @param ids ids of generators that are modified if -1 apply to all generators
      */
-    ExperimentSubTask(std::vector<int> ids = {0});
+    ExperimentSubTask(std::vector<int> ids = {-1});
     /**
      * modify properties according to simulation data
      */

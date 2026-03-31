@@ -66,6 +66,6 @@ int main(int argc, char* argv[]) {
       return 0;
     }
   }
-  std::cout << "Uknown parameter try --help" << std::endl;
+  std::cout << "Unknown parameter try --help" << std::endl;
   return 1;
 }

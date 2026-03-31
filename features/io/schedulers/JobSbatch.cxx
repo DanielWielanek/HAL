@@ -59,7 +59,7 @@ namespace Hal {
       addLine("ntasks", fTasks);
       addLine("cpus-per-task", fCpuPerTask);
       addLine("partition", fQueue);
-      addLine("job_name", fName);
+      addLine("job-name", fName);
       auto copyL = fLogs;
       auto copyE = fErrors;
       if (!IsArray()) {

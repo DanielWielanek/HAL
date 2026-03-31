@@ -34,11 +34,12 @@ namespace Hal {
     for (int i = 0; i < commands.GetNChildren(); i++) {
       fCommands.push_back(commands[i].GetValue());
     }
-    // parsing paramteters
+    // parsing parameters
     auto& parameters = root["parameters"];
     for (int i = 0; i < parameters.GetNChildren(); i++) {
-      auto& parameter = parameters[i];
-      if (parameter.GetAttrib("value").GetValue().Length()) {
+      auto& parameter  = parameters[i];
+      TString atribVal = parameter.GetAttrib("value").GetValue();
+      if (atribVal.Length() > 0 && atribVal != "no") {
         fParameters[parameter.GetAttrib("name").GetValue()] = parameter.GetAttrib("value").GetValue();
       }
     }
@@ -201,11 +202,12 @@ namespace Hal {
     res.push_back(addParameter("start", "0"));
     res.push_back(addParameter("end", "10"));
     res.push_back(addParameter("name", ""));
-    res.push_back(addParameter("array", ""));
+    res.push_back(addParameter("array", "no"));
     res.push_back(addParameter("time", "1:2:2:22"));
     res.push_back(addParameter("ram", "10G"));
-    res.push_back(addParameter("direct", ""));
-    res.push_back(addParameter("extra", ""));
+    res.push_back(addParameter("direct", "no"));
+    res.push_back(addParameter("extra", "no"));
+    res.push_back(addParameter("tmpfile", "hal_jobs"));
     return res;
   }
 

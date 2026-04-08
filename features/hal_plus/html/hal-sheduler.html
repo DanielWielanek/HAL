@@ -205,6 +205,7 @@ pre {
 
 <h3>Commands</h3>
 <textarea id="commands" oninput="checkCommands()">source /path/to/config.sh
+cd ${HAL::CONST::PWD}
 root -b -q macro.C</textarea>
 <div id="warn" class="warning"></div>
 
@@ -241,7 +242,7 @@ function highlightXML(xml) {
     '"<span class="attr">$1</span>"'
   );
 
-  const tags = ["hal-merger", "scheduler", "aliases", "command", "commands" ,"parameter","parameters"];
+  const tags = ["hal-merger", "scheduler", "aliases", "commands", "command" ,"parameters","parameter"];
 
   tags.forEach(tag => {
     let regex = new RegExp(`(&lt;/?)(` + tag + `)`, "g");

@@ -86,22 +86,30 @@ namespace Hal {
     return instance;
   }
 
-  void Styles::RegisterStyle(const Hal::Style& style) {
+  void Styles::RegisterStyle(const Hal::Style& style, TString newName) {
     auto histo_style  = dynamic_cast<const Hal::HistoStyle*>(&style);
     auto legend_style = dynamic_cast<const Hal::LegendStyle*>(&style);
     auto pad_style    = dynamic_cast<const Hal::PadStyle*>(&style);
     auto text_style   = dynamic_cast<const Hal::TextStyle*>(&style);
     if (histo_style) {
-      if (!GetHistoStyle(histo_style->GetName())) fStyleHisto.push_back(new Hal::HistoStyle(*histo_style));
+      auto newStyle = new Hal::HistoStyle(*histo_style);
+      if (newName.Length() > 0) newStyle->Rename(newName);
+      if (!GetHistoStyle(histo_style->GetName())) fStyleHisto.push_back(newStyle);
     }
     if (legend_style) {
-      if (!GetLegendStyle(legend_style->GetName())) fStyleLegend.push_back(new Hal::LegendStyle(*legend_style));
+      auto newStyle = new Hal::LegendStyle(*legend_style);
+      if (newName.Length() > 0) newStyle->Rename(newName);
+      if (!GetLegendStyle(legend_style->GetName())) fStyleLegend.push_back(newStyle);
     }
     if (pad_style) {
-      if (!GetPadStyle(pad_style->GetName())) fStylePad.push_back(new Hal::PadStyle(*pad_style));
+      auto newStyle = new Hal::PadStyle(*pad_style);
+      if (newName.Length() > 0) newStyle->Rename(newName);
+      if (!GetPadStyle(pad_style->GetName())) fStylePad.push_back(newStyle);
     }
     if (text_style) {
-      if (!GetTextStyle(text_style->GetName())) fStyleText.push_back(new Hal::TextStyle(*text_style));
+      auto newStyle = new Hal::TextStyle(*text_style);
+      if (newName.Length() > 0) newStyle->Rename(newName);
+      if (!GetTextStyle(text_style->GetName())) fStyleText.push_back(newStyle);
     }
   }
 

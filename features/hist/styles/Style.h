@@ -147,7 +147,12 @@ namespace Hal {
     Styles(const Styles& other)      = delete;
     Styles& operator=(const Styles&) = delete;
     static Styles& Instance();
-    void RegisterStyle(const Hal::Style& style);
+    /**
+     * register style with new name
+     * @param style
+     * @param newName
+     */
+    void RegisterStyle(const Hal::Style& style, TString newName = "");
     Hal::HistoStyle* GetHistoStyle(TString name) const;
     Hal::LegendStyle* GetLegendStyle(TString name) const;
     Hal::PadStyle* GetPadStyle(TString name) const;

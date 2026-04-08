@@ -21,6 +21,8 @@ namespace Hal {
   class Cout : public TObject {
   private:
     static Int_t fgLineLength;
+    static Color_t fgPrimColor;
+    static Color_t fgSecColor;
     static Cout* fgInstance;
     static Hal::EInfo fgVerboseMode;
     static TString GetShift(Int_t i);
@@ -180,6 +182,11 @@ namespace Hal {
      * @param flag
      */
     static void PrintLineFileInfo(TString file, Int_t line, TString text, Hal::EInfo flag = Hal::EInfo::kDebugInfo);
+
+    static void SetPrimSecColor(Color_t primary, Color_t secondary) {
+      fgPrimColor = primary;
+      fgSecColor  = secondary;
+    }
     ClassDef(Cout, 1)
   };
   /*

@@ -709,7 +709,6 @@ namespace Hal {
 
   Double_t ProfileAna2D::GetFittedSigmaLo(Double_t x) const { return fSigmaLow->Eval(x); }
 
-
   Double_t ProfileAna2D::GetFittedSigmaHi(Double_t x) const { return fSigmaHigh->Eval(x); }
 
 } /* namespace Hal */

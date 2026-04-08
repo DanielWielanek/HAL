@@ -17,6 +17,8 @@
 #endif
 namespace Hal {
   Int_t Cout::fgLineLength       = 100;
+  Color_t Cout::fgPrimColor      = kWhite;
+  Color_t Cout::fgSecColor       = kGray;
   Cout* Cout::fgInstance         = NULL;
   Hal::EInfo Cout::fgVerboseMode = Hal::EInfo::kInfo;
   void Cout::Database(Int_t no, ...) {
@@ -408,11 +410,13 @@ namespace Hal {
   void Cout::FailSucced(TString value, TString flag, Color_t color) {
     auto words        = Hal::Std::SmartTextSplit(value, fgLineLength - flag.Length() - 6, kTRUE, kFALSE);
     TString emptyFlag = TString(' ', flag.Length());
-    std::cout << GetColor(kWhite);
+    Color_t mainColor = fgPrimColor;
+    if (flag.Contains("DEBUG")) mainColor = fgSecColor;
+    std::cout << GetColor(mainColor);
     for (int i = 0; i < words.size(); i++) {
       std::cout << "* " << words[i];
       if (i == 0) {
-        std::cout << "[" << GetColor(color) << flag << GetColor(kWhite) << "] *" << std::endl;
+        std::cout << "[" << GetColor(color) << flag << GetColor(mainColor) << "] *" << std::endl;
       } else {
         std::cout << " " << emptyFlag << "  *" << std::endl;
       }
@@ -437,10 +441,10 @@ namespace Hal {
 
   void Cout::PrintLineFileInfo(TString file, Int_t line, TString text, Hal::EInfo flag) {
     auto Colored = [](TString str, Color_t col) {
-      TString res = Hal::Cout::GetColor(kWhite) + "[" + Hal::Cout::GetDisableColor();
+      TString res = Hal::Cout::GetColor(fgPrimColor) + "[" + Hal::Cout::GetDisableColor();
       res         = res + Hal::Cout::GetColor(col);
       res         = res + str;
-      res         = res + Hal::Cout::GetColor(kWhite);
+      res         = res + Hal::Cout::GetColor(fgPrimColor);
       res         = res + "] ";
       res         = res + Hal::Cout::GetDisableColor();
       return res;
@@ -451,7 +455,7 @@ namespace Hal {
     TString dDot     = "../";
     if (vec.size() > 2) { filename = dDot + vec[vec.size() - 2] + "/" + filename; }
     TString helpText = "";
-    Color_t helpCol  = kWhite;
+    Color_t helpCol  = fgPrimColor;
     switch (flag) {
       case Hal::EInfo::kDebugInfo: {
         helpText = "DEBUG   ";
@@ -478,8 +482,8 @@ namespace Hal {
         helpCol  = kRed;
       } break;
     }
-    TString colEn  = Hal::Cout::GetColor(kWhite);
-    TString colRed = Hal::Cout::GetColor(kWhite);
+    TString colEn  = Hal::Cout::GetColor(fgPrimColor);
+    TString colRed = Hal::Cout::GetColor(fgPrimColor);
     TString colDis = Hal::Cout::GetDisableColor();
     TString open   = colEn + "[" + colDis;
     TString close  = colEn + "]" + colDis;

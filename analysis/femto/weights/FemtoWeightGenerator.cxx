@@ -62,8 +62,6 @@ namespace Hal {
     // TODO Auto-generated destructor stub
   }
 
-  Double_t FemtoWeightGenerator::GenerateWeight(FemtoPair* /*pair*/) { return 1; }
-
   void FemtoWeightGenerator::SetPairTypeFromPair(FemtoPair* pair) { fPairType = GetPairTypeFromPair(pair); }
 
   void FemtoWeightGenerator::Print(Option_t* /*option*/) const {

@@ -96,7 +96,7 @@ namespace Hal {
      * @param pair pair used for calculating weights
      * @return calculated weight
      */
-    virtual Double_t GenerateWeight(FemtoPair* pair);
+    virtual Double_t GenerateWeight(FemtoPair* /*pair*/) { return 1.; };
     /**
      * set pair type
      * @param aPairType pair type

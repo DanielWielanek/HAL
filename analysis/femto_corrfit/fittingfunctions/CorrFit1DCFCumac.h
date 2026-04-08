@@ -57,19 +57,19 @@ namespace Hal {
    * C++ version of R.Lednicky's fortran code rlamlam2n.f
    */
 
-  class CorrFIt1DCFCumacLamLam : public CorrFit1DCFCumac {
+  class CorrFit1DCFCumacLamLam : public CorrFit1DCFCumac {
   protected:
     virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
 
   public:
-    CorrFIt1DCFCumacLamLam();
+    CorrFit1DCFCumacLamLam();
     Int_t ScatteringLengthID() const { return 3; };
     Int_t EffectiveRadiusID() const { return 4; };
     Int_t LambdaPolarizationID() const { return 5; };
     Int_t ResidualAmplitudeID() const { return 6; };
     Int_t ResidualGaussWidhtID() const { return 7; };
-    virtual ~CorrFIt1DCFCumacLamLam();
-    ClassDef(CorrFIt1DCFCumacLamLam, 1)
+    virtual ~CorrFit1DCFCumacLamLam();
+    ClassDef(CorrFit1DCFCumacLamLam, 1)
   };
 
   /**

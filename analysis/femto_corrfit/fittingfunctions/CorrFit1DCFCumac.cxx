@@ -216,9 +216,18 @@ namespace Hal {
   }
   //*****************************************************************************//
 
-  CorrFIt1DCFCumacLamLam::CorrFIt1DCFCumacLamLam() : CorrFit1DCFCumac(8) {}
+  CorrFit1DCFCumacLamLam::CorrFit1DCFCumacLamLam() : CorrFit1DCFCumac(8) {
+    SetParameterName(NormID(), "N");
+    SetParameterName(LambdaID(), "#lambda");
+    SetParameterName(RadiusID(), "R");
+    SetParameterName(ScatteringLengthID(), "f0");
+    SetParameterName(EffectiveRadiusID(), "d0");
+    SetParameterName(LambdaPolarizationID(), "Pol");
+    SetParameterName(ResidualAmplitudeID(), "a_{res}");
+    SetParameterName(ResidualGaussWidhtID(), "r_{res}");
+  }
 
-  Double_t CorrFIt1DCFCumacLamLam::CalculateCF(const Double_t* x, const Double_t* params) const {
+  Double_t CorrFit1DCFCumacLamLam::CalculateCF(const Double_t* x, const Double_t* params) const {
     Double_t d0, f0, r0, ai, ak, al, an, ex, f0m, r0m, zs, den, fim, fre, fsi, r_s__, r_t__, fsq, pol, r0res, alres;
     Double_t ret_val, r__1;
     switch (fKinematics) {
@@ -229,7 +238,7 @@ namespace Hal {
     an    = params[NormID()];
     al    = params[LambdaID()];
     r0    = params[RadiusID()];
-    f0    = -params[ScatteringLengthID()];
+    f0    = params[ScatteringLengthID()];  // why was minus there?
     d0    = params[EffectiveRadiusID()];
     pol   = params[LambdaPolarizationID()];
     alres = params[ResidualAmplitudeID()];
@@ -259,7 +268,7 @@ namespace Hal {
     return ret_val;
   }
 
-  CorrFIt1DCFCumacLamLam::~CorrFIt1DCFCumacLamLam() {}
+  CorrFit1DCFCumacLamLam::~CorrFit1DCFCumacLamLam() {}
   //******************************************************************************
   CorrFit1DCFCumacPLam::CorrFit1DCFCumacPLam() : CorrFit1DCFCumac(8) {
     SetParameterName(SingletScatteringLengthID(), "f_{0s}");

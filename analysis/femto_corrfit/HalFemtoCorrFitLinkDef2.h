@@ -26,7 +26,7 @@
 #pragma link C++ class Hal::CorrFit3DCF_Lorentz + ;
 #pragma link C++ class Hal::CorrFit1DCF_Lorentz + ;
 #pragma link C++ class Hal::CorrFit1DCFCumac + ;
-#pragma link C++ class Hal::CorrFIt1DCFCumacLamLam + ;
+#pragma link C++ class Hal::CorrFit1DCFCumacLamLam + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacPLam + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacK0K0 + ;
 #pragma link C++ class Hal::CorrFit1DCFCumacK0Kch + ;

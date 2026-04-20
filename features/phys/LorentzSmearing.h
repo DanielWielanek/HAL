@@ -98,6 +98,8 @@ namespace Hal {
     TH2D* fResoPhi2d   = {nullptr};
     TH2D* fResoTheta2d = {nullptr};
 
+    void CheckVector(std::vector<TH1D*> vec, TString name);
+
   public:
     LorentzSmearingTH2(Int_t pid = 211) : LorentzSmearing(pid) {};
     LorentzSmearingTH2(const LorentzSmearingTH2& other);

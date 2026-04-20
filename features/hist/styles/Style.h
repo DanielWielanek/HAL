@@ -15,9 +15,11 @@
 #include <vector>
 
 #include <RtypesCore.h>
+#include <TAttText.h>
 #include <TH1.h>
 #include <TString.h>
 
+class TLegend;
 class TGraph;
 class TVirtualPad;
 namespace Hal {
@@ -141,6 +143,10 @@ namespace Hal {
     std::vector<Hal::LegendStyle*> fStyleLegend;
     std::vector<Hal::PadStyle*> fStylePad;
     std::vector<Hal::TextStyle*> fStyleText;
+    void ApplyLegend(TLegend* obj, TString name) const;
+    void ApplyText(TAttText* obj, TString name) const;
+    void ApplyHisto(TObject* obj, TString name) const;
+    void ApplyPad(TVirtualPad* obj, TString name) const;
 
   public:
     Styles() {};
@@ -153,10 +159,49 @@ namespace Hal {
      * @param newName
      */
     void RegisterStyle(const Hal::Style& style, TString newName = "");
+    /**
+     * return histo style with given name, nullptr if not found
+     * @param name
+     * @return
+     */
     Hal::HistoStyle* GetHistoStyle(TString name) const;
+    /**
+     *
+     * @param name style name
+     * @return legend style, nullptr if not found
+     */
     Hal::LegendStyle* GetLegendStyle(TString name) const;
+    /**
+     *
+     * @param name style name
+     * @return pad style, nullptr if not found
+     */
     Hal::PadStyle* GetPadStyle(TString name) const;
+    /**
+     *
+     * @param name style name
+     * @return text style, nullptr if not found
+     */
     Hal::TextStyle* GetTextStyle(TString name) const;
+    /**
+     * apply style if found
+     * @tparam T
+     * @param obj
+     * @param name
+     */
+    template<typename T>
+    void Apply(T* obj, TString name = "default") const {
+      if (!obj) return;
+      if constexpr (std::is_same_v<T, TLegend>) {
+        ApplyLegend(obj, name);
+      } else if constexpr (std::is_same_v<T, TAttText>) {
+        ApplyText(obj, name);
+      } else if constexpr (std::is_same_v<T, TVirtualPad>) {
+        ApplyPad(obj, name);
+      } else {
+        ApplyHisto(obj, name);
+      }
+    }
     virtual ~Styles();
     ClassDef(Styles, 1)
   };

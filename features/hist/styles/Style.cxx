@@ -124,4 +124,20 @@ namespace Hal {
       delete p;
   }
 
+  void Styles::ApplyLegend(TLegend* obj, TString name) const {
+    if (auto st = GetLegendStyle(name); st) st->Apply(*(TLegend*) obj);
+  }
+
+  void Styles::ApplyText(TAttText* obj, TString name) const {
+    if (auto st = GetTextStyle(name); st) st->Apply(*(TAttText*) obj);
+  }
+
+  void Styles::ApplyHisto(TObject* obj, TString name) const {
+    if (auto st = GetHistoStyle(name); st) st->Apply(*(TObject*) obj);
+  }
+
+  void Styles::ApplyPad(TVirtualPad* obj, TString name) const {
+    if (auto st = GetPadStyle(name); st) st->Apply((TVirtualPad*) obj);
+  }
+
 }  // namespace Hal

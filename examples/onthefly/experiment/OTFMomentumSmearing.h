@@ -35,7 +35,7 @@ namespace HalOTF {
     virtual void ProcessTrack(Hal::ComplexTrack* track);
 
   public:
-    MomentumSmearing(std::vector<int> vec = {0}) : ExperimentSubTask(vec) {};
+    MomentumSmearing(std::vector<int> vec = {-1}) : ExperimentSubTask(vec) {};
     /**
      * set smearing algorithm
      * @param algo

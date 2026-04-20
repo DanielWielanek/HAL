@@ -35,6 +35,7 @@ namespace Hal {
   void Track::SetPrimary() {
     SETBIT(fType, kPrimary);
     CLRBIT(fType, kMotherKnown);
+    SetMotherIndex(-1);
   }
 
   void Track::CopyData(Track* other) {
@@ -202,6 +203,20 @@ namespace Hal {
       CLRBIT(fType, kV0);
     }
   }
+
+  void Track::SetMotherIndex(Int_t index) {
+    fMotherID = index;
+    if (index == -1) {
+      SETBIT(fType, kPrimary);
+      CLRBIT(fType, kMotherKnown);
+    } else if (index < 0) {
+      CLRBIT(fType, kPrimary);
+      CLRBIT(fType, kMotherKnown);
+    } else {
+      CLRBIT(fType, kPrimary);
+      SETBIT(fType, kMotherKnown);
+    }
+  };
 
   Float_t Track::GetFieldVal(Int_t fieldID) const {
     switch (fieldID) {

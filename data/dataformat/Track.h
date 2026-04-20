@@ -202,13 +202,9 @@ namespace Hal {
     }
     /**
      * set particle mother index
-     * @param index
+     * @param index if -1 set as primary if <-1 mother is unknown
      */
-    inline void SetMotherIndex(Int_t index) {
-      CLRBIT(fType, kPrimary);
-      if (index >= 0) SETBIT(fType, kMotherKnown);
-      fMotherID = index;
-    };
+    void SetMotherIndex(Int_t index);
     /**
      *
      * @return mass of track

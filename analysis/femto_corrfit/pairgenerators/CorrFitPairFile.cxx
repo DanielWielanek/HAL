@@ -71,7 +71,7 @@ namespace Hal {
         for (int idx = start_bin; idx < end_bin; idx++) {
           fBackground.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
           fTree->SetBranchStatus(Form("FemtoBackground_%i", idx), 1);
-          fTree->SetBranchAddress(Form("FemtoBackground_%i", idx), &*fBackground[idx]);
+          fTree->SetBranchAddress(Form("FemtoBackground_%i", idx), &fBackground[idx]);
         }
     }
     if (fConfig->HaveSignal()) {
@@ -81,7 +81,7 @@ namespace Hal {
         for (int idx = start_bin; idx < end_bin; idx++) {
           fTree->SetBranchStatus(Form("FemtoSignal_%i", idx), 1);
           fSignals.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
-          fTree->SetBranchAddress(Form("FemtoSignal_%i", idx), &*fSignals[idx]);
+          fTree->SetBranchAddress(Form("FemtoSignal_%i", idx), &fSignals[idx]);
         }
     }
     return kTRUE;
@@ -93,17 +93,24 @@ namespace Hal {
     if (!fConfig) {
       Hal::Cout::PrintInfo("Cannot init CorrFitPairFile in write mode without config!", EInfo::kError);
       return kFALSE;
+    } else {
+      fFile->mkdir("HalInfo", "HalInfo");
+      fFile->cd("HalInfo");
+      fConfig->Write("CorrFitMapGroup");
+      fFile->cd();
     }
     Int_t bins = fConfig->GetNbins();
     if (fConfig->HaveBackground()) {
       for (int idx = 0; idx < bins; idx++) {
         fBackground.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
+        fBackground[idx]->ExpandCreateFast(100);
         fTree->Branch(Form("FemtoBackground_%i", idx), &*fBackground[idx]);
       }
     }
     if (fConfig->HaveSignal()) {
       for (int idx = 0; idx < bins; idx++) {
         fSignals.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
+        fSignals[idx]->ExpandCreateFast(100);
         fTree->Branch(Form("FemtoSignal_%i", idx), &*fSignals[idx]);
       }
     }
@@ -121,7 +128,7 @@ namespace Hal {
     }
   }
 
-  Int_t CorrFitPairFile::GetEntries() const { return fTree->GetEntriesFast(); }
+  Int_t CorrFitPairFile::GetEntries() const { return fTree->GetEntries(); }
 
   CorrFitPairFile::~CorrFitPairFile() {
     if (fMode == 1 && fFile) {

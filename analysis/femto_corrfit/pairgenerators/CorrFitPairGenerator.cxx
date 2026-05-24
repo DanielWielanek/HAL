@@ -33,7 +33,10 @@ namespace Hal {
   CorrFitPairGenerator::CorrFitPairGenerator() {}
 
   Bool_t CorrFitPairGenerator::Init() {
-    if (!fCF) return kFALSE;
+    if (!fCF) {
+      Hal::Cout::PrintInfo(Form("%s no CF", ClassName()), EInfo::kWarning);
+      return kFALSE;
+    }
     DividedHisto1D* dummy = fCF->GetCF(0);
     Int_t bins;
     Double_t min, max;
@@ -86,8 +89,14 @@ namespace Hal {
     fHbtPair->SetPdg1(fPid1);
     fHbtPair->SetPdg2(fPid2);
     fHbtPair->Init(-1);
-    if (!pid1) return kFALSE;
-    if (!pid2) return kFALSE;
+    if (!pid1) {
+      Hal::Cout::PrintInfo(Form("%s no PID 1 (%i)", ClassName(), fPid1), EInfo::kWarning);
+      return kFALSE;
+    }
+    if (!pid2) {
+      Hal::Cout::PrintInfo(Form("%s no PID2 (%i)", ClassName(), fPid2), EInfo::kWarning);
+      return kFALSE;
+    }
     fM1 = pid1->Mass();
     fM2 = pid2->Mass();
     fGrouping.SetFrame(fFrame);
@@ -151,6 +160,7 @@ namespace Hal {
       GenerateEvent();
       fPairFile->Fill();
     }
+
     CleanUpFiles();
   }
 

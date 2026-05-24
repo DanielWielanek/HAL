@@ -47,6 +47,7 @@ namespace Hal {
     fFreezeoutGenerator(nullptr),
     fHistograms1d(nullptr),
     fHistograms1dphi(nullptr),
+    fHistograms1dphiPrim(nullptr),
     fHistograms3d(nullptr) {
     fBackgroundMode = kNoBackground;
     fMixSize        = 1;
@@ -76,7 +77,9 @@ namespace Hal {
     fFreezeoutGenerator(nullptr),
     fHistograms1d(nullptr),
     fHistograms1dphi(nullptr),
+    fHistograms1dphiPrim(nullptr),
     fHistograms3d(nullptr) {
+    fDrawCosAngle = ana.fDrawCosAngle;
     if (ana.fFastCut) { fFastCut = (FemtoFastCut*) ana.fFastCut->Clone(); }
     for (int i = 0; i < 3; i++) {
       fBins[i]     = ana.fBins[i];
@@ -94,6 +97,30 @@ namespace Hal {
       }
     }
     if (ana.fFreezeoutGenerator) { fFreezeoutGenerator = ana.fFreezeoutGenerator->MakeCopy(); }
+  }
+
+  void FemtoFreezeoutsAna::FillHistos(Int_t bin, const TLorentzVector& p1) {
+    Double_t R     = TMath::Sqrt(fX * fX + fY * fY + fZ * fZ);
+    Double_t mag   = p1.P();
+    Double_t theta = TMath::ACos((fX * p1.X() + fY * p1.Y() + fZ * p1.Z()) / (R * mag));
+    theta          = TVector2::Phi_mpi_pi(theta);
+    if (fDrawCosAngle) theta = TMath::Cos(theta);
+    if (fX < 0) {
+      R   = -R;
+      mag = -mag;
+    }
+    if (fIgnoreSign) {
+      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R));
+      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R), theta);
+      fHistograms1dphiPrim->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, mag, theta);
+      fHistograms3d->Fill(
+        fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(fX), TMath::Abs(fY), TMath::Abs(fZ));
+    } else {
+      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R);
+      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R, theta);
+      fHistograms1dphiPrim->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, mag, theta);
+      fHistograms3d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, fX, fY, fZ);
+    }
   }
 
   void FemtoFreezeoutsAna::ComputePRF() {
@@ -122,24 +149,11 @@ namespace Hal {
     x2.RotateZ(-phi);
     x1.Boost(-beta, 0, 0);
     x2.Boost(-beta, 0, 0);
-    fX             = x1.X() - x2.X();
-    fY             = x1.Y() - x2.Y();
-    fZ             = x1.Z() - x2.Z();
-    Double_t R     = TMath::Sqrt(fX * fX + fY * fY + fZ * fZ);
-    Double_t mag   = p1.P();
-    Double_t theta = TMath::ACos((fX * p1.X() + fY * p1.Y() + fZ * p1.Z()) / (R * mag));
-    theta          = TVector2::Phi_mpi_pi(theta);
-    if (fX < 0) R = -R;
-    if (fIgnoreSign) {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R));
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R), theta);
-      fHistograms3d->Fill(
-        fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(fX), TMath::Abs(fY), TMath::Abs(fZ));
-    } else {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R);
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R, theta);
-      fHistograms3d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, fX, fY, fZ);
-    }
+    fX = x1.X() - x2.X();
+    fY = x1.Y() - x2.Y();
+    fZ = x1.Z() - x2.Z();
+
+    FillHistos(bin, p1);
   }
 
   void FemtoFreezeoutsAna::ComputeLCMS() {
@@ -162,24 +176,10 @@ namespace Hal {
     Double_t phi = P.Phi();
     x1.RotateZ(-phi);
     x2.RotateZ(-phi);
-    fX             = x1.X() - x2.X();
-    fY             = x1.Y() - x2.Y();
-    fZ             = x1.Z() - x2.Z();
-    Double_t mag   = p1.P();
-    Double_t R     = TMath::Sqrt(fX * fX + fY * fY + fZ * fZ);
-    Double_t theta = TMath::ACos((fX * p1.X() + fY * p1.Y() + fZ * p1.Z()) / (R * mag));
-    theta          = TVector2::Phi_mpi_pi(theta);
-    if (fX < 0) R = -R;
-    if (fIgnoreSign) {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R));
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R), theta);
-      fHistograms3d->Fill(
-        fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(fX), TMath::Abs(fY), TMath::Abs(fZ));
-    } else {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R);
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R, theta);
-      fHistograms3d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, fX, fY, fZ);
-    }
+    fX = x1.X() - x2.X();
+    fY = x1.Y() - x2.Y();
+    fZ = x1.Z() - x2.Z();
+    FillHistos(bin, p1);
   }
 
   void FemtoFreezeoutsAna::ComputePRFL() {
@@ -197,25 +197,11 @@ namespace Hal {
     TLorentzVector X = x2 - x1;
     X.Boost(-v);
     // X.RotateZ(-P.Phi());
-    fX             = X.X();
-    fY             = X.Y();
-    fZ             = X.Z();
-    fT             = X.Rho();
-    Double_t R     = TMath::Sqrt(fX * fX + fY * fY + fZ * fZ);
-    Double_t mag   = p1.P();
-    Double_t theta = TMath::ACos((fX * p1.X() + fY * p1.Y() + fZ * p1.Z()) / (R * mag));
-    theta          = TVector2::Phi_mpi_pi(theta);
-    if (fX < 0) R = -R;
-    if (fIgnoreSign) {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R));
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R), theta);
-      fHistograms3d->Fill(
-        fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(fX), TMath::Abs(fY), TMath::Abs(fZ));
-    } else {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R);
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R, theta);
-      fHistograms3d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, fX, fY, fZ);
-    }
+    fX = X.X();
+    fY = X.Y();
+    fZ = X.Z();
+    fT = X.Rho();
+    FillHistos(bin, p1);
   }
 
   void FemtoFreezeoutsAna::ComputeLCMSGamma() {
@@ -257,21 +243,7 @@ namespace Hal {
     Double_t kstarO = p1.X();
     Double_t rstarO = TMath::Abs(x1.X() - x2.X());
     fX              = rstarO * kstarO / qout * 2.0;
-    Double_t mag    = p1.P();
-    Double_t R      = TMath::Sqrt(fX * fX + fY * fY + fZ * fZ);
-    Double_t theta  = TMath::ACos((fX * p1.X() + fY * p1.Y() + fZ * p1.Z()) / (R * mag));
-    theta           = TVector2::Phi_mpi_pi(theta);
-    if (fX < 0) R = -R;
-    if (fIgnoreSign) {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R));
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R), theta);
-      fHistograms3d->Fill(
-        fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(fX), TMath::Abs(fY), TMath::Abs(fZ));
-    } else {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R);
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R, theta);
-      fHistograms3d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, fX, fY, fZ);
-    }
+    FillHistos(bin, p1);
   }
 
   void FemtoFreezeoutsAna::ComputeRaw() {
@@ -296,21 +268,7 @@ namespace Hal {
     fY = x1.Y() - x2.Y();
     fZ = x1.Z() - x2.Z();
 
-    Double_t mag   = p1.P();
-    Double_t R     = TMath::Sqrt(fX * fX + fY * fY + fZ * fZ);
-    Double_t theta = TMath::ACos((fX * p1.X() + fY * p1.Y() + fZ * p1.Z()) / (R * mag));
-    theta          = TVector2::Phi_mpi_pi(theta);
-    if (fX < 0) R = -R;
-    if (fIgnoreSign) {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R));
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(R), theta);
-      fHistograms3d->Fill(
-        fCurrentEventCollectionID, fCurrentPairCollectionID, bin, TMath::Abs(fX), TMath::Abs(fY), TMath::Abs(fZ));
-    } else {
-      fHistograms1d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R);
-      fHistograms1dphi->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, R, theta);
-      fHistograms3d->Fill(fCurrentEventCollectionID, fCurrentPairCollectionID, bin, fX, fY, fZ);
-    }
+    FillHistos(bin, p1);
   }
 
   void FemtoFreezeoutsAna::ProcessFemtoPair() {
@@ -373,9 +331,10 @@ namespace Hal {
   Task::EInitFlag FemtoFreezeoutsAna::Init() {
     Task::EInitFlag prev = TwoTrackAna::Init();
     if (prev == Task::EInitFlag::kFATAL) return prev;
-    fHistograms1d    = new HistogramManager_3_1D<TH1D>();
-    fHistograms1dphi = new HistogramManager_3_2D<TH2D>();
-    fHistograms3d    = new HistogramManager_3_3D<TH3D>();
+    fHistograms1d        = new HistogramManager_3_1D<TH1D>();
+    fHistograms1dphi     = new HistogramManager_3_2D<TH2D>();
+    fHistograms3d        = new HistogramManager_3_3D<TH3D>();
+    fHistograms1dphiPrim = new HistogramManager_3_2D<TH2D>();
     std::vector<HistogramAxisConf> axis(3);
     if (fFastCut == NULL) { fFastCut = new FemtoFastCutVirtual(); }
     switch (fKinematicsMode) {
@@ -426,14 +385,20 @@ namespace Hal {
     axis2[0] = HistogramAxisConf(titles[3], fBins[0], fHistoMin[0], fHistoMax[0]);
     axis2[1] = HistogramAxisConf(titles[4]);
     HistogramAxisConf phi_conf("#phi [rad]", 100, 0, TMath::Pi());
+    if (fDrawCosAngle) { phi_conf = HistogramAxisConf("Cos(#phi)", 100, -1, 1); }
     std::vector<HistogramAxisConf> phiConfs;
+    std::vector<HistogramAxisConf> phiConfs2;
     axis[0].SetTitle(titles[3]);
     phiConfs.push_back(axis[0]);
     phiConfs.push_back(phi_conf);
+    phiConfs2.push_back(axis2[0]);
+    phiConfs2.push_back(phi_conf);
 
     fHistograms1d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis2, "Freezeouts1d", kFALSE);
     fHistograms1dphi->Init(
       fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), phiConfs, "Freezeouts1dphi", kFALSE);
+    fHistograms1dphiPrim->Init(
+      fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), phiConfs2, "Freezeouts1dphiPrim", kFALSE);
     fHistograms3d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis, "Freezeouts3d", kFALSE);
     return Task::EInitFlag::kSUCCESS;
   }
@@ -464,6 +429,11 @@ namespace Hal {
     }
     delete list;
     list = fHistograms1dphi->GetFlatList();
+    for (int i = 0; i < list->GetEntries(); i++) {
+      pack->AddObject(list->At(i));
+    }
+    delete list;
+    list = fHistograms1dphiPrim->GetFlatList();
     for (int i = 0; i < list->GetEntries(); i++) {
       pack->AddObject(list->At(i));
     }

@@ -25,6 +25,7 @@
 /**
  * basic class for obtaint source emission function
  */
+class TLorentzVector;
 
 namespace Hal {
   class FemtoFreezeoutsAna : public TwoTrackAna {
@@ -35,6 +36,7 @@ namespace Hal {
     /**
      * assumed masses of particles (if <0 then value from data format is used)
      */
+    Bool_t fDrawCosAngle = {kFALSE};
     Int_t fPdg1, fPdg2;
     Double_t fX, fY, fZ, fT, fCut;
     FemtoFastCut* fFastCut;
@@ -48,12 +50,14 @@ namespace Hal {
     FemtoFreezeoutGenerator* fFreezeoutGenerator;
     HistogramManager_3_1D<TH1D>* fHistograms1d;
     HistogramManager_3_2D<TH2D>* fHistograms1dphi;
+    HistogramManager_3_2D<TH2D>* fHistograms1dphiPrim;
     HistogramManager_3_3D<TH3D>* fHistograms3d;
     void ComputePRF();
     void ComputeLCMS();
     void ComputePRFL();
     void ComputeRaw();
     void ComputeLCMSGamma();
+    void FillHistos(Int_t bin, const TLorentzVector& mom);
     virtual void ProcessFemtoPair();
     virtual void PreprocessFemtoPair();
     virtual void ProcessPair();
@@ -93,6 +97,7 @@ namespace Hal {
     void SetOutAxis(Int_t bins, Double_t min, Double_t max);
     void SetSideAxis(Int_t bins, Double_t min, Double_t max);
     void SetLongAxis(Int_t bins, Double_t min, Double_t max);
+    void UseCosines(Bool_t use) { fDrawCosAngle = use; }
     virtual void AddCut(const Cut& cut, Option_t* opt = " ");
     /**
      * set freezout generator (this is optional)

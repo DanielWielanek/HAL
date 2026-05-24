@@ -209,6 +209,7 @@ namespace Hal {
         i = nullptr;
       }
     }
+    Int_t GetJobId();
   }  // namespace Std
 }  // namespace Hal
 

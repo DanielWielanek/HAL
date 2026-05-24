@@ -370,4 +370,9 @@ namespace Hal::Std {
     if (ver < 62812) return 6;
     return 7;
   }
+
+  Int_t GetJobId() {
+    TString val = gSystem->Getenv("JOB_ID_HAL");
+    return val.Atoi();
+  }
 }  // namespace Hal::Std

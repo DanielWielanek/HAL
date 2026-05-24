@@ -189,9 +189,13 @@ namespace Hal {
       const Double_t Nbe    = fNum->GetBinError(i);
       const Double_t Dbe    = fDen->GetBinError(i);
       fDen->SetBinContent(i, Dg);
-      fNum->SetBinContent(i, Ng);
+      if (!TMath::IsNaN(Ng)) {
+        fNum->SetBinContent(i, Ng);
+        fNum->SetBinError(i, Nbe * purity);
+      } else {
+        fNum->SetBinContent(i, 0);
+      }
       fDen->SetBinError(i, Dbe * purity);
-      fNum->SetBinError(i, Nbe * purity);
     }
   }
 
@@ -207,18 +211,23 @@ namespace Hal {
     } else
       mu = 1.0 / normalization;
     for (int i = 1; i <= fNum->GetNbinsX(); i++) {
-      const Double_t purity = 1.0 - fraction.GetBinContent(i);
-      const Double_t lambda = residual.GetBinContent(i);
-      const Double_t Dm     = fDen->GetBinContent(i);
-      const Double_t Nm     = fNum->GetBinContent(i);
-      const Double_t Dg     = Dm * purity;
-      const Double_t Ng     = Nm - lambda * (1.0 - purity) * Dm / mu;
-      const Double_t Nbe    = fNum->GetBinError(i);
-      const Double_t Dbe    = fDen->GetBinError(i);
+      const Double_t purity  = 1.0 - fraction.GetBinContent(i);
+      const Double_t lambda  = residual.GetBinContent(i);
+      const Double_t Dm      = fDen->GetBinContent(i);
+      const Double_t Nm      = fNum->GetBinContent(i);
+      const Double_t Dg      = Dm * purity;
+      const Double_t Ng      = Nm - lambda * (1.0 - purity) * Dm / mu;
+      const Double_t sigmaNm = fNum->GetBinError(i);
+      const Double_t sigmaDm = fDen->GetBinError(i);
+      const Double_t Nbe2    = sigmaNm * sigmaNm + sigmaDm * sigmaDm * TMath::Power(lambda * (1.0 - purity) / mu, 2);
+      const Double_t Nbe     = TMath::Sqrt(Nbe2);
+      const Double_t Dbe     = fDen->GetBinError(i);
+      //  std::cout << i << " " << Nm << "-" << lambda << "*" << (1.0 - purity) << "*" << Dm << "/" << mu << std::endl;
+
       fDen->SetBinContent(i, Dg);
       fNum->SetBinContent(i, Ng);
       fDen->SetBinError(i, Dbe * purity);
-      fNum->SetBinError(i, Nbe * purity);
+      fNum->SetBinError(i, Nbe);
     }
   }
 

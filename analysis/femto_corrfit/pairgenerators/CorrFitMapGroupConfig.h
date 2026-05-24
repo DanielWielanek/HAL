@@ -46,7 +46,7 @@ namespace Hal {
     void EnableSignal() { SETBIT(fMode, kBitBranchModeSignal); };
     void EnableBackground() { SETBIT(fMode, kBitBranchModeBckg); };
     Bool_t HaveSignal() const { return TESTBIT(fMode, kBitBranchModeSignal); };
-    Bool_t HaveBackground() const { return TESTBIT(fMode, kBitBranchModeSignal); };
+    Bool_t HaveBackground() const { return TESTBIT(fMode, kBitBranchModeBckg); };
     virtual void Add(const Object* pack);
     std::pair<Int_t, Int_t> GetBranchesByValue(Double_t min, Double_t max) const;
     virtual ~CorrFitMapGroupConfig() {};

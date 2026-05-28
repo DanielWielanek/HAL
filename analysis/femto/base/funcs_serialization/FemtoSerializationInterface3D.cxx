@@ -36,8 +36,8 @@ namespace Hal {
 
   void FemtoSerializationInterface3D::ConvertSlice(ECopyDir dir) {
     ExpandArrayIfSerialize(fSlice->fOutBins * fSlice->fSideBins * 2, dir);
-    for ( int iO = 0; iO < fSlice->fOutBins; iO++) {
-      for ( int iS = 0; iS < fSlice->fSideBins; iS++) {
+    for (int iO = 0; iO < fSlice->fOutBins; iO++) {
+      for (int iS = 0; iS < fSlice->fSideBins; iS++) {
         CopyDataSingle(fSlice->fNum[fBinLow][iO][iS], dir);
         CopyDataSingle(fSlice->fDen[fBinLow][iO][iS], dir);
       }

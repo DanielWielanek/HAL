@@ -62,8 +62,8 @@ namespace Hal {
     fNormRadius(0),
     fNormBohr(0),
     fLmVals(FemtoYlmIndexes(1)) {
-    gSystem->Load("libgsl.so");
-    gSystem->Load("libgslcblas.so");
+    //  gSystem->Load("libgsl.so");
+    //  gSystem->Load("libgslcblas.so");
   }
 
   FemtoSHCF::FemtoSHCF(TString name, Int_t maxL, Int_t bins, Double_t min, Double_t max, Femto::EKinematics kinematics) :

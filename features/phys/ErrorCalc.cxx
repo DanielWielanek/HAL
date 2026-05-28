@@ -171,7 +171,7 @@ namespace Hal {
       Hal::Cout::PrintInfo("ErrorCalc::GetSystError - cannot get error, did you call BarlowTest?", EInfo::kError);
       return -1;
     }
-    for (int i = 0; i < (int)fValues.size(); i++) {
+    for (int i = 0; i < (int) fValues.size(); i++) {
       auto parName = fValues[i].first;
       if (parName == name) { return fUncertainties[i]; }
     }
@@ -214,7 +214,7 @@ namespace Hal {
 
     Hal::XMLNode root("parameter", "");
     root.AddAttrib("parName", GetName());
-    for (int i = 0; i < (int)fValues.size(); i++) {
+    for (int i = 0; i < (int) fValues.size(); i++) {
       Hal::XMLNode errorNode("SysError", fValues[i].first);
       errorNode.AddAttrib("Value", Form(precFlag, GetSysError(i)));
       root.AddChild(errorNode);

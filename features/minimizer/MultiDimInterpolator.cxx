@@ -25,7 +25,7 @@ namespace Hal {
   Hal::CorrelationHisto* MultiDimInterpolator::GetCorrHisto() const {
     Hal::CorrelationHisto* res = new Hal::CorrelationHisto(fInFile->GetConfig()->GetParametersNo());
     auto params                = fInFile->GetConfig()->GetParams();
-    for (int i = 0; i < (int)params.size(); i++) {
+    for (int i = 0; i < (int) params.size(); i++) {
       res->ConfigParam(i,
                        params[i].GetNPoints(),
                        params[i].GetMapMin() - 0.5 * params[i].GetStepSize(),
@@ -37,7 +37,7 @@ namespace Hal {
     std::vector<Double_t> values(valuesTree->size() - 1);
     for (int i = 0; i < fInFile->GetEntries(); i++) {
       fInFile->GetEntry(i);
-      for (int j = 0; j < (int)values.size(); j++) {
+      for (int j = 0; j < (int) values.size(); j++) {
         values[j] = (*valuesTree)[j + 1];
       }
       res->FillUnchecked(values, (*valuesTree)[0]);

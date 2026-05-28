@@ -16,9 +16,7 @@ namespace Hal {
   FemtoWeightGenerator::FemtoWeightGenerator() {}
 
   FemtoWeightGenerator::FemtoWeightGenerator(const FemtoWeightGenerator& aModel) :
-    TObject(aModel),
-    fPairType(aModel.fPairType),
-    fTaskID(aModel.fTaskID){}
+    TObject(aModel), fPairType(aModel.fPairType), fTaskID(aModel.fTaskID) {}
 
   FemtoWeightGenerator& FemtoWeightGenerator::operator=(const FemtoWeightGenerator& aModel) {
     if (this != &aModel) {
@@ -98,20 +96,16 @@ namespace Hal {
     Double_t tROut  = (tDX * tPx + tDY * tPy) / tPt;
     Double_t tRSide = (-tDX * tPy + tDY * tPx) / tPt;
 
-    fRStarSide    = tRSide;
-    Double_t tRSS = fRStarSide / 0.197327;
+    fRStarSide = tRSide;
 
     fRStarLong              = tGamma * (tRLong - tBeta * tDTime);
     Double_t tDTimePairLCMS = tGamma * (tDTime - tBeta * tRLong);
 
-    Double_t tRLS = fRStarLong / 0.197327;
     // 1/.1973
     tBeta  = tPt / tMt;
     tGamma = tMt / tM;
     // std::cout<<tROut<<" x "<<fRStarSide<<" "<<fRStarLong<<std::endl;
     fRStarOut = tGamma * (tROut - tBeta * tDTimePairLCMS);
-
-    Double_t tROS = fRStarOut / 0.197327;
     //   Double_t tDTimePairCMS = tGamma*(tDTimePairLCMS - tBeta* tROut);
     fRStar = ::sqrt(fRStarOut * fRStarOut + fRStarSide * fRStarSide + fRStarLong * fRStarLong);
     fKStar = ::sqrt(fKStarOut * fKStarOut + fKStarSide * fKStarSide + fKStarLong * fKStarLong);

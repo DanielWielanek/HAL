@@ -58,7 +58,7 @@ namespace Hal {
      * @return
      */
     virtual TMatrixD GetSmearedVec(const TH1D& raw) = 0;
-    virtual TMatrixD GetUnsmearedVec(const TH1D& raw) {
+    virtual TMatrixD GetUnsmearedVec(const TH1D& /*raw*/) {
       MayNotUse("SmearAlgo");
       return TMatrixD(1, 1);
     };
@@ -67,19 +67,19 @@ namespace Hal {
   };
 
   /**
-   * class for smearing histograms, uses simple matrix method to make convoltuion of matrix
+   * class for smearing histograms, uses simple matrix method to make convolution of matrix
    */
   class SmearAlgoMatrix : public SmearAlgo {
     virtual void Compute();
 
   public:
     SmearAlgoMatrix() {};
+    static std::pair<TH2D*, TH1D*> GetFilledUpMatrix(TH2D& smear_matrix, TH1D& raw);
     virtual TMatrixD GetSmearedVec(const TH1D& raw);
     virtual TMatrixD GetUnsmearedVec(const TH1D& raw);
     virtual ~SmearAlgoMatrix() {};
     ClassDef(SmearAlgoMatrix, 1)
   };
-
 
 } /* namespace Hal */
 

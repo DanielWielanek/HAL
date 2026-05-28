@@ -62,12 +62,9 @@ namespace Hal {
 
     Task::EInitFlag stat = TrackAna::Init();
     if (stat == Task::EInitFlag::kFATAL) return stat;
-    Event* event = fMemoryMap->GetTemporaryEvent();
     if (!fMemoryMap->IsDirectAccess()) {
       Cout::PrintInfo("Smear task might not work correctly without direct access to data", EInfo::kError);
     }
-
-    DataManager* ioManager = DataManager::Instance();
 
     if (fEventAlgorithm == NULL) {
       Cout::PrintInfo("No event smear algorithm, new will be added but do virtual", EInfo::kLowWarning);

@@ -36,7 +36,7 @@ namespace Hal {
 
   void FastAxisCalc::RoundToMinusOne() { fMinBin = fMaxBin = -1; }
 
-  void FastAxisCalc::Print(Option_t* option) const {
+  void FastAxisCalc::Print(Option_t* /*option*/) const {
     std::cout << ClassName() << std::endl;
     std::cout << Form("1/step %4.4f min = %4.4f max = %4.4f", fStep, fMin, fMax) << std::endl;
   }

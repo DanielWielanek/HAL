@@ -28,7 +28,7 @@ namespace Hal {
     enum class option { kMean = 0, kMax = 1 };
     option intopt = option::kMax;
     if (Hal::Std::FindParam(opt, "mean")) intopt = option::kMean;
-    for (int i = 0; i < fValues.size(); i++) {
+    for (int i = 0; i < (int) fValues.size(); i++) {
       Double_t uncert = 0;
       switch (intopt) {
         case option::kMean: uncert = BarlowTestParameterMean(i); break;
@@ -107,7 +107,7 @@ namespace Hal {
     auto uncerts         = fValues[parId].second;
     int m                = 0;
     double total_uncert2 = 0;
-    for (int i = 0; i < uncerts.size(); i++) {
+    for (int i = 0; i < (int) uncerts.size(); i++) {
       double value      = uncerts[i].first;
       double uncert     = uncerts[i].second;
       double par_diff   = TMath::Abs(fMeasurement - value);
@@ -129,7 +129,7 @@ namespace Hal {
     auto uncerts        = fValues[parId].second;
     int m               = 0;
     double total_uncert = 0;
-    for (int i = 0; i < uncerts.size(); i++) {
+    for (int i = 0; i < (int) uncerts.size(); i++) {
       double value      = uncerts[i].first;
       double uncert     = uncerts[i].second;
       double par_diff   = TMath::Abs(fMeasurement - value);
@@ -155,7 +155,7 @@ namespace Hal {
       Hal::Cout::PrintInfo("ErrorCalc::GetSystError - cannot get error, did you call BarlowTest?", EInfo::kError);
       return -1;
     }
-    if (par < 0 || par >= fUncertainties.size()) {
+    if (par < 0 || par >= (int) fUncertainties.size()) {
       Hal::Cout::PrintInfo("ErrorCalc::GetSystError - cannot find error with given index!", EInfo::kError);
       return -1;
     }
@@ -171,7 +171,7 @@ namespace Hal {
       Hal::Cout::PrintInfo("ErrorCalc::GetSystError - cannot get error, did you call BarlowTest?", EInfo::kError);
       return -1;
     }
-    for (int i = 0; i < fValues.size(); i++) {
+    for (int i = 0; i < (int)fValues.size(); i++) {
       auto parName = fValues[i].first;
       if (parName == name) { return fUncertainties[i]; }
     }
@@ -214,7 +214,7 @@ namespace Hal {
 
     Hal::XMLNode root("parameter", "");
     root.AddAttrib("parName", GetName());
-    for (int i = 0; i < fValues.size(); i++) {
+    for (int i = 0; i < (int)fValues.size(); i++) {
       Hal::XMLNode errorNode("SysError", fValues[i].first);
       errorNode.AddAttrib("Value", Form(precFlag, GetSysError(i)));
       root.AddChild(errorNode);

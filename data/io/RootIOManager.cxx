@@ -56,8 +56,7 @@ namespace Hal {
   }
 
   void RootIOManager::UpdateBranches() {
-    TObjArray* list_branch = fInChain->GetListOfBranches();
-    auto branches          = GetListOfBranches(fInChain, kTRUE);
+    auto branches = GetListOfBranches(fInChain, kTRUE);
     for (auto name : branches) {
       TBranch* branch = fInChain->GetBranch(name);
       if (FindBranch(name).GetFlag() != BranchInfo::EFlag::kNull) continue;  // branch with given name already exist
@@ -79,7 +78,7 @@ namespace Hal {
     }
   }
 
-  void RootIOManager::RegisterInternal(TString name, TString folderName, TObject* obj, Bool_t toFile) {
+  void RootIOManager::RegisterInternal(TString name, TString /*folderName*/, TObject* obj, Bool_t toFile) {
     if (toFile) { fOutTree->Branch(name, obj); }
   }
 

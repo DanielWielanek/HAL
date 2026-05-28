@@ -39,7 +39,7 @@ namespace Hal {
 
   Int_t VirtualIOManager::GetEntries() const { return fEntries; }
 
-  void VirtualIOManager::RegisterInternal(TString name, TString folderName, TObject* obj, Bool_t toFile) {
+  void VirtualIOManager::RegisterInternal(TString name, TString /*folderName*/, TObject* obj, Bool_t toFile) {
     if (toFile) { fOutTree->Branch(name, obj); }
   }
 

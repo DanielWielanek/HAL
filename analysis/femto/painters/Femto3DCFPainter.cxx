@@ -136,14 +136,7 @@ namespace Hal {
       int optId      = padId % 3;
       int flagDir    = (padId - optId) / 3;
       TString optLoc = titles[optId] + "+" + dirs[flagDir] + "+scale+bins";
-      TH1* hx        = nullptr;
-      switch (optId) {
-        case 0: hx = h; break;
-        case 1: hx = fCF->GetNum(); break;
-        case 2: hx = fCF->GetDen(); break;
-        default: break;
-      }
-      auto histo = GetProjection1D(h, mxxLow[flagDir], mxxHi[flagDir], myyLow[flagDir], myyHi[flagDir], optLoc);
+      auto histo     = GetProjection1D(h, mxxLow[flagDir], mxxHi[flagDir], myyLow[flagDir], myyHi[flagDir], optLoc);
       histo->SetTitle(Form("%s %s", names[flagDir].Data(), titles[optId].Data()));
       histo->SetMinimum(0);
       if (fRangeY[0] != fRangeY[1] && optId == 0) {

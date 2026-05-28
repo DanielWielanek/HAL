@@ -23,11 +23,11 @@ namespace Hal {
 
   void CorrFitVerticalSlices1D::FillDen(Int_t bin, FemtoPair* pair) { fDen[bin] += pair->GetWeight(); }
 
-  void CorrFitVerticalSlices3D::FillNum(Int_t bin, FemtoPair* pair) {  // fNum[bin] += pair->GetWeight();
-                                                                       // TODO
+  void CorrFitVerticalSlices3D::FillNum(Int_t /*bin*/, FemtoPair* /*pair*/) {  // fNum[bin] += pair->GetWeight();
+                                                                               // TODO
   }
 
-  void CorrFitVerticalSlices3D::FillDen(Int_t bin, FemtoPair* pair) {
+  void CorrFitVerticalSlices3D::FillDen(Int_t /*bin*/, FemtoPair* /*pair*/) {
     // fDen[bin] += pair->GetWeight();  TODO
   }
 
@@ -141,7 +141,7 @@ namespace Hal {
     return fLmMath.YlmUpToL(fLmVals.GetMaxL(), pair->GetX(), pair->GetY(), pair->GetZ());
   }
 
-  CorrFitVerticalSlices1D::CorrFitVerticalSlices1D(const Hal::Femto1DCF& h, Int_t nSamples) {
+  CorrFitVerticalSlices1D::CorrFitVerticalSlices1D(const Hal::Femto1DCF& /*h*/, Int_t nSamples) {
     Hal::Std::ResizeVector1D(fNum, nSamples);
     Hal::Std::ResizeVector1D(fDen, nSamples);
   }
@@ -213,7 +213,7 @@ namespace Hal {
 
   void CorrFitVerticalSlicesSH::Debug() const {
     std::cout << "NUMDEN[ " << fNum[0] << " " << fDen[0] << "]" << std::endl;
-    std::cout << "NUM 00" << fShNumReal[0][0] << " " << fShDenReal[0][0] << std::endl;
+    std::cout << "NUM 00 " << fShNumReal[0][0] << " " << fShDenReal[0][0] << std::endl;
   }
 
 } /* namespace Hal */

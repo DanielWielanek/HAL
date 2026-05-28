@@ -77,8 +77,8 @@ namespace Hal {
 
   std::pair<Double_t, Double_t> FemtoCFPainter::GetMinMax(Int_t x, Int_t y) const {
     std::pair<Double_t, Double_t> res;
-    if (fHistograms.size() < x + 1) return res;
-    if (fHistograms[x].size() < y + 1) return res;
+    if ((int) fHistograms.size() < x + 1) return res;
+    if ((int) fHistograms[x].size() < y + 1) return res;
     auto h = fHistograms[x][y];
     if (!h) return res;
     res.first  = h->GetMinimum();

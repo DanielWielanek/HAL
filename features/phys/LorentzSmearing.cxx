@@ -29,9 +29,11 @@ namespace Hal {
     if (tr) { fMass = tr->Mass(); }
   }
 
-  LorentzSmearing::LorentzSmearing(const LorentzSmearing& other) : fPid(other.fPid), fMass(other.fMass), fKeepE(other.fKeepE) {}
+  LorentzSmearing::LorentzSmearing(const LorentzSmearing& other) :
+    TObject(other), fPid(other.fPid), fMass(other.fMass), fKeepE(other.fKeepE) {}
 
   void LorentzSmearing::SetPid(Int_t pid) {
+    fPid    = pid;
     auto db = TDatabasePDG::Instance();
     auto tr = db->GetParticle(fPid);
     if (tr) { fMass = tr->Mass(); }
@@ -182,7 +184,7 @@ namespace Hal {
       }
       flags[i] = best;
     }
-    for (int i = 0; i < flags.size(); i++) {
+    for (int i = 0; i < (int) flags.size(); i++) {
       if (flags[i] != -2) {
         Hal::Cout::PrintInfo(Form("%s - detected empty bins %s", ClassName(), name.Data()), Hal::EInfo::kLowWarning);
         break;
@@ -195,7 +197,7 @@ namespace Hal {
         vec[i]->Add(vec[flags[i]]);
       }
     }
-    for (int i = 0; i < flags.size(); i++) {
+    for (int i = 0; i < (int) flags.size(); i++) {
       double mom = fResoP2d->GetXaxis()->GetBinCenter(i);
       if (flags[i] == -1) {
         Hal::Cout::PrintInfo(Form("Empty bin p = %4.4f filled with 0", mom), Hal::EInfo::kDebugInfo);

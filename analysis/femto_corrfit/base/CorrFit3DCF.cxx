@@ -643,7 +643,6 @@ namespace Hal {
   }
 
   Double_t CorrFit3DCF::GetScaledValue(Double_t x, Double_t* params) const {
-    double y = x;
     if (params[GetParametersNo()]) return x / params[fNormParIndex];
     return x;
   }

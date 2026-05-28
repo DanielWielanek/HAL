@@ -326,18 +326,6 @@ namespace Hal {
       }
     }
 
-    auto sameMon = [](CutMonitor* a, CutMonitor* b) {
-      int n = a->GetAxisNo();
-      if (n != b->GetAxisNo()) return false;
-      int bad = 0;
-      for (int no = 0; no < n; no++) {
-        if (a->GetCutLink(no) == b->GetCutLink(no))
-          if (a->GetCutParameter(no) == b->GetCutParameter(no)) ++bad;
-      }
-      if (bad == n) return true;
-      return false;
-    };
-    Int_t n = fCutMonitors->GetEntries();
     std::vector<int> toRemove;
     for (int i = 0; i < fCutMonitors->GetEntries(); i++) {
       auto a = (CutMonitor*) fCutMonitors->UncheckedAt(i);
@@ -399,7 +387,6 @@ namespace Hal {
                         EInfo::kLowWarning);
         return res;
       }
-      auto upd = cut->GetUpdateRatio();
       res.push_back(cut);
     }
     return res;

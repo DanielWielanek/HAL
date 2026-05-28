@@ -211,7 +211,7 @@ namespace Hal {
 
   }  // namespace Hal
 
-  void CutsAndMonitors::AddAllCutMonitorRequests(Option_t* opt) {
+  void CutsAndMonitors::AddAllCutMonitorRequests(Option_t* /*opt*/) {
     if (fCutMonitorRequests.size() != 0) {
       Hal::Cout::PrintInfo("CutsAndMonitors: AddAllCutMonitorRequests should be overridden if monitor request is full",
                            EInfo::kLowWarning);

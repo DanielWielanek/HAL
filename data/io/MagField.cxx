@@ -29,7 +29,7 @@ namespace Hal {
     fBz = z;
   }
 
-  void ConstMagField::GetFieldValue(const Double_t point[3], Double_t* bField) const {
+  void ConstMagField::GetFieldValue(const Double_t /*point*/[3], Double_t* bField) const {
     bField[0] = fBx;
     bField[1] = fBy;
     bField[2] = fBz;

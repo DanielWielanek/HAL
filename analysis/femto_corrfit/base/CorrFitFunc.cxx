@@ -147,8 +147,8 @@ namespace Hal {
     ROOT::Math::Minimizer *min, *min2 = nullptr;
     CheckOrder();
     fNDF = CountNDF();
-    min  = GetMinimizer1(fMinAlgo);
-    min2 = GetMinimizer2(fMinAlgo);
+    min  = GetMinimizer1();
+    min2 = GetMinimizer2();
     ROOT::Math::Functor f;
     switch (fMinFunc) {
       case kChi: f = ROOT::Math::Functor(this, &CorrFitFunc::FunctorChiTFD, GetParametersNo()); break;
@@ -601,7 +601,7 @@ namespace Hal {
     return fActiveBins - freeParameters;
   }
 
-  ROOT::Math::Minimizer* CorrFitFunc::GetMinimizer1(EMinAlgo algo) const {
+  ROOT::Math::Minimizer* CorrFitFunc::GetMinimizer1() const {
     auto algos = AlgoToOptions(fMinAlgo);
     if (algos.size() < 2) algos.push_back("");
     TString pat1               = algos[0];
@@ -620,7 +620,7 @@ namespace Hal {
     return min;
   }
 
-  ROOT::Math::Minimizer* CorrFitFunc::GetMinimizer2(EMinAlgo algo) const {
+  ROOT::Math::Minimizer* CorrFitFunc::GetMinimizer2() const {
     auto algos = AlgoToOptions(fMinAlgo);
     if (algos.size() <= 3) return nullptr;
     TString pat1               = algos[2];

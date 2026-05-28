@@ -254,7 +254,7 @@ namespace Hal {
         high = x[x.size() - 1].second;
       }
       TGraph* gr = new TGraph();
-      for (int i = 0; i < x.size(); i++) {
+      for (int i = 0; i < (int) x.size(); i++) {
         double X = x[i].first;
         double Y = x[i].second;
         gr->SetPoint(i, X, Y);

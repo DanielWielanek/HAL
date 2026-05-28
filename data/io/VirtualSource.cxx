@@ -17,7 +17,7 @@
 
 namespace Hal {
 
-  VirtualSource::VirtualSource(Int_t nevents) : Hal::Source("/dev/null"), fEvents(nevents) {
+  VirtualSource::VirtualSource(Int_t nevents) : Hal::Source(), fEvents(nevents) {
     fManager = new VirtualIOManager(this, nevents);
   }
 

@@ -61,7 +61,7 @@ namespace Hal {
 
     ROOT::Math::Functor f = ROOT::Math::Functor(this, &MultiDimMinuit::GetEval, fParameters.size());
     fMinimizer->SetFunction(f);
-    for (int i = 0; i < fParameters.size(); i++) {
+    for (int i = 0; i < (int) fParameters.size(); i++) {
       auto Param = fParameters[i];
       if (Param.GetMin() == Param.GetMax()) Param.SetIsFixed(kTRUE);
       Param.Init();

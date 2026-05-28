@@ -972,7 +972,7 @@ namespace Hal {
     }
   }
 
-  void FemtoSHCF::Rebin(Int_t ngroup, Option_t* opt) {
+  void FemtoSHCF::Rebin(Int_t ngroup, Option_t* /*opt*/) {
 
     int oldBins = fNumReal[0]->GetNbinsX();
     for (int i = 0; i < fMaxJM; i++) {
@@ -1057,6 +1057,6 @@ namespace Hal {
     return nullptr;
   }
 
-  void FemtoSHCF::MakePainter(TString option) { fPainter = new FemtoSHCFPainter(this); }
+  void FemtoSHCF::MakePainter(TString /*option*/) { fPainter = new FemtoSHCFPainter(this); }
 
 }  // namespace Hal

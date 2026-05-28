@@ -32,7 +32,7 @@ namespace Hal {
      * constructor
      * @param name name of file
      */
-    Source(TString name = "") {};
+    Source(TString /*name*/ = "") {};
     /**
      * add  file to analysis
      * @param friendName

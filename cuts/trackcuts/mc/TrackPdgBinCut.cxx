@@ -70,7 +70,7 @@ namespace Hal {
 
   std::vector<std::pair<TString, Double_t>> TrackPdgBinCut::GetBinLabels(Int_t /*par*/) const {
     std::vector<std::pair<TString, Double_t>> res;
-    for (int i = 0; i < fNames.size(); i++) {
+    for (int i = 0; i < (int) fNames.size(); i++) {
       res.push_back(std::pair<TString, Double_t>(fNames[i], fIndexes[i]));
     }
     return res;

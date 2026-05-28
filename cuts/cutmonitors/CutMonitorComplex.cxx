@@ -48,7 +48,7 @@ namespace Hal {
     return report;
   }
 
-  void ComplexMonitor::Update(Bool_t passed, TObject* obj) {}
+  void ComplexMonitor::Update(Bool_t /*passed*/, TObject* /*obj*/) {}
 
   Bool_t ComplexMonitor::Init(Int_t task_id) {
     fMonitor->SetCollectionID(fCollectionID);
@@ -89,7 +89,7 @@ namespace Hal {
     fMonitor->Update(passed, event);
   }
 
-  Hal::CutMonitor* EventCutMonitorImaginary::MakeCopy(TString opt) const { return new EventCutMonitorImaginary(*this); }
+  Hal::CutMonitor* EventCutMonitorImaginary::MakeCopy(TString /*opt*/) const { return new EventCutMonitorImaginary(*this); }
 
   //======================================================
 
@@ -99,7 +99,7 @@ namespace Hal {
     fMonitor->Update(passed, track);
   }
 
-  Hal::CutMonitor* TrackCutMonitorImaginary::MakeCopy(TString opt) const { return new TrackCutMonitorImaginary(*this); }
+  Hal::CutMonitor* TrackCutMonitorImaginary::MakeCopy(TString /*opt*/) const { return new TrackCutMonitorImaginary(*this); }
 
   //======================================================
 
@@ -108,7 +108,7 @@ namespace Hal {
     fMonitor->Update(passed, &fPair);
   }
 
-  Hal::CutMonitor* TwoTrackCutMonitorImaginary::MakeCopy(TString opt) const { return new TwoTrackCutMonitorImaginary(*this); }
+  Hal::CutMonitor* TwoTrackCutMonitorImaginary::MakeCopy(TString /*opt*/) const { return new TwoTrackCutMonitorImaginary(*this); }
 
   //======================================================
 
@@ -117,7 +117,7 @@ namespace Hal {
     fMonitor->Update(passed, event);
   }
 
-  Hal::CutMonitor* EventCutMonitorReal::MakeCopy(TString opt) const { return new EventCutMonitorReal(*this); }
+  Hal::CutMonitor* EventCutMonitorReal::MakeCopy(TString /*opt*/) const { return new EventCutMonitorReal(*this); }
 
   //======================================================
 
@@ -126,7 +126,7 @@ namespace Hal {
     fMonitor->Update(passed, track);
   }
 
-  Hal::CutMonitor* TrackCutMonitorReal::MakeCopy(TString opt) const { return new TrackCutMonitorReal(*this); }
+  Hal::CutMonitor* TrackCutMonitorReal::MakeCopy(TString /*opt*/) const { return new TrackCutMonitorReal(*this); }
 
   //======================================================
 
@@ -135,7 +135,7 @@ namespace Hal {
     fMonitor->Update(passed, &fPair);
   }
 
-  Hal::CutMonitor* TwoTrackCutMonitorReal::MakeCopy(TString opt) const { return new TwoTrackCutMonitorReal(*this); }
+  Hal::CutMonitor* TwoTrackCutMonitorReal::MakeCopy(TString /*opt*/) const { return new TwoTrackCutMonitorReal(*this); }
 
   Bool_t ComplexMonitor::AreSimilar(const Hal::CutMonitor& other) const {
     TString classThis  = ClassName();

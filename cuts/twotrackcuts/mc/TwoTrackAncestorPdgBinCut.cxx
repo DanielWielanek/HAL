@@ -49,7 +49,7 @@ namespace Hal {
 
   std::vector<std::pair<TString, Double_t>> TwoTrackAncestorPdgBinCut::GetBinLabels(Int_t /*int1*/) const {
     std::vector<std::pair<TString, Double_t>> res;
-    for (int i = 0; i < fNames.size(); i++) {
+    for (int i = 0; i < (int) fNames.size(); i++) {
       res.push_back(std::pair<TString, Double_t>(fNames[i], fIndexes[i]));
     }
     return res;

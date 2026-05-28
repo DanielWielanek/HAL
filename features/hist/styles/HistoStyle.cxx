@@ -178,7 +178,7 @@ namespace Hal {
   }
 
   void HistoStyle::SetAntiColor(Bool_t /*safe*/) {
-    Int_t i;
+    Int_t i     = GetMarkerStyle().GetColor();
     auto GetCol = [&](Int_t col) {
       col = Hal::Std::GetAntiColor(col);
       return col;

@@ -270,9 +270,9 @@ namespace Hal {
       } break;
       default: fPionac = 0; break;
     }
-    fOneoveracsq = 1.0 / (fPionac * fPionac);
-    fTwopioverac = 2.0 * TMath::Pi() / fPionac;
-    double tpaoverk;
+    fOneoveracsq    = 1.0 / (fPionac * fPionac);
+    fTwopioverac    = 2.0 * TMath::Pi() / fPionac;
+    double tpaoverk = 0;
 
     for (int iter = 0; iter < 2000; iter++) {
       tpaoverk = fTwopioverac / (iter * 0.0002 + 0.0001);
@@ -388,9 +388,9 @@ namespace Hal {
     long double kstar = fabs(fKStar);
     long double rho   = fRStarS * kstar;
 
-    int ccase         = 0;
-    static int pcount = 0;
-    int wavesign      = 1;
+    int ccase = 0;
+    // static int pcount = 0;
+    int wavesign = 1;
 
     // Classical limit - if distance is larger than Coulomb radius,
     // the interaction does not matter
@@ -665,9 +665,9 @@ namespace Hal {
     double srk, crk;
 
     double d0_sr = fD0s.re;
-    double d0_si = fD0s.im;
+    // double d0_si = fD0s.im;
     double d0_tr = fD0t.re;
-    double d0_ti = fD0t.im;
+    // double d0_ti = fD0t.im;
 
     double f0_sr = fF0s.re;
     double f0_si = fF0s.im;
@@ -863,7 +863,7 @@ namespace Hal {
   }
 
   double FemtoWeightGeneratorKisiel::GetQuantum() {
-    double quantumweight;
+    double quantumweight = 1;
 
     if (fTwospin == 0) {
       quantumweight = 1.0 + TMath::Cos(2.0 * (fKStarOut * fRStarOutS + fKStarSide * fRStarSideS + fKStarLong * fRStarLongS));
@@ -1096,9 +1096,9 @@ namespace Hal {
     }
 
     dcomplex expikr;
-    expikr.re         = cos(kstrst);
-    expikr.im         = sin(kstrst);
-    dcomplex expikrc  = conj(expikr);
+    expikr.re = cos(kstrst);
+    expikr.im = sin(kstrst);
+    // dcomplex expikrc  = conj(expikr);
     dcomplex ffplusc  = conj(ffplus);
     dcomplex ffminusc = conj(ffminus);
 

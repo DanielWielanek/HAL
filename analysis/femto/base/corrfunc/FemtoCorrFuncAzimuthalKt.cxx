@@ -66,7 +66,7 @@ namespace Hal {
   FemtoCorrFuncAzimuthalKt::FemtoCorrFuncAzimuthalKt(const DividedHisto1D& h,
                                                      const std::initializer_list<double>& init,
                                                      Int_t phi,
-                                                     Int_t nbins) :
+                                                     Int_t /*nbins*/) :
     FemtoCorrFunc2D(h, "k_{T} [GeV/c]", "#phi_{pair}", init.size() - 1, phi) {
     fPhiCorrection[0] = 0;
     fPhiCorrection[1] = TMath::TwoPi();

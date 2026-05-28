@@ -164,7 +164,7 @@ Int_t mergeAnaFiles(TString filename, std::pair<TList*, TList*> res, TString out
     if (!gSkipBadFiles) { Hal::Cout::PrintInfo("Critical error", Hal::EInfo::kCriticalError); }
   };
 
-  for (int i = 1; i < list_files.size(); i++) {
+  for (int i = 1; i < (int) list_files.size(); i++) {
     filename = list_files[i];
     file     = new TFile(filename);
     if (file->IsZombie()) {
@@ -240,7 +240,7 @@ Int_t mergeFiles(TString outFile, std::vector<TString>& list_files) {
 
 std::vector<std::vector<TString>> Split(std::vector<TString> vec, Int_t chunk_size) {
   std::vector<std::vector<TString>> bunches;
-  for (int i = 0; i < vec.size(); i += chunk_size) {
+  for (int i = 0; i < (int) vec.size(); i += chunk_size) {
     int last = TMath::Min((int) vec.size(), i + chunk_size);
     std::vector<TString> chunk;
     for (int j = i; j < last; ++j) {
@@ -259,8 +259,6 @@ TString Merge(std::vector<TString>& vec) {
     for (auto s : vec) {
       res = res + s + " ";
     }
-    auto x = res[res.Length() - 1];
-    //  if (x == ' ') res = res.Chop();  // remove last
     return res;
   }
   return "";
@@ -329,7 +327,7 @@ int main(int argc, char* argv[]) {
   if (opt.HaveParameter("hidden")) hidden = opt.GetParameterValue("hidden").Atoi();
   if (opt.HaveParameter("debug")) Hal::Cout::SetVerboseMode(Hal::EInfo::kDebugInfo);
 
-  if (split < 2 || split >= list_files.size()) {
+  if (split < 2 || split >= (int) list_files.size()) {
     mergeFiles(outputFile, list_files);
   } else if (nCores <= 1) {
     auto lists = Split(list_files, split - 1);

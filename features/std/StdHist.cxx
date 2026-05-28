@@ -1508,9 +1508,9 @@ NamespaceImp(Hal::Std)
 
 
       const Int_t start[] = {useUnderFlow ? 0 : 1, useUnderFlow ? 0 : 1, useUnderFlow ? 0 : 1};
-      const Int_t end[]   = {useUnderFlow ? h.GetXaxis()->GetNbins() + 1 : h.GetXaxis()->GetNbins(),
-                           useUnderFlow ? h.GetYaxis()->GetNbins() + 1 : h.GetYaxis()->GetNbins(),
-                           useUnderFlow ? h.GetZaxis()->GetNbins() + 1 : h.GetZaxis()->GetNbins()};
+      const Int_t end[]   = {useOverFlow ? h.GetXaxis()->GetNbins() + 1 : h.GetXaxis()->GetNbins(),
+                           useOverFlow ? h.GetYaxis()->GetNbins() + 1 : h.GetYaxis()->GetNbins(),
+                           useOverFlow ? h.GetZaxis()->GetNbins() + 1 : h.GetZaxis()->GetNbins()};
       switch (ndim) {
         case 1: {
           Double_t sum = GetSumByBin(h, start[0], end[0]);

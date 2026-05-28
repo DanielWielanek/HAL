@@ -50,7 +50,7 @@ namespace Hal {
      * @return variable with is plotted of flow histogram
      */
     virtual Double_t GetVariable(Track* p);
-    virtual Bool_t Init(Int_t taskId) { return kTRUE; }
+    virtual Bool_t Init(Int_t /*taskId*/) { return kTRUE; }
     virtual FlowVariable* MakeCopy() const = 0;
     virtual ~FlowVariable();
     ClassDef(FlowVariable, 1)

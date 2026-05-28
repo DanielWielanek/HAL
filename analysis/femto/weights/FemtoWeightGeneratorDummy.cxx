@@ -34,9 +34,9 @@ namespace Hal {
     Double_t U           = TMath::Sqrt(s);
     Double_t k1prim      = TMath::Sqrt(fKStar * fKStar + mK2 - mpi2);
     Double_t e           = TMath::Sqrt(ak2 + mK2) * 2.0;
-    Double_t k3prim =
-      TMath::Sqrt(mpi2 * mpi2 - 2.0 * mpi2 * meta2 - 2.0 * e * e * mpi2 + meta2 * meta2 - 2.0 * e * e * meta2 + e * e * e * e)
-      / (2.0 * e);
+    /* Double_t k3prim =
+       TMath::Sqrt(mpi2 * mpi2 - 2.0 * mpi2 * meta2 - 2.0 * e * e * mpi2 + meta2 * meta2 - 2.0 * e * e * meta2 + e * e * e * e)
+       / (2.0 * e);*/
 
     Double_t k2prim = TMath::Sqrt(mpi2 * mpi2 + meta2 * meta2 + s * s - 2.0 * (mpi2 * meta2 + mpi2 * s + meta2 * s)) / (2.0 * U);
     TComplex num1(fMf0 * fMf0 - s, -fGamma_f0KK * fKStar - fGamma_f0pipi * k1prim);

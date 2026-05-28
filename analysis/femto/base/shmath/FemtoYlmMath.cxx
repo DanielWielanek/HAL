@@ -18,7 +18,9 @@ namespace Hal {
 
   FemtoYlmMath::FemtoYlmMath() { InitializeYlms(); }
 
-  FemtoYlmMath::~FemtoYlmMath() {}
+  FemtoYlmMath::~FemtoYlmMath() {
+    if (fYlms) delete fYlms;
+  }
 
   FemtoYlmMath::FemtoYlmMath(const FemtoYlmMath& aYlm) : TObject(aYlm) { InitializeYlms(); }
 

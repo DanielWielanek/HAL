@@ -24,7 +24,7 @@ namespace Hal {
 
   PeakFitterX::PeakFitterX() {}
 
-  Double_t PeakFitterX::EvalNumSignal(Double_t* x, Double_t* params) const {
+  Double_t PeakFitterX::EvalNumSignal(Double_t* x, Double_t* /*params*/) const {
     return fData->Eval(x[0]) - fBackgroundFunction->Eval(x[0]);
   }
 

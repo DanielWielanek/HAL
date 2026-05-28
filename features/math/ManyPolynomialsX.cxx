@@ -29,12 +29,12 @@ namespace Hal {
     }
     return kFALSE;
   }
-  Double_t ManyPolynomialsX::Eval(Double_t* x, Double_t* params) const {
+  Double_t ManyPolynomialsX::Eval(Double_t* x, Double_t* /*params*/) const {
     double sum  = 0;
     const int j = FindBin(x[0]);
     if (j < 0) return fRawValue;
-    for (int i = 0; i < fTerms[j].size(); i++) {
-      sum += TMath::Power(x[0], i) * fTerms[j][i];
+    for (unsigned int i = 0; i < fTerms[j].size(); i++) {
+      sum += TMath::Power(x[0], (int) i) * fTerms[j][i];
     }
     return sum;
   }
@@ -42,7 +42,7 @@ namespace Hal {
   void ManyPolynomialsX::SetRanges(const std::vector<double>& ranges) {
     if (IsInitialzed(__func__)) return;
     double prev = ranges[0] - 1;
-    for (int i = 0; i < ranges.size(); i++) {
+    for (int i = 0; i < (int) ranges.size(); i++) {
       if (prev > ranges[i]) {
         Hal::Cout::PrintInfo("PolynomialX::SetRanges wrong ranges order !", EInfo::kError);
         return;
@@ -55,7 +55,7 @@ namespace Hal {
 
   void ManyPolynomialsX::SetTerms(const std::vector<double>& terms, int range) {
     if (IsInitialzed(__func__)) return;
-    if (range < 0 || range >= fTerms.size()) {
+    if (range < 0 || range >= (int) fTerms.size()) {
       Hal::Cout::PrintInfo("PolynomialX::SetTerms to large range !", EInfo::kError);
       return;
     }
@@ -73,7 +73,7 @@ namespace Hal {
   ManyPolynomialsX* ManyPolynomialsX::GetDeriverative() const {
     ManyPolynomialsX* poly = new ManyPolynomialsX();
     poly->SetRanges(fRanges);
-    for (int i = 0; i < fTerms.size(); i++) {
+    for (int i = 0; i < (int) fTerms.size(); i++) {
       std::vector<double> terms = GetDeriverativeTerms(fTerms[i]);
       poly->SetTerms(terms, i);
     }
@@ -84,7 +84,7 @@ namespace Hal {
   ManyPolynomialsX* ManyPolynomialsX::GetDeriverative2() const {
     ManyPolynomialsX* poly = new ManyPolynomialsX();
     poly->SetRanges(fRanges);
-    for (int i = 0; i < fTerms.size(); i++) {
+    for (int i = 0; i < (int) fTerms.size(); i++) {
       std::vector<double> terms = GetDeriverativeTerms(GetDeriverativeTerms(fTerms[i]));
       poly->SetTerms(terms, i);
     }
@@ -149,7 +149,7 @@ namespace Hal {
     parNo     = 0;
     int count = 0;
     for (auto i : fTerms) {
-      for (int j = 0; j < i.size(); j++) {
+      for (int j = 0; j < (int) i.size(); j++) {
         fFunc->SetParName(parNo, Form("p_%i_%i", count, j));
         fFunc->FixParameter(parNo, fTerms[count][j]);
         parNo++;

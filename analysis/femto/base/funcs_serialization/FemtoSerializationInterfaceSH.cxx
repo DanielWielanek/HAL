@@ -70,7 +70,7 @@ namespace Hal {
       CopyDataSingle(fSlice->fShDenImag[fBinLow][i], dir);
     }
     auto sqrSeralize = [&](Double_t& val, ECopyDir dirx) {
-      Double_t copy;
+      Double_t copy = 0;
       if (dirx == ECopyDir::kSerialize) {
         copy = TMath::Sqrt(val);  // go to error to be compatible with TH1D
         CopyDataSingle(copy, dirx);
@@ -79,7 +79,6 @@ namespace Hal {
         val = copy * copy;
       }
     };
-    float temp_err = 0;
     for (int i = 0; i < fMaxJM; i++) {  // set errors to zero to be compatible with CF's
       sqrSeralize(fSlice->fShNumRealE[fBinLow][i], dir);
       sqrSeralize(fSlice->fShDenRealE[fBinLow][i], dir);
@@ -88,7 +87,9 @@ namespace Hal {
     }
     for (int i = 0; i < fMaxJM * 2; i++) {
       for (int j = 0; j < fMaxJM * 2; j++) {
-        if (i == j && i == 0) std::cout << "EXPORT COV " << fSlice->fCovMatrix[fBinLow][i][j] << std::endl;
+        if (i == j && i == 0)
+          std::cout << "EXPORT COV [" << fBinLow << "][" << i << "][" << j << "] " << fSlice->fCovMatrix[fBinLow][i][j]
+                    << std::endl;
         CopyDataSingle(fSlice->fCovMatrix[fBinLow][i][j], dir);
       }
     }
@@ -113,7 +114,6 @@ namespace Hal {
   void FemtoSerializationInterfaceSH::ConvertSliceSimple(ECopyDir dir) {
     ConvertSlice(dir);
     return;
-    int count = 0;
     ExpandArrayIfSerialize(2 + fMaxJM * 4 + fMaxJM * fMaxJM * 4, dir);
 
     CopyDataSingle(fSlice->fNum[fBinLow], dir);

@@ -92,7 +92,7 @@ namespace Hal {
     if (fX.size() != fY.size()) {
       Hal::Cout::PrintInfo(Form("ParameterSolver different x, y size in ct-or"), Hal::EInfo::kWarning);
     }
-    if (fX.size() != fFunc->GetNpar()) {
+    if ((int) fX.size() != fFunc->GetNpar()) {
       Hal::Cout::PrintInfo(Form("ParameterSolver size of x is different than number of parameters in function!"),
                            Hal::EInfo::kWarning);
     }

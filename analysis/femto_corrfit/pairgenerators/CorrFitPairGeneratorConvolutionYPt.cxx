@@ -75,11 +75,10 @@ namespace Hal {
       fSide[0] = q_side;
       fLong[0] = q_long;
     }
-    for (int i = 0; i < fOut.size(); i++) {
-      auto array = fPairFile->GetSignal(fBinCFZ);
-      fX         = fOut[i];
-      fY         = fSide[i];
-      fZ         = fLong[i];
+    for (int i = 0; i < (int) fOut.size(); i++) {
+      fX = fOut[i];
+      fY = fSide[i];
+      fZ = fLong[i];
       GeneratePairEvent();
     }
   }
@@ -165,7 +164,7 @@ namespace Hal {
     }
   }
 
-  void CorrFitPairGeneratorConvolutionYPt::RunFraction(Int_t entries, Int_t nSamples, Int_t nNo) {
+  void CorrFitPairGeneratorConvolutionYPt::RunFraction(Int_t /*entries*/, Int_t nSamples, Int_t nNo) {
     if (!fInited || !fPairFile) return;
 
     Int_t nTotalBins  = fXaxis.GetNBins() * fYaxis.GetNBins() * fZaxis.GetNBins();

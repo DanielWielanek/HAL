@@ -64,7 +64,7 @@ namespace Hal {
     return Validate();
   }
 
-  std::vector<std::pair<TString, Double_t>> TrackPrimaryFlagCut::GetBinLabels(Int_t par) const {
+  std::vector<std::pair<TString, Double_t>> TrackPrimaryFlagCut::GetBinLabels(Int_t /*par*/) const {
     std::vector<std::pair<TString, Double_t>> res;
     res.push_back(std::pair<TString, Double_t>("NonPrimary", ValID::NonPrimary));
     res.push_back(std::pair<TString, Double_t>("Primary", ValID::Primary));
@@ -72,7 +72,7 @@ namespace Hal {
   }
 
 
-  std::vector<std::pair<TString, Double_t>> TrackV0FlagCut::GetBinLabels(Int_t par) const {
+  std::vector<std::pair<TString, Double_t>> TrackV0FlagCut::GetBinLabels(Int_t /*par*/) const {
     std::vector<std::pair<TString, Double_t>> res;
     res.push_back(std::pair<TString, Double_t>("NonV0", ValID::NonV0));
     res.push_back(std::pair<TString, Double_t>("BadV0", ValID::BadV0));
@@ -81,7 +81,7 @@ namespace Hal {
   }
 
 
-  std::vector<std::pair<TString, Double_t>> TrackGoodSecondaryFlagCut::GetBinLabels(Int_t par) const {
+  std::vector<std::pair<TString, Double_t>> TrackGoodSecondaryFlagCut::GetBinLabels(Int_t /*par*/) const {
     std::vector<std::pair<TString, Double_t>> res;
     res.push_back(std::pair<TString, Double_t>("HasMother", ValID::HasMother));
     res.push_back(std::pair<TString, Double_t>("Orphan", ValID::IsOrphan));
@@ -89,21 +89,21 @@ namespace Hal {
   }
 
 
-  std::vector<std::pair<TString, Double_t>> TrackGlobalFlagCut::GetBinLabels(Int_t par) const {
+  std::vector<std::pair<TString, Double_t>> TrackGlobalFlagCut::GetBinLabels(Int_t /*par*/) const {
     std::vector<std::pair<TString, Double_t>> res;
     res.push_back(std::pair<TString, Double_t>("GlobalTrack", ValID::GlobalTrack));
     res.push_back(std::pair<TString, Double_t>("NonGlobalTrack", ValID::NonGlobalTrack));
     return res;
   }
 
-  std::vector<std::pair<TString, Double_t>> TrackEmbeddedFlagCut::GetBinLabels(Int_t par) const {
+  std::vector<std::pair<TString, Double_t>> TrackEmbeddedFlagCut::GetBinLabels(Int_t /*par*/) const {
     std::vector<std::pair<TString, Double_t>> res;
     res.push_back(std::pair<TString, Double_t>("EmbeddedTrack", ValID::EmbeddedTrack));
     res.push_back(std::pair<TString, Double_t>("NonEmbeddedTrack", ValID::NonEmbeddedTrack));
     return res;
   }
 
-  std::vector<std::pair<TString, Double_t>> TrackBackgroundFlagCut::GetBinLabels(Int_t par) const {
+  std::vector<std::pair<TString, Double_t>> TrackBackgroundFlagCut::GetBinLabels(Int_t /*par*/) const {
     std::vector<std::pair<TString, Double_t>> res;
     res.push_back(std::pair<TString, Double_t>("BackgroundTrack", ValID::BackgroundTrack));
     res.push_back(std::pair<TString, Double_t>("NonBackgroundTrack", ValID::NonBackgroundTrack));

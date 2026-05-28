@@ -22,7 +22,7 @@ namespace Hal {
     int fPrefshift[6];
     int fPlmshift[6];
     double fFactorials[24];
-    mutable std::complex<double>* fYlms;  //!
+    mutable std::complex<double>* fYlms = {nullptr};  //!
   public:
     FemtoYlmMath();
     virtual ~FemtoYlmMath();

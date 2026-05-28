@@ -110,12 +110,11 @@ namespace Hal {
         Hal::Cout::PrintInfo("SmearAlgo::SetSmearFunction - cf not set, cannot guess ranges", Hal::EInfo::kError);
         return;
       }
-      double step   = (fMax - fMin) / double(fBins);
-      double low    = fMin - step;
-      double high   = fMax + step;
-      double nsteps = (high - low) / step;
-      int rows      = fFunction.GetNrows();
-      fSmearMatrix  = TMatrixD(rows, rows);
+      double step  = (fMax - fMin) / double(fBins);
+      double low   = fMin - step;
+      double high  = fMax + step;
+      int rows     = fFunction.GetNrows();
+      fSmearMatrix = TMatrixD(rows, rows);
       for (int i = 0; i < rows; i++) {
         double sim_q = low + double(i) * step + 0.5 * step;
         for (int j = 0; j < rows; j++) {
@@ -136,6 +135,7 @@ namespace Hal {
     }
 
     NormalizeMatrix(fSmearMatrix);
+
     fSmearMatrixRev.ResizeTo(fSmearMatrix);
     fSmearMatrixRev = fSmearMatrix;
     fSmearMatrixRev.Invert();
@@ -159,5 +159,47 @@ namespace Hal {
     if (!fComputed) { Compute(); }
     return fSmearMatrixRev * fFunction;
   }
+
+  std::pair<TH2D*, TH1D*> SmearAlgoMatrix::GetFilledUpMatrix(TH2D& smear_matrix, TH1D& raw) {
+    // TODO
+    std::pair<TH2D*, TH1D*> res;
+    res.first  = (TH2D*) smear_matrix.Clone();
+    res.second = (TH1D*) raw.Clone();
+    auto smear = res.first;
+    auto data  = res.second;
+    int size   = data->GetNbinsX();
+
+    // normalize colums
+    for (int i = 0; i <= size + 1; i++) {
+      double sum = 0;
+      for (int j = 0; j <= size + 1; j++) {
+        sum += smear->GetBinContent(i, j);
+      }
+      if (sum > 0)
+        for (int j = 0; j <= size + 1; j++) {
+          smear->SetBinContent(i, j, smear->GetBinContent(i, j) / sum);
+        }
+      else {
+        for (int j = 0; j <= size + 1; j++) {
+          smear->SetBinContent(i, j, 0);
+        }
+        smear->SetBinContent(i, i, 1);
+      }
+    }
+    double esc_data = 0;
+    for (int i = 0; i <= size + 1; i++) {
+      esc_data += smear->GetBinContent(i, size + 1) * data->GetBinContent(i);
+    }
+    double rawLast = data->GetBinContent(size, size);
+    double last    = esc_data + data->GetBinContent(size, size);
+    data->SetBinContent(size + 1, size + 1, last);
+    double overFactor = esc_data / rawLast;
+    for (int i = 0; i <= size + 1; i++) {
+      smear->SetBinContent(size + 1, i, smear->GetBinContent(i, size + 1) * overFactor);
+    }
+    data->SetBinContent(size + 1, size + 1, 1 - overFactor);
+    return res;
+  }
+
 
 } /* namespace Hal */

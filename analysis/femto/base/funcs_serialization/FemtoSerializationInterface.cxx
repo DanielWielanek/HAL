@@ -119,7 +119,7 @@ namespace Hal {
   }
 
   void FemtoSerializationInterface::CopyData1D2(std::vector<TH1*>& listN, std::vector<TH1*>& listD, int bin, ECopyDir dir) {
-    for (int i = 0; i < listN.size(); i++) {
+    for (int i = 0; i < (int) listN.size(); i++) {
       auto nH = listN[i];
       auto dH = listD[i];
       if (dir == ECopyDir::kSerialize) {
@@ -137,7 +137,7 @@ namespace Hal {
                                                 int biny,
                                                 int binz,
                                                 ECopyDir dir) {
-    for (int i = 0; i < listN.size(); i++) {
+    for (int i = 0; i < (int) listN.size(); i++) {
       auto nH = listN[i];
       auto dH = listD[i];
       if (dir == ECopyDir::kSerialize) {

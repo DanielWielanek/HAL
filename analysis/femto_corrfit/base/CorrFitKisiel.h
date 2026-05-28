@@ -42,7 +42,6 @@ namespace Hal {
     };
     virtual Double_t CalculateCF(const Double_t* x, const Double_t* params) const;
     virtual Double_t CalculateCFExtrapolated(const Double_t* x, const Double_t* params) const;
-    virtual void Paint(Bool_t repaint = kTRUE, Bool_t refresh = kTRUE);
 
   public:
     CorrFitKisiel(Int_t params = 3);

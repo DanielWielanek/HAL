@@ -64,7 +64,7 @@ namespace Hal {
       Std::GetAxisPar(*dummy->GetNum(), bins, min, max, "x");
       fLimitsN.MakeBigger(bins + 1);
       fXaxis.Recalc(*dummy->GetNum()->GetXaxis());
-      fGrouping.GroupByKStar();
+      fGrouping.SetGroupByKStar();
       fGroupingFlag = EGrouping::kOneDim;
       if (fDebug) fDebugHisto = new TH1D("debug", "debug", bins, min, max);
     }

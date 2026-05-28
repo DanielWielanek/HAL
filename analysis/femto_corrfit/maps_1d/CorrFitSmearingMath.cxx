@@ -140,7 +140,7 @@ namespace Hal {
 
   void CorrFitSmearingMath::GenerateTracks(TLorentzVector* tracks, Int_t pid) {
     Double_t m = 0;
-    TH2D* h;
+    TH2D* h    = nullptr;
     switch (pid) {
       case 0: {
         m = fSmearing1->GetMass();

@@ -36,7 +36,7 @@ namespace Hal {
     FemtoSourceDensityNumericalPseudo3d() {};
     FemtoSourceDensityNumericalPseudo3d(const FemtoSourceDensityNumericalPseudo3d& other);
     void SetRadiusDistribution(const TH1D& distribution);
-    virtual Double_t GetProbDensity1d(const Double_t r, const Double_t* params) const { return 0; };
+    virtual Double_t GetProbDensity1d(const Double_t /*r*/, const Double_t* /*params*/) const { return 0; };
     virtual Double_t GetProbDensity3d(const TVector3& r, const Double_t* params) const;
     virtual ~FemtoSourceDensityNumericalPseudo3d();
     ClassDef(FemtoSourceDensityNumericalPseudo3d, 1)

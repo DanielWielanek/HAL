@@ -24,12 +24,11 @@ namespace Hal {
     if (fRawDistribution) delete fRawDistribution;
     fRawDistribution = (TH1D*) distribution.Clone();
     fRawDistribution->SetDirectory(nullptr);
-    Double_t scale = 0;
     fRawDistribution->SetBinContent(0, 0);
     ((FemtoSourceDensityNumericalPseudo3d*) fDensity)->SetRadiusDistribution(*fRawDistribution);
   }
 
-  void FemtoSourceModelNumericalPseudo3d::GenerateCoordinates(FemtoPair* Pair) {
+  void FemtoSourceModelNumericalPseudo3d::GenerateCoordinates(FemtoPair* /*Pair*/) {
     fRout    = fRawDistribution->GetRandom();
     fRside   = fRawDistribution->GetRandom();
     fRlong   = fRawDistribution->GetRandom();
@@ -71,7 +70,7 @@ namespace Hal {
     if (fRawDistribution) delete fRawDistribution;
   }
 
-  Double_t FemtoSourceDensityNumericalPseudo3d::GetProbDensity3d(const TVector3& r, const Double_t* params) const {
+  Double_t FemtoSourceDensityNumericalPseudo3d::GetProbDensity3d(const TVector3& r, const Double_t* /*params*/) const {
     auto findDens = [&](Double_t v) { return int((TMath::Abs(v) - fMin) * fDx + 1); };
     double rho    = fRawDistribution->GetBinContent(findDens(r.X()));
     rho *= fRawDistribution->GetBinContent(findDens(r.Y()));

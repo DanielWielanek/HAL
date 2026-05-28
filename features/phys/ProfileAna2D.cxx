@@ -134,7 +134,7 @@ namespace Hal {
     Double_t ent    = 0;
     Double_t maxVal = 0;
     Double_t maxi   = 0;
-    for (int i = 0; i < valuesX.size(); i++) {
+    for (int i = 0; i < (int) valuesX.size(); i++) {
       sum += valuesX[i] * valuesY[i];
       ent += valuesY[i];
       if (valuesY[i] > maxVal) {
@@ -143,7 +143,7 @@ namespace Hal {
       }
     }
     Double_t mean = sum / TMath::Max(1., ent);
-    for (int i = 0; i < valuesX.size(); i++) {
+    for (int i = 0; i < (int) valuesX.size(); i++) {
       Double_t delta = valuesX[i] - mean;
       rms += valuesY[i] * delta * delta;
     }
@@ -170,7 +170,6 @@ namespace Hal {
     valuesY.clear();
     errorY.clear();
     for (int j = 1; j <= fHisto->GetNbinsY(); j++) {
-      double inc = fHisto->GetBinContent(row, j);
       valuesX.push_back(fHisto->GetYaxis()->GetBinCenter(j));
       valuesY.push_back(fHisto->GetBinContent(row, j));
       errorY.push_back(fHisto->GetBinError(row, j));
@@ -178,8 +177,8 @@ namespace Hal {
   }
 
   void ProfileAna2D::Draw(Option_t* opt) {
-    Int_t binsX, binsY;
-    Double_t lowX, highX, lowY, highY;
+    Int_t binsX;
+    Double_t lowX, highX;
     Hal::Std::GetAxisPar(*fHisto, binsX, lowX, highX, "x");
     TF1* average = new TF1(
       Hal::Std::GetUniqueName("polyfit"), this, &ProfileAna2D::EvaluateMean, lowX, highX, 0, this->ClassName(), "EvaluateMean");
@@ -292,21 +291,21 @@ namespace Hal {
     return Hal::Std::LagrangeInterpol(xI, yI);
   }
 
-  Double_t ProfileAna2D::EvalRawMean(Double_t* x, Double_t* p) const {
+  Double_t ProfileAna2D::EvalRawMean(Double_t* x, Double_t* /*p*/) const {
     double step = (fTotMaxX - fTotMinX) / fTotBinsX;
     int point   = (x[0] - fTotMinX) / step + 1;
     if (point >= fTotBinsX) { point = fTotBinsX - 1; }
     return fAverages[point];
   }
 
-  Double_t ProfileAna2D::EvalRawRMSPlus(Double_t* x, Double_t* p) const {
+  Double_t ProfileAna2D::EvalRawRMSPlus(Double_t* x, Double_t* /*p*/) const {
     double step = (fTotMaxX - fTotMinX) / fTotBinsX;
     int point   = (x[0] - fTotMinX) / step + 1;
     if (point >= fTotBinsX) { point = fTotBinsX - 1; }
     return fAverages[point] + fRmsHigh[point];
   }
 
-  Double_t ProfileAna2D::EvalRawRMSMinus(Double_t* x, Double_t* p) const {
+  Double_t ProfileAna2D::EvalRawRMSMinus(Double_t* x, Double_t* /*p*/) const {
     double step = (fTotMaxX - fTotMinX) / fTotBinsX;
     int point   = (x[0] - fTotMinX) / step + 1;
     if (point >= fTotBinsX) { point = fTotBinsX - 1; }
@@ -361,7 +360,6 @@ namespace Hal {
     Double_t av      = fAverage->Eval(val);
     Double_t sigmaLo = fSigmaLow->Eval(val);
     Double_t sigmaHi = fSigmaHigh->Eval(val);
-    double x         = val;
     gauss->SetParameters(1.0, av, sigmaHi);
     gauss->SetLineColor(fColor);
     gauss->SetNpx(1000);
@@ -424,9 +422,6 @@ namespace Hal {
     fSigmaHigh = new TF1(Hal::Std::GetUniqueName("polyfitsigma"), fFittingSigmaPattern, fTotMinX, fTotMaxX);
     fSigmaLow  = new TF1(Hal::Std::GetUniqueName("polyfitsigma"), fFittingSigmaPattern, fTotMinX, fTotMaxX);
     fData.clear();
-    int count      = 0;
-    Double_t min   = lowX;
-    Double_t max   = highX;
     Int_t startBin = 1;
     Int_t endBin   = binsX;
     if (fXMin != fXMax) {
@@ -505,7 +500,7 @@ namespace Hal {
     auto val   = ReCalculateGauss(data);
     TH1D* copy = Hal::Std::GetProjection1D(fHisto, fValues[data.fBin], fValues[data.fBin], "y");
     copy->Reset();
-    for (int i = 0; i < data.fX.size(); i++) {
+    for (int i = 0; i < (int) data.fX.size(); i++) {
       int bin = copy->GetXaxis()->FindBin(data.fX[i]);
       copy->SetBinContent(bin, data.fY[i]);
       copy->SetBinError(bin, data.fYe[i]);
@@ -546,7 +541,7 @@ namespace Hal {
     Double_t ent    = 0;
     Double_t maxVal = 0;
     Double_t maxi   = 0;
-    for (int i = 0; i < data.fX.size(); i++) {
+    for (int i = 0; i < (int) data.fX.size(); i++) {
       sum += data.fX[i] * data.fY[i];
       ent += data.fY[i];
       if (data.fY[i] > maxVal) {
@@ -555,7 +550,7 @@ namespace Hal {
       }
     }
     Double_t mean = sum / TMath::Max(1., ent);
-    for (int i = 0; i < data.fX.size(); i++) {
+    for (int i = 0; i < (int) data.fX.size(); i++) {
       Double_t delta = data.fX[i] - mean;
       rms += data.fY[i] * delta * delta;
     }
@@ -572,7 +567,7 @@ namespace Hal {
 
     TF1* f           = new TF1("funcgauss", fFittingProjPattern, fYMin, fYMax);
     TGraphErrors* gr = new TGraphErrors();
-    for (unsigned int i = 0; i < data.fX.size(); i++) {
+    for (unsigned int i = 0; i < (int) data.fX.size(); i++) {
       gr->SetPoint(i, data.fX[i], data.fY[i]);
       gr->SetPointError(i, 0, data.fY[i]);
     }
@@ -595,11 +590,11 @@ namespace Hal {
     return val;
   }
 
-  Double_t ProfileAna2D::EvalSigmaPlus(Double_t* x, Double_t* p) const { return fSigmaHigh->Eval(*x); }
+  Double_t ProfileAna2D::EvalSigmaPlus(Double_t* x, Double_t* /*p*/) const { return fSigmaHigh->Eval(*x); }
 
-  Double_t ProfileAna2D::EvalSigmaMinus(Double_t* x, Double_t* p) const { return fSigmaLow->Eval(*x); }
+  Double_t ProfileAna2D::EvalSigmaMinus(Double_t* x, Double_t* /*p*/) const { return fSigmaLow->Eval(*x); }
 
-  Double_t ProfileAna2D::EvaluateMean(Double_t* x, Double_t* p) const {
+  Double_t ProfileAna2D::EvaluateMean(Double_t* x, Double_t* /*p*/) const {
     Double_t val = fAverage->Eval(*x);
     if (TMath::IsNaN(val)) return 0;
     return val;
@@ -665,7 +660,7 @@ namespace Hal {
     } else {
       /** finish average calculation first - we need them for sigmas ! **/
       auto vecAv = InitEstimFunc(av, fAverage, fPoints);
-      if (fStartParamsMain.size() == fNParam) { vecAv = fStartParamsMain; }
+      if ((int) fStartParamsMain.size() == fNParam) { vecAv = fStartParamsMain; }
       for (int i = 0; i < fNParam; i++) {
         fAverage->SetParameter(i, vecAv[i]);
       }

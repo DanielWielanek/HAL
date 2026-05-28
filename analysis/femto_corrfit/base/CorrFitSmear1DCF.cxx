@@ -26,8 +26,14 @@
 
 namespace Hal {
   CorrFitSmear1DCF::CorrFitSmear1DCF() {
-    fFunc =
-      new TF1(Hal::Std::GetUniqueName("func_draw"), this, &CorrFitSmear1DCF::GaussNS, -10, 10, 2, this->ClassName(), "GaussNS");
+    fFunc = new TF1(Hal::Std::GetUniqueName("func_draw"),
+                    this,
+                    &CorrFitSmear1DCF::GaussNS,
+                    -10,
+                    10,
+                    2,
+                    CorrFitSmear1DCF::ClassName(),
+                    "GaussNS");
   }
 
   CorrFitSmear1DCF::~CorrFitSmear1DCF() {
@@ -76,8 +82,8 @@ namespace Hal {
     NormalizeMatrix(smearMT);
     std::vector<double> correction;
     if (fAutoFill) { correction = GetAutoFill(smearMT, (smearMatrix.GetXaxis()->GetBinCenter(1) < 0)); }
-    auto print = [](const TMatrixD x, TString flag) {
 #ifdef _DEBUG__CORRFITSMEAR1DCF_
+    auto print = [](const TMatrixD x, TString flag) {
       std::cout << flag << std::endl;
       for (int i = 0; i < x.GetNrows(); i++) {
         for (int j = 0; j < x.GetNcols(); j++) {
@@ -85,9 +91,8 @@ namespace Hal {
         }
         std::cout << std::endl;
       }
-#endif
     };
-
+#endif
 
     if (fSeparateSmear) {
       auto den           = (TH1D*) fCF->GetDen();
@@ -113,12 +118,13 @@ namespace Hal {
         auto sim = GetVec(*maph, i);
 
         auto reco = smearMT * sim;
-
+#ifdef _DEBUG__CORRFITSMEAR1DCF_
         if (i == 1) {
           print(sim, "SIM MOM");
           print(smearMT, "MATRIX");
           print(reco, "RECO");
         }
+#endif
         for (int j = 1; j <= sizeQ; j++) {
           if (fAutoFill) {
             histo->SetBinContent(j, i, reco[j - 1][0] + correction[j - 1]);

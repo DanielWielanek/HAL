@@ -60,7 +60,6 @@ namespace Hal {
   void CorrFitPairGeneratorYPtKt::GenerateEvent() {
     switch (fGroupingFlag) {
       case EGrouping::kOneDim: {
-        int size = fLimitsN.GetSize() - 1;
         for (int i = 0; i < 10000; i++) {
           int bin = GeneratePairOneDim();
           if (bin < 1) continue;
@@ -135,8 +134,6 @@ namespace Hal {
       Double_t e2   = TMath::Sqrt(et2 * et2 + pz2 * pz2);
       Double_t Px   = px1 + px2;
       Double_t Py   = py1 + py2;
-      Double_t Pz   = pz1 + pz2;
-      Double_t tE   = e1 + e2;
       Double_t tPt  = Px * Px + Py * Py;
       if (tPt > f2Kt2[0] && tPt < f2Kt2[1]) {
         bad_pair = false;

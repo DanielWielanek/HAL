@@ -32,8 +32,8 @@ namespace Hal {
       offset.push_back(p.GetNPoints());
       if (!p.IsFixed()) ++freePars;
     }
-    for (int i = 0; i < fMultiOffsets.size(); i++) {
-      for (int j = 0; j < fPoints[i].size(); j++)
+    for (int i = 0; i < (int) fMultiOffsets.size(); i++) {
+      for (int j = 0; j < (int) fPoints[i].size(); j++)
         fPoints[i][j] = fPoints[i][j] * fMultiOffsets[i];
     }
     fStateVector.resize(fDim);
@@ -41,7 +41,7 @@ namespace Hal {
     fStateVectorInt.resize(fDim);
     fErrLow.resize(fDim);
     fErrHigh.resize(fDim);
-    for (int i = 0; i < fParameters.size(); i++) {
+    for (int i = 0; i < (int) fParameters.size(); i++) {
       fErrHigh[i] = 0;
       fErrLow[i]  = fParameters[i].GetNPoints();
     }
@@ -65,7 +65,7 @@ namespace Hal {
   }
 
   void MultiDimMinimizerSquare::LoopOverParameter(Int_t n) {
-    if (n == fPoints.size()) {
+    if (n == (int) fPoints.size()) {
       FindParam();
     } else {
       int count = 0;
@@ -79,7 +79,7 @@ namespace Hal {
   }
 
   void MultiDimMinimizerSquare::LoopOverParameterError(Int_t n) {
-    if (n == fPoints.size()) {
+    if (n == (int) fPoints.size()) {
       FindError();
     } else {
       int count = 0;

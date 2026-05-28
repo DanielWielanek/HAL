@@ -40,7 +40,7 @@ namespace Hal {
 
   public:
     TrackFlagChecker() {};
-    const Int_t GetFlagNo() const { return 10; }
+    Int_t GetFlagNo() const { return 10; }
     std::vector<Int_t> GetFlags(Track* track) const;
     void SetupAxis(TAxis* axis) const;
     virtual ~TrackFlagChecker() {};

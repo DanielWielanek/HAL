@@ -50,7 +50,12 @@ namespace Hal {
       return nullptr;
     }
 
-    void MergeVertical(Hal::Femto::ECFType cfType, TObject* obj, Array_1<Float_t>* input, Array_1<Float_t>* output, Int_t pos) {
+    void MergeVertical(Hal::Femto::ECFType /*cfType*/,
+                       TObject* /*obj*/,
+                       Array_1<Float_t>* /*input*/,
+                       Array_1<Float_t>* /*output*/,
+                       Int_t /*pos*/) {
+      std::cout << "Hal::CorrFitConst::MergeVertical is not implemented" << std::endl;
       /*    switch (cfType) { KURWA
             case ECFType::kOneDim: {
               auto cf = (Hal::Femto1DCF*) obj;

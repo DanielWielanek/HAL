@@ -35,7 +35,7 @@ namespace Hal {
       XMLFile xmlFile(file);
       auto& root  = xmlFile.GetRootNode();
       auto& files = root.GetChild("files");
-      for (int i = 0; i < files.GetNChildren(); i++) {
+      for (int i = 0; i < (int) files.GetNChildren(); i++) {
         auto& list = files.GetChild(i);
         fFileNames.push_back(std::vector<TString>());
         for (int j = 0; j < list.GetNChildren(); i++) {
@@ -69,21 +69,21 @@ namespace Hal {
   }
 
   TString InputDataInfo::GetSafeFile(Int_t level, Int_t entry) const {
-    if (level + 1 < fFileNames.size()) {
+    if (level + 1 < (int) fFileNames.size()) {
       if (fFileNames[level + 1].size() > entry) return fFileNames[level + 1][entry];
     }
     return "";
   }
 
   std::vector<TString> InputDataInfo::GetSafeFiles(Int_t level) const {
-    if (level + 1 < fFileNames.size()) { return fFileNames[level + 1]; }
+    if (level + 1 < (int) fFileNames.size()) { return fFileNames[level + 1]; }
     return std::vector<TString>();
   }
 
   void InputDataInfo::AddFile(TString file) { AddFriend(file, -1); }
 
   void InputDataInfo::AddFriend(TString file, Int_t level) {
-    if (fFileNames.size() < level + 2) { fFileNames.resize(level + 2); }
+    if ((int) fFileNames.size() < level + 2) { fFileNames.resize(level + 2); }
     fFileNames[level + 1].push_back(file);
   }
 
@@ -130,7 +130,6 @@ namespace Hal {
     if (file.EndsWith(".xml")) {
       XMLFile xmlFile(file);
       auto& root      = xmlFile.GetRootNode();
-      auto& files     = root["files"];
       auto& treenames = root["treenames"];
       if (treenames) {
         for (int i = 0; i < treenames.GetNChildren(); i++) {
@@ -170,15 +169,15 @@ namespace Hal {
     std::vector<TString> header;
     header.push_back("No");
     header.push_back("Main file");
-    for (int i = 1; i < fFileNames.size(); i++) {
+    for (int i = 1; i < (int) fFileNames.size(); i++) {
       header.push_back(Form("Friend_%i", i - 1));
     }
     Hal::Cout::SetLineLenght(26 * header.size());
     Hal::Cout::Database(header);
-    for (unsigned int pos = 0; pos < fFileNames[0].size(); pos++) {
+    for (unsigned int pos = 0; pos < (int)fFileNames[0].size(); pos++) {
       std::vector<TString> str;
       str.push_back(Form("%i", pos));
-      for (unsigned int level = 0; level < fFileNames.size(); level++) {
+      for (unsigned int level = 0; level < (int)fFileNames.size(); level++) {
         if (fFileNames[level].size() > pos) {
           TString path = fFileNames[level][pos];
           if (path.Length() > 25) {
@@ -200,7 +199,7 @@ namespace Hal {
     std::vector<TString> header;
     header.push_back("No");
     header.push_back("Main file");
-    for (unsigned int i = 1; i < fFileNames.size(); i++) {
+    for (unsigned int i = 1; i < (int)fFileNames.size(); i++) {
       header.push_back(Form("Friend_%i", i - 1));
     }
     Hal::Cout::SetLineLenght(26 * header.size());
@@ -211,11 +210,11 @@ namespace Hal {
       line.push_back(tree);
     }
     Hal::Cout::Database(line);
-    for (unsigned int pos = 0; pos < fFileNames[0].size(); pos++) {
+    for (unsigned int pos = 0; pos < (int)fFileNames[0].size(); pos++) {
       std::vector<TString> str;
       str.push_back(Form("%i", pos));
-      for (unsigned int level = 0; level < fFileNames.size(); level++) {
-        if (fFileNames[level].size() > pos) {
+      for (unsigned int level = 0; level < (int)fFileNames.size(); level++) {
+        if ((int)fFileNames[level].size() > pos) {
           TString path = fFileNames[level][pos];
           if (path.Length() > 25) {
             int crop = path.Length() - 25;

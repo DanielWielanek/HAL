@@ -68,7 +68,7 @@ namespace Hal {
     fWeights[pos] = (TF1*) func.Clone();
   }
 
-  FemtoWeightGeneratorTF1::FemtoWeightGeneratorTF1(const FemtoWeightGeneratorTF1& other) {
+  FemtoWeightGeneratorTF1::FemtoWeightGeneratorTF1(const FemtoWeightGeneratorTF1& other) : FemtoWeightGenerator(other) {
     for (int i = 0; i < fMaxPairsNo; i++) {
       fWeights.push_back((TF1*) other.fWeights[i]->Clone());
     }
@@ -130,7 +130,7 @@ namespace Hal {
     fWeights[pos] = (TF3*) func.Clone();
   }
 
-  FemtoWeightGeneratorTF3::FemtoWeightGeneratorTF3(const FemtoWeightGeneratorTF3& other) {
+  FemtoWeightGeneratorTF3::FemtoWeightGeneratorTF3(const FemtoWeightGeneratorTF3& other) : FemtoWeightGenerator(other) {
     for (int i = 0; i < fMaxPairsNo; i++) {
       fWeights.push_back((TF3*) other.fWeights[i]->Clone());
     }

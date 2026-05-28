@@ -217,7 +217,7 @@ namespace Hal {
   void AnalysisManager::AddTask(Task* ana) {
     if (auto trig = dynamic_cast<TriggerTask*>(ana)) {
       fTriggers.push_back(trig);
-    } else if (auto reader = dynamic_cast<Reader*>(ana)) {
+    } else if (dynamic_cast<Reader*>(ana)) {
       if (fTasks.size() != 0)
         Hal::Cout::PrintInfo("You are adding reader as not a first task,  this might lead to undefined behaviour",
                              EInfo::kWarning);

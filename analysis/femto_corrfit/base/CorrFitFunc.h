@@ -50,8 +50,8 @@ namespace Hal {
     void PrepareSecondMiminizer(ROOT::Math::Minimizer* min, const double* pars, const double* errors) const;
     void SetParsOfMinimizer(ROOT::Math::Minimizer* min) const;
     Int_t CountNDF() const;
-    ROOT::Math::Minimizer* GetMinimizer1(EMinAlgo algo) const;
-    ROOT::Math::Minimizer* GetMinimizer2(EMinAlgo algo) const;
+    ROOT::Math::Minimizer* GetMinimizer1() const;
+    ROOT::Math::Minimizer* GetMinimizer2() const;
 
   protected:
     /**

@@ -227,7 +227,7 @@ namespace Hal {
     if ((UInt_t) param == fNonConstMap.size()) {
       Double_t chi = GetChi2();
       if (fDump) {
-        for (int i = 0; i < fParameters.size(); i++) {
+        for (int i = 0; i < (int) fParameters.size(); i++) {
           (*fDumpFile->GetValues())[i + 1] = fTempParams[i];
         }
         (*fDumpFile->GetValues())[0] = chi;

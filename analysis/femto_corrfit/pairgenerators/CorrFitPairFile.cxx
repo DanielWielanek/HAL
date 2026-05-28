@@ -63,7 +63,9 @@ namespace Hal {
     if (startBranch != -1) {
       start_bin = TMath::Min(TMath::Max(0, startBranch), bins - 1);
       end_bin   = TMath::Min(TMath::Max(0, endBranch), bins - 1);
+      if (start_bin == end_bin && start_bin == bins - 1) end_bin++;
     }
+
     if (fConfig->HaveBackground()) {
       for (int idx = 0; idx < bins; idx++)
         fTree->SetBranchStatus(Form("FemtoBackground_%i", idx), 0);
@@ -71,7 +73,7 @@ namespace Hal {
         for (int idx = start_bin; idx < end_bin; idx++) {
           fBackground.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
           fTree->SetBranchStatus(Form("FemtoBackground_%i", idx), 1);
-          fTree->SetBranchAddress(Form("FemtoBackground_%i", idx), &fBackground[idx]);
+          fTree->SetBranchAddress(Form("FemtoBackground_%i", idx), &fBackground[fBackground.size() - 1]);
         }
     }
     if (fConfig->HaveSignal()) {
@@ -79,9 +81,10 @@ namespace Hal {
         fTree->SetBranchStatus(Form("FemtoSignal_%i", idx), 0);
       if (enableSignal)
         for (int idx = start_bin; idx < end_bin; idx++) {
+          std::cout << Form("FemtoSignal_%i", idx) << " as " << fSignals.size() << std::endl;
           fTree->SetBranchStatus(Form("FemtoSignal_%i", idx), 1);
           fSignals.push_back(new TClonesArray("Hal::FemtoMicroPair", 100));
-          fTree->SetBranchAddress(Form("FemtoSignal_%i", idx), &fSignals[idx]);
+          fTree->SetBranchAddress(Form("FemtoSignal_%i", idx), &fSignals[fSignals.size() - 1]);
         }
     }
     return kTRUE;

@@ -253,8 +253,10 @@ void mergeHorizontal() {
   chain->GetEntry(0);
   Data_out->MakeBigger(Data_in->GetSize() * nJobs);
   int single_size = Data_in->GetSize();
+  int percent     = nJobs / 100;
   for (int i = 0; i < nJobs; i++) {  // nsamples
     chain->GetEntry(i);
+    if (i % percent == 0) Hal::Cout::ProgressBar(i, nJobs);
     for (int k = 0; k < single_size; k++) {
       Data_out->Set(k, Data_in->Get(k));
     }
@@ -303,13 +305,20 @@ void mergeVertical() {
   std::cout << "CHECK SIZE " << nSlices * n_params << " " << chain->GetEntries() << std::endl;
   std::cout << nSlices << " " << n_params << std::endl;
   Data_out->MakeBigger(slice_size * nSlices);
+  Int_t percent = n_params / 100;
+  if (percent == 0) percent = 1;
+  int total = chain->GetEntries();
   for (int iPar = 0; iPar < n_params; iPar++) {
+    int entrypos = 0;
     for (int iBin = 0; iBin < nSlices; iBin++) {
       chain->GetEntry(iPar + n_params * iBin);
+      entrypos = iPar + n_params * iBin;
       for (int iS = 0; iS < slice_size; iS++) {
-        Data_out->Set(iBin * slice_size + iS, Data_in->Get(iS));
+        int pos = iBin * slice_size + iS;
+        Data_out->Set(pos, Data_in->Get(iS));
       }
     }
+    if (iPar % percent == 0) { Hal::Cout::ProgressBar(iPar, n_params); }
     tree->Fill();
   }
   delete CF;

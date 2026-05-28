@@ -121,7 +121,7 @@ namespace Hal {
     CorrelationHisto* fHisto = {nullptr};
     std::vector<std::vector<TVirtualPad*>> fPads;
     virtual void MakeHistograms();
-    virtual ULong64_t SetOptionInternal(const Options& opt, ULong64_t prev = 0) { return prev; };
+    virtual ULong64_t SetOptionInternal(const Options& /*opt*/, ULong64_t prev = 0) { return prev; };
     virtual void MakePadsAndCanvases();
     virtual void OwnCanvasDivide(TCanvas* c, Int_t x, Int_t y, Int_t canvasNo);
     virtual void InnerRepaint();

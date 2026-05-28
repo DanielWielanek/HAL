@@ -314,7 +314,7 @@ namespace Hal {
   class SimplePainter : public Painter {
   protected:
     virtual void MakePadsAndCanvases();
-    virtual ULong64_t SetOptionInternal(const Options& opt, ULong64_t prev = 0) { return prev; };
+    virtual ULong64_t SetOptionInternal(const Options& /*opt*/, ULong64_t prev = 0) { return prev; };
 
   public:
     /**

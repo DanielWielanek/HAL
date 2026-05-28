@@ -177,7 +177,7 @@ namespace Hal {
     if (h.InheritsFrom("TGraph")) { ApplyInternal(dynamic_cast<TGraph&>(h)); }
   }
 
-  void HistoStyle::SetAntiColor(Bool_t safe) {
+  void HistoStyle::SetAntiColor(Bool_t /*safe*/) {
     Int_t i;
     auto GetCol = [&](Int_t col) {
       col = Hal::Std::GetAntiColor(col);
@@ -277,9 +277,9 @@ namespace Hal {
     }
     if (Hal::Std::FindParam(style, "black", kTRUE)) {
       auto SetColor = [&](Char_t x, Color_t col) {
-        GetAxisStyle(x).SetLabelColor(kWhite);
-        GetAxisStyle(x).SetTitleColor(kWhite);
-        GetAxisStyle(x).SetAxisColor(kWhite);
+        GetAxisStyle(x).SetLabelColor(col);
+        GetAxisStyle(x).SetTitleColor(col);
+        GetAxisStyle(x).SetAxisColor(col);
       };
       SetColor('x', kWhite);
       SetColor('y', kWhite);

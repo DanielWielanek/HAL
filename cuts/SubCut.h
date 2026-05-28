@@ -22,11 +22,11 @@ namespace Hal {
   class Cut;
   class Package;
   class SubCut : public TObject {
-    Int_t fSize;
-    Double_t* fMin;      //[fSize]
-    Double_t* fMax;      //[fSize]
-    Double_t* fValue;    //[fSize]
-    TString* fUnitName;  //[fSize]
+    Int_t fSize        = {0};
+    Double_t* fMin     = {nullptr};  //[fSize]
+    Double_t* fMax     = {nullptr};  //[fSize]
+    Double_t* fValue   = {nullptr};  //[fSize]
+    TString* fUnitName = {nullptr};  //[fSize]
   public:
     /**
      * constructor

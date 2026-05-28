@@ -284,7 +284,7 @@ namespace Hal {
 
     delete temp_histo;
   }
-  Spline2D::Spline2D(const Spline2D& other) {
+  Spline2D::Spline2D(const Spline2D& other) : TObject(other) {
     if (other.fXaxis) fXaxis = (TAxis*) other.fXaxis->Clone();
     if (other.fYaxis) fYaxis = (TAxis*) other.fYaxis->Clone();
     fNbinsX = other.fNbinsX;

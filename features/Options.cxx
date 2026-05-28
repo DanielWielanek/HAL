@@ -81,7 +81,7 @@ namespace Hal {
     return "";
   }
 
-  void Options::Print(Option_t* option) const {
+  void Options::Print(Option_t* /*option*/) const {
     std::cout << "== " << ClassName() << " ==" << std::endl;
     std::cout << "Options:" << std::endl;
     for (auto opt : fOptions) {
@@ -144,14 +144,14 @@ namespace Hal {
     return kFALSE;
   }
 
-  void MainOption::Print(Option_t* option) const {
+  void MainOption::Print(Option_t* /*option*/) const {
     std::cout << "MainOption::Print" << std::endl;
     std::cout << "Arguments:" << std::endl;
-    for (int i = 0; i < fArgs.size(); i++) {
+    for (unsigned int i = 0; i < fArgs.size(); i++) {
       std::cout << Form("\t#%i %s", i, fArgs[i].Data()) << std::endl;
     }
     std::cout << "Parameters:" << std::endl;
-    for (int i = 0; i < fParams.size(); i++) {
+    for (unsigned int i = 0; i < fParams.size(); i++) {
       std::cout << Form("\t%s:  %s", fParams[i].first.Data(), fParams[i].second.Data()) << std::endl;
     }
   }

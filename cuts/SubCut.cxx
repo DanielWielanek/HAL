@@ -19,7 +19,7 @@
 #include <TRandom.h>
 
 namespace Hal {
-  SubCut::SubCut(Int_t size) : TObject(), fMin(nullptr), fMax(nullptr), fValue(nullptr), fUnitName(nullptr) {
+  SubCut::SubCut(Int_t size) : TObject() {
     fSize = size;
     if (fSize > 0) {
       fMin      = new Double_t[fSize];
@@ -56,16 +56,26 @@ namespace Hal {
   }
 
   SubCut::~SubCut() {
-    delete[] fMin;
-    delete[] fMax;
-    delete[] fUnitName;
-    delete[] fValue;
+    if (fMin) {
+      delete[] fMin;
+      delete[] fMax;
+      delete[] fUnitName;
+      delete[] fValue;
+    }
   }
 
   SubCut& SubCut::operator=(const SubCut& other) {
     if (this == &other) {
       return *this;
     } else {
+      if (fMin) {
+        delete[] fMin;
+        delete[] fMax;
+        delete[] fValue;
+        delete[] fUnitName;
+        fMin = nullptr;
+      }
+
       this->fSize     = other.fSize;
       this->fMin      = new Double_t[fSize];
       this->fMax      = new Double_t[fSize];

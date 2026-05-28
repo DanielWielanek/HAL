@@ -73,7 +73,7 @@ namespace Hal {
     return *this;
   }
 
-  void DrawableObject::Browse(TBrowser* b) {
+  void DrawableObject::Browse(TBrowser* /*b*/) {
     TVirtualPad* c1 = gPad;
     if (gPad == nullptr) { new TCanvas(); }
     gPad->Clear();

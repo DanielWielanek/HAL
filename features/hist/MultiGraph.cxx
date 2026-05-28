@@ -62,7 +62,7 @@ namespace Hal {
     int old_entries = 0;
     if (fMultiGraph->GetListOfGraphs()) old_entries = fMultiGraph->GetListOfGraphs()->GetEntries();
 
-    for (int i = old_entries; i < fGraphErrors.size(); i++) {
+    for (unsigned int i = old_entries; i < fGraphErrors.size(); i++) {
       fMultiGraph->Add(fGraphErrors[i], fAddingOptions[i]);
     }
     TString option = opt;
@@ -205,7 +205,7 @@ namespace Hal {
   }
 
   void MultiGraph::MakeStatSys(TString optStat, TString optSys) {
-    for (int i = 0; i < fGraphErrors.size(); i++) {
+    for (unsigned int i = 0; i < fGraphErrors.size(); i++) {
       if (i % 2 == 0) {  // sys
         if (optSys.Length() != 0)
           fAddingOptions[i] = optSys;
@@ -225,7 +225,7 @@ namespace Hal {
                                    Double_t y,
                                    std::vector<Double_t> errYStat,
                                    std::vector<Double_t> errYsys) {
-    if (fGraphErrors.size() < pairGraph * 2) return;
+    if ((int) fGraphErrors.size() < pairGraph * 2) return;
     auto grSys  = fGraphErrors[pairGraph * 2];
     auto grStat = fGraphErrors[pairGraph * 2 + 1];
     Double_t xLowStat, xLowSys, xHighStat, xHighSys;
@@ -298,7 +298,7 @@ namespace Hal {
       } break;
       default: {
         if (no < 0) return callVector;
-        if (no < fGraphErrors.size()) callVector.push_back(fGraphErrors[no]);
+        if (no < (int) fGraphErrors.size()) callVector.push_back(fGraphErrors[no]);
       } break;
     }
     return callVector;
@@ -326,7 +326,7 @@ namespace Hal {
   }
 
   void MultiGraph::SetDrawOption(Int_t no, Option_t* opt) {
-    if (no < fAddingOptions.size()) { fAddingOptions[no] = opt; }
+    if (no < (int) fAddingOptions.size()) { fAddingOptions[no] = opt; }
   }
 
 }  // namespace Hal

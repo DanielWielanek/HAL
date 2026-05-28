@@ -55,21 +55,21 @@ namespace Hal {
 
   Float_t PadStyle::GetRightMargin() const { return GetF(EBitFlag::kRightMargin); }
 
-  Int_t PadStyle::GetLogx(Int_t val) const { return GetI(EBitFlag::kLogx); }
+  Int_t PadStyle::GetLogx() const { return GetI(EBitFlag::kLogx); }
 
-  Int_t PadStyle::GetLogy(Int_t val) const { return GetI(EBitFlag::kLogy); }
+  Int_t PadStyle::GetLogy() const { return GetI(EBitFlag::kLogy); }
 
-  Int_t PadStyle::GetLogz(Int_t val) const { return GetI(EBitFlag::kLogz); }
+  Int_t PadStyle::GetLogz() const { return GetI(EBitFlag::kLogz); }
 
-  Int_t PadStyle::GetGridx(Int_t val) const { return GetI(EBitFlag::kGridx); }
+  Int_t PadStyle::GetGridx() const { return GetI(EBitFlag::kGridx); }
 
-  Int_t PadStyle::GetGridy(Int_t val) const { return GetI(EBitFlag::kGridy); }
+  Int_t PadStyle::GetGridy() const { return GetI(EBitFlag::kGridy); }
 
-  Int_t PadStyle::GetGridz(Int_t val) const { return GetI(EBitFlag::kGridz); }
+  Int_t PadStyle::GetGridz() const { return GetI(EBitFlag::kGridz); }
 
-  Int_t PadStyle::GetTickx(Int_t val) const { return GetI(EBitFlag::kTickX); }
+  Int_t PadStyle::GetTickx() const { return GetI(EBitFlag::kTickX); }
 
-  Int_t PadStyle::GetTicky(Int_t val) const { return GetI(EBitFlag::kTickY); }
+  Int_t PadStyle::GetTicky() const { return GetI(EBitFlag::kTickY); }
 
   Int_t PadStyle::GetFillColor() const { return GetI(EBitFlag::kFillColor); }
 

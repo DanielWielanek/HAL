@@ -444,7 +444,7 @@ namespace Hal {
     return 1;
   }
 
-  void Parameter::Print(Option_t* option) const {
+  void Parameter::Print(Option_t* /*option*/) const {
     std::cout << "====================================" << std::endl;
     std::cout << ClassName() << ": " << GetName() << std::endl;
     std::cout << "Value:" << HTMLExtract() << std::endl;

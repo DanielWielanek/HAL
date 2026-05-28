@@ -109,7 +109,7 @@ namespace Hal {
 
   void Painter::InnerRepaint() { std::cout << ClassName() << " does not support repaint" << std::endl; }
 
-  void Painter::OwnCanvasDivide(TCanvas* c, Int_t x, Int_t y, Int_t canvasNo) { c->Divide(x, y); }
+  void Painter::OwnCanvasDivide(TCanvas* c, Int_t x, Int_t y, Int_t /*canvasNo*/) { c->Divide(x, y); }
 
   void Painter::MakeCanvasPads(Int_t x, Int_t y, Int_t canvasNo) {
     auto dividePads = [&]() {
@@ -138,7 +138,7 @@ namespace Hal {
     };
     LockPad();
     if (CheckOpt(kSameBit)) {
-    } else if (fCommonData.fCanvases->size() > canvasNo) {
+    } else if ((int) fCommonData.fCanvases->size() > canvasNo) {
       dividePads();
     } else if (CheckOpt(kBrowserBit) && canvasNo == 0) {
       TCanvas* newCanv = dynamic_cast<TCanvas*>(gPad);
@@ -148,7 +148,7 @@ namespace Hal {
       fCommonData.fPads->push_back(pads);
       dividePads();
     } else {
-      for (int i = fCommonData.fCanvases->size(); i <= canvasNo; i++) {
+      for (int i = (int) fCommonData.fCanvases->size(); i <= canvasNo; i++) {
         TCanvas* newCanv = nullptr;
         if (CheckOpt(kPadBit) || CheckOpt(kCanvasBit)) {
           newCanv = dynamic_cast<TCanvas*>(gPad);
@@ -319,7 +319,8 @@ namespace Hal {
     return kTRUE;
   }
 
-  void Painter::ContitionalPattern(const Options& option, TString pattern, ULong64_t& drawOpt, Int_t bit, Bool_t remove) const {
+  void
+  Painter::ContitionalPattern(const Options& option, TString pattern, ULong64_t& drawOpt, Int_t bit, Bool_t /*remove*/) const {
     if (option.HasOption(pattern)) SETBIT(drawOpt, bit);
     if (option.HasNotOption(pattern)) CLRBIT(drawOpt, bit);
   }
@@ -353,7 +354,7 @@ namespace Hal {
   void Painter::SetGlobalPadStyle(Hal::PadStyle& pad) { fPadStyle = new Hal::PadStyle(pad); }
 
   Bool_t Painter::CanvasExist(Int_t canvasNo) const {
-    if (fCommonData.fCanvases->size() > canvasNo) return kTRUE;
+    if ((int) fCommonData.fCanvases->size() > canvasNo) return kTRUE;
     return kFALSE;
   }
 

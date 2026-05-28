@@ -20,7 +20,7 @@ namespace Hal {
     std::array<int, 4> time {};
     auto vec = Hal::Std::ExplodeString(raw, ':', true);
     int c    = vec.size() - 4;
-    for (int i = 0; i < vec.size(); i++) {
+    for (unsigned int i = 0; i < vec.size(); i++) {
       time[i + c] = vec[i].Atoi();
     }
     return time;
@@ -49,6 +49,8 @@ namespace Hal {
     for (int i = 0; i < aliases.GetNChildren(); i++) {
       auto& alias = aliases[i];
       std::pair<TString, TString> aliasPair;
+      aliasPair.first  = alias.GetAttrib("name").GetValue();
+      aliasPair.second = alias.GetAttrib("value").GetValue();
       aliasarray.push_back(aliasPair);
     }
     std::pair<TString, TString> aliasPair;
@@ -118,7 +120,7 @@ namespace Hal {
       val       = val.ReplaceAll("G", "");
       val       = val.ReplaceAll(" ", "");
       int mem   = val.Atoi();
-      fMem.name = GetMemoryFlags(Form("%i", mem));
+      fMem.name = GetMemoryFlags(Form("%i", int(mem * scale)));
     }
 
     fExtra      = GetParameter("extra");
@@ -128,19 +130,13 @@ namespace Hal {
     fName       = GetParameter("name");
   }
 
-  void JobQueue::SendCommand(Bool_t send, TString command, Int_t jobID) const {
+  void JobQueue::SendCommand(Bool_t send, TString command, Int_t /*jobID*/) const {
     if (fDebugCommands) { std::cout << " DEBUG JOBS : " << command << std::endl; }
     if (send) gSystem->Exec(command);
   }
 
   void JobQueue::BuildExample(TString name) {
-    auto addParameter = [](TString nodename, TString value, Bool_t enabled) {
-      XMLNode node("parameter");
-      TString en = "false";
-      if (enabled) en = "true";
-      node.AddAttribs({{"name", nodename}, {"value", value}, {"enabled", en}});
-      return node;
-    };
+
 
     Hal::XMLFile file(name, "create");
     file.CreateRootNode("hal-merger");

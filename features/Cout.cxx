@@ -92,7 +92,8 @@ namespace Hal {
       if (size.size() != list.size()) size.push_back(0);
       int sum = 0;
       TString text;
-      for (int i = 0; i < list.size() - 1; i++) {
+      int listSize = (int) list.size();
+      for (int i = 0; i < listSize - 1; i++) {
         TString word = Align(list[i], size[i], alignement);
         sum += word.Length() + 1;
         text = text + word + "|";
@@ -413,7 +414,7 @@ namespace Hal {
     Color_t mainColor = fgPrimColor;
     if (flag.Contains("DEBUG")) mainColor = fgSecColor;
     std::cout << GetColor(mainColor);
-    for (int i = 0; i < words.size(); i++) {
+    for (unsigned int i = 0; i < words.size(); i++) {
       std::cout << "* " << words[i];
       if (i == 0) {
         std::cout << "[" << GetColor(color) << flag << GetColor(mainColor) << "] *" << std::endl;

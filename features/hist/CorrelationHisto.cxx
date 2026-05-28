@@ -47,7 +47,7 @@ namespace Hal {
     auto ranges = Hal::Std::GetVector(vals);
     auto namess = Hal::Std::GetVector(names);
     if (ranges.size() > namess.size()) {
-      for (int i = namess.size(); i < ranges.size(); i++) {
+      for (unsigned int i = namess.size(); i < ranges.size(); i++) {
         namess.push_back(Form("Par_%i", i));
       }
     }
@@ -61,11 +61,11 @@ namespace Hal {
   }
 
   void CorrelationHisto::Fill(std::vector<Double_t> params) {
-    if (params.size() != fNParams) return;
+    if ((int) params.size() != fNParams) return;
     //    HalCoutDebug();
     if (fAutoFill) {
       //      HalCoutDebug();
-      if (fTestValues.size() < fNTest) {
+      if ((int) fTestValues.size() < fNTest) {
 
         fTestValues.push_back(params);
         return;
@@ -91,11 +91,11 @@ namespace Hal {
   }
 
   void CorrelationHisto::Fill(std::vector<Double_t> params, Double_t weight) {
-    if (params.size() != fNParams) return;
+    if ((int) params.size() != fNParams) return;
     //    HalCoutDebug();
     if (fAutoFill) {
       //      HalCoutDebug();
-      if (fTestValues.size() < fNTest) {
+      if ((int) fTestValues.size() < fNTest) {
 
         fTestValues.push_back(params);
         return;
@@ -159,7 +159,7 @@ namespace Hal {
     for (int par = 0; par < fNParams; par++) {
       double mini = 1E+9, maxi = 1E-9, av, sum = 0;
       double n = fNTest;
-      for (unsigned int ent = 0; ent < fNTest; ent++) {
+      for (int ent = 0; ent < fNTest; ent++) {
         double j = fTestValues[ent][par];
         sum += j;
         mini = TMath::Min(mini, j);
@@ -167,7 +167,7 @@ namespace Hal {
       }
       av         = sum / n;
       double rms = 0;
-      for (unsigned int ent = 0; ent < fNTest; ent++) {
+      for (int ent = 0; ent < fNTest; ent++) {
         double j = fTestValues[ent][par];
         rms += (av - j) * (av - j);
       }
@@ -354,7 +354,7 @@ namespace Hal {
     GetCanvas(0)->cd();
   }
 
-  void CorrelationHistoPainter::OwnCanvasDivide(TCanvas* c, Int_t x, Int_t y, Int_t canvasNo) {
+  void CorrelationHistoPainter::OwnCanvasDivide(TCanvas* c, Int_t /*x*/, Int_t /*y*/, Int_t /*canvasNo*/) {
     c->cd();
     fPads = Hal::Std::GetGridPad(fHisto->GetNParams(), fHisto->GetNParams(), 0.124, 0.124);
   }

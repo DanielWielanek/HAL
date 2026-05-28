@@ -180,43 +180,26 @@ namespace Hal {
     Cut* res           = nullptr;
     Bool_t acceptNulls = Hal::Std::FindParam(opt, "null");
     if (Hal::Std::FindParam(opt, "re")) {
-      switch (fUpdateRatio) {
-        case ECutUpdate::kEvent: {
-          res = new EventRealCut(static_cast<const EventCut&>(*this));
-        } break;
-        case ECutUpdate::kTrack: {
-          res = new TrackRealCut(static_cast<const TrackCut&>(*this));
-        } break;
-        case ECutUpdate::kTwoTrack: {
-          res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(*this));
-        } break;
-        case ECutUpdate::kTwoTrackBackground: {
-          res = new TwoTrackRealCut(static_cast<const TwoTrackCut&>(*this));
-        } break;
-        default: return nullptr; break;
-      }
+      if (auto* cut = dynamic_cast<const EventCut*>(this)) { res = new EventRealCut(*cut); }
+      if (auto* cut = dynamic_cast<const TrackCut*>(this)) { res = new TrackRealCut(*cut); }
+      if (auto* cut = dynamic_cast<const TwoTrackCut*>(this)) { res = new TwoTrackRealCut(*cut); }
+      if (!res) { Hal::Cout::PrintInfo(Form("%s Make Copy problem", ClassName()), Hal::EInfo::kError); }
       return res;
     }
     if (Hal::Std::FindParam(opt, "im")) {
-      switch (fUpdateRatio) {
-        case ECutUpdate::kEvent: {
-          res = new EventImaginaryCut(static_cast<const EventCut&>(*this));
-          if (acceptNulls) static_cast<EventImaginaryCut*>(res)->AcceptNulls(kTRUE);
-        } break;
-        case ECutUpdate::kTrack: {
-          res = new TrackImaginaryCut(static_cast<const TrackCut&>(*this));
-          if (acceptNulls) static_cast<TrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
-        } break;
-        case ECutUpdate::kTwoTrack: {
-          res = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(*this));
-          if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
-        } break;
-        case ECutUpdate::kTwoTrackBackground: {
-          res = new TwoTrackImaginaryCut(static_cast<const TwoTrackCut&>(*this));
-          if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
-        } break;
-        default: return nullptr; break;
+      if (auto* cut = dynamic_cast<const EventCut*>(this)) {
+        res = new EventImaginaryCut(*cut);
+        if (acceptNulls) static_cast<EventImaginaryCut*>(res)->AcceptNulls(kTRUE);
       }
+      if (auto* cut = dynamic_cast<const TrackCut*>(this)) {
+        res = new TrackImaginaryCut(*cut);
+        if (acceptNulls) static_cast<TrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
+      }
+      if (auto* cut = dynamic_cast<const TwoTrackCut*>(this)) {
+        res = new TwoTrackImaginaryCut(*cut);
+        if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
+      }
+      if (!res) { Hal::Cout::PrintInfo(Form("%s Make Copy problem", ClassName()), Hal::EInfo::kError); }
       return res;
     }
     return (Cut*) MakeInnerCopy();

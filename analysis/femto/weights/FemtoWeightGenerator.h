@@ -27,43 +27,43 @@ namespace Hal {
     /**
      * Type of the pair for which the calculation is done
      */
-    Femto::EPairType fPairType;
+    Femto::EPairType fPairType = {Femto::EPairType::kUnknown};
     /**
      * id of task that own this weight
      */
-    Int_t fTaskID;
+    Int_t fTaskID = {0};
     /**
      * relative momentum out component in PRF
      */
-    Double_t fKStarOut;
+    Double_t fKStarOut = {0};
     /**
      * relative momentum side component in PRF
      */
-    Double_t fKStarSide;
+    Double_t fKStarSide = {0};
     /**
      * relative momentum long component in PRF
      */
-    Double_t fKStarLong;
+    Double_t fKStarLong = {0};
     /**
      * relative momentum magnitude
      */
-    Double_t fKStar;
+    Double_t fKStar = {0};
     /**
      * elative separation out component in PRF
      */
-    Double_t fRStarOut;
+    Double_t fRStarOut = {0};
     /**
      * relative separation side component in PRF
      */
-    Double_t fRStarSide;
+    Double_t fRStarSide = {0};
     /**
      * relative separation long component in PRF
      */
-    Double_t fRStarLong;
+    Double_t fRStarLong = {0};
     /**
      *  relative separation magnitude
      */
-    Double_t fRStar;
+    Double_t fRStar = {0};
     /**
      * calculate prf variables r* is in fm/c
      * @param pair

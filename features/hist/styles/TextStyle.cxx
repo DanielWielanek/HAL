@@ -67,11 +67,11 @@ namespace Hal {
   void TextStyle::Import(const TAttText& text) {
     TAttText def;
     def.SetTextColor(kBlack);
-    if (def.GetTextSize() != GetSize()) SetSize(def.GetTextSize());
-    if (def.GetTextFont() != GetFont()) SetFont(def.GetTextFont());
-    if (def.GetTextAngle() != GetAngle()) SetAngle(def.GetTextAngle());
-    if (def.GetTextColor() != GetColor()) SetColor(def.GetTextColor());
-    if (def.GetTextAlign() != GetAlign()) SetAlign(def.GetTextAlign());
+    if (def.GetTextSize() != text.GetTextSize()) SetSize(def.GetTextSize());
+    if (def.GetTextFont() != text.GetTextFont()) SetFont(def.GetTextFont());
+    if (def.GetTextAngle() != text.GetTextAngle()) SetAngle(def.GetTextAngle());
+    if (def.GetTextColor() != text.GetTextColor()) SetColor(def.GetTextColor());
+    if (def.GetTextAlign() != text.GetTextAlign()) SetAlign(def.GetTextAlign());
   }
 
   TextStyle::~TextStyle() {

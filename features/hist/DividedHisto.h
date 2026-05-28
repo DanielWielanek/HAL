@@ -416,7 +416,7 @@ namespace Hal {
      * @param opt
      * @return
      */
-    virtual TObject* GetSpecial(TString opt) const { return nullptr; }
+    virtual TObject* GetSpecial(TString /*opt*/) const { return nullptr; }
     virtual ~DividedHisto1D();
     ClassDef(DividedHisto1D, 5)
   };

@@ -13,30 +13,12 @@
 #include "FemtoPair.h"
 
 namespace Hal {
-  FemtoWeightGenerator::FemtoWeightGenerator() :
-    fPairType(Femto::EPairType::kUnknown),
-    fTaskID(0),
-    fKStarOut(0),
-    fKStarSide(0),
-    fKStarLong(0),
-    fKStar(0),
-    fRStarOut(0),
-    fRStarSide(0),
-    fRStarLong(0),
-    fRStar(0) {}
+  FemtoWeightGenerator::FemtoWeightGenerator() {}
 
   FemtoWeightGenerator::FemtoWeightGenerator(const FemtoWeightGenerator& aModel) :
     TObject(aModel),
     fPairType(aModel.fPairType),
-    fTaskID(aModel.fTaskID),
-    fKStarOut(0),
-    fKStarSide(0),
-    fKStarLong(0),
-    fKStar(0),
-    fRStarOut(0),
-    fRStarSide(0),
-    fRStarLong(0),
-    fRStar(0) {}
+    fTaskID(aModel.fTaskID){}
 
   FemtoWeightGenerator& FemtoWeightGenerator::operator=(const FemtoWeightGenerator& aModel) {
     if (this != &aModel) {

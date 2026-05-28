@@ -80,6 +80,7 @@ namespace Hal {
   }
 
   DividedHisto1D::DividedHisto1D(const DividedHisto1D& other) :
+    DrawableObject(other),
     fNumIsCloned(kFALSE),
     fDenIsCloned(kFALSE),
     fNum(NULL),

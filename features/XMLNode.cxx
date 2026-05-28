@@ -21,10 +21,10 @@ namespace Hal {
   XMLNode::XMLNode(TString name, TString value, Bool_t null) : TNamed(name, value), fNull(null) {}
 
   XMLNode::XMLNode(const XMLNode& other) : XMLNode(other.GetName(), other.GetValue(), other.fNull) {
-    for (int i = 0; i < other.fChildren.size(); i++) {
+    for (int i = 0; i < (int) other.fChildren.size(); i++) {
       fChildren.push_back(XMLNode(other.GetChild(i)));
     }
-    for (int i = 0; i < other.fAttrib.size(); i++) {
+    for (int i = 0; i < (int) other.fAttrib.size(); i++) {
       fAttrib.push_back(XMLAttrib(other.GetAttrib(i)));
     }
   }
@@ -35,17 +35,17 @@ namespace Hal {
     SetValue(other.GetValue());
     fChildren.clear();
     fAttrib.clear();
-    for (int i = 0; i < other.fChildren.size(); i++) {
+    for (int i = 0; i < (int) other.fChildren.size(); i++) {
       fChildren.push_back(XMLNode(other.GetChild(i)));
     }
-    for (int i = 0; i < other.fAttrib.size(); i++) {
+    for (int i = 0; i < (int) other.fAttrib.size(); i++) {
       fAttrib.push_back(XMLAttrib(other.GetAttrib(i)));
     }
     return *this;
   }
 
   XMLNode& XMLNode::operator[](int i) {
-    if (i < fChildren.size()) return fChildren[i];
+    if (i < (int) fChildren.size()) return fChildren[i];
     return NullNode();
   }
 

@@ -79,21 +79,21 @@ namespace Hal {
 
     Float_t GetRightMargin() const;
 
-    Int_t GetLogx(Int_t val) const;
+    Int_t GetLogx() const;
 
-    Int_t GetLogy(Int_t val) const;
+    Int_t GetLogy() const;
 
-    Int_t GetLogz(Int_t val) const;
+    Int_t GetLogz() const;
 
-    Int_t GetGridx(Int_t val) const;
+    Int_t GetGridx() const;
 
-    Int_t GetGridy(Int_t val) const;
+    Int_t GetGridy() const;
 
-    Int_t GetGridz(Int_t val) const;
+    Int_t GetGridz() const;
 
-    Int_t GetTickx(Int_t val) const;
+    Int_t GetTickx() const;
 
-    Int_t GetTicky(Int_t val) const;
+    Int_t GetTicky() const;
 
     Int_t GetLineColor() const;
 

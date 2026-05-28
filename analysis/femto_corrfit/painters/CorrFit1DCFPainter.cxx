@@ -35,7 +35,7 @@ namespace Hal {
     if (fCFPainter) fCFPainter->AddPainter(this);
   }
 
-  TF1* CorrFit1DCFPainter::GetDrawableFunc(TString opt) {
+  TF1* CorrFit1DCFPainter::GetDrawableFunc(TString /*opt*/) {
     if (!fFittedFunc) return nullptr;
     return ((CorrFit1DCF*) fFittedFunc)->GetFunctionForDrawing();
   }

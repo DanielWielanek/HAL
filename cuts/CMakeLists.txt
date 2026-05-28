@@ -4,6 +4,10 @@ ${HAL_DATA}
 ${HAL_CUTS}
 )
 
+if(WARNING_FLAGS)
+    add_compile_options( ${MY_WARNINGS})
+endif()
+
 Set(SYSTEM_INCLUDE_DIRECTORIES
  ${ROOT_INCLUDE_DIR} 
  ${BASE_INCLUDE_DIRECTORIES}

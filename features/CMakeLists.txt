@@ -113,6 +113,11 @@ Set(LIBRARY_NAME HalFeatures)
 Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO EG gsl gslcblas )
 
 
+if(WARNING_FLAGS)
+    add_compile_options( ${MY_WARNINGS})
+endif()
+
+
 string(JOIN " " ROOTCLING_FLAGS "-I" ${HAL_FEATURES})
 
 GENERATE_LIBRARY_HAL()

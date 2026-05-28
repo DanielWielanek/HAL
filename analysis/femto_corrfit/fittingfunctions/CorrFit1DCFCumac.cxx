@@ -33,12 +33,11 @@ namespace Hal {
   Double_t CorrFit1DCFCumac::Ff1(Double_t x) const { return TMath::Exp(x * x - fZ * fZ) / fZ; }
 
   Double_t CorrFit1DCFCumac::Integr() const {
-    Int_t n;
-    Double_t xx, de1, a1h, ddd, abs__, eps;
-    eps           = 1E-18;
-    ddd           = .005;
-    n             = 100;
-    de1           = fZ / n;
+    Int_t n     = 100;
+    Double_t xx = 0, a1h = 0, abs__ = 0;
+    Double_t eps  = 1E-18;
+    Double_t ddd  = .005;
+    Double_t de1  = fZ / n;
     Double_t zero = 0.0;
     return Simps(zero, fZ, de1, ddd, eps, xx, a1h, abs__);
   }
@@ -342,10 +341,10 @@ namespace Hal {
     Double_t s           = 4. * (ak2 + mK2);
     Double_t U           = TMath::Sqrt(s);
     Double_t k1prim      = TMath::Sqrt(ak * ak + mK2 - mpi2);
-    Double_t e           = TMath::Sqrt(ak2 + mK2) * 2.0;
-    // Double_t k3prim =
-    //   TMath::Sqrt(mpi2 * mpi2 - 2.0 * mpi2 * meta2 - 2.0 * e * e * mpi2 + meta2 * meta2 - 2.0 * e * e * meta2 + e * e * e * e)
-    //   / (2.0 * e);
+    // Double_t e           = TMath::Sqrt(ak2 + mK2) * 2.0;
+    //  Double_t k3prim =
+    //    TMath::Sqrt(mpi2 * mpi2 - 2.0 * mpi2 * meta2 - 2.0 * e * e * mpi2 + meta2 * meta2 - 2.0 * e * e * meta2 + e * e * e * e)
+    //    / (2.0 * e);
 
     Double_t k2prim = TMath::Sqrt(mpi2 * mpi2 + meta2 * meta2 + s * s - 2.0 * (mpi2 * meta2 + mpi2 * s + meta2 * s)) / (2.0 * U);
 
@@ -414,15 +413,14 @@ namespace Hal {
     const Double_t ak2   = ak * ak;
     Double_t s           = 4. * (ak2 + mK2);
     Double_t U           = TMath::Sqrt(s);
-    Double_t k1prim      = TMath::Sqrt(ak * ak + mK2 - mpi2);
-    Double_t e           = TMath::Sqrt(ak2 + mK2) * 2.0;
-    Double_t k3prim =
+    // Double_t k1prim      = TMath::Sqrt(ak * ak + mK2 - mpi2);
+    // Double_t e           = TMath::Sqrt(ak2 + mK2) * 2.0;
+    /*Double_t k3prim =
       TMath::Sqrt(mpi2 * mpi2 - 2.0 * mpi2 * meta2 - 2.0 * e * e * mpi2 + meta2 * meta2 - 2.0 * e * e * meta2 + e * e * e * e)
-      / (2.0 * e);
+      / (2.0 * e);*/
 
     Double_t k2prim = TMath::Sqrt(mpi2 * mpi2 + meta2 * meta2 + s * s - 2.0 * (mpi2 * meta2 + mpi2 * s + meta2 * s)) / (2.0 * U);
-    double k2prim_old = k2prim;
-    k2prim            = fGammaCalc.Calculate(ak);
+    k2prim          = fGammaCalc.Calculate(ak);
     TComplex num(params[Ma0ID()] * params[Ma0ID()] - s, -params[Gamma_a0KKID()] * ak - params[Gamma_a0PiEtaID()] * k2prim);
     TComplex f(params[Gamma_a0KKID()], 0);
     f            = f / num;

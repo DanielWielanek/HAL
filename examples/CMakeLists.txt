@@ -1,3 +1,6 @@
+if(WARNING_FLAGS)
+    add_compile_options( ${MY_WARNINGS})
+endif()
 add_subdirectory(onthefly)
 add_subdirectory(debugformat)
 add_subdirectory(unigen)

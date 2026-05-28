@@ -73,7 +73,7 @@ namespace Hal {
   };
 
   /**
-   * C++ version of Lednicky's code rplam1.F
+   * C++ version of R. Lednicky's code rplam1.F
    */
   class CorrFit1DCFCumacPLam : public CorrFit1DCFCumac {
   protected:

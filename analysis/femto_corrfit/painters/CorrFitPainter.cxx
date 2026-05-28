@@ -225,7 +225,7 @@ namespace Hal {
     std::vector<TString> label;
     TString chi_label = "";
     if (CheckOpt(kChi2)) {
-      Double_t chi2 = fFittedFunc->GetChiTF(fFittedFunc->fTempParamsEval);  // legend present, we have to recalcuate chi2
+      // Double_t chi2 = fFittedFunc->GetChiTF(fFittedFunc->fTempParamsEval);  // legend present, we have to recalcuate chi2
       TString chi_s, chindf_s, ndf_s;
       Double_t chi    = fFittedFunc->GetChiSquare();
       Double_t chindf = fFittedFunc->GetChiNDF();
@@ -279,8 +279,7 @@ namespace Hal {
 
 
   void CorrFitPainter::ScaleHistograms() {
-    auto func     = (CorrFitFunc*) fFittedFunc;
-    Double_t norm = func->GetNorm();
+    auto func = (CorrFitFunc*) fFittedFunc;
     if (CheckOpt(kAutoNormBit)) {
       fCFPainter->Rescale(1.0 / func->GetNorm());
       fCFPainter->ScaleHistograms();

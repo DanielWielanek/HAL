@@ -70,7 +70,7 @@ namespace Hal {
 
   TString InputDataInfo::GetSafeFile(Int_t level, Int_t entry) const {
     if (level + 1 < (int) fFileNames.size()) {
-      if (fFileNames[level + 1].size() > entry) return fFileNames[level + 1][entry];
+      if (int(fFileNames[level + 1].size()) > entry) return fFileNames[level + 1][entry];
     }
     return "";
   }
@@ -165,7 +165,7 @@ namespace Hal {
     return fChain;
   }
 
-  void InputDataInfo::Print(Option_t* option) const {
+  void InputDataInfo::Print(Option_t* /* option*/) const {
     std::vector<TString> header;
     header.push_back("No");
     header.push_back("Main file");
@@ -174,11 +174,11 @@ namespace Hal {
     }
     Hal::Cout::SetLineLenght(26 * header.size());
     Hal::Cout::Database(header);
-    for (unsigned int pos = 0; pos < (int)fFileNames[0].size(); pos++) {
+    for (int pos = 0; pos < (int) fFileNames[0].size(); pos++) {
       std::vector<TString> str;
       str.push_back(Form("%i", pos));
-      for (unsigned int level = 0; level < (int)fFileNames.size(); level++) {
-        if (fFileNames[level].size() > pos) {
+      for (int level = 0; level < (int) fFileNames.size(); level++) {
+        if ((int) fFileNames[level].size() > pos) {
           TString path = fFileNames[level][pos];
           if (path.Length() > 25) {
             int crop = path.Length() - 25;
@@ -195,11 +195,11 @@ namespace Hal {
     Hal::Cout::SetLineLenght(100);
   }
 
-  void InputRootDataInfo::Print(Option_t* option) const {
+  void InputRootDataInfo::Print(Option_t* /*option*/) const {
     std::vector<TString> header;
     header.push_back("No");
     header.push_back("Main file");
-    for (unsigned int i = 1; i < (int)fFileNames.size(); i++) {
+    for (int i = 1; i < (int) fFileNames.size(); i++) {
       header.push_back(Form("Friend_%i", i - 1));
     }
     Hal::Cout::SetLineLenght(26 * header.size());
@@ -210,11 +210,11 @@ namespace Hal {
       line.push_back(tree);
     }
     Hal::Cout::Database(line);
-    for (unsigned int pos = 0; pos < (int)fFileNames[0].size(); pos++) {
+    for (int pos = 0; pos < (int) fFileNames[0].size(); pos++) {
       std::vector<TString> str;
       str.push_back(Form("%i", pos));
-      for (unsigned int level = 0; level < (int)fFileNames.size(); level++) {
-        if ((int)fFileNames[level].size() > pos) {
+      for (int level = 0; level < (int) fFileNames.size(); level++) {
+        if ((int) fFileNames[level].size() > pos) {
           TString path = fFileNames[level][pos];
           if (path.Length() > 25) {
             int crop = path.Length() - 25;

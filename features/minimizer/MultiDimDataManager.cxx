@@ -45,7 +45,6 @@ namespace Hal {
 
   Int_t MultiDimDataManager::GetIndexInt(std::vector<int> paramsId) const {
     if (paramsId.size() != fParams.size()) return -1;
-    Int_t step   = 1;
     Int_t pos    = 0;
     auto factors = GetMultiFactors();
     for (int i = 0; i < (int) fParams.size(); i++) {
@@ -90,7 +89,7 @@ namespace Hal {
     return res;
   }
 
-  void MultiDimDataManager::Print(Option_t* option) const {
+  void MultiDimDataManager::Print(Option_t* /*option*/) const {
     std::cout << "MultiDimDataManager " << this->GetName() << std::endl;
     Hal::Cout::Database({"ParName", "MapMin", "MapMax", "Npoints", "Step"});
     for (auto i : fParams) {
@@ -105,7 +104,7 @@ namespace Hal {
   std::vector<Int_t> MultiDimDataManager::GetMultiFactors() const {
     const int params = fParams.size();
     std::vector<Int_t> temp(params), res(params);
-    for (unsigned int i = 0; i < params; i++) {
+    for (int i = 0; i < params; i++) {
       temp[i] = fParams[i].GetNPoints();
     }
     res[res.size() - 1] = 1;

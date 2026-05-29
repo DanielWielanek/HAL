@@ -138,14 +138,8 @@ namespace Hal {
     int parNo = 0;
     for (auto i : fTerms)
       parNo += i.size();
-    fFunc     = new TF1(Hal::Std::GetUniqueName("func_draw"),
-                    this,
-                    &ManyPolynomialsX::Eval,
-                    fRanges[0],
-                    fRanges[fRanges.size() - 1],
-                    parNo,
-                    this->ClassName(),
-                    "Eval");
+    fFunc = new TF1(
+      Hal::Std::GetUniqueName("func_draw"), this, &ManyPolynomialsX::Eval, fRanges[0], fRanges[fRanges.size() - 1], parNo);
     parNo     = 0;
     int count = 0;
     for (auto i : fTerms) {

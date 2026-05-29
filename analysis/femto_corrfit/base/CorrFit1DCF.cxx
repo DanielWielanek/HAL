@@ -221,9 +221,7 @@ namespace Hal {
                              &CorrFit1DCF::GetFunDrawable,
                              fRange.Get(0),
                              fRange.Get(1),
-                             GetParametersNo() + 1,
-                             this->ClassName(),
-                             "GetFunDrawable");  // last parameter enable normalization if set to 1
+                             GetParametersNo() + 1);  // last parameter enable normalization if set to 1
     for (int i = 0; i < GetParametersNo(); i++) {
       draw_func->FixParameter(i, GetParameter(i));
       draw_func->SetParName(i, GetParameterName(i));

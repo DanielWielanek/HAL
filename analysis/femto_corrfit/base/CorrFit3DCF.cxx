@@ -729,35 +729,22 @@ namespace Hal {
     const Int_t nPar  = GetParametersNo() + 1;
     TString className = this->ClassName();
     TF1* func         = nullptr;
-    if (option.EqualTo("x"))
-      func = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar, className, "GetFunX");
-    if (option.EqualTo("y"))
-      func = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar, className, "GetFunY");
-    if (option.EqualTo("z"))
-      func = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar, className, "GetFunZ");
+    if (option.EqualTo("x")) func = new TF1("funcX", this, &CorrFit3DCF::GetFunX, fRange[0], fRange[1], nPar);
+    if (option.EqualTo("y")) func = new TF1("funcY", this, &CorrFit3DCF::GetFunY, fRange[2], fRange[3], nPar);
+    if (option.EqualTo("z")) func = new TF1("funcZ", this, &CorrFit3DCF::GetFunZ, fRange[4], fRange[5], nPar);
 
-    if (option.EqualTo("xy++"))
-      func = new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar, className, "GetFunXYpp");
-    if (option.EqualTo("xy+-"))
-      func = new TF1("funcXY+-", this, &CorrFit3DCF::GetFunXYpm, fRange[0], fRange[1], nPar, className, "GetFunXYpm");
-    if (option.EqualTo("yz++"))
-      func = new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar, className, "GetFunXZpp");
-    if (option.EqualTo("yz+-"))
-      func = new TF1("funcYZ+-", this, &CorrFit3DCF::GetFunYZpm, fRange[2], fRange[3], nPar, className, "GetFunYZpm");
-    if (option.EqualTo("xz++"))
-      func = new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar, className, "GetFunYZpp");
-    if (option.EqualTo("xz+-"))
-      func = new TF1("funcXZ+-", this, &CorrFit3DCF::GetFunXZpm, fRange[2], fRange[3], nPar, className, "GetFunXZpm");
+    if (option.EqualTo("xy++")) func = new TF1("funcXY++", this, &CorrFit3DCF::GetFunXYpp, fRange[0], fRange[1], nPar);
+    if (option.EqualTo("xy+-")) func = new TF1("funcXY+-", this, &CorrFit3DCF::GetFunXYpm, fRange[0], fRange[1], nPar);
+    if (option.EqualTo("yz++")) func = new TF1("funcYZ++", this, &CorrFit3DCF::GetFunYZpp, fRange[2], fRange[3], nPar);
+    if (option.EqualTo("yz+-")) func = new TF1("funcYZ+-", this, &CorrFit3DCF::GetFunYZpm, fRange[2], fRange[3], nPar);
+    if (option.EqualTo("xz++")) func = new TF1("funcXZ++", this, &CorrFit3DCF::GetFunXZpp, fRange[4], fRange[5], nPar);
+    if (option.EqualTo("xz+-")) func = new TF1("funcXZ+-", this, &CorrFit3DCF::GetFunXZpm, fRange[2], fRange[3], nPar);
 
 
-    if (option.EqualTo("xyz+++"))
-      func = new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar, className, "GetFunXYZppp");
-    if (option.EqualTo("xyz+-+"))
-      func = new TF1("funcXYZ+-+", this, &CorrFit3DCF::GetFunXYZpmp, fRange[0], fRange[1], nPar, className, "GetFunXYZpmp");
-    if (option.EqualTo("xyz+--"))
-      func = new TF1("funcXYZ+--", this, &CorrFit3DCF::GetFunXYZpmm, fRange[0], fRange[1], nPar, className, "GetFunXYZpmm");
-    if (option.EqualTo("xyz++-"))
-      func = new TF1("funcXYZ++-", this, &CorrFit3DCF::GetFunXYZppm, fRange[0], fRange[1], nPar, className, "GetFunXYZppm");
+    if (option.EqualTo("xyz+++")) func = new TF1("funcXYZ+++", this, &CorrFit3DCF::GetFunXYZppp, fRange[0], fRange[1], nPar);
+    if (option.EqualTo("xyz+-+")) func = new TF1("funcXYZ+-+", this, &CorrFit3DCF::GetFunXYZpmp, fRange[0], fRange[1], nPar);
+    if (option.EqualTo("xyz+--")) func = new TF1("funcXYZ+--", this, &CorrFit3DCF::GetFunXYZpmm, fRange[0], fRange[1], nPar);
+    if (option.EqualTo("xyz++-")) func = new TF1("funcXYZ++-", this, &CorrFit3DCF::GetFunXYZppm, fRange[0], fRange[1], nPar);
 
     /**
      * because root have problems with 3D axes we have to take them from th3d
@@ -774,14 +761,11 @@ namespace Hal {
       Range[5]     = numtemp->GetZaxis()->GetBinUpEdge(numtemp->GetNbinsZ());
     }
     if (option.EqualTo("xy"))
-      func =
-        new TF2("fun2dxy", this, &CorrFit3DCF::GetFunXY2d, Range[0], Range[1], Range[2], Range[3], nPar, className, "GetFunXY2d");
+      func = new TF2("fun2dxy", this, &CorrFit3DCF::GetFunXY2d, Range[0], Range[1], Range[2], Range[3], nPar);
     if (option.EqualTo("xz"))
-      func =
-        new TF2("fun2dxz", this, &CorrFit3DCF::GetFunXZ2d, Range[0], Range[1], Range[4], Range[5], nPar, className, "GetFunXZ2d");
+      func = new TF2("fun2dxz", this, &CorrFit3DCF::GetFunXZ2d, Range[0], Range[1], Range[4], Range[5], nPar);
     if (option.EqualTo("yz"))
-      func =
-        new TF2("fun2dyz", this, &CorrFit3DCF::GetFunYZ2d, Range[2], Range[3], Range[4], Range[5], nPar, className, "GetFunYZ2d");
+      func = new TF2("fun2dyz", this, &CorrFit3DCF::GetFunYZ2d, Range[2], Range[3], Range[4], Range[5], nPar);
 
     if (!func) { std::cout << __LINE__ << __FILE__ << " wrong option " << option << std::endl; }
     SetParametersToTF1(func);

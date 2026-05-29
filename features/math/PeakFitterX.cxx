@@ -55,14 +55,7 @@ namespace Hal {
     if (fTotalFunction) delete fTotalFunction;
     if (!fSignalFunction) {
       std::cout << "No signal function, using numerical formula" << std::endl;
-      fSignalFunction = new TF1(Hal::Std::GetUniqueName("func_draw"),
-                                this,
-                                &PeakFitterX::EvalNumSignal,
-                                fEx[0],
-                                fEx[1],
-                                0,
-                                this->ClassName(),
-                                "EvalNumSignal");
+      fSignalFunction = new TF1(Hal::Std::GetUniqueName("func_draw"), this, &PeakFitterX::EvalNumSignal, fEx[0], fEx[1], 0);
     }
     Double_t lo = fData->GetPointX(0);
     Double_t hi = fData->GetPointX(fData->GetN() - 1);

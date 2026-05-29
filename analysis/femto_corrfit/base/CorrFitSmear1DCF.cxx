@@ -26,14 +26,7 @@
 
 namespace Hal {
   CorrFitSmear1DCF::CorrFitSmear1DCF() {
-    fFunc = new TF1(Hal::Std::GetUniqueName("func_draw"),
-                    this,
-                    &CorrFitSmear1DCF::GaussNS,
-                    -10,
-                    10,
-                    2,
-                    CorrFitSmear1DCF::ClassName(),
-                    "GaussNS");
+    fFunc = new TF1(Hal::Std::GetUniqueName("func_draw"), this, &CorrFitSmear1DCF::GaussNS, -10, 10, 2);
   }
 
   CorrFitSmear1DCF::~CorrFitSmear1DCF() {
@@ -153,10 +146,7 @@ namespace Hal {
     auto h  = Hal::Std::GetProjection1D(histo, 1, 1, "x+bins");
     fSpline = new Hal::Spline1D(h);
     delete h;
-    if (!fSplot) {
-      fSplot =
-        new TF1(Hal::Std::GetUniqueName("func_splot"), this, &CorrFitSmear1DCF::Splot, -10, 10, 1, this->ClassName(), "Splot");
-    }
+    if (!fSplot) { fSplot = new TF1(Hal::Std::GetUniqueName("func_splot"), this, &CorrFitSmear1DCF::Splot, -10, 10, 1); }
     if (!fSeparateSmear) {
       for (int iR = 1; iR <= y->GetNbins(); iR++) {
         h = Hal::Std::GetProjection1D(fMap->GetHisto(), iR, iR, "x+bins+randname");

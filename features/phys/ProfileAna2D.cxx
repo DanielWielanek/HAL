@@ -180,24 +180,9 @@ namespace Hal {
     Int_t binsX;
     Double_t lowX, highX;
     Hal::Std::GetAxisPar(*fHisto, binsX, lowX, highX, "x");
-    TF1* average = new TF1(
-      Hal::Std::GetUniqueName("polyfit"), this, &ProfileAna2D::EvaluateMean, lowX, highX, 0, this->ClassName(), "EvaluateMean");
-    TF1* sigmaLo = new TF1(Hal::Std::GetUniqueName("sigmafitLo"),
-                           this,
-                           &ProfileAna2D::EvalNSigmaMinus,
-                           lowX,
-                           highX,
-                           1,
-                           this->ClassName(),
-                           "EvalNSigmaMinus");
-    TF1* sigmaHi = new TF1(Hal::Std::GetUniqueName("sigmafitHi"),
-                           this,
-                           &ProfileAna2D::EvalNSigmaPlus,
-                           lowX,
-                           highX,
-                           1,
-                           this->ClassName(),
-                           "EvalNSigmaPlus");
+    TF1* average = new TF1(Hal::Std::GetUniqueName("polyfit"), this, &ProfileAna2D::EvaluateMean, lowX, highX, 0);
+    TF1* sigmaLo = new TF1(Hal::Std::GetUniqueName("sigmafitLo"), this, &ProfileAna2D::EvalNSigmaMinus, lowX, highX, 1);
+    TF1* sigmaHi = new TF1(Hal::Std::GetUniqueName("sigmafitHi"), this, &ProfileAna2D::EvalNSigmaPlus, lowX, highX, 1);
 
     sigmaLo->SetLineStyle(7);
     sigmaHi->SetLineStyle(7);
@@ -220,24 +205,9 @@ namespace Hal {
 
 
     if (subplots) {
-      TF1* rmsLo = new TF1(Hal::Std::GetUniqueName("rmsLo"),
-                           this,
-                           &ProfileAna2D::EvalRawRMSMinus,
-                           lowX,
-                           highX,
-                           0,
-                           this->ClassName(),
-                           "EvalRawRMSMinus");
-      TF1* rmsHi = new TF1(Hal::Std::GetUniqueName("rmsHi"),
-                           this,
-                           &ProfileAna2D::EvalRawRMSPlus,
-                           lowX,
-                           highX,
-                           0,
-                           this->ClassName(),
-                           "EvalRawRMSPlus");
-      TF1* avmax = new TF1(
-        Hal::Std::GetUniqueName("avmax"), this, &ProfileAna2D::EvalRawMean, lowX, highX, 0, this->ClassName(), "EvalRawMean");
+      TF1* rmsLo = new TF1(Hal::Std::GetUniqueName("rmsLo"), this, &ProfileAna2D::EvalRawRMSMinus, lowX, highX, 0);
+      TF1* rmsHi = new TF1(Hal::Std::GetUniqueName("rmsHi"), this, &ProfileAna2D::EvalRawRMSPlus, lowX, highX, 0);
+      TF1* avmax = new TF1(Hal::Std::GetUniqueName("avmax"), this, &ProfileAna2D::EvalRawMean, lowX, highX, 0);
       rmsLo->SetLineColor(fColor2);
       rmsHi->SetLineColor(fColor2);
       avmax->SetLineColor(fColor2);
@@ -567,7 +537,7 @@ namespace Hal {
 
     TF1* f           = new TF1("funcgauss", fFittingProjPattern, fYMin, fYMax);
     TGraphErrors* gr = new TGraphErrors();
-    for (unsigned int i = 0; i < (int) data.fX.size(); i++) {
+    for (int i = 0; i < (int) data.fX.size(); i++) {
       gr->SetPoint(i, data.fX[i], data.fY[i]);
       gr->SetPointError(i, 0, data.fY[i]);
     }

@@ -343,8 +343,6 @@ void compress() {
   treeIn->SetBranchAddress("data", &Data_in);
   treeOut->Branch("data", &Data_out);
   auto interfaceFrom = (Hal::FemtoSerializationInterface*) CF->GetSpecial("serialization");
-  std::cout << interfaceFrom << std::endl;
-  std::cout << interfaceFrom->ClassName() << std::endl;
   interfaceFrom->BindCFs(CF);
   interfaceFrom->BindArray(Data_in);
   interfaceFrom->SetOption(Hal::FemtoSerializationInterface::EOption::kFull);
@@ -362,8 +360,8 @@ void compress() {
     interfaceFrom->Deserialize();
     if (i == 0) std::cout << "ARSIZE " << Data_in->GetSize() << " " << Data_out->GetSize() << std::endl;
     if (sh) {
-      sh->RecalculateCF();
-      sh->RecalculateCF(-1, kTRUE);
+      sh->RecalculateCF(-1, false, true);
+      // sh->RecalculateCF(-1, kTRUE);
       /*std::cout << "NUM " << sh->GetNum()->GetBinContent(1) << std::endl;
       std::cout << "NUM " << sh->GetNum()->GetBinContent(2) << std::endl;
       std::cout << "NUM " << sh->GetNum()->GetBinContent(3) << std::endl;

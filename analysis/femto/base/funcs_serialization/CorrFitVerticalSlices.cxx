@@ -91,7 +91,7 @@ namespace Hal {
     }
   }
 
-  void CorrFitVerticalSlicesSH::FillNumBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin) {
+  void CorrFitVerticalSlicesSH::FillNumBufferN(std::complex<double>* shCoord, std::vector<double>& weight, Int_t paramBin) {
     Double_t ws  = 0;
     Double_t ws2 = 0;
     for (auto w : weight) {
@@ -119,7 +119,7 @@ namespace Hal {
     }
   }
 
-  void CorrFitVerticalSlicesSH::FillDenBuffer10(std::complex<double>* shCoord, std::vector<Double_t>& weight, Int_t paramBin) {
+  void CorrFitVerticalSlicesSH::FillDenBufferN(std::complex<double>* shCoord, std::vector<double>& weight, Int_t paramBin) {
     Double_t ws  = 0;
     Double_t ws2 = 0;
     for (auto w : weight) {

@@ -159,10 +159,11 @@ namespace Hal {
      * recalculate correlation function, should be used if numerator/denominator
      * was changed
      * @param number of bin to debu i negative do not debug
-     * @param sumw - use GetEffective entries when calculate the number of entries,
+     * @param sumw - use GetEffective entries when calculate the number of entries
+     * @param forced_scale - set normalization to 1
      * use for ROCO method
      */
-    void RecalculateCF(Int_t debugBin = -1, Bool_t suwm = kFALSE);
+    void RecalculateCF(Int_t debugBin = -1, Bool_t suwm = kFALSE, Bool_t forced_scale = kFALSE);
     /**
      * add real numerators
      * @param histograms array of numerators

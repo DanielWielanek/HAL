@@ -604,7 +604,7 @@ namespace Hal {
 
   TH3D* FemtoSHCF::GetCovCF() const { return fCfcov; }
 
-  void FemtoSHCF::RecalculateCF(Int_t debug, Bool_t suwm) {
+  void FemtoSHCF::RecalculateCF(Int_t debug, Bool_t suwm, Bool_t forced_scale) {
 #ifndef DISABLE_GSL
     if (fDenImag == nullptr) {
       Cout::PrintInfo("No imaginary denominators!", EInfo::kError);
@@ -672,6 +672,7 @@ namespace Hal {
     FemtoYlmSolver solver(GetLMax(), this, suwm);
     solver.SetDebugBin(debug);
     solver.SetNormalizationArea(GetNormMin(0), GetNormMax(0));
+    if (forced_scale) { solver.FixNormalization(1.0); }
     solver.Solve(kTRUE);
     PackCfcCovariance();
 #else

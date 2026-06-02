@@ -68,6 +68,7 @@ namespace Hal {
     FemtoYlmSolver();
     FemtoYlmSolver(Int_t maxL, FemtoSHCF* cf, Bool_t sumw = kFALSE);
     void SetNormalizationArea(Double_t min, Double_t max);
+    void FixNormalization(Double_t norm) { fNormFactor = 1; }
     void Solve(Bool_t recalc);
     void SetDebugBin(Int_t dbg) { fDebugBin = dbg; }
     virtual ~FemtoYlmSolver();

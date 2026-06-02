@@ -9,6 +9,7 @@
 #include "Cout.h"
 #include "ErrorCalc.h"
 
+#include <stdexcept>
 
 namespace Hal {
 
@@ -238,6 +239,106 @@ namespace Hal {
     } else {
       Hal::Cout::PrintInfo("Cannot set rlong limits wrong 3dmode", EInfo::kWarning);
     }
+  }
+
+  void CorrFitFunc3D::SwitchMode(e3DMode mode) {
+    switch (mode) {
+      case e3DMode::kNormal3R: {
+        if (GetParametersNo() < 5) throw std::out_of_range(("Using mode normal3 but less then 5 parameters in %s", ClassName()));
+        fLambdaParIndex    = 4;
+        fNormParIndex      = 3;
+        fRoutParIndex      = 0;
+        fRsideParIndex     = 1;
+        fRlongParIndex     = 2;
+        fRoutsideParIndex  = -1;
+        fRoutlongParIndex  = -1;
+        fRsidelongParIndex = -1;
+        SetParameterName(fRsideParIndex, "R_{side}");
+        SetParameterName(fRlongParIndex, "R_{long}");
+      } break;
+      case e3DMode::kPlus3R: {
+        if (GetParametersNo() < 5) throw std::out_of_range(("Using mode plus3r but less then 5 parameters in %s", ClassName()));
+        fLambdaParIndex    = 4;
+        fNormParIndex      = 3;
+        fRoutParIndex      = 0;
+        fRsideParIndex     = 1;
+        fRlongParIndex     = 2;
+        fRoutsideParIndex  = -1;
+        fRoutlongParIndex  = -1;
+        fRsidelongParIndex = -1;
+        SetParameterName(fRsideParIndex, "R_{#Delta side}");
+        SetParameterName(fRlongParIndex, "R_{#Delta long}");
+      } break;
+      case e3DMode::kRatio3R: {
+        if (GetParametersNo() < 5) throw std::out_of_range(("Using mode ratio3 but less then 5 parameters in %s", ClassName()));
+        fLambdaParIndex    = 4;
+        fNormParIndex      = 3;
+        fRoutParIndex      = 0;
+        fRsideParIndex     = 1;
+        fRlongParIndex     = 2;
+        fRoutsideParIndex  = -1;
+        fRoutlongParIndex  = -1;
+        fRsidelongParIndex = -1;
+        SetParameterName(fRsideParIndex, "R_{#times side}");
+        SetParameterName(fRlongParIndex, "R_{#times long}");
+      } break;
+      case e3DMode::kNormal6R: {
+        if (GetParametersNo() < 8) throw std::out_of_range(("Using mode normal6 but less then 8 parameters in %s", ClassName()));
+        fLambdaParIndex    = 7;
+        fNormParIndex      = 6;
+        fRoutParIndex      = 0;
+        fRsideParIndex     = 1;
+        fRlongParIndex     = 2;
+        fRoutsideParIndex  = 3;
+        fRoutlongParIndex  = 4;
+        fRsidelongParIndex = 5;
+        SetParameterName(fRsideParIndex, "R_{side}");
+        SetParameterName(fRlongParIndex, "R_{long}");
+        SetParameterName(fRoutsideParIndex, "R_{out-side}");
+        SetParameterName(fRoutlongParIndex, "R_{out-long}");
+        SetParameterName(fRsidelongParIndex, "R_{side-long}");
+      } break;
+
+      case e3DMode::kRatio6R: {
+        if (GetParametersNo() < 8) throw std::out_of_range(("Using mode ratio6 but less then 8 parameters in %s", ClassName()));
+        fLambdaParIndex    = 7;
+        fNormParIndex      = 6;
+        fRoutParIndex      = 0;
+        fRsideParIndex     = 1;
+        fRlongParIndex     = 2;
+        fRoutsideParIndex  = 3;
+        fRoutlongParIndex  = 4;
+        fRsidelongParIndex = 5;
+
+        SetParameterName(fRsideParIndex, "R_{#times side}");
+        SetParameterName(fRlongParIndex, "R_{#times long}");
+        SetParameterName(fRoutsideParIndex, "R_{out-side}");
+        SetParameterName(fRoutlongParIndex, "R_{out-long}");
+        SetParameterName(fRsidelongParIndex, "R_{side-long}");
+      } break;
+
+      case e3DMode::kPlus6R: {
+        if (GetParametersNo() < 8) throw std::out_of_range(("Using mode plus6 but less then 8 parameters in %s", ClassName()));
+        fLambdaParIndex    = 7;
+        fNormParIndex      = 6;
+        fRoutParIndex      = 0;
+        fRsideParIndex     = 1;
+        fRlongParIndex     = 2;
+        fRoutsideParIndex  = 3;
+        fRoutlongParIndex  = 4;
+        fRsidelongParIndex = 5;
+        SetParameterName(fRsideParIndex, "R_{#Delta side}");
+        SetParameterName(fRlongParIndex, "R_{#Delta long+}");
+        SetParameterName(fRoutsideParIndex, "R_{out-side}");
+        SetParameterName(fRoutlongParIndex, "R_{out-long}");
+        SetParameterName(fRsidelongParIndex, "R_{side-long}");
+      } break;
+      default: {
+      } break;
+    }
+    SetParameterName(fLambdaParIndex, "#lambda");
+    SetParameterName(fNormParIndex, "N");
+    SetParameterName(fRoutParIndex, "R_{out}");
   }
 
 } /* namespace Hal */

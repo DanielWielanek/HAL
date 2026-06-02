@@ -27,7 +27,7 @@ namespace Hal {
   protected:
     enum class e3DMode { kNormal3R, kRatio3R, kNormal6R, kRatio6R, kPlus3R, kPlus6R };
     const e3DMode fMode;
-
+    void SwitchMode(e3DMode mode);
 
   public:
     CorrFitFunc3D(e3DMode mode = e3DMode::kNormal3R, Int_t par = -1, Int_t dim = 1);

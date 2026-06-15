@@ -70,7 +70,7 @@ namespace Hal {
     inline Array_1<Double_t>& GetCFMapHD() { return fMapHD; }
     inline Array_1<Double_t>& GetDenominatorHD() { return fDenominatorHD; };
     inline Array_1<Double_t>& GetDenominatorSum() { return fDenominatorSum; };
-    void FillValues(const Hal::CorrFit1DCF* cf, Double_t* params);
+    void FillValues(const Hal::CorrFit1DCF* cf);
     virtual ~CorrFitHDFunc1D();
     ClassDef(CorrFitHDFunc1D, 1)
   };

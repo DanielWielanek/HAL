@@ -100,13 +100,13 @@ namespace Hal {
 
   CorrFitHDFunc1D::~CorrFitHDFunc1D() {}
 
-  void CorrFitHDFunc1D::FillValues(const Hal::CorrFit1DCF* cf, Double_t* params) {
+  void CorrFitHDFunc1D::FillValues(const Hal::CorrFit1DCF* cf) {
     Double_t X[1];
     for (int i = 0; i < GetBinsHD().GetSize(); i++) {
       Int_t hdBin         = GetBinsHD()[i];
       X[0]                = EvalHD(hdBin);
       cf->fBinX           = HDBinToBin(hdBin);
-      Double_t p          = cf->CalculateCF(X, params);
+      Double_t p          = cf->CalculateCF(X, cf->fTempParamsEval);
       GetCFMapHD()[hdBin] = p;
     }
   }

@@ -165,7 +165,7 @@ namespace Hal {
     }
   }
 
-  void CorrFitHDFunc3D::FillValues(const Hal::CorrFit3DCF* cf, Double_t* params) {
+  void CorrFitHDFunc3D::FillValues(const Hal::CorrFit3DCF* cf) {
     Double_t X[3];
     for (int a = 0; a < GetBinsHDX().GetSize(); a++) {
       Int_t i            = GetBinsHDX()[a];
@@ -177,7 +177,7 @@ namespace Hal {
       X[0]               = EvalHDX(i);
       X[1]               = EvalHDY(j);
       X[2]               = EvalHDZ(k);
-      Double_t CF        = cf->CalculateCF(X, params);
+      Double_t CF        = cf->CalculateCF(X, cf->fTempParamsEval);
       CFMapHD()[i][j][k] = CF;
     }
   }

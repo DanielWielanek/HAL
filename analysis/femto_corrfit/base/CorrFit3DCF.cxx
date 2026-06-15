@@ -688,7 +688,7 @@ namespace Hal {
 
   void CorrFit3DCF::RecalculateFunction() const {
     CorrFitHDFunc3D* cf = static_cast<CorrFitHDFunc3D*>(fHDMaps);
-    cf->FillValues(this, fTempParamsEval);
+    cf->FillValues(this);
   }
 
   void CorrFit3DCF::SetFittingMask(const CorrFitMask& map) {

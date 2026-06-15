@@ -70,7 +70,7 @@ namespace Hal {
     inline Double_t EvalHDX(Double_t hdBin) const { return fMins[0] + fSteps[0] * hdBin; }
     inline Double_t EvalHDY(Double_t hdBin) const { return fMins[1] + fSteps[1] * hdBin; }
     inline Double_t EvalHDZ(Double_t hdBin) const { return fMins[2] + fSteps[2] * hdBin; }
-    void FillValues(const Hal::CorrFit3DCF* cf, Double_t* params);
+    void FillValues(const Hal::CorrFit3DCF* cf);
     virtual ~CorrFitHDFunc3D() {};
     ClassDef(CorrFitHDFunc3D, 1)
   };

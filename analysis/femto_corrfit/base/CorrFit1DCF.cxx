@@ -245,7 +245,7 @@ namespace Hal {
 
   void CorrFit1DCF::RecalculateFunction() const {
     CorrFitHDFunc1D* cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
-    cf->FillValues(this, fTempParamsEval);
+    cf->FillValues(this);
   }
 
   void CorrFit1DCF::SetFittingMask(const CorrFitMask& map) {

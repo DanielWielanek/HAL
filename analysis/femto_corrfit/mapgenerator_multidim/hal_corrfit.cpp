@@ -38,7 +38,7 @@ void mergeHorizontal();
 void printjobs();
 void printjobsbad();
 void preparetemplate();
-void compress();
+void compress(bool use_fake);
 int getNFiles();
 void rebin(TString opt);
 int main(int argc, char* argv[]) {
@@ -53,6 +53,7 @@ int main(int argc, char* argv[]) {
     std::cout << "0  - prepare template files and database" << std::endl;
     std::cout << "1 - merge maps" << std::endl;
     std::cout << "2 - compress maps" << std::endl;
+    std::cout << "2+ - compress maps and use fake covariance matrix (SH only)" << std::endl;
     std::cout << "--print - check/print info about executed jobs " << std::endl;
     std::cout << "--print-bad - check/print info about executed jobs list of bad jobs is set to bad_jobs.txt" << std::endl;
     std::cout << "--rebin=n rebin CF new_map.root fille will be created" << std::endl;
@@ -68,7 +69,9 @@ int main(int argc, char* argv[]) {
     printjobs();
     merge();
   } else if (arg1 == "2") {
-    compress();
+    compress(false);
+  } else if (arg1 == "2+") {
+    compress(true);
   } else if (arg1.BeginsWith("--rebin=")) {
     rebin(arg1);
   } else {
@@ -328,7 +331,7 @@ void mergeVertical() {
   info_file->Close();
 }
 
-void compress() {
+void compress(bool use_fake) {
   TFile* info_file      = new TFile("files/config.root");
   Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
   auto CF               = (Hal::DividedHisto1D*) obj->GetCf()->Clone();
@@ -360,6 +363,7 @@ void compress() {
     interfaceFrom->Deserialize();
     if (i == 0) std::cout << "ARSIZE " << Data_in->GetSize() << " " << Data_out->GetSize() << std::endl;
     if (sh) {
+      if (use_fake) sh->MakeDummyCov();
       sh->RecalculateCF(-1, false, true);
       // sh->RecalculateCF(-1, kTRUE);
       /*std::cout << "NUM " << sh->GetNum()->GetBinContent(1) << std::endl;

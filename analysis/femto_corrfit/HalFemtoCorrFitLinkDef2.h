@@ -107,11 +107,12 @@
 #pragma link C++ class Hal::CorrFitSHCFMultiDim + ;
 #pragma link C++ class Hal::CorrFitHDFuncSH + ;
 #pragma link C++ class Hal::BattlestarGalactica + ;
-#pragma link C++ class Hal::BattlestarGalactica10 + ;
+// #pragma link C++ class Hal::BattlestarGalactica10 + ;
 #pragma link C++ class Hal::BattlestarPegasus + ;
 #pragma link C++ class Hal::BattlestarValkyria + ;
 #pragma link C++ class Hal::BattlestarAtlantia + ;
 #pragma link C++ class Hal::BattlestarSolaria + ;
+#pragma link C++ class Hal::BattlestarAcropolis + ;
 //
 
 #pragma link C++ class Hal::CorrFitSmearingMath + ;

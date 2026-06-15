@@ -127,7 +127,7 @@ if(DEFINED CIA)
         top_secret/CorrFitHDFuncSH.cxx
         top_secret/CorrFitDumpedPairAnaVertical.cxx
         top_secret/BattlestarGalactica.cxx
-        top_secret/BattlestarGalactica10.cxx
+       # top_secret/BattlestarGalactica10.cxx
         top_secret/BattlestarPegasus.cxx
         top_secret/BattlestarValkyria.cxx
         top_secret/CorrFitSHCFPainter.cxx
@@ -135,6 +135,8 @@ if(DEFINED CIA)
         top_secret/BattlestarSolaria.cxx
         top_secret/GausianSourceDenstityFastCalc.cxx
         top_secret/FemtoSHCFDecomposer.cxx
+        top_secret/BattlestarAcropolis.cxx
+        top_secret/BattlestarHelper.cxx
     )
 endif()
 

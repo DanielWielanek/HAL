@@ -77,16 +77,16 @@ namespace Hal {
     void Boost(FemtoPair* pair);
 
   public:
-    FemtoFreezeoutGeneratorLCMS();
-    FemtoFreezeoutGeneratorLCMS(const FemtoSourceModel& model);
+    FemtoFreezeoutGeneratorLCMS() {};
+    FemtoFreezeoutGeneratorLCMS(const FemtoSourceModel& model) : FemtoFreezeoutGenerator(model) {};
     /**
      * copy ctor
      * @param generator
      */
-    FemtoFreezeoutGeneratorLCMS(const FemtoFreezeoutGeneratorLCMS& generator);
+    FemtoFreezeoutGeneratorLCMS(const FemtoFreezeoutGeneratorLCMS& generator) : FemtoFreezeoutGenerator(generator) {};
     FemtoFreezeoutGenerator* MakeCopy() const;
     virtual Package* Report() const;
-    virtual ~FemtoFreezeoutGeneratorLCMS();
+    virtual ~FemtoFreezeoutGeneratorLCMS() {};
     ClassDef(FemtoFreezeoutGeneratorLCMS, 1)
   };
 
@@ -98,18 +98,40 @@ namespace Hal {
     void Boost(FemtoPair* pair);
 
   public:
-    FemtoFreezeoutGeneratorPRF();
+    FemtoFreezeoutGeneratorPRF() {};
     /**
      * copy ctor
      * @param generator
      */
-    FemtoFreezeoutGeneratorPRF(const FemtoFreezeoutGeneratorPRF& generator);
-    FemtoFreezeoutGeneratorPRF(const FemtoSourceModel& model);
+    FemtoFreezeoutGeneratorPRF(const FemtoFreezeoutGeneratorPRF& generator) : FemtoFreezeoutGenerator(generator) {};
+    FemtoFreezeoutGeneratorPRF(const FemtoSourceModel& model) : FemtoFreezeoutGenerator(model) {};
     FemtoFreezeoutGenerator* MakeCopy() const;
     virtual Package* Report() const;
-    virtual ~FemtoFreezeoutGeneratorPRF();
+    virtual ~FemtoFreezeoutGeneratorPRF() {};
     ClassDef(FemtoFreezeoutGeneratorPRF, 1)
   };
+  /**
+   * not real boost
+   */
+  class FemtoFreezeoutGeneratorLAB : public FemtoFreezeoutGenerator {
+  protected:
+    void Boost(FemtoPair* /*pair*/) {};
+
+  public:
+    FemtoFreezeoutGeneratorLAB() {};
+    /**
+     * copy ctor
+     * @param generator
+     */
+    FemtoFreezeoutGeneratorLAB(const FemtoFreezeoutGeneratorLAB& generator) : FemtoFreezeoutGenerator(generator) {};
+    FemtoFreezeoutGeneratorLAB(const FemtoSourceModel& model) : FemtoFreezeoutGenerator(model) {};
+    FemtoFreezeoutGenerator* MakeCopy() const;
+    virtual Package* Report() const;
+    virtual ~FemtoFreezeoutGeneratorLAB() {};
+    ClassDef(FemtoFreezeoutGeneratorLAB, 1)
+  };
+
+
 }  // namespace Hal
 
 #endif /* HALFEMTOFREEZOUTGENERATOR_H_ */

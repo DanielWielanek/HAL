@@ -25,6 +25,10 @@ namespace Hal {
     fModel = (FemtoSourceModel*) source.MakeCopy();
   }
 
+  FemtoFreezeoutGenerator::FemtoFreezeoutGenerator(const FemtoFreezeoutGenerator& generator) : TObject(generator) {
+    if (generator.fModel) fModel = generator.fModel->MakeCopy();
+  }
+
   void FemtoFreezeoutGenerator::SetSourceModel(const FemtoSourceModel& model) {
     if (fModel) delete fModel;
     fModel = model.MakeCopy();
@@ -55,7 +59,9 @@ namespace Hal {
     if (fModel) delete fModel;
   }
 
-  FemtoFreezeoutGeneratorLCMS::FemtoFreezeoutGeneratorLCMS() {}
+  //=============================================================== LCMS stuff
+
+  FemtoFreezeoutGenerator* FemtoFreezeoutGeneratorLCMS::MakeCopy() const { return new FemtoFreezeoutGeneratorLCMS(*this); }
 
   void FemtoFreezeoutGeneratorLCMS::Boost(FemtoPair* pair) {
     // like in AliFemtoModelGausLCMSFreezeOutGenerator
@@ -110,12 +116,7 @@ namespace Hal {
     return pack;
   }
 
-  FemtoFreezeoutGeneratorLCMS::~FemtoFreezeoutGeneratorLCMS() {}
-
-  FemtoFreezeoutGeneratorPRF::FemtoFreezeoutGeneratorPRF() {
-    // Cout::CriticalError("PRF freezeout generator Not ready yet");
-  }
-
+  // ============================================================================== PRF stuff
   void FemtoFreezeoutGeneratorPRF::Boost(FemtoPair* pair) {
     Double_t tPx = pair->TruePx1() + pair->TruePx2();
     Double_t tPy = pair->TruePy1() + pair->TruePy2();
@@ -153,25 +154,7 @@ namespace Hal {
     return pack;
   }
 
-  FemtoFreezeoutGeneratorPRF::~FemtoFreezeoutGeneratorPRF() {}
-
-  FemtoFreezeoutGenerator* FemtoFreezeoutGeneratorLCMS::MakeCopy() const { return new FemtoFreezeoutGeneratorLCMS(*this); }
-
   FemtoFreezeoutGenerator* FemtoFreezeoutGeneratorPRF::MakeCopy() const { return new FemtoFreezeoutGeneratorPRF(*this); }
-
-  FemtoFreezeoutGenerator::FemtoFreezeoutGenerator(const FemtoFreezeoutGenerator& generator) : TObject(generator) {
-    if (generator.fModel) fModel = generator.fModel->MakeCopy();
-  }
-
-  FemtoFreezeoutGeneratorLCMS::FemtoFreezeoutGeneratorLCMS(const FemtoFreezeoutGeneratorLCMS& generator) :
-    FemtoFreezeoutGenerator(generator) {}
-
-  FemtoFreezeoutGeneratorLCMS::FemtoFreezeoutGeneratorLCMS(const FemtoSourceModel& model) : FemtoFreezeoutGenerator(model) {}
-
-  FemtoFreezeoutGeneratorPRF::FemtoFreezeoutGeneratorPRF(const FemtoFreezeoutGeneratorPRF& generator) :
-    FemtoFreezeoutGenerator(generator) {}
-
-  FemtoFreezeoutGeneratorPRF::FemtoFreezeoutGeneratorPRF(const FemtoSourceModel& model) : FemtoFreezeoutGenerator(model) {}
 
   void FemtoFreezeoutGenerator::Print(Option_t* /*option*/) const {
     Cout::Text(ClassName(), "L");
@@ -181,4 +164,13 @@ namespace Hal {
       Cout::Text("No model!", "L");
     }
   }
+
+  FemtoFreezeoutGenerator* FemtoFreezeoutGeneratorLAB::MakeCopy() const { return new FemtoFreezeoutGeneratorLAB(*this); }
+
+  Package* FemtoFreezeoutGeneratorLAB::Report() const {
+    Package* pack = FemtoFreezeoutGenerator::Report();
+    pack->AddObject(new ParameterString("source kinematics", "LAB"));
+    return pack;
+  }
+
 }  // namespace Hal

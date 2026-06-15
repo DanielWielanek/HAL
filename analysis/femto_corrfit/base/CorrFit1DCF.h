@@ -27,6 +27,7 @@ namespace Hal {
     friend class Femto1DCF;
     friend class CorrFitMath1DCF;
     friend class CorrFit1DCFPainter;
+    friend class CorrFitHDFunc1D;
 
   private:
     Double_t EvalDenominator(Double_t x) const;
@@ -50,7 +51,7 @@ namespace Hal {
     virtual Double_t GetNumericalError(Int_t /*binX*/) const { return 0; };
     void PrepareRaw();
     void EstimateActiveBins();
-    void RecalculateSmoothFunction() const;
+    void RecalculateFunction() const;
     void SetErrors(TH1* num, const TH1* den) const;
     double GetChiTF(const double* par) const;
     double GetChiTFD(const double* par) const;

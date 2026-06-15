@@ -28,11 +28,11 @@ namespace Hal {
     Array_1<Int_t> fBinsHDX;
     Array_1<Int_t> fBinsHDY;
     Array_1<Int_t> fBinsHDZ;
-    void CalculateBinsArrays(const CorrFitMask3D& mask, Bool_t hd);
+    void CalculateBinsArrays(const CorrFitMask3D& mask);
 
   public:
-    CorrFitHDFunc3D();
-    void SetMask(const CorrFitMask& mask, TH1* denominator, Bool_t hd);
+    CorrFitHDFunc3D(Bool_t hd = true);
+    void SetMask(const CorrFitMask& mask, TH1* denominator);
     /**
      *
      * @param binX
@@ -41,7 +41,7 @@ namespace Hal {
      * @param extrapolated
      * @return value of CF for given bins
      */
-    Double_t GetBinCFVal(Int_t binX, Int_t binY, Int_t binZ, Bool_t extrapolated) const;
+    Double_t GetBinCFVal(Int_t binX, Int_t binY, Int_t binZ) const;
     /**
      * converts active bin number into bin number
      * @param i
@@ -70,6 +70,7 @@ namespace Hal {
     inline Double_t EvalHDX(Double_t hdBin) const { return fMins[0] + fSteps[0] * hdBin; }
     inline Double_t EvalHDY(Double_t hdBin) const { return fMins[1] + fSteps[1] * hdBin; }
     inline Double_t EvalHDZ(Double_t hdBin) const { return fMins[2] + fSteps[2] * hdBin; }
+    void FillValues(const Hal::CorrFit3DCF* cf, Double_t* params);
     virtual ~CorrFitHDFunc3D() {};
     ClassDef(CorrFitHDFunc3D, 1)
   };

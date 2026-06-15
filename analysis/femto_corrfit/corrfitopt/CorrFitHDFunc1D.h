@@ -23,6 +23,7 @@ namespace Hal {
    * b) map f sum
    * NOTE - there are "active bins" as arguments of CF's
    */
+  class CorrFit1DCF;
   class CorrFitHDFunc1D : public CorrFitHDFunc {
     Array_1<Double_t> fDenominatorHD;
     Array_1<Double_t> fDenominatorSum;
@@ -30,10 +31,10 @@ namespace Hal {
 
     Array_1<Int_t> fBins;
     Array_1<Int_t> fBinsHD;
-    void CalculateBinsArrays(const CorrFitMask1D& mask, Bool_t hd);
+    void CalculateBinsArrays(const CorrFitMask1D& mask);
 
   public:
-    CorrFitHDFunc1D();
+    CorrFitHDFunc1D(Bool_t hd = true);
     /**
      *
      * @return total number of "active bins"
@@ -51,14 +52,14 @@ namespace Hal {
      * @param denominator denomiator of CF
      * @param hd if HD then calculate also values of denominator on the edges of bins
      */
-    void SetMask(const CorrFitMask& mask, TH1* denominator, Bool_t hd);
+    void SetMask(const CorrFitMask& mask, TH1* denominator);
     /**
      * return value of the CF at given bin, note: only active bins have this value calculated
      * @param bin
      * @param extrapolated
      * @return
      */
-    Double_t GetBinCFVal(Int_t bin, Bool_t extrapolated) const;
+    Double_t GetBinCFVal(Int_t bin) const;
     /**
      * calculate X-value for given "hd bin"
      * @param hdBin
@@ -69,6 +70,7 @@ namespace Hal {
     inline Array_1<Double_t>& GetCFMapHD() { return fMapHD; }
     inline Array_1<Double_t>& GetDenominatorHD() { return fDenominatorHD; };
     inline Array_1<Double_t>& GetDenominatorSum() { return fDenominatorSum; };
+    void FillValues(const Hal::CorrFit1DCF* cf, Double_t* params);
     virtual ~CorrFitHDFunc1D();
     ClassDef(CorrFitHDFunc1D, 1)
   };

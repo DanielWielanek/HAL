@@ -58,11 +58,7 @@ namespace Hal {
      * called for each calculation of chi2 or loglikehood minimalization - used
      * for recalculation CF is parameters are changed
      */
-    virtual void RecalculateFunction() const {};
-    /**
-     * recalculate CF's with taking into acount limited bin resolution
-     */
-    virtual void RecalculateSmoothFunction() const = 0;
+    virtual void RecalculateFunction() const = 0;
     /**
      * kinematics of pair
      */
@@ -177,7 +173,6 @@ namespace Hal {
      */
     void ParametersChanged() const {  // TODO optimize
       RecalculateFunction();
-      RecalculateSmoothFunction();
     }
     /**
      * fit this function to given CF

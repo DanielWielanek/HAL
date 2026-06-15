@@ -21,16 +21,17 @@
  */
 namespace Hal {
   class CorrFitHDFunc : public TObject {
+    Array_1<Int_t> fHDToBin;
+
   protected:
     /**
      * dummy val - used to avoid recalculation of bins
      */
     const Int_t fDummyVal;
     const Int_t fDim;
-    Array_1<Int_t> fHDToBin;
-    Double_t* fParams;  //[fDim]
-    Double_t* fMins;    //[fDim]
-    Double_t* fSteps;   //[fDim]
+    const Bool_t fUseHD;
+    Double_t* fMins;   //[fDim]
+    Double_t* fSteps;  //[fDim]
     /**
      * recalculate array with conversion from bin to hd bin
      * @param newSize
@@ -44,13 +45,13 @@ namespace Hal {
     inline Int_t GetBinHD(Int_t bin) const { return bin * 2 - 1; };
 
   public:
-    CorrFitHDFunc(Int_t dim = 1);
+    CorrFitHDFunc(Int_t dim = 1, Bool_t hd = true);
     /**
      *
      * @param mask
      * @return number of bins
      */
-    virtual void SetMask(const CorrFitMask& mask, TH1* denominator, Bool_t hd) = 0;
+    virtual void SetMask(const CorrFitMask& mask, TH1* denominator) = 0;
     /**
      * conver "standard bin number" to "HD bin number"
      * @param hd_bin

@@ -77,7 +77,8 @@ namespace Hal {
     fCorrelationFunctionHistogram = ((DividedHisto1D*) fCF)->GetHist(kFALSE);
     fCorrelationFunctionHistogram->SetDirectory(0);
     fKinematics = static_cast<Femto1DCF*>(fCF)->GetFrame();
-    if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc1D();
+    Bool_t hd   = (fBinCalc == kExtrapolated);
+    if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc1D(hd);
   }
 
   double CorrFit1DCF::GetChiTFD(const double* /*par*/) const {
@@ -85,8 +86,6 @@ namespace Hal {
     Double_t A, B;
     Double_t e3, chi;
     CorrFitHDFunc1D* cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
-    Bool_t useHD        = kFALSE;
-    if (fBinCalc == kExtrapolated) useHD = kTRUE;
     for (int i = 0; i < cf->GetNbins(); i++) {
       fBinX = cf->GetBin(i);
       A     = fNumeratorHistogram->GetBinContent(fBinX);
@@ -96,7 +95,7 @@ namespace Hal {
       Double_t Cf, ecf;
       Double_t Cf_theo;
       //  CalcError(A, fNumeratorHistogram->GetBinError(fBinX), B, fDenominatorHistogram->GetBinError(fBinX), Cf, ecf);
-      Cf_theo = cf->GetBinCFVal(fBinX, useHD);
+      Cf_theo = cf->GetBinCFVal(fBinX);
       e3      = GetNumericalError(fBinX) * Cf_theo;
       Cf_theo = Cf_theo * B;                              // cf_theo * denominator
       Cf      = A;                                        // just numerator
@@ -118,14 +117,12 @@ namespace Hal {
     Double_t f = 0.0;
     Double_t A, B, C;
     CorrFitHDFunc1D* cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
-    Bool_t useHD        = kFALSE;
-    if (fBinCalc == kExtrapolated) useHD = kTRUE;
     for (int i = 0; i < cf->GetNbins(); i++) {
       fBinX = cf->GetBin(i);
       A     = fNumeratorHistogram->GetBinContent(fBinX);
       B     = fDenominatorHistogram->GetBinContent(fBinX);
       //  x             = fDenominatorHistogram->GetBinCenter(fBinX);
-      C             = cf->GetBinCFVal(fBinX, useHD);
+      C             = cf->GetBinCFVal(fBinX);
       Double_t logA = (C * (A + B)) / (A * (C + 1.0));
       Double_t logB = (A + B) / (B * (C + 1.0));
       f += -(A * TMath::Log(logA) + B * TMath::Log(logB));
@@ -144,13 +141,11 @@ namespace Hal {
     Double_t f = 0.0;
     Double_t C;
     CorrFitHDFunc1D* Cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
-    Bool_t useHD        = kFALSE;
-    if (fBinCalc == kExtrapolated) useHD = kTRUE;
     for (int i = 0; i < Cf->GetNbins(); i++) {
       fBinX       = Cf->GetBin(i);
       Double_t cf = fCorrelationFunctionHistogram->GetBinContent(fBinX);
       // x              = fDenominatorHistogram->GetBinCenter(fBinX);
-      C              = Cf->GetBinCFVal(fBinX, useHD);
+      C              = Cf->GetBinCFVal(fBinX);
       Double_t ea    = fCorrelationFunctionHistogram->GetBinError(fBinX);
       Double_t eb    = GetNumericalError(fBinX);
       ea             = (ea + eb);
@@ -199,10 +194,7 @@ namespace Hal {
       if (!fParameters[i].IsFixed()) free_parameters++;
     }
 
-    Bool_t useHD = kFALSE;
-    if (fBinCalc == kExtrapolated) useHD = kTRUE;
-
-    fHDMaps->SetMask(*fMask, fDenominatorHistogram, useHD);
+    fHDMaps->SetMask(*fMask, fDenominatorHistogram);
 
     fNDF = fActiveBins - free_parameters;
   }
@@ -251,16 +243,9 @@ namespace Hal {
     return val / params[NormID()];
   }
 
-  void CorrFit1DCF::RecalculateSmoothFunction() const {
+  void CorrFit1DCF::RecalculateFunction() const {
     CorrFitHDFunc1D* cf = static_cast<CorrFitHDFunc1D*>(fHDMaps);
-    Double_t X[1];
-    for (int i = 0; i < cf->GetBinsHD().GetSize(); i++) {
-      Int_t hdBin             = cf->GetBinsHD()[i];
-      X[0]                    = cf->EvalHD(hdBin);
-      fBinX                   = cf->HDBinToBin(hdBin);
-      Double_t p              = CalculateCF(X, fTempParamsEval);
-      cf->GetCFMapHD()[hdBin] = p;
-    }
+    cf->FillValues(this, fTempParamsEval);
   }
 
   void CorrFit1DCF::SetFittingMask(const CorrFitMask& map) {

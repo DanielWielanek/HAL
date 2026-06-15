@@ -14,14 +14,12 @@
 
 // #define DEBUG_FUNCHD
 namespace Hal {
-  CorrFitHDFunc::CorrFitHDFunc(Int_t dim) : fDummyVal(-999), fDim(dim) {
-    fParams = new Double_t[fDim];
-    fMins   = new Double_t[fDim];
-    fSteps  = new Double_t[fDim];
+  CorrFitHDFunc::CorrFitHDFunc(Int_t dim, Bool_t hd) : fDummyVal(-999), fDim(dim), fUseHD(hd) {
+    fMins  = new Double_t[fDim];
+    fSteps = new Double_t[fDim];
   }
 
   CorrFitHDFunc::~CorrFitHDFunc() {
-    delete[] fParams;
     delete[] fMins;
     delete[] fSteps;
   }

@@ -186,15 +186,13 @@ namespace Hal {
     fCorrelationFunctionHistogram = ((DividedHisto1D*) fCF)->GetHist(kFALSE);
     fCorrelationFunctionHistogram->SetDirectory(0);
     fKinematics = static_cast<Femto3DCF*>(fCF)->GetFrame();
-    if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc3D();
+    if (fHDMaps == nullptr) fHDMaps = new CorrFitHDFunc3D((fBinCalc == kExtrapolated));
   }
 
   double CorrFit3DCF::GetChiTFD(const double* /*par*/) const {
     Double_t f = 0.0;
     Double_t A, B, C;
     Double_t e, e1, e2, chi; /* FIXME */
-    Bool_t useHD = kFALSE;
-    if (fBinCalc == kExtrapolated) useHD = kTRUE;
     CorrFitHDFunc3D* cf = static_cast<CorrFitHDFunc3D*>(fHDMaps);
     for (int i = 0; i < cf->GetNBins(); i++) {
       fBinX = cf->GetXBin(i);
@@ -205,7 +203,7 @@ namespace Hal {
       B   = fDenominatorHistogram->GetBinContent(fBinX, fBinY, fBinZ);
       e1  = fNumeratorHistogram->GetBinError(fBinX, fBinY, fBinZ);
       e   = e1 * e1;
-      C   = cf->GetBinCFVal(fBinX, fBinY, fBinZ, useHD);
+      C   = cf->GetBinCFVal(fBinX, fBinY, fBinZ);
       chi = A - C * B;
       e2  = B * GetNumericalError(fBinX, fBinY, fBinZ);
       e += e2 * e2;
@@ -225,8 +223,6 @@ namespace Hal {
     Double_t f = 0.0;
     Double_t A, B, C;
     Double_t e, e2, chi;
-    Bool_t useHD = kFALSE;
-    if (fBinCalc == kExtrapolated) useHD = kTRUE;
     CorrFitHDFunc3D* cf = static_cast<CorrFitHDFunc3D*>(fHDMaps);
     for (int i = 0; i < cf->GetNBins(); i++) {
       fBinX = cf->GetXBin(i);
@@ -236,7 +232,7 @@ namespace Hal {
       B     = fDenominatorHistogram->GetBinContent(fBinX, fBinY, fBinZ);
       e     = fCorrelationFunctionHistogram->GetBinError(fBinX, fBinY, fBinZ);
       e *= e;
-      C   = cf->GetBinCFVal(fBinX, fBinY, fBinZ, useHD);
+      C   = cf->GetBinCFVal(fBinX, fBinY, fBinZ);
       chi = A / B - C;
       e2  = GetNumericalError(fBinX, fBinY, fBinZ);
       e += e2 * e2;
@@ -255,8 +251,6 @@ namespace Hal {
   double CorrFit3DCF::GetLogTFD(const double* /*par*/) const {
     Double_t f = 0.0;
     Double_t A, B, C;
-    Bool_t useHD = kFALSE;
-    if (fBinCalc == kExtrapolated) useHD = kTRUE;
     CorrFitHDFunc3D* cf = static_cast<CorrFitHDFunc3D*>(fHDMaps);
     for (int i = 0; i < cf->GetNBins(); i++) {
       fBinX         = cf->GetXBin(i);
@@ -264,7 +258,7 @@ namespace Hal {
       fBinZ         = cf->GetZBin(i);
       A             = fNumeratorHistogram->GetBinContent(fBinX, fBinY, fBinZ);
       B             = fDenominatorHistogram->GetBinContent(fBinX, fBinY, fBinZ);
-      C             = cf->GetBinCFVal(fBinX, fBinY, fBinZ, useHD);
+      C             = cf->GetBinCFVal(fBinX, fBinY, fBinZ);
       Double_t logA = (C * (A + B)) / (A * (C + 1.0));
       Double_t logB = (A + B) / (B * (C + 1.0));
       Double_t step = -(A * TMath::Log(logA) + B * TMath::Log(logB));
@@ -305,11 +299,9 @@ namespace Hal {
     GetMask()->ApplyThreshold(*fNumeratorHistogram, 0);
     GetMask()->ApplyThreshold(*fDenominatorHistogram, 0);
     fMask->Init();
-    fActiveBins  = fMask->GetActiveBins();
-    Bool_t useHD = kFALSE;
-    if (fBinCalc == kExtrapolated) useHD = kTRUE;
+    fActiveBins = fMask->GetActiveBins();
 
-    fHDMaps->SetMask(*fMask, fDenominatorHistogram, useHD);
+    fHDMaps->SetMask(*fMask, fDenominatorHistogram);
     Double_t free_parameters = 0;
     for (int i = 0; i < GetParametersNo(); i++) {
       if (!fParameters[i].IsFixed()) free_parameters++;
@@ -694,22 +686,9 @@ namespace Hal {
     }
   }
 
-  void CorrFit3DCF::RecalculateSmoothFunction() const {
+  void CorrFit3DCF::RecalculateFunction() const {
     CorrFitHDFunc3D* cf = static_cast<CorrFitHDFunc3D*>(fHDMaps);
-    Double_t X[3];
-    for (int a = 0; a < cf->GetBinsHDX().GetSize(); a++) {
-      Int_t i                = cf->GetBinsHDX()[a];
-      Int_t j                = cf->GetBinsHDY()[a];
-      Int_t k                = cf->GetBinsHDZ()[a];
-      fBinX                  = cf->HDBinToBin(i);
-      fBinY                  = cf->HDBinToBin(j);
-      fBinZ                  = cf->HDBinToBin(k);
-      X[0]                   = cf->EvalHDX(i);
-      X[1]                   = cf->EvalHDY(j);
-      X[2]                   = cf->EvalHDZ(k);
-      Double_t CF            = CalculateCF(X, fTempParamsEval);
-      cf->CFMapHD()[i][j][k] = CF;
-    }
+    cf->FillValues(this, fTempParamsEval);
   }
 
   void CorrFit3DCF::SetFittingMask(const CorrFitMask& map) {

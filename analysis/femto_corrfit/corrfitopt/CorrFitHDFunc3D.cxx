@@ -13,9 +13,9 @@
 #include <iostream>
 
 namespace Hal {
-  CorrFitHDFunc3D::CorrFitHDFunc3D() : CorrFitHDFunc(3) {}
+  CorrFitHDFunc3D::CorrFitHDFunc3D(Bool_t hd) : CorrFitHDFunc(3, hd) {}
 
-  void CorrFitHDFunc3D::SetMask(const CorrFitMask& mask, TH1* denominator, Bool_t hd) {
+  void CorrFitHDFunc3D::SetMask(const CorrFitMask& mask, TH1* denominator) {
     TH3* den3d                  = static_cast<TH3*>(denominator);
     const CorrFitMask3D* mask3d = dynamic_cast<const CorrFitMask3D*>(&mask);
     Int_t maxBins               = TMath::Max(mask3d->GetNbinsX(), TMath::Max(mask3d->GetNbinsY(), mask3d->GetNbinsZ()));
@@ -31,8 +31,8 @@ namespace Hal {
     fSteps[1] = den3d->GetYaxis()->GetBinWidth(1) * 0.5;
     fSteps[2] = den3d->GetZaxis()->GetBinWidth(1) * 0.5;
     RecalcHDBin(maxBins);
-    CalculateBinsArrays(*mask3d, hd);
-    if (hd == kFALSE) {
+    CalculateBinsArrays(*mask3d);
+    if (fUseHD == kFALSE) {
       for (int i = 0; i < fBinsX.GetSize(); i++) {
         Int_t binX                                                     = fBinsX[i];
         Int_t binY                                                     = fBinsY[i];
@@ -86,8 +86,8 @@ namespace Hal {
     }
   }
 
-  Double_t CorrFitHDFunc3D::GetBinCFVal(Int_t BinX, Int_t BinY, Int_t BinZ, Bool_t extrapolated) const {
-    if (extrapolated) {
+  Double_t CorrFitHDFunc3D::GetBinCFVal(Int_t BinX, Int_t BinY, Int_t BinZ) const {
+    if (fUseHD) {
       Double_t val = 0;
       Int_t xbin0  = GetBinHD(BinX);
       Int_t ybin0  = GetBinHD(BinY);
@@ -104,7 +104,7 @@ namespace Hal {
     return fMapHD.Get(GetBinHD(BinX), GetBinHD(BinY), GetBinHD(BinZ));
   }
 
-  void CorrFitHDFunc3D::CalculateBinsArrays(const CorrFitMask3D& mask, Bool_t hd) {
+  void CorrFitHDFunc3D::CalculateBinsArrays(const CorrFitMask3D& mask) {
     // calculate standard bins----------------------------------------------------
     Int_t nonZeroBins = mask.GetActiveBins();
     if (nonZeroBins != fBinsX.GetSize()) {
@@ -125,7 +125,7 @@ namespace Hal {
             fBinsX[binId]   = i;
             fBinsY[binId]   = j;
             fBinsZ[binId++] = k;
-            if (hd) {
+            if (fUseHD) {
               for (int a = -1; a < 2; a++) {
                 for (int b = -1; b < 2; b++) {
                   for (int c = -1; c < 2; c++) {
@@ -162,6 +162,23 @@ namespace Hal {
           }
         }
       }
+    }
+  }
+
+  void CorrFitHDFunc3D::FillValues(const Hal::CorrFit3DCF* cf, Double_t* params) {
+    Double_t X[3];
+    for (int a = 0; a < GetBinsHDX().GetSize(); a++) {
+      Int_t i            = GetBinsHDX()[a];
+      Int_t j            = GetBinsHDY()[a];
+      Int_t k            = GetBinsHDZ()[a];
+      cf->fBinX          = HDBinToBin(i);
+      cf->fBinY          = HDBinToBin(j);
+      cf->fBinZ          = HDBinToBin(k);
+      X[0]               = EvalHDX(i);
+      X[1]               = EvalHDY(j);
+      X[2]               = EvalHDZ(k);
+      Double_t CF        = cf->CalculateCF(X, params);
+      CFMapHD()[i][j][k] = CF;
     }
   }
 

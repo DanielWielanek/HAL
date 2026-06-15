@@ -31,6 +31,7 @@ namespace Hal {
     friend class CorrFitMath3DCF;
     friend class CorrFitSHCF;
     friend class CorrFit3DCFPainter;
+    friend class CorrFitHDFunc3D;
     Array_1<Double_t> fXbins;
     Array_1<Double_t> fYbins;
     Array_1<Double_t> fZbins;
@@ -73,8 +74,7 @@ namespace Hal {
      * called for each calculation of chi2 or loglikehood minimalization - used
      * for recalculation CF is parameters are changed
      */
-    virtual void RecalculateFunction() const {};
-    virtual void RecalculateSmoothFunction() const;
+    virtual void RecalculateFunction() const;
     /**
      * recompute errors in num by using information from den histogram
      * @param num

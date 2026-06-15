@@ -7,21 +7,22 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "CorrFitHDFunc1D.h"
+#include "CorrFit1DCF.h"
 
 namespace Hal {
-  CorrFitHDFunc1D::CorrFitHDFunc1D() : CorrFitHDFunc(1) {}
+  CorrFitHDFunc1D::CorrFitHDFunc1D(Bool_t hd) : CorrFitHDFunc(1, hd) {}
 
-  void CorrFitHDFunc1D::SetMask(const CorrFitMask& mask, TH1* denominator, Bool_t hd) {
+  void CorrFitHDFunc1D::SetMask(const CorrFitMask& mask, TH1* denominator) {
     const CorrFitMask1D* mask1d = dynamic_cast<const CorrFitMask1D*>(&mask);
-    Int_t maxBins               = mask1d->GetNBins() * 2 + 1;
-    fDenominatorHD.Resize(maxBins);                        //+1 to keep compatible with bin id
+    const Int_t maxHdBins       = mask1d->GetNBins() * 2 + 1;
+    fDenominatorHD.Resize(maxHdBins);                      //+1 to keep compatible with bin id
     fDenominatorSum.Resize(denominator->GetNbinsX() + 1);  //+1 to keep compatible with bin id
-    fMapHD.Resize(maxBins);
+    fMapHD.Resize(maxHdBins);
     fMins[0]  = denominator->GetXaxis()->GetBinLowEdge(1);
     fSteps[0] = denominator->GetXaxis()->GetBinWidth(1) * 0.5;
     RecalcHDBin(mask1d->GetNBins());
-    CalculateBinsArrays(*mask1d, hd);
-    if (hd == kFALSE) {
+    CalculateBinsArrays(*mask1d);
+    if (fUseHD == kFALSE) {
       for (int i = 0; i < fBins.GetSize(); i++) {
         Int_t bin                     = fBins[i];
         fDenominatorHD[GetBinHD(bin)] = denominator->GetBinContent(bin);
@@ -53,9 +54,9 @@ namespace Hal {
     }
   }
 
-  Double_t CorrFitHDFunc1D::GetBinCFVal(Int_t BinX, Bool_t extrapolated) const {
+  Double_t CorrFitHDFunc1D::GetBinCFVal(Int_t BinX) const {
     Int_t bin = GetBinHD(BinX);
-    if (extrapolated) {
+    if (fUseHD) {
       // CF *weight
       Double_t low   = fMapHD.Get(bin - 1) * fDenominatorHD.Get(bin - 1);
       Double_t med   = fMapHD.Get(bin) * fDenominatorHD.Get(bin);
@@ -67,7 +68,7 @@ namespace Hal {
     }
   }
 
-  void CorrFitHDFunc1D::CalculateBinsArrays(const CorrFitMask1D& mask, Bool_t hd) {
+  void CorrFitHDFunc1D::CalculateBinsArrays(const CorrFitMask1D& mask) {
     Int_t nonZero = mask.GetActiveBins();
     if (nonZero != fBins.GetSize()) fBins.Resize(nonZero);
     Int_t binId    = 0;
@@ -77,7 +78,7 @@ namespace Hal {
       if (mask.GetBinFlag(i)) {
         fBins[binId++] = i;
         Int_t binHd    = GetBinHD(i);
-        if (!hd) {
+        if (!fUseHD) {
           ++hdBinsNo;
           tempFlags[binHd] = 1;
         } else {
@@ -98,4 +99,16 @@ namespace Hal {
   }
 
   CorrFitHDFunc1D::~CorrFitHDFunc1D() {}
+
+  void CorrFitHDFunc1D::FillValues(const Hal::CorrFit1DCF* cf, Double_t* params) {
+    Double_t X[1];
+    for (int i = 0; i < GetBinsHD().GetSize(); i++) {
+      Int_t hdBin         = GetBinsHD()[i];
+      X[0]                = EvalHD(hdBin);
+      cf->fBinX           = HDBinToBin(hdBin);
+      Double_t p          = cf->CalculateCF(X, params);
+      GetCFMapHD()[hdBin] = p;
+    }
+  }
+
 }  // namespace Hal

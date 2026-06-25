@@ -617,12 +617,16 @@ namespace Hal {
       Double_t phi = summ.Phi();
       switch (kin) {
         case EKinematics::kLCMS: {
-          TLorentzVector p1(diff.X() * 0.5, diff.Y() * 0.5, diff.Z() * 0.5, TMath::Sqrt(m1 * m1 + diff.Mag2() * 0.25));
-          TLorentzVector p2(-diff.X() * 0.5, -diff.Y() * 0.5, -diff.Z() * 0.5, TMath::Sqrt(m2 * m2 + diff.Mag2() * 0.25));
-          p1.Boost(0, 0, vz);
-          p2.Boost(0, 0, vz);
+          double Pt = sum.Pt();
+          TLorentzVector p1, p2;
+          p1.SetXYZM(0.5 * (Pt + diff.X()), 0.5 * diff.Y(), 0.5 * diff.Z(), m1);
+          p2.SetXYZM(0.5 * (Pt - diff.X()), -0.5 * diff.Y(), -0.5 * diff.Z(), m1);
+          double phi = sum.Phi();
           p1.RotateZ(phi);
           p2.RotateZ(phi);
+          double betaZ = sum.Z() / sqrt(sum.Mag2() + 4. * m1 * m1);
+          p1.Boost(0, 0, betaZ);
+          p2.Boost(0, 0, betaZ);
           p.SetTrueMomenta(p1, p2);
           p.SetMomenta(p1, p2);
         } break;

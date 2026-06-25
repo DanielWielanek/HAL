@@ -223,8 +223,11 @@ namespace Hal {
     auto calcOpts = dumpAna["CalcOptions"];
     if (calcOpts) {
       auto pairCut = calcOpts["NoPairCut"];
-      if (pairCut) { fPairThreshold = pairCut.GetValue().Atoi(); }
-      Hal::Cout::PrintInfo("Pair threshold detected", EInfo::kInfo);
+      if (pairCut) {
+        fPairThreshold = pairCut.GetValue().Atoi();
+        if (fPairThreshold < 0) fPairThreshold = 0;
+        if (fPairThreshold > 0) Hal::Cout::PrintInfo(Form("Pair threshold detected %i", fPairThreshold), EInfo::kInfo);
+      }
     }
     auto multiJobs = calcOpts["JobMultiplyFactor"];
     if (multiJobs) {

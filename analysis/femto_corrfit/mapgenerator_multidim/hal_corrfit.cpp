@@ -179,6 +179,7 @@ void preparetemplate() {
   xml_file << "\t\t<!-- S/B/S+B for S(signal) B (background)  B+S (both)-->" << std::endl;
   xml_file << "\t\t<CalcMode>S</CalcMode>" << std::endl;
   xml_file << "\t\t<IgnoreSign>kTRUE</IgnoreSign>" << std::endl;
+  xml_file << "\t\t<NoPairCut>50000</NoPairCut>" << std::endl;
   xml_file << "\t</CalcOptions>" << std::endl;
   xml_file << "\t<WeightConf>" << std::endl;
   xml_file << "\t\t<Type>Hal::FemtoWeightGeneratorLednicky</Type>" << std::endl;

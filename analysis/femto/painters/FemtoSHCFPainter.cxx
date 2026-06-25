@@ -185,7 +185,7 @@ namespace Hal {
 
   Bool_t FemtoSHCFPainter::CheckPads() const {
     Int_t padsNo = GetPadsNo();
-    Int_t req    = (fSHCF->GetLMax() + 1) * (fSHCF->GetLMax() + 1);
+    Int_t req    = (fSHCF->GetLMax() + 1) * (fSHCF->GetLMax() + 1) + 1;
     if (padsNo != req) return kFALSE;
     return kTRUE;
   }

@@ -261,6 +261,61 @@ namespace Hal {
     virtual void SetOption(TString option);
     /**
      * called when object needs to be draw (should be called only once) or redraw
+     * sequence of calls:
+     * \dot
+     * digraph PaintFlow {
+     *   rankdir=TD;
+     *
+     *   A [label="Paint"];
+     *   B [label="kSameBit?"];
+     *   C [label="AddAsSubpainter"];
+     *   D [label="Do nothing"];
+     *   E [label="HasParent?"];
+     *   F [label="GetAncestor"];
+     *   G [label="IsPainted?"];
+     *   I [label="LockPad"];
+     *   J [label="MakePadsAndCanvases"];
+     *   L [label="TryPaint"];
+     *   M [label="UpdateAllPads"];
+     *   N [label="UnlockPad"];
+     *   P [label="IsPainted?"];
+     *   R [label="ancestor->TryPaint"];
+     *   S [label="ancestor->Paint"];
+     *   T [label="ancestor->UpdateAllPads"];
+     *   U [label="set gCommon data, return to pad"];
+     *
+     *   A -> B;
+     *
+     *   B -> C [label="Yes"];
+     *   B -> D [label="No"];
+     *
+     *   C -> E;
+     *
+     *   E -> F [label="Yes"];
+     *   E -> G [label="No"];
+     *
+     *   G -> I [label="Yes"];
+     *   G -> J [label="No"];
+     *
+     *   I -> L;
+     *   L -> M;
+     *   M -> N;
+     *   N -> U;
+     *
+     *   J -> I;
+     *
+     *   D -> E;
+     *
+     *   F -> P;
+     *
+     *   P -> R [label="Yes"];
+     *   P -> S [label="No"];
+     *
+     *   R -> T;
+     *   T -> U;
+     *   S -> U;
+     * }
+     * \enddot
      */
     void Paint();
     /**

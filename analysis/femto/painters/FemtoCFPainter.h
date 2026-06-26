@@ -58,7 +58,7 @@ namespace Hal {
      */
     std::pair<Double_t, Double_t> GetMinMax(Int_t x = 0, Int_t y = 0) const;
     /**
-     * rescale hisgorams used by corrfits
+     * rescale histograms used by corrfits
      * @param newScale
      */
     virtual void Rescale(Double_t newScale);

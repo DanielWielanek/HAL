@@ -18,6 +18,7 @@
 #include "XMLNode.h"
 
 #include <initializer_list>
+#include <iostream>
 
 #include <TAttLine.h>
 #include <TAttMarker.h>
@@ -111,6 +112,22 @@ namespace Hal {
       if (newName.Length() > 0) newStyle->Rename(newName);
       if (!GetTextStyle(text_style->GetName())) fStyleText.push_back(newStyle);
     }
+  }
+
+  void Styles::Print() const {
+    std::cout << "Styles info" << std::endl;
+    std::cout << "Histo styles" << std::endl;
+    for (auto p : fStyleHisto)
+      std::cout << "\t\t" << p->GetName() << std::endl;
+    std::cout << "\tLegend styles" << std::endl;
+    for (auto p : fStyleLegend)
+      std::cout << "\t\t" << p->GetName() << std::endl;
+    std::cout << "\tPad styles" << std::endl;
+    for (auto p : fStylePad)
+      std::cout << "\t\t" << p->GetName() << std::endl;
+    std::cout << "\tText styles" << std::endl;
+    for (auto p : fStyleText)
+      std::cout << "\t\t" << p->GetName() << std::endl;
   }
 
   Styles::~Styles() {

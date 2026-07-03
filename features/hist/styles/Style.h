@@ -125,7 +125,10 @@ namespace Hal {
      */
     void LoadFromXML(TString filename, TString nodeName);
     TString GetName() const { return fName; }
-    void Rename(TString name) { fName = name; }
+    void Rename(TString name) {
+      name.ToLower();
+      fName = name;
+    }
     virtual ~Style() {};
     ClassDef(Style, 1);
   };
@@ -202,6 +205,7 @@ namespace Hal {
         ApplyHisto(obj, name);
       }
     }
+    virtual void Print() const;
     virtual ~Styles();
     ClassDef(Styles, 1)
   };

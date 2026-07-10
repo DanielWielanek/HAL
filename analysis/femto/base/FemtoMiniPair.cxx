@@ -158,4 +158,11 @@ namespace Hal {
   }
 
   FemtoMicroPair::~FemtoMicroPair() {}
+
+  void FemtoMicroPair::SetPairType(Hal::Femto::EPairType type) {
+    auto pids = Hal::Femto::PairTypeToPid(type);
+    fPdg1     = pids.first;
+    fPdg2     = pids.second;
+  }
+
 }  // namespace Hal

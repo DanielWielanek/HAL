@@ -128,6 +128,11 @@ namespace Hal {
     void SetMass(Double_t m1, Double_t m2);
     virtual FemtoPair* MakeCopy() const         = 0;
     virtual Femto::EKinematics GetFrame() const = 0;
+    /**
+     * intialize the pair, use -1 if used outside of the analysis chain
+     * @param task_id
+     * @return
+     */
     Bool_t Init(Int_t task_id);
     /**
      * build femtoscpic pair fro pair of tracks
@@ -390,6 +395,11 @@ namespace Hal {
      * @param val PDG code
      */
     inline void SetPdg2(Int_t val) { fPdg2 = val; };
+    /**
+     * set pair type
+     * @param type
+     */
+    void SetPairType(Hal::Femto::EPairType type);
     /**
      * set pair weight
      * @param weight

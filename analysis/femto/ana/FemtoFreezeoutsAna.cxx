@@ -335,7 +335,7 @@ namespace Hal {
     fHistograms1dphi     = new HistogramManager_3_2D<TH2D>();
     fHistograms3d        = new HistogramManager_3_3D<TH3D>();
     fHistograms1dphiPrim = new HistogramManager_3_2D<TH2D>();
-    std::vector<HistogramAxisConf> axis(3);
+    std::vector<HistogramAxisConf> axis3d(3);
     if (fFastCut == NULL) { fFastCut = new FemtoFastCutVirtual(); }
     switch (fKinematicsMode) {
       case EMode::kPRF: {
@@ -380,26 +380,25 @@ namespace Hal {
     }
     titles[4] = "N_{pairs}";
     for (int i = 0; i < 3; i++)
-      axis[i] = HistogramAxisConf(titles[i], fBins[i], fHistoMin[i], fHistoMax[i]);
-    std::vector<HistogramAxisConf> axis2(2);
-    axis2[0] = HistogramAxisConf(titles[3], fBins[0], fHistoMin[0], fHistoMax[0]);
-    axis2[1] = HistogramAxisConf(titles[4]);
-    HistogramAxisConf phi_conf("#phi [rad]", 100, 0, TMath::Pi());
-    if (fDrawCosAngle) { phi_conf = HistogramAxisConf("Cos(#phi)", 100, -1, 1); }
-    std::vector<HistogramAxisConf> phiConfs;
-    std::vector<HistogramAxisConf> phiConfs2;
-    axis[0].SetTitle(titles[3]);
-    phiConfs.push_back(axis[0]);
-    phiConfs.push_back(phi_conf);
-    phiConfs2.push_back(axis2[0]);
-    phiConfs2.push_back(phi_conf);
+      axis3d[i] = HistogramAxisConf(titles[i], fBins[i], fHistoMin[i], fHistoMax[i]);
+    HistogramAxisConf axisRinv(titles[3], fBins[0], fHistoMin[0], fHistoMax[0]);
+    HistogramAxisConf number(titles[4]);
+    HistogramAxisConf phi_axis("#phi [rad]", 100, 0, TMath::Pi());
+    if (fDrawCosAngle) { phi_axis = HistogramAxisConf("Cos(#phi)", 100, -1, 1); }
+    HistogramAxisConf axisKstar("k* [GeV/c]", fBins[0], fHistoMin[0], fHistoMax[0]);
 
-    fHistograms1d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis2, "Freezeouts1d", kFALSE);
+    fHistograms1d->Init(
+      fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), {axisRinv, number}, "Freezeouts1d", kFALSE);
     fHistograms1dphi->Init(
-      fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), phiConfs, "Freezeouts1dphi", kFALSE);
+      fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), {axisRinv, phi_axis}, "Freezeouts1dphi", kFALSE);
     fHistograms1dphiPrim->Init(
-      fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), phiConfs2, "Freezeouts1dphiPrim", kFALSE);
-    fHistograms3d->Init(fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), axis, "Freezeouts3d", kFALSE);
+      fEventCollectionsNo, fTwoTrackCollectionsNo, fFastCut->GetNBins(), {axisKstar, phi_axis}, "Freezeouts1dphiPrim", kFALSE);
+    fHistograms3d->Init(fEventCollectionsNo,
+                        fTwoTrackCollectionsNo,
+                        fFastCut->GetNBins(),
+                        {axis3d[0], axis3d[1], axis3d[2], number},
+                        "Freezeouts3d",
+                        kFALSE);
     return Task::EInitFlag::kSUCCESS;
   }
 

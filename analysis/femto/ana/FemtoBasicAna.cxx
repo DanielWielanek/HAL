@@ -27,8 +27,10 @@
 #include "Std.h"
 
 #include <TClonesArray.h>
+#include <TDatabasePDG.h>
 #include <TNamed.h>
 #include <TObjArray.h>
+#include <TParticlePDG.h>
 #include <TString.h>
 
 
@@ -140,9 +142,22 @@ namespace Hal {
       Cout::PrintInfo("Something wrong is with FemtoPair it cannot be created", EInfo::kError);
       return Task::EInitFlag::kFATAL;
     }
-
-    fFemtoPair->SetPdg1(fPdg1);
-    fFemtoPair->SetPdg2(fPdg2);
+    auto particle1 = fPDG->GetParticle(fPdg1);
+    auto particle2 = fPDG->GetParticle(fPdg2);
+    if (!particle1) {
+      Cout::PrintInfo(Form("Cannot find first particle %i", fPdg1), EInfo::kError);
+      return Task::EInitFlag::kERROR;
+    }
+    if (!particle2) {
+      Cout::PrintInfo(Form("Cannot second particle %i", fPdg2), EInfo::kError);
+      return Task::EInitFlag::kERROR;
+    }
+    if (particle2->Mass() > particle1->Mass()) {
+      Cout::PrintInfo(Form("%s wrong mass order, lighter particle should be first !"), EInfo::kError);
+      return Task::EInitFlag::kERROR;
+    }
+    auto type = Hal::Femto::PidToPairType(fPdg1, fPdg2);
+    fFemtoPair->SetPairType(type);
     fFemtoPair->Init(GetTaskID());
     if (fIgnoreSign) {
       if (dummy->InheritsFrom("Hal::FemtoSHCF")) {

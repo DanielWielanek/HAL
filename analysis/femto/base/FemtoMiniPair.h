@@ -179,6 +179,11 @@ namespace Hal {
      */
     inline void SetPdg2(Int_t val) { fPdg2 = val; };
     /**
+     * safer method to set PDG's
+     * @param type
+     */
+    void SetPairType(Hal::Femto::EPairType type);
+    /**
      * set true momenta for first particle
      * @param px Px
      * @param py Py

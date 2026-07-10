@@ -90,6 +90,13 @@ namespace Hal {
       Double_t m1 = part2->Mass();
       fM22        = m1 * m1;
     }
+    if (fM12 > fM22) {
+      Hal::Cout::PrintInfo(Form("%s wrong mass order? first track should be lighter", ClassName()), EInfo::kWarning);
+    }
+    auto type = Hal::Femto::PidToPairType(fPdg1, fPdg2);
+    if (type == Hal::Femto::EPairType::kUnknown) {
+      Hal::Cout::PrintInfo(Form("%s using unknown pair type", ClassName()), EInfo::kWarning);
+    }
     if (task_id < 0) {
       fMode = kNoMC;
       return kTRUE;
@@ -423,6 +430,12 @@ namespace Hal {
   void FemtoPair::GetFreezouts(TLorentzVector& x1, TLorentzVector& x2) const {
     x1.SetXYZT(fX1, fY1, fZ1, fT1);
     x2.SetXYZT(fX2, fY2, fZ2, fT2);
+  }
+
+  void FemtoPair::SetPairType(Hal::Femto::EPairType type) {
+    auto pids = Hal::Femto::PairTypeToPid(type);
+    fPdg1     = pids.first;
+    fPdg2     = pids.second;
   }
 
 }  // namespace Hal

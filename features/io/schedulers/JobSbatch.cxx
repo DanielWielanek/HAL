@@ -108,7 +108,7 @@ namespace Hal {
     }
     addLine("output", copyL);
     addLine("error", copyE);
-    if (fIsDependent && (jobID == 0 || jobID == -1)) { command = command + Form(" --dependency=afterany:%i", fDependencyId); }
+    if (fDependencyId > -1 && IsArray()) { command = command + Form(" --dependency=afterok:%i", fDependencyId); }
     return command;
   }
 
@@ -130,6 +130,5 @@ namespace Hal {
   }
 
   JobSbatch::~JobSbatch() {}
-
 
 } /* namespace Hal */

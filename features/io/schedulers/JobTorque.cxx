@@ -102,7 +102,7 @@ namespace Hal {
     addLine("o ", copyL);
     addLine("e ", copyE);
     command = command + " --t=" + Form("%i-%i", GetStart(), GetEnd());
-    if (fIsDependent && (jobid == 0 || jobid == -1)) { command = command + Form(" -W depend=afterok:%i", fDependencyId); }
+    if (fDependencyId > -1 && IsArray()) { command = command + Form(" -W depend=afterokarray:%i", fDependencyId); }
     return command;
   }
 

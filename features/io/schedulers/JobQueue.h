@@ -43,8 +43,7 @@ namespace Hal {
     ParPair fSource;
     ParPair fExtra;
     ParPair fMerge;
-    Bool_t fIsDependent = {kFALSE};
-    Int_t fDependencyId = {-1};
+    Bool_t fDependencyId = {-1};
     /**
      * return parameter from sheduler
      * @param name
@@ -157,10 +156,7 @@ namespace Hal {
      * set this job as depended on job with given id
      * @param id
      */
-    void SetDependency(Int_t id) {
-      fDependencyId = id;
-      fIsDependent  = kTRUE;
-    }
+    void SetDependency(Int_t depid) { fDependencyId = depid; }
     static JobQueue* GetInstance(TString xmlFile);
     virtual ~JobQueue() {};
     ClassDef(JobQueue, 0)

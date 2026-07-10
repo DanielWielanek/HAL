@@ -140,7 +140,10 @@ namespace Hal {
     if (fDebugCommands) { std::cout << " DEBUG JOBS : " << command << std::endl; }
     if (send) {
       TString SubmitResponse = gSystem->GetFromPipe(command);
-      if (fMerge.enabled && IsArray()) { gSystem->Exec(Form("hal-jobs %s -dep=%i", fMerge.name.Data(), SubmitResponse.Atoi())); }
+      TRegexp reg("[0-9]+");
+      TString dependency = SubmitResponse(reg);
+      Int_t depId        = dependency.Atoi();
+      if (fMerge.enabled && IsArray()) { gSystem->Exec(Form("hal-jobs %s -dep=%i", fMerge.name.Data(), depId)); }
     }
   }
 

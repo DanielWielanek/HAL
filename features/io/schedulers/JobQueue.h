@@ -40,7 +40,11 @@ namespace Hal {
     ParPair fTime;
     ParPair fShell, fLogs, fErrors, fQueue;
     ParPair fMem, fMemPerCpu, fTasks, fCpuPerTask, fName;
+    ParPair fSource;
     ParPair fExtra;
+    ParPair fMerge;
+    Bool_t fIsDependent = {kFALSE};
+    Int_t fDependencyId = {-1};
     /**
      * return parameter from sheduler
      * @param name
@@ -85,7 +89,14 @@ namespace Hal {
      * @param val
      * @return export parameter for export val in shell with given shell name (bash, sh, tcsh, zsh)
      */
-    TString GetExport(TString shell, TString val) const;
+    TString GetExport(TString val) const;
+    /**
+     * return source command for given shell
+     * @param shell
+     * @param val
+     * @return
+     */
+    TString GetSource(TString val) const;
     /**
      *
      * @return array of commands
@@ -142,6 +153,14 @@ namespace Hal {
      * @param submit if false do not submit
      */
     virtual void Submit(Bool_t submit) = 0;
+    /**
+     * set this job as depended on job with given id
+     * @param id
+     */
+    void SetDependency(Int_t id) {
+      fDependencyId = id;
+      fIsDependent  = kTRUE;
+    }
     static JobQueue* GetInstance(TString xmlFile);
     virtual ~JobQueue() {};
     ClassDef(JobQueue, 0)

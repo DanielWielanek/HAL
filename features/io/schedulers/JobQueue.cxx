@@ -128,11 +128,20 @@ namespace Hal {
     fTasks      = GetParameter("tasks");
     fCpuPerTask = GetParameter("cpu_per_task");
     fName       = GetParameter("name");
+    fSource     = GetParameter("source");
+    fMerge      = GetParameter("merge");
+    if (fSource.enabled) {
+      TString sourceCommand = GetSource(fSource.name);
+      fCommands.insert(fCommands.begin(), fSource.name);
+    }
   }
 
   void JobQueue::SendCommand(Bool_t send, TString command, Int_t /*jobID*/) const {
     if (fDebugCommands) { std::cout << " DEBUG JOBS : " << command << std::endl; }
-    if (send) gSystem->Exec(command);
+    if (send) {
+      TString SubmitResponse = gSystem->GetFromPipe(command);
+      if (fMerge.enabled && IsArray()) { gSystem->Exec(Form("hal-jobs %s -dep=%i", fMerge.name.Data(), SubmitResponse.Atoi())); }
+    }
   }
 
   void JobQueue::BuildExample(TString name) {
@@ -174,12 +183,25 @@ namespace Hal {
     return val;
   }
 
-  TString JobQueue::GetExport(TString shell, TString val) const {
-    shell = shell.ReplaceAll(" ", "");
+  TString JobQueue::GetExport(TString val) const {
+    TString shell = fShell.name;
+    shell         = shell.ReplaceAll(" ", "");
     if (shell.EndsWith("bash")) return TString("export JOB_ID_HAL=") + val;
     if (shell.EndsWith("tcsh")) return TString("setenv JOB_ID_HAL ") + val;
     if (shell.EndsWith("zsh")) return TString("export JOB_ID_HAL=") + val;
     if (shell.EndsWith("sh")) return TString("export JOB_ID_HAL=") + val;
+    if (shell.EndsWith("dash")) return TString("export JOB_ID_HAL=") + val;
+    return "";
+  }
+
+  TString JobQueue::GetSource(TString val) const {
+    TString shell = fShell.name;
+    shell         = shell.ReplaceAll(" ", "");
+    if (shell.EndsWith("bash")) return TString("source ") + val;
+    if (shell.EndsWith("tcsh")) return TString("source ") + val;
+    if (shell.EndsWith("zsh")) return TString("source ") + val;
+    if (shell.EndsWith("sh")) return TString(" . ") + val;
+    if (shell.EndsWith("dash")) return TString(" . ") + val;
     return "";
   }
 
@@ -204,6 +226,8 @@ namespace Hal {
     res.push_back(addParameter("direct", "no"));
     res.push_back(addParameter("extra", "no"));
     res.push_back(addParameter("tmpfile", "hal_jobs"));
+    res.push_back(addParameter("merge", ""));
+    res.push_back(addParameter("source", ""));
     return res;
   }
 

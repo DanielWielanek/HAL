@@ -73,10 +73,10 @@ namespace Hal {
     }
     if (IsArray()) {
       TString env = "`expr $SLURM_ARRAY_TASK_ID`";
-      plik << GetExport(fShell.name, env) << std::endl;
+      plik << GetExport(env) << std::endl;
     } else {
       TString env = Form("%i", jobid);
-      plik << GetExport(fShell.name, env) << std::endl;
+      plik << GetExport(env) << std::endl;
     }
     for (auto i : GetCommands()) {
       plik << i << std::endl;
@@ -108,6 +108,7 @@ namespace Hal {
     }
     addLine("output", copyL);
     addLine("error", copyE);
+    if (fIsDependent && (jobID == 0 || jobID == -1)) { command = command + Form(" --dependency=afterany:%i", fDependencyId); }
     return command;
   }
 

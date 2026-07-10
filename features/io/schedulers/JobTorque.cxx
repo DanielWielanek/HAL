@@ -69,10 +69,10 @@ namespace Hal {
     }
     if (IsArray()) {
       TString env = "`expr ${PBS_ARRAYID}`";
-      plik << GetExport(fShell.name, env) << std::endl;
+      plik << GetExport(env) << std::endl;
     } else {
       TString env = Form("%i", jobid);
-      plik << GetExport(fShell.name, env) << std::endl;
+      plik << GetExport(env) << std::endl;
     }
     for (auto i : GetCommands()) {
       plik << i << std::endl;
@@ -102,6 +102,7 @@ namespace Hal {
     addLine("o ", copyL);
     addLine("e ", copyE);
     command = command + " --t=" + Form("%i-%i", GetStart(), GetEnd());
+    if (fIsDependent && (jobid == 0 || jobid == -1)) { command = command + Form(" -W depend=afterok:%i", fDependencyId); }
     return command;
   }
 

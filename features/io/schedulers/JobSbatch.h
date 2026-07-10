@@ -19,11 +19,9 @@ namespace Hal {
 
   class JobSbatch : public JobQueue {
 
-    void BuildTmpFile();
-    void BuildSingleFile(Int_t jobid);
-    TString BuildArgsCommand(Int_t jobID) const;
-
   protected:
+    void MakeJobFile(Int_t jobid) const;
+    TString MakeSubmitCommand(Int_t jobID) const;
     virtual TString GetLogPath(TString raw) const;
     virtual TString GetErrorPath(TString raw) const;
     virtual TString GetMemoryFlags(TString mbs) const;
@@ -31,7 +29,6 @@ namespace Hal {
 
   public:
     JobSbatch(TString xmlFile);
-    virtual void Submit(Bool_t submit);
     virtual ~JobSbatch();
     ClassDef(JobSbatch, 0)
   };

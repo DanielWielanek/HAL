@@ -20,32 +20,7 @@ namespace Hal {
     JobSbatch::LoadCore(xmlfile);
   }
 
-  void JobSbatch::Submit(Bool_t submit) {
-    BuildTmpFile();
-    if (IsArray()) {
-      TString command = BuildArgsCommand(-1);
-      SendCommand(submit, command, -1);
-    } else {
-      for (int i = GetStart(); i <= GetEnd(); i++) {
-        TString command = BuildArgsCommand(i);
-        SendCommand(submit, command, i);
-      }
-    }
-  }
-
-  void JobSbatch::BuildTmpFile() {
-    TString dir = GetTmpFile();
-    gSystem->mkdir(dir, true);
-    if (IsArray()) {
-      BuildSingleFile(-1);
-    } else {
-      for (int i = GetStart(); i <= GetEnd(); i++) {
-        BuildSingleFile(i);
-      }
-    }
-  }
-
-  void JobSbatch::BuildSingleFile(Int_t jobid) {
+  void JobSbatch::MakeJobFile(Int_t jobid) const {
     std::ofstream plik(Form("%s/job_%i", GetTmpFile().Data(), TMath::Max(jobid, 0)));
     plik << fShell.name << std::endl;
     auto addLine = [&](TString name, ParPair pars) {
@@ -85,7 +60,7 @@ namespace Hal {
     plik.close();
   }
 
-  TString JobSbatch::BuildArgsCommand(Int_t jobID) const {
+  TString JobSbatch::MakeSubmitCommand(Int_t jobID) const {
     TString command = TString("sbatch ") + Form("%s/job_%i", GetTmpFile().Data(), TMath::Max(0, jobID));
     if (fExtra.enabled) { command = command + " " + fExtra.name; }
     if (!IsDirect()) return command;

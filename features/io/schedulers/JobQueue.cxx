@@ -5,6 +5,7 @@
  *      Author: daniel
  */
 
+#include <TRegexp.h>
 #include <TSystem.h>
 #include <iostream>
 #include <utility>
@@ -250,5 +251,29 @@ namespace Hal {
 
   JobQueue::JobQueue() {}
 
+  void JobQueue::Submit(Bool_t submit) {
+    MakeJobFiles();
+    if (IsArray()) {
+      TString command = MakeSubmitCommand(-1);
+      SendCommand(submit, command, -1);
+    } else {
+      for (int i = GetStart(); i <= GetEnd(); i++) {
+        TString command = MakeSubmitCommand(i);
+        SendCommand(submit, command, i);
+      }
+    }
+  }
+
+  void JobQueue::MakeJobFiles() const {
+    TString dir = GetTmpFile();
+    gSystem->mkdir(dir, true);
+    if (IsArray()) {
+      MakeJobFile(-1);
+    } else {
+      for (int i = GetStart(); i <= GetEnd(); i++) {
+        MakeJobFile(i);
+      }
+    }
+  }
 
 } /* namespace Hal */

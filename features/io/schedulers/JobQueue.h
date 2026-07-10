@@ -43,7 +43,7 @@ namespace Hal {
     ParPair fSource;
     ParPair fExtra;
     ParPair fMerge;
-    Bool_t fDependencyId = {-1};
+    Int_t fDependencyId = {-1};
     /**
      * return parameter from sheduler
      * @param name
@@ -135,6 +135,21 @@ namespace Hal {
      * @param file
      */
     virtual void LoadCore(TString file);
+    /**
+     * build temporary files (those that will be submitted)
+     */
+    virtual void MakeJobFiles() const;
+    /**
+     * create command with parameters used to send job
+     * @param jobID if negative its for array
+     * @return arguments to send e.g. qsub script.sh
+     */
+    virtual TString MakeSubmitCommand(Int_t jobID) const = 0;
+    /**
+     * creates single file taht will be send, if jobid =-1 this is for array
+     * @param jobID if negative its for array
+     */
+    virtual void MakeJobFile(Int_t jobId) const = 0;
 
   public:
     JobQueue();
@@ -151,7 +166,7 @@ namespace Hal {
      * submit command
      * @param submit if false do not submit
      */
-    virtual void Submit(Bool_t submit) = 0;
+    virtual void Submit(Bool_t submit);
     /**
      * set this job as depended on job with given id
      * @param id

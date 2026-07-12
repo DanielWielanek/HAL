@@ -78,20 +78,32 @@ int main(int argc, char* argv[]) {
       return 0;
     } else if (flag1 == "debug" && val1.EndsWith(".xml")) {
       auto job = Hal::JobQueue::GetInstance(val1);
-      job->EnableDebug();
-      std::cout << job->ClassName() << std::endl;
       job->Submit(kFALSE);
       delete job;
       return 0;
     } else if (flag1 == "dep") {
       auto job = Hal::JobQueue::GetInstance(val1);
-      job->EnableDebug();
-      std::cout << job->ClassName() << std::endl;
       job->SetDependency(val1.Atoi());
       job->Submit(kFALSE);
       delete job;
     } else if (flag1 == "example") {
       Hal::JobQueue::BuildExample(val1);
+      return 0;
+    }
+  } else if (nArgs == 2) {
+    TString flag1 = args[0].first;
+    TString val1  = args[0].second;
+    TString flag2 = args[1].first;
+    TString val2  = args[1].second;
+    if (flag1 == "dep") {
+      auto job = Hal::JobQueue::GetInstance(val2);
+      job->SetDependency(val1.Atoi());
+      job->Submit(kTRUE);
+      return 0;
+    } else if (flag2 == "dep") {
+      auto job = Hal::JobQueue::GetInstance(val1);
+      job->SetDependency(val2.Atoi());
+      job->Submit(kTRUE);
       return 0;
     }
   }

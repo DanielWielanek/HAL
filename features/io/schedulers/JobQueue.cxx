@@ -144,7 +144,7 @@ namespace Hal {
       TRegexp reg("[0-9]+");
       TString dependency = SubmitResponse(reg);
       Int_t depId        = dependency.Atoi();
-      if (fMerge.enabled && IsArray()) { gSystem->Exec(Form("hal-jobs %s -dep=%i", fMerge.name.Data(), depId)); }
+      if (fMerge.enabled && IsArray()) { gSystem->Exec(Form("hal-jobs %s --dep=%i", fMerge.name.Data(), depId)); }
     }
   }
 

@@ -59,6 +59,20 @@ namespace Hal {
     aliasPair.second = gSystem->pwd();
     aliasarray.push_back(aliasPair);
 
+    fSource   = GetParameter("source");
+    fShell    = GetParameter("shell");
+    fStartDir = GetParameter("dir");
+
+    if (fStartDir.enabled) {
+      TString pwdCommand = GetSource(fStartDir.enabled);
+      fCommands.insert(fCommands.begin(), Form("cd %s", fStartDir.name.Data()));
+    }
+
+    if (fSource.enabled) {
+      TString sourceCommand = GetSource(fSource.name);
+      fCommands.insert(fCommands.begin(), sourceCommand);
+    }
+
     for (auto& i : fCommands) {
       for (auto& a : aliasarray) {
         TString from = a.first;
@@ -82,8 +96,6 @@ namespace Hal {
     if (GetParameter("array").enabled) fArray = kTRUE;
 
     if (GetParameter("direct").enabled) fDirectCommand = kTRUE;
-
-    fShell = GetParameter("shell");
 
     auto parTmp = GetParameter("tmpfile");
     if (parTmp.enabled) {
@@ -129,12 +141,7 @@ namespace Hal {
     fTasks      = GetParameter("tasks");
     fCpuPerTask = GetParameter("cpu_per_task");
     fName       = GetParameter("name");
-    fSource     = GetParameter("source");
     fMerge      = GetParameter("merge");
-    if (fSource.enabled) {
-      TString sourceCommand = GetSource(fSource.name);
-      fCommands.insert(fCommands.begin(), fSource.name);
-    }
   }
 
   void JobQueue::SendCommand(Bool_t send, TString command, Int_t /*jobID*/) const {
@@ -232,6 +239,7 @@ namespace Hal {
     res.push_back(addParameter("tmpfile", "hal_jobs"));
     res.push_back(addParameter("merge", ""));
     res.push_back(addParameter("source", ""));
+    res.push_back(addParameter("dir", "${HAL::CONST::PWD}"));
     return res;
   }
 

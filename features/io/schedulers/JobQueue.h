@@ -43,6 +43,7 @@ namespace Hal {
     ParPair fSource;
     ParPair fExtra;
     ParPair fMerge;
+    ParPair fStartDir;
     Int_t fDependencyId = {-1};
     /**
      * return parameter from sheduler

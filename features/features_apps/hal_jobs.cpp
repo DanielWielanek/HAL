@@ -22,7 +22,7 @@
  * create xml file
  * call hal-jobs <file>
  * structure of file:
- * - scheduler - type of sheduler (sbatch for slurm or pbs for torque)
+ * - scheduler - type of scheduler (sbatch for slurm or pbs for torque)
  * - parameters list of parameters in "parameter" node, each parameter has given name and value, list of names:
  *   - queue - partition type
  *   - error - path for errors if emtpy, discard error logs
@@ -33,8 +33,9 @@
  *   - name - name of job
  *   - array - if "yes" send job as array, otherwise generates n-jobs
  *   - time - wall time, notation D:H:M:S
+ *   - dir - start directory (cd place will be called in command
  *   - direct - if yes send job parameters directly to command e.g. sbatch --time, otherwise pass parameter inside of script e.g.
- *#SBATCH welltime
+ *#SBATCH walltime
  *   - extra - pass extra command to submit command
  *   - tmpfile - path to directory with jobs (by default hal_jobs directory is used)
  *   - source - path to script that setup the env variables

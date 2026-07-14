@@ -22,11 +22,14 @@
 #include <TSystemDirectory.h>
 #include <TVector3.h>
 #include <TVirtualPad.h>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <vector>
 
-NamespaceImp(Hal::Std);
+NamespaceImp(Hal::Std)
+
+  ;
 
 namespace {  // interal functions
   TString GetJsRoot5or6() {
@@ -371,8 +374,11 @@ namespace Hal::Std {
     return 7;
   }
 
-  Int_t GetJobId() {
-    TString val = gSystem->Getenv("JOB_ID_HAL");
-    return val.Atoi();
+  TString GetFullPath(TString path) {
+    const std::string localPathStr   = path.Data();
+    std::filesystem::path localPath  = localPathStr;
+    std::filesystem::path fullPathFs = std::filesystem::absolute(localPath);
+    std::string fullPathStr          = fullPathFs.string();
+    return fullPathStr;
   }
 }  // namespace Hal::Std

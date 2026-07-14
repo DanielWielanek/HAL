@@ -209,7 +209,12 @@ namespace Hal {
         i = nullptr;
       }
     }
-    Int_t GetJobId();
+    /**
+     *
+     * @param path
+     * @return full path to file
+     */
+    TString GetFullPath(TString path);
   }  // namespace Std
 }  // namespace Hal
 

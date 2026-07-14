@@ -17,7 +17,7 @@
 
 namespace Hal {
   VirtualIOManager::VirtualIOManager(VirtualSource* source, Int_t events) :
-    Hal::IOManager(new Hal::InputDataInfo("/dev/null")),
+    Hal::IOManager(Hal::InputDataInfo("/dev/null")),
     fInFileName("/dev/null"),
     fOutTreeName("HalTree"),
     fEntries(events),

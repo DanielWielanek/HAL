@@ -32,6 +32,11 @@ namespace Hal {
      */
     InputDataInfo(TString file = "data.root");
     /**
+     * copy constructor
+     * @param other
+     */
+    InputDataInfo(const InputDataInfo& other) = default;
+    /**
      *
      * @param fileLists list of files with lists
      * @param treeNames list of tree names
@@ -63,6 +68,7 @@ namespace Hal {
     Int_t GetFriendsLevel() const;
     TString GetSourceName() const { return fListName; }
     std::vector<std::vector<TString>> GetListOfFiles() const { return fFileNames; }
+    virtual InputDataInfo* MakeCopy() const { return new InputDataInfo(*this); }
     virtual ~InputDataInfo() {};
     ClassDef(InputDataInfo, 1);
   };
@@ -80,9 +86,15 @@ namespace Hal {
     /**
      * default ctor
      * @param file single root file, or list of root files (.list extension) or xml file (.xml extension)
+     * if emtpy - then looks for db-file from sheduler
      * @param treename tree name if, empty, try to find a tree
      */
     InputRootDataInfo(TString file = "data.root", TString treename = "");
+    /**
+     * copy constructor
+     * @param other
+     */
+    InputRootDataInfo(const InputRootDataInfo& other) : InputDataInfo(other) { fTreeNames = other.fTreeNames; }
     /**
      *
      * @param fileLists list of files with lists
@@ -99,6 +111,11 @@ namespace Hal {
      * @return TChain with data, works only with root files
      */
     TChain* GetChain();
+    /**
+     * makes copy of this class
+     * @return
+     */
+    virtual InputDataInfo* MakeCopy() const { return new InputRootDataInfo(*this); }
     virtual void Print(Option_t* option = "") const;
     ClassDef(InputRootDataInfo, 1)
   };

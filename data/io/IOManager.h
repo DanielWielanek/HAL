@@ -91,7 +91,7 @@ namespace Hal {
      * IO manager
      * @param info - information input data
      */
-    IOManager(InputDataInfo* info);
+    IOManager(const InputDataInfo& info);
     /**
      *
      * @return number of entries in data

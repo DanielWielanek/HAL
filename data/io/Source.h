@@ -22,6 +22,7 @@
 namespace Hal {
   class IOManager;
   class RootIOManager;
+  class InputRootDataInfo;
   class Source : public TObject {
   protected:
     IOManager* fManager = {nullptr};
@@ -68,6 +69,7 @@ namespace Hal {
   protected:
   public:
     RootSource(TString name = "");
+    RootSource(InputRootDataInfo& dataset);
     virtual Bool_t Init();
     virtual ~RootSource() {};
     ClassDef(RootSource, 1)

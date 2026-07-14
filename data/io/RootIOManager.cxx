@@ -32,9 +32,9 @@
 #include <TTree.h>
 
 namespace Hal {
-  RootIOManager::RootIOManager(TString name) : IOManager(new InputRootDataInfo(name)) {};
+  RootIOManager::RootIOManager(TString name) : IOManager(InputRootDataInfo(name)) {};
 
-  RootIOManager::RootIOManager(InputDataInfo* info) : IOManager(info) {}
+  RootIOManager::RootIOManager(const InputDataInfo& info) : IOManager(info) {}
 
   Bool_t RootIOManager::InitInternal() {
     fInChain = ((Hal::InputRootDataInfo*) fDataInfo)->GetChain();

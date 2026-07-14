@@ -14,12 +14,15 @@
 #include <TKey.h>
 #include <TList.h>
 #include <TNamed.h>
+#include <TSystem.h>
 #include <TTree.h>
+#include <fstream>
 #include <initializer_list>
 #include <iostream>
 
-
+#include "Const.h"
 #include "Cout.h"
+#include "JobQueue.h"
 #include "Std.h"
 #include "StdString.h"
 #include "XMLNode.h"
@@ -134,6 +137,70 @@ namespace Hal {
       if (treenames) {
         for (int i = 0; i < treenames.GetNChildren(); i++) {
           fTreeNames.push_back(treenames.GetChild(i).GetValue());
+        }
+      }
+      auto& files = root["files"];
+      if (files) {
+        for (int i = 0; i < files.GetNChildren(); i++) {
+          auto vec = Hal::Std::ExplodeString(files.GetChild(i).GetValue(), ' ', false);
+          fFileNames.push_back(vec);
+        }
+      }
+    }
+    // no file added pass via job ids
+    if (file.Length() == 0) {
+      Hal::Cout::PrintInfo("InputRootDataInfo: Taking file list from job DB", EInfo::kDebugInfo);
+      TString var = Hal::JobQueue::GetDatasetPath();
+      if (var.Length() == 0) {
+        Hal::Cout::PrintInfo("InputRootDataInfo: Cannot find file list in job DB", EInfo::kWarning);
+        return;
+      }
+
+      fListName       = "Job DB";
+      Int_t jobId     = Hal::JobQueue::GetJobId();
+      Int_t totalJobs = Hal::JobQueue::GetTotalJobs();
+
+      if (jobId < 0) return;
+      std::ifstream datafile(var);
+      int fileLines = -1;  // first line is metadata
+      std::string line;
+      // count lines
+      while (std::getline(datafile, line))
+        ++fileLines;
+      datafile.clear();
+      datafile.seekg(0, std::ios::beg);
+
+      const int filesToProcess = TMath::Ceil(static_cast<double>(fileLines) / double(totalJobs));
+      const int firstFile      = filesToProcess * jobId;
+
+      std::getline(datafile, line);
+      TString firstLine = line;
+      auto trees        = Hal::Std::ExplodeString(firstLine, ' ', false);
+      for (unsigned int i = 1; i < trees.size(); i++) {
+        fTreeNames.push_back(trees[i]);
+      }
+      if (fTreeNames.size() > 0) {
+        int lineCount = 1;
+        for (int iSkip = 0; iSkip < firstFile; iSkip++) {
+          lineCount++;
+          std::getline(datafile, line);
+        }
+        int loadedFiles = 0;
+        while (std::getline(datafile, line) && loadedFiles < filesToProcess) {
+          auto files = Hal::Std::ExplodeString(line, ' ', true);
+          fFileNames.push_back(files);
+          loadedFiles++;
+        }
+      } else {
+        int lineCount = 1;
+        for (int iSkip = 0; iSkip < firstFile; iSkip++) {
+          lineCount++;
+          std::getline(datafile, line);
+        }
+        int loadedFiles = 0;
+        while (std::getline(datafile, line) && loadedFiles < filesToProcess) {
+          fFileNames.push_back({line});
+          loadedFiles++;
         }
       }
     }

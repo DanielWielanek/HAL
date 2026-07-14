@@ -51,7 +51,7 @@ namespace Hal {
      * main constructor
      * @param info
      */
-    RootIOManager(InputDataInfo* info);
+    RootIOManager(const InputDataInfo& info);
     /**
      * set name of the output file
      * @param name

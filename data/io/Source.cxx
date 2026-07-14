@@ -32,4 +32,6 @@ namespace Hal {
 
   Bool_t RootSource::Init() { return kTRUE; }
 
+  RootSource::RootSource(InputRootDataInfo& dataset) { fManager = new RootIOManager(dataset); }
+
 }  // namespace Hal

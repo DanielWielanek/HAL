@@ -21,7 +21,7 @@
 namespace HalDbg {
 
   IOManager::IOManager(TString name, Int_t entries) :
-    Hal::IOManager(new Hal::InputDataInfo(name)),
+    Hal::IOManager(Hal::InputDataInfo(name)),
     fInFileName(name),
     fOutTreeName("HalTree"),
     fEntries(entries),
@@ -48,7 +48,7 @@ namespace HalDbg {
 
   TFile* IOManager::GetInFile() { return fInFile; }
 
-  void IOManager::RegisterInternal(TString name, TString folderName, TObject* obj, Bool_t toFile) {
+  void IOManager::RegisterInternal(TString name, TString /*folderName*/, TObject* obj, Bool_t toFile) {
     if (toFile) { fOutTree->Branch(name, obj); }
   }
 

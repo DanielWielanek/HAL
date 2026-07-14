@@ -187,7 +187,7 @@ namespace Hal {
     return InitInternal();
   }
 
-  IOManager::IOManager(InputDataInfo* info) { fDataInfo = info; }
+  IOManager::IOManager(const InputDataInfo& info) { fDataInfo = info.MakeCopy(); }
 
   TString IOManager::GetSourceName() const { return fDataInfo->GetSourceName(); };
 

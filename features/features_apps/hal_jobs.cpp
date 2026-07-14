@@ -28,8 +28,7 @@
  *   - error - path for errors if emtpy, discard error logs
  *   - log - path to log files (discard if empty)
  *   - shell - shell type in first line of job script (e.g. #!/bin/bash)
- *   - start - id of first job
- *   - end - id of last job
+ *   - range - range of the jobs with atributes start (first job) and end (last job)
  *   - name - name of job
  *   - array - if "yes" send job as array, otherwise generates n-jobs
  *   - time - wall time, notation D:H:M:S
@@ -43,8 +42,20 @@
  *   - cpu_per_task
  *   - ram - max memory per job
  *   - merge - path to another sheduler xml file, this file will be executed when previous jobs are done (works only for array)
+ *   - dataset - path to data (in form of xml file, or directory) files will be evenly distributed to computing nodes
  * - command - list of commands in "command" nodes
  *
+ *
+ * #Passing the list of files
+ * list of files is passed by dataset variable, it can be a path to directory with given depth e.g.:
+ * <dataset depth="2" extension="root">some_directory</dataset>
+ * by default extenision is root and depth is zero (only given directory is checked)
+ * or list of files in xml format:
+ * <dataset>some.xml</dataset>
+ * note now oln supports flat list
+ * or list of files in txt format:
+ *<dataset>list.txt</dataset>
+ * note - now support only flat list
  * @see HalJobs::CreateDummyTxtFile  @see HalJobs::CreateDummyXMLFile
  * @HalJobs
  */

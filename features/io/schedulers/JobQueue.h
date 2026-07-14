@@ -28,11 +28,16 @@ namespace Hal {
     Bool_t fArray         = {kFALSE};
     Bool_t fDirectCommand = {kFALSE};
     std::vector<TString> fCommands;
+    std::vector<TString> fFiles;
+    std::vector<TString> fTrees;
     std::map<TString, TString> fParameters;
     TString fTmpFile;
     std::array<int, 4> GetTime(TString raw) const;
 
   protected:
+    static const TString fgJobIdName;
+    static const TString fgJobTotalNoName;
+    static const TString fgDataset;
     struct ParPair {
       TString name;
       Bool_t enabled = {kFALSE};
@@ -40,11 +45,9 @@ namespace Hal {
     ParPair fTime;
     ParPair fShell, fLogs, fErrors, fQueue;
     ParPair fMem, fMemPerCpu, fTasks, fCpuPerTask, fName;
-    ParPair fSource;
-    ParPair fExtra;
-    ParPair fMerge;
-    ParPair fStartDir;
+    ParPair fSource, fExtra, fMerge, fStartDir;
     Int_t fDependencyId = {-1};
+    void LoadParams(Hal::XMLNode& node);
     /**
      * return parameter from sheduler
      * @param name
@@ -58,6 +61,15 @@ namespace Hal {
      * @param jobID job id
      */
     void SendCommand(Bool_t send, TString command, Int_t jobID) const;
+    /**
+     * loads list of input files
+     */
+    void LoadDataset(const Hal::XMLNode& node);
+    /**
+     * loads start/end id's
+     * @param node
+     */
+    void LoadStartEnd(const Hal::XMLNode& node);
     /**
      * first job ID
      * @return
@@ -89,7 +101,7 @@ namespace Hal {
      * @param val
      * @return export parameter for export val in shell with given shell name (bash, sh, tcsh, zsh)
      */
-    TString GetExport(TString val) const;
+    TString GetExport(TString val, TString variable = fgJobIdName) const;
     /**
      * return source command for given shell
      * @param shell
@@ -151,6 +163,15 @@ namespace Hal {
      * @param jobID if negative its for array
      */
     virtual void MakeJobFile(Int_t jobId) const = 0;
+    /**
+     * make list of files in tmpdir/dataset.txt file
+     */
+    void MakeDatasetList() const;
+    /**
+     * make commands to setup the dataset
+     */
+    void MakeDatasetCommands();
+
 
   public:
     JobQueue();
@@ -174,6 +195,21 @@ namespace Hal {
      */
     void SetDependency(Int_t depid) { fDependencyId = depid; }
     static JobQueue* GetInstance(TString xmlFile);
+    /**
+     *
+     * @return job id (by looking in HAL_JOB_ID env variable, return -1 if no variable found
+     */
+    static Int_t GetJobId();
+    /**
+     *
+     * @return total number of jobs (works in arrays only)
+     */
+    static Int_t GetTotalJobs();
+    /**
+     *
+     * @return path to dataset (works in arrays only)
+     */
+    static TString GetDatasetPath();
     virtual ~JobQueue() {};
     ClassDef(JobQueue, 0)
   };

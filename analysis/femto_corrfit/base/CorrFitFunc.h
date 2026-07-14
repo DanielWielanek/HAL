@@ -150,6 +150,40 @@ namespace Hal {
     void SetupFunction(TF1* f) const;
     /**
      * main function that performs numerical minimization of given function
+     * \dot
+     * digraph PaintFlow {
+     * rankdir=TD;
+     * order[label="CheckOrder"];
+                count[label="CountNDF"];
+                minim[label="GetMinimizer1"];
+                minim2[label="GetMinimizer2"];
+                func[label="*make minimizer"];
+                func2[label="*set function to minimize"];
+                func3[label="*call minimizer minimizer"];
+                func4[label="min2 is set"];
+                prep1[label="PrepareSecondMinimzier"];
+                prep2[label="SetParsOfMinimizer"];
+                prep3[label="*minimizer2 minimize"];
+                func5[label="*copy errors and parameters"];
+                func6[label="ParametersChanged"];
+                func7[label="GetChiTF"];
+
+                order->count;
+                count->minim;
+                minim->minim2;
+                minim2->func;
+                func->func2;
+                func2->func3;
+                func3->func4;
+                func4->prep1 [label="yes"]
+                prep1->prep2;
+                prep2->prep3;
+                prep3->func5;
+                func4-> func5 [label="no"];
+                func5->func6;
+                func6->func7;
+     * }
+     * \enddot
      */
     void NumericalMinimization();
     /**
@@ -176,8 +210,34 @@ namespace Hal {
     }
     /**
      * fit this function to given CF
+     * \dot
+     * digraph PaintFlow {
+     * rankdir=TD;
+                 a[label="*Histo==CF"];
+                 b[label="Prepare\n(clear chi2)"];
+                 c[label="PrepareRaw\n(preapre histograms)"];
+                 check[label="Check\n(ranges et.c)"];
+                 setparms[label="*init parameters"];
+                 estimate[label="EstimateActiveBins"];
+                 fimin[label="if deflago set algo"]
+                 numerical[label="NumericalMinimization"]
+
+
+
+
+                 a->b [label="yes"];
+                 a->c[label="no"];
+                 b->check;
+                 c->check;
+                 check->setparms;
+                 setparms->estimate;
+                 estimate->fimin;
+                 fimin->numerical;
+                 }
+                  \enddot
      * @param histo - object that will be fitted
      * @see Femto1DCF#Fit or @see Femto3DCF#Fit
+     * @see CorrFitFunc#NumericalMinimization
      */
     virtual void Fit(TObject* histo);
     /**

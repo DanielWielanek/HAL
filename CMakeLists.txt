@@ -12,6 +12,11 @@ if(NOT DEFINED CMAKE_CXX_STANDARD)
     Set(CMAKE_CXX_STANDARD 17)
 endif()
 
+# be sure that we have support to std::filesystem
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9)
+      link_libraries(stdc++fs)
+endif()
+
 
 #check if simpath detected
 
@@ -22,8 +27,22 @@ if(DEFINED EXAMPLES)
     endif()
 endif()
 
+Set(WARNING_FLAGS FALSE)
+if(DEFINED  FULL_FLAGS)
+	if(FULL_FLAGS STREQUAL "ON")
+		Set(WARNING_FLAGS TRUE)
+	endif()
+endif()
+
 include(cmake/modules/CMakeListsExternal.cmake)
 
+find_package(OpenMP)
+
+set(MY_WARNINGS
+    -Wall
+    -Wextra
+    -Wreorder
+)
 
 if(DEFINED CIA)
     add_compile_definitions(__CIA__ GLOBAL)

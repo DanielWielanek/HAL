@@ -304,7 +304,6 @@ namespace Hal {
     fCommands.insert(fCommands.begin(), commandExportPath);
     TString commandNJobs = GetExport(Form("%i", (fEndJob - fStartJob + 1)), fgJobTotalNoName);
     fCommands.insert(fCommands.begin(), commandNJobs);
-    std::cout << "DATASET " << commandExportPath << " " << commandNJobs << std::endl;
   }
 
   Int_t JobQueue::GetJobId() {

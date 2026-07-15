@@ -59,5 +59,12 @@ namespace Hal {
 
   void DataManager::GetIOManagerInfo() { fManager->PrintInfo(); }
 
+  void DataManager::ChangeEventJump(Int_t events) {
+    if (events < 1) events = 1;  // at leas me just on 1 event
+    if (fManager->GetEventJump() < events) { fManager->SetEventJump(events); }
+  }
+
   /****************************************************************************************************************************/
+
+
 }  // namespace Hal

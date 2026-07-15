@@ -125,7 +125,8 @@ namespace Hal {
     Cout::PrintInfo(Form("Run from %i to %i events", start, end), EInfo::kInfo);
     Int_t percent = (end - start) / 100;
     if (percent == 0) percent = 1;
-    for (int i = start; i < end; i++) {
+    for (int i = start; i < end; i += fManager->GetEventJump()) {
+      fManager->SetEventJump(1);  // always reset skip events to 1
       ++fProcessedEvents;
       if (fProgressBar) {
         if (fProcessedEvents % percent == 1) Hal::Cout::ProgressBar(fProcessedEvents, end - start);

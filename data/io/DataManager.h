@@ -63,6 +63,11 @@ namespace Hal {
      * @param mngr
      */
     void SetManager(IOManager* mngr) { fManager = mngr; }
+    /**
+     * sends signal to skip many events,
+     * @param events
+     */
+    void ChangeEventJump(Int_t events);
     TObject* GetObject(const char* BrName);
     TString GetSourceName() const;
     const std::vector<TString> GetBranchNameList();

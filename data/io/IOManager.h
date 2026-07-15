@@ -55,6 +55,7 @@ namespace Hal {
   private:
     MagField* fField = {nullptr};
     std::vector<TString> fBranchNameList;
+    Int_t fEventJump = {1};
 
   protected:
     InputDataInfo* fDataInfo = {nullptr};
@@ -249,6 +250,16 @@ namespace Hal {
      * switch gFile to output file
      */
     virtual void CdToOutput() = 0;
+    /**
+     * set number of events to skip
+     * @param i
+     */
+    void SetEventJump(Int_t i) { fEventJump = i; };
+    /**
+     *
+     * @return number of events to skip
+     */
+    Int_t GetEventJump() const { return fEventJump; }
     virtual ~IOManager();
     ClassDef(IOManager, 1)
   };

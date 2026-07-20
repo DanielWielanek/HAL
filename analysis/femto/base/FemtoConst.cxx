@@ -610,11 +610,6 @@ namespace Hal {
       Double_t m1 = p.GetM1();
       Double_t m2 = p.GetM2();
       Double_t ms = m1 + m2;
-      TLorentzVector summ(sum.X(), sum.Y(), sum.Z(), TMath::Sqrt(ms * ms + sum.Mag2()));
-      auto summ2  = summ;
-      Double_t vz = summ.Z() / summ.E();
-      summ.Boost(0, 0, -vz);
-      Double_t phi = summ.Phi();
       switch (kin) {
         case EKinematics::kLCMS: {
           double Pt = sum.Pt();
@@ -631,6 +626,11 @@ namespace Hal {
           p.SetMomenta(p1, p2);
         } break;
         case EKinematics::kPRF: {
+          TLorentzVector summ(sum.X(), sum.Y(), sum.Z(), TMath::Sqrt(ms * ms + sum.Mag2()));
+          auto summ2  = summ;
+          Double_t vz = summ.Z() / summ.E();
+          summ.Boost(0, 0, -vz);
+          Double_t phi = summ.Phi();
           TLorentzVector p1(diff.X(), diff.Y(), diff.Z(), TMath::Sqrt(m1 * m1 + diff.Mag2()));
           TLorentzVector p2(-diff.X(), -diff.Y(), -diff.Z(), TMath::Sqrt(m2 * m2 + diff.Mag2()));
           Double_t ptboost = summ.BoostVector().Pt();

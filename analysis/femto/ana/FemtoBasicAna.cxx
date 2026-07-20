@@ -153,7 +153,7 @@ namespace Hal {
       return Task::EInitFlag::kERROR;
     }
     if (particle2->Mass() > particle1->Mass()) {
-      Cout::PrintInfo(Form("%s wrong mass order, lighter particle should be first !"), EInfo::kError);
+      Cout::PrintInfo(Form("%s wrong mass order, lighter particle should be first !", ClassName()), EInfo::kError);
       return Task::EInitFlag::kERROR;
     }
     auto type = Hal::Femto::PidToPairType(fPdg1, fPdg2);

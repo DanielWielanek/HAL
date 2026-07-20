@@ -52,7 +52,7 @@ namespace Hal {
         fFileNames.push_back(row);
       }
     } else if (file.Length() == 0) {
-      // do nothing
+      fFileNames.resize(1);
     } else {
       fFileNames.resize(1);
       fFileNames[0].push_back(file);

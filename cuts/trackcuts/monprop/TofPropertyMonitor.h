@@ -13,12 +13,20 @@
 
 namespace Hal {
 
-  class TofPropertyMonitor : public TrackFieldMonitorXY {
+  class TofM2Monitor : public TrackFieldMonitorXY {
   public:
-    TofPropertyMonitor();
-    virtual ~TofPropertyMonitor();
-    ClassDef(TofPropertyMonitor, 1)
+    TofM2Monitor();
+    virtual ~TofM2Monitor() {};
+    ClassDef(TofM2Monitor, 1)
   };
+
+  class TofBetaMonitor : public TrackFieldMonitorXY {
+  public:
+    TofBetaMonitor();
+    virtual ~TofBetaMonitor() {};
+    ClassDef(TofBetaMonitor, 1)
+  };
+
 }  // namespace Hal
 
 #endif /* HALFEMTO_CUTS_TRACKCUTS_PROPERTIES_HALTOFPROPERTYMONITOR_H_ */

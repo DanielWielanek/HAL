@@ -51,8 +51,8 @@ jobs:
       if: matrix.os == 'macos-latest'
       shell: bash
       run: |
-        brew update
-        brew upgrade
+        #brew update
+        #brew upgrade
         brew uninstall --force cmake || true
         brew install cmake
         brew install gcc gfortran

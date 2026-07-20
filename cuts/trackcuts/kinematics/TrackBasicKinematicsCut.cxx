@@ -20,7 +20,7 @@
 namespace Hal {
 
   TrackPtYCut::TrackPtYCut() : TrackCut(2) {
-    SetUnitName("p_T [GeV/c]", 0);
+    SetUnitName("p_{T} [GeV/c]", 0);
     SetUnitName("y", 1);
   }
 
@@ -33,7 +33,7 @@ namespace Hal {
   //=====================================================================
 
   TrackPtYAssumedCut::TrackPtYAssumedCut() : TrackCut(2) {
-    SetUnitName("p_T [GeV/c]", 0);
+    SetUnitName("p_{T} [GeV/c]", 0);
     SetUnitName("y_{assum}", 1);
   }
 
@@ -60,7 +60,7 @@ namespace Hal {
   //=====================================================================
 
   TrackPtEtaCut::TrackPtEtaCut() : TrackCut(2) {
-    SetUnitName("p_T [GeV/c]", 0);
+    SetUnitName("p_{T} [GeV/c]", 0);
     SetUnitName("#eta", 1);
   }
 

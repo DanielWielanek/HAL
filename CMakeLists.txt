@@ -51,11 +51,6 @@ if(NOT DEFINED INCLUDE_HAL_SUBIDIR)
   Set(INCLUDE_HAL_SUBIDIR FALSE)
 endif()
 
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/external)
-    add_subdirectory(external)
-endif()
-
-
 PrintConfig()
 SetHeaderVariables(${CMAKE_SOURCE_DIR})
 WriteConfig()
@@ -66,4 +61,8 @@ add_subdirectory (features)
 add_subdirectory (analysis)
 if(USE_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/external)
+    add_subdirectory(external)
 endif()

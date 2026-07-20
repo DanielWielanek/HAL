@@ -7,8 +7,19 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "ToFTrack.h"
+
+#include "Const.h"
+
 namespace Hal {
   ToFTrack::ToFTrack() : fToFNHits(0), fToFTime(0), fToFMass2(0), fToFBeta(0), fToFEnergy(0) {}
 
   ToFTrack::~ToFTrack() {}
+
+  void ToFTrack::ResetToEmpty() {
+    SetFlagBad();
+    fToFNHits  = 0;
+    fToFTime   = Hal::Const::DummyVal();
+    fToFEnergy = fToFMass2 = fToFBeta = Hal::Const::DummyVal();
+  }
+
 }  // namespace Hal

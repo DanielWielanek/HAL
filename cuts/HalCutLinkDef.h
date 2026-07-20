@@ -174,7 +174,8 @@
 #pragma link C++ class Hal::TrackGoodSecondaryFlagCut + ;
 #pragma link C++ class Hal::TrackGlobalFlagCut + ;
 
-#pragma link C++ class Hal::TofPropertyMonitor + ;
+#pragma link C++ class Hal::TofM2Monitor + ;
+#pragma link C++ class Hal::TofBetaMonitor + ;
 #pragma link C++ class Hal::DCAPropertyMonitor + ;
 
 

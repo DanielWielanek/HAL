@@ -88,6 +88,7 @@ namespace Hal {
      * @param toFTime set time of flight
      */
     void SetTime(Float_t toFTime) { fToFTime = toFTime; }
+    virtual void ResetToEmpty();
     virtual ~ToFTrack();
     ClassDef(ToFTrack, 1)
   };

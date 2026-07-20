@@ -28,7 +28,8 @@ __HAL_NAME_OF_CXX_FILES__
 Set(HEADERS )
 Set(LINKDEF __HAL_NAME_OF_LINKDEF__)
 Set(LIBRARY_NAME __HAL_NAME_OF_LIBRARY__)
+#by default only ROOT dependencies
 Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO  EG
 #add other dependencies
  )
-GENERATE_LIBRARY()
+GENERATE_LIBRARY_HAL() #or change to GENERATE_LIBRARY if have such function

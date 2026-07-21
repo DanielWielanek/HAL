@@ -281,6 +281,16 @@ namespace Hal {
     return kTRUE;
   }
 
+  EFormatType Cut::GetFormatType(Int_t taskId) const {
+    EFormatDepth depth = EFormatDepth::kNonBuffered;
+    if (GetUpdateRatio() == ECutUpdate::kTwoTrack || GetUpdateRatio() == ECutUpdate::kTwoTrackBackground) {
+      depth = EFormatDepth::kBuffered;
+    }
+    auto event = Hal::DataFormatManager::Instance()->GetFormat(taskId, depth);
+    if (!event) { return EFormatType::kUnknown; }
+    return event->GetFormatType();
+  }
+
   std::vector<std::pair<TString, Double_t>> Cut::GetBinLabels(Int_t /*int1*/) const {
     std::vector<std::pair<TString, Double_t>> x;
     return x;

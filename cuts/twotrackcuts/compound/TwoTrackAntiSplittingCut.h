@@ -17,6 +17,7 @@ namespace Hal {
     TwoTrackAntiSplittingCut();
     void AcceptOnlySplitted() { SetMinAndMax(1); }
     void AcceptOnlyNonSplitted() { SetMinAndMax(0); };
+    virtual Bool_t Init(Int_t format_id = 0);
     virtual Bool_t Pass(TwoTrack* pair);
     virtual ~TwoTrackAntiSplittingCut();
     ClassDef(TwoTrackAntiSplittingCut, 1)

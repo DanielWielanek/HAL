@@ -6,9 +6,13 @@
  *		E-mail: daniel.wielanek@gmail.com
  *		Warsaw University of Technology, Faculty of Physics
  */
+
 #include "TwoTrackAntiSplittingCut.h"
 
+#include <RtypesCore.h>
+
 #include "ComplexTrack.h"
+#include "Cut.h"
 #include "TwoTrack.h"
 
 namespace Hal {
@@ -30,4 +34,11 @@ namespace Hal {
   }
 
   TwoTrackAntiSplittingCut::~TwoTrackAntiSplittingCut() {}
+
+  Bool_t TwoTrackAntiSplittingCut::Init(Int_t taskId) {
+    auto formatType = GetFormatType(taskId);
+    if (formatType != EFormatType::kComplexReco) return kFALSE;
+    return TwoTrackCut::Init(taskId);
+  }
+
 }  // namespace Hal

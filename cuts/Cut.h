@@ -188,6 +188,12 @@ namespace Hal {
      * @param i parameter no
      */
     inline void SetUnitName(TString name, Int_t i = 0) { fSubCut.SetUnitName(name, i); };
+    /**
+     * try to get format type
+     * @param taskId
+     * @return
+     */
+    EFormatType GetFormatType(Int_t taskId) const;
 
   public:
     /** default constructor

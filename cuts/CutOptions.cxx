@@ -28,7 +28,7 @@ namespace Hal {
   CutOptions::CutOptions(TString opt, Int_t defCol) {
     if (opt.Length() != 0) {
       TString option = opt;
-      TRegexp regexp("\\[([^\]]+)\\]");
+      TRegexp regexp("\\[([^\\]]+)\\]");
       fExtra = option(regexp);
       if (fExtra.Length()) { opt.ReplaceAll(Form("[%s]", fExtra.Data()), ""); }
       if (Hal::Std::FindParam(opt, "re", kFALSE)) SETBIT(fFlag, fgReFlagId);

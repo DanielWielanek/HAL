@@ -29,6 +29,7 @@ namespace Hal {
     static constexpr uint32_t fgFastFlagId      = {4};
     static constexpr uint32_t fgAccNullFlagId   = {5};
     static constexpr uint32_t fgAccDoubleFlagId = {6};
+    static constexpr uint32_t fgStartColSet     = {7};
     Int_t fFlag                                 = {0};
     Int_t fDefCol                               = {-1};
     /**
@@ -77,7 +78,7 @@ namespace Hal {
      * @param opt option
      * @param defCol default collection number
      */
-    CutOptions(TString opt = "", Int_t defCol = -1);
+    CutOptions(TString opt = "", Int_t defCol = -2);
     CutOptions(const CutOptions& other) = default;
     /**
      * clear given flag
@@ -119,6 +120,11 @@ namespace Hal {
      * @return true if keep double option is set
      */
     Bool_t IsKeepDouble() const { return TESTBIT(fFlag, fgAccDoubleFlagId); }
+    /**
+     *
+     * @return true if start colission was set
+     */
+    Bool_t IsColIdSet() const { return TESTBIT(fFlag, fgStartColSet); };
     /**
      *
      * @param set status of real flag

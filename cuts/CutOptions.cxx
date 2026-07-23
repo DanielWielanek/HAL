@@ -26,6 +26,9 @@
 
 namespace Hal {
   CutOptions::CutOptions(TString opt, Int_t defCol) {
+    if (defCol >= -1) { SETBIT(fFlag, fgStartColSet); }
+    if (defCol == -2) defCol = 0;  // not set, set to zero
+    fDefCol = defCol;
     if (opt.Length() != 0) {
       TString option = opt;
       TRegexp regexp("\\[([^\\]]+)\\]");
@@ -48,7 +51,6 @@ namespace Hal {
       }
       fCollections = GetCollectionsFlags(fDefCol, opt);
     }
-    fDefCol = defCol;
     if (fCollections.size() == 0) fCollections.push_back(fDefCol);  // collections where not overwriten
   }
 
@@ -95,7 +97,7 @@ namespace Hal {
       return res;
     }
     if (two_exp) {  //{x}
-      single = startCol;
+      single = TMath::Max(0, startCol);
       for (int i = 0; i < n; i++) {
         res.push_back(single);
         single += jump;

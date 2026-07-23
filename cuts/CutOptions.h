@@ -70,6 +70,14 @@ namespace Hal {
      */
     TString GetCutUpdateRatioName(Hal::ECutUpdate upd) const;
 
+    void SetFlag(Bool_t state, Int_t flag) {
+      if (state) {
+        SETBIT(fFlag, flag);
+      } else {
+        CLRBIT(fFlag, flag);
+      }
+    }
+
   public:
     /**
      * base constructor
@@ -117,6 +125,41 @@ namespace Hal {
      * @return true if keep double option is set
      */
     Bool_t KeepDouble() const { return TESTBIT(fFlag, fgAccDoubleFlagId); }
+    /**
+     *
+     * @param set status of real flag
+     */
+    void SetRe(Bool_t stat = kTRUE) { SetFlag(stat, fgReFlagId); }
+    /**
+     *
+     * @param set status of imaginary flag
+     */
+    void SetIm(Bool_t stat = kTRUE) { SetFlag(stat, fgImFlagId); }
+    /**
+     *
+     * @param set status of signal flag
+     */
+    void SetSig(Bool_t stat = kTRUE) { SetFlag(stat, fgSigFlagId); }
+    /**
+     *
+     * @return @param set status of background flag
+     */
+    void SetBckg(Bool_t stat = kTRUE) { SetFlag(stat, fgBckgFlagId); }
+    /**
+     *
+     * @return @param set status of fast flag
+     */
+    void SetFast(Bool_t stat = kTRUE) { SetFlag(stat, fgFastFlagId); }
+    /**
+     *
+     * @return @param set status of null flag
+     */
+    void SetNull(Bool_t stat = kTRUE) { SetFlag(stat, fgAccNullFlagId); }
+    /**
+     *
+     * @return @param set status of double flag
+     */
+    void SetKeepDouble(Bool_t stat = kTRUE) { SetFlag(stat, fgAccDoubleFlagId); }
     /**
      *
      * @return collection id's

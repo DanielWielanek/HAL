@@ -126,15 +126,14 @@ namespace Hal {
     } else {
       upds.push_back(monitor.GetUpdateRatio());
     }
-    TString option     = opt;
-    TString target_opt = "";
-    if (Hal::Std::FindParam(option, "re") && Hal::Std::FindParam(option, "im")) {
+    Hal::CutOptions target_opt;
+    if (opts.Re() && opts.Im()) {
       Cout::PrintInfo(
         "CutContainer: You add cut monitor with both im and re flags, this is not supported now, only re flag will be used",
         EInfo::kLowWarning);
     }
-    if (Hal::Std::FindParam(option, "re")) target_opt = "re";
-    if (Hal::Std::FindParam(option, "im")) target_opt = "im";
+    target_opt.SetRe(opts.Re());
+    target_opt.SetIm(opts.Im());
     for (auto upd : upds) {
       if (fSize <= static_cast<Int_t>(upd)) {
         Cout::PrintInfo("CutContainer: can't hold this cut because it's update ratio is too big, check fTries or call "

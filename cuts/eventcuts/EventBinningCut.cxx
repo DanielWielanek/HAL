@@ -11,6 +11,7 @@
 
 #include "Cout.h"
 #include "Cut.h"
+#include "CutOptions.h"
 #include "EventComplexCut.h"
 #include "Package.h"
 #include "Parameter.h"
@@ -54,16 +55,16 @@ namespace Hal {
     fValuesUp    = other.fValuesUp;
     fTotalBinsNo = other.fTotalBinsNo;
     fLastPassed  = other.fLastPassed;
-    if (other.fEventCut) { fEventCut = (EventCut*) other.fEventCut->MakeCopy(""); }
+    if (other.fEventCut) { fEventCut = (EventCut*) other.fEventCut->MakeCopy(); }
   }
 
   EventBinningCut::EventBinningCut(const EventCut& cut, const std::vector<std::vector<Double_t>>& init) :
-    EventCut(cut.GetCutSize()), fEventCut((EventCut*) cut.MakeCopy("")) {
+    EventCut(cut.GetCutSize()), fEventCut((EventCut*) cut.MakeCopy()) {
     PreInit(init);
   }
 
   EventBinningCut::EventBinningCut(const EventCut& cut, const std::initializer_list<int>& init) :
-    EventCut(cut.GetCutSize()), fEventCut((EventCut*) cut.MakeCopy("")) {
+    EventCut(cut.GetCutSize()), fEventCut((EventCut*) cut.MakeCopy()) {
     std::vector<std::vector<Double_t>> xvals;
     Int_t counter = 0;
     for (auto val : init) {
@@ -88,7 +89,7 @@ namespace Hal {
 
   EventBinningCut::EventBinningCut(const EventCut& cut, const std::initializer_list<std::initializer_list<Double_t>>& init) :
     EventCut(cut.GetCutSize()) {
-    fEventCut = (EventCut*) cut.MakeCopy("");
+    fEventCut = (EventCut*) cut.MakeCopy();
     std::vector<std::vector<Double_t>> vec;
     for (auto i : init) {
       vec.push_back(Hal::Std::GetVector(i));
@@ -142,7 +143,7 @@ namespace Hal {
     fStepsNo     = other.fStepsNo;
     fValuesUp    = other.fValuesUp;
     fTotalBinsNo = other.fTotalBinsNo;
-    if (other.fEventCut) fEventCut = (EventCut*) other.fEventCut->MakeCopy("");
+    if (other.fEventCut) fEventCut = (EventCut*) other.fEventCut->MakeCopy();
     return *this;
   }
 
@@ -150,16 +151,14 @@ namespace Hal {
     if (fEventCut) delete fEventCut;
   }
 
-  EventBinningCut* EventBinningCut::MakeCopy(TString opt) const {
-
-    Bool_t acceptNulls = Hal::Std::FindParam(opt, "null");
-    if (Hal::Std::FindParam(opt, "re")) {
+  EventBinningCut* EventBinningCut::MakeCopy(const CutOptions& opt) const {
+    if (opt.IsRe()) {
       return new EventBinningCut(EventRealCut(*fEventCut), fValuesUp);
       // if (acceptNulls) ((Hal::EventRealCut*) res->fEventCut)->AcceptNulls(kTRUE);
     }
-    if (Hal::Std::FindParam(opt, "im")) {
+    if (opt.IsIm()) {
       EventBinningCut* res = new EventBinningCut(EventImaginaryCut(*fEventCut), fValuesUp);
-      if (acceptNulls) ((Hal::EventImaginaryCut*) res->fEventCut)->AcceptNulls(kTRUE);
+      ((Hal::EventImaginaryCut*) res->fEventCut)->AcceptNulls(opt.IsNull());
       return res;
     }
     return new EventBinningCut(*this);

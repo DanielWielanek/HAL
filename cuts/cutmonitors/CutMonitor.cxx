@@ -10,6 +10,7 @@
 #include "Cout.h"
 #include "Cut.h"
 #include "CutMonitorComplex.h"
+#include "CutOptions.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "StdString.h"
@@ -210,7 +211,7 @@ namespace Hal {
     }
   }
 
-  CutMonitor* CutMonitor::MakeCopy(TString opt) const {
+  CutMonitor* CutMonitor::MakeCopy(const CutOptions& opt) const {
     auto res = TryMakeComplexMonitor(opt);
     if (!res) res = (CutMonitor*) this->MakeInnerCopy();
     res->MakeComplexAxes(opt);
@@ -373,11 +374,11 @@ namespace Hal {
     }
   }
 
-  void CutMonitor::MakeComplexAxes(TString opt) {
+  void CutMonitor::MakeComplexAxes(const CutOptions& opt) {
     if (ObjMonitor()) return;  // do not create magic flags from object monitors
     Bool_t Re = kFALSE, Im = kFALSE;
-    if (Hal::Std::FindParam(opt, "re")) Re = kTRUE;
-    if (Hal::Std::FindParam(opt, "im")) Im = kTRUE;
+    Re = opt.IsRe();
+    Im = opt.IsIm();
     if (Re == kFALSE && Im == kFALSE) return;
     for (int axis = 0; axis < GetAxisNo(); axis++) {
       TString cut_name = GetCutName(axis);
@@ -414,10 +415,10 @@ namespace Hal {
     }
   }
 
-  CutMonitor* CutMonitor::TryMakeComplexMonitor(TString opt) const {
+  CutMonitor* CutMonitor::TryMakeComplexMonitor(const CutOptions& opt) const {
     if (!ObjMonitor()) return nullptr;
     if (dynamic_cast<const ComplexMonitor*>(this)) return nullptr;
-    if (Hal::Std::FindParam(opt, "im")) {
+    if (opt.IsIm()) {
       switch (fUpdateRatio) {
         case ECutUpdate::kEvent: {
           return new Hal::EventCutMonitorImaginary((CutMonitor*) this);
@@ -436,7 +437,7 @@ namespace Hal {
         } break;
       }
     }
-    if (Hal::Std::FindParam(opt, "re")) {
+    if (opt.IsRe()) {
       switch (fUpdateRatio) {
         case ECutUpdate::kEvent: {
           return new Hal::EventCutMonitorReal((CutMonitor*) this);

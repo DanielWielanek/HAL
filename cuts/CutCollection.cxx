@@ -43,8 +43,8 @@ namespace Hal {
   }
 
   void CutCollection::AddCut(Cut* cut, Hal::CutOptions opts) {
-    Bool_t fast       = opts.Fast();
-    Bool_t keepDouble = opts.KeepDouble();
+    Bool_t fast       = opts.IsFast();
+    Bool_t keepDouble = opts.IsKeepDouble();
     if (fDummy) return;
     if (cut == NULL) {
       Cout::PrintInfo("CutCollection: Empty cut", EInfo::kLowWarning);

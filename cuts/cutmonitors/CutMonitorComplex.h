@@ -28,7 +28,7 @@ namespace Hal {
   protected:
     CutMonitor* fMonitor = {nullptr};
 
-    virtual void MakeComplexAxes(TString opt);
+    virtual void MakeComplexAxes(const CutOptions& opt);
 
   public:
     ComplexMonitor();
@@ -39,7 +39,7 @@ namespace Hal {
     virtual Hal::Package* Report() const;
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t Init(Int_t task_id);
-    virtual Hal::CutMonitor* MakeCopy(TString opt = "") const = 0;
+    virtual Hal::CutMonitor* MakeCopy(const CutOptions& opt) const = 0;
     virtual Bool_t AreSimilar(const Hal::CutMonitor& other) const;
     virtual ~ComplexMonitor();
     ClassDef(ComplexMonitor, 1)
@@ -52,7 +52,7 @@ namespace Hal {
     EventCutMonitorImaginary() { fUpdateRatio = ECutUpdate::kEvent; };
     explicit EventCutMonitorImaginary(CutMonitor* other) : ComplexMonitor(other) {};
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Hal::CutMonitor* MakeCopy(TString opt = "") const;
+    virtual Hal::CutMonitor* MakeCopy(const CutOptions& opt) const;
     virtual ~EventCutMonitorImaginary() {};
     ClassDef(EventCutMonitorImaginary, 1)
   };
@@ -63,7 +63,7 @@ namespace Hal {
     TrackCutMonitorImaginary() { fUpdateRatio = ECutUpdate::kTrack; };
     explicit TrackCutMonitorImaginary(CutMonitor* other) : ComplexMonitor(other) {};
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Hal::CutMonitor* MakeCopy(TString opt = "") const;
+    virtual Hal::CutMonitor* MakeCopy(const CutOptions& opt) const;
     virtual ~TrackCutMonitorImaginary() {};
     ClassDef(TrackCutMonitorImaginary, 1)
   };
@@ -76,7 +76,7 @@ namespace Hal {
     TwoTrackCutMonitorImaginary() { fUpdateRatio = ECutUpdate::kTwoTrack; };
     explicit TwoTrackCutMonitorImaginary(CutMonitor* other) : ComplexMonitor(other) {};
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Hal::CutMonitor* MakeCopy(TString opt = "") const;
+    virtual Hal::CutMonitor* MakeCopy(const CutOptions& opt) const;
     virtual ~TwoTrackCutMonitorImaginary() {};
     ClassDef(TwoTrackCutMonitorImaginary, 1)
   };
@@ -88,7 +88,7 @@ namespace Hal {
     EventCutMonitorReal() { fUpdateRatio = ECutUpdate::kEvent; };
     explicit EventCutMonitorReal(CutMonitor* other) : ComplexMonitor(other) {};
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Hal::CutMonitor* MakeCopy(TString opt = "") const;
+    virtual Hal::CutMonitor* MakeCopy(const CutOptions& opt) const;
     virtual ~EventCutMonitorReal() {};
     ClassDef(EventCutMonitorReal, 1)
   };
@@ -99,7 +99,7 @@ namespace Hal {
     TrackCutMonitorReal() { fUpdateRatio = ECutUpdate::kTrack; };
     explicit TrackCutMonitorReal(CutMonitor* other) : ComplexMonitor(other) {};
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Hal::CutMonitor* MakeCopy(TString opt = "") const;
+    virtual Hal::CutMonitor* MakeCopy(const CutOptions& opt) const;
     virtual ~TrackCutMonitorReal() {};
     ClassDef(TrackCutMonitorReal, 1)
   };
@@ -112,7 +112,7 @@ namespace Hal {
     TwoTrackCutMonitorReal() { fUpdateRatio = ECutUpdate::kTwoTrack; };
     explicit TwoTrackCutMonitorReal(CutMonitor* other) : ComplexMonitor(other) {};
     virtual void Update(Bool_t passed, TObject* obj);
-    virtual Hal::CutMonitor* MakeCopy(TString opt = "") const;
+    virtual Hal::CutMonitor* MakeCopy(const CutOptions& opt) const;
     virtual ~TwoTrackCutMonitorReal() {};
     ClassDef(TwoTrackCutMonitorReal, 1)
   };

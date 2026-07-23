@@ -21,6 +21,7 @@ namespace Hal {
 
   class CutOptions : public TObject {
     std::vector<Int_t> fCollections;
+    TString fExtra;
     static constexpr uint32_t fgReFlagId        = {0};
     static constexpr uint32_t fgImFlagId        = {1};
     static constexpr uint32_t fgSigFlagId       = {2};
@@ -56,14 +57,6 @@ namespace Hal {
      */
     std::vector<Int_t> GetCollectionsFlags(Int_t startCol, TString option) const;
     /**
-     * make copy of cut
-     * @param cu cut to copy
-     * @param flag re for real, other create img flag
-     * @param acceptNulls for img if true than accept nulls
-     * @return
-     */
-    Hal::Cut* MakeCutCopy(const Hal::Cut& cut, TString flag, Bool_t acceptNulls = kTRUE) const;
-    /**
      * return cut update ratio name
      * @param upd
      * @return
@@ -85,6 +78,7 @@ namespace Hal {
      * @param defCol default collection number
      */
     CutOptions(TString opt = "", Int_t defCol = -1);
+    CutOptions(const CutOptions& other) = default;
     /**
      * clear given flag
      * @param flag
@@ -94,37 +88,37 @@ namespace Hal {
      *
      * @return true if real option is set
      */
-    Bool_t Re() const { return TESTBIT(fFlag, fgReFlagId); }
+    Bool_t IsRe() const { return TESTBIT(fFlag, fgReFlagId); }
     /**
      *
      * @return true if imaginary option is set
      */
-    Bool_t Im() const { return TESTBIT(fFlag, fgImFlagId); }
+    Bool_t IsIm() const { return TESTBIT(fFlag, fgImFlagId); }
     /**
      *
      * @return true if signal option is set
      */
-    Bool_t Sig() const { return TESTBIT(fFlag, fgSigFlagId); }
+    Bool_t IsSig() const { return TESTBIT(fFlag, fgSigFlagId); }
     /**
      *
      * @return true if background option is set
      */
-    Bool_t Bckg() const { return TESTBIT(fFlag, fgBckgFlagId); }
+    Bool_t IsBckg() const { return TESTBIT(fFlag, fgBckgFlagId); }
     /**
      *
      * @return true if fast option is set
      */
-    Bool_t Fast() const { return TESTBIT(fFlag, fgFastFlagId); }
+    Bool_t IsFast() const { return TESTBIT(fFlag, fgFastFlagId); }
     /**
      *
      * @return true if accept null flags is set
      */
-    Bool_t Null() const { return TESTBIT(fFlag, fgAccNullFlagId); }
+    Bool_t IsNull() const { return TESTBIT(fFlag, fgAccNullFlagId); }
     /**
      *
      * @return true if keep double option is set
      */
-    Bool_t KeepDouble() const { return TESTBIT(fFlag, fgAccDoubleFlagId); }
+    Bool_t IsKeepDouble() const { return TESTBIT(fFlag, fgAccDoubleFlagId); }
     /**
      *
      * @param set status of real flag
@@ -177,6 +171,14 @@ namespace Hal {
      * @return
      */
     Hal::CutMonitor* MakeMonitorCopy(const Hal::CutMonitor& x) const;
+    /**
+     * @return extra flags
+     */
+    TString GetExtra() const { return fExtra; }
+    /**
+     * set extra flags
+     */
+    void SetExtra(TString extra) { fExtra = extra; };
     virtual ~CutOptions() {};
     ClassDef(CutOptions, 1)
   };

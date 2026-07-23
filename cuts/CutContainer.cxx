@@ -104,8 +104,8 @@ namespace Hal {
     };
     std::vector<ECutUpdate> upds;
     if (cut.GetUpdateRatio() == ECutUpdate::kTwoTrack || cut.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground) {
-      if (opts.Sig()) upds.push_back(ECutUpdate::kTwoTrack);
-      if (opts.Bckg()) upds.push_back(ECutUpdate::kTwoTrackBackground);
+      if (opts.IsSig()) upds.push_back(ECutUpdate::kTwoTrack);
+      if (opts.IsBckg()) upds.push_back(ECutUpdate::kTwoTrackBackground);
     } else {
       upds.push_back(cut.GetUpdateRatio());
     }
@@ -121,19 +121,19 @@ namespace Hal {
     auto monitor_copy = std::unique_ptr<Hal::CutMonitor>(monitor.MakeCopy());
     std::vector<ECutUpdate> upds;
     if (monitor.GetUpdateRatio() == ECutUpdate::kTwoTrack || monitor.GetUpdateRatio() == ECutUpdate::kTwoTrackBackground) {
-      if (opts.Sig()) upds.push_back(ECutUpdate::kTwoTrack);
-      if (opts.Bckg()) upds.push_back(ECutUpdate::kTwoTrackBackground);
+      if (opts.IsSig()) upds.push_back(ECutUpdate::kTwoTrack);
+      if (opts.IsBckg()) upds.push_back(ECutUpdate::kTwoTrackBackground);
     } else {
       upds.push_back(monitor.GetUpdateRatio());
     }
     Hal::CutOptions target_opt;
-    if (opts.Re() && opts.Im()) {
+    if (opts.IsRe() && opts.IsIm()) {
       Cout::PrintInfo(
         "CutContainer: You add cut monitor with both im and re flags, this is not supported now, only re flag will be used",
         EInfo::kLowWarning);
     }
-    target_opt.SetRe(opts.Re());
-    target_opt.SetIm(opts.Im());
+    target_opt.SetRe(opts.IsRe());
+    target_opt.SetIm(opts.IsIm());
     for (auto upd : upds) {
       if (fSize <= static_cast<Int_t>(upd)) {
         Cout::PrintInfo("CutContainer: can't hold this cut because it's update ratio is too big, check fTries or call "

@@ -10,10 +10,12 @@
 #ifndef _HALCUT_H_
 #define _HALCUT_H_
 
+#include "CutOptions.h"
 #include "SubCut.h"
 
 #include <TNamed.h>
 #include <TString.h>
+
 
 #include <vector>
 
@@ -67,6 +69,7 @@ namespace Hal {
     friend class TwoTrackRealCut;
 
     friend class CutBackdoor;
+
 
   private:
     /**
@@ -345,7 +348,7 @@ namespace Hal {
      * @param opt - option of making cut, can be re or im
      * @return copy of this cut
      */
-    virtual Cut* MakeCopy(TString opt = "") const;
+    virtual Cut* MakeCopy(const CutOptions& opt = CutOptions()) const;
     /**
      *
      * @return report about this cut

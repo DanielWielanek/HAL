@@ -26,23 +26,29 @@
 
 namespace Hal {
   CutOptions::CutOptions(TString opt, Int_t defCol) {
-    if (Hal::Std::FindParam(opt, "re", kFALSE)) SETBIT(fFlag, fgReFlagId);
-    if (Hal::Std::FindParam(opt, "im", kFALSE)) SETBIT(fFlag, fgImFlagId);
-    if (!Hal::Std::FindParam(opt, "sig", kFALSE) && !Hal::Std::FindParam(opt, "bckg", kFALSE)) {
-      SETBIT(fFlag, fgSigFlagId);
-      SETBIT(fFlag, fgBckgFlagId);
+    if (opt.Length() != 0) {
+      TString option = opt;
+      TRegexp regexp("\\[([^\]]+)\\]");
+      fExtra = option(regexp);
+      if (fExtra.Length()) { opt.ReplaceAll(Form("[%s]", fExtra.Data()), ""); }
+      if (Hal::Std::FindParam(opt, "re", kFALSE)) SETBIT(fFlag, fgReFlagId);
+      if (Hal::Std::FindParam(opt, "im", kFALSE)) SETBIT(fFlag, fgImFlagId);
+      if (!Hal::Std::FindParam(opt, "sig", kFALSE) && !Hal::Std::FindParam(opt, "bckg", kFALSE)) {
+        SETBIT(fFlag, fgSigFlagId);
+        SETBIT(fFlag, fgBckgFlagId);
+      }
+      if (Hal::Std::FindParam(opt, "null", kFALSE)) SETBIT(fFlag, fgAccNullFlagId);
+      if (Hal::Std::FindParam(opt, "double", kFALSE)) SETBIT(fFlag, fgAccDoubleFlagId);
+      if (Hal::Std::FindParam(opt, "sig", kFALSE)) SETBIT(fFlag, fgSigFlagId);
+      if (Hal::Std::FindParam(opt, "bckg", kFALSE)) SETBIT(fFlag, fgBckgFlagId);
+      if (Hal::Std::FindParam(opt, "fast", kFALSE)) SETBIT(fFlag, fgFastFlagId);
+      if (Hal::Std::FindParam(opt, "both", kFALSE)) {
+        SETBIT(fFlag, fgSigFlagId);
+        SETBIT(fFlag, fgBckgFlagId);
+      }
+      fCollections = GetCollectionsFlags(fDefCol, opt);
     }
-    if (Hal::Std::FindParam(opt, "null", kFALSE)) SETBIT(fFlag, fgAccNullFlagId);
-    if (Hal::Std::FindParam(opt, "double", kFALSE)) SETBIT(fFlag, fgAccDoubleFlagId);
-    if (Hal::Std::FindParam(opt, "sig", kFALSE)) SETBIT(fFlag, fgSigFlagId);
-    if (Hal::Std::FindParam(opt, "bckg", kFALSE)) SETBIT(fFlag, fgBckgFlagId);
-    if (Hal::Std::FindParam(opt, "fast", kFALSE)) SETBIT(fFlag, fgFastFlagId);
-    if (Hal::Std::FindParam(opt, "both", kFALSE)) {
-      SETBIT(fFlag, fgSigFlagId);
-      SETBIT(fFlag, fgBckgFlagId);
-    }
-    fDefCol      = defCol;
-    fCollections = GetCollectionsFlags(fDefCol, opt);
+    fDefCol = defCol;
     if (fCollections.size() == 0) fCollections.push_back(fDefCol);  // collections where not overwriten
   }
 
@@ -55,21 +61,24 @@ namespace Hal {
   }
 
   Hal::Cut* CutOptions::MakeCutCopy(const Hal::Cut& x) const {
-    if (Re()) {
-      return MakeCutCopy(x, "re", kFALSE);
-    } else if (Im()) {
-      return MakeCutCopy(x, "im", Null());
+    CutOptions opt;
+    if (IsRe()) {
+      opt.SetRe(IsRe());
+      opt.SetNull(false);
+    } else if (IsIm()) {
+      opt.SetIm(IsIm());
+      opt.SetNull(IsNull());
     }
-    return x.MakeCopy();
+    auto copy = x.MakeCopy(opt);
+    copy->SetCollectionID(x.GetCollectionID());
+    return copy;
   }
 
   Hal::CutMonitor* CutOptions::MakeMonitorCopy(const Hal::CutMonitor& x) const {
-    TString innerOpt = "";
-    if (Re())
-      innerOpt = "re";
-    else if (Im())
-      innerOpt = "im";
-    Hal::CutMonitor* res = x.MakeCopy(innerOpt);
+    CutOptions opts;
+    opts.SetRe(IsRe());
+    opts.SetIm(IsIm());
+    Hal::CutMonitor* res = x.MakeCopy(opts);
     return res;
   }
   std::vector<Int_t> CutOptions::GetCollectionsFlags(Int_t startCol, TString option) const {
@@ -101,13 +110,6 @@ namespace Hal {
     return res;
   }
 
-  Hal::Cut* CutOptions::MakeCutCopy(const Hal::Cut& cut, TString flag, Bool_t acceptNulls) const {
-    TString opt = flag;
-    if (acceptNulls) opt = opt + "+null";
-    Hal::Cut* res = cut.MakeCopy(opt);
-    if (res) res->SetCollectionID(cut.GetCollectionID());
-    return res;
-  }
   TString CutOptions::GetCutUpdateRatioName(ECutUpdate upd) const {
     TString update_ratio_name;
     switch (upd) {

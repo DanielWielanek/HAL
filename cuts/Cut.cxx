@@ -176,28 +176,27 @@ namespace Hal {
     Cout::Text(Form("Failed %llu", GetFailed()), "M");
   }
 
-  Cut* Cut::MakeCopy(TString opt) const {
-    Cut* res           = nullptr;
-    Bool_t acceptNulls = Hal::Std::FindParam(opt, "null");
-    if (Hal::Std::FindParam(opt, "re")) {
+  Cut* Cut::MakeCopy(const CutOptions& opt) const {
+    Cut* res = nullptr;
+    if (opt.IsRe()) {
       if (auto* cut = dynamic_cast<const EventCut*>(this)) { res = new EventRealCut(*cut); }
       if (auto* cut = dynamic_cast<const TrackCut*>(this)) { res = new TrackRealCut(*cut); }
       if (auto* cut = dynamic_cast<const TwoTrackCut*>(this)) { res = new TwoTrackRealCut(*cut); }
       if (!res) { Hal::Cout::PrintInfo(Form("%s Make Copy problem", ClassName()), Hal::EInfo::kError); }
       return res;
     }
-    if (Hal::Std::FindParam(opt, "im")) {
+    if (opt.IsIm()) {
       if (auto* cut = dynamic_cast<const EventCut*>(this)) {
         res = new EventImaginaryCut(*cut);
-        if (acceptNulls) static_cast<EventImaginaryCut*>(res)->AcceptNulls(kTRUE);
+        if (opt.IsNull()) static_cast<EventImaginaryCut*>(res)->AcceptNulls(opt.IsNull());
       }
       if (auto* cut = dynamic_cast<const TrackCut*>(this)) {
         res = new TrackImaginaryCut(*cut);
-        if (acceptNulls) static_cast<TrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
+        if (opt.IsNull()) static_cast<TrackImaginaryCut*>(res)->AcceptNulls(opt.IsNull());
       }
       if (auto* cut = dynamic_cast<const TwoTrackCut*>(this)) {
         res = new TwoTrackImaginaryCut(*cut);
-        if (acceptNulls) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(kTRUE);
+        if (opt.IsNull()) static_cast<TwoTrackImaginaryCut*>(res)->AcceptNulls(opt.IsNull());
       }
       if (!res) { Hal::Cout::PrintInfo(Form("%s Make Copy problem", ClassName()), Hal::EInfo::kError); }
       return res;
@@ -250,11 +249,11 @@ namespace Hal {
   }
 
   TString Cut::CutName(Option_t* opt) const {
-    TString option = opt;
+    CutOptions option(opt);
     TString name;
     TString className = ClassName();
     if (fLabel >= 0) className = Form("%s_%i", className.Data(), fLabel);
-    if (option.EqualTo("re")) {
+    if (option.IsRe()) {
       if (InheritsFrom("Hal::EventCut")) {
         name = Form("Hal::EventRealCut(%s)", className.Data());
       } else if (InheritsFrom("Hal::TrackCut")) {
@@ -262,7 +261,7 @@ namespace Hal {
       } else if (InheritsFrom("Hal::TwoTrackCut")) {
         name = Form("Hal::TwoTrackRealCut(%s)", className.Data());
       }
-    } else if (option.EqualTo("im")) {
+    } else if (option.IsIm()) {
       if (InheritsFrom("Hal::EventCut")) {
         name = Form("Hal::EventImaginaryCut(%s)", className.Data());
       } else if (InheritsFrom("Hal::TrackCut")) {
@@ -309,7 +308,6 @@ namespace Hal {
   }
 
   void CutBackdoor::SetValue(Cut& cut, Double_t value, Int_t index) const { cut.SetValue(value, index); }
-
 
   void CutBackdoor::SetUnitName(Cut& cut, TString unitName, Int_t index) const { cut.SetUnitName(unitName, index); }
 

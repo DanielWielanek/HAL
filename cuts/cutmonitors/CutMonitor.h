@@ -11,6 +11,7 @@
 #include <TObject.h>
 #include <TString.h>
 
+#include "CutOptions.h"
 #include "Std.h"
 
 namespace Hal {
@@ -145,14 +146,14 @@ namespace Hal {
      * make complex axes for cuts
      * @param opt
      */
-    virtual void MakeComplexAxes(TString opt = "");
+    virtual void MakeComplexAxes(const CutOptions& opt);
     /**
      * tries to make an complex monitors, return nullptr if failed, moved only to avoid full
      * declaration in hader
      * @param opt
      * @return
      */
-    CutMonitor* TryMakeComplexMonitor(TString opt) const;
+    CutMonitor* TryMakeComplexMonitor(const CutOptions& opt) const;
     /**
      * make simple copy, overwrite in custom classes
      * @return
@@ -283,7 +284,7 @@ namespace Hal {
      * @param opt copy option, for some of the cut monitors "re" and "im" make real and imaginary copy of monitor
      * @return copy of this
      */
-    virtual CutMonitor* MakeCopy(TString opt = "") const;
+    virtual CutMonitor* MakeCopy(const CutOptions& opt = CutOptions()) const;
     /**
      *
      * @return report from this cut monitor

@@ -20,7 +20,7 @@
 namespace HalOTF {
   DetectorHitsCut::DetectorHitsCut(Int_t par) : Hal::TrackExpCut(par) {}
 
-  std::vector<std::pair<TString, Double_t>> DetectorHitsCut::GetBinLabels(Int_t par) const {
+  std::vector<std::pair<TString, Double_t>> DetectorHitsCut::GetBinLabels(Int_t /*par*/) const {
     std::vector<std::pair<TString, Double_t>> res;
     std::pair<TString, Double_t> data;
     data.first  = "Undetected";
@@ -67,7 +67,7 @@ namespace HalOTF {
 
   DetectorHitsABCSumCut::DetectorHitsABCSumCut() : DetectorHitsCut(1) { SetUnitName("NHits_{ABC} [AU]"); }
 
-  std::vector<std::pair<TString, Double_t>> DetectorHitsABCSumCut::GetBinLabels(Int_t par) const {
+  std::vector<std::pair<TString, Double_t>> DetectorHitsABCSumCut::GetBinLabels(Int_t /*par*/) const {
     std::vector<std::pair<TString, Double_t>> x;
     return x;
   }

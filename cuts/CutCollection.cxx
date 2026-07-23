@@ -158,7 +158,7 @@ namespace Hal {
           fCuts->Compress();
           i--;
         } else {
-          Cout::PrintInfo(Form("CutCollection: Succesfully  inited %s in cut collection %i",
+          Cout::PrintInfo(Form("CutCollection: Successfully  inited %s in cut collection %i",
                                ((Cut*) fCuts->UncheckedAt(i))->CutName().Data(),
                                GetCollectionID()),
                           EInfo::kDebugInfo);
@@ -175,7 +175,7 @@ namespace Hal {
           fFastCuts->Compress();
           i--;
         } else {
-          Cout::PrintInfo(Form("Fast CutCollection: Succesfully inited %s in cut collection %i",
+          Cout::PrintInfo(Form("Fast CutCollection: Successfully inited %s in cut collection %i",
                                ((Cut*) fFastCuts->UncheckedAt(i))->CutName().Data(),
                                GetCollectionID()),
                           EInfo::kDebugInfo);

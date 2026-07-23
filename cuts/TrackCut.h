@@ -30,16 +30,6 @@ namespace Hal {
      * @return true if track pass, false otherwise
      */
     virtual Bool_t Pass(Track* track) = 0;
-    /**
-     *
-     * @param opt - option of making complex cut, by default
-     * cut contains imaginary and real part (like complex(this,this), however by
-     * specify "re" or "im" you can enforce creation cut (this,virtual) or
-     * (virtual, this) rescpectively
-     * @return complex cut from this cut
-     * i
-     */
-    TrackComplexCut* MakeComplexCut(Option_t* opt) const;
     virtual Package* Report() const;
     ClassDef(TrackCut, 1)
   };

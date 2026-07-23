@@ -26,17 +26,20 @@
 
 namespace Hal {
   CutOptions::CutOptions(TString opt, Int_t defCol) {
-    if (Hal::Std::FindParam(opt, "re", kFALSE)) fRe = kTRUE;
-    if (Hal::Std::FindParam(opt, "im", kFALSE)) fIm = kTRUE;
-    if (!Hal::Std::FindParam(opt, "sig", kFALSE) && !Hal::Std::FindParam(opt, "bckg", kFALSE)) { fSig = fBckg = kTRUE; }
-    if (Hal::Std::FindParam(opt, "null", kFALSE)) fAcceptNull = kTRUE;
-    if (Hal::Std::FindParam(opt, "double", kFALSE)) fAcceptDouble = kTRUE;
-    if (Hal::Std::FindParam(opt, "sig", kFALSE)) fSig = kTRUE;
-    if (Hal::Std::FindParam(opt, "bckg", kFALSE)) fBckg = kTRUE;
-    if (Hal::Std::FindParam(opt, "fast", kFALSE)) fFast = kTRUE;
+    if (Hal::Std::FindParam(opt, "re", kFALSE)) SETBIT(fFlag, fgReFlagId);
+    if (Hal::Std::FindParam(opt, "im", kFALSE)) SETBIT(fFlag, fgImFlagId);
+    if (!Hal::Std::FindParam(opt, "sig", kFALSE) && !Hal::Std::FindParam(opt, "bckg", kFALSE)) {
+      SETBIT(fFlag, fgSigFlagId);
+      SETBIT(fFlag, fgBckgFlagId);
+    }
+    if (Hal::Std::FindParam(opt, "null", kFALSE)) SETBIT(fFlag, fgAccNullFlagId);
+    if (Hal::Std::FindParam(opt, "double", kFALSE)) SETBIT(fFlag, fgAccDoubleFlagId);
+    if (Hal::Std::FindParam(opt, "sig", kFALSE)) SETBIT(fFlag, fgSigFlagId);
+    if (Hal::Std::FindParam(opt, "bckg", kFALSE)) SETBIT(fFlag, fgBckgFlagId);
+    if (Hal::Std::FindParam(opt, "fast", kFALSE)) SETBIT(fFlag, fgFastFlagId);
     if (Hal::Std::FindParam(opt, "both", kFALSE)) {
-      fSig  = kTRUE;
-      fBckg = kTRUE;
+      SETBIT(fFlag, fgSigFlagId);
+      SETBIT(fFlag, fgBckgFlagId);
     }
     fDefCol      = defCol;
     fCollections = GetCollectionsFlags(fDefCol, opt);
@@ -44,27 +47,27 @@ namespace Hal {
   }
 
   void CutOptions::ClearFlag(TString flag) {
-    if (Hal::Std::FindParam(flag, "re", kFALSE)) fRe = kFALSE;
-    if (Hal::Std::FindParam(flag, "im", kFALSE)) fIm = kFALSE;
-    if (Hal::Std::FindParam(flag, "sig", kFALSE)) fSig = kFALSE;
-    if (Hal::Std::FindParam(flag, "bckg", kFALSE)) fBckg = kFALSE;
-    if (Hal::Std::FindParam(flag, "fast", kFALSE)) fFast = kFALSE;
+    if (Hal::Std::FindParam(flag, "re", kFALSE)) CLRBIT(fFlag, fgReFlagId);
+    if (Hal::Std::FindParam(flag, "im", kFALSE)) CLRBIT(fFlag, fgImFlagId);
+    if (Hal::Std::FindParam(flag, "sig", kFALSE)) CLRBIT(fFlag, fgSigFlagId);
+    if (Hal::Std::FindParam(flag, "bckg", kFALSE)) CLRBIT(fFlag, fgBckgFlagId);
+    if (Hal::Std::FindParam(flag, "fast", kFALSE)) CLRBIT(fFlag, fgFastFlagId);
   }
 
   Hal::Cut* CutOptions::MakeCutCopy(const Hal::Cut& x) const {
-    if (fRe) {
+    if (Re()) {
       return MakeCutCopy(x, "re", kFALSE);
-    } else if (fIm) {
-      return MakeCutCopy(x, "im", fAcceptNull);
+    } else if (Im()) {
+      return MakeCutCopy(x, "im", Null());
     }
     return x.MakeCopy();
   }
 
   Hal::CutMonitor* CutOptions::MakeMonitorCopy(const Hal::CutMonitor& x) const {
     TString innerOpt = "";
-    if (fRe)
+    if (Re())
       innerOpt = "re";
-    else if (fIm)
+    else if (Im())
       innerOpt = "im";
     Hal::CutMonitor* res = x.MakeCopy(innerOpt);
     return res;

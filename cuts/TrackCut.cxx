@@ -9,6 +9,7 @@
 
 #include <TString.h>
 
+#include "CutOptions.h"
 #include "Std.h"
 #include "TrackComplexCut.h"
 #include "TrackVirtualCut.h"
@@ -25,17 +26,5 @@ namespace Hal {
   Package* TrackCut::Report() const {
     Package* pack = Cut::Report();
     return pack;
-  }
-
-  TrackComplexCut* TrackCut::MakeComplexCut(Option_t* opt) const {
-    if (this->InheritsFrom("Hal::TrackComplexCut")) return NULL;
-    TString option = opt;
-    if (option == "re" || option == "RE" || option == "Re") {
-      return new TrackComplexCut(this, new TrackVirtualCut());
-    } else if (option == "im" || option == "IM" || option == "Im") {
-      return new TrackComplexCut(new TrackVirtualCut(), this);
-    } else {
-      return new TrackComplexCut(this, this);
-    }
   }
 }  // namespace Hal

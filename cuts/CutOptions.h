@@ -21,14 +21,15 @@ namespace Hal {
 
   class CutOptions : public TObject {
     std::vector<Int_t> fCollections;
-    Bool_t fRe           = {kFALSE};
-    Bool_t fIm           = {kFALSE};
-    Bool_t fSig          = {kFALSE};
-    Bool_t fBckg         = {kFALSE};
-    Bool_t fFast         = {kFALSE};
-    Bool_t fAcceptNull   = {kFALSE};
-    Bool_t fAcceptDouble = {kFALSE};
-    Int_t fDefCol        = {-1};
+    static constexpr uint32_t fgReFlagId        = {0};
+    static constexpr uint32_t fgImFlagId        = {1};
+    static constexpr uint32_t fgSigFlagId       = {2};
+    static constexpr uint32_t fgBckgFlagId      = {3};
+    static constexpr uint32_t fgFastFlagId      = {4};
+    static constexpr uint32_t fgAccNullFlagId   = {5};
+    static constexpr uint32_t fgAccDoubleFlagId = {6};
+    Int_t fFlag                                 = {0};
+    Int_t fDefCol                               = {-1};
     /**
      * find number in exression like *{A}*
      * @param expression
@@ -70,16 +71,68 @@ namespace Hal {
     TString GetCutUpdateRatioName(Hal::ECutUpdate upd) const;
 
   public:
+    /**
+     * base constructor
+     * @param opt option
+     * @param defCol default collection number
+     */
     CutOptions(TString opt = "", Int_t defCol = -1);
+    /**
+     * clear given flag
+     * @param flag
+     */
     void ClearFlag(TString flag);
-    Bool_t Re() const { return fRe; }
-    Bool_t Im() const { return fIm; }
-    Bool_t Sig() const { return fSig; }
-    Bool_t Bckg() const { return fBckg; }
-    Bool_t Fast() const { return fFast; }
-    Bool_t KeepDouble() const { return fAcceptDouble; }
+    /**
+     *
+     * @return true if real option is set
+     */
+    Bool_t Re() const { return TESTBIT(fFlag, fgReFlagId); }
+    /**
+     *
+     * @return true if imaginary option is set
+     */
+    Bool_t Im() const { return TESTBIT(fFlag, fgImFlagId); }
+    /**
+     *
+     * @return true if signal option is set
+     */
+    Bool_t Sig() const { return TESTBIT(fFlag, fgSigFlagId); }
+    /**
+     *
+     * @return true if background option is set
+     */
+    Bool_t Bckg() const { return TESTBIT(fFlag, fgBckgFlagId); }
+    /**
+     *
+     * @return true if fast option is set
+     */
+    Bool_t Fast() const { return TESTBIT(fFlag, fgFastFlagId); }
+    /**
+     *
+     * @return true if accept null flags is set
+     */
+    Bool_t Null() const { return TESTBIT(fFlag, fgAccNullFlagId); }
+    /**
+     *
+     * @return true if keep double option is set
+     */
+    Bool_t KeepDouble() const { return TESTBIT(fFlag, fgAccDoubleFlagId); }
+    /**
+     *
+     * @return collection id's
+     */
     std::vector<Int_t> GetCollectionsIds() const { return fCollections; };
+    /**
+     * make copy of cut according to those options
+     * @param x
+     * @return
+     */
     Hal::Cut* MakeCutCopy(const Hal::Cut& x) const;
+    /**
+     * make cut monitor copy accordint to those options
+     * @param x
+     * @return
+     */
     Hal::CutMonitor* MakeMonitorCopy(const Hal::CutMonitor& x) const;
     virtual ~CutOptions() {};
     ClassDef(CutOptions, 1)

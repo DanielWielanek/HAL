@@ -376,9 +376,7 @@ namespace Hal {
 
   void CutMonitor::MakeComplexAxes(const CutOptions& opt) {
     if (ObjMonitor()) return;  // do not create magic flags from object monitors
-    Bool_t Re = kFALSE, Im = kFALSE;
-    Re = opt.IsRe();
-    Im = opt.IsIm();
+    Bool_t Re = opt.IsRe(), Im = opt.IsIm();
     if (Re == kFALSE && Im == kFALSE) return;
     for (int axis = 0; axis < GetAxisNo(); axis++) {
       TString cut_name = GetCutName(axis);

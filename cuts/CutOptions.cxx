@@ -50,6 +50,9 @@ namespace Hal {
         SETBIT(fFlag, fgBckgFlagId);
       }
       fCollections = GetCollectionsFlags(fDefCol, opt);
+    } else {
+      SetSig(true);
+      SetBckg(true);
     }
     if (fCollections.size() == 0) fCollections.push_back(fDefCol);  // collections where not overwriten
   }

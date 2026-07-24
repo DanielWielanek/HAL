@@ -261,7 +261,6 @@ namespace Hal {
       Cout::PrintInfo("Initializing cut collection", EInfo::kDebugInfo);
       for (int i = 0; i < fCutContainers[k]->GetEntriesFast(); i++) {
         Cout::PrintInfo(Form("Initializing cut collection at %i", k), EInfo::kDebugInfo);
-
         ((CutCollection*) (fCutContainers[k]->UncheckedAt(i)))->Init(task_id);
       }
     }

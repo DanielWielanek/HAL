@@ -285,21 +285,24 @@ namespace Hal {
     if (fPrev.IsUsed()) prev_size = fPrev.GetSize();
     for (int i = 0; i < oryginal_monitors_no; i++) {
       CutMonitor* cutmon = (CutMonitor*) fCutMonitors->UncheckedAt(i);
+      TString monName    = cutmon->ClassName();
       if (cutmon->ObjMonitor()) {
         cutmon->SetCollectionID(fCollectionID);
         Bool_t init = cutmon->Init(task_id);
         if (init == kFALSE) {
-          Cout::PrintInfo(Form("CutCollection: Problem with initalization obj monitor [%s]", cutmon->ClassName()),
-                          EInfo::kLowWarning);
+          Cout::PrintInfo(Form("CutCollection: Problem with initalization obj monitor [%s]", monName.Data()), EInfo::kLowWarning);
           fCutMonitors->RemoveAt(i);
+        } else {
+          Cout::PrintInfo(Form("CutCollection: Intialized obj monitor [%s]", monName.Data()), EInfo::kDebugInfo);
         }
         continue;
       }
-      TString monName = cutmon->ClassName();
+      TString sizeIssue = Form("CutCollection: Removed monitor [%s] (size issue)", monName.Data());
       if (monName == "Hal::CutMonitorX") {
         auto cuts = BasicCheckMonitor(cutmon);
         if (cuts.size() != 1) {
           fCutMonitors->RemoveAt(i);
+          Cout::PrintInfo(sizeIssue, EInfo::kDebugInfo);
         } else {
           cutmon->AddForcedCut(cuts[0], 0);
         }
@@ -307,6 +310,7 @@ namespace Hal {
         auto cuts = BasicCheckMonitor(cutmon);
         if (cuts.size() != 2 || prev_size > 1) {
           fCutMonitors->RemoveAt(i);
+          Cout::PrintInfo(sizeIssue, EInfo::kDebugInfo);
         } else {
           cutmon->AddForcedCut(cuts[0], 0);
           cutmon->AddForcedCut(cuts[1], 1);
@@ -315,6 +319,7 @@ namespace Hal {
         auto cuts = BasicCheckMonitor(cutmon);
         if (cuts.size() != 3 || prev_size > 1) {
           fCutMonitors->RemoveAt(i);
+
         } else {
           cutmon->AddForcedCut(cuts[0], 0);
           cutmon->AddForcedCut(cuts[1], 1);
@@ -333,7 +338,10 @@ namespace Hal {
       for (int j = i + 1; j < fCutMonitors->GetEntries(); j++) {
         auto b = (CutMonitor*) fCutMonitors->UncheckedAt(j);
         if (b == nullptr) continue;
-        if (a->AreSimilar(*b)) { fCutMonitors->RemoveAt(j); }
+        if (a->AreSimilar(*b)) {
+          fCutMonitors->RemoveAt(j);
+          Cout::PrintInfo(Form("CutCollection: Removed duplicates [%s] [%s]", a->ClassName(), b->ClassName()), EInfo::kDebugInfo);
+        }
       }
     }
 
@@ -360,7 +368,10 @@ namespace Hal {
     for (int i = 0; i < fCutMonitors->GetEntriesFast(); i++) {
       CutMonitor* mon = ((CutMonitor*) fCutMonitors->UncheckedAt(i));
       mon->SetCollectionID(this->fCollectionID);
-      if (!mon->ObjMonitor()) mon->Init(task_id);
+      if (!mon->ObjMonitor()) {
+        mon->Init(task_id);
+        Cout::PrintInfo(Form("CutCollection: Intialized monitor [%s]", mon->ClassName()), EInfo::kDebugInfo);
+      }
     }
   }
 

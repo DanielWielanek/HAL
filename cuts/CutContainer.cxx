@@ -147,6 +147,9 @@ namespace Hal {
         copy->SetCollectionID(colId);
         fTempCutMonitors[static_cast<Int_t>(upd)]->AddLast(copy);
       }
+      if (collections.size() == 0) {
+        Hal::Cout::PrintInfo("Cut Container size of collection for monitors is zero !", EInfo::kLowWarning);
+      }
     }
   }
 

@@ -108,7 +108,7 @@ namespace Hal {
     while (FindExpressionSingleValue(option, single, kTRUE)) {
       res.push_back(single);
     }
-    if (res.size() == 0) res.push_back(startCol);
+    if (res.size() == 0) { res.push_back(startCol); }
     return res;
   }
 

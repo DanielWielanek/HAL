@@ -76,7 +76,7 @@ namespace Hal {
     /**
      * base constructor
      * @param opt option
-     * @param defCol default collection number
+     * @param defCol default collection number by default values lower then -1 are considered as "bad" and set to zero
      */
     CutOptions(TString opt = "", Int_t defCol = -2);
     CutOptions(const CutOptions& other) = default;

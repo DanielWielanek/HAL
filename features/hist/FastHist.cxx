@@ -7,69 +7,69 @@
  *		Warsaw University of Technology, Faculty of Physics
  */
 #include "FastHist.h"
+
 #include <iostream>
 
 namespace Hal {
   FastHist::FastHist(TString name, TString title) :
-    fAxisNameX(""),
-    fAxisNameY(""),
-    fAxisNameZ(""),
-    fTitle(title),
-    fBinsNoX(0),
-    fBinsNoY(0),
-    fBinsNoZ(0),
-    fTotalBinsNo(0),
-    fValues(nullptr) {
-    SetName(name);
+    fAxisNameX(""), fAxisNameY(""), fAxisNameZ(""), fTitle(title), fBinsNoX(0), fBinsNoY(0), fBinsNoZ(0), fTotalBinsNo(0) {
+    TNamed::SetName(name);
   }
 
-  FastHist::~FastHist() {
-    if (fValues) delete[] fValues;
+  Double_t FastHist::GetLabelValue(const std::vector<TString>& input, TString& val) const {
+    for (unsigned int i = 0; i < input.size(); i++) {
+      if (input[i] == val) return (Double_t) i;
+    }
+    return -1.0;
   }
+
+  FastHist::~FastHist() {}
+
+  //====================================================================================================================
 
   FastHist1D::FastHist1D(TString name, TString title, Int_t nbins, Double_t min, Double_t max) : FastHist(name, title) {
-    fBinsNoX = nbins + 2;
-    if (nbins != 0) {
-      fValues = new Double_t[fBinsNoX];
-      fMinX   = min;
-      fMaxX   = max;
-      fStepX  = (fMaxX - fMinX) / nbins;
-      fStepX  = 1.0 / fStepX;
-    }
-    for (int i = 0; i < fTotalBinsNo; i++)
-      fValues[i] = 0;
+    fBinsNoX     = nbins + 2;
     fTotalBinsNo = fBinsNoX;
+    fMinX        = min;
+    fMaxX        = max;
+    Initialize();
   }
 
-  Int_t FastHist1D::FindBin(Double_t x) const {
-    Int_t bin = (x - fMinX) * fStepX + 1;
-    if (bin < 0) {
-      bin = 0;
-    } else if (bin > fBinsNoX - 1) {
-      bin = fBinsNoX - 1;
-    }
-    return bin;
+  void FastHist1D::Initialize() {
+    fValues.resize(fTotalBinsNo);
+    fStepX   = (fMaxX - fMinX) / (fBinsNoX - 2);
+    fStepX   = 1.0 / fStepX;
+    fOffsetX = 1.0 - fMinX * fStepX;
+    Reset();
   }
 
-  void FastHist1D::Fill(Double_t x, Double_t w) {
-    Int_t bin = (x - fMinX) * fStepX + 1;
-    if (bin < 0) {
-      bin = 0;
-    } else if (bin > fBinsNoX - 1) {
-      bin = fBinsNoX - 1;
-    }
-    fValues[bin] += w;
+  void FastHist1D::LabelizeAxis(const std::vector<TString>& labels) {
+    fLabelsX = labels;
+    fMinX    = -0.5;
+    fMaxX    = -0.5 + labels.size();
+    Initialize();
   }
 
   TH1* FastHist1D::GetTH1() const {
+    TH1::AddDirectory(kFALSE);
     TH1D* h = new TH1D(GetName(), GetTitle(), fBinsNoX - 2, fMinX, fMaxX);
     if (fAxisNameX.Length() > 0) h->GetXaxis()->SetTitle(fAxisNameX);
     if (fAxisNameY.Length() > 0) h->GetYaxis()->SetTitle(fAxisNameY);
     for (int i = 0; i < fBinsNoX; i++) {
       h->SetBinContent(i, fValues[i]);
     }
+    h->SetFillColor(fFillColor);
+    if (fLabelsX.size()) {
+      int count = 0;
+      for (auto label : fLabelsX) {
+        h->GetXaxis()->SetBinLabel(++count, label);
+      }
+    }
+    TH1::AddDirectory(kTRUE);
     return h;
   }
+
+  //====================================================================================================================
 
   FastHist2D::FastHist2D(TString name,
                          TString title,
@@ -80,59 +80,44 @@ namespace Hal {
                          Double_t ymin,
                          Double_t ymax) :
     FastHist(name, title) {
-    fBinsNoX     = nbinsX + 2;
-    fBinsNoY     = nbinsY + 2;
-    fMinX        = xmin;
-    fMinY        = ymin;
-    fMaxX        = xmax;
-    fMaxY        = ymax;
-    fTotalBinsNo = fBinsNoX * fBinsNoY;
-    fValues      = new Double_t[fTotalBinsNo];
-    fStepX       = (fMaxX - fMinX) / (Double_t) nbinsX;
-    fStepY       = (fMaxY - fMinY) / (Double_t) nbinsY;
-    fStepX       = 1.0 / fStepX;
-    fStepY       = 1.0 / fStepY;
-    for (int i = 0; i < fTotalBinsNo; i++)
-      fValues[i] = 0;
-  }
-
-  Int_t FastHist2D::FindBin(Double_t x, Double_t y) const {
-    Int_t binX = (x - fMinX) * fStepX + 1;
-    Int_t binY = (y - fMinY) * fStepY + 1;
-
-    if (binX < 0) {
-      binX = 0;
-    } else if (binX + 1 > fBinsNoX) {
-      binX = fBinsNoX - 1;
-    }
-    if (binY < 0) {
-      binY = 0;
-    } else if (binY + 1 > fBinsNoY) {
-      binY = fBinsNoY - 1;
-    }
-    return binX * fBinsNoY + binY;
-  }
-
-  void FastHist2D::Fill(Double_t x, Double_t y, Double_t w) {
-    Int_t binX = (x - fMinX) * fStepX + 1;
-    Int_t binY = (y - fMinY) * fStepY + 1;
-
-    if (binX < 0) {
-      binX = 0;
-    } else if (binX + 1 > fBinsNoX) {
-      binX = fBinsNoX - 1;
-    }
-    if (binY < 0) {
-      binY = 0;
-    } else if (binY + 1 > fBinsNoY) {
-      binY = fBinsNoY - 1;
-    }
-    fValues[binX * fBinsNoY + binY] += w;
+    fBinsNoX = nbinsX + 2;
+    fBinsNoY = nbinsY + 2;
+    fMinX    = xmin;
+    fMinY    = ymin;
+    fMaxX    = xmax;
+    fMaxY    = ymax;
+    Initialize();
   }
 
   Double_t FastHist2D::GetBinContent(Int_t i, Int_t j) const { return fValues[i * fBinsNoY + j]; }
 
+  void FastHist2D::Initialize() {
+    fTotalBinsNo = fBinsNoX * fBinsNoY;
+    fValues.resize(fTotalBinsNo);
+    fStepX   = (fMaxX - fMinX) / (Double_t) (fBinsNoX - 2);
+    fStepY   = (fMaxY - fMinY) / (Double_t) (fBinsNoY - 2);
+    fStepX   = 1.0 / fStepX;
+    fStepY   = 1.0 / fStepY;
+    fOffsetX = 1.0 - fMinX * fStepX;
+    fOffsetY = 1.0 - fMinY * fStepY;
+    Reset();
+  }
+
+  void FastHist2D::LabelizeAxis(const std::vector<TString>& labels, Char_t axis) {
+    if (axis == 'x') {
+      fMinX    = -0.5;
+      fMaxX    = -0.5 + labels.size();
+      fLabelsX = labels;
+    } else {
+      fMinY    = -0.5;
+      fMaxY    = -0.5 + labels.size();
+      fLabelsY = labels;
+    }
+    Initialize();
+  }
+
   TH1* FastHist2D::GetTH1() const {
+    TH1::AddDirectory(kFALSE);
     TH2D* h = new TH2D(GetName(), GetTitle(), fBinsNoX - 2, fMinX, fMaxX, fBinsNoY - 2, fMinY, fMaxY);
     if (fAxisNameX.Length() > 0) h->GetXaxis()->SetTitle(fAxisNameX);
     if (fAxisNameY.Length() > 0) h->GetYaxis()->SetTitle(fAxisNameY);
@@ -142,8 +127,12 @@ namespace Hal {
         h->SetBinContent(i, j, fValues[i * fBinsNoY + j]);
       }
     }
+    h->SetFillColor(fFillColor);
+    TH1::AddDirectory(kTRUE);
     return h;
   }
+
+  //====================================================================================================================
 
   FastHist3D::FastHist3D(TString name,
                          TString title,
@@ -157,76 +146,22 @@ namespace Hal {
                          Double_t zmin,
                          Double_t zmax) :
     FastHist(name, title) {
-    fBinsNoX     = nbinsX + 2;
-    fBinsNoY     = nbinsY + 2;
-    fBinsNoZ     = nbinsZ + 2;
-    fMinX        = xmin;
-    fMinY        = ymin;
-    fMinZ        = zmin;
-    fMaxX        = xmax;
-    fMaxY        = ymax;
-    fMaxZ        = zmax;
-    fTotalBinsNo = fBinsNoX * fBinsNoY * fBinsNoZ;
-    fValues      = new Double_t[fTotalBinsNo];
-    fStepX       = (fMaxX - fMinX) / nbinsX;
-    fStepY       = (fMaxY - fMinY) / nbinsY;
-    fStepZ       = (fMaxZ - fMinZ) / nbinsZ;
-    fStepX       = 1.0 / fStepX;
-    fStepY       = 1.0 / fStepY;
-    fStepZ       = 1.0 / fStepZ;
-    fBinsYZ      = fBinsNoY * fBinsNoZ;
-    for (int i = 0; i < fTotalBinsNo; i++)
-      fValues[i] = 0;
+    fBinsNoX = nbinsX + 2;
+    fBinsNoY = nbinsY + 2;
+    fBinsNoZ = nbinsZ + 2;
+    fMinX    = xmin;
+    fMinY    = ymin;
+    fMinZ    = zmin;
+    fMaxX    = xmax;
+    fMaxY    = ymax;
+    fMaxZ    = zmax;
+    Initialize();
   }
 
-  Int_t FastHist3D::FindBin(Double_t x, Double_t y, Double_t z) const {
-    Int_t binX = (x - fMinX) * fStepX + 1;
-    Int_t binY = (y - fMinY) * fStepY + 1;
-    Int_t binZ = (z - fMinZ) * fStepZ + 1;
-    if (binX < 0) {
-      binX = 0;
-    } else if (binX + 1 > fBinsNoX) {
-      binX = fBinsNoX - 1;
-    }
-    if (binY < 0) {
-      binY = 0;
-    } else if (binY + 1 > fBinsNoY) {
-      binY = fBinsNoY - 1;
-    }
-    if (binZ < 0) {
-      binZ = 0;
-    } else if (binZ + 1 > fBinsNoZ) {
-      binZ = fBinsNoZ - 1;
-    }
-    return binX * fBinsYZ + binY * fBinsNoZ + binZ;
-  }
-
-
-  void FastHist3D::Fill(Double_t x, Double_t y, Double_t z, Double_t w) {
-    Int_t binX = (x - fMinX) * fStepX + 1;
-    Int_t binY = (y - fMinY) * fStepY + 1;
-    Int_t binZ = (z - fMinZ) * fStepZ + 1;
-    if (binX < 0) {
-      binX = 0;
-    } else if (binX + 1 > fBinsNoX) {
-      binX = fBinsNoX - 1;
-    }
-    if (binY < 0) {
-      binY = 0;
-    } else if (binY + 1 > fBinsNoY) {
-      binY = fBinsNoY - 1;
-    }
-    if (binZ < 0) {
-      binZ = 0;
-    } else if (binZ + 1 > fBinsNoZ) {
-      binZ = fBinsNoZ - 1;
-    }
-
-    fValues[binX * fBinsYZ + binY * fBinsNoZ + binZ] += w;
-  }
   Double_t FastHist3D::GetBinContent(Int_t i, Int_t j, Int_t k) const { return fValues[i * fBinsYZ + j * fBinsNoZ + k]; }
 
   TH1* FastHist3D::GetTH1() const {
+    TH1::AddDirectory(kFALSE);
     TH3D* h = new TH3D(GetName(), GetTitle(), fBinsNoX - 2, fMinX, fMaxX, fBinsNoY - 2, fMinY, fMaxY, fBinsNoZ - 2, fMinZ, fMaxZ);
     if (fAxisNameX.Length() > 0) h->GetXaxis()->SetTitle(fAxisNameX);
     if (fAxisNameY.Length() > 0) h->GetYaxis()->SetTitle(fAxisNameY);
@@ -238,6 +173,42 @@ namespace Hal {
         }
       }
     }
+    h->SetFillColor(fFillColor);
+    TH1::AddDirectory(kTRUE);
     return h;
   }
+
+  void FastHist3D::LabelizeAxis(const std::vector<TString>& labels, Char_t axis) {
+    if (axis == 'x') {
+      fMinX    = -0.5;
+      fMaxX    = -0.5 + labels.size();
+      fLabelsX = labels;
+    } else if (axis == 'y') {
+      fMinY    = -0.5;
+      fMaxY    = -0.5 + labels.size();
+      fLabelsY = labels;
+    } else {
+      fMinZ    = -0.5;
+      fMaxZ    = -0.5 + labels.size();
+      fLabelsZ = labels;
+    }
+    Initialize();
+  }
+
+  void FastHist3D::Initialize() {
+    fTotalBinsNo = fBinsNoX * fBinsNoY * fBinsNoZ;
+    fValues.resize(fTotalBinsNo);
+    fStepX   = (fMaxX - fMinX) / (fBinsNoX - 2);
+    fStepY   = (fMaxY - fMinY) / (fBinsNoY - 2);
+    fStepZ   = (fMaxZ - fMinZ) / (fBinsNoZ - 2);
+    fStepX   = 1.0 / fStepX;
+    fStepY   = 1.0 / fStepY;
+    fStepZ   = 1.0 / fStepZ;
+    fBinsYZ  = fBinsNoY * fBinsNoZ;
+    fOffsetX = 1. - fMinX * fStepX;
+    fOffsetY = 1. - fMinY * fStepY;
+    fOffsetZ = 1. - fMinZ * fStepZ;
+    Reset();
+  }
+
 } /* namespace Hal */

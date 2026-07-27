@@ -11,14 +11,12 @@
 #include "Cut.h"
 #include "CutMonitorComplex.h"
 #include "CutOptions.h"
+#include "FastHist.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "StdString.h"
 
 #include <TClass.h>
-#include <TH1.h>
-#include <TH2.h>
-#include <TH3.h>
 
 
 namespace Hal {
@@ -107,9 +105,7 @@ namespace Hal {
         }
       }
     }
-    TH1::AddDirectory(kFALSE);
     CreateHistograms();
-    TH1::AddDirectory(kTRUE);
     MarkAsInitialized();
     return kTRUE;
   }
@@ -247,8 +243,8 @@ namespace Hal {
       if (fHistoPassed) delete fHistoPassed;
       fHistoPassed = nullptr;
       if (other.IsInitialized()) {
-        fHistoPassed = (TH1*) other.fHistoPassed->Clone();
-        fHistoFailed = (TH1*) other.fHistoFailed->Clone();
+        fHistoPassed = (FastHist*) other.fHistoPassed->Clone();
+        fHistoFailed = (FastHist*) other.fHistoFailed->Clone();
       }
       fFlags       = other.fFlags;
       fUpdateRatio = other.fUpdateRatio;
@@ -264,24 +260,19 @@ namespace Hal {
     pack->AddObject(new ParameterInt("ExclusiveUpdate", (Int_t) IsExclusive()));
 
     if (!ObjMonitor()) {
-      TH1* hP = (TH1*) fHistoPassed->Clone();
-      TH1* hF = (TH1*) fHistoFailed->Clone();
+      TH1* hP = (TH1*) fHistoPassed->GetTH1();
+      TH1* hF = (TH1*) fHistoFailed->GetTH1();
       pack->AddObject(hP);
       pack->AddObject(hF);
       if (fAxisNo >= 1) {
-        std::vector<std::pair<TString, Double_t>> labels = fCut[0]->GetBinLabels(fOptionAxis[0]);
-        if (labels.size() > 0) {
-          for (auto iLabel : labels) {
-            Int_t bin = hP->GetXaxis()->FindBin(iLabel.second);
-            if (bin != 0 && bin <= hP->GetNbinsX()) {
-              hP->GetXaxis()->SetBinLabel(bin, iLabel.first);
-              hF->GetXaxis()->SetBinLabel(bin, iLabel.first);
-            } else {
-              Hal::Cout::PrintInfo(Form("Wrong bin for cut monitor from cut %s [X-axis]", fCut[0]->ClassName()),
-                                   EInfo::kLowWarning);
-            }
+        auto labels = fCut[0]->GetAxisBinLabels(fOptionAxis[0]);
+        int bin     = 0;
+        if (labels.size() > 0)
+          for (auto label : labels) {
+            ++bin;
+            hP->GetXaxis()->SetBinLabel(bin, label);
+            hF->GetXaxis()->SetBinLabel(bin, label);
           }
-        }
         pack->AddObject(new ParameterString("AxisX", fCut[0]->GetUnit(fOptionAxis[0])));
         pack->AddObject(new ParameterString("CutXName", fCut[0]->CutName()));
         pack->AddObject(new ParameterInt("CutXAxis", fOptionAxis[0]));
@@ -290,19 +281,14 @@ namespace Hal {
         pack->AddObject(new ParameterInt("CutXCollection", fCut[0]->GetCollectionID()));
       }
       if (fAxisNo >= 2) {
-        std::vector<std::pair<TString, Double_t>> labels = fCut[1]->GetBinLabels(fOptionAxis[1]);
-        if (labels.size() > 0) {
-          for (auto iLabel : labels) {
-            Int_t bin = hP->GetYaxis()->FindBin(iLabel.second);
-            if (bin != 0 && bin <= hP->GetNbinsY()) {
-              hP->GetYaxis()->SetBinLabel(bin, iLabel.first);
-              hF->GetYaxis()->SetBinLabel(bin, iLabel.first);
-            } else {
-              Hal::Cout::PrintInfo(Form("Wrong bin for cut monitor from cut %s [Y-axis]", fCut[1]->ClassName()),
-                                   EInfo::kLowWarning);
-            }
+        auto labels = fCut[1]->GetAxisBinLabels(fOptionAxis[1]);
+        int bin     = 0;
+        if (labels.size() > 0)
+          for (auto label : labels) {
+            ++bin;
+            hP->GetYaxis()->SetBinLabel(bin, label);
+            hF->GetYaxis()->SetBinLabel(bin, label);
           }
-        }
         pack->AddObject(new ParameterString("AxisY", fCut[1]->GetUnit(fOptionAxis[1])));
         pack->AddObject(new ParameterString("CutYName", fCut[1]->CutName()));
         pack->AddObject(new ParameterInt("CutYAxis", fOptionAxis[1]));
@@ -311,19 +297,14 @@ namespace Hal {
         pack->AddObject(new ParameterInt("CutYCollection", fCut[1]->GetCollectionID()));
       }
       if (fAxisNo >= 3) {
-        std::vector<std::pair<TString, Double_t>> labels = fCut[2]->GetBinLabels(fOptionAxis[2]);
-        if (labels.size() > 0) {
-          for (auto iLabel : labels) {
-            Int_t bin = hP->GetZaxis()->FindBin(iLabel.second);
-            if (bin != 0 && bin <= hP->GetNbinsZ()) {
-              hP->GetZaxis()->SetBinLabel(bin, iLabel.first);
-              hF->GetZaxis()->SetBinLabel(bin, iLabel.first);
-            } else {
-              Hal::Cout::PrintInfo(Form("Wrong bin for cut monitor from cut %s [Z-axis]", fCut[2]->ClassName()),
-                                   EInfo::kLowWarning);
-            }
+        auto labels = fCut[2]->GetAxisBinLabels(fOptionAxis[2]);
+        int bin     = 0;
+        if (labels.size() > 0)
+          for (auto label : labels) {
+            ++bin;
+            hP->GetZaxis()->SetBinLabel(bin, label);
+            hF->GetZaxis()->SetBinLabel(bin, label);
           }
-        }
         pack->AddObject(new ParameterString("AxisZ", fCut[2]->GetUnit(fOptionAxis[2])));
         pack->AddObject(new ParameterString("CutZName", fCut[2]->CutName()));
         pack->AddObject(new ParameterInt("CutZAxis", fOptionAxis[2]));
@@ -332,8 +313,8 @@ namespace Hal {
         pack->AddObject(new ParameterInt("CutZCollection", fCut[2]->GetCollectionID()));
       }
     } else {
-      pack->AddObject(fHistoPassed->Clone());
-      pack->AddObject(fHistoFailed->Clone());
+      pack->AddObject(fHistoPassed->GetTH1());
+      pack->AddObject(fHistoFailed->GetTH1());
     }
     pack->SetComment(this->ClassName());
 
@@ -348,30 +329,6 @@ namespace Hal {
       if (fOptionAxis[i] != other.fOptionAxis[i]) return kFALSE;
     }
     return kTRUE;
-  }
-
-  void CutMonitor::ManualFill1D(Double_t x, Bool_t passed) {
-    if (passed) {
-      fHistoPassed->Fill(x);
-    } else {
-      fHistoFailed->Fill(x);
-    }
-  }
-
-  void CutMonitor::ManualFill2D(Double_t x, Double_t y, Bool_t passed) {
-    if (passed) {
-      ((TH2*) fHistoPassed)->Fill(x, y);
-    } else {
-      ((TH2*) fHistoFailed)->Fill(x, y);
-    }
-  }
-
-  void CutMonitor::ManualFill3D(Double_t x, Double_t y, Double_t z, Bool_t passed) {
-    if (passed) {
-      ((TH3*) fHistoPassed)->Fill(x, y, z);
-    } else {
-      ((TH3*) fHistoFailed)->Fill(x, y, z);
-    }
   }
 
   void CutMonitor::MakeComplexAxes(const CutOptions& opt) {

@@ -12,8 +12,6 @@
 
 #include <RtypesCore.h>
 #include <TAxis.h>
-#include <TH1.h>
-#include <TH2.h>
 #include <TString.h>
 
 #include "StdString.h"
@@ -49,21 +47,7 @@ namespace Hal {
   }
 
   void CutMonitorXY::TrueUpdate(Bool_t passed) {
-#ifdef MPPCUTFULL
-    Double_t weight = fCut[0]->GetWeight();
-    if (fIdenticalCuts == kFALSE) { weight = weight * fCut[1]->GetWeight(); }
-    if (passed) {
-      ((TH2*) fHistoPassed)->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[0]), weight);
-    } else {
-      ((TH2*) fHistoFailed)->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[0]), weight);
-    }
-#else
-    if (passed) {
-      ((TH2D*) fHistoPassed)->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]));
-    } else {
-      ((TH2D*) fHistoFailed)->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]));
-    }
-#endif
+    ManualFill2D(fCut[0]->GetValue(fOptionAxis[0]), fCut[1]->GetValue(fOptionAxis[1]), passed);
   }
 
   Bool_t CutMonitorXY::Init(Int_t task_id) {
@@ -92,14 +76,13 @@ namespace Hal {
     TString name;  // = Form("%s_vs_%s",
                    // fCut[0]->GetUnit(fOptionAxis[0]).Data(),fCut[1]->GetUnit(fOptionAxis[1]).Data());
     name         = "Passed";
-    fHistoPassed = new TH2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
-    fHistoPassed->GetXaxis()->SetTitle(fCut[0]->GetUnit(fOptionAxis[0]));
-    fHistoPassed->GetYaxis()->SetTitle(fCut[1]->GetUnit(fOptionAxis[1]));
-    name         = name + "_F";
+    fHistoPassed = new FastHist2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
+    fHistoPassed->SetXaxisName(fCut[0]->GetUnit(fOptionAxis[0]));
+    fHistoPassed->SetYaxisName(fCut[1]->GetUnit(fOptionAxis[1]));
     name         = "Failed";
-    fHistoFailed = new TH2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
-    fHistoFailed->GetXaxis()->SetTitle(fCut[0]->GetUnit(fOptionAxis[0]));
-    fHistoFailed->GetYaxis()->SetTitle(fCut[1]->GetUnit(fOptionAxis[1]));
+    fHistoFailed = new FastHist2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
+    fHistoFailed->SetXaxisName(fCut[0]->GetUnit(fOptionAxis[0]));
+    fHistoFailed->SetYaxisName(fCut[1]->GetUnit(fOptionAxis[1]));
 
 #ifdef MPPCUTFULL
     if (fCut[0] == fCut[1]) { fIdenticalCuts = kTRUE; }

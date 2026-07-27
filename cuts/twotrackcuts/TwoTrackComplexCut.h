@@ -57,7 +57,7 @@ namespace Hal {
     virtual Package* Report() const;
     virtual TString CutName(Option_t* opt = "") const;
     TwoTrackCut* GetRealCut() const { return fRealCut; };
-    std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const { return fRealCut->GetBinLabels(par); }
+    std::vector<TString> GetAxisBinLabels(Int_t par = 0) const { return fRealCut->GetAxisBinLabels(par); }
     virtual ~TwoTrackRealCut();
     ClassDef(TwoTrackRealCut, 1)
   };
@@ -84,7 +84,7 @@ namespace Hal {
     virtual Package* Report() const;
     virtual TString CutName(Option_t* opt = "") const;
     TwoTrackCut* GetImgCut() const { return fImgCut; };
-    std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const { return fImgCut->GetBinLabels(par); }
+    std::vector<TString> GetAxisBinLabels(Int_t par = 0) const { return fImgCut->GetAxisBinLabels(par); }
     virtual ~TwoTrackImaginaryCut();
     ClassDef(TwoTrackImaginaryCut, 1)
   };

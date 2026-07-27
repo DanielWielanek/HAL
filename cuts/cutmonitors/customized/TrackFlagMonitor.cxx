@@ -7,10 +7,15 @@
 
 #include "TrackFlagMonitor.h"
 
+#include <Rtypes.h>
 #include <TAxis.h>
-#include <TH1.h>
+#include <TString.h>
 
-#include "Std.h"
+#include "Cut.h"
+#include "CutMonitor.h"
+#include "FastHist.h"
+#include "StdString.h"
+#include "StdTypes.h"
 #include "Track.h"
 
 namespace Hal {
@@ -40,20 +45,6 @@ namespace Hal {
     return result;
   }
 
-  void TrackFlagChecker::SetupAxis(TAxis* axis) const {
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kPrimary), "Primary");
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kGlobal), "Global");
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kKnownMother), "Good secondary");
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kV0daughtersKnown), "V0-known-daughters");
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kV0daughtersUnknown), "V0-unknown-dauthers");
-
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kXidaughtersKnown), "Xi-knonw-daughters");
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kXidaughersUnknown), "Xi-uknown-daughters");
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kBackground), "Background");
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kEmbeded), "Embedded");
-    axis->SetBinLabel(axis->FindBin((double) eFlags::kAny), "Any");
-  }
-
   //==================================================================================================
 
   TrackFlagMonitor1D::TrackFlagMonitor1D() : PropertyMonitorX("Flag", "N", ECutUpdate::kTrack) {
@@ -61,19 +52,15 @@ namespace Hal {
     SetAxis(size, -0.5, size - 0.5, 0);
   }
   void TrackFlagMonitor1D::Update(Bool_t passed, TObject* obj) {
-    auto res   = fChecker.GetFlags((Hal::Track*) (obj));
-    auto histo = fHistoFailed;
-    if (passed) { histo = fHistoPassed; }
+    auto res = fChecker.GetFlags((Hal::Track*) (obj));
     for (auto flag : res) {
-      histo->Fill(flag);
+      ManualFill1D(flag, passed);
     }
   }
 
   Bool_t TrackFlagMonitor1D::Init(Int_t task_id) {
     auto res = PropertyMonitorX::Init(task_id);
     if (!res) return kFALSE;
-    fChecker.SetupAxis(fHistoPassed->GetXaxis());
-    fChecker.SetupAxis(fHistoFailed->GetXaxis());
     return kTRUE;
   }
 
@@ -100,11 +87,38 @@ namespace Hal {
   Bool_t TrackFlagMonitor2D::Init(Int_t task_id) {
     auto res = PropertyMonitorXY::Init(task_id);
     if (!res) return kFALSE;
-    fChecker.SetupAxis(fHistoPassed->GetXaxis());
-    fChecker.SetupAxis(fHistoFailed->GetXaxis());
-    fChecker.SetupAxis(fHistoPassed->GetYaxis());
-    fChecker.SetupAxis(fHistoFailed->GetYaxis());
     return kTRUE;
+  }
+
+  void TrackFlagMonitor2D::CreateHistograms() {
+    PropertyMonitorXY::CreateHistograms();
+    auto labels = fChecker.GetLabels();
+
+    ((FastHist2D*) fHistoPassed)->LabelizeAxisX(labels);
+    ((FastHist2D*) fHistoPassed)->LabelizeAxisY(labels);
+    ((FastHist2D*) fHistoFailed)->LabelizeAxisX(labels);
+    ((FastHist2D*) fHistoFailed)->LabelizeAxisY(labels);
+  }
+
+  void TrackFlagMonitor1D::CreateHistograms() {
+    PropertyMonitorX::CreateHistograms();
+    auto labels = fChecker.GetLabels();
+    ((FastHist2D*) fHistoPassed)->LabelizeAxisX(labels);
+    ((FastHist2D*) fHistoFailed)->LabelizeAxisX(labels);
+  }
+
+  std::vector<TString> TrackFlagChecker::GetLabels() const {
+    std::vector<TString> labels = {"Primary",
+                                   "Global",
+                                   "Good secondary",
+                                   "V0-known-daughters",
+                                   "V0-unknown-dauthers",
+                                   "Xi-knonw-daughters",
+                                   "Xi-uknown-daughters",
+                                   "Background",
+                                   "Embedded",
+                                   "Any"};
+    return labels;
   }
 
 }  // namespace Hal

@@ -12,6 +12,7 @@
 #include <TString.h>
 
 #include "CutOptions.h"
+#include "FastHist.h"
 #include "Std.h"
 
 namespace Hal {
@@ -52,11 +53,11 @@ namespace Hal {
     /**
      * histogram with passed objects
      */
-    TH1* fHistoPassed = {nullptr};
+    FastHist* fHistoPassed = {nullptr};
     /**
      * histogram with failed objects
      */
-    TH1* fHistoFailed = {nullptr};
+    FastHist* fHistoFailed = {nullptr};
     /**
      * array with lower edges of axes
      */
@@ -115,19 +116,75 @@ namespace Hal {
      * @param x
      * @param passed
      */
-    void ManualFill1D(Double_t x, Bool_t passed);
+    inline void ManualFill1D(Double_t x, Bool_t passed) {
+      if (passed) {
+        ((FastHist1D*) fHistoPassed)->Fill(x, 1.);
+      } else {
+        ((FastHist1D*) fHistoFailed)->Fill(x, 1.);
+      }
+    }
     /**
      * fill histogram by hand
      * @param x
      * @param passed
      */
-    void ManualFill2D(Double_t x, Double_t y, Bool_t passed);
+    inline void ManualFill2D(Double_t x, Double_t y, Bool_t passed) {
+      if (passed) {
+        ((FastHist2D*) fHistoPassed)->Fill(x, y, 1.);
+      } else {
+        ((FastHist2D*) fHistoFailed)->Fill(x, y, 1.);
+      }
+    }
     /**
      * fill histogram by hand
      * @param x
      * @param passed
      */
-    void ManualFill3D(Double_t x, Double_t y, Double_t z, Bool_t passed);
+    inline void ManualFill3D(Double_t x, Double_t y, Double_t z, Bool_t passed) {
+      if (passed) {
+        ((FastHist3D*) fHistoPassed)->Fill(x, y, z, 1.);
+      } else {
+        ((FastHist3D*) fHistoFailed)->Fill(x, y, z, 1.);
+      }
+    }
+
+    /**
+     * fill histogram by hand
+     * @param x
+     * @param passed
+     */
+    inline void ManualFill1D(Double_t x, Double_t w, Bool_t passed) {
+      if (passed) {
+        ((FastHist1D*) fHistoPassed)->Fill(x, w);
+      } else {
+        ((FastHist1D*) fHistoFailed)->Fill(x, w);
+      }
+    }
+    /**
+     * fill histogram by hand
+     * @param x
+     * @param passed
+     */
+    inline void ManualFill2D(Double_t x, Double_t y, Double_t w, Bool_t passed) {
+      if (passed) {
+        ((FastHist2D*) fHistoPassed)->Fill(x, y, w);
+      } else {
+        ((FastHist2D*) fHistoFailed)->Fill(x, y, w);
+      }
+    }
+    /**
+     * fill histogram by hand
+     * @param x
+     * @param passed
+     */
+    inline void ManualFill3D(Double_t x, Double_t y, Double_t z, Double_t w, Bool_t passed) {
+      if (passed) {
+        ((FastHist3D*) fHistoPassed)->Fill(x, y, z, w);
+      } else {
+        ((FastHist3D*) fHistoFailed)->Fill(x, y, z, w);
+      }
+    }
+
     /**
      *
      * @return true if initialized

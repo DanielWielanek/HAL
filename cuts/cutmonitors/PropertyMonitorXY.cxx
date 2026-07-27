@@ -23,8 +23,6 @@
 
 #include <RtypesCore.h>
 #include <TAxis.h>
-#include <TH1.h>
-#include <TH2.h>
 #include <TString.h>
 
 #include <memory>
@@ -33,20 +31,18 @@
 namespace Hal {
 
   void PropertyMonitorXY::CreateHistograms() {
-    TH1::AddDirectory(kFALSE);
     TString title = Form("%s vs %s", Hal::Std::RemoveUnits(fYaxisName).Data(), Hal::Std::RemoveUnits(fXaxisName).Data());
     TString name;  // = Form("%s_vs_%s",
                    // fCut[0]->GetUnit(fOptionAxis[0]).Data(),fCut[1]->GetUnit(fOptionAxis[1]).Data());
     name         = "Passed";
-    fHistoPassed = new TH2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
-    fHistoPassed->GetXaxis()->SetTitle(fXaxisName);
-    fHistoPassed->GetYaxis()->SetTitle(fYaxisName);
+    fHistoPassed = new FastHist2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
+    fHistoPassed->SetXaxisName(fXaxisName);
+    fHistoPassed->SetYaxisName(fYaxisName);
     name         = name + "_F";
     name         = "Failed";
-    fHistoFailed = new TH2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
-    fHistoFailed->GetXaxis()->SetTitle(fXaxisName);
-    fHistoFailed->GetYaxis()->SetTitle(fYaxisName);
-    TH1::AddDirectory(kTRUE);
+    fHistoFailed = new FastHist2D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0], fAxisBins[1], fAxisMin[1], fAxisMax[1]);
+    fHistoFailed->SetXaxisName(fXaxisName);
+    fHistoFailed->SetYaxisName(fYaxisName);
   }
 
   PropertyMonitorXY::PropertyMonitorXY(TString xLabel, TString yLabel, ECutUpdate update) :
@@ -69,9 +65,7 @@ namespace Hal {
     }
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
     fFormatType     = ev->GetFormatType();
-    TH1::AddDirectory(kFALSE);
     CreateHistograms();
-    TH1::AddDirectory(kTRUE);
     MarkAsInitialized();
     return kTRUE;
   }
@@ -122,11 +116,7 @@ namespace Hal {
 
   void EventFieldMonitorXY::Update(Bool_t passed, TObject* obj) {
     Event* ev = (Event*) obj;
-    if (passed) {
-      fHistoPassed->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY));
-    } else {
-      fHistoFailed->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY));
-    }
+    ManualFill2D(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), passed);
   }
 
   Bool_t EventFieldMonitorXY::Init(Int_t task_id) {

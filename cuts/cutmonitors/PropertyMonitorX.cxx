@@ -23,24 +23,21 @@
 
 #include <TAttFill.h>
 #include <TAxis.h>
-#include <TH1.h>
 #include <TString.h>
 #include <iostream>
 
 
 namespace Hal {
   void PropertyMonitorX::CreateHistograms() {
-    TH1::AddDirectory(kFALSE);
     TString title = Form("%s", Hal::Std::RemoveUnits(fXaxisName).Data());
     TString name  = "Passed";
-    fHistoPassed  = new TH1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
-    fHistoPassed->GetXaxis()->SetTitle(fXaxisName);
-    fHistoPassed->GetYaxis()->SetTitle(fYaxisName);
+    fHistoPassed  = new FastHist1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
+    fHistoPassed->SetXaxisName(fXaxisName);
+    fHistoPassed->SetYaxisName(fYaxisName);
     fHistoPassed->SetFillColor(kGreen);
     name         = "Failed";
-    fHistoFailed = (TH1D*) fHistoPassed->Clone(name);
+    fHistoFailed = (FastHist1D*) fHistoPassed->Clone(name);
     fHistoFailed->SetFillColor(kRed);
-    TH1::AddDirectory(kTRUE);
   }
 
   PropertyMonitorX::PropertyMonitorX(TString xLabel, TString yLabel, ECutUpdate update) :
@@ -71,9 +68,7 @@ namespace Hal {
     }
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
     fFormatType     = ev->GetFormatType();
-    TH1::AddDirectory(kFALSE);
     CreateHistograms();
-    TH1::AddDirectory(kTRUE);
     MarkAsInitialized();
     return kTRUE;
   }
@@ -111,11 +106,7 @@ namespace Hal {
 
   void EventFieldMonitorX::Update(Bool_t passed, TObject* obj) {
     Event* ev = (Event*) obj;
-    if (passed) {
-      fHistoPassed->Fill(ev->GetFieldVal(fFieldID));
-    } else {
-      fHistoFailed->Fill(ev->GetFieldVal(fFieldID));
-    }
+    ManualFill1D(ev->GetFieldVal(fFieldID), passed);
   }
 
   Bool_t EventFieldMonitorX::Init(Int_t task_id) {
@@ -146,11 +137,7 @@ namespace Hal {
 
   void TrackFieldMonitorX::Update(Bool_t passed, TObject* obj) {
     Track* tr = (Track*) obj;
-    if (passed) {
-      fHistoPassed->Fill(tr->GetFieldVal(fFieldID));
-    } else {
-      fHistoFailed->Fill(tr->GetFieldVal(fFieldID));
-    }
+    ManualFill1D(tr->GetFieldVal(fFieldID), passed);
   }
 
   Bool_t TrackFieldMonitorX::Init(Int_t task_id) {

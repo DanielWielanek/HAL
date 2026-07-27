@@ -394,13 +394,22 @@ namespace Hal {
      * @param paremeter number
      * @return vector of names used in cut histogram first parameter is name of bin, second is value of bin center
      */
-    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
+    [[deprecated]] virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
+    /**
+     * optional function used to set names of bin in non-standard histograms, labels are set to report histogram. Now
+     * Now labels are numbered from 0 to N (e.g. 0, 1,2, therefore double values should not be provided (this is due to
+     * introducting fast histograms)
+     * @see PdgBinPairCut as an example
+     * @param paremeter number
+     * @return vector of names used in cut histogram first parameter is name of bin, second is value of bin center
+     */
+    virtual std::vector<TString> GetAxisBinLabels(Int_t par = 0) const;
     /**
      *
      * @param par parameter id
      * @return true if parameter have some recommended axis settings
      */
-    Bool_t HasRecomendedAxisPar(Int_t par) const { return !GetBinLabels(par).empty(); }
+    Bool_t HasRecomendedAxisPar(Int_t par) const { return !GetAxisBinLabels(par).empty(); }
     /**
      * @param par parameter id
      * @return recommended parameters for axis of cut monitor (bins, low, up range) works correctly for most "flag like

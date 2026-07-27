@@ -22,8 +22,6 @@
 #include "StdString.h"
 
 #include <TAxis.h>
-#include <TH1.h>
-#include <TH3.h>
 #include <TString.h>
 
 
@@ -39,22 +37,22 @@ namespace Hal {
     name = "Passed";
     // title = title + Form(" ** %s %s %s
     // ",fCut[0]->ClassName(),fCut[1]->ClassName(),fCut[2]->ClassName());
-    fHistoPassed = new TH3D(name,
-                            title,
-                            fAxisBins[0],
-                            fAxisMin[0],
-                            fAxisMax[0],
-                            fAxisBins[1],
-                            fAxisMin[1],
-                            fAxisMax[1],
-                            fAxisBins[2],
-                            fAxisMin[2],
-                            fAxisMax[2]);
-    fHistoPassed->GetXaxis()->SetTitle(fXaxisName);
-    fHistoPassed->GetYaxis()->SetTitle(fYaxisName);
-    fHistoPassed->GetZaxis()->SetTitle(fZaxisName);
+    fHistoPassed = new FastHist3D(name,
+                                  title,
+                                  fAxisBins[0],
+                                  fAxisMin[0],
+                                  fAxisMax[0],
+                                  fAxisBins[1],
+                                  fAxisMin[1],
+                                  fAxisMax[1],
+                                  fAxisBins[2],
+                                  fAxisMin[2],
+                                  fAxisMax[2]);
+    fHistoPassed->SetXaxisName(fXaxisName);
+    fHistoPassed->SetYaxisName(fYaxisName);
+    fHistoPassed->SetZaxisName(fZaxisName);
     name         = "Failed";
-    fHistoFailed = (TH3D*) fHistoPassed->Clone(name);
+    fHistoFailed = (FastHist3D*) fHistoPassed->Clone(name);
     MarkAsInitialized();
   }
 
@@ -79,9 +77,7 @@ namespace Hal {
     }
     const Event* ev = DataFormatManager::Instance()->GetFormat(task_id, EFormatDepth::kNonBuffered);
     fFormatType     = ev->GetFormatType();
-    TH1::AddDirectory(kFALSE);
     CreateHistograms();
-    TH1::AddDirectory(kTRUE);
     MarkAsInitialized();
     return kTRUE;
   }
@@ -141,13 +137,8 @@ namespace Hal {
   }
 
   void EventFieldMonitorXYZ::Update(Bool_t passed, TObject* obj) {
-
     Event* ev = (Event*) obj;
-    if (passed) {
-      ((TH3*) fHistoPassed)->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), ev->GetFieldVal(fFieldIDZ));
-    } else {
-      ((TH3*) fHistoFailed)->Fill(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), ev->GetFieldVal(fFieldIDZ));
-    }
+    ManualFill3D(ev->GetFieldVal(fFieldIDX), ev->GetFieldVal(fFieldIDY), ev->GetFieldVal(fFieldIDZ), passed);
   }
 
   Bool_t EventFieldMonitorXYZ::Init(Int_t task_id) {
@@ -200,13 +191,8 @@ namespace Hal {
   }
 
   void TrackFieldMonitorXYZ::Update(Bool_t passed, TObject* obj) {
-
     Track* tr = (Track*) obj;
-    if (passed) {
-      ((TH3*) fHistoPassed)->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY), tr->GetFieldVal(fFieldIDZ));
-    } else {
-      ((TH3*) fHistoFailed)->Fill(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY), tr->GetFieldVal(fFieldIDZ));
-    }
+    ManualFill3D(tr->GetFieldVal(fFieldIDX), tr->GetFieldVal(fFieldIDY), tr->GetFieldVal(fFieldIDZ), passed);
   }
 
   Bool_t TrackFieldMonitorXYZ::Init(Int_t task_id) {

@@ -10,10 +10,10 @@
 
 #include <TAttFill.h>
 #include <TAxis.h>
-#include <TH1.h>
 #include <TString.h>
 
 #include "Cut.h"
+#include "FastHist.h"
 #include "StdString.h"
 
 namespace Hal {
@@ -28,21 +28,7 @@ namespace Hal {
 
   CutMonitorX::CutMonitorX(TString cut_name, Int_t parameter_no) : CutMonitorX() { AddCut(cut_name, parameter_no); }
 
-  void CutMonitorX::TrueUpdate(Bool_t passed) {
-#ifdef MPPCUTFULL
-    if (passed) {
-      fHistoPassed->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[0]->GetWeight());
-    } else {
-      fHistoFailed->Fill(fCut[0]->GetValue(fOptionAxis[0]), fCut[0]->GetWeight());
-    }
-#else
-    if (passed) {
-      fHistoPassed->Fill(fCut[0]->GetValue(fOptionAxis[0]), 1.0);
-    } else {
-      fHistoFailed->Fill(fCut[0]->GetValue(fOptionAxis[0]), 1.0);
-    }
-#endif
-  }
+  void CutMonitorX::TrueUpdate(Bool_t passed) { ManualFill1D(fCut[0]->GetValue(fOptionAxis[0]), passed); }
 
   void CutMonitorX::Update(Bool_t passed, TObject* /*obj*/) {
     if (IsExclusive()) {
@@ -55,16 +41,16 @@ namespace Hal {
   void CutMonitorX::CreateHistograms() {
     TString title = Form("%s", Hal::Std::RemoveUnits(fCut[0]->GetUnit(fOptionAxis[0])).Data());
     TString name  = "Passed";
-    fHistoPassed  = new TH1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
-    fHistoPassed->GetXaxis()->SetTitle(fCut[0]->GetUnit(fOptionAxis[0]).Data());
+    fHistoPassed  = new FastHist1D(name, title, fAxisBins[0], fAxisMin[0], fAxisMax[0]);
+    fHistoPassed->SetXaxisName(fCut[0]->GetUnit(fOptionAxis[0]).Data());
     TString y_axis_name       = fCut[0]->GetGroupFlag();  // take flag group like dNTracks
     TString y_axis_name_units = fCut[0]->GetUnit(fOptionAxis[0]);
     y_axis_name               = y_axis_name + "/";
     y_axis_name               = y_axis_name + Hal::Std::RemoveUnits(y_axis_name_units);
-    fHistoPassed->GetYaxis()->SetTitle(y_axis_name);
+    fHistoPassed->SetYaxisName(y_axis_name);
     fHistoPassed->SetFillColor(kGreen);
     name         = "Failed";
-    fHistoFailed = (TH1D*) fHistoPassed->Clone(name);
+    fHistoFailed = (FastHist1D*) fHistoPassed->Clone(name);
     fHistoFailed->SetFillColor(kRed);
   }
 

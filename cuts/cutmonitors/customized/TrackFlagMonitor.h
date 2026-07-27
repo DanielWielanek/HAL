@@ -40,9 +40,9 @@ namespace Hal {
 
   public:
     TrackFlagChecker() {};
+    std::vector<TString> GetLabels() const;
     Int_t GetFlagNo() const { return 10; }
     std::vector<Int_t> GetFlags(Track* track) const;
-    void SetupAxis(TAxis* axis) const;
     virtual ~TrackFlagChecker() {};
     ClassDef(TrackFlagChecker, 1)
   };
@@ -53,10 +53,14 @@ namespace Hal {
   class TrackFlagMonitor1D : public PropertyMonitorX {
     TrackFlagChecker fChecker;
 
+  protected:
+    virtual void CreateHistograms();
+
   public:
     TrackFlagMonitor1D();
     virtual void Update(Bool_t passed, TObject* obj);
     virtual Bool_t Init(Int_t task_id);
+
     virtual ~TrackFlagMonitor1D() {};
     ClassDef(TrackFlagMonitor1D, 1)
   };
@@ -65,6 +69,9 @@ namespace Hal {
    */
   class TrackFlagMonitor2D : public PropertyMonitorXY {
     TrackFlagChecker fChecker;
+
+  protected:
+    virtual void CreateHistograms();
 
   public:
     TrackFlagMonitor2D();

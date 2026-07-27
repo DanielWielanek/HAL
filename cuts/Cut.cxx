@@ -290,8 +290,13 @@ namespace Hal {
     return event->GetFormatType();
   }
 
-  std::vector<std::pair<TString, Double_t>> Cut::GetBinLabels(Int_t /*int1*/) const {
-    std::vector<std::pair<TString, Double_t>> x;
+  std::vector<std::pair<TString, Double_t>> Cut::GetBinLabels(Int_t /*par*/) const {
+    std::vector<std::pair<TString, Double_t>> res;
+    return res;
+  }
+
+  std::vector<TString> Cut::GetAxisBinLabels(Int_t /*int1*/) const {
+    std::vector<TString> x;
     return x;
   }
 
@@ -312,14 +317,14 @@ namespace Hal {
   void CutBackdoor::SetUnitName(Cut& cut, TString unitName, Int_t index) const { cut.SetUnitName(unitName, index); }
 
   Hal::Std::Triplet<Double_t> Cut::GetRecomenedAxisPar(Int_t par) const {
-    auto res = GetBinLabels(par);
+    auto res = GetAxisBinLabels(par);
     Hal::Std::Triplet<Double_t> trio;
     if (res.size() <= 1) return trio;
-    Double_t low  = res[0].second;
-    Double_t high = res[res.size() - 1].second;
+    Double_t low  = -0.5;
+    Double_t high = -0.5 + res.size();
     trio.x        = res.size();
-    trio.y        = low - 0.5;
-    trio.z        = high + 0.5;
+    trio.y        = low;
+    trio.z        = high;
     return trio;
   }
 

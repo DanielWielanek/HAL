@@ -29,7 +29,6 @@
 namespace HalOTF {
 
   void EventGeneratorDecayer::GenerateEvent() {
-    TDatabasePDG* db = TDatabasePDG::Instance();
     for (auto decayer : fDecays) {
       int tracks = fMcEvent->GetNTracks();
       for (int i = 0; i < tracks; i++) {
@@ -51,7 +50,7 @@ namespace HalOTF {
         }
       }
     }
-    int tracks = fMcEvent->GetNTracks();
+    // int tracks = fMcEvent->GetNTracks();
   }
 
   void EventGeneratorDecayer::SetDecay(Hal::Decay decay) { fDecays.push_back(new Hal::Decay(decay)); }

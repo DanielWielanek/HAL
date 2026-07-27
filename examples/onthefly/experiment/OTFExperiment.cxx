@@ -75,7 +75,7 @@ namespace HalOTF {
   }
 
 
-  void Experiment::Exec(Option_t* option) {
+  void Experiment::Exec(Option_t* /*option*/) {
     for (auto i : fSubTasks) {
       i->Exec(fCurrentEvent);
     }

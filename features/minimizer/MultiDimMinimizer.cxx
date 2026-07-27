@@ -38,7 +38,7 @@ namespace Hal {
   }
 
   void MultiDimMinimizer::SetParLimits(Int_t par, Double_t min, Double_t max) {
-    if (par < 0 || par >= fParameters.size()) return;
+    if (par < 0 || par >= (int) fParameters.size()) return;
     fParameters[par].SetMin(min);
     fParameters[par].SetMax(max);
     fParameters[par].SetStartVal(0.5 * (min + max));
@@ -50,7 +50,7 @@ namespace Hal {
   }
 
   void MultiDimMinimizer::FixParameter(Int_t par, Double_t val) {
-    if (par < 0 || par >= fParameters.size()) return;
+    if (par < 0 || par >= (int) fParameters.size()) return;
     fParameters[par].SetMin(val);
     fParameters[par].SetMax(val);
     fParameters[par].SetStartVal(val);
@@ -59,12 +59,12 @@ namespace Hal {
   }
 
   TString MultiDimMinimizer::GetParameterName(Int_t par) const {
-    if (par < 0 || par >= fParameters.size()) return "";
+    if (par < 0 || par >= (int) fParameters.size()) return "";
     return fParameters[par].GetParName();
   }
 
   void MultiDimMinimizer::SetStartParam(Int_t par, Double_t start) {
-    if (par < 0 || par >= fParameters.size()) return;
+    if (par < 0 || par >= (int) fParameters.size()) return;
     fParameters[par].SetStartVal(start);
   }
 

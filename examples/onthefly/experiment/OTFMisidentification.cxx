@@ -102,8 +102,8 @@ namespace HalOTF {
   }
 
   void MisidentificationYPt::ProcessTrack(Hal::ComplexTrack* track) {
-    Hal::Track* tr          = nullptr;
-    Hal::McTrack* sim       = (Hal::McTrack*) track->GetImgTrack();
+    Hal::Track* tr = nullptr;
+    // Hal::McTrack* sim       = (Hal::McTrack*) track->GetImgTrack();
     HalOTF::RecoTrack* reco = (HalOTF::RecoTrack*) track->GetRealTrack();
     if (fMode == eMode::kReco) {
       tr = track->GetRealTrack();
@@ -116,7 +116,6 @@ namespace HalOTF {
 
   void MisidentificationEtaPt::ProcessTrack(Hal::ComplexTrack* track) {
     Hal::Track* tr          = nullptr;
-    Hal::McTrack* sim       = (Hal::McTrack*) track->GetImgTrack();
     HalOTF::RecoTrack* reco = (HalOTF::RecoTrack*) track->GetRealTrack();
     if (fMode == eMode::kReco) {
       tr = track->GetRealTrack();

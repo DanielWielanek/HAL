@@ -54,10 +54,8 @@ namespace HalOTF {
   }
 
   void EventGeneratorDecay::Decay() {
-    Int_t shift      = fMcEvent->GetNTracks();
-    Int_t start      = shift - fCurrrentMult;
-    TDatabasePDG* db = TDatabasePDG::Instance();
-    int indexCount   = 0;
+    Int_t shift = fMcEvent->GetNTracks();
+    Int_t start = shift - fCurrrentMult;
 
     for (int i = start; i < shift; i++) {
       auto track         = fMcEvent->GetTrack(i);

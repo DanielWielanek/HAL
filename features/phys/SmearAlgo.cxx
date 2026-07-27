@@ -110,9 +110,9 @@ namespace Hal {
         Hal::Cout::PrintInfo("SmearAlgo::SetSmearFunction - cf not set, cannot guess ranges", Hal::EInfo::kError);
         return;
       }
-      double step  = (fMax - fMin) / double(fBins);
-      double low   = fMin - step;
-      double high  = fMax + step;
+      double step = (fMax - fMin) / double(fBins);
+      double low  = fMin - step;
+      //     double high  = fMax + step;
       int rows     = fFunction.GetNrows();
       fSmearMatrix = TMatrixD(rows, rows);
       for (int i = 0; i < rows; i++) {

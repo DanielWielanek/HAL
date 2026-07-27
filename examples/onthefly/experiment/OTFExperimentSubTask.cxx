@@ -37,9 +37,7 @@ namespace HalOTF {
   void ExperimentSubTask::Exec(Hal::ComplexEvent* event) {
     if (fAll) {
       for (int i = 0; i < event->GetTotalTrackNo(); i++) {
-        auto z_track      = (Hal::ComplexTrack*) event->GetTrack(i);
-        auto reco_track   = (HalOTF::RecoTrack*) z_track->GetRealTrack();
-        Int_t generatorId = reco_track->GetGeneratorId();
+        auto z_track = (Hal::ComplexTrack*) event->GetTrack(i);
         ProcessTrack(z_track);
       }
     } else

@@ -144,42 +144,43 @@ namespace Hal {
       fPrev.SafeInit();
       return;
     }
+    auto printInfoFailed = [](TString info, Bool_t status) {
+      if (Hal::Cout::GetVerboseMode() <= EInfo::kDebugInfo) {
+        Color_t col  = kGreen;
+        TString flag = "GOOD";
+        if (!status) {
+          col  = kRed;
+          flag = "BAD ";
+        }
+        Hal::Cout::FailSucced(info, flag, col);
+      } else {
+        if (!status) { Hal::Cout::PrintInfo(Form("Failed to init %s cut", info.Data()), EInfo::kLowWarning); }
+      }
+    };
     if (fInit) {
       Cout::PrintInfo("CutCollection: CutCollection has been initialized", EInfo::kError);
     } else {
+      Cout::PrintInfo(Form("CutCollection: cut initialization"), EInfo::kDebugInfo);
       for (int i = 0; i < fCuts->GetEntriesFast(); i++) {
-        Bool_t ok = ((Cut*) fCuts->UncheckedAt(i))->Init(task_id);
+        Bool_t ok       = ((Cut*) fCuts->UncheckedAt(i))->Init(task_id);
+        TString cutName = ((Cut*) fCuts->UncheckedAt(i))->CutName();
         if (!ok) {
-          Cout::PrintInfo(Form("CutCollection: Failed to init %s in cut collection %i",
-                               ((Cut*) fCuts->UncheckedAt(i))->CutName().Data(),
-                               GetCollectionID()),
-                          EInfo::kDebugInfo);
           fCuts->RemoveAt(i);
           fCuts->Compress();
           i--;
-        } else {
-          Cout::PrintInfo(Form("CutCollection: Successfully  inited %s in cut collection %i",
-                               ((Cut*) fCuts->UncheckedAt(i))->CutName().Data(),
-                               GetCollectionID()),
-                          EInfo::kDebugInfo);
         }
+        printInfoFailed(cutName, ok);
       }
+      Cout::PrintInfo(Form("CutCollection: fast cut initialization"), EInfo::kDebugInfo);
       for (int i = 0; i < fFastCuts->GetEntriesFast(); i++) {
-        Bool_t ok = ((Cut*) fFastCuts->UncheckedAt(i))->Init(task_id);
+        Bool_t ok       = ((Cut*) fFastCuts->UncheckedAt(i))->Init(task_id);
+        TString cutName = ((Cut*) fFastCuts->UncheckedAt(i))->CutName();
         if (!ok) {
-          Cout::PrintInfo(Form("Fast CutCollection: Failed to init %s in cut collection %i",
-                               ((Cut*) fFastCuts->UncheckedAt(i))->CutName().Data(),
-                               GetCollectionID()),
-                          EInfo::kDebugInfo);
           fFastCuts->RemoveAt(i);
           fFastCuts->Compress();
           i--;
-        } else {
-          Cout::PrintInfo(Form("Fast CutCollection: Successfully inited %s in cut collection %i",
-                               ((Cut*) fFastCuts->UncheckedAt(i))->CutName().Data(),
-                               GetCollectionID()),
-                          EInfo::kDebugInfo);
         }
+        printInfoFailed(cutName, ok);
       }
       Cout::PrintInfo("CutCollection: Initializing cut monitors", EInfo::kDebugInfo);
       AdvancedMonitorInitialization(task_id);
@@ -282,6 +283,19 @@ namespace Hal {
     // linking cuts by names with pointers with cuts
     Int_t oryginal_monitors_no = fCutMonitors->GetEntries();
     Int_t prev_size            = 0;
+    auto printInfoFailed       = [](TString info, Bool_t status) {
+      if (Hal::Cout::GetVerboseMode() <= EInfo::kDebugInfo) {
+        Color_t col  = kGreen;
+        TString flag = "GOOD";
+        if (!status) {
+          col  = kRed;
+          flag = "BAD ";
+        }
+        Hal::Cout::FailSucced(info, flag, col);
+      } else {
+        if (!status) { Hal::Cout::PrintInfo(Form("Failed to init %s cutmonitor", info.Data()), EInfo::kLowWarning); }
+      }
+    };
     if (fPrev.IsUsed()) prev_size = fPrev.GetSize();
     for (int i = 0; i < oryginal_monitors_no; i++) {
       CutMonitor* cutmon = (CutMonitor*) fCutMonitors->UncheckedAt(i);
@@ -369,8 +383,10 @@ namespace Hal {
       CutMonitor* mon = ((CutMonitor*) fCutMonitors->UncheckedAt(i));
       mon->SetCollectionID(this->fCollectionID);
       if (!mon->ObjMonitor()) {
-        mon->Init(task_id);
-        Cout::PrintInfo(Form("CutCollection: Intialized monitor [%s]", mon->ClassName()), EInfo::kDebugInfo);
+        auto stat = mon->Init(task_id);
+        printInfoFailed(mon->ClassName(), stat);
+      } else {
+        printInfoFailed(mon->ClassName(), true);
       }
     }
   }

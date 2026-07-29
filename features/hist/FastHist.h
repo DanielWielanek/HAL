@@ -72,6 +72,7 @@ namespace Hal {
     Double_t GetLabelVal(TString label) const { return GetLabelValue(fLabelsX, label); };
     inline Int_t FindBin(Double_t x) const final {
       Int_t bin = x * fStepX + fOffsetX;
+      if (std::isnan(x)) bin = fBinsNoX - 1;
       return std::clamp(bin, 0, fBinsNoX - 1);
     }
     Double_t GetBinCenterX(Int_t bin) const { return fMinX + (-0.5 + bin) * fStepX; }
@@ -114,6 +115,8 @@ namespace Hal {
       Int_t binY = y * fStepY + fOffsetY;
       binX       = std::clamp(binX, 0, fBinsNoX - 1);
       binY       = std::clamp(binY, 0, fBinsNoY - 1);
+      if (std::isnan(x)) binX = fBinsNoX - 1;
+      if (std::isnan(y)) binY = fBinsNoY - 1;
       return binX * fBinsNoY + binY;
     }
     Double_t GetLabelValX(TString label) const { return GetLabelValue(fLabelsX, label); };
@@ -174,6 +177,9 @@ namespace Hal {
       binX       = std::clamp(binX, 0, fBinsNoX - 1);
       binY       = std::clamp(binY, 0, fBinsNoY - 1);
       binZ       = std::clamp(binZ, 0, fBinsNoZ - 1);
+      if (std::isnan(x)) binX = fBinsNoX - 1;
+      if (std::isnan(y)) binY = fBinsNoY - 1;
+      if (std::isnan(z)) binZ = fBinsNoZ - 1;
       return binX * fBinsYZ + binY * fBinsNoZ + binZ;
     }
     Double_t GetBinContent(Int_t i, Int_t j, Int_t k) const final;

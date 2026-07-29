@@ -127,6 +127,19 @@ namespace Hal {
         h->SetBinContent(i, j, fValues[i * fBinsNoY + j]);
       }
     }
+    if (fLabelsX.size()) {
+      int count = 0;
+      for (auto label : fLabelsX) {
+        h->GetXaxis()->SetBinLabel(++count, label);
+      }
+    }
+
+    if (fLabelsY.size()) {
+      int count = 0;
+      for (auto label : fLabelsY) {
+        h->GetYaxis()->SetBinLabel(++count, label);
+      }
+    }
     h->SetFillColor(fFillColor);
     TH1::AddDirectory(kTRUE);
     return h;
@@ -174,6 +187,27 @@ namespace Hal {
       }
     }
     h->SetFillColor(fFillColor);
+    if (fLabelsX.size()) {
+      int count = 0;
+      for (auto label : fLabelsX) {
+        h->GetXaxis()->SetBinLabel(++count, label);
+      }
+    }
+
+    if (fLabelsY.size()) {
+      int count = 0;
+      for (auto label : fLabelsY) {
+        h->GetYaxis()->SetBinLabel(++count, label);
+      }
+    }
+
+    if (fLabelsZ.size()) {
+      int count = 0;
+      for (auto label : fLabelsZ) {
+        h->GetZaxis()->SetBinLabel(++count, label);
+      }
+    }
+
     TH1::AddDirectory(kTRUE);
     return h;
   }

@@ -449,6 +449,37 @@ namespace Hal {
                           Double_t end_y,
                           Double_t start_z,
                           Double_t end_z);
+    /**
+     * calculate mean by rejecting lowest and highest values (defined by threshold).
+     * E.g. if threshould = 0.1 then only 80% bins is used to calculate mean
+     * @param h
+     * @param threshold
+     * @param underover - include under/overflow bins
+     * @return
+     */
+    Double_t GetTrimmedMean(const TH1& h, Double_t threshold = 0.1, Bool_t underover = false);
+    /**
+     * tests if histograms are the same
+     * @param h1
+     * @param h2
+     * @param axes test axis  ranges, number of bins
+     * @param names test axis names
+     * @param values test bin contents
+     * @param errors test bin errors
+     * @param overflow test over/underflow bins
+     * @param thres - threshold of tollerance (in absolute values)
+     * @param print - print what is wrong
+     * @return
+     */
+    Bool_t TestHistogram(const TH1& h1,
+                         const TH1& h2,
+                         Bool_t axes,
+                         Bool_t names,
+                         Bool_t values,
+                         Bool_t errors,
+                         Bool_t overflow,
+                         Double_t thres = 0,
+                         Bool_t print   = false);
 
   }  // namespace Std
 }  // namespace Hal

@@ -8,15 +8,19 @@
  */
 
 #include "StdHist.h"
-#include "StdString.h"
 
-
+#include <Rtypes.h>
+#include <RtypesCore.h>
 #include <TArray.h>
+#include <TArrayD.h>
+#include <TAttAxis.h>
+#include <TAttFill.h>
+#include <TAttLine.h>
+#include <TAttMarker.h>
+#include <TAttPad.h>
 #include <TAxis.h>
 #include <TCollection.h>
 #include <TColor.h>
-#include <TDecompLU.h>
-#include <TDirectory.h>
 #include <TGaxis.h>
 #include <TGraph.h>
 #include <TH1.h>
@@ -24,22 +28,28 @@
 #include <TH3.h>
 #include <TList.h>
 #include <TMath.h>
+#include <TMathBase.h>
 #include <TMatrixDfwd.h>
 #include <TMatrixT.h>
 #include <TNamed.h>
 #include <TObjArray.h>
 #include <TPaletteAxis.h>
+#include <TPave.h>
 #include <TROOT.h>
 #include <TRandom.h>
 #include <TStyle.h>
 #include <TVirtualPad.h>
+#include <algorithm>
+#include <functional>
 #include <iostream>
+#include <stddef.h>
 #include <utility>
-
+#include <vector>
 
 #include "Cout.h"
 #include "Splines.h"
-#include "Std.h"
+#include "StdMath.h"
+#include "StdString.h"
 
 NamespaceImp(Hal::Std)
 
@@ -1681,5 +1691,150 @@ NamespaceImp(Hal::Std)
       return -1;
     }
 
+    Double_t GetTrimmedMean(const TH1& h, Double_t threshold, Bool_t underover) {
+      std::vector<double> values;
+      int startBin = 1;
+      int endBinX  = h.GetNbinsX();
+      int endBinY  = h.GetNbinsY();
+      int endBinZ  = h.GetNbinsZ();
+      if (underover) {
+        startBin = 0;
+        ++endBinX;
+        ++endBinY;
+        ++endBinZ;
+      }
+      if (h.GetDimension() == 3) {
+        for (int i = startBin; i <= endBinX; i++) {
+          for (int j = startBin; j <= endBinY; j++) {
+            for (int k = startBin; k <= endBinZ; k++) {
+              values.push_back(h.GetBinContent(i, j, k));
+            }
+          }
+        }
+      } else if (h.GetDimension() == 2) {
+        for (int i = startBin; i <= endBinX; i++) {
+          for (int j = startBin; j <= endBinY; j++) {
+            values.push_back(h.GetBinContent(i, j));
+          }
+        }
+      } else {
+        for (int i = startBin; i <= endBinX; i++) {
+          values.push_back(h.GetBinContent(i));
+        }
+      }
+      std::sort(values.begin(), values.end());
+
+      int n        = values.size();
+      int cut      = static_cast<int>(threshold * n);
+      double count = 0, sum = 0;
+      for (int i = cut; i < n - cut * 2; i++) {
+        count++;
+        sum += values[i];
+      }
+      return sum / count;
+    }
+
+
+    Bool_t TestHistogram(const TH1& h1,
+                         const TH1& h2,
+                         Bool_t axes,
+                         Bool_t names,
+                         Bool_t values,
+                         Bool_t errors,
+                         Bool_t overflow,
+                         Double_t thres,
+                         Bool_t print) {
+      if (h1.IsA() != h2.IsA()) return kFALSE;
+
+      if (h1.GetDimension() != h2.GetDimension()) return kFALSE;
+
+      if (axes || names) {
+        auto testAxis = [&](const TAxis* a1, const TAxis* a2) -> Bool_t {
+          if (axes) {
+            if (a1->GetNbins() != a2->GetNbins()) return kFALSE;
+            if (a1->GetXmin() != a2->GetXmin()) return kFALSE;
+            if (a1->GetXmax() != a2->GetXmax()) return kFALSE;
+          }
+          if (names) {
+            if (strcmp(a1->GetTitle(), a2->GetTitle()) != 0) return kFALSE;
+          }
+          return kTRUE;
+        };
+
+        if (!testAxis(h1.GetXaxis(), h2.GetXaxis())) return kFALSE;
+        if (h1.GetDimension() >= 2)
+          if (!testAxis(h1.GetYaxis(), h2.GetYaxis())) return kFALSE;
+        if (h1.GetDimension() >= 3)
+          if (!testAxis(h1.GetZaxis(), h2.GetZaxis())) return kFALSE;
+      }
+
+      int startBin = 1;
+      int endBinX  = h1.GetNbinsX();
+      int endBinY  = h1.GetNbinsY();
+      int endBinZ  = h1.GetNbinsZ();
+      if (overflow) {
+        startBin = 0;
+        ++endBinX;
+        ++endBinY;
+        ++endBinZ;
+      }
+      auto check = [&](double a, double ae, double b, double be, std::vector<int> pos) {
+        if (values && (TMath::Abs(a - b) > thres)) {
+          if (print) {
+            std::cout << "Different values [";
+            for (auto i : pos) {
+              std::cout << i << " ";
+            }
+            std::cout << "] " << a << " vs " << b << std::endl;
+          }
+          return false;
+        }
+        if (errors && (TMath::Abs(ae - be) > thres)) {
+          if (print) {
+            std::cout << "Different errors [";
+            for (auto i : pos) {
+              std::cout << i << " ";
+            }
+            std::cout << "] " << ae << " vs " << be << std::endl;
+          }
+          return false;
+        }
+        return true;
+      };
+
+
+      if (h1.GetDimension() == 3) {
+        for (int i = startBin; i <= endBinX; i++) {
+          for (int j = startBin; j <= endBinY; j++) {
+            for (int k = startBin; k <= endBinZ; k++) {
+              double a  = h1.GetBinContent(i, j, k);
+              double b  = h2.GetBinContent(i, j, k);
+              double ae = h1.GetBinError(i, j, k);
+              double be = h2.GetBinError(i, j, k);
+              if (!check(a, ae, b, be, {i, j, k})) return kFALSE;
+            }
+          }
+        }
+      } else if (h1.GetDimension() == 2) {
+        for (int i = startBin; i <= endBinX; i++) {
+          for (int j = startBin; j <= endBinY; j++) {
+            double a  = h1.GetBinContent(i, j);
+            double b  = h2.GetBinContent(i, j);
+            double ae = h1.GetBinError(i, j);
+            double be = h2.GetBinError(i, j);
+            if (!check(a, ae, b, be, {i, j})) return kFALSE;
+          }
+        }
+      } else {
+        for (int i = startBin; i <= endBinX; i++) {
+          double a  = h1.GetBinContent(i);
+          double b  = h2.GetBinContent(i);
+          double ae = h1.GetBinError(i);
+          double be = h2.GetBinError(i);
+          if (!check(a, ae, b, be, {i})) return kFALSE;
+        }
+      }
+      return kTRUE;
+    }
   }  // namespace Std
 }  // namespace Hal

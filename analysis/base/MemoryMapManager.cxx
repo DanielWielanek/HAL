@@ -113,10 +113,7 @@ namespace Hal {
 
   Event* MemoryMapManager::GetTemporaryEvent() {
     if (!fDirectAcces) fCurrentEvent->Update(fInterface);
-    if (fCurrentEvent->GetTotalTrackNo() > fTrackMapSize) {
-      for (int i = 0; i < fEventCollectionsNo; i++)
-        ReloadMap(fCurrentEvent->GetTotalTrackNo() * 1.2);
-    }
+    if (fCurrentEvent->GetTotalTrackNo() > fTrackMapSize) { ReloadMap(fCurrentEvent->GetTotalTrackNo() * 1.2); }
     return fCurrentEvent;
   }
 
@@ -293,7 +290,8 @@ namespace Hal {
     links.resize(fCurrentEvent->GetMaxExpectedLinks());
     // index global map - if fIndexMap[i=>0 need to store particle
     for (int iTrackCollection = 0; iTrackCollection < collections; iTrackCollection++) {
-      for (int j = 0; j < GetTracksNo(eventCol, iTrackCollection); j++) {
+      const int tracksNo = GetTracksNo(eventCol, iTrackCollection);
+      for (int j = 0; j < tracksNo; j++) {
         Int_t index  = fTrackMap->Get(eventCol, iTrackCollection, counter, j);
         Track* track = fCurrentEvent->GetTrack(index);
         Int_t size   = track->GetLinksFast(links, kTRUE);
@@ -303,8 +301,9 @@ namespace Hal {
     }
     fCompression.Recalculate();
     for (int iTrackCollection = 0; iTrackCollection < collections; iTrackCollection++) {
-      auto submap = fTrackMap->At(eventCol)->At(iTrackCollection)->At(counter);
-      for (int iTrack = 0; iTrack < GetTracksNo(eventCol, iTrackCollection); iTrack++) {
+      auto submap        = fTrackMap->At(eventCol)->At(iTrackCollection)->At(counter);
+      const int tracksNo = GetTracksNo(eventCol, iTrackCollection);
+      for (int iTrack = 0; iTrack < tracksNo; iTrack++) {
         Int_t old_index = submap->Get(iTrack);
         submap->Set(iTrack, fCompression.GetNewIndex(old_index));
       }

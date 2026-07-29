@@ -12,6 +12,7 @@
 #include "ComplexEvent.h"
 #include "ComplexTrack.h"
 #include "CutMonitor.h"
+#include "DataFormatManager.h"
 #include "Package.h"
 #include "Parameter.h"
 #include "TwoTrack.h"
@@ -51,8 +52,9 @@ namespace Hal {
   void ComplexMonitor::Update(Bool_t /*passed*/, TObject* /*obj*/) {}
 
   Bool_t ComplexMonitor::Init(Int_t task_id) {
+    auto event = Hal::DataFormatManager::Instance()->GetFormat(task_id);
+    if (!dynamic_cast<const Hal::ComplexEvent*>(event)) return kFALSE;
     fMonitor->SetCollectionID(fCollectionID);
-
     return fMonitor->Init(task_id);
   }
 

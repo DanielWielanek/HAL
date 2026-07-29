@@ -109,6 +109,7 @@ namespace Hal {
       Double_t bckgval = fBackgroundFunction->Integral(fEx[0], fEx[1]);
       TLegend* leg     = new TLegend(0.7, 0.7, 0.99, 0.99);
       leg->SetHeader(Form("S/S+B = %4.2f", sigval / totval));
+      leg->AddEntry((TObject*) nullptr, Form("S/#sqrt{S+B} = %4.2f", sigval / TMath::Sqrt(totval)));
       if (drawTotal) leg->AddEntry(fTotalFunction, Form("Total %4.2f", totval));
       if (drawSignal) leg->AddEntry(fSignalFunction, Form("Signal %4.2f", sigval));
       if (drawBackground) leg->AddEntry(fBackgroundFunction, Form("Background %4.2f", bckgval));

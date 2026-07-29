@@ -20,18 +20,11 @@
 namespace HalOTF {
   DetectorHitsCut::DetectorHitsCut(Int_t par) : Hal::TrackExpCut(par) {}
 
-  std::vector<std::pair<TString, Double_t>> DetectorHitsCut::GetBinLabels(Int_t /*par*/) const {
-    std::vector<std::pair<TString, Double_t>> res;
-    std::pair<TString, Double_t> data;
-    data.first  = "Undetected";
-    data.second = 0;
-    res.push_back(data);
-    data.first  = "Modified";
-    data.second = 1;
-    res.push_back(data);
-    data.first  = "Unmodified";
-    data.second = 2;
-    res.push_back(data);
+  std::vector<TString> DetectorHitsCut::GetAxisBinLabels(Int_t /*par*/) const {
+    std::vector<TString> res;
+    res.push_back("Undetected");
+    res.push_back("Modified");
+    res.push_back("Unmodified");
     return res;
   }
 
@@ -67,8 +60,8 @@ namespace HalOTF {
 
   DetectorHitsABCSumCut::DetectorHitsABCSumCut() : DetectorHitsCut(1) { SetUnitName("NHits_{ABC} [AU]"); }
 
-  std::vector<std::pair<TString, Double_t>> DetectorHitsABCSumCut::GetBinLabels(Int_t /*par*/) const {
-    std::vector<std::pair<TString, Double_t>> x;
+  std::vector<TString> DetectorHitsABCSumCut::GetAxisBinLabels(Int_t /*par*/) const {
+    std::vector<TString> x;
     return x;
   }
 

@@ -21,7 +21,7 @@ namespace Hal {
     SetUnitName("First particle [AU]", 0);
     SetUnitName("Second particle [AU]", 1);
     SafelyAddToMap(0, "primary");
-    SafelyAddToMap(1, "unkown");
+    SafelyAddToMap(1, "unknown");
     SafelyAddToMap(2, "bad");
     if (pid == Hal::Const::ProtonPID()) {
       SafelyAddToMap(Hal::Const::LambdaPID(), "");
@@ -47,13 +47,7 @@ namespace Hal {
     return Validate();
   }
 
-  std::vector<std::pair<TString, Double_t>> TwoTrackAncestorPdgBinCut::GetBinLabels(Int_t /*int1*/) const {
-    std::vector<std::pair<TString, Double_t>> res;
-    for (int i = 0; i < (int) fNames.size(); i++) {
-      res.push_back(std::pair<TString, Double_t>(fNames[i], fIndexes[i]));
-    }
-    return res;
-  }
+  std::vector<TString> TwoTrackAncestorPdgBinCut::GetAxisBinLabels(Int_t /*int1*/) const { return fNames; }
 
   void TwoTrackAncestorPdgBinCut::SafelyAddToMap(Int_t pid, TString name) {
     auto it = fMap.find(pid);

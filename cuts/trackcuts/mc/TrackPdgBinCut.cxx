@@ -68,10 +68,10 @@ namespace Hal {
     return Validate();
   }
 
-  std::vector<std::pair<TString, Double_t>> TrackPdgBinCut::GetBinLabels(Int_t /*par*/) const {
-    std::vector<std::pair<TString, Double_t>> res;
+  std::vector<TString> TrackPdgBinCut::GetAxisBinLabels(Int_t /*par*/) const {
+    std::vector<TString> res;
     for (int i = 0; i < (int) fNames.size(); i++) {
-      res.push_back(std::pair<TString, Double_t>(fNames[i], fIndexes[i]));
+      res.push_back(fNames[i]);
     }
     return res;
   }

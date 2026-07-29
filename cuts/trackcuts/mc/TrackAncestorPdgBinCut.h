@@ -41,7 +41,7 @@ namespace Hal {
      */
     void SafelyAddToMap(Int_t pid, TString name);
     virtual Bool_t Pass(Track* track);
-    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
+    virtual std::vector<TString> GetAxisBinLabels(Int_t par = 0) const;
     virtual Hal::Package* Report() const;
     virtual ~TrackAncestorPdgBinCut() {};
     ClassDef(TrackAncestorPdgBinCut, 1)

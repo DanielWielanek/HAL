@@ -19,7 +19,7 @@ namespace HalOTF {
     DetectorHitsCut(Int_t par);
     virtual Bool_t Init(Int_t taskId);
     virtual ~DetectorHitsCut() {};
-    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
+    virtual std::vector<TString> GetAxisBinLabels(Int_t par = 0) const;
     ClassDef(DetectorHitsCut, 1)
   };
 
@@ -51,7 +51,7 @@ namespace HalOTF {
   public:
     DetectorHitsABCSumCut();
     virtual ~DetectorHitsABCSumCut() {};
-    virtual std::vector<std::pair<TString, Double_t>> GetBinLabels(Int_t par = 0) const;
+    virtual std::vector<TString> GetAxisBinLabels(Int_t par = 0) const;
     virtual Bool_t Pass(Hal::Track* track);
     ClassDef(DetectorHitsABCSumCut, 1)
   };

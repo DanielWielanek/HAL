@@ -20,7 +20,7 @@ namespace Hal {
   TrackAncestorPdgBinCut::TrackAncestorPdgBinCut(Int_t pdg) : TrackMcCut(1) {
     SetUnitName("Pdg type [int]");
     SafelyAddToMap(0, "primary");
-    SafelyAddToMap(1, "unkown");
+    SafelyAddToMap(1, "unknown");
     SafelyAddToMap(2, "bad");
     if (pdg == Hal::Const::DummyPID()) return;
     // TODO
@@ -58,10 +58,10 @@ namespace Hal {
     return Validate();
   }
 
-  std::vector<std::pair<TString, Double_t>> TrackAncestorPdgBinCut::GetBinLabels(Int_t /*par*/) const {
-    std::vector<std::pair<TString, Double_t>> res;
+  std::vector<TString> TrackAncestorPdgBinCut::GetAxisBinLabels(Int_t /*par*/) const {
+    std::vector<TString> res;
     for (int i = 0; i < (int) fNames.size(); i++) {
-      res.push_back(std::pair<TString, Double_t>(fNames[i], fIndexes[i]));
+      res.push_back(fNames[i]);
     }
     return res;
   }

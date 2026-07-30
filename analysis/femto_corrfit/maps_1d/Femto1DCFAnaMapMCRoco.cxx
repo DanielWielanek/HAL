@@ -39,76 +39,15 @@ namespace Hal {
 
   Femto1DCFAnaMapMCRoco::~Femto1DCFAnaMapMCRoco() {
     if (fGeneratorIntegrated) delete fGeneratorIntegrated;
-    if (fSourceParams) delete fSourceParams;
-    if (fSampleRandom) delete fSampleRandom;
   }
 
   void Femto1DCFAnaMapMCRoco::Run(Int_t pairs_per_bin, Bool_t autoscale) {
     if (autoscale) pairs_per_bin = (Double_t) pairs_per_bin * fIntegralScale;
-    const Int_t pointsQ                        = fMap->GetNum()->GetNbinsX() + 1;
-    Double_t* kstar                            = new Double_t[pointsQ];
-    Double_t* kfill                            = new Double_t[pointsQ];
-    Double_t** parametrizations                = new Double_t*[fRBins];
-    FemtoSourceModel* sourceModel              = fGenerator->GetSourceModel();
-    FemtoSourceModel* sourceModelntegrated     = fGeneratorIntegrated->GetSourceModel();
-    FemtoSourceDensity* densityModel           = sourceModel->GetDensityProb();
-    FemtoSourceDensity* densityIntegratedModel = sourceModelntegrated->GetDensityProb();
-    Int_t sourceParamsNo                       = sourceModel->GetNpar();
-    for (int i = 0; i < fRBins; i++) {
-      parametrizations[i] = new Double_t[sourceParamsNo];
-    }
-
-    for (int i = 1; i <= fMap->GetNum()->GetNbinsX(); i++) {
-      kstar[i] = fMap->GetNum()->GetXaxis()->GetBinCenter(i);
-      kfill[i] = kstar[i];
-      if (fKinematics == Femto::EKinematics::kLCMS) { kstar[i] = kstar[i] * 0.5; }
-    }
     TVector3 boost(0.1, 0.1, 0.1);
-
-    const Double_t scale = 1.0 / TMath::Sqrt(3.0);
-
-
-    for (int i = 0; i < fRBins; i++) {
-      for (int j = 0; j < sourceParamsNo; j++) {
-        parametrizations[i][j] = fSourceParams[j];
-      }
-    }
-    switch (fModelType) {
-      case EModelType::k1dModel: {
-        for (int i = 0; i < fRBins; i++) {
-          parametrizations[i][0] = fRadiiBins[i];
-        }
-      } break;
-      case EModelType::k3dModel: {
-        for (int i = 0; i < fRBins; i++) {
-          parametrizations[i][0] = fRadiiBins[i] * scale;
-          parametrizations[i][1] = fRadiiBins[i] * scale;
-          parametrizations[i][2] = fRadiiBins[i] * scale;
-        }
-      } break;
-      case EModelType::kOther: {
-        // DO NOTHING TODO check
-      } break;
-    };
-    // Int_t mainBin = fRBins * 0.5;
-    // if (refRadius != 0) { mainBin = fMap->GetNum()->GetYaxis()->FindBin(refRadius); }
-    //  mainBin = 0;
-    //  fGenerator->GetSourceModel()->SetRadius(fRadiiBins[mainBin]);  // generate pairs for only one parametrization
-
-    TH1D* monGaus1 = new TH1D("monG1", "monG", 500, 0, 50);
-    TH1D* monGaus2 = new TH1D("monG3", "monG", 500, 0, 50);
-    TH1D* monGaus3 = new TH1D("monG6", "monG", 500, 0, 50);
-    TH1D* monGaus4 = new TH1D("monG9", "monG", 500, 0, 50);
-    TH1D* monGaus5 = new TH1D("monG10", "monG", 500, 0, 50);
-    TH1D* monRaw   = new TH1D("monR", "monR", 500, 0, 50);
-
-    TDatabasePDG* pdg  = TDatabasePDG::Instance();
-    TParticlePDG* pid1 = pdg->GetParticle(fPid1);
-    TParticlePDG* pid2 = pdg->GetParticle(fPid2);
-    Double_t m1        = Const::PionPlusMass();
-    Double_t m2        = Const::PionPlusMass();
-    if (pid1) m1 = pid1->Mass();
-    if (pid2) m2 = pid2->Mass();
+    if (fDebugDistribution) fDebugData.Init();
+    Double_t m1, m2;
+    Hal::Const::GetPdgMass(fPid1, m1, Const::PionPlusMass());
+    Hal::Const::GetPdgMass(fPid2, m1, Const::PionPlusMass());
     m1 = m1 * m1;
     m2 = m2 * m2;
     Int_t nbinsX, nbinsY;
@@ -119,10 +58,10 @@ namespace Hal {
     FastHist2D* num1 = new FastHist2D("2dnum", "2dnum", nbinsX, minX, maxX, nbinsY, minY, maxY);
     FastHist2D* num2 = new FastHist2D("2dden", "2dden", nbinsX, minX, maxX, nbinsY, minY, maxY);
     for (int ikst = 1; ikst <= fMap->GetNum()->GetNbinsX(); ikst++) {
-      Double_t E1 = TMath::Sqrt(m1 + kstar[ikst] * kstar[ikst]);
-      Double_t E2 = TMath::Sqrt(m2 + kstar[ikst] * kstar[ikst]);
+      Double_t E1 = TMath::Sqrt(m1 + fKStar[ikst] * fKStar[ikst]);
+      Double_t E2 = TMath::Sqrt(m2 + fKStar[ikst] * fKStar[ikst]);
       Double_t px, py, pz;
-      gRandom->Sphere(px, py, pz, kstar[ikst]);
+      gRandom->Sphere(px, py, pz, fKStar[ikst]);
       TLorentzVector p1(px, py, pz, E1);
       TLorentzVector p2(-px, -py, -pz, E2);
       p1.Boost(boost);
@@ -131,51 +70,7 @@ namespace Hal {
       fPair->SetTrueMomenta2(p2.X(), p2.Y(), p2.Z(), p2.T());
 
       for (int i = 0; i < pairs_per_bin; i++) {
-        fGeneratorIntegrated->GenerateFreezeoutCooordinates(fPair);
-        Double_t weight = fWeight->GenerateWeight(fPair);
-        TVector3 Radius(sourceModelntegrated->GetROut(), sourceModelntegrated->GetRSide(), sourceModelntegrated->GetRLong());
-        // Double_t RadiusFor1D[3] = {0, 0, 0};
-        Double_t Rinv = Radius.Mag();
-        // RadiusFor1D[0]          = Rinv * TMath::Sqrt(3);
-        Double_t refWeight = 1;  // 1.0 / sourceModelntegrated->GetProbDensity3d(Radius, nullptr);
-        refWeight          = 1.0 / densityIntegratedModel->GetProbDensity1d(Rinv, nullptr);
-        if (TMath::IsNaN(refWeight)) {
-          i--;
-          continue;
-        }
-        // std::cout << "\t" << std::endl;
-        for (int r_bin = 0; r_bin < fRBins; r_bin++) {
-          Double_t R         = fRadiiBins[r_bin];
-          Double_t newWeight = 1;  // sourceModel->GetProbDensity3d(Radius, parametrizations[r_bin]);  // why?
-          newWeight          = densityModel->GetProbDensity1d(Rinv, parametrizations[r_bin]);  // why?
-          Double_t effWeight = newWeight * refWeight;
-          if (fDebugDistribution) {
-            if (r_bin == 1) {
-              monRaw->Fill(Rinv, 1);
-              monGaus1->Fill(Rinv, effWeight);
-            }
-            if (r_bin == 10) {
-              //   monRaw->Fill(Rinv, 1);
-              monGaus2->Fill(Rinv, effWeight);
-            }
-            if (r_bin == 25) {
-              // monRaw->Fill(Rinv, 1);
-              monGaus3->Fill(Rinv, effWeight);
-            }
-            if (r_bin == 50) {
-              // monRaw->Fill(Rinv, 1);
-              monGaus4->Fill(Rinv, effWeight);
-            }
-            if (r_bin == 75) {
-              // monRaw->Fill(Rinv, 1);
-              monGaus5->Fill(Rinv, effWeight);
-            }
-          }
-          // std::cout << r_bin << " " << newWeight << " " << refWeight << std::endl;
-          Int_t bin = num1->FindBin(kfill[ikst], R);
-          num1->IncrementRawBinContent(bin, weight * effWeight);
-          num2->IncrementRawBinContent(bin, effWeight);
-        }
+        ComputePair(num1, num2, i, ikst);
       }
     }
     for (int i = 0; i <= nbinsX + 1; i++) {
@@ -186,30 +81,40 @@ namespace Hal {
     }
     delete num1;
     delete num2;
-    if (fDebugDistribution) {
-      TFile* fx = new TFile("ctrl.root", "recreate");
-      monRaw->Write();
-      monGaus1->Write();
-      monGaus2->Write();
-      monGaus3->Write();
-      monGaus4->Write();
-      monGaus5->Write();
-      fx->Close();
-    } else {
-      delete monRaw;
-      delete monGaus1;
-      delete monGaus2;
-      delete monGaus3;
-      delete monGaus4;
-      delete monGaus5;
-    }
+    if (fDebugDistribution) fDebugData.Save();
+  }
 
-    for (int i = 0; i < fRBins; i++) {
-      delete[] parametrizations[i];
+  void Femto1DCFAnaMapMCRoco::ComputePair(FastHist2D* num1, FastHist2D* num2, int& counter, int ikst) {
+
+    fGeneratorIntegrated->GenerateFreezeoutCooordinates(fPair);
+    Double_t weight = fWeight->GenerateWeight(fPair);
+    TVector3 Radius(fSourceModelntegrated->GetROut(), fSourceModelntegrated->GetRSide(), fSourceModelntegrated->GetRLong());
+    Double_t Rinv      = Radius.Mag();
+    Double_t refWeight = 1;  // 1.0 / sourceModelntegrated->GetProbDensity3d(Radius, nullptr);
+    refWeight          = 1.0 / fDensityIntegratedModel->GetProbDensity1d(Rinv, nullptr);
+    if (TMath::IsNaN(refWeight)) {
+      counter--;
+      return;
     }
-    delete[] parametrizations;
-    delete[] kfill;
-    delete[] kstar;
+    for (int r_bin = 0; r_bin < fRBins; r_bin++) {
+      Double_t R         = fRadiiBins[r_bin];
+      Double_t newWeight = 1;  // sourceModel->GetProbDensity3d(Radius, parametrizations[r_bin]);  // why?
+      newWeight          = fDensityModel->GetProbDensity1d(Rinv, fParametrizations[r_bin].data());  // why?
+      Double_t effWeight = newWeight * refWeight;
+      if (fDebugDistribution) {
+        if (r_bin == 1) {
+          fDebugData.monRaw->Fill(Rinv, 1);
+          fDebugData.monGaus1->Fill(Rinv, effWeight);
+        }
+        if (r_bin == 10) { fDebugData.monGaus2->Fill(Rinv, effWeight); }
+        if (r_bin == 25) { fDebugData.monGaus3->Fill(Rinv, effWeight); }
+        if (r_bin == 50) { fDebugData.monGaus4->Fill(Rinv, effWeight); }
+        if (r_bin == 75) { fDebugData.monGaus5->Fill(Rinv, effWeight); }
+      }
+      Int_t bin = num1->FindBin(fKFill[ikst], R);
+      num1->IncrementRawBinContent(bin, weight * effWeight);
+      num2->IncrementRawBinContent(bin, effWeight);
+    }
   }
 
   void Femto1DCFAnaMapMCRoco::SaveMap(TString filename) {
@@ -227,7 +132,7 @@ namespace Hal {
     }
     FemtoSourceModel* sourceModel = fGenerator->GetSourceModel();
     Int_t sourceParamsNo          = sourceModel->GetNpar();
-    fSourceParams                 = new Double_t[sourceParamsNo];
+    fSourceParams.resize(sourceParamsNo);
     for (int i = 0; i < sourceParamsNo; i++) {
       fSourceParams[i] = sourceModel->GetParameter(i);
     }
@@ -256,43 +161,116 @@ namespace Hal {
     if (part2 == nullptr) return kFALSE;
     fPair->SetPdg1(pid1);
     fPair->SetPdg2(pid2);
-    /*   fM1           = part1->Mass();
-       fM2           = part2->Mass();
-       fM1           = fM1 * fM1;
-       fM2           = fM2 * fM2;*/
+
+    CalculateIntegral();
+
+    fSourceModel            = fGenerator->GetSourceModel();
+    fSourceModelntegrated   = fGeneratorIntegrated->GetSourceModel();
+    fDensityModel           = fSourceModel->GetDensityProb();
+    fDensityIntegratedModel = fSourceModelntegrated->GetDensityProb();
+
+    InitParametrizations();
+
+    const Int_t pointsQ = fMap->GetNum()->GetNbinsX() + 1;
+    fKStar.resize(pointsQ);
+    fKFill.resize(pointsQ);
+    for (int i = 1; i <= fMap->GetNum()->GetNbinsX(); i++) {
+      fKStar[i] = fMap->GetNum()->GetXaxis()->GetBinCenter(i);
+      fKFill[i] = fKStar[i];
+      if (fKinematics == Femto::EKinematics::kLCMS) { fKStar[i] = fKStar[i] * 0.5; }
+    }
+    return kTRUE;
+  }
+
+  void Femto1DCFAnaMapMCRoco::debugData::Init() {
+    monGaus1 = new TH1D("monG1", "monG", 500, 0, 50);
+    monGaus2 = new TH1D("monG3", "monG", 500, 0, 50);
+    monGaus3 = new TH1D("monG6", "monG", 500, 0, 50);
+    monGaus4 = new TH1D("monG9", "monG", 500, 0, 50);
+    monGaus5 = new TH1D("monG10", "monG", 500, 0, 50);
+    monRaw   = new TH1D("monR", "monR", 500, 0, 50);
+  }
+
+  void Femto1DCFAnaMapMCRoco::debugData::Save() {
+    TFile* fx = new TFile("ctrl.root", "recreate");
+    monRaw->Write();
+    monGaus1->Write();
+    monGaus2->Write();
+    monGaus3->Write();
+    monGaus4->Write();
+    monGaus5->Write();
+    fx->Close();
+  }
+
+  Femto1DCFAnaMapMCRoco::debugData::~debugData() {
+    if (monRaw) {
+      delete monRaw;
+      delete monGaus1;
+      delete monGaus2;
+      delete monGaus3;
+      delete monGaus4;
+      delete monGaus5;
+    }
+  }
+
+  void Femto1DCFAnaMapMCRoco::InitParametrizations() {
+    Int_t sourceParamsNo = fSourceModel->GetNpar();
+    const Double_t scale = 1.0 / TMath::Sqrt(3.0);
+    Hal::Std::ResizeVector2D(fParametrizations, fRBins, sourceParamsNo);
+    for (int i = 0; i < fRBins; i++) {
+      for (int j = 0; j < sourceParamsNo; j++) {
+        fParametrizations[i][j] = fSourceParams[j];
+      }
+    }
+    switch (fModelType) {
+      case EModelType::k1dModel: {
+        for (int i = 0; i < fRBins; i++) {
+          fParametrizations[i][0] = fRadiiBins[i];
+        }
+      } break;
+      case EModelType::k3dModel: {
+        for (int i = 0; i < fRBins; i++) {
+          fParametrizations[i][0] = fRadiiBins[i] * scale;
+          fParametrizations[i][1] = fRadiiBins[i] * scale;
+          fParametrizations[i][2] = fRadiiBins[i] * scale;
+        }
+      } break;
+      case EModelType::kOther: {
+        // DO NOTHING TODO check
+      } break;
+    };
+  }
+
+  void Femto1DCFAnaMapMCRoco::CalculateIntegral() {
     Double_t rmin = 0;
     Double_t rmax = fRadiiBins[fRBins - 1] * 5;
-    if (fSampleRandom) {
-      delete fSampleRandom;
-      fSampleRandom = nullptr;
-    }
-    fSampleRandom                  = new TH1D("samram", "samram", 50, rmin, rmax);
+
+    auto SampleRandom              = new TH1D("samram", "samram", 50, rmin, rmax);
     Double_t params[1]             = {0};
     Double_t minIntegral           = 1E+9;
     FemtoSourceDensity* sourceBase = fGenerator->GetSourceModel()->GetDensityProb();
     for (int r_bin = 0; r_bin < fRBins; r_bin++) {
       params[0]              = fRadiiBins[r_bin];
       Double_t localIntegral = 0;
-      for (int i = 1; i <= fSampleRandom->GetNbinsX(); i++) {
-        Double_t r   = fSampleRandom->GetXaxis()->GetBinCenter(i);
+      for (int i = 1; i <= SampleRandom->GetNbinsX(); i++) {
+        Double_t r   = SampleRandom->GetXaxis()->GetBinCenter(i);
         Double_t val = sourceBase->GetProbDensity1d(r, params);
         localIntegral += val;
-        if (val > fSampleRandom->GetBinContent(i)) { fSampleRandom->SetBinContent(i, val); }
+        if (val > SampleRandom->GetBinContent(i)) { SampleRandom->SetBinContent(i, val); }
       }
       if (localIntegral < minIntegral) { minIntegral = localIntegral; }
     }
     Double_t maxIntegral = 0;
-    for (int i = 1; i <= fSampleRandom->GetNbinsX(); i++) {
-      maxIntegral += fSampleRandom->GetBinContent(i);
+    for (int i = 1; i <= SampleRandom->GetNbinsX(); i++) {
+      maxIntegral += SampleRandom->GetBinContent(i);
     }
     fIntegralScale = maxIntegral / minIntegral;
     Cout::Text(Form("Integral scale = %4.2f ", fIntegralScale), "L", kYellow);
     fGeneratorIntegrated = fGenerator->MakeCopy();
     FemtoSourceModelNumerical1D model;
-    model.SetRadiusDistribution(*fSampleRandom);
+    model.SetRadiusDistribution(*SampleRandom);
     fGeneratorIntegrated->SetSourceModel(model);
-    delete fSampleRandom;
-    fSampleRandom = nullptr;
-    return kTRUE;
+    delete SampleRandom;
   }
+
 }  // namespace Hal

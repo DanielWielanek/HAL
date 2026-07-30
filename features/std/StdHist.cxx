@@ -1691,7 +1691,7 @@ NamespaceImp(Hal::Std)
       return -1;
     }
 
-    Double_t GetTrimmedMean(const TH1& h, Double_t threshold, Bool_t underover) {
+    Double_t GetTrimmedMean(const TH1& h, Double_t trimFraction, Bool_t underover) {
       std::vector<double> values;
       int startBin = 1;
       int endBinX  = h.GetNbinsX();
@@ -1725,9 +1725,9 @@ NamespaceImp(Hal::Std)
       std::sort(values.begin(), values.end());
 
       int n        = values.size();
-      int cut      = static_cast<int>(threshold * n);
+      int cut      = static_cast<int>(trimFraction * n);
       double count = 0, sum = 0;
-      for (int i = cut; i < n - cut * 2; i++) {
+      for (int i = cut; i < n - cut; i++) {
         count++;
         sum += values[i];
       }

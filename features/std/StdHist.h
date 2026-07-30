@@ -453,11 +453,11 @@ namespace Hal {
      * calculate mean by rejecting lowest and highest values (defined by threshold).
      * E.g. if threshould = 0.1 then only 80% bins is used to calculate mean
      * @param h
-     * @param threshold
+     * @param trimFraction
      * @param underover - include under/overflow bins
      * @return
      */
-    Double_t GetTrimmedMean(const TH1& h, Double_t threshold = 0.1, Bool_t underover = false);
+    Double_t GetTrimmedMean(const TH1& h, Double_t trimFraction = 0.1, Bool_t underover = false);
     /**
      * tests if histograms are the same
      * @param h1

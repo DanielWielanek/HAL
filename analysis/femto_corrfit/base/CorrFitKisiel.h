@@ -56,6 +56,11 @@ namespace Hal {
      * @param map
      */
     virtual void AddMap(CorrFitMapKstarRstar* map);
+    /**
+     * load map from TFile, map should be called "map"
+     * @param file
+     */
+    void LoadMapFromFile(TString file);
 
     /**
      * set map directly from histogram

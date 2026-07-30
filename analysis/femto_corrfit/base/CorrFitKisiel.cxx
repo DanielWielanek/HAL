@@ -22,6 +22,7 @@
 #include <TAxis.h>
 #include <TClonesArray.h>
 #include <TF1.h>
+#include <TFile.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TLegend.h>
@@ -151,4 +152,12 @@ namespace Hal {
     }
     fMaps.push_back(map);
   }
+
+  void CorrFitKisiel::LoadMapFromFile(TString file) {
+    auto tfile = new TFile(file);
+    auto map   = (CorrFitMapKstarRstar*) tfile->Get("map");
+    AddMap(map);
+    tfile->Close();
+  }
+
 }  // namespace Hal

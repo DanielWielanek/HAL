@@ -78,6 +78,14 @@ namespace Hal {
     inline static Double_t SqrtPi() { return 1.77245385090551588191942755656783; };
     inline static Double_t DummyVal() { return -9999999; }
     /**
+     * return mass according to pdg database
+     * @param pid
+     * @param status true if pid found
+     * @param defaultmass default mass (set when pdg not found)
+     * @return
+     */
+    static Bool_t GetPdgMass(Int_t pid, Double_t& mass, Double_t defaultmass = 0);
+    /**
      * Default branch name for readers
      * @return
      */

@@ -68,4 +68,15 @@ namespace Hal {
     return "unknown";
   }
 
+  Bool_t Const::GetPdgMass(Int_t pid, Double_t& mass, Double_t defaultmass) {
+    auto db       = TDatabasePDG::Instance();
+    auto particle = db->GetParticle(pid);
+    if (!particle) {
+      mass = defaultmass;
+      return false;
+    }
+    mass = particle->Mass();
+    return true;
+  }
+
 }  // namespace Hal

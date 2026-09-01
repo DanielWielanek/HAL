@@ -156,6 +156,23 @@ namespace Hal {
     RecalculateCF();
   }
 
+  TH1D* FemtoSHCF::GetTHDByFlag(TString flag, int el, int em) const {
+    enum class PairType { kNum, kDen, kCF };
+    PairType type = PairType::kCF;
+    bool im       = false;
+    if (Hal::Std::FindParam(flag, "num")) type = PairType::kNum;
+    if (Hal::Std::FindParam(flag, "den")) type = PairType::kDen;
+    if (Hal::Std::FindParam(flag, "im")) im = true;
+
+    using Getter = TH1D* (FemtoSHCF::*) (int, int) const;
+
+    const Getter getters[3][2] = {{&FemtoSHCF::GetNumRe, &FemtoSHCF::GetNumIm},
+                                  {&FemtoSHCF::GetDenRe, &FemtoSHCF::GetDenIm},
+                                  {&FemtoSHCF::GetCFRe, &FemtoSHCF::GetCFIm}};
+
+    return (this->*getters[static_cast<int>(type)][im])(el, em);
+  }
+
   TH1D* FemtoSHCF::GetCFRe(int el, int em) const {
     if (fLmVals.GetIndex(el, em) >= 0 && fCFReal != nullptr) {
       return fCFReal[fLmVals.GetIndex(el, em)];

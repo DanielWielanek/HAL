@@ -247,6 +247,14 @@ namespace Hal {
      */
     TH1D* GetRawCFIm(int pos) const { return fCFImag[pos]; };
     /**
+     * return histogram
+     * @param flag "num" for numerator, "den" for denominator, "re" - real, "im" imag
+     * @param el
+     * @param em
+     * @return
+     */
+    TH1D* GetTHDByFlag(TString flag, int el, int em) const;
+    /**
      * return computed correlation function
      * @param el
      * @param em

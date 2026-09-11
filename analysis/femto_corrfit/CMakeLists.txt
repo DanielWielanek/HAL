@@ -137,6 +137,8 @@ if(DEFINED CIA)
         top_secret/FemtoSHCFDecomposer.cxx
         top_secret/BattlestarAcropolis.cxx
         top_secret/BattlestarHelper.cxx
+        top_secret/ProjektSkurwol.cxx
+        top_secret/NumericalSHDecomposer.cxx
     )
 endif()
 
@@ -151,6 +153,9 @@ Set(LIBRARY_NAME HalFemtoCorrFit)
 
 
 Set(DEPENDENCIES HalFemto HalAna Minuit Minuit2 Fumili)
+if(OpenMP_CXX_FOUND)
+	Set(DEPENDENCIES ${DEPENDENCIES} OpenMP::OpenMP_CXX)
+endif()
 if(NOT DEFINED DISABLE_SQLITE)
    # Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
 endif()
@@ -190,6 +195,9 @@ Set(Exe_Source
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
     Set(DEPENDENCIES gsl gslcblas HalData HalFeatures Tree EG HalAna HalFemto HalFemtoCorrFit)
+    if(OpenMP_CXX_FOUND)
+	Set(DEPENDENCIES ${DEPENDENCIES} OpenMP::OpenMP_CXX)
+endif()
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
 

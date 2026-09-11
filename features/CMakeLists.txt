@@ -34,7 +34,6 @@ CompressionMap.cxx
 UniqueOptions.cxx
 Units.cxx
 
-
 io/Link.cxx
 io/Object.cxx
 io/Package.cxx
@@ -81,6 +80,7 @@ std/StdString.cxx
 std/StdMath.cxx
 std/StdPhys.cxx
 std/StdTypes.cxx
+std/StdOpenMP.cxx
 
 phys/ErrorCalc.cxx
 phys/Helix.cxx
@@ -149,7 +149,11 @@ Set(Exe_Source
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    Set(DEPENDENCIES ${GSL_LIBRARIES} HalFeatures Tree HalAna HalFemto HalFlow HalSpectra )
+    if(OpenMP_CXX_FOUND)
+    	Set(DEPENDENCIES ${GSL_LIBRARIES} HalFeatures Tree HalAna HalFemto HalFlow HalSpectra OpenMP::OpenMP_CXX )
+    else()
+    	Set(DEPENDENCIES ${GSL_LIBRARIES} HalFeatures Tree HalAna HalFemto HalFlow HalSpectra )
+    endif()
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
 

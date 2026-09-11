@@ -129,6 +129,12 @@
 #pragma link C++ class Hal::FemtoSHCFDecomposerGSL + ;
 #pragma link C++ class Hal::FemtoSHCFDecomposerGSLVc + ;
 
+#pragma link C++ class Hal::SkurwolKernelGenerator + ;
+#pragma link C++ class Hal::SkurwolCalculator + ;
+#pragma link C++ class Hal::GausianSkurwolKalculator + ;
+#pragma link C++ class Hal::SkurwolGaussianFitter + ;
+#pragma link C++ class Hal::NumericalSHDecomposer + ;
+#pragma link C++ class Hal::FemtoDecomposerGaus + ;
 #endif
 
 // #pragma link C++ class Led+;

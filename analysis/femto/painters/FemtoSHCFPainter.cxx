@@ -59,34 +59,21 @@ namespace Hal {
 
   std::pair<TH1*, TH1*> FemtoSHCFPainter::GetNewHistPair(Int_t l, Int_t m) {
     std::pair<TH1*, TH1*> res(nullptr, nullptr);
-    if (CheckOpt(kNumBit)) {                        // return numerators
-      if (CheckOpt(kImBit) && !CheckOpt(kReBit)) {  // only imag
-        res.first = fSHCF->GetNumIm(l, m);
-      } else if (!CheckOpt(kImBit) && CheckOpt(kReBit)) {  // only real
-        res.first = fSHCF->GetNumRe(l, m);
-      } else {  // im + real
-        res.first  = fSHCF->GetNumRe(l, m);
-        res.second = fSHCF->GetNumIm(l, m);
-      }
-    } else if (CheckOpt(kDenBit)) {                 // return denominators
-      if (CheckOpt(kImBit) && !CheckOpt(kReBit)) {  // only imag
-        res.first = fSHCF->GetDenIm(l, m);
-      } else if (!CheckOpt(kImBit) && CheckOpt(kReBit)) {  // only real
-        res.first = fSHCF->GetDenRe(l, m);
-      } else {  // im + real
-        res.first  = fSHCF->GetDenRe(l, m);
-        res.second = fSHCF->GetDenIm(l, m);
-      }
-    } else {                                        // return cf's
-      if (CheckOpt(kImBit) && !CheckOpt(kReBit)) {  // only imag
-        res.first = fSHCF->GetCFIm(l, m);
-      } else if (!CheckOpt(kImBit) && CheckOpt(kReBit)) {  // only real
-        res.first = fSHCF->GetCFRe(l, m);
-      } else {  // im + real
-        res.first  = fSHCF->GetCFRe(l, m);
-        res.second = fSHCF->GetCFIm(l, m);
-      }
+    TString flag;
+    if (CheckOpt(kNumBit)) {
+      flag = "num";
+    } else if (CheckOpt(kDenBit)) {
+      flag = "den";
     }
+    if (CheckOpt(kImBit) && !CheckOpt(kReBit)) {
+      res.first = fSHCF->GetTHDByFlag(flag + "+im", l, m);
+    } else if (!CheckOpt(kImBit) && CheckOpt(kReBit)) {
+      res.first = fSHCF->GetTHDByFlag(flag + "+re", l, m);
+    } else {
+      res.first  = fSHCF->GetTHDByFlag(flag + "+re", l, m);
+      res.second = fSHCF->GetTHDByFlag(flag + "+im", l, m);
+    }
+
     if (res.first) {
       res.first = CloneHist(res.first);
       Hal::Std::CopyHistProp(*fSHCF->GetNum(), *res.first, "!tit");

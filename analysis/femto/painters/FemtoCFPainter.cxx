@@ -92,6 +92,10 @@ namespace Hal {
     for (auto i : fHistograms) {
       std::vector<TH1*> row;
       for (auto h : i) {
+        if (!h) {
+          row.push_back(nullptr);
+          continue;
+        }
         Int_t binx, biny;
         Double_t minx, miny, maxx, maxy;
         if (h->InheritsFrom("TH2")) {

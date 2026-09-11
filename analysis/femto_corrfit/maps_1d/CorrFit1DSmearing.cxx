@@ -8,6 +8,7 @@
 #include "CorrFit1DSmearing.h"
 
 #include <RtypesCore.h>
+#include <TFile.h>
 #include <TH1.h>
 #include <TH2.h>
 
@@ -29,7 +30,7 @@ namespace Hal {
     fInputMap = (Hal::CorrFitMapKstarRstar*) map.Clone();
   }
 
-  void CorrFit1DSmearing::Calculate(Bool_t unsmear) {
+  void CorrFit1DSmearing::Calculate() {
 
 
     auto CF_unsmeared    = fInputMap->GetHisto();
@@ -54,48 +55,52 @@ namespace Hal {
       Hal::Cout::PrintInfo("Not equal number of maxes in maps/smearing functions", EInfo::kError);
     }
 
-    Hal::SmearAlgoMatrix Algo;
+    Hal::SmearAlgoMatrix Algo(true);
+    Algo.SetInvertionParameters({fLambda});
     Algo.SetSmearMatrix(*fSmearingMap);
-    if (unsmear) {
-      auto prev      = rawDenominator;
-      rawDenominator = Algo.GetUnsmeared(*rawDenominator);
-      delete prev;
-    }
+    Algo.SetInvertionMethod(fInversion);
+    Algo.Init();
+    auto rawVector    = Std::Math::GetVector(*rawDenominator, true);
+    rawVector[0]      = 0;
+    auto unsmearedDen = Algo.GetUnsmeared(rawVector);
+    // TFile* f                    = new TFile("debug.root", "recreate");
     auto div                    = dynamic_cast<Hal::CorrFitMapKstarRstarDiv*>(fSmearedMap);
     Hal::DividedHisto2D* ratioH = nullptr;
     if (div) { ratioH = (Hal::DividedHisto2D*) div->GetDividedHisto(); }
-    for (int i = 1; i <= CF_unsmeared->GetNbinsY(); i++) {
-      TH1D* sliceNum = Hal::Std::GetProjection1D(CF_unsmeared, i, i, "bins+x");
-      TH1D* sliceDen = Hal::Std::GetProjection1D(CF_unsmeared, i, i, "bins+x");
-      TH1D* sliceOri = Hal::Std::GetProjection1D(CF_unsmeared, i, i, "bins+x");
-      for (int j = 1; j <= sliceNum->GetNbinsX(); j++) {
-        sliceNum->SetBinContent(j, sliceNum->GetBinContent(j) * rawDenominator->GetBinContent(j));
-        sliceDen->SetBinContent(j, rawDenominator->GetBinContent(j));
+
+
+    TH1D* sliceNumRaw = Hal::Std::GetProjection1D(CF_unsmeared, 1, 1, "bins+x");
+
+    auto smearedD = Algo.GetSmeared(unsmearedDen);
+
+    for (int iRadius = 1; iRadius <= CF_unsmeared->GetNbinsY(); iRadius++) {
+      for (int jKstar = 1; jKstar <= sliceNumRaw->GetNbinsX(); jKstar++) {
+        sliceNumRaw->SetBinContent(jKstar, CF_unsmeared->GetBinContent(jKstar, iRadius) * unsmearedDen[jKstar]);
       }
-      auto smearedN = Algo.GetSmeared(*sliceNum);
-      auto smearedD = Algo.GetSmeared(*sliceDen);
-      for (int j = 1; j <= CF_unsmeared->GetNbinsX(); j++) {
-        double DenVal = smearedD->GetBinContent(j);
-        double NumVal = smearedN->GetBinContent(j);
-        double OriVal = sliceOri->GetBinContent(j);
+      auto smearedN = Algo.GetSmeared(*sliceNumRaw);
+      for (int jKstar = 1; jKstar <= CF_unsmeared->GetNbinsX(); jKstar++) {
+        double DenVal = smearedD[jKstar];
+        double NumVal = smearedN[jKstar];
+        double OriVal = CF_unsmeared->GetBinContent(jKstar, iRadius);
         if (DenVal == 0) {
-          C_smeared->SetBinContent(j, i, OriVal);
-          fRatio->SetBinContent(j, i, 1);
-          if (ratioH) { ratioH->GetNum()->SetBinContent(j, i, ratioH->GetDen()->GetBinContent(j, i) * OriVal); }
+          C_smeared->SetBinContent(jKstar, iRadius, OriVal);
+          fRatio->SetBinContent(jKstar, iRadius, 1);
+          if (ratioH) {
+            ratioH->GetNum()->SetBinContent(jKstar, iRadius, ratioH->GetDen()->GetBinContent(jKstar, iRadius) * OriVal);
+          }
         } else {
           double smearedVal = NumVal / DenVal;
           double ratio      = OriVal / smearedVal;
-          C_smeared->SetBinContent(j, i, smearedVal);
-          fRatio->SetBinContent(j, i, ratio);
-          if (ratioH) { ratioH->GetNum()->SetBinContent(j, i, ratioH->GetDen()->GetBinContent(j, i) * smearedVal); }
+          C_smeared->SetBinContent(jKstar, iRadius, smearedVal);
+          fRatio->SetBinContent(jKstar, iRadius, ratio);
+          if (ratioH) {
+            ratioH->GetNum()->SetBinContent(jKstar, iRadius, ratioH->GetDen()->GetBinContent(jKstar, iRadius) * smearedVal);
+          }
         }
       }
-      delete sliceNum;
-      delete sliceDen;
-      delete sliceOri;
-      delete smearedN;
-      delete smearedD;
     }
+    delete sliceNumRaw;
+    // f->Close();
     delete rawDenominator;
   }
 

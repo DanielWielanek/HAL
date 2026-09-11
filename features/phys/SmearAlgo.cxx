@@ -7,6 +7,7 @@
 
 #include "SmearAlgo.h"
 
+#include <TDecompSVD.h>
 #include <TF1.h>
 #include <TF2.h>
 #include <TH1D.h>
@@ -14,192 +15,163 @@
 #include <TMath.h>
 #include <TMatrixT.h>
 #include <TMatrixTBase.h>
+#include <TRandom.h>
+
+#include <iomanip>  //TODO remove
 
 #include "Cout.h"
 #include "Std.h"
 #include "StdHist.h"
-
+using std::cout;
+using std::endl;
 namespace Hal {
-  TMatrixD SmearAlgo::GetVec(const TH2& vec) const {
-    TMatrixD vect(vec.GetNbinsX() + 2, vec.GetNbinsY() + 2);  // on x - real, on y- smeared
-    for (int iSim = 0; iSim <= vec.GetNbinsX() + 1; iSim++) {
-      for (int iReco = 0; iReco <= vec.GetNbinsY() + 1; iReco++) {
-        if (iSim == iReco)
-          vect[iReco][iSim] = 1;
-        else
-          vect[iReco][iSim] = 0;
-      }
-    }
-    for (int iSim = 1; iSim <= vec.GetNbinsX(); iSim++) {
-      for (int iReco = 1; iReco <= vec.GetNbinsY(); iReco++)
-        vect[iReco][iSim] = vec.GetBinContent(iSim, iReco);
-    }
-    return vect;
+
+  TVectorD SmearAlgo::GetSmeared(const TH1D& raw) { return GetSmeared(Hal::Std::Math::GetVector(raw, fUseUnderflows)); }
+
+  TVectorD SmearAlgo::GetUnsmeared(const TH1D& raw) { return GetUnsmeared(Hal::Std::Math::GetVector(raw, fUseUnderflows)); }
+
+  //===================================================================================================================================
+
+  void SmearAlgoMatrix::SetSmearMatrix(TH2& vec) {
+
+    auto temp = Hal::Std::Math::GetMatrix(vec, false, fUseUnderflows);
+    Hal::Std::Math::DiagonalOnEmpty(temp, true);  // diagonalize empty
+    fSmearMatrix.ResizeTo(temp.GetNrows(), temp.GetNcols());
+    Hal::Std::Math::NormalizeMatrixByRow(temp);
+    fSmearMatrix = temp;
   }
 
-  TMatrixD SmearAlgo::GetVec(const TH1& vec) const {
-    TMatrixD vect(vec.GetNbinsX() + 2, 1);
-    vect[0][0]                   = 0;
-    vect[vec.GetNbinsX() + 1][0] = 0;
-    for (int i = 1; i <= vec.GetNbinsX(); i++) {
-      vect[i][0] = vec.GetBinContent(i);
-    }
-    return vect;
-  }
+  void SmearAlgoMatrix::SetSmearFunction(TF1* f, const TH1D& raw) {
+    double min, max;
+    int bins;
+    Hal::Std::GetAxisPar(raw, bins, min, max, "x");
+    double step = (max - min) / double(bins);
+    double low  = min - step;
+    //     double high  = fMax + step;
+    Int_t size = raw.GetNbinsX();
+    if (fUseUnderflows) size += 2;
 
-
-  TH1D* SmearAlgo::GetSmeared(const TH1D& raw) {
-    auto newMatrix = GetSmearedVec(raw);
-    TH1D* res      = new TH1D("res", "res", fBins, fMin, fMax);
-    newMatrix.Print();
-    for (int i = 0; i < newMatrix.GetNrows(); i++) {
-      res->SetBinContent(i, newMatrix[i][0]);
-    }
-    return res;
-  }
-
-  TH1D* SmearAlgo::GetUnsmeared(const TH1D& raw) {
-    auto newMatrix = GetUnsmearedVec(raw);
-    TH1D* res      = new TH1D("res", "res", fBins, fMin, fMax);
-    for (int i = 0; i < newMatrix.GetNrows(); i++) {
-      res->SetBinContent(i, newMatrix[i][0]);
-    }
-    return res;
-  }
-
-  void SmearAlgo::SetSmearMatrix(TH2& vec) {
-    if (fSmearMatrixH) delete fSmearMatrixH;
-    fSmearMatrixH = (TH2*) vec.Clone();
-    fSmearMatrixH->SetDirectory(nullptr);
-  }
-
-  void SmearAlgo::SetSmearFunction(TF1* func) {
-    if (fSmearFunc1d) delete fSmearFunc1d;
-    fSmearFunc1d = (TF1*) func->Clone();
-  }
-
-  void SmearAlgo::NormalizeMatrix(TMatrixD& matrix) const {
-    for (int iSim = 0; iSim < matrix.GetNcols(); iSim++) {
-      Double_t sum = 0;
-      for (int iReco = 0; iReco < matrix.GetNrows(); iReco++) {
-        sum += matrix[iReco][iSim];
-      }
-      sum = 1.0 / sum;
-      for (int iReco = 0; iReco < matrix.GetNrows(); iReco++) {
-        matrix[iReco][iSim] = matrix[iReco][iSim] * sum;
-      }
-    }
-  }
-
-  SmearAlgo::~SmearAlgo() {
-    if (fSmearMatrixH) delete fSmearMatrixH;
-    if (fRawFunctionH) delete fRawFunctionH;
-    if (fSmearFunc1d) delete fSmearFunc1d;
-    if (fSmearFunc2d) delete fSmearFunc2d;
-  }
-
-  void SmearAlgoMatrix::Compute() {
-    if (fComputed) return;
-    if (fSmearMatrixH) {  // use smear matrix directly
-      auto temp = GetVec(*fSmearMatrixH);
-      fSmearMatrix.ResizeTo(temp);
-      fSmearMatrix = temp;
-
-    } else if (fSmearFunc1d) {  // use smear function gaussian
-      if (fFunction.GetNcols() == 0) {
-        Hal::Cout::PrintInfo("SmearAlgo::SetSmearFunction - cf not set, cannot guess ranges", Hal::EInfo::kError);
-        return;
-      }
-      double step = (fMax - fMin) / double(fBins);
-      double low  = fMin - step;
-      //     double high  = fMax + step;
-      int rows     = fFunction.GetNrows();
-      fSmearMatrix = TMatrixD(rows, rows);
-      for (int i = 0; i < rows; i++) {
-        double sim_q = low + double(i) * step + 0.5 * step;
-        for (int j = 0; j < rows; j++) {
-          double reco_q      = low + double(j) * step + 0.5 * step;
-          double rms         = fSmearFunc1d->Eval(sim_q);
-          double val         = TMath::Gaus(reco_q, 0, rms, false);
-          fSmearMatrix[j][i] = val;
+    TMatrixD temp(size, size);
+    if (fUseUnderflows) {
+      for (int i = 0; i < size; i++) {
+        double sim_q = low + double(i) * step - 0.5 * step;
+        for (int j = 0; j < size; j++) {
+          double reco_q = low + double(j) * step - 0.5 * step;
+          double rms    = f->Eval(sim_q);
+          double val    = TMath::Gaus(reco_q, 0, rms, false);
+          temp[j][i]    = val;
         }
       }
-      /* cleaning the edges */
-      for (int i = 0; i < rows; i++) {
-        fSmearMatrix[i][0]        = 0;
-        fSmearMatrix[0][i]        = 0;
-        fSmearMatrix[rows - 1][0] = 0;
-        fSmearMatrix[0][rows - 1] = 0;
+    } else {
+      for (int i = 0; i < size; i++) {
+        double sim_q = low + double(i) * step + 0.5 * step;
+        for (int j = 0; j < size; j++) {
+          double reco_q = low + double(j) * step + 0.5 * step;
+          double rms    = f->Eval(sim_q);
+          double val    = TMath::Gaus(reco_q, 0, rms, false);
+          temp[j][i]    = val;
+        }
       }
-      fSmearMatrix[0][0] = fSmearMatrix[rows - 1][rows - 1] = 1;
     }
+    Hal::Std::Math::DiagonalOnEmpty(temp, true);  // diagonalize empty
+    fSmearMatrix.ResizeTo(temp.GetNrows(), temp.GetNcols());
+    Hal::Std::Math::NormalizeMatrixByRow(temp);
+    fSmearMatrix = temp;
+  }
 
-    NormalizeMatrix(fSmearMatrix);
-
-    fSmearMatrixRev.ResizeTo(fSmearMatrix);
+  Bool_t SmearAlgoMatrix::Init() {
+    if (fComputed) { return false; }
+    fSmearMatrixRev.ResizeTo(fSmearMatrix.GetNrows(), fSmearMatrix.GetNcols());
     fSmearMatrixRev = fSmearMatrix;
     fSmearMatrixRev.Invert();
-    fComputed = kTRUE;
-  }
+    fComputed = true;
+    return false;
+  };
 
-  TMatrixD SmearAlgoMatrix::GetSmearedVec(const TH1D& raw) {
-    auto temp = GetVec(raw);
-    fFunction.ResizeTo(temp);
-    fFunction = temp;
-    Hal::Std::GetAxisPar(raw, fBins, fMin, fMax, "x");
-    if (!fComputed) { Compute(); }
-    return fSmearMatrix * fFunction;
-  }
+  TVectorD SmearAlgoMatrix::GetSmeared(const TVectorD& raw) { return fSmearMatrix * raw; }
 
-  TMatrixD SmearAlgoMatrix::GetUnsmearedVec(const TH1D& raw) {
-    auto temp = GetVec(raw);
-    fFunction.ResizeTo(temp);
-    fFunction = temp;
-    Hal::Std::GetAxisPar(raw, fBins, fMin, fMax, "x");
-    if (!fComputed) { Compute(); }
-    return fSmearMatrixRev * fFunction;
-  }
+  TVectorD SmearAlgoMatrix::GetUnsmeared(const TVectorD& raw) {
 
-  std::pair<TH2D*, TH1D*> SmearAlgoMatrix::GetFilledUpMatrix(TH2D& smear_matrix, TH1D& raw) {
-    // TODO
-    std::pair<TH2D*, TH1D*> res;
-    res.first  = (TH2D*) smear_matrix.Clone();
-    res.second = (TH1D*) raw.Clone();
-    auto smear = res.first;
-    auto data  = res.second;
-    int size   = data->GetNbinsX();
-
-    // normalize colums
-    for (int i = 0; i <= size + 1; i++) {
-      double sum = 0;
-      for (int j = 0; j <= size + 1; j++) {
-        sum += smear->GetBinContent(i, j);
+    if (fInvertionMethod == EMethod::kThikonov1) {
+      if (fParameters.size() < 1) {
+        std::cout << ClassName() << " no lambda set, set 0.1 " << std::endl;
+        SetInvertionParameters({0.1});
       }
-      if (sum > 0)
-        for (int j = 0; j <= size + 1; j++) {
-          smear->SetBinContent(i, j, smear->GetBinContent(i, j) / sum);
-        }
-      else {
-        for (int j = 0; j <= size + 1; j++) {
-          smear->SetBinContent(i, j, 0);
-        }
-        smear->SetBinContent(i, i, 1);
+      return Hal::Std::Math::TikhonovUnfold(raw, fSmearMatrix, fParameters[0]);
+    } else if (fInvertionMethod == EMethod::kThikonov2) {
+      if (fParameters.size() < 1) {
+        std::cout << ClassName() << " no lambda set, set 0.1 " << std::endl;
+        SetInvertionParameters({0.1});
       }
+      return Hal::Std::Math::TikhonovUnfold2(raw, fSmearMatrix, fParameters[0]);
+    } else if (fInvertionMethod == EMethod::kMatrix) {
+      return fSmearMatrixRev * raw;
     }
-    double esc_data = 0;
-    for (int i = 0; i <= size + 1; i++) {
-      esc_data += smear->GetBinContent(i, size + 1) * data->GetBinContent(i);
-    }
-    double rawLast = data->GetBinContent(size, size);
-    double last    = esc_data + data->GetBinContent(size, size);
-    data->SetBinContent(size + 1, size + 1, last);
-    double overFactor = esc_data / rawLast;
-    for (int i = 0; i <= size + 1; i++) {
-      smear->SetBinContent(size + 1, i, smear->GetBinContent(i, size + 1) * overFactor);
-    }
-    data->SetBinContent(size + 1, size + 1, 1 - overFactor);
-    return res;
+    // none of above? return raw
+    return raw;
   }
 
+  //===================================================================================================================================
+
+  Double_t SmearAlgoMatrix::FindOptimalLambdaThikonov2(const TH1D& raw) {
+    auto rawVect = Hal::Std::Math::GetVector(raw, fUseUnderflows);
+    const int n  = rawVect.GetNrows();
+    std::vector<double> errors;
+    int start = 1;
+    int end   = raw.GetNbinsX();
+    if (fUseUnderflows) {
+      start = 0;
+      end   = end + 1;
+    }
+    for (int i = start; i <= end; i++) {
+      errors.push_back(raw.GetBinError(i));
+    }
+
+    std::vector<TVectorD> samples;
+    const int samplesNo = 20;
+    for (int i = 0; i < samplesNo; i++) {
+      auto test = rawVect;
+      for (int j = 0; j < rawVect.GetNrows(); j++) {
+        test[j] = test[j] + gRandom->Gaus(0, errors[j]);
+      }
+      samples.push_back(test);
+    }
+
+    // Skan lambdy logarytmicznie
+    const int nLambda      = 100;
+    const double lambdaMin = 1e-8;
+    const double lambdaMax = 1e+2;
+
+    double bestLambda = lambdaMax;
+
+    for (int il = 0; il < nLambda; ++il) {
+      const double logLambda = std::log10(lambdaMin) + il * (std::log10(lambdaMax) - std::log10(lambdaMin)) / (nLambda - 1);
+
+      const double lambda = std::pow(10.0, logLambda);
+      double chi2sum      = 0.0;
+      for (int iS = 0; iS < samplesNo; iS++) {
+        // Unfold
+        TVectorD unfolded = Hal::Std::Math::TikhonovUnfold2(samples[iS], fSmearMatrix, lambda);
+
+        // Ponowne rozmycie
+        TVectorD refolded = GetSmeared(unfolded);
+
+        // chi2
+        double chi2 = 0.0;
+
+        for (int i = 0; i < n; ++i) {
+          if (errors[i] <= 0.0) continue;
+
+          const double diff = refolded[i] - rawVect[i];
+
+          chi2 += diff * diff;  /// (errors[i] * errors[i]);
+        }
+        chi2sum = ++chi2;
+      }
+
+      std::cout << "lambda = " << lambda << "   chi2/N = " << chi2sum / n << std::endl;
+    }
+    return 1;
+  }
 
 } /* namespace Hal */

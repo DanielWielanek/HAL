@@ -258,7 +258,7 @@ namespace Hal {
         xI.push_back(fPoints[i]);
       }
     }
-    return Hal::Std::LagrangeInterpol(xI, yI);
+    return Hal::Std::Math::LagrangeInterpol(xI, yI);
   }
 
   Double_t ProfileAna2D::EvalRawMean(Double_t* x, Double_t* /*p*/) const {

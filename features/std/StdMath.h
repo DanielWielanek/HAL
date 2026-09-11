@@ -12,6 +12,7 @@
 #include <TMath.h>
 #include <TMatrixD.h>
 #include <TVector3.h>
+#include <TVectorD.h>
 #include <vector>
 
 class TH1;
@@ -62,20 +63,6 @@ namespace Hal {
      * @return
      */
     Int_t Bin3dToBin1d(Int_t nbinsX, Int_t nBinsY, Int_t binX, Int_t binY, Int_t binZ, Bool_t root_number = kTRUE);
-    /**
-     * convert histogram into math vector
-     * @param h
-     * @param horizontal - return horizontal vector if true
-     * @return
-     */
-    TMatrixD GetVec(const TH1& h, Bool_t horizontal = kFALSE);
-    /**
-     * convert histogram into matrix
-     * @param h
-     * @param swaprow swap vertical positions if true
-     * @return
-     */
-    TMatrixD GetMatrix(const TH2& h, Bool_t swaprow = kFALSE);
     /**
      * calculate the position of bin in 3D histogram when convert from 1D array
      * @param nbinsX
@@ -129,24 +116,100 @@ namespace Hal {
      * @return pair - quotient + reminder
      */
     std::pair<Int_t, Int_t> Division(Int_t num, Int_t div);
-    /**
-     * NOTE: sometimes this algo fails to invert matrices, in such case prints warnings
-     * @param x
-     * @param y
-     * @return polynomial fitted to n-points p[0] is const term
-     */
-    std::vector<Double_t> LagrangeInterpol(const std::vector<Double_t>& x, const std::vector<Double_t>& y);
-    /**
-     * transform points into chebyshev polynomian
-     * @param x - values - first X, second Y
-     * @param n - degreen of polynominal
-     * @param low - lower range
-     * @param high - upper range
-     * @return
-     */
-    std::vector<Double_t>
-    ChebyshevInterpolation(const std::vector<std::pair<Double_t, Double_t>>& x, Int_t n, Double_t low, Double_t high);
-
-  }  // namespace Std
+    namespace Math {  // not so frequely used math
+      /**
+       * NOTE: sometimes this algo fails to invert matrices, in such case prints warnings
+       * @param x
+       * @param y
+       * @return polynomial fitted to n-points p[0] is const term
+       */
+      std::vector<Double_t> LagrangeInterpol(const std::vector<Double_t>& x, const std::vector<Double_t>& y);
+      /**
+       * transform points into chebyshev polynomian
+       * @param x - values - first X, second Y
+       * @param n - degreen of polynominal
+       * @param low - lower range
+       * @param high - upper range
+       * @return
+       */
+      std::vector<Double_t>
+      ChebyshevInterpolation(const std::vector<std::pair<Double_t, Double_t>>& x, Int_t n, Double_t low, Double_t high);
+      /**
+       * thikonov method to unfold smeared data
+       * @param smeared smeared data
+       * @param response smearing matrix
+       * @param lambda
+       * @return
+       */
+      TVectorD TikhonovUnfold(const TVectorD& smeared, const TMatrixD& response, double lambda);
+      /**
+       * another thikonov method - second derivarative
+       * @param smeared smeared data
+       * @param response smearing matrix
+       * @param lambda
+       * @return
+       */
+      TVectorD TikhonovUnfold2(const TVectorD& smeared, const TMatrixD& response, double lambda);
+      /**
+       * @param byRow normalize by row (sum of row i 1), otherwise normalize by column
+       * @return normalized matrix by rows or colums
+       */
+      void NormalizeMatrix(TMatrixD& matrix);
+      /**
+       *
+       * @param m
+       * @param byRow
+       * @return
+       */
+      void NormalizeMatrixByRow(TMatrixD& matrix);
+      /**
+       *
+       * @param m
+       * @param byRow
+       * @return
+       */
+      void NormalizeMatrixByColumn(TMatrixD& matrix);
+      /**
+       * convert histogram into math vector
+       * @param h
+       * @param horizontal - return horizontal vector if true
+       * @param underflow - use under/overflow bins also
+       * @return
+       */
+      TMatrixD GetMatrixVec(const TH1& h, Bool_t horizontal = kFALSE, Bool_t underflow = kFALSE);
+      /**
+       * convert histogram to math vec - ommits under/overflow bins
+       * @param h
+       * @param underflow - use under/overflow bins also
+       * @return
+       */
+      TVectorD GetVector(const TH1& h, Bool_t undeflows = kFALSE);
+      /**
+       * convert histogram into matrix
+       * @param h
+       * @param swap swap vertical positions if true (not a matrix transposition !)
+       * @param underflow - use under/overflow bins also
+       * @return
+       */
+      TMatrixD GetMatrix(const TH2& h, Bool_t swap = kFALSE, Bool_t underflows = kFALSE);
+      /**
+       * return matrix with 1 on diagonal
+       * @param matrix
+       * @param rows if true set 1 if row is empty, otherwise check column
+       * @return
+       */
+      void DiagonalOnEmpty(TMatrixD& matrix, Bool_t rows, Double_t epsilon = 1E-12);
+      /**
+       * set 0 instead of all NaN
+       * @param m
+       */
+      void RemoveNan(TMatrixD& m);
+      /**
+       * set 0 instead of all NaN
+       * @param m
+       */
+      void RemoveNan(TVectorD& vec);
+    }  // namespace Math
+  }    // namespace Std
 }  // namespace Hal
 #endif /* HAL_FEATURES_STD_HALSTDMATH_H_ */

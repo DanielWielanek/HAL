@@ -1401,7 +1401,7 @@ NamespaceImp(Hal::Std)
       }
 
       auto vector = Hal::Std::TH1ToPair(histo);
-      return ChebyshevInterpolation(vector, n, low, high);
+      return Math::ChebyshevInterpolation(vector, n, low, high);
     }
 
     std::vector<Hal::Std::Triplet<Double_t>> TH1ToTriplets(const TH1& histo) {

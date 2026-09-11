@@ -47,17 +47,8 @@ namespace Hal {
       for (unsigned int i = 0; i < fPSeudoFunctions.size(); i++) {
         for (unsigned int j = 0; j < fPSeudoFunctions[i].size(); j++) {
           auto histo = fPSeudoFunctions[i][j];
-          TF1* func  = nullptr;
-          if (fFunctions.size() > i) {
-            if (fFunctions[i].size() > j) func = fFunctions[i][j];
-          }
-          if (!func) {  // this might happen for sh opition
-            if (dim == 1)
-              for (int k = 1; k <= histo->GetNbinsX(); k++) {
-                histo->SetBinContent(k, -1E+9);
-              }
-            continue;
-          }
+          TF1* func  = fFunctions[i][j];
+          if (!histo) continue;
           histo->SetLineColor(func->GetLineColor());
           histo->SetLineStyle(func->GetLineStyle());
           histo->SetLineWidth(func->GetLineWidth());

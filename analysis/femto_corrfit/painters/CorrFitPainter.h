@@ -68,6 +68,9 @@ namespace Hal {
     virtual void MakeLegend();
     virtual void UpdateLegend();
     void DeleteFunctions();
+    /**
+     * makes fake fuctions - histograms to represents fitted function instead of TFx object
+     */
     void MakeFakeFuncs();
     std::vector<TString> GetLegendLabels() const;
     ULong64_t PrepBitTemplate(std::initializer_list<int> temps) const;

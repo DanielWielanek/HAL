@@ -71,8 +71,7 @@ namespace Hal {
     auto histo                   = newMap->GetHisto();
     histo->Reset();
     Int_t sizeQ  = newMap->GetHisto()->GetNbinsX();
-    auto smearMT = Std::GetMatrix(smearMatrix, kFALSE);
-    NormalizeMatrix(smearMT);
+    auto smearMT = Std::Math::GetMatrix(smearMatrix, true);
     std::vector<double> correction;
     if (fAutoFill) { correction = GetAutoFill(smearMT, (smearMatrix.GetXaxis()->GetBinCenter(1) < 0)); }
 #ifdef _DEBUG__CORRFITSMEAR1DCF_
@@ -198,25 +197,6 @@ namespace Hal {
       vect[i - 1][0] = vec.GetBinContent(i);
     }
     return vect;
-  }
-
-  void CorrFitSmear1DCF::NormalizeMatrix(TMatrixD& matrix) const {
-    int rowcol = matrix.GetNrows();
-    for (int i = 0; i < rowcol; i++) {
-      double sum = 0;
-      for (int j = 0; j < rowcol; j++) {
-        sum += matrix[j][i];
-      }
-      if (sum != 0)
-        sum = 1.0 / sum;
-      else {
-        sum          = 1;
-        matrix[i][i] = 1;  // y,x
-      }
-      for (int j = 0; j < rowcol; j++) {
-        matrix[j][i] = matrix[j][i] * sum;
-      }
-    }
   }
 
   TMatrixD CorrFitSmear1DCF::Multiply(TMatrixD A, TMatrixD B) const {
@@ -349,7 +329,8 @@ namespace Hal {
         }
       }
     }
-    NormalizeMatrix(smearMT);
+    Std::Math::DiagonalOnEmpty(smearMT, true);
+    Std::Math::NormalizeMatrixByRow(smearMT);
     auto rev    = smearMT.Invert();
     auto newDen = reversed * rev;
     TMatrixD reversedDen(nbins, 1);

@@ -39,7 +39,6 @@ namespace Hal {
     TMatrixD ReverseDenominator(TF1* smearfunc, TH2D* smearMatrix) const;
     std::vector<double> GetAutoFill(const TMatrixD& matrix, Bool_t lower) const;
     std::vector<double> GetGausNorms(TF1* f, TAxis* x) const;
-    void NormalizeMatrix(TMatrixD& matrix) const;
     /**
      * check compatiblitity between smear matrix map and
      * @return

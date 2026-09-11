@@ -396,6 +396,15 @@ namespace Hal {
      */
     inline void SetPdg2(Int_t val) { fPdg2 = val; };
     /**
+     * set both PDG's
+     * @param pid1
+     * @param pid2
+     */
+    void SetPdgs(Int_t pid1, Int_t pid2) {
+      fPdg1 = pid1;
+      fPdg2 = pid2;
+    };
+    /**
      * set pair type
      * @param type
      */

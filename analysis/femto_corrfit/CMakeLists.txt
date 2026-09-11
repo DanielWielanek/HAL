@@ -56,7 +56,9 @@ base/CorrFitConst.cxx
 
 maps_1d/CorrFitMapKstarRstar.cxx
 maps_1d/CorrFit1DSmearing.cxx
-maps_1d/CorrFitSmearingMath.cxx
+maps_1d/CorrFitSmearingMath1DCF.cxx
+maps_1d/CorrFitSmearingMath2DYield.cxx
+maps_1d/CorrFitSmearingMath3DYield.cxx
 maps_1d/Femto1DCFAnaMapMCRoco.cxx
 
 pairgenerators/CorrFitMapGroupConfig.cxx

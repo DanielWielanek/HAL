@@ -96,7 +96,9 @@
 #pragma link C++ class Hal::CorrFitMask3D + ;
 #pragma link C++ class Hal::CorrFitMaskSH + ;
 
-#pragma link C++ class Hal::CorrFitSmearingMath + ;
+#pragma link C++ class Hal::CorrFitSmearingMath1DCF + ;
+#pragma link C++ class Hal::CorrFitSmearingMath2DYield + ;
+#pragma link C++ class Hal::CorrFitSmearingMath3DYield + ;
 #pragma link C++ class Hal::CorrFit1DSmearing + ;
 
 #endif

@@ -97,7 +97,7 @@ jobs:
         make install
 
     - name: Build (MacOS)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'macos-latest'
       shell: bash
       run: |
         source $(brew --prefix root)/bin/thisroot.sh

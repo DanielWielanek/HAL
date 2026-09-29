@@ -15,7 +15,7 @@ namespace HalUni {
 
   UnigenReader::UnigenReader() {}
 
-  void UnigenReader::Exec(Option_t* opt) { fUniEvent->Update(fInterface); }
+  void UnigenReader::Exec(Option_t* /*opt*/) { fUniEvent->Update(fInterface); }
 
   Hal::Task::EInitFlag UnigenReader::Init() {
 

@@ -122,7 +122,7 @@ UParticle::UParticle(Int_t index,
 
 
 //--------------------------------------------------------------------
-UParticle::UParticle(const UParticle& right) {
+UParticle::UParticle(const UParticle& right) : TObject(*this) {
   // Copy constructor
   *this = right;
 }
@@ -197,7 +197,7 @@ const UParticle& UParticle::operator=(const TParticle& right) {
 
 
 //--------------------------------------------------------------------
-const Bool_t UParticle::operator==(const UParticle& right) const {
+Bool_t UParticle::operator==(const UParticle& right) const {
   // If equal operator
   return (fIndex == right.fIndex && fPdg == right.fPdg && fStatus == right.fStatus && fParent == right.fParent
           && fParentDecay == right.fParentDecay && fMate == right.fMate && fDecay == right.fDecay && fChild[0] == right.fChild[0]
@@ -217,7 +217,7 @@ const Bool_t UParticle::operator==(const UParticle& right) const {
 
 
 //--------------------------------------------------------------------
-void UParticle::Print(Option_t* option) {
+void UParticle::Print(Option_t* /*option*/) {
   // Print the data members to the standard output
   cout << "------------------------------------------------" << endl
        << "-I-                 Particle                 -I-" << endl

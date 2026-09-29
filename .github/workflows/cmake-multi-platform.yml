@@ -81,13 +81,13 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
           find . -name "*.cpp" -o -name "*.h" -o -name "*.cxx" | xargs clang-format-15 -style=file -output-replacements-xml | grep -q "<replacement " && echo "Clang-format check failed" && exit 1 || echo "Clang-format check passed"
-    - name: Build
+    - name: Build (Linux)
+      if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
-        source $(brew --prefix root)/bin/thisroot.sh || source /opt/root/bin/thisroot.sh
+        source /opt/root/bin/thisroot.sh
         echo $ROOTSYS
         export LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
-        export DYLD_LIBRARY_PATH=$ROOTSYS/lib:$DYLD_LIBRARY_PATH
         CXXFLAGS=$(root-config --cflags)
         CPP_STANDARD=$(echo $CXXFLAGS | grep -o -E '\-std=c\+\+[^ ]+' | sed 's/-std=c++//')
         mkdir build
@@ -95,6 +95,22 @@ jobs:
         cmake .. -DCMAKE_INSTALL_PREFIX=../inst -DEXAMPLES=ON -DCMAKE_CXX_STANDARD="$CPP_STANDARD"
         make 
         make install
+
+    - name: Build (MacOS)
+      if: matrix.os == 'ubuntu-latest'
+      shell: bash
+      run: |
+        source $(brew --prefix root)/bin/thisroot.sh
+        echo $ROOTSYS
+        export DYLD_LIBRARY_PATH=$ROOTSYS/lib:$DYLD_LIBRARY_PATH
+        CXXFLAGS=$(root-config --cflags)
+        CPP_STANDARD=$(echo $CXXFLAGS | grep -o -E '\-std=c\+\+[^ ]+' | sed 's/-std=c++//')
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=../inst -DEXAMPLES=ON -DCMAKE_CXX_STANDARD="$CPP_STANDARD" -DSIMD=OFF
+        make 
+        make install
+
     - name: Test
    #   working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).

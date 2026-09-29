@@ -58,10 +58,11 @@ namespace Hal {
     Double_t fNormBohr;        //
     TH3D* fCfcov = {nullptr};  //
     Sh::Indexes fLmVals;
-    Sh::YlmMath fLmMath;
-    Bool_t fColzSet = {kFALSE};
-    Color_t fColRe  = {kBlue};
-    Color_t fColIm  = {kRed};
+    Sh::YlmMath fLmMath;  //!
+    Bool_t fColzSet     = {kFALSE};
+    Color_t fColRe      = {kBlue};
+    Color_t fColIm      = {kRed};
+    Int_t fDisableRecal = {0};  // disable recalc true if greater than zero
 
     Double_t Sqr(Double_t val1, Double_t val2) const;
     TH1D* Histo(int ilm, int em, Option_t* opt, Double_t scale) const;
@@ -326,12 +327,17 @@ namespace Hal {
     virtual void Add(const Object* pack);
     virtual Long64_t Merge(TCollection* collection);
     void MakeDummyCov();
+    /**
+     * disables recalcuation
+     * @param if true - recalculation of CF is disabld when called Recalculate
+     */
+    void DisableRecalc(Bool_t disable);
     [[nodiscard]] Array_3<Double_t>& GetCovNum() { return fCovNum; }
     [[nodiscard]] Array_3<Double_t>& GetCovDen() { return fCovDen; }
     virtual TString HTMLExtract(Int_t counter = 0, TString dir = " ") const;
     virtual TObject* GetSpecial(TString opt) const;
     virtual ~FemtoSHCF();
-    ClassDef(FemtoSHCF, 6)
+    ClassDef(FemtoSHCF, 7)
   };
 }  // namespace Hal
 #endif /* HALFEMTOSHCF_H_ */

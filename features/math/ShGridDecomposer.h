@@ -42,7 +42,7 @@ namespace Hal {
        * @param nTheta - number of samples along theta angle
        * @param nPhi - number of samples along phi angle
        */
-      GridDecomposerBase(double step = 0.01, int nbins = 100, int maxL = 20, int nTheta = 40, int nPhi = 80);
+      GridDecomposerBase(double step = 0.01, int nbins = 100, int maxL = 5, int nTheta = 40, int nPhi = 80);
       /**
        * do decomposition
        * @param

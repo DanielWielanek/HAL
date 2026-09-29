@@ -46,14 +46,12 @@ namespace Hal {
         fPhiTable[ip].cosine = cos(phi);
         fPhiTable[ip].sine   = sin(phi);
       }
-
-      // fBuffer.resize(fIndexes.GetMaxJM());
     }
 
     void GridDecomposerScalar::Decompose(double* params) {
       fFunction->SetParams(params);
       double rstart      = fStep * 0.5;
-      const double scale = TMath::Sqrt(4 * TMath::Pi()) * fDeltaAngle;
+      const double scale = TMath::Sqrt(4. * TMath::Pi()) * fDeltaAngle;
 #pragma omp parallel
       {
 #pragma omp for schedule(static)
@@ -78,7 +76,6 @@ namespace Hal {
 
     void GridDecomposerScalar::ComputeLegendres(std::vector<double>& flat, std::vector<std::vector<double>>& Plm, double x) {
       gsl_sf_legendre_array(GSL_SF_LEGENDRE_SPHARM, fMaxL, x, flat.data());
-
       for (int l = 0; l <= fMaxL; ++l) {
         for (int m = 0; m <= l; ++m) {
           size_t idx = gsl_sf_legendre_array_index(l, m);

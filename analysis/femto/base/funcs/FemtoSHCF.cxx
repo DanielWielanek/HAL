@@ -622,6 +622,14 @@ namespace Hal {
   TH3D* FemtoSHCF::GetCovCF() const { return fCfcov; }
 
   void FemtoSHCF::RecalculateCF(Int_t debug, Bool_t suwm, Bool_t forced_scale) {
+
+    if (fMaxJM != fLmVals.GetMaxJM()) { fLmVals = Sh::Indexes(TMath::Sqrt(fMaxJM) - 1); }
+
+    if (fDisableRecal == 1) {
+      Cout::PrintInfo(Form("%s recalculation (%s) is blocked", GetName(), ClassName()), EInfo::kLowWarning);
+      fDisableRecal++;
+    }
+    if (fDisableRecal > 0) return;
 #ifndef DISABLE_GSL
     if (fDenImag == nullptr) {
       Cout::PrintInfo("No imaginary denominators!", EInfo::kError);
@@ -987,6 +995,15 @@ namespace Hal {
         //  Int_t gbin       = GetBin(i, ilmzero, 0, ilmzero, 1);
         // (*covmnum)[gbin] = 1;
       }
+    }
+  }
+
+
+  void FemtoSHCF::DisableRecalc(Bool_t disable) {
+    if (disable) {
+      disable = 1;
+    } else {
+      disable = 0;
     }
   }
 

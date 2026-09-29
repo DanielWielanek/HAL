@@ -474,6 +474,8 @@ namespace Hal {
 
       constexpr T value() const { return fValue; }
 
+      constexpr Vec operator-() const { return Vec(-fValue); }
+
     private:
       T fValue {};
     };
@@ -675,6 +677,16 @@ namespace Hal {
       return x.value();
     }
 
+    /**
+     * another stuff to multiply
+     * @tparam T
+     * @return
+     */
+
+    template<typename T>
+    constexpr auto operator*(float lhs, const Vec<T>& rhs) {
+      return lhs * rhs.value();
+    }
 
 #endif
 

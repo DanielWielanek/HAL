@@ -102,6 +102,8 @@ namespace Hal {
     }
 
   }  // namespace Simd
+
+
   typedef Simd::Complex<Simd::Vec<float>> FComplex_v;
   typedef Simd::Complex<Simd::Vec<double>> DComplex_v;
 

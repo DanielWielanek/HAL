@@ -33,6 +33,8 @@ endif()
 find_package(OpenMP)
 if(OpenMP_CXX_FOUND)
     add_compile_definitions(HAVE_OPENMP)
+    add_compile_options(${OpenMP_CXX_FLAGS})
+	add_link_options(${OpenMP_CXX_FLAGS})
 endif()
 set(MY_WARNINGS
     -Wall

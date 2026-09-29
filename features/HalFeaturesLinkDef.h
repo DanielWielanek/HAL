@@ -9,6 +9,7 @@
 #pragma link C++ namespace Hal::Std;
 #pragma link C++ namespace Hal::Units;
 #pragma link C++ namespace Hal::Std::Math;
+#pragma link C++ namespace Hal::Std::Simd;
 #pragma link C++ namespace Hal::Std::LorentzGenerator;
 #pragma link C++ namespace Hal::Std::OpenMP;
 #ifdef __MAKECINT__
@@ -205,6 +206,10 @@
 #pragma link C++ class Hal::Std::Triplet < Float_t> + ;
 #pragma link C++ class Hal::PackageTable + ;
 #pragma link C++ class std::unordered_map < int, int>;
+
+
+// #pragma link C++ class Hal::Simd::FComplex_v < Hal::Simd::Vec < float>> + ;
+// #pragma link C++ class Hal::Simd::DComplex_v < Hal::Simd::Vec < double>> + ;
 
 // #pragma link C++ class HalParameter+;
 

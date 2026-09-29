@@ -81,6 +81,8 @@ std/StdMath.cxx
 std/StdPhys.cxx
 std/StdTypes.cxx
 std/StdOpenMP.cxx
+std/StdSimd.cxx
+std/StdSimdComplex.cxx
 
 phys/ErrorCalc.cxx
 phys/Helix.cxx

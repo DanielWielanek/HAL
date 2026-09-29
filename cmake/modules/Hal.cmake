@@ -135,9 +135,11 @@ Macro(PrintConfig)
         message(STATUS "${INFOFLAG_1}Installation path:         ${CMAKE_INSTALL_PREFIX}${INFOFLAG_2}")
         message(STATUS "${INFOFLAG_1}Install subdir:            ${INCLUDE_HAL_SUBIDIR}${INFOFLAG_2}")
         message(STATUS "${INFOFLAG_1}Warning flags:             ${WARNING_FLAGS}${INFOFLAG_2}")
+        message(STATUS "${INFOFLAG_1}Simd flags:                ${SIMD}")
     if(DEFINED CIA)
     	message(STATUS "${INFOFLAG_3}Magic flag enabled${INFOFLAG_2}")
     endif()
+    
 EndMacro()
 
 

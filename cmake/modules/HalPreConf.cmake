@@ -12,6 +12,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_L
 endif()
 
 
+include(CheckCXXCompilerFlag)
+
 #check if simpath detected
 
 Set(USE_EXAMPLES FALSE)
@@ -41,6 +43,32 @@ set(MY_WARNINGS
 if(DEFINED CIA)
     add_compile_definitions(__CIA__ GLOBAL)
 endif()
+
 if(NOT DEFINED INCLUDE_HAL_SUBIDIR)
   Set(INCLUDE_HAL_SUBIDIR FALSE)
 endif()
+
+
+if(NOT DEFINED SIMD)
+    set(SIMD OFF)
+endif()
+
+include(${CMAKE_CURRENT_LIST_DIR}/CheckSimd.cmake)
+	
+if(SIMD STREQUAL "OFF")
+	#scalar computing
+	add_compile_definitions(HAL_SIMD_FORCE_SCALAR)
+elseif(SIMD STREQUAL "ON")
+	#simd default
+	message(STATUS "Simple simd")
+elseif(SIMD STREQUAL "AUTO")
+	SETUP_HAL_SIMD()
+endif()
+
+
+
+	
+
+
+
+

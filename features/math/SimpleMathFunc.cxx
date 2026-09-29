@@ -9,8 +9,7 @@
 
 namespace Hal {
 
-  namespace Math {
-  }  // namespace Math
+  namespace Math {}  // namespace Math
 
 
 } /* namespace Hal */

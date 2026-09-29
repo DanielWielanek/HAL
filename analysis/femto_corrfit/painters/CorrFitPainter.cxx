@@ -49,6 +49,7 @@ namespace Hal {
           auto histo = fPSeudoFunctions[i][j];
           TF1* func  = fFunctions[i][j];
           if (!histo) continue;
+          if (!func) continue;
           histo->SetLineColor(func->GetLineColor());
           histo->SetLineStyle(func->GetLineStyle());
           histo->SetLineWidth(func->GetLineWidth());

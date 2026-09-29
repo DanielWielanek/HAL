@@ -92,7 +92,7 @@ jobs:
         CPP_STANDARD=$(echo $CXXFLAGS | grep -o -E '\-std=c\+\+[^ ]+' | sed 's/-std=c++//')
         mkdir build
         cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=../inst -DEXAMPLES=ON -DCMAKE_CXX_STANDARD="$CPP_STANDARD"
+        cmake .. -DCMAKE_INSTALL_PREFIX=../inst -DEXAMPLES=ON -DCMAKE_CXX_STANDARD="$CPP_STANDARD" -DSIMD=ON
         make 
         make install
 

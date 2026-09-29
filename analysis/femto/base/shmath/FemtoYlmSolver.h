@@ -14,8 +14,7 @@
 #include <complex>
 
 #include "FemtoSHSlice.h"
-#include "FemtoYlmIndexes.h"
-#include "FemtoYlmMath.h"
+#include "ShMath.h"
 
 class TH1;
 namespace Hal {
@@ -38,8 +37,8 @@ namespace Hal {
     FemtoSHCF* fCF = {nullptr};
 
     std::vector<Double_t> fFactorials;
-    FemtoYlmIndexes fLmVals;
-    FemtoYlmMath fLmMath;
+    Sh::Indexes fLmVals;
+    Sh::YlmMath fLmMath;
     void GetMtilde(std::complex<double>* aMat, double* aMTilde);
     void InvertYlmIndependentMatrix(double* inmat, double* outmat) const;
     void UnPackYlmMatrixIndependentOnly(double* inmat, double* outmat, int insize) const;

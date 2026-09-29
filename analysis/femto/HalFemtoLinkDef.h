@@ -92,17 +92,13 @@
 #pragma link C++ class Hal::Femto3DCFPainter + ;
 #pragma link C++ class Hal::FemtoSHCFPainter + ;
 
+#pragma link C++ class Hal::Femto::Gauss3D + ;
+#pragma link C++ class Hal::Femto::Gaus3DSimd + ;
 
 #ifndef GSL_DISABLE
 
-
-#pragma link C++ class Hal::FemtoYlmIndexes + ;
-#pragma link C++ class Hal::FemtoYlmIndexesShort + ;
 #pragma link C++ class Hal::FemtoSHCF + ;
-
-
 #pragma link C++ class Hal::FemtoSHSlice + ;
-#pragma link C++ class Hal::FemtoYlmMath + ;
 #pragma link C++ class Hal::FemtoYlmSolver + ;
 
 #pragma link C++ class Hal::FemtoSerializationInterface + ;

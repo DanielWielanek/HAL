@@ -17,6 +17,7 @@ Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
 Set(LINK_DIRECTORIES
   ${ROOT_LIBRARY_DIR}
   ${GSL_LIBRARY_DIRS} 
+  
 )
 
 link_directories( ${LINK_DIRECTORIES})
@@ -74,6 +75,11 @@ hist/styles/TextStyle.cxx
 
 math/ManyPolynomialsX.cxx
 math/PeakFitterX.cxx
+math/ShMath.cxx
+math/ShIndexes.cxx
+math/ShGridDecomposer.cxx
+math/ShGridDecomposerSimd.cxx
+math/SimpleMathFunc.cxx
 
 std/StdHist.cxx
 std/StdString.cxx

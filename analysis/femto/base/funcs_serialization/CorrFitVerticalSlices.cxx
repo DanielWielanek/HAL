@@ -159,7 +159,7 @@ namespace Hal {
 
   CorrFitVerticalSlicesSH::CorrFitVerticalSlicesSH(const Hal::FemtoSHCF& h, Int_t nSamples) :
     fMaxJM((h.GetLMax() + 1) * (h.GetLMax() + 1)) {
-    fLmVals = Hal::FemtoYlmIndexes(h.GetLMax());
+    fLmVals = Sh::Indexes(h.GetLMax());
     Hal::Std::ResizeVector1D(fNum, nSamples);
     Hal::Std::ResizeVector1D(fDen, nSamples);
     Hal::Std::ResizeVector2D(fShNumReal, nSamples, fMaxJM);

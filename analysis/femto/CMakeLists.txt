@@ -55,8 +55,6 @@ base/source_models/FemtoSourceModelNumerical1D.cxx
 base/source_models/FemtoSourceDensity.cxx
 base/source_models/FemtoSourceModelNumericalPseudo3d.cxx
 base/shmath/FemtoSHSlice.cxx
-base/shmath/FemtoYlmIndexes.cxx
-base/shmath/FemtoYlmMath.cxx
 base/shmath/FemtoYlmSolver.cxx
 
 base/funcs_serialization/FemtoSerializationInterface.cxx
@@ -84,7 +82,10 @@ base/funcs/FemtoDebug2DCF.cxx
 base/funcs/Femto3DCFQinv.cxx
 base/funcs/CorrFitBaseFunc.cxx
 
+
 base/FemtoCorrFunc.cxx
+base/FemtoMathFuncs.cxx
+
 base/corrfunc/FemtoCorrFuncPt.cxx
 base/corrfunc/FemtoCorrFuncKt.cxx
 base/corrfunc/FemtoCorrFuncAzimuthalKt.cxx

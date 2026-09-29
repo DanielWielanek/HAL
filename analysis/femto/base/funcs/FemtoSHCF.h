@@ -15,8 +15,7 @@
 
 #include "Array.h"
 #include "DividedHisto.h"
-#include "FemtoYlmIndexes.h"
-#include "FemtoYlmMath.h"
+#include "ShMath.h"
 #include "Style.h"
 
 #include <TMath.h>
@@ -58,8 +57,8 @@ namespace Hal {
     Double_t fNormRadius;      //
     Double_t fNormBohr;        //
     TH3D* fCfcov = {nullptr};  //
-    FemtoYlmIndexes fLmVals;
-    FemtoYlmMath fLmMath;
+    Sh::Indexes fLmVals;
+    Sh::YlmMath fLmMath;
     Bool_t fColzSet = {kFALSE};
     Color_t fColRe  = {kBlue};
     Color_t fColIm  = {kRed};
@@ -118,7 +117,7 @@ namespace Hal {
     }
     virtual void FillNumObj(TObject* obj);
     virtual void FillDenObj(TObject* obj);
-    FemtoYlmIndexes GetYlmIndexes() const { return fLmVals; }
+    Sh::Indexes GetYlmIndexes() const { return fLmVals; }
     /**
      * primitive constructor to conver angular Femto3DCF into SH CF
      * @param cf

@@ -8,8 +8,8 @@
 #pragma link C++ namespace Hal;
 #pragma link C++ namespace Hal::Std;
 #pragma link C++ namespace Hal::Units;
+#pragma link C++ namespace Hal::Simd;
 #pragma link C++ namespace Hal::Std::Math;
-#pragma link C++ namespace Hal::Std::Simd;
 #pragma link C++ namespace Hal::Std::LorentzGenerator;
 #pragma link C++ namespace Hal::Std::OpenMP;
 #ifdef __MAKECINT__
@@ -129,8 +129,18 @@
 #pragma link C++ class Hal::CorrelationHistoPainter + ;
 #pragma link C++ class Hal::Painter + ;
 #pragma link C++ class Hal::SimplePainter + ;
+
 #pragma link C++ class Hal::ManyPolynomialsX + ;
 #pragma link C++ class Hal::PeakFitterX + ;
+#pragma link C++ class Hal::Sh::Indexes + ;
+#pragma link C++ class Hal::Sh::IndexesShort + ;
+#pragma link C++ class Hal::Sh::YlmMath + ;
+#pragma link C++ class Hal::Sh::GridDecomposerBase + ;
+#pragma link C++ class Hal::Sh::GridDecomposerScalar + ;
+#pragma link C++ class Hal::Sh::GridDecomposerSimd + ;
+
+#pragma link C++ class Hal::Math::Function3D + ;
+#pragma link C++ class Hal::Math::SimdFunctionF3D + ;
 
 #pragma link C++ class Hal::ErrorCalc + ;
 #pragma link C++ class Hal::FastAxisCalc + ;

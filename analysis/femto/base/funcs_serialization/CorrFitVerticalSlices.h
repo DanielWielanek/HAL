@@ -12,8 +12,7 @@
 #include <TObject.h>
 #include <vector>
 
-#include "FemtoYlmIndexes.h"
-#include "FemtoYlmMath.h"
+#include "ShMath.h"
 
 namespace Hal {
   class FemtoPair;
@@ -76,8 +75,8 @@ namespace Hal {
 
   class CorrFitVerticalSlicesSH : public CorrFitVerticalSlices {
     friend class FemtoSerializationInterfaceSH;
-    FemtoYlmIndexes fLmVals;
-    FemtoYlmMath fLmMath;
+    Sh::Indexes fLmVals;
+    Sh::YlmMath fLmMath;
 
   public:
     const Int_t fMaxJM;

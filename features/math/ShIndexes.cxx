@@ -1,0 +1,197 @@
+/*
+ * ShIndexes.cxx
+ *
+ *  Created on: 29 wrz 2026
+ *      Author: daniel
+ */
+
+#include "ShIndexes.h"
+
+#include <TString.h>
+#include <iostream>
+
+#include "Cout.h"
+#include "StdTypes.h"
+
+namespace Hal {
+
+  namespace Sh {
+    //===================================================================================================================================
+    Indexes::~Indexes() {
+      if (fEls) delete[] fEls;
+      if (fEms) delete[] fEms;
+      if (fElsi) delete[] fElsi;
+      if (fEmsi) delete[] fEmsi;
+    }
+
+    Indexes& Indexes::operator=(const Indexes& other) {
+      if (this == &other) return *this;
+      if (this->fL == other.fL) return *this;
+      Resize(other.fL);
+      return *this;
+    }
+
+    Indexes::Indexes(Int_t L) : fL(L), fMaxJM((L + 1) * (L + 1)), fEls(nullptr), fEms(nullptr), fElsi(nullptr), fEmsi(nullptr) {
+      Resize(L);
+    }
+
+    void Indexes::Resize(Int_t newL) {
+      if (fEls) {
+        delete[] fEls;
+        delete[] fEms;
+        delete[] fElsi;
+        delete[] fEmsi;
+        fEls  = nullptr;
+        fEms  = nullptr;
+        fElsi = nullptr;
+        fEmsi = nullptr;
+      }
+      fL = newL;
+      if (fL == 0) return;
+      if (fL > 6) { Cout::PrintInfo("Creating YLM for L>6!", EInfo::kError); }
+      fMaxJM = (fL + 1) * (fL + 1);
+      if (fL > 0) {
+        fEls     = new Double_t[fMaxJM];
+        fEms     = new Double_t[fMaxJM];
+        fElsi    = new Int_t[fMaxJM];
+        fEmsi    = new Int_t[fMaxJM];
+        fIndexes = Array_2<Int_t>(fL + 1, 2 * fL + 1);
+        for (int i = 0; i <= fL; i++) {
+          for (int j = 0; j < 2 * fL + 1; j++) {
+            fIndexes[i][j] = -1;
+          }
+        }
+      }
+      int el = 0;
+      int em = 0;
+      int il = 0;
+      do {
+        fEls[il]              = el;
+        fEms[il]              = em;
+        fElsi[il]             = (int) el;
+        fEmsi[il]             = (int) em;
+        fIndexes[el][fL + em] = il;
+#ifdef _FINISH_DEBUG_
+        std::cout << "il el em " << il << " " << fElsi[il] << " " << fEmsi[il] << std::endl;
+#endif
+        em++;
+        il++;
+        if (em > el) {
+          el++;
+          em = -el;
+        }
+      } while (el <= fL);
+    }
+
+    Indexes::Indexes(const Indexes& other) : Indexes(other.fL) {}
+
+    Int_t Indexes::GetPadId(Int_t l, Int_t m) const {
+      Array_2<Int_t> map;
+      map.MakeBigger(fL + 1, fL + 1);
+      Int_t pad = 1;
+      for (int i = 0; i <= fL; i++) {
+        for (int j = 0; j <= fL; j++) {
+          map[i][j] = pad++;
+        }
+      }
+      Int_t x = l;
+      Int_t y = 0;
+      if (m >= 0) {
+        y = l - m;
+      } else {
+        y = l;
+        x = l + m;
+      }
+      return map[x][y];
+    }
+
+    void Indexes::Print(Option_t* /*option*/) const {
+      std::cout << ClassName() << std::endl;
+      std::cout << Form("   l   m   index") << std::endl;
+      for (int i = 0; i < fMaxJM; i++) {
+        std::cout << Form("%4i%4i%4i", fElsi[i], fEmsi[i], i) << std::endl;
+      }
+      std::cout << "------------" << std::endl;
+    }
+
+    //===================================================================================================================================
+
+    IndexesShort::~IndexesShort() {
+      if (fEls) delete[] fEls;
+      if (fEms) delete[] fEms;
+      if (fElsi) delete[] fElsi;
+      if (fEmsi) delete[] fEmsi;
+    }
+
+    IndexesShort& IndexesShort::operator=(const IndexesShort& other) {
+      if (this == &other) return *this;
+      if (this->fL == other.fL) return *this;
+      Resize(other.fL);
+      return *this;
+    }
+
+    IndexesShort::IndexesShort(Int_t L) :
+      fL(L), fMaxJM(0.5 * ((L + 1) * (L + 1) + L + 1)), fEls(nullptr), fEms(nullptr), fElsi(nullptr), fEmsi(nullptr) {
+      Resize(L);
+    }
+
+    void IndexesShort::Resize(Int_t newL) {
+      if (fEls) {
+        delete[] fEls;
+        delete[] fEms;
+        delete[] fElsi;
+        delete[] fEmsi;
+        fEls  = nullptr;
+        fEms  = nullptr;
+        fElsi = nullptr;
+        fEmsi = nullptr;
+      }
+      fL = newL;
+      if (fL == 0) return;
+      if (fL > 6) { Cout::PrintInfo("Creating YLM for L>6!", EInfo::kError); }
+      fMaxJM = 0.5 * ((fL + 1) * (fL + 1) + fL + 1);
+      if (fL > 0) {
+        fEls     = new Double_t[fMaxJM];
+        fEms     = new Double_t[fMaxJM];
+        fElsi    = new Int_t[fMaxJM];
+        fEmsi    = new Int_t[fMaxJM];
+        fIndexes = Array_2<Int_t>(fL + 1, fL + 1);
+        for (int i = 0; i <= fL; i++) {
+          for (int j = 0; j < fL + 1; j++) {
+            fIndexes[i][j] = -1;
+          }
+        }
+      }
+      int el = 0;
+      int em = 0;
+      int il = 0;
+      do {
+        fEls[il]              = el;
+        fEms[il]              = em;
+        fElsi[il]             = (int) el;
+        fEmsi[il]             = (int) em;
+        fIndexes[el][fL + em] = il;
+        em++;
+        il++;
+        if (em > el) {
+          el++;
+          em = 0;
+        }
+      } while (el <= fL);
+    }
+
+    IndexesShort::IndexesShort(const IndexesShort& other) : IndexesShort(other.fL) {}
+
+    void IndexesShort::Print(Option_t* /*option*/) const {
+      std::cout << ClassName() << std::endl;
+      std::cout << Form("   l   m   index") << std::endl;
+      for (int i = 0; i < fMaxJM; i++) {
+        std::cout << Form("%4i%4i%4i", fElsi[i], fEmsi[i], i) << std::endl;
+      }
+      std::cout << "------------" << std::endl;
+    }
+
+    //===================================================================================================================================
+
+  }  // namespace Sh
+} /* namespace Hal */

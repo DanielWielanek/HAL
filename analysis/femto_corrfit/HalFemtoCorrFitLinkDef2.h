@@ -133,10 +133,9 @@
 
 #pragma link C++ class Hal::SkurwolKernelGenerator + ;
 #pragma link C++ class Hal::SkurwolCalculator + ;
-#pragma link C++ class Hal::GausianSkurwolKalculator + ;
 #pragma link C++ class Hal::SkurwolGaussianFitter + ;
-#pragma link C++ class Hal::NumericalSHDecomposer + ;
-#pragma link C++ class Hal::FemtoDecomposerGaus + ;
+#pragma link C++ class Hal::Kurwinox + ;
+
 #endif
 
 // #pragma link C++ class Led+;

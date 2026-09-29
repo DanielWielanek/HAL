@@ -36,6 +36,7 @@ if(OpenMP_CXX_FOUND)
     add_compile_options(${OpenMP_CXX_FLAGS})
 	add_link_options(${OpenMP_CXX_FLAGS})
 endif()
+
 set(MY_WARNINGS
     -Wall
     -Wextra
@@ -51,6 +52,7 @@ if(NOT DEFINED INCLUDE_HAL_SUBIDIR)
 endif()
 
 
+# SIMD stuff
 if(NOT DEFINED SIMD)
     set(SIMD OFF)
 endif()

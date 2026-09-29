@@ -61,7 +61,7 @@ namespace Hal {
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
-    fLmVals(FemtoYlmIndexes(1)) {
+    fLmVals(Sh::Indexes(1)) {
     //  gSystem->Load("libgsl.so");
     //  gSystem->Load("libgslcblas.so");
   }
@@ -73,7 +73,7 @@ namespace Hal {
     fNormPurity(0),
     fNormRadius(0),
     fNormBohr(0),
-    fLmVals(FemtoYlmIndexes(TMath::Min(maxL, 5))),
+    fLmVals(Sh::Indexes(TMath::Min(maxL, 5))),
     fLmMath() {
     SetNorm(0, 0.5, 0);
     if (maxL > 5) { Hal::Cout::PrintInfo("MaxL > 5 not supported", EInfo::kError); }

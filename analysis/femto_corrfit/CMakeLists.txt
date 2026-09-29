@@ -140,7 +140,7 @@ if(DEFINED CIA)
         top_secret/BattlestarAcropolis.cxx
         top_secret/BattlestarHelper.cxx
         top_secret/ProjektSkurwol.cxx
-        top_secret/NumericalSHDecomposer.cxx
+        top_secret/Kurwinox.cxx
     )
 endif()
 
@@ -182,7 +182,8 @@ GENERATE_LIBRARY_HAL()
 
 
 #making executables
-
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 Set(Exe_Names
     hal-corrfit)

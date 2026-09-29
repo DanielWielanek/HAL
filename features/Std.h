@@ -13,7 +13,7 @@ class TVirtualPad;
 
 #define Draw_2D_option "colz"
 #define Draw_3D_option "box2"
-#define HAL_PHYSICALANALYSYS_VER "dec2025"
+#define HAL_PHYSICALANALYSYS_VER "sep2026"
 
 
 class TClonesArray;

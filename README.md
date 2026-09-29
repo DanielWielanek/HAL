@@ -86,6 +86,7 @@ For Typical Users
 For Advanced Use
  * **INCLUDE_HAL_SUBDIR=TRUE** – install headers in Hal/ subdirectory (for use as a dependency, e.g., in CbmROOT)
  * **JSROOT_DIR=[path]** – specify custom JSROOT directory if ROOT's version causes issues
+ * **SIMD=OFF/TRUE/AUTO** – if OFF buidl without SIMD support, if ON use with support of AVX (4 floats per register) if AUTO use available resources (code might not be portable!) default option is OFF
 
 If Compilation Fails
  * **CMAKE_CXX_STANDARD=[XX]** – manually set C++ standard (default is 17).

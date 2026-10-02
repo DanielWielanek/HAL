@@ -20,9 +20,9 @@
 namespace Hal {
   Bool_t CorrFitMask3D::Init() {
     fActiveBins = 0;
-    for (int i = 1; i < (int) fRawMask.size() - 1; i++) {  // dont take into account overflow/underflow bins
-      for (int j = 1; j < (int) fRawMask[0].size() - 1; j++) {
-        for (int k = 1; k < (int) fRawMask[0][0].size() - 1; k++) {
+    for (int i = 1; i < (int) fRawMask.GetSize() - 1; i++) {  // dont take into account overflow/underflow bins
+      for (int j = 1; j < (int) fRawMask[0].GetSize() - 1; j++) {
+        for (int k = 1; k < (int) fRawMask[0][0].GetSize() - 1; k++) {
           if (fRawMask[i][j][k]) fActiveBins++;
         }
       }
@@ -65,13 +65,7 @@ namespace Hal {
     fMax[0]  = maxX;
     fMax[1]  = maxY;
     fMax[2]  = maxZ;
-    fRawMask.resize(fBins[0] + 2);
-    for (auto& i : fRawMask) {
-      i.resize(fBins[1] + 2);
-      for (auto& j : i) {
-        j.resize(fBins[2] + 2);
-      }
-    }
+    fRawMask.MakeBigger(fBins[0] + 2, fBins[1] + 2, fBins[2] + 2);
   }
 
   void CorrFitMask3D::ApplyRange(Double_t minX,
@@ -80,7 +74,7 @@ namespace Hal {
                                  Double_t maxY,
                                  Double_t minZ,
                                  Double_t maxZ,
-                                 Bool_t additive) {
+                                 ELogic flag) {
     int low[3], high[3];
     double min[3] = {minX, minY, minZ};
     double max[3] = {maxX, maxY, maxZ};
@@ -91,74 +85,40 @@ namespace Hal {
       if (low[i] < 0) low[i] = 1;
       if (high[i] > fBins[i] + 1) high[i] = fBins[i] + 1;
     }
-    if (additive) {
-      for (int i = low[0]; i <= high[0]; i++) {
-        for (int j = low[1]; j <= high[1]; j++) {
-          for (int k = low[2]; k <= high[2]; k++) {
-            fRawMask[i][j][k] = true;
-          }
-        }
-      }
-    } else {
-      for (int i = 0; i < (int) fRawMask.size(); i++) {
-        for (int j = 0; j < (int) fRawMask[0].size(); j++) {
-          for (int k = 0; k < (int) fRawMask[0][0].size(); k++) {
-            if (i < low[0]) fRawMask[i][j][k] = false;
-            if (i > high[0]) fRawMask[i][j][k] = false;
-            if (j < low[1]) fRawMask[i][j][k] = false;
-            if (j > high[1]) fRawMask[i][j][k] = false;
-            if (k < low[2]) fRawMask[i][j][k] = false;
-            if (k > high[2]) fRawMask[i][j][k] = false;
-          }
+    auto mask = fRawMask;
+    SetGlobalStatus(mask, 0);
+    for (int i = low[0]; i <= high[0]; i++) {
+      for (int j = low[1]; j <= high[1]; j++) {
+        for (int k = low[2]; k <= high[2]; k++) {
+          mask[i][j][k] = 1;
         }
       }
     }
+    Mask(fRawMask, mask, flag);
   }
 
   void CorrFitMask3D::SetBin(Int_t binX, Int_t binY, Int_t binZ, Bool_t state) { fRawMask[binX][binY][binZ] = state; }
 
-  void CorrFitMask3D::Reset(Bool_t state) {
-    for (int i = 0; i < (int) fRawMask.size(); i++) {
-      for (int j = 0; j < (int) fRawMask[0].size(); j++) {
-        for (int k = 0; k < (int) fRawMask[0][0].size(); k++) {
-          fRawMask[i][j][k] = state;
-        }
-      }
-    }
-  }
+  void CorrFitMask3D::Reset(Bool_t state) { SetGlobalStatus(fRawMask, state); }
 
-  void CorrFitMask3D::ApplyThreshold(const TH1& h, Double_t threshold) {
+  void CorrFitMask3D::ApplyThreshold(const TH1& h, Double_t threshold, ELogic flag) {
+    auto mask = fRawMask;
+    SetGlobalStatus(mask, 0);
     for (int i = 1; i <= h.GetNbinsX(); i++) {
       for (int j = 1; j <= h.GetNbinsY(); j++) {
         for (int k = 1; k <= h.GetNbinsZ(); k++) {
-          if (h.GetBinContent(i, j, k) <= threshold) { fRawMask[i][j][k] = false; }
+          if (h.GetBinContent(i, j, k) > threshold) { mask[i][j][k] = 1; }
         }
       }
     }
+    Mask(fRawMask, mask, flag);
   }
 
-  void CorrFitMask3D::ApplyMask(EFitExtraMask mask, Bool_t additive) {
-    Array_3<Short_t> map;
-    map.MakeBigger(GetNbinsX() + 1, GetNbinsY() + 1, GetNbinsZ() + 1);
-    for (int i = 0; i <= GetNbinsX() + 1; i++) {
-      for (int j = 0; j <= GetNbinsY() + 1; j++) {
-        for (int k = 0; k <= GetNbinsZ() + 1; k++) {
-          map[i][j][k] = false;
-        }
-      }
-    }
+  void CorrFitMask3D::ApplyMask(EFitExtraMask mask, ELogic flag) {
+    auto map = fRawMask;
+    SetGlobalStatus(map, 0);
     CalcMap(map, mask);
-    for (int i = 0; i <= GetNbinsX() + 1; i++) {
-      for (int j = 0; j <= GetNbinsY() + 1; j++) {
-        for (int k = 0; k <= GetNbinsZ() + 1; k++) {
-          if (additive) {
-            if (map[i][j][k]) fRawMask[i][j][k] = true;
-          } else {
-            if (!map[i][j][k]) fRawMask[i][j][k] = false;
-          }
-        }
-      }
-    }
+    Mask(fRawMask, map, flag);
   }
 
   void CorrFitMask3D::CalcMap(Array_3<Short_t>& map, EFitExtraMask mask) {

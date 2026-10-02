@@ -292,12 +292,12 @@ namespace Hal {
     if (fOwnRangeMap) {  // use own map
     } else {             // get own mask
       GetMask()->Reset(true);
-      GetMask()->ApplyThreshold(*fNumeratorHistogram, fThreshold);
-      GetMask()->ApplyThreshold(*fDenominatorHistogram, fThreshold);
-      GetMask()->ApplyRange(fRange[0], fRange[1], fRange[2], fRange[3], fRange[4], fRange[5], kFALSE);
+      GetMask()->ApplyThreshold(*fNumeratorHistogram, fThreshold, CorrFitMask::ELogic::kOr);
+      GetMask()->ApplyThreshold(*fDenominatorHistogram, fThreshold, CorrFitMask::ELogic::kOr);
+      GetMask()->ApplyRange(fRange[0], fRange[1], fRange[2], fRange[3], fRange[4], fRange[5], CorrFitMask::ELogic::kAnd);
     }
-    GetMask()->ApplyThreshold(*fNumeratorHistogram, 0);
-    GetMask()->ApplyThreshold(*fDenominatorHistogram, 0);
+    GetMask()->ApplyThreshold(*fNumeratorHistogram, 0, CorrFitMask::ELogic::kOr);
+    GetMask()->ApplyThreshold(*fDenominatorHistogram, 0, CorrFitMask::ELogic::kOr);
     fMask->Init();
     fActiveBins = fMask->GetActiveBins();
 

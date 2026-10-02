@@ -20,19 +20,19 @@ namespace Hal {
   class CorrFitMask1D : public CorrFitMask {
     Int_t fBins;
     Double_t fMin, fMax;
-    std::vector<Short_t> fRawMask;
+    Array_1<Short_t> fRawMask;
 
   public:
     CorrFitMask1D(Int_t bins = 100, Double_t min = 0, Double_t max = 1);
     CorrFitMask1D(const Hal::Femto1DCF& cf);
-    void ApplyRange(Double_t min, Double_t max, Bool_t additive = kTRUE);
+    void ApplyRange(Double_t min, Double_t max, ELogic flag = ELogic::kAnd);
     void SetBin(Int_t bin, Bool_t state = true);
     void Reset(Bool_t state = kTRUE);
     Bool_t Init();
     Bool_t GetBinFlag(Int_t no) const { return fRawMask[no]; };
     Bool_t AreCompatible(TObject* cf) const;
-    void ApplyThreshold(const TH1& h, Double_t threshold = 0);
-    Int_t GetNBins() const { return fRawMask.size() - 2; };
+    void ApplyThreshold(const TH1& h, Double_t threshold = 0, ELogic flag = ELogic::kAnd);
+    Int_t GetNBins() const { return fRawMask.GetSize() - 2; };
     Double_t GetMin() const { return fMin; };
     Double_t GetMax() const { return fMax; }
     virtual ~CorrFitMask1D() {};

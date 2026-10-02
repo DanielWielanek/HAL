@@ -32,7 +32,7 @@ namespace Hal {
   private:
     Int_t fBins[3];
     Double_t fMin[3], fMax[3];
-    std::vector<std::vector<std::vector<Short_t>>> fRawMask;
+    Array_3<Short_t> fRawMask;
     void CalcMap(Array_3<Short_t>& map, EFitExtraMask mask);
     void CalculateDiagonalBins(Array_3<Short_t>& map, EFitExtraMask mask);
     void CalculateUltradiagonalBins(Array_3<Short_t>& map, EFitExtraMask mask);
@@ -49,19 +49,24 @@ namespace Hal {
                   Int_t binsZ   = 100,
                   Double_t minZ = 0,
                   Double_t maxZ = 1);
-    void
-    ApplyRange(Double_t minX, Double_t maxX, Double_t minY, Double_t maxY, Double_t minZ, Double_t maxZ, Bool_t additive = kTRUE);
-    void ApplyMask(EFitExtraMask mask, Bool_t additive = kFALSE);
-    void SetBin(Int_t binX, Int_t binY, Int_t binZ, Bool_t state = true);
+    void ApplyRange(Double_t minX,
+                    Double_t maxX,
+                    Double_t minY,
+                    Double_t maxY,
+                    Double_t minZ,
+                    Double_t maxZ,
+                    ELogic flag = ELogic::kAnd);
+    void ApplyMask(EFitExtraMask mask, ELogic flag = ELogic::kAnd);
+    void SetBin(Int_t binX, Int_t binY, Int_t binZ, Bool_t state);
     void Reset(Bool_t state = kTRUE);
-    void ApplyThreshold(const TH1& h, Double_t threshold = 0);
+    void ApplyThreshold(const TH1& h, Double_t threshold = 0, ELogic flag = ELogic::kAnd);
     Bool_t Init();
     inline Bool_t GetBinFlag(Int_t x, Int_t y, Int_t z) const { return fRawMask[x][y][z]; };
     Bool_t AreCompatible(TObject* cf) const;
-    Int_t GetNBins() const { return fRawMask.size() - 2; };
-    Int_t GetNbinsX() const { return fRawMask.size() - 2; };
-    Int_t GetNbinsY() const { return fRawMask[0].size() - 2; };
-    Int_t GetNbinsZ() const { return fRawMask[0][0].size() - 2; };
+    Int_t GetNBins() const { return fRawMask.GetSize() - 2; };
+    Int_t GetNbinsX() const { return fRawMask.GetSize() - 2; };
+    Int_t GetNbinsY() const { return fRawMask[0].GetSize() - 2; };
+    Int_t GetNbinsZ() const { return fRawMask[0][0].GetSize() - 2; };
     virtual ~CorrFitMask3D() {};
     ClassDef(CorrFitMask3D, 1)
   };

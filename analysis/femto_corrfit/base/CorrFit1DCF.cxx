@@ -183,9 +183,9 @@ namespace Hal {
       fMask->ApplyThreshold(*fDenominatorHistogram, 0);
     } else {
       GetMask()->Reset(false);
-      GetMask()->ApplyRange(fRange[0], fRange[1], true);
-      GetMask()->ApplyThreshold(*fNumeratorHistogram, fThreshold);
-      GetMask()->ApplyThreshold(*fDenominatorHistogram, fThreshold);
+      GetMask()->ApplyRange(fRange[0], fRange[1], CorrFitMask::ELogic::kOr);
+      GetMask()->ApplyThreshold(*fNumeratorHistogram, fThreshold, CorrFitMask::ELogic::kAnd);
+      GetMask()->ApplyThreshold(*fDenominatorHistogram, fThreshold, CorrFitMask::ELogic::kAnd);
     }
     fMask->Init();
     fActiveBins              = GetMask()->GetActiveBins();

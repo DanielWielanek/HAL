@@ -146,6 +146,7 @@ namespace Hal {
        */
       double ClebschGordan(double aJot1, double aEm1, double aJot2, double aEm2, double aJot, double aEm) const;
       double WignerSymbol(double aJot1, double aEm1, double aJot2, double aEm2, double aJot, double aEm) const;
+      double GetScale(int l, int m) const;
       ClassDef(YlmMath, 1)
     };
   }  // namespace Sh

@@ -308,6 +308,9 @@ namespace Hal {
       }
       return fYlms;
     }
+
+    double YlmMath::GetScale(int l, int m) const { return fPrefactors[fPrefshift[l] + m]; }
+
   }  // namespace Sh
 
 

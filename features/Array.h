@@ -45,6 +45,12 @@ namespace Hal {
     inline T& operator[](const int index) { return fArray[index]; };
     /**
      *
+     * @param index
+     * @return
+     */
+    T operator[](const int index) const { return fArray[index]; }
+    /**
+     *
      * @return size of array
      */
     inline Int_t GetSize() const { return fSize; }
@@ -174,6 +180,12 @@ namespace Hal {
     inline T Get(Int_t i, Int_t j) const { return fArray[i].Get(j); };
     inline Array_1<T>& operator[](const int index) { return fArray[index]; };
     /**
+     *
+     * @param index index
+     * @return value at given index
+     */
+    inline const Array_1<T>& operator[](const int index) const { return fArray[index]; };
+    /**
      * set value
      * @param i 1st index
      * @param j 2nd index
@@ -220,6 +232,12 @@ namespace Hal {
      */
     inline Int_t GetSize() const { return fSize; }
     inline Array_2<T>& operator[](const int index) { return fArray[index]; };
+    /**
+     *
+     * @param index index
+     * @return value at given index
+     */
+    inline const Array_2<T>& operator[](const int index) const { return fArray[index]; };
     /**
      * return sub-array
      * @param i index
@@ -293,6 +311,12 @@ namespace Hal {
      */
     void MakeBigger(Int_t sizeA, Int_t sizeB, Int_t sizeC, Int_t sizeD);
     inline Array_3<T>& operator[](const int index) { return fArray[index]; };
+    /**
+     *
+     * @param index index
+     * @return value at given index
+     */
+    inline const Array_3<T>& operator[](const int index) const { return fArray[index]; };
     /**
      * return sub-array
      * @param i index

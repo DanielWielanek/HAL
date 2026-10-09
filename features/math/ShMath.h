@@ -21,13 +21,14 @@ namespace Hal {
 
     /**
      * spherical harmonics functions
+     * note for L>5 using recursive functions
      */
     class YlmMath : public TObject {
     private:
       std::complex<double> Ceiphi(double phi) const;
-      double fPrefactors[36];
-      int fPrefshift[6];
-      int fPlmshift[6];
+      double fPrefactors[121];
+      int fPrefshift[11];
+      int fPlmshift[11];
       double fFactorials[24];
       mutable std::complex<double>* fYlms = {nullptr};  //!
       void InitializeYlms();

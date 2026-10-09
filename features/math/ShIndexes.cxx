@@ -48,7 +48,7 @@ namespace Hal {
       }
       fL = newL;
       if (fL == 0) return;
-      if (fL > 6) { Cout::PrintInfo("Creating YLM for L>6!", EInfo::kError); }
+      if (fL > 10) { Cout::PrintInfo("Creating YLM for L>10!", EInfo::kError); }
       fMaxJM = (fL + 1) * (fL + 1);
       if (fL > 0) {
         fEls     = new Double_t[fMaxJM];

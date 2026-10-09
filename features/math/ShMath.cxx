@@ -37,7 +37,7 @@ namespace Hal {
     double YlmMath::Legendre(int ell, int em, double ctheta) const {
       // Calculate a single Legendre value
       // *** Warning - NOT optimal - calculated all Plms up to L !!!
-      double lbuf[36];
+      double lbuf[66];
       YlmMath::LegendreUpToYlm(ell, ctheta, lbuf);
 
       return lbuf[fPlmshift[ell] - abs(em)];
@@ -174,27 +174,118 @@ namespace Hal {
       fPrefactors[27] = 1.0 / 32.0 * sqrt(385.0) * oneoversqrtpi;
       fPrefactors[28] = 1.0 / 8.0 * sqrt(1155.0 / 2.0) * oneoversqrtpi;
       fPrefactors[29] = 1.0 / 16.0 * sqrt(165.0 / 2.0) * oneoversqrtpi;
-      fPrefactors[30] = 1.0 / 16.0 * sqrt(11.0) * oneoversqrtpi;
+      fPrefactors[30] = 1.0 / 16.0 * sqrt(11.0) * oneoversqrtpi;  //
       fPrefactors[31] = -fPrefactors[29];
       fPrefactors[32] = fPrefactors[28];
       fPrefactors[33] = -fPrefactors[27];
       fPrefactors[34] = fPrefactors[26];
       fPrefactors[35] = -fPrefactors[25];
 
-      fPrefshift[0] = 0;
-      fPrefshift[1] = 2;
-      fPrefshift[2] = 6;
-      fPrefshift[3] = 12;
-      fPrefshift[4] = 20;
-      fPrefshift[5] = 30;
 
-      fPlmshift[0] = 0;
-      fPlmshift[1] = 2;
-      fPlmshift[2] = 5;
-      fPlmshift[3] = 9;
-      fPlmshift[4] = 14;
-      fPlmshift[5] = 20;
-      fYlms        = new std::complex<double>[36];
+      auto prefactor = [](double a, double b, double c, double d = 1) { return a / b * TMath::Sqrt(c / d / TMath::Pi()); };
+
+      // l=6 prefactors (m = -6 ... +6) --- GPT + WIki
+      fPrefactors[36] = prefactor(1, 64, 3003, 1);
+      fPrefactors[37] = prefactor(3, 32, 1001, 1);
+      fPrefactors[38] = prefactor(3, 32, 91, 2);
+      fPrefactors[39] = prefactor(1, 32, 1365, 1);
+      fPrefactors[40] = prefactor(1, 64, 1365, 1);
+      fPrefactors[41] = prefactor(1, 16, 273, 2);
+      fPrefactors[42] = prefactor(1, 32, 13, 1);  ///
+      fPrefactors[43] = prefactor(-1, 16, 273, 2);
+      fPrefactors[44] = prefactor(1, 64, 1365, 1);
+      fPrefactors[45] = prefactor(-1, 32, 1365, 1);
+      fPrefactors[46] = prefactor(3, 32, 91, 2);
+      fPrefactors[47] = prefactor(-3, 32, 1001, 1);
+      fPrefactors[48] = prefactor(1, 64, 3003, 1);
+
+      // l=7 prefactors (m = -7 ... +7)
+      fPrefactors[49] = prefactor(3, 64, 715, 2);
+      fPrefactors[50] = prefactor(3, 64, 5005, 1);
+      fPrefactors[51] = prefactor(3, 64, 385, 2);
+      fPrefactors[52] = prefactor(3, 32, 385, 2);
+      fPrefactors[53] = prefactor(3, 64, 35, 2);
+      fPrefactors[54] = prefactor(3, 64, 35, 1);
+      fPrefactors[55] = prefactor(1, 64, 105, 2);
+      fPrefactors[56] = prefactor(1, 32, 15, 1);  ///
+      fPrefactors[57] = prefactor(-1, 64, 105, 2);
+      fPrefactors[58] = prefactor(3, 64, 35, 1);
+      fPrefactors[59] = prefactor(-3, 64, 35, 2);
+      fPrefactors[60] = prefactor(3, 32, 385, 2);
+      fPrefactors[61] = prefactor(-3, 64, 385, 2);
+      fPrefactors[62] = prefactor(3, 64, 5005, 1);
+      fPrefactors[63] = prefactor(-3, 64, 715, 2);
+
+      // l=8 prefactors (m = -8 ... +8)
+      fPrefactors[64] = prefactor(3, 256, 12155, 2);
+      fPrefactors[65] = prefactor(3, 64, 12155, 2);
+      fPrefactors[66] = prefactor(1, 128, 7293, 1);
+      fPrefactors[67] = prefactor(3, 64, 17017, 2);
+      fPrefactors[68] = prefactor(3, 128, 1309, 2);
+      fPrefactors[69] = prefactor(1, 64, 19635, 2);
+      fPrefactors[70] = prefactor(3, 128, 595, 1);
+      fPrefactors[71] = prefactor(3, 64, 17, 2);
+      fPrefactors[72] = prefactor(1, 256, 17, 1);  //
+      fPrefactors[73] = prefactor(-3, 64, 17, 2);
+      fPrefactors[74] = prefactor(3, 128, 595, 1);
+      fPrefactors[75] = prefactor(-1, 64, 19635, 2);
+      fPrefactors[76] = prefactor(3, 128, 1309, 2);
+      fPrefactors[77] = prefactor(-3, 64, 17017, 2);
+      fPrefactors[78] = prefactor(1, 128, 7293, 1);
+      fPrefactors[79] = prefactor(-3, 64, 12155, 2);
+      fPrefactors[80] = prefactor(3, 256, 12155, 2);
+
+      // l=9 prefactors (m = -9 ... +9)
+      fPrefactors[81] = prefactor(1, 512, 230945, 1);
+      fPrefactors[82] = prefactor(3, 256, 230945, 2);
+      fPrefactors[83] = prefactor(3, 512, 13585, 1);
+      fPrefactors[84] = prefactor(1, 128, 40755, 1);
+      fPrefactors[85] = prefactor(3, 256, 2717, 1);
+      fPrefactors[86] = prefactor(3, 128, 95095, 2);
+      fPrefactors[87] = prefactor(1, 256, 21945, 1);
+      fPrefactors[88] = prefactor(3, 128, 1045, 1);
+      fPrefactors[89] = prefactor(3, 256, 95, 2);
+      fPrefactors[90] = prefactor(1, 256, 19, 1);  //
+      fPrefactors[91] = prefactor(-3, 256, 95, 2);
+      fPrefactors[92] = prefactor(3, 128, 1045, 1);
+      fPrefactors[93] = prefactor(-1, 256, 21945, 1);
+      fPrefactors[94] = prefactor(3, 128, 95095, 2);
+      fPrefactors[95] = prefactor(-3, 256, 2717, 1);
+      fPrefactors[96] = prefactor(1, 128, 40755, 1);
+      fPrefactors[97] = prefactor(-3, 512, 13585, 1);
+      fPrefactors[98] = prefactor(3, 256, 230945, 2);
+      fPrefactors[99] = prefactor(-1, 512, 230945, 1);
+
+      // l=10 prefactors (m = -10 ... +10)
+      fPrefactors[100] = prefactor(1, 1024, 969969, 1);
+      fPrefactors[101] = prefactor(1, 512, 4849845, 1);
+      fPrefactors[102] = prefactor(1, 512, 255255, 2);
+      fPrefactors[103] = prefactor(3, 512, 85085, 1);
+      fPrefactors[104] = prefactor(3, 1024, 5005, 1);
+      fPrefactors[105] = prefactor(3, 256, 1001, 1);
+      fPrefactors[106] = prefactor(3, 256, 5005, 2);
+      fPrefactors[107] = prefactor(3, 256, 5005, 1);
+      fPrefactors[108] = prefactor(3, 512, 385, 2);
+      fPrefactors[109] = prefactor(1, 256, 1155, 2);
+      fPrefactors[110] = prefactor(1, 512, 21, 1);  //
+      fPrefactors[111] = prefactor(-1, 256, 1155, 2);
+      fPrefactors[112] = prefactor(3, 512, 385, 2);
+      fPrefactors[113] = prefactor(-3, 256, 5005, 1);
+      fPrefactors[114] = prefactor(3, 256, 5005, 2);
+      fPrefactors[115] = prefactor(-3, 256, 1001, 1);
+      fPrefactors[116] = prefactor(3, 1024, 5005, 1);
+      fPrefactors[117] = prefactor(-3, 512, 85085, 1);
+      fPrefactors[118] = prefactor(1, 512, 255255, 2);
+      fPrefactors[119] = prefactor(-1, 512, 4849845, 1);
+      fPrefactors[120] = prefactor(1, 1024, 969969, 1);
+
+
+      for (int l = 0; l <= 10; l++) {
+        fPrefshift[l] = l * (l + 1);
+        fPlmshift[l]  = l * (l + 3) / 2;
+      }
+
+      fYlms = new std::complex<double>[121];
 
       Double_t fac   = 1;
       fFactorials[0] = 1;
@@ -207,13 +298,13 @@ namespace Hal {
     void YlmMath::LegendreUpToYlm(int lmax, double ctheta, double* lbuf) const {
       // Calculate a set of legendre polynomials up to a given l
       // with spherical input
-      double sins[6];
-      double coss[6];
+      double sins[11];
+      double coss[11];
       sins[0] = 0.0;
       coss[0] = 1.0;
       sins[1] = sqrt(1. - ctheta * ctheta);
       coss[1] = ctheta;
-      for (int iter = 2; iter < 6; iter++) {
+      for (int iter = 2; iter < 11; iter++) {
         sins[iter] = sins[iter - 1] * sins[1];
         coss[iter] = coss[iter - 1] * coss[1];
       }
@@ -260,6 +351,23 @@ namespace Hal {
         lbuf[19] = (21 * coss[4] - 14 * coss[2] + 1) * sins[1];
         lbuf[20] = 63 * coss[5] - 70 * coss[3] + 15 * coss[1];
       }
+      if (lmax > 5)  // switch to recursive
+        for (int l = 5; l <= lmax; ++l) {
+          const int shift = fPlmshift[l];
+
+          // P_l^l = (2l - 1) sin(theta) P_{l-1}^{l-1}
+          lbuf[shift - l] = (2.0 * l - 1.0) * sins[1] * lbuf[fPlmshift[l - 1] - (l - 1)];
+
+          // P_l^{l-1} = (2l - 1) cos(theta) P_{l-1}^{l-1}
+          lbuf[shift - (l - 1)] = (2.0 * l - 1.0) * ctheta * lbuf[fPlmshift[l - 1] - (l - 1)];
+
+          // P_l^m = [(2l - 1) cos(theta) P_{l-1}^m
+          //          - (l + m - 1) P_{l-2}^m] / (l - m)
+          for (int m = 0; m <= l - 2; ++m) {
+            lbuf[shift - m] =
+              ((2.0 * l - 1.0) * ctheta * lbuf[fPlmshift[l - 1] - m] - (l + m - 1.0) * lbuf[fPlmshift[l - 2] - m]) / (l - m);
+          }
+        }
     }
 
     std::complex<double>* YlmMath::YlmUpToL(int lmax, double x, double y, double z) {
@@ -283,10 +391,10 @@ namespace Hal {
       int lcur = 0;
       double lpol;
 
-      double coss[6];
-      double sins[6];
+      double coss[11];
+      double sins[11];
 
-      double lbuf[21];  // was 36 but not used
+      double lbuf[66];  // was 36 but not used
       LegendreUpToYlm(lmax, ctheta, lbuf);
 
       for (int iter = 1; iter <= lmax; iter++) {

@@ -188,6 +188,7 @@ namespace Hal {
       GetMask()->ApplyThreshold(*fDenominatorHistogram, fThreshold, CorrFitMask::ELogic::kAnd);
     }
     fMask->Init();
+
     fActiveBins              = GetMask()->GetActiveBins();
     Double_t free_parameters = 0;
     for (int i = 0; i < GetParametersNo(); i++) {

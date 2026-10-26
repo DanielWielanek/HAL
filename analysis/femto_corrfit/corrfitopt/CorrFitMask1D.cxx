@@ -31,7 +31,7 @@ namespace Hal {
     auto mask = fRawMask;
     SetGlobalStatus(mask, 0);
     for (int i = 1; i <= h.GetNbinsX(); i++) {
-      if (h.GetBinContent(i) <= threshold) mask[i] = 1;
+      if (h.GetBinContent(i) >= threshold) mask[i] = 1;
     }
     Mask(fRawMask, mask, logic);
   }

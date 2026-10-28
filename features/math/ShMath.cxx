@@ -351,23 +351,72 @@ namespace Hal {
         lbuf[19] = (21 * coss[4] - 14 * coss[2] + 1) * sins[1];
         lbuf[20] = 63 * coss[5] - 70 * coss[3] + 15 * coss[1];
       }
-      if (lmax > 5)  // switch to recursive
-        for (int l = 5; l <= lmax; ++l) {
-          const int shift = fPlmshift[l];
 
-          // P_l^l = (2l - 1) sin(theta) P_{l-1}^{l-1}
-          lbuf[shift - l] = (2.0 * l - 1.0) * sins[1] * lbuf[fPlmshift[l - 1] - (l - 1)];
+      // vibe coding starts here
+      // Legendre polynomials l=6
+      if (lmax > 5) {
+        lbuf[21] = sins[6];
+        lbuf[22] = sins[5] * coss[1];
+        lbuf[23] = (11 * coss[2] - 1) * sins[4];
+        lbuf[24] = (11 * coss[3] - 3 * coss[1]) * sins[3];
+        lbuf[25] = (33 * coss[4] - 18 * coss[2] + 1) * sins[2];
+        lbuf[26] = (33 * coss[5] - 30 * coss[3] + 5 * coss[1]) * sins[1];
+        lbuf[27] = 231 * coss[6] - 315 * coss[4] + 105 * coss[2] - 5;
+      }
 
-          // P_l^{l-1} = (2l - 1) cos(theta) P_{l-1}^{l-1}
-          lbuf[shift - (l - 1)] = (2.0 * l - 1.0) * ctheta * lbuf[fPlmshift[l - 1] - (l - 1)];
+      // Legendre polynomials l=7
+      if (lmax > 6) {
+        lbuf[28] = sins[7];
+        lbuf[29] = sins[6] * coss[1];
+        lbuf[30] = (13 * coss[2] - 1) * sins[5];
+        lbuf[31] = (13 * coss[3] - 3 * coss[1]) * sins[4];
+        lbuf[32] = (143 * coss[4] - 66 * coss[2] + 3) * sins[3];
+        lbuf[33] = (143 * coss[5] - 110 * coss[3] + 15 * coss[1]) * sins[2];
+        lbuf[34] = (429 * coss[6] - 465 * coss[4] + 135 * coss[2] - 5) * sins[1];
+        lbuf[35] = 429 * coss[7] - 693 * coss[5] + 315 * coss[3] - 35 * coss[1];
+      }
 
-          // P_l^m = [(2l - 1) cos(theta) P_{l-1}^m
-          //          - (l + m - 1) P_{l-2}^m] / (l - m)
-          for (int m = 0; m <= l - 2; ++m) {
-            lbuf[shift - m] =
-              ((2.0 * l - 1.0) * ctheta * lbuf[fPlmshift[l - 1] - m] - (l + m - 1.0) * lbuf[fPlmshift[l - 2] - m]) / (l - m);
-          }
-        }
+      // Legendre polynomials l=8
+      if (lmax > 7) {
+        lbuf[36] = sins[8];
+        lbuf[37] = sins[7] * coss[1];
+        lbuf[38] = (15 * coss[2] - 1) * sins[6];
+        lbuf[39] = (5 * coss[3] - coss[1]) * sins[5];
+        lbuf[40] = (65 * coss[4] - 26 * coss[2] + 1) * sins[4];
+        lbuf[41] = (39 * coss[5] - 26 * coss[3] + 3 * coss[1]) * sins[3];
+        lbuf[42] = (143 * coss[6] - 143 * coss[4] + 33 * coss[2] - 1) * sins[2];
+        lbuf[43] = (715 * coss[7] - 1001 * coss[5] + 385 * coss[3] - 35 * coss[1]) * sins[1];
+        lbuf[44] = 6435 * coss[8] - 12012 * coss[6] + 6930 * coss[4] - 1260 * coss[2] + 35;
+      }
+
+      // Legendre polynomials l=9
+      if (lmax > 8) {
+        lbuf[45] = sins[9];
+        lbuf[46] = sins[8] * coss[1];
+        lbuf[47] = (17 * coss[2] - 1) * sins[7];
+        lbuf[48] = (17 * coss[3] - 3 * coss[1]) * sins[6];
+        lbuf[49] = (85 * coss[4] - 30 * coss[2] + 1) * sins[5];
+        lbuf[50] = (17 * coss[5] - 10 * coss[3] + coss[1]) * sins[4];
+        lbuf[51] = (221 * coss[6] - 195 * coss[4] + 39 * coss[2] - 1) * sins[3];
+        lbuf[52] = (221 * coss[7] - 273 * coss[5] + 91 * coss[3] - 7 * coss[1]) * sins[2];
+        lbuf[53] = (2431 * coss[8] - 4004 * coss[6] + 2002 * coss[4] - 308 * coss[2] + 7) * sins[1];
+        lbuf[54] = 12155 * coss[9] - 25740 * coss[7] + 18018 * coss[5] - 4620 * coss[3] + 315 * coss[1];
+      }
+
+      // Legendre polynomials l=10
+      if (lmax > 9) {
+        lbuf[55] = sins[10];
+        lbuf[56] = sins[9] * coss[1];
+        lbuf[57] = (19 * coss[2] - 1) * sins[8];
+        lbuf[58] = (19 * coss[3] - 3 * coss[1]) * sins[7];
+        lbuf[59] = (323 * coss[4] - 102 * coss[2] + 3) * sins[6];
+        lbuf[60] = (323 * coss[5] - 170 * coss[3] + 15 * coss[1]) * sins[5];
+        lbuf[61] = (323 * coss[6] - 255 * coss[4] + 45 * coss[2] - 1) * sins[4];
+        lbuf[62] = (323 * coss[7] - 357 * coss[5] + 105 * coss[3] - 7 * coss[1]) * sins[3];
+        lbuf[63] = (4199 * coss[8] - 6188 * coss[6] + 2730 * coss[4] - 364 * coss[2] + 7) * sins[2];
+        lbuf[64] = (4199 * coss[9] - 7956 * coss[7] + 4914 * coss[5] - 1092 * coss[3] + 63 * coss[1]) * sins[1];
+        lbuf[65] = 46189 * coss[10] - 109395 * coss[8] + 90090 * coss[6] - 30030 * coss[4] + 3465 * coss[2] - 63;
+      }
     }
 
     std::complex<double>* YlmMath::YlmUpToL(int lmax, double x, double y, double z) {

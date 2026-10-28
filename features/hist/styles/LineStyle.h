@@ -41,6 +41,7 @@ namespace Hal {
 
     template<class T>
     void Import(const T& obj);
+    virtual void SetGlobal(TString opt = "") const;
     virtual ~LineStyle() {};
     ClassDef(LineStyle, 1);
   };

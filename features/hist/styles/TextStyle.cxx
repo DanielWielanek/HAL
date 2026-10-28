@@ -7,6 +7,8 @@
 
 #include "TextStyle.h"
 
+#include <TStyle.h>
+
 #include "XMLNode.h"
 
 namespace Hal {
@@ -78,5 +80,12 @@ namespace Hal {
     // TODO Auto-generated destructor stub
   }
 
+  void TextStyle::SetGlobal(TString opt) const {
+    if (Find(BitFlag::kAlign)) gStyle->SetTextAlign(GetI(BitFlag::kAlign));
+    if (Find(BitFlag::kColor)) gStyle->SetTextColor(GetI(BitFlag::kColor));
+    if (Find(BitFlag::kAngle)) gStyle->SetTextAngle(GetF(BitFlag::kAngle));
+    if (Find(BitFlag::kSize)) gStyle->SetTextSize(GetF(BitFlag::kSize));
+    if (Find(BitFlag::kFont)) gStyle->SetTextFont(GetF(BitFlag::kFont));
+  }
 
 } /* namespace Hal */

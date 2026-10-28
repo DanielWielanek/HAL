@@ -31,6 +31,7 @@ namespace Hal {
     void ExportToXML(XMLNode& node) const;
     void ImportFromXML(const XMLNode& node);
     void Import(const TAttText& text);
+    virtual void SetGlobal(TString opt = "") const;
     virtual ~TextStyle();
     ClassDef(TextStyle, 1);
   };

@@ -105,6 +105,7 @@ namespace Hal {
     void ImportFromXML(const XMLNode& node);
     void Import(TVirtualPad& pad);
     void Apply(TVirtualPad* pad = nullptr);
+    void SetGlobal(TString opt = "") const;
     virtual ~PadStyle() {}
     ClassDef(PadStyle, 1);
   };

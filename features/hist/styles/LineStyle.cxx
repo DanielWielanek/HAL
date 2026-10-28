@@ -9,7 +9,9 @@
 
 #include <RtypesCore.h>
 #include <TString.h>
+#include <TStyle.h>
 
+#include "StdString.h"
 #include "XMLNode.h"
 
 namespace Hal {
@@ -48,4 +50,21 @@ namespace Hal {
       SetStyle(x);
     }
   }
+
+  void LineStyle::SetGlobal(TString opt) const {
+    if (Hal::Std::FindParam(opt, "hist")) {
+      if (Find(EBitFlag::kColor)) gStyle->SetHistLineColor(GetI(EBitFlag::kColor));
+      if (Find(EBitFlag::kWidth)) gStyle->SetHistLineWidth(GetI(EBitFlag::kWidth));
+      if (Find(EBitFlag::kStyle)) gStyle->SetHistLineStyle(GetI(EBitFlag::kStyle));
+    } else if (Hal::Std::FindParam(opt, "func")) {
+      if (Find(EBitFlag::kColor)) gStyle->SetFuncColor(GetI(EBitFlag::kColor));
+      if (Find(EBitFlag::kWidth)) gStyle->SetFuncWidth(GetI(EBitFlag::kWidth));
+      if (Find(EBitFlag::kStyle)) gStyle->SetFuncStyle(GetI(EBitFlag::kStyle));
+    } else {
+      if (Find(EBitFlag::kColor)) gStyle->SetLineColor(GetI(EBitFlag::kColor));
+      if (Find(EBitFlag::kWidth)) gStyle->SetLineWidth(GetI(EBitFlag::kWidth));
+      if (Find(EBitFlag::kStyle)) gStyle->SetLineStyle(GetI(EBitFlag::kStyle));
+    }
+  }
+
 } /* namespace Hal */

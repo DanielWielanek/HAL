@@ -93,6 +93,8 @@ namespace Hal {
 
     void SetHideHighLabel(Bool_t hide = kTRUE);
 
+    void SetGlobal(TString opt = "") const;
+
     Float_t GetTitleOffset() const;
 
     Float_t GetLabelOffset() const;

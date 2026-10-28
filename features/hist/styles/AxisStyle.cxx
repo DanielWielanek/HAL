@@ -11,6 +11,7 @@
 #include <TAxis.h>
 #include <TMath.h>
 #include <TString.h>
+#include <TStyle.h>
 
 #include "XMLNode.h"
 
@@ -59,6 +60,26 @@ namespace Hal {
   void AxisStyle::SetHideLowLabel(Bool_t hide) { SetI(EBitFlag::kHideLow, hide); };
 
   void AxisStyle::SetHideHighLabel(Bool_t hide) { SetI(EBitFlag::kHideHigh, hide); };
+
+  void AxisStyle::SetGlobal(TString opt) const {
+    if (Find(EBitFlag::kTitleOffset)) gStyle->SetTitleOffset(GetF(EBitFlag::kTitleOffset), opt);
+    if (Find(EBitFlag::kLabelOffset)) gStyle->SetLabelOffset(GetF(EBitFlag::kLabelOffset), opt);
+    if (Find(EBitFlag::kTitleSize)) gStyle->SetTitleSize(GetF(EBitFlag::kTitleSize), opt);
+    if (Find(EBitFlag::kLabelSize)) gStyle->SetLabelSize(GetF(EBitFlag::kLabelSize), opt);
+    if (Find(EBitFlag::kTickLength)) gStyle->SetTickLength(GetF(EBitFlag::kTickLength), opt);
+    if (Find(EBitFlag::kNdivisions)) {
+      int div = GetI(EBitFlag::kNdivisions);
+      if (div >= 0)
+        gStyle->SetNdivisions(div, opt);
+      else
+        gStyle->SetNdivisions(-div, opt);
+    }
+    if (Find(EBitFlag::kAxisColor)) gStyle->SetAxisColor(GetI(EBitFlag::kAxisColor), opt);
+    if (Find(EBitFlag::kLabelColor)) gStyle->SetLabelColor(GetI(EBitFlag::kLabelColor), opt);
+    if (Find(EBitFlag::kTitleColor)) gStyle->SetTitleColor(GetI(EBitFlag::kTitleColor), opt);
+    if (Find(EBitFlag::kTitleFont)) gStyle->SetTitleFont(GetI(EBitFlag::kTitleFont), opt);
+    if (Find(EBitFlag::kFontStyleLabel)) gStyle->SetLabelFont(GetI(EBitFlag::kFontStyleLabel), opt);
+  }
 
   Float_t AxisStyle::GetTitleOffset() const { return GetF(EBitFlag::kTitleOffset); }
 

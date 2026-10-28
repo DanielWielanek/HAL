@@ -191,12 +191,34 @@ namespace Hal {
     MarkerStyle& GetMarkerStyle() { return fMarker; }
     /**
      *
+     * @param x  x,y or z
+     * @return axis style
+     */
+    AxisStyle GetAxisStyle(Char_t x) const;
+    /**
+     * return fill style
+     * @return
+     */
+    FillStyle GetFillStyle() const { return fFill; };
+    /**
+     * return line style
+     * @return
+     */
+    LineStyle GetLineStyle() const { return fLine; }
+    /**
+     *
+     * @return marker style
+     */
+    MarkerStyle GetMarkerStyle() const { return fMarker; }
+    /**
+     *
      * @return title
      */
     TString GetTitle() const { return fTitle; };
     void ExportToXML(XMLNode& node) const;
     void ImportFromXML(const XMLNode& node);
     void Import(const TObject& obj);
+    virtual void SetGlobal(TString opt = "") const;
     virtual ~HistoStyle() {};
     ClassDef(HistoStyle, 1);
   };

@@ -35,6 +35,11 @@ namespace Hal {
     return fXAxis;
   }
 
+  AxisStyle HistoStyle::GetAxisStyle(Char_t x) const {
+    if (x == 'y' || x == 'Y') return fYAxis;
+    if (x == 'z' || x == 'Z') return fZAxis;
+    return fXAxis;
+  }
   void HistoStyle::ExportToXML(XMLNode& node) const {
     if (Find(EBitFlag::kTitle)) node.AddAttrib("Title", fTitle);
     if (Find(EBitFlag::kMin)) node.AddAttrib("Min", Form("%4.4f", GetF(EBitFlag::kMin)));
@@ -289,5 +294,13 @@ namespace Hal {
   }
 
   void HistoStyle::CopyAxisProperties(Char_t from, Char_t to) { GetAxisStyle(to) = GetAxisStyle(from); }
+
+  void HistoStyle::SetGlobal(TString opt) const {
+    GetAxisStyle('x').SetGlobal("x");
+    GetAxisStyle('y').SetGlobal("y");
+    GetAxisStyle('z').SetGlobal("z");
+    GetFillStyle().SetGlobal("hist");
+    GetMarkerStyle().SetGlobal("hist");
+  }
 
 } /* namespace Hal */

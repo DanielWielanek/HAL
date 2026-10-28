@@ -8,7 +8,9 @@
 #include "FillStyle.h"
 
 #include <TString.h>
+#include <TStyle.h>
 
+#include "StdString.h"
 #include "XMLNode.h"
 
 namespace Hal {
@@ -36,6 +38,19 @@ namespace Hal {
     if (auto& atr = node.GetAttrib("Style"); !atr.IsNull()) {
       int x = atr.GetValue().Atoi();
       SetStyle(x);
+    }
+  }
+
+  void FillStyle::SetGlobal(TString opt) const {
+    if (Hal::Std::FindParam(opt, "hist")) {
+      if (Find(EBitFlag::kColor)) gStyle->SetHistFillColor(GetI(EBitFlag::kColor));
+      if (Find(EBitFlag::kStyle)) gStyle->SetHistFillStyle(GetI(EBitFlag::kStyle));
+    } else if (Hal::Std::FindParam(opt, "pad")) {
+      if (Find(EBitFlag::kColor)) gStyle->SetFrameFillColor(GetI(EBitFlag::kColor));
+      if (Find(EBitFlag::kStyle)) gStyle->SetFrameFillStyle(GetI(EBitFlag::kStyle));
+    } else {
+      if (Find(EBitFlag::kColor)) gStyle->SetFillColor(GetI(EBitFlag::kColor));
+      if (Find(EBitFlag::kStyle)) gStyle->SetFillStyle(GetI(EBitFlag::kStyle));
     }
   }
 

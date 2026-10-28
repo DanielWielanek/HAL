@@ -9,6 +9,7 @@
 
 #include <Rtypes.h>
 #include <TString.h>
+#include <TStyle.h>
 #include <TVirtualPad.h>
 
 #include "StdString.h"
@@ -184,6 +185,26 @@ namespace Hal {
       int x = atr.GetValue().Atoi();
       SetFrameLineColor(x);
     }
+  }
+
+  void PadStyle::SetGlobal(TString /*opt*/) const {
+    if (Find(EBitFlag::kBottomMargin)) gStyle->SetPadBottomMargin(GetF(EBitFlag::kLeftMargin));
+    if (Find(EBitFlag::kLogx)) gStyle->SetOptLogx(GetI(EBitFlag::kLogx));
+    if (Find(EBitFlag::kLogy)) gStyle->SetOptLogy(GetI(EBitFlag::kLogy));
+    if (Find(EBitFlag::kLogz)) gStyle->SetOptLogz(GetI(EBitFlag::kLogz));
+    if (Find(EBitFlag::kLeftMargin)) gStyle->SetPadLeftMargin(GetF(EBitFlag::kLeftMargin));
+    if (Find(EBitFlag::kTopMargin)) gStyle->SetPadTopMargin(GetF(EBitFlag::kTopMargin));
+    if (Find(EBitFlag::kRightMargin)) gStyle->SetPadRightMargin(GetF(EBitFlag::kRightMargin));
+    if (Find(EBitFlag::kGridx)) gStyle->SetPadGridX(GetI(EBitFlag::kGridx));
+    if (Find(EBitFlag::kGridy)) gStyle->SetPadGridY(GetI(EBitFlag::kGridy));
+    if (Find(EBitFlag::kTickX)) gStyle->SetPadTickX(GetI(EBitFlag::kTickX));
+    if (Find(EBitFlag::kTickY)) gStyle->SetPadTickY(GetI(EBitFlag::kTickY));
+    if (Find(EBitFlag::kFillColor)) {
+      gStyle->SetPadColor(GetI(EBitFlag::kFillColor));
+      gStyle->SetCanvasColor(GetI(EBitFlag::kFillColor));
+      gStyle->SetFrameFillColor(GetI(EBitFlag::kFillColor));
+    }
+    if (Find(EBitFlag::kFrameLineColor)) gStyle->SetFrameLineColor(GetI(EBitFlag::kFrameLineColor));
   }
 
   void PadStyle::Import(TVirtualPad& pad) {

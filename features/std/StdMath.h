@@ -117,6 +117,8 @@ namespace Hal {
      */
     std::pair<Int_t, Int_t> Division(Int_t num, Int_t div);
     namespace Math {  // not so frequely used math
+      enum class ENormalization { kByRow, kByColum, kTotal };
+      enum class EOrientation { kVertical, kHorizontal };
       /**
        * NOTE: sometimes this algo fails to invert matrices, in such case prints warnings
        * @param x
@@ -141,7 +143,7 @@ namespace Hal {
        * @param lambda
        * @return
        */
-      TVectorD TikhonovUnfold(const TVectorD& smeared, const TMatrixD& response, double lambda);
+      TMatrixD TikhonovUnfold(const TMatrixD& smeared, const TMatrixD& response, double lambda);
       /**
        * another thikonov method - second derivarative
        * @param smeared smeared data
@@ -149,41 +151,20 @@ namespace Hal {
        * @param lambda
        * @return
        */
-      TVectorD TikhonovUnfold2(const TVectorD& smeared, const TMatrixD& response, double lambda);
+      TMatrixD TikhonovUnfold2(const TMatrixD& smeared, const TMatrixD& response, double lambda);
       /**
        * @param byRow normalize by row (sum of row i 1), otherwise normalize by column
+       * @param opt - normalization by row/col or by sum of all entries
        * @return normalized matrix by rows or colums
        */
-      void NormalizeMatrix(TMatrixD& matrix);
-      /**
-       *
-       * @param m
-       * @param byRow
-       * @return
-       */
-      void NormalizeMatrixByRow(TMatrixD& matrix);
-      /**
-       *
-       * @param m
-       * @param byRow
-       * @return
-       */
-      void NormalizeMatrixByColumn(TMatrixD& matrix);
-      /**
-       * convert histogram into math vector
-       * @param h
-       * @param horizontal - return horizontal vector if true
-       * @param underflow - use under/overflow bins also
-       * @return
-       */
-      TMatrixD GetMatrixVec(const TH1& h, Bool_t horizontal = kFALSE, Bool_t underflow = kFALSE);
+      void NormalizeMatrix(TMatrixD& matrix, ENormalization opt = ENormalization::kTotal);
       /**
        * convert histogram to math vec - ommits under/overflow bins
        * @param h
        * @param underflow - use under/overflow bins also
        * @return
        */
-      TVectorD GetVector(const TH1& h, Bool_t undeflows = kFALSE);
+      TMatrixD GetMatrix(const TH1& h, EOrientation opt = EOrientation::kVertical, Bool_t undeflows = kFALSE);
       /**
        * convert histogram into matrix
        * @param h
@@ -198,17 +179,12 @@ namespace Hal {
        * @param rows if true set 1 if row is empty, otherwise check column
        * @return
        */
-      void DiagonalOnEmpty(TMatrixD& matrix, Bool_t rows, Double_t epsilon = 1E-12);
+      void DiagonalOnEmpty(TMatrixD& matrix, ENormalization opt = ENormalization::kByRow, Double_t epsilon = 1E-12);
       /**
        * set 0 instead of all NaN
        * @param m
        */
       void RemoveNan(TMatrixD& m);
-      /**
-       * set 0 instead of all NaN
-       * @param m
-       */
-      void RemoveNan(TVectorD& vec);
     }  // namespace Math
   }    // namespace Std
 }  // namespace Hal

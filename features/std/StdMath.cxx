@@ -253,9 +253,12 @@ namespace Hal {
         return res;
       }
 
-      TVectorD TikhonovUnfold(const TVectorD& smeared, const TMatrixD& response, double lambda) {
+      TMatrixD TikhonovUnfold(const TMatrixD& smearedM, const TMatrixD& response, double lambda) {
         const int n = response.GetNcols();
-
+        TVectorD smeared(smearedM.GetNrows());
+        for (int i = 0; i < smearedM.GetNrows(); i++) {
+          smeared[i] = smearedM[i][0];
+        }
         // A^T A
         TMatrixD At  = TMatrixD(TMatrixD::kTransposed, response);
         TMatrixD AtA = At * response;
@@ -277,13 +280,16 @@ namespace Hal {
 
         Bool_t ok;
         TVectorD result = svd.Solve(Aty, ok);
-
+        TMatrixD mResult(result.GetNrows(), 0);
+        for (int i = 0; i < result.GetNrows(); i++) {
+          mResult[i][0] = result[i];
+        }
         if (!ok) { throw std::runtime_error("Tikhonov unfolding: failed to solve system"); }
 
-        return result;
+        return mResult;
       }
 
-      TVectorD TikhonovUnfold2(const TVectorD& smeared, const TMatrixD& response, double lambda) {
+      TMatrixD TikhonovUnfold2(const TMatrixD& smeared, const TMatrixD& response, double lambda) {
         const int n = response.GetNcols();
 
         if (response.GetNrows() != n) throw std::runtime_error("Response matrix must be square");
@@ -338,7 +344,7 @@ namespace Hal {
         // First block: A f = y
         for (int i = 0; i < n; ++i) {
 
-          rhs(i) = smeared(i);
+          rhs(i) = smeared(i, 0);
 
           for (int j = 0; j < n; ++j) {
             B(i, j) = response(i, j);
@@ -366,84 +372,79 @@ namespace Hal {
         TVectorD unfolded = svd.Solve(rhs, ok);
 
         if (!ok) throw std::runtime_error("Tikhonov unfolding failed");
-
-        return unfolded;
-      }
-
-      void NormalizeMatrix(TMatrixD& matrix) {
-        Double_t sum = 0;
-        for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
-          for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
-            sum += matrix[iRow][iCol];
-          }
+        TMatrixD mResult(unfolded.GetNrows(), 0);
+        for (int i = 0; i < unfolded.GetNrows(); i++) {
+          mResult[i][0] = unfolded[i];
         }
-        if (sum == 0) sum = 1;
-        sum    = 1.0 / sum;
-        matrix = matrix * sum;
+        return mResult;
       }
 
-      void NormalizeMatrixByRow(TMatrixD& matrix) {
-        for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
-          Double_t sum = 0;
-          for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
-            sum += matrix[iRow][iCol];
-          }
-          if (sum == 0) sum = 1;
-          sum = 1.0 / sum;
-          for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
-            matrix[iRow][iCol] = matrix[iRow][iCol] * sum;
-          }
+      void NormalizeMatrix(TMatrixD& matrix, ENormalization opt) {
+        switch (opt) {
+          case ENormalization::kTotal: {
+            Double_t sum = 0;
+            for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
+              for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
+                sum += matrix[iRow][iCol];
+              }
+            }
+            if (sum == 0) sum = 1;
+            sum    = 1.0 / sum;
+            matrix = matrix * sum;
+          } break;
+          case ENormalization::kByRow: {
+            for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
+              Double_t sum = 0;
+              for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
+                sum += matrix[iRow][iCol];
+              }
+              sum = 1.0 / sum;
+              for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
+                matrix[iRow][iCol] = matrix[iRow][iCol] * sum;
+              }
+            }
+          } break;
+          case ENormalization::kByColum: {
+            for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
+              Double_t sum = 0;
+              for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
+                sum += matrix[iRow][iCol];
+              }
+              if (sum == 0) sum = 1;
+              sum = 1.0 / sum;
+              for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
+                matrix[iRow][iCol] = matrix[iRow][iCol] * sum;
+              }
+            }
+          } break;
         }
       }
 
-      void NormalizeMatrixByColumn(TMatrixD& matrix) {
-        for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
-          Double_t sum = 0;
-          for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
-            sum += matrix[iRow][iCol];
-          }
-          sum = 1.0 / sum;
-          for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
-            matrix[iRow][iCol] = matrix[iRow][iCol] * sum;
-          }
-        }
-      }
-
-      TMatrixD GetMatrixVec(const TH1& h, Bool_t horizontal, Bool_t underflow) {
-        int size  = h.GetNbinsX();
-        int shift = 1;
+      TMatrixD GetMatrix(const TH1& h, EOrientation opt, Bool_t underflow) {
+        Int_t size  = h.GetNbinsX();
+        Int_t shift = 1;
         if (underflow) {
           size += 2;
           shift = 0;
         }
-        TMatrix vect;
-        if (horizontal) {
-          vect = TMatrixD(1, size);
-          for (int i = 0; i < size; i++) {
-            vect[0][i] = h.GetBinContent(i + shift);
-          }
-        } else {
-          vect = TMatrixD(size, 1);
-          for (int i = 0; i <= size; i++) {
-            vect[i][0] = h.GetBinContent(i + shift);
-          }
-        }
-        return vect;
-      }
 
-      TVectorD GetVector(const TH1& h, Bool_t underflow) {
-        if (underflow) {
-          TVectorD vec(h.GetNbinsX() + 2);
-          for (int i = 0; i <= h.GetNbinsX() + 1; i++) {
-            vec[i] = h.GetBinContent(i);
-          }
-          return vec;
+        switch (opt) {
+          case EOrientation::kVertical: {
+            TMatrixD matrix(size, 1);
+            for (int i = 0; i < size; i++) {
+              matrix[i][0] = h.GetBinContent(shift + i);
+            }
+            return matrix;
+          } break;
+          case EOrientation::kHorizontal: {
+            TMatrix matrix(1, size);
+            for (int i = 0; i < size; i++) {
+              matrix[0][i] = h.GetBinContent(shift + i);
+            }
+            return matrix;
+          } break;
         }
-        TVectorD vec(h.GetNbinsX());
-        for (int i = 0; i < h.GetNbinsX(); i++) {
-          vec[i] = h.GetBinContent(i + 1);
-        }
-        return vec;
+        return TMatrixD();
       }
 
       TMatrixD GetMatrix(const TH2& h, Bool_t swap, Bool_t underflow) {
@@ -458,34 +459,25 @@ namespace Hal {
         if (minY != minX || maxX != maxY) {
           Hal::Cout::PrintInfo("Wrong histogram Hal::Std::GetMatrix min/max are not equal", EInfo::kWarning);
         }
-        if (underflow) {
-          TMatrixD vect(binX + 2, binX + 2);
-          for (int i = 0; i <= binX + 1; i++) {
-            for (int j = 0; j <= binX + 1; j++) {
-              if (swap) {
-                vect[binX + 2 - j][i] = h.GetBinContent(i, j);
-              } else {
-                vect[j][i] = h.GetBinContent(i, j);
-              }
-            }
-          }
-          return vect;
-        }
-        TMatrixD vect(binX, binX);
-        for (int i = 1; i <= binX; i++) {
-          for (int j = 1; j <= binX; j++) {
+
+        Int_t binPlus = underflow ? 2 : 0;
+        Int_t shift   = underflow ? 0 : 1;
+
+        TMatrixD vect(binX + binPlus, binX + binPlus);
+        for (int i = 0; i < binX + binPlus; i++) {
+          for (int j = 0; j < binX + binPlus; j++) {
             if (swap) {
-              vect[binX - j][i - 1] = h.GetBinContent(i, j);
+              vect[binX + binPlus - j][i] = h.GetBinContent(i + shift, j + shift);
             } else {
-              vect[j - 1][i - 1] = h.GetBinContent(i, j);
+              vect[j][i] = h.GetBinContent(i + shift, j + shift);
             }
           }
         }
         return vect;
       }
 
-      void DiagonalOnEmpty(TMatrixD& matrix, Bool_t rows, Double_t epsilon) {
-        if (rows) {
+      void DiagonalOnEmpty(TMatrixD& matrix, ENormalization opt, Double_t epsilon) {
+        if (opt == ENormalization::kByRow) {
           for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
             double rowSum = 0;
             for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
@@ -493,13 +485,17 @@ namespace Hal {
             }
             if (TMath::Abs(rowSum) <= epsilon) { matrix[iRow][iRow] = 1; }
           }
-        } else {
+        } else if (opt == ENormalization::kByColum) {
           for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
             double colSum = 0;
-            for (int iRow = 0; iRow < matrix.GetNcols(); iRow++) {
+            for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
               colSum += matrix[iCol][iRow];
             }
             if (TMath::Abs(colSum) <= epsilon) { matrix[iCol][iCol] = 1; }
+          }
+        } else {
+          for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
+            if (matrix[iCol][iCol] < epsilon) matrix[iCol][iCol] = 1;
           }
         }
       }
@@ -509,12 +505,6 @@ namespace Hal {
           for (int j = 0; j < m.GetNcols(); j++) {
             if (std::isnan(m[i][j])) m[i][j] = 0;
           }
-        }
-      }
-
-      void RemoveNan(TVectorD& vec) {
-        for (int i = 0; i < vec.GetNrows(); i++) {
-          if (std::isnan(vec[i])) vec[i] = 0;
         }
       }
     }  // namespace Math

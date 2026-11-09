@@ -295,10 +295,10 @@ namespace Hal {
 
   void HistoStyle::CopyAxisProperties(Char_t from, Char_t to) { GetAxisStyle(to) = GetAxisStyle(from); }
 
-  void HistoStyle::SetGlobal(TString opt) const {
-    GetAxisStyle('x').SetGlobal("x");
-    GetAxisStyle('y').SetGlobal("y");
-    GetAxisStyle('z').SetGlobal("z");
+  void HistoStyle::SetGlobal(TString /*opt*/) const {
+    GetAxisStyle('x').SetGlobal("X");
+    GetAxisStyle('y').SetGlobal("Y");
+    GetAxisStyle('z').SetGlobal("Z");
     GetFillStyle().SetGlobal("hist");
     GetMarkerStyle().SetGlobal("hist");
   }

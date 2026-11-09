@@ -74,7 +74,7 @@ namespace Hal {
       else
         gStyle->SetNdivisions(-div, opt);
     }
-    if (Find(EBitFlag::kAxisColor)) gStyle->SetAxisColor(GetI(EBitFlag::kAxisColor), opt);
+    if (Find(EBitFlag::kAxisColor)) { gStyle->SetAxisColor(GetI(EBitFlag::kAxisColor), opt); }
     if (Find(EBitFlag::kLabelColor)) gStyle->SetLabelColor(GetI(EBitFlag::kLabelColor), opt);
     if (Find(EBitFlag::kTitleColor)) gStyle->SetTitleColor(GetI(EBitFlag::kTitleColor), opt);
     if (Find(EBitFlag::kTitleFont)) gStyle->SetTitleFont(GetI(EBitFlag::kTitleFont), opt);

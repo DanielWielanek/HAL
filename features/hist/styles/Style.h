@@ -208,7 +208,7 @@ namespace Hal {
     /**
      * set current style as default
      */
-    virtual void SetGlobal(TString opt = "") const {}
+    virtual void SetGlobal(TString /*opt = ""*/) const {}
     virtual void Print() const;
     virtual ~Styles();
     ClassDef(Styles, 1)

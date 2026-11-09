@@ -40,24 +40,12 @@ namespace Hal {
      */
     virtual Bool_t Init() = 0;
     /**
-     * return smeared function
-     * @param raw
-     * @return
-     */
-    virtual TVectorD GetSmeared(const TVectorD& raw) = 0;
-    /**
-     * return unsmeared function
-     * @param raw
-     * @return
-     */
-    virtual TVectorD GetUnsmeared(const TVectorD& raw) = 0;
-    /**
      * return smeared vector note: contains n+2 bins (under+overflow)
      * @param raw
      * @return
      */
-    virtual TVectorD GetSmeared(const TH1D& raw);
-    virtual TVectorD GetUnsmeared(const TH1D& raw);
+    virtual TMatrixD GetSmeared(const TH1D& raw);
+    virtual TMatrixD GetUnsmeared(const TH1D& raw);
     virtual ~SmearAlgo() {};
     ClassDef(SmearAlgo, 1)
   };
@@ -96,8 +84,8 @@ namespace Hal {
      */
     virtual void SetSmearFunction(TF1* f, const TH1D& raw);
     virtual Bool_t Init();
-    virtual TVectorD GetSmeared(const TVectorD& raw);
-    virtual TVectorD GetUnsmeared(const TVectorD& raw);
+    virtual TMatrixD GetSmeared(const TMatrixD& raw);
+    virtual TMatrixD GetUnsmeared(const TMatrixD& raw);
     /**
      * set invertion method
      * @param method

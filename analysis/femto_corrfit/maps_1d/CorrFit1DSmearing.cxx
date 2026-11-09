@@ -23,6 +23,7 @@
 #include <iostream>
 
 namespace Hal {
+  namespace HMath = Hal::Std::Math;
 
   void CorrFit1DSmearing::SetCorrelationFunction(const Hal::Femto1DCF& cf) { fCF = (Hal::Femto1DCF*) cf.Clone(); }
 
@@ -60,8 +61,8 @@ namespace Hal {
     Algo.SetSmearMatrix(*fSmearingMap);
     Algo.SetInvertionMethod(fInversion);
     Algo.Init();
-    auto rawVector    = Std::Math::GetVector(*rawDenominator, true);
-    rawVector[0]      = 0;
+    auto rawVector    = HMath::GetMatrix(*rawDenominator, HMath::EOrientation::kVertical, true);
+    rawVector[0][0]   = 0;
     auto unsmearedDen = Algo.GetUnsmeared(rawVector);
     // TFile* f                    = new TFile("debug.root", "recreate");
     auto div                    = dynamic_cast<Hal::CorrFitMapKstarRstarDiv*>(fSmearedMap);
@@ -75,12 +76,12 @@ namespace Hal {
 
     for (int iRadius = 1; iRadius <= CF_unsmeared->GetNbinsY(); iRadius++) {
       for (int jKstar = 1; jKstar <= sliceNumRaw->GetNbinsX(); jKstar++) {
-        sliceNumRaw->SetBinContent(jKstar, CF_unsmeared->GetBinContent(jKstar, iRadius) * unsmearedDen[jKstar]);
+        sliceNumRaw->SetBinContent(jKstar, CF_unsmeared->GetBinContent(jKstar, iRadius) * unsmearedDen[jKstar][0]);
       }
       auto smearedN = Algo.GetSmeared(*sliceNumRaw);
       for (int jKstar = 1; jKstar <= CF_unsmeared->GetNbinsX(); jKstar++) {
-        double DenVal = smearedD[jKstar];
-        double NumVal = smearedN[jKstar];
+        double DenVal = smearedD[jKstar][0];
+        double NumVal = smearedN[jKstar][0];
         double OriVal = CF_unsmeared->GetBinContent(jKstar, iRadius);
         if (DenVal == 0) {
           C_smeared->SetBinContent(jKstar, iRadius, OriVal);

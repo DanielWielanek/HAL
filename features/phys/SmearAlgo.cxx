@@ -25,19 +25,23 @@
 using std::cout;
 using std::endl;
 namespace Hal {
+  namespace HMath = Hal::Std::Math;
 
-  TVectorD SmearAlgo::GetSmeared(const TH1D& raw) { return GetSmeared(Hal::Std::Math::GetVector(raw, fUseUnderflows)); }
+  TMatrixD SmearAlgo::GetSmeared(const TH1D& raw) {
+    return HMath::GetMatrix(raw, HMath::EOrientation::kVertical, fUseUnderflows);
+  }
 
-  TVectorD SmearAlgo::GetUnsmeared(const TH1D& raw) { return GetUnsmeared(Hal::Std::Math::GetVector(raw, fUseUnderflows)); }
+  TMatrixD SmearAlgo::GetUnsmeared(const TH1D& raw) {
+    return HMath::GetMatrix(raw, HMath::EOrientation::kVertical, fUseUnderflows);
+  }
 
   //===================================================================================================================================
 
   void SmearAlgoMatrix::SetSmearMatrix(TH2& vec) {
-
     auto temp = Hal::Std::Math::GetMatrix(vec, false, fUseUnderflows);
-    Hal::Std::Math::DiagonalOnEmpty(temp, true);  // diagonalize empty
+    HMath::DiagonalOnEmpty(temp);  // diagonalize empty
     fSmearMatrix.ResizeTo(temp.GetNrows(), temp.GetNcols());
-    Hal::Std::Math::NormalizeMatrixByRow(temp);
+    HMath::NormalizeMatrix(temp, HMath::ENormalization::kByColum);
     fSmearMatrix = temp;
   }
 
@@ -73,9 +77,9 @@ namespace Hal {
         }
       }
     }
-    Hal::Std::Math::DiagonalOnEmpty(temp, true);  // diagonalize empty
+    HMath::DiagonalOnEmpty(temp);  // diagonalize empty
     fSmearMatrix.ResizeTo(temp.GetNrows(), temp.GetNcols());
-    Hal::Std::Math::NormalizeMatrixByRow(temp);
+    HMath::NormalizeMatrix(temp, HMath::ENormalization::kByColum);
     fSmearMatrix = temp;
   }
 
@@ -88,22 +92,22 @@ namespace Hal {
     return false;
   };
 
-  TVectorD SmearAlgoMatrix::GetSmeared(const TVectorD& raw) { return fSmearMatrix * raw; }
+  TMatrixD SmearAlgoMatrix::GetSmeared(const TMatrixD& raw) { return fSmearMatrix * raw; }
 
-  TVectorD SmearAlgoMatrix::GetUnsmeared(const TVectorD& raw) {
+  TMatrixD SmearAlgoMatrix::GetUnsmeared(const TMatrixD& raw) {
 
     if (fInvertionMethod == EMethod::kThikonov1) {
       if (fParameters.size() < 1) {
         std::cout << ClassName() << " no lambda set, set 0.1 " << std::endl;
         SetInvertionParameters({0.1});
       }
-      return Hal::Std::Math::TikhonovUnfold(raw, fSmearMatrix, fParameters[0]);
+      return HMath::TikhonovUnfold(raw, fSmearMatrix, fParameters[0]);
     } else if (fInvertionMethod == EMethod::kThikonov2) {
       if (fParameters.size() < 1) {
         std::cout << ClassName() << " no lambda set, set 0.1 " << std::endl;
         SetInvertionParameters({0.1});
       }
-      return Hal::Std::Math::TikhonovUnfold2(raw, fSmearMatrix, fParameters[0]);
+      return HMath::TikhonovUnfold2(raw, fSmearMatrix, fParameters[0]);
     } else if (fInvertionMethod == EMethod::kMatrix) {
       return fSmearMatrixRev * raw;
     }
@@ -114,7 +118,7 @@ namespace Hal {
   //===================================================================================================================================
 
   Double_t SmearAlgoMatrix::FindOptimalLambdaThikonov2(const TH1D& raw) {
-    auto rawVect = Hal::Std::Math::GetVector(raw, fUseUnderflows);
+    auto rawVect = HMath::GetMatrix(raw, HMath::EOrientation::kVertical, fUseUnderflows);
     const int n  = rawVect.GetNrows();
     std::vector<double> errors;
     int start = 1;
@@ -127,12 +131,12 @@ namespace Hal {
       errors.push_back(raw.GetBinError(i));
     }
 
-    std::vector<TVectorD> samples;
+    std::vector<TMatrixD> samples;
     const int samplesNo = 20;
     for (int i = 0; i < samplesNo; i++) {
       auto test = rawVect;
       for (int j = 0; j < rawVect.GetNrows(); j++) {
-        test[j] = test[j] + gRandom->Gaus(0, errors[j]);
+        test[j][0] = test[j][0] + gRandom->Gaus(0, errors[j]);
       }
       samples.push_back(test);
     }
@@ -143,6 +147,7 @@ namespace Hal {
     const double lambdaMax = 1e+2;
 
     double bestLambda = lambdaMax;
+    double bestChi    = 1E+9;
 
     for (int il = 0; il < nLambda; ++il) {
       const double logLambda = std::log10(lambdaMin) + il * (std::log10(lambdaMax) - std::log10(lambdaMin)) / (nLambda - 1);
@@ -151,10 +156,10 @@ namespace Hal {
       double chi2sum      = 0.0;
       for (int iS = 0; iS < samplesNo; iS++) {
         // Unfold
-        TVectorD unfolded = Hal::Std::Math::TikhonovUnfold2(samples[iS], fSmearMatrix, lambda);
+        TMatrixD unfolded = Hal::Std::Math::TikhonovUnfold2(samples[iS], fSmearMatrix, lambda);
 
         // Ponowne rozmycie
-        TVectorD refolded = GetSmeared(unfolded);
+        TMatrixD refolded = GetSmeared(unfolded);
 
         // chi2
         double chi2 = 0.0;
@@ -162,16 +167,18 @@ namespace Hal {
         for (int i = 0; i < n; ++i) {
           if (errors[i] <= 0.0) continue;
 
-          const double diff = refolded[i] - rawVect[i];
+          const double diff = refolded[i][0] - rawVect[i][0];
 
           chi2 += diff * diff;  /// (errors[i] * errors[i]);
         }
         chi2sum = ++chi2;
       }
+      if (chi2sum < bestChi) { bestLambda = lambda; }
+
 
       std::cout << "lambda = " << lambda << "   chi2/N = " << chi2sum / n << std::endl;
     }
-    return 1;
+    return bestLambda;
   }
 
 } /* namespace Hal */

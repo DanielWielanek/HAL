@@ -83,7 +83,7 @@ Macro(GENERATE_LIBRARY_HAL)
   EndIf()
 
   target_include_directories(${Int_LIB} PUBLIC ${INCLUDE_DIRECTORIES})
-  target_link_libraries(${Int_LIB} ${Int_DEPENDENCIES})
+  target_link_libraries(${Int_LIB} PUBLIC ${Int_DEPENDENCIES})
   set_target_properties(${Int_LIB} PROPERTIES ${PROJECT_LIBRARY_PROPERTIES})
 
   if(LINKDEF)
@@ -118,7 +118,7 @@ Macro(GENERATE_EXECUTABLE)
 
   ############### build the library #####################
   Add_Executable(${EXE_NAME} ${SRCS})
-  target_link_libraries(${EXE_NAME} ${DEPENDENCIES})
+  target_link_libraries(${EXE_NAME} PRIVATE ${DEPENDENCIES})
 
   ############### install the library ###################
   if(DEFINED BIN_DESTINATION)

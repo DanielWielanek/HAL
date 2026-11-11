@@ -34,7 +34,7 @@ endif()
 
 
 PrintConfig()
-SetHeaderVariables(${CMAKE_SOURCE_DIR})
+SetHeaderVariables(${PROJECT_SOURCE_DIR})
 WriteConfig()
 
 add_subdirectory (data)
@@ -44,3 +44,6 @@ add_subdirectory (analysis)
 if(USE_EXAMPLES)
     add_subdirectory(examples)
 endif()
+
+list(REMOVE_ITEM CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
+list(REMOVE_ITEM CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/fair")

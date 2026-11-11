@@ -1,25 +1,3 @@
-Set(INCLUDE_DIRECTORIES
-${HAL_FEATURES}
-${HAL_DATA}
-${HAL_CUTS}
-)
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
- ${ROOT_INCLUDE_DIR} 
- ${BASE_INCLUDE_DIRECTORIES}
-)
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
-
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
- 
-Link_Directories( ${LINK_DIRECTORIES})
-
 set(SRCS
 
 SubCut.cxx
@@ -139,6 +117,29 @@ cutmonitors/customized/MonitorDCA.cxx
 cutmonitors/customized/MonitorEventVertex.cxx
 cutmonitors/customized/TrackFlagMonitor.cxx
 cutmonitors/CutMonitorComplex.cxx
+)
+
+Set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}/eventcuts
+  ${CMAKE_CURRENT_SOURCE_DIR}/eventcuts/detector
+  ${CMAKE_CURRENT_SOURCE_DIR}/eventcuts/general
+  ${CMAKE_CURRENT_SOURCE_DIR}/eventcuts/mc
+  ${CMAKE_CURRENT_SOURCE_DIR}/trackcuts
+  ${CMAKE_CURRENT_SOURCE_DIR}/trackcuts/mc
+  ${CMAKE_CURRENT_SOURCE_DIR}/trackcuts/detector
+  ${CMAKE_CURRENT_SOURCE_DIR}/trackcuts/kinematics
+  ${CMAKE_CURRENT_SOURCE_DIR}/trackcuts/mc
+  ${CMAKE_CURRENT_SOURCE_DIR}/trackcuts/resolution
+  ${CMAKE_CURRENT_SOURCE_DIR}/trackcuts/monprop
+  ${CMAKE_CURRENT_SOURCE_DIR}/trackcuts/v0
+  ${CMAKE_CURRENT_SOURCE_DIR}/twotrackcuts
+  ${CMAKE_CURRENT_SOURCE_DIR}/twotrackcuts/detector
+  ${CMAKE_CURRENT_SOURCE_DIR}/twotrackcuts/kinematics
+  ${CMAKE_CURRENT_SOURCE_DIR}/twotrackcuts/mc
+  ${CMAKE_CURRENT_SOURCE_DIR}/twotrackcuts/compound
+  ${CMAKE_CURRENT_SOURCE_DIR}/cutmonitors
+  ${CMAKE_CURRENT_SOURCE_DIR}/cutmonitors/customized
+  ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 Set(HEADERS )

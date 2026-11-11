@@ -4,36 +4,6 @@
 #add_subdirectory(Weights)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -Wno-strict-aliasing")
-
-Set(INCLUDE_DIRECTORIES
-${HAL_DATA}
-${HAL_FEATURES}
-${HAL_ANA}
-${HAL_HBT}
-${HAL_CUTS}
-)
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
-
-Include_Directories(
- ${INCLUDE_DIRECTORIES}
- ${GSL_INCLUDE_DIRS}
-)
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-Include_Directories(${GSL_DIR}/include)
-
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-  ${FAIRROOT_LIBRARY_DIR}
-)
- 
-Link_Directories(${LINK_DIRECTORIES})
-
 set(SRCS
 
 ana/FemtoBasicAna.cxx
@@ -164,11 +134,30 @@ painters/CorrFit3DCFPainter.cxx
 
 )
 
+Set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}/ana
+  ${CMAKE_CURRENT_SOURCE_DIR}/base
+  ${CMAKE_CURRENT_SOURCE_DIR}/weights
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/corrfitopt
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/fittingfunctions
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/mapgenerator_multidim
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/mapgenerators
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/pairgenerators
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/serialization
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/roco
+  ${CMAKE_CURRENT_SOURCE_DIR}/painters
+  ${CMAKE_CURRENT_SOURCE_DIR}/imaging
+  ${CMAKE_CURRENT_SOURCE_DIR}/base/source_models
+  ${CMAKE_CURRENT_SOURCE_DIR}/base/corrfunc
+  ${CMAKE_CURRENT_SOURCE_DIR}/base/shmath
+  ${CMAKE_CURRENT_SOURCE_DIR}/base/funcs
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 if(DEFINED CIA)
-    Set(INCLUDE_DIRECTORIES
-        ${INCLUDE_DIRECTORIES} top_secret
-    )
+    add_compile_definitions(__CIA__)
+    LIST(APPEND INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/top_secret)
     set(SRCS ${SRCS}
         top_secret/CorrFitSHCF.cxx
         top_secret/CorrFitSHFrom3D.cxx
@@ -187,6 +176,8 @@ if(DEFINED CIA)
         top_secret/GausianSourceDenstityFastCalc.cxx
     )
 endif()
+
+
 
 set(NO_DICT_SRCS
 weights/FemtoFsiTools.F
@@ -207,13 +198,13 @@ endif()
 Set(LIBRARY_NAME HalFemto)
 
 
-Set(DEPENDENCIES HalAna Minuit Minuit2 Fumili)
+Set(DEPENDENCIES HalAna ROOT::Minuit ROOT::Minuit2 ROOT::Fumili)
 if(NOT DEFINED DISABLE_SQLITE)
    # Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
 endif()
 
 if (NOT DEFINED DISABLE_SQLITE)
-	Set(DEPENDENCIES ${DEPENDENCIES} SQLIO)
+	Set(DEPENDENCIES ${DEPENDENCIES} ROOT::SQLIO)
 endif()
 
 
@@ -246,7 +237,7 @@ Set(Exe_Source
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    Set(DEPENDENCIES gsl gslcblas HalData HalFeatures Tree EG HalAna HalFemto)
+    Set(DEPENDENCIES GSL::gsl GSL::gslcblas HalData HalFeatures ROOT::Tree ROOT::EG HalAna HalFemto)
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
 

@@ -134,31 +134,6 @@ painters/CorrFit3DCFPainter.cxx
 
 )
 
-
-if(DEFINED CIA)
-    Set(INCLUDE_DIRECTORIES
-        ${INCLUDE_DIRECTORIES} top_secret
-    )
-    set(SRCS ${SRCS}
-        top_secret/CorrFitSHCF.cxx
-        top_secret/CorrFitSHFrom3D.cxx
-        top_secret/FemtoSHArray.cxx
-        top_secret/CorrFitSHCFMultiDim.cxx
-        top_secret/CorrFitMaskSH.cxx
-        top_secret/CorrFitHDFuncSH.cxx
-        top_secret/CorrFitDumpedPairAnaVertical.cxx
-        top_secret/BattlestarGalactica.cxx
-        top_secret/BattlestarGalactica10.cxx
-        top_secret/BattlestarPegasus.cxx
-        top_secret/BattlestarValkyria.cxx
-        top_secret/CorrFitSHCFPainter.cxx
-        top_secret/BattlestarAtlantia.cxx
-        top_secret/BattlestarSolaria.cxx
-        top_secret/GausianSourceDenstityFastCalc.cxx
-    )
-endif()
-
-
 Set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/ana
   ${CMAKE_CURRENT_SOURCE_DIR}/base
@@ -179,6 +154,30 @@ Set(INCLUDE_DIRECTORIES
   ${CMAKE_CURRENT_SOURCE_DIR}/base/funcs
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+if(DEFINED CIA)
+    add_compile_definitions(__CIA__)
+    LIST(APPEND INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/top_secret)
+    set(SRCS ${SRCS}
+        top_secret/CorrFitSHCF.cxx
+        top_secret/CorrFitSHFrom3D.cxx
+        top_secret/FemtoSHArray.cxx
+        top_secret/CorrFitSHCFMultiDim.cxx
+        top_secret/CorrFitMaskSH.cxx
+        top_secret/CorrFitHDFuncSH.cxx
+        top_secret/CorrFitDumpedPairAnaVertical.cxx
+        top_secret/BattlestarGalactica.cxx
+        top_secret/BattlestarGalactica10.cxx
+        top_secret/BattlestarPegasus.cxx
+        top_secret/BattlestarValkyria.cxx
+        top_secret/CorrFitSHCFPainter.cxx
+        top_secret/BattlestarAtlantia.cxx
+        top_secret/BattlestarSolaria.cxx
+        top_secret/GausianSourceDenstityFastCalc.cxx
+    )
+endif()
+
+
 
 set(NO_DICT_SRCS
 weights/FemtoFsiTools.F

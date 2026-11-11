@@ -95,7 +95,7 @@ install(FILES ${EXT_HEADERS}
 Set(HEADERS )
 Set(LINKDEF HalFeaturesLinkDef.h)
 Set(LIBRARY_NAME HalFeatures)
-Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO EG gsl gslcblas )
+Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO EG GSL::gsl GSL::gslcblas )
 
 
 string(JOIN " " ROOTCLING_FLAGS "-I" ${HAL_FEATURES})

@@ -246,7 +246,7 @@ Set(Exe_Source
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    Set(DEPENDENCIES gsl gslcblas HalData HalFeatures Tree EG HalAna HalFemto)
+    Set(DEPENDENCIES GSL::gsl GSL::gslcblas HalData HalFeatures Tree EG HalAna HalFemto)
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
 

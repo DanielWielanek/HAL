@@ -4,36 +4,6 @@
 #add_subdirectory(Weights)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -Wno-strict-aliasing")
-
-Set(INCLUDE_DIRECTORIES
-${HAL_DATA}
-${HAL_FEATURES}
-${HAL_ANA}
-${HAL_HBT}
-${HAL_CUTS}
-)
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
-
-Include_Directories(
- ${INCLUDE_DIRECTORIES}
- ${GSL_INCLUDE_DIRS}
-)
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-Include_Directories(${GSL_DIR}/include)
-
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-  ${FAIRROOT_LIBRARY_DIR}
-)
- 
-Link_Directories(${LINK_DIRECTORIES})
-
 set(SRCS
 
 ana/FemtoBasicAna.cxx
@@ -187,6 +157,28 @@ if(DEFINED CIA)
         top_secret/GausianSourceDenstityFastCalc.cxx
     )
 endif()
+
+
+Set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}/ana
+  ${CMAKE_CURRENT_SOURCE_DIR}/base
+  ${CMAKE_CURRENT_SOURCE_DIR}/weights
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/corrfitopt
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/fittingfunctions
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/mapgenerator_multidim
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/mapgenerators
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/pairgenerators
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/serialization
+  ${CMAKE_CURRENT_SOURCE_DIR}/corrfit/roco
+  ${CMAKE_CURRENT_SOURCE_DIR}/painters
+  ${CMAKE_CURRENT_SOURCE_DIR}/imaging
+  ${CMAKE_CURRENT_SOURCE_DIR}/base/source_models
+  ${CMAKE_CURRENT_SOURCE_DIR}/base/corrfunc
+  ${CMAKE_CURRENT_SOURCE_DIR}/base/shmath
+  ${CMAKE_CURRENT_SOURCE_DIR}/base/funcs
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 set(NO_DICT_SRCS
 weights/FemtoFsiTools.F

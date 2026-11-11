@@ -2,29 +2,6 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
-Set(INCLUDE_DIRECTORIES
-${HAL_DATA}
-${HAL_FEATURES}
-${HAL_ANA}
-${HAL_CUTS}
-${HAL_CORE}/analysis/qa
-)
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
- ${ROOT_INCLUDE_DIR}
- ${BASE_INCLUDE_DIRECTORIES} 
-)
-
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
- 
-Link_Directories(${LINK_DIRECTORIES})
-
 # List of source files
 set(SRCS
    QAPlot.cxx
@@ -34,6 +11,10 @@ set(SRCS
    QAHistoSettings.cxx
    QAManager.cxx
    QAPlotAxis.cxx
+)
+
+Set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 Set(HEADERS )

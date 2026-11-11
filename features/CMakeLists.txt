@@ -2,25 +2,6 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
-Set(INCLUDE_DIRECTORIES
- ${HAL_FEATURES}
- ${GSL_INCLUDE_DIRS}
-)
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
- ${ROOT_INCLUDE_DIR} 
- ${BASE_INCLUDE_DIRECTORIES}
-)
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
-
-link_directories( ${LINK_DIRECTORIES})
-
 set(SRCS
 Cout.cxx
 Array.cxx
@@ -91,6 +72,18 @@ minimizer/MultiDimMinuit.cxx
 install(FILES ${EXT_HEADERS}
         DESTINATION include
        )
+
+Set(INCLUDE_DIRECTORIES
+  ${CMAKE_CURRENT_SOURCE_DIR}/hist
+  ${CMAKE_CURRENT_SOURCE_DIR}/hist/styles
+  ${CMAKE_CURRENT_SOURCE_DIR}/io
+  ${CMAKE_CURRENT_SOURCE_DIR}/io/html
+  ${CMAKE_CURRENT_SOURCE_DIR}/std
+  ${CMAKE_CURRENT_SOURCE_DIR}/minimizer
+  ${CMAKE_CURRENT_SOURCE_DIR}/phys
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 
 Set(HEADERS )
 Set(LINKDEF HalFeaturesLinkDef.h)

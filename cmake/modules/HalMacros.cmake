@@ -63,25 +63,6 @@ Macro(GENERATE_LIBRARY_HAL)
     install(FILES ${HDRS} DESTINATION include)
   Endif()
   
-  
-  If(LINKDEF)
-    If( IS_ABSOLUTE ${LINKDEF})
-      Set(Int_LINKDEF ${LINKDEF})
-    Else( IS_ABSOLUTE ${LINKDEF})
-      Set(Int_LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LINKDEF})
-    EndIf( IS_ABSOLUTE ${LINKDEF})
-    ROOT_GENERATE_DICTIONARY()
-    SET(Int_SRCS ${Int_SRCS} ${DICTIONARY})
-    SET_SOURCE_FILES_PROPERTIES(${DICTIONARY}
-       PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast"
-    )
-  EndIf(LINKDEF)
-
-
-  If (ROOT_FOUND_VERSION LESS 59999)
-    ROOT_GENERATE_ROOTMAP()
-  EndIf()
-
   set(Int_DEPENDENCIES)
   foreach(d ${DEPENDENCIES})
     get_filename_component(_ext ${d} EXT)
@@ -100,10 +81,20 @@ Macro(GENERATE_LIBRARY_HAL)
   Else()
     Add_Library(${Int_LIB} SHARED ${Int_SRCS} ${NO_DICT_SRCS} ${LINKDEF})
   EndIf()
-  
+
   target_include_directories(${Int_LIB} PUBLIC ${INCLUDE_DIRECTORIES})
   target_link_libraries(${Int_LIB} ${Int_DEPENDENCIES})
   set_target_properties(${Int_LIB} PROPERTIES ${PROJECT_LIBRARY_PROPERTIES})
+
+  if(LINKDEF)
+    root_generate_dictionary(G__${Int_LIB} ${HDRS} MODULE ${Int_LIB} LINKDEF ${LINKDEF})
+    if (CMAKE_CXX_COMPILER_ID MATCHES Clang)
+      set_target_properties(G__${Int_LIB} PROPERTIES COMPILE_FLAGS "-Wno-overloaded-virtual -Wno-shadow -Wno-deprecated-declarations -Wno-unused-parameter")
+    else()
+      set_target_properties(G__${Int_LIB} PROPERTIES COMPILE_FLAGS "-Wno-ctor-dtor-privacy -Wno-overloaded-virtual -Wno-null-pointer-subtraction -Wno-shadow -Wno-deprecated-declarations -Wno-unused-parameter")
+    endif()
+  endif(LINKDEF)
+
 
   ############### install the library ###################
   install(TARGETS ${Int_LIB} DESTINATION lib)
@@ -118,3 +109,26 @@ Macro(GENERATE_LIBRARY_HAL)
 
 EndMacro(GENERATE_LIBRARY_HAL)
 
+Macro(GENERATE_EXECUTABLE)
+
+#  If(IWYU_FOUND)
+#    Set(HeaderRuleName "${EXE_NAME}_HEADER_RULES")
+#    CHECK_HEADERS("${SRCS}" "${INCLUDE_DIRECTORIES}" ${HeaderRuleName})
+#  EndIf(IWYU_FOUND)
+
+  ############### build the library #####################
+  Add_Executable(${EXE_NAME} ${SRCS})
+  target_link_libraries(${EXE_NAME} ${DEPENDENCIES})
+
+  ############### install the library ###################
+  if(DEFINED BIN_DESTINATION)
+    install(TARGETS ${EXE_NAME} DESTINATION ${BIN_DESTINATION})
+  else(DEFINED BIN_DESTINATION)
+    install(TARGETS ${EXE_NAME} DESTINATION bin)
+  endif(DEFINED BIN_DESTINATION)
+
+  Set(EXE_NAME)
+  Set(SRCS)
+  Set(DEPENDENCIES)
+
+EndMacro(GENERATE_EXECUTABLE)

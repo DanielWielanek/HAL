@@ -101,7 +101,7 @@ Macro(GENERATE_LIBRARY_HAL)
     Add_Library(${Int_LIB} SHARED ${Int_SRCS} ${NO_DICT_SRCS} ${LINKDEF})
   EndIf()
   
-
+  target_include_directories(${Int_LIB} PUBLIC ${INCLUDE_DIRECTORIES})
   target_link_libraries(${Int_LIB} ${Int_DEPENDENCIES})
   set_target_properties(${Int_LIB} PROPERTIES ${PROJECT_LIBRARY_PROPERTIES})
 

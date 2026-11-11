@@ -70,7 +70,7 @@ decays/Decay.cxx
 Set(HEADERS )
 Set(LINKDEF HalDataLinkDef.h)
 Set(LIBRARY_NAME HalData)
-Set(DEPENDENCIES EG HalFeatures)
+Set(DEPENDENCIES ROOT::EG HalFeatures)
 
 GENERATE_LIBRARY_HAL()
 

@@ -95,7 +95,11 @@ install(FILES ${EXT_HEADERS}
 Set(HEADERS )
 Set(LINKDEF HalFeaturesLinkDef.h)
 Set(LIBRARY_NAME HalFeatures)
-Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO EG GSL::gsl GSL::gslcblas )
+Set(DEPENDENCIES ROOT::Gui ROOT::Core ROOT::RIO ROOT::Net ROOT::Hist
+                 ROOT::Graf ROOT::Graf3d ROOT::Gpad ROOT::Tree
+                 ROOT::Rint ROOT::Postscript ROOT::Matrix ROOT::Physics
+                 ROOT::MathCore ROOT::Thread ROOT::XMLParser ROOT::XMLIO
+                 ROOT::SQLIO ROOT::EG GSL::gsl GSL::gslcblas )
 
 
 string(JOIN " " ROOTCLING_FLAGS "-I" ${HAL_FEATURES})
@@ -129,9 +133,8 @@ Set(Exe_Source
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    Set(DEPENDENCIES ${GSL_LIBRARIES} HalFeatures Tree HalAna HalFemto HalFlow HalSpectra )
+    Set(DEPENDENCIES GSL::gsl GSL::gslcblas HalFeatures ROOT::Tree HalAna HalFemto HalFlow HalSpectra )
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
-
 
 

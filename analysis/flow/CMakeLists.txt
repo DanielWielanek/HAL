@@ -36,7 +36,7 @@ set(SRCS
 Set(HEADERS )
 Set(LINKDEF HalPhysFlowLinkDef.h)
 Set(LIBRARY_NAME HalFlow)
-Set(DEPENDENCIES EG MathCore Physics Core HalAna )
+Set(DEPENDENCIES ROOT::EG ROOT::MathCore ROOT::Physics ROOT::Core HalAna )
 
 GENERATE_LIBRARY_HAL()
 

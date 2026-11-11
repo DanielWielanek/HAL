@@ -207,13 +207,13 @@ endif()
 Set(LIBRARY_NAME HalFemto)
 
 
-Set(DEPENDENCIES HalAna Minuit Minuit2 Fumili)
+Set(DEPENDENCIES HalAna ROOT::Minuit ROOT::Minuit2 ROOT::Fumili)
 if(NOT DEFINED DISABLE_SQLITE)
    # Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
 endif()
 
 if (NOT DEFINED DISABLE_SQLITE)
-	Set(DEPENDENCIES ${DEPENDENCIES} SQLIO)
+	Set(DEPENDENCIES ${DEPENDENCIES} ROOT::SQLIO)
 endif()
 
 
@@ -246,7 +246,7 @@ Set(Exe_Source
     List(GET Exe_Source ${_file} _src)
     Set(EXE_NAME ${_name})
     Set(SRCS ${_src})
-    Set(DEPENDENCIES GSL::gsl GSL::gslcblas HalData HalFeatures Tree EG HalAna HalFemto)
+    Set(DEPENDENCIES GSL::gsl GSL::gslcblas HalData HalFeatures ROOT::Tree ROOT::EG HalAna HalFemto)
     GENERATE_EXECUTABLE()
   EndForEach(_file RANGE 0 ${_length})
 

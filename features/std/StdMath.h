@@ -16,6 +16,7 @@
 #include <vector>
 
 class TH1;
+class TH1D;
 class TH2;
 namespace Hal {
   namespace Std {
@@ -117,8 +118,8 @@ namespace Hal {
      */
     std::pair<Int_t, Int_t> Division(Int_t num, Int_t div);
     namespace Math {  // not so frequely used math
-      enum class ENormalization { kByRow, kByColum, kTotal };
-      enum class EOrientation { kVertical, kHorizontal };
+      enum class ENorm { kByRow, kByColum, kTotal };
+      enum class EOrient { kVertical, kHorizontal };
       /**
        * NOTE: sometimes this algo fails to invert matrices, in such case prints warnings
        * @param x
@@ -157,14 +158,14 @@ namespace Hal {
        * @param opt - normalization by row/col or by sum of all entries
        * @return normalized matrix by rows or colums
        */
-      void NormalizeMatrix(TMatrixD& matrix, ENormalization opt = ENormalization::kTotal);
+      void NormalizeMatrix(TMatrixD& matrix, ENorm opt = ENorm::kTotal);
       /**
-       * convert histogram to math vec - ommits under/overflow bins
+       * convert histogram to math vec - omits under/overflow bins
        * @param h
        * @param underflow - use under/overflow bins also
        * @return
        */
-      TMatrixD GetMatrix(const TH1& h, EOrientation opt = EOrientation::kVertical, Bool_t undeflows = kFALSE);
+      TMatrixD GetMatrix(const TH1& h, EOrient opt = EOrient::kVertical, Bool_t underflows = kFALSE);
       /**
        * convert histogram into matrix
        * @param h
@@ -179,12 +180,21 @@ namespace Hal {
        * @param rows if true set 1 if row is empty, otherwise check column
        * @return
        */
-      void DiagonalOnEmpty(TMatrixD& matrix, ENormalization opt = ENormalization::kByRow, Double_t epsilon = 1E-12);
+      void DiagonalOnEmpty(TMatrixD& matrix, ENorm opt = ENorm::kByRow, Double_t epsilon = 1E-12);
       /**
        * set 0 instead of all NaN
        * @param m
        */
       void RemoveNan(TMatrixD& m);
+      /**
+       * creates 1-D histogram from TMatrixD
+       * @param matrix
+       * @param min min range of histogram
+       * @param max max range of histogram
+       * @param overflow - if true assumes that first and last entries are under/oveflow bins
+       * @return
+       */
+      TH1D* GetHist1D(TMatrixD& matrix, Double_t min, Double_t max, Bool_t overflow = false);
     }  // namespace Math
   }    // namespace Std
 }  // namespace Hal

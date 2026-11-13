@@ -40,14 +40,24 @@ namespace Hal {
      */
     virtual Bool_t Init() = 0;
     /**
-     * return smeared vector note: contains n+2 bins (under+overflow)
+     * return smeared function
      * @param raw
      * @return
      */
-    virtual TMatrixD GetSmeared(const TH1D& raw);
-    virtual TMatrixD GetUnsmeared(const TH1D& raw);
+    virtual TMatrixD GetSmeared(const TMatrixD& raw) = 0;
+    /**
+     * return unsmeared function
+     * @param raw
+     * @return
+     */
+    virtual TMatrixD GetUnsmeared(const TMatrixD& raw) = 0;
+    /**
+     *
+     * @return true if underflows are used
+     */
+    Bool_t Undeflows() const { return fUseUnderflows; };
     virtual ~SmearAlgo() {};
-    ClassDef(SmearAlgo, 1)
+    ClassDef(SmearAlgo, 0)
   };
 
   /**
@@ -69,8 +79,6 @@ namespace Hal {
     std::vector<double> fParameters;
 
   public:
-    using SmearAlgo::GetSmeared;
-    using SmearAlgo::GetUnsmeared;
     SmearAlgoMatrix(Bool_t underflows = false) : SmearAlgo(underflows) {};
     /**
      * set smear matrix on X - true value, on Y - measured
@@ -110,7 +118,7 @@ namespace Hal {
     TMatrixD GetSmearingMatrix() const { return fSmearMatrix; }
     TMatrixD GetSmearingMatrixRev() const { return fSmearMatrixRev; }
     virtual ~SmearAlgoMatrix() {};
-    ClassDef(SmearAlgoMatrix, 1)
+    ClassDef(SmearAlgoMatrix, 0)
   };
 
 } /* namespace Hal */

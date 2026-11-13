@@ -17,7 +17,11 @@ namespace Hal {
   class CorrFitMapKstarRstar;
   class Femto1DCF;
   /**
-   * smeared map in PRF frame
+   * smeared map in PRF frame,recommended usage:
+   * - set your experimental CF - this allow realistically estimate the shape of denominator
+   * - recommended inversion is kNone - matrix inversion, Thikonov are sometimes unstable
+   * - set acceptance map - using M^T allow estimate more realistic shape of real denominator
+   * - acceptance map is not mandatory
    */
   class CorrFit1DSmearing : public TObject {
   public:
@@ -28,10 +32,18 @@ namespace Hal {
     Hal::Femto1DCF* fCF                    = {nullptr};
     Hal::CorrFitMapKstarRstar* fInputMap   = {nullptr};
     Hal::CorrFitMapKstarRstar* fSmearedMap = {nullptr};
+    Hal::SmearAlgoMatrix* fAlgo            = {nullptr};
     TH2D* fRatio                           = {nullptr};
     TH2D* fSmearingMap                     = {nullptr};
     TH2D* DoInversion(TH2D* h) const;
+    TH1D* fAcceptanceMap = {nullptr};
+    TMatrixD fSimDenominator;
+    TMatrixD fAcceptance;
     Double_t fLambda = {0.01};
+    Bool_t InitSmearing();
+    void DoMapSmearing();
+    void FinishSmearing();
+    TMatrixD VecMultiply(const TMatrixD& a, const TMatrixD& b) const;
 
   public:
     CorrFit1DSmearing() {};
@@ -57,6 +69,11 @@ namespace Hal {
      */
     void SetCorrFitMap(const Hal::CorrFitMapKstarRstar& map);
     /**
+     * set acceptance map, used to correct unsmeared sim distribution
+     * @param map
+     */
+    void SetAcceptanceMap(const TH1D& map);
+    /**
      *
      * @return smeared map, call after @see Calculate
      */
@@ -70,6 +87,11 @@ namespace Hal {
      * @return correction C_unsmeared/C_smeared
      */
     TH2D* GetCorrection() const { return fRatio; };
+    /**
+     *
+     * @return expected simulated denominator
+     */
+    TMatrixD GetSimDenominator() const { return fSimDenominator; }
     void SetTikhonovLambda(Double_t lambda) { fLambda = lambda; };
     virtual ~CorrFit1DSmearing();
     ClassDef(CorrFit1DSmearing, 0)

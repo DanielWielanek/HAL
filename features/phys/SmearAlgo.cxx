@@ -27,21 +27,13 @@ using std::endl;
 namespace Hal {
   namespace HMath = Hal::Std::Math;
 
-  TMatrixD SmearAlgo::GetSmeared(const TH1D& raw) {
-    return HMath::GetMatrix(raw, HMath::EOrientation::kVertical, fUseUnderflows);
-  }
-
-  TMatrixD SmearAlgo::GetUnsmeared(const TH1D& raw) {
-    return HMath::GetMatrix(raw, HMath::EOrientation::kVertical, fUseUnderflows);
-  }
-
   //===================================================================================================================================
 
   void SmearAlgoMatrix::SetSmearMatrix(TH2& vec) {
     auto temp = Hal::Std::Math::GetMatrix(vec, false, fUseUnderflows);
     HMath::DiagonalOnEmpty(temp);  // diagonalize empty
     fSmearMatrix.ResizeTo(temp.GetNrows(), temp.GetNcols());
-    HMath::NormalizeMatrix(temp, HMath::ENormalization::kByColum);
+    HMath::NormalizeMatrix(temp, HMath::ENorm::kByColum);
     fSmearMatrix = temp;
   }
 
@@ -79,17 +71,20 @@ namespace Hal {
     }
     HMath::DiagonalOnEmpty(temp);  // diagonalize empty
     fSmearMatrix.ResizeTo(temp.GetNrows(), temp.GetNcols());
-    HMath::NormalizeMatrix(temp, HMath::ENormalization::kByColum);
+    HMath::NormalizeMatrix(temp, HMath::ENorm::kByColum);
     fSmearMatrix = temp;
   }
 
   Bool_t SmearAlgoMatrix::Init() {
-    if (fComputed) { return false; }
+    if (fComputed) {
+      Cout::PrintInfo(Form("%s already initialized ", ClassName()), EInfo::kWarning);
+      return false;
+    }
     fSmearMatrixRev.ResizeTo(fSmearMatrix.GetNrows(), fSmearMatrix.GetNcols());
     fSmearMatrixRev = fSmearMatrix;
     fSmearMatrixRev.Invert();
     fComputed = true;
-    return false;
+    return true;
   };
 
   TMatrixD SmearAlgoMatrix::GetSmeared(const TMatrixD& raw) { return fSmearMatrix * raw; }
@@ -118,7 +113,7 @@ namespace Hal {
   //===================================================================================================================================
 
   Double_t SmearAlgoMatrix::FindOptimalLambdaThikonov2(const TH1D& raw) {
-    auto rawVect = HMath::GetMatrix(raw, HMath::EOrientation::kVertical, fUseUnderflows);
+    auto rawVect = HMath::GetMatrix(raw, HMath::EOrient::kVertical, fUseUnderflows);
     const int n  = rawVect.GetNrows();
     std::vector<double> errors;
     int start = 1;

@@ -33,30 +33,15 @@ namespace Hal {
                      Double_t& a,
                      Double_t& b,
                      Double_t& c) {
-      TMatrixD AM(3, 3);
-      TMatrixD BM(3, 1);
-      AM[0][0] = 1;
-      AM[0][1] = x1;
-      AM[0][2] = x1 * x1;
-      AM[1][0] = 1;
-      AM[1][1] = x2;
-      AM[1][2] = x2 * x2;
-      AM[2][0] = 1;
-      AM[2][1] = x3;
-      AM[2][2] = x3 * x3;
+      const Double_t dx1 = x2 - x1;
+      const Double_t dx2 = x3 - x1;
 
-      BM[0][0] = y1;
-      BM[1][0] = y2;
-      BM[2][0] = y3;
+      const Double_t slope12 = (y2 - y1) / dx1;
+      const Double_t slope13 = (y3 - y1) / dx2;
 
-      TMatrixD SOL(3, 1);
-      AM = AM.InvertFast();
-
-      SOL = AM * BM;
-
-      c = SOL[0][0];
-      b = SOL[1][0];
-      a = SOL[2][0];
+      a = (slope13 - slope12) / (x3 - x2);
+      b = slope12 - a * (x1 + x2);
+      c = y1 - slope12 * x1 + a * x1 * x2;
     }
 
     Int_t SolveParabola(Double_t a, Double_t b, Double_t c, Double_t& x1, Double_t& x2) {
@@ -379,9 +364,9 @@ namespace Hal {
         return mResult;
       }
 
-      void NormalizeMatrix(TMatrixD& matrix, ENormalization opt) {
+      void NormalizeMatrix(TMatrixD& matrix, ENorm opt) {
         switch (opt) {
-          case ENormalization::kTotal: {
+          case ENorm::kTotal: {
             Double_t sum = 0;
             for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
               for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
@@ -392,7 +377,7 @@ namespace Hal {
             sum    = 1.0 / sum;
             matrix = matrix * sum;
           } break;
-          case ENormalization::kByRow: {
+          case ENorm::kByRow: {
             for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
               Double_t sum = 0;
               for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
@@ -404,7 +389,7 @@ namespace Hal {
               }
             }
           } break;
-          case ENormalization::kByColum: {
+          case ENorm::kByColum: {
             for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
               Double_t sum = 0;
               for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
@@ -420,7 +405,7 @@ namespace Hal {
         }
       }
 
-      TMatrixD GetMatrix(const TH1& h, EOrientation opt, Bool_t underflow) {
+      TMatrixD GetMatrix(const TH1& h, EOrient opt, Bool_t underflow) {
         Int_t size  = h.GetNbinsX();
         Int_t shift = 1;
         if (underflow) {
@@ -429,14 +414,14 @@ namespace Hal {
         }
 
         switch (opt) {
-          case EOrientation::kVertical: {
+          case EOrient::kVertical: {
             TMatrixD matrix(size, 1);
             for (int i = 0; i < size; i++) {
               matrix[i][0] = h.GetBinContent(shift + i);
             }
             return matrix;
           } break;
-          case EOrientation::kHorizontal: {
+          case EOrient::kHorizontal: {
             TMatrix matrix(1, size);
             for (int i = 0; i < size; i++) {
               matrix[0][i] = h.GetBinContent(shift + i);
@@ -476,8 +461,8 @@ namespace Hal {
         return vect;
       }
 
-      void DiagonalOnEmpty(TMatrixD& matrix, ENormalization opt, Double_t epsilon) {
-        if (opt == ENormalization::kByRow) {
+      void DiagonalOnEmpty(TMatrixD& matrix, ENorm opt, Double_t epsilon) {
+        if (opt == ENorm::kByRow) {
           for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
             double rowSum = 0;
             for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
@@ -485,7 +470,7 @@ namespace Hal {
             }
             if (TMath::Abs(rowSum) <= epsilon) { matrix[iRow][iRow] = 1; }
           }
-        } else if (opt == ENormalization::kByColum) {
+        } else if (opt == ENorm::kByColum) {
           for (int iCol = 0; iCol < matrix.GetNcols(); iCol++) {
             double colSum = 0;
             for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
@@ -506,6 +491,27 @@ namespace Hal {
             if (std::isnan(m[i][j])) m[i][j] = 0;
           }
         }
+      }
+
+      TH1D* GetHist1D(TMatrixD& matrix, Double_t min, Double_t max, Bool_t overflow) {
+        Int_t nMatrixBins = 0;
+        std::vector<double> vec;
+        if (matrix.GetNcols() == 1) {
+          nMatrixBins = matrix.GetNrows();
+          for (int i = 0; i < nMatrixBins; i++)
+            vec.push_back(matrix[i][0]);
+        } else {
+          nMatrixBins = matrix.GetNcols();
+          for (int i = 0; i < nMatrixBins; i++)
+            vec.push_back(matrix[0][i]);
+        }
+        TH1D* h = new TH1D("mhist", "mhist", overflow ? nMatrixBins - 2 : nMatrixBins, min, max);
+        h->SetDirectory(nullptr);
+        const Int_t shift = overflow ? 0 : 1;
+        for (int i = 0; i < nMatrixBins; i++) {
+          h->SetBinContent(i + shift, vec[i]);
+        }
+        return h;
       }
     }  // namespace Math
   }    // namespace Std

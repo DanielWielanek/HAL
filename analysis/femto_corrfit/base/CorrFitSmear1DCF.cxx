@@ -330,7 +330,7 @@ namespace Hal {
       }
     }
     Std::Math::DiagonalOnEmpty(smearMT);
-    Std::Math::NormalizeMatrix(smearMT, Std::Math::ENormalization::kByColum);
+    Std::Math::NormalizeMatrix(smearMT, Std::Math::ENorm::kByColum);
     auto rev    = smearMT.Invert();
     auto newDen = reversed * rev;
     TMatrixD reversedDen(nbins, 1);

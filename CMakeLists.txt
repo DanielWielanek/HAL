@@ -5,12 +5,12 @@ Set(HAL_MAJOR_VERSION 1)
 project(Hal)
 enable_language(Fortran)
 
-include(cmake/modules/HalPreConf.cmake)
-include(cmake/modules/CMakeListsExternal.cmake)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
-PrintConfig()
-SetHeaderVariables(${CMAKE_SOURCE_DIR})
-WriteConfig()
+include(HalEnv)
+include(HalMacros)
+include(HalPreConf)
+include(HalConfig)
 
 add_subdirectory (data)
 add_subdirectory (cuts) 

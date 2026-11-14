@@ -27,13 +27,13 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, ubuntu-24.04]
         build_type: [Release]
         c_compiler: [gcc, clang]
 
     steps:
     - name: Install ROOT (Linux)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04'
       shell: bash
       run: |
        sudo add-apt-repository -y universe
@@ -83,7 +83,7 @@ jobs:
       run: |
           find . -name "*.cpp" -o -name "*.h" -o -name "*.cxx" | xargs clang-format-15 -style=file -output-replacements-xml | grep -q "<replacement " && echo "Clang-format check failed" && exit 1 || echo "Clang-format check passed"
     - name: Build (Linux)
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04'
       shell: bash
       run: |
         source /opt/root/bin/thisroot.sh

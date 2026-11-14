@@ -12,22 +12,6 @@ ${HAL_CORE}/examples/onthefly/generators
 ${HAL_SPECTRA}
 )
 
-Set(SYSTEM_INCLUDE_DIRECTORIES
- ${ROOT_INCLUDE_DIR} 
- ${BASE_INCLUDE_DIRECTORIES}
-)
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
-
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
- 
-Link_Directories( ${LINK_DIRECTORIES})
-
 set(SRCS
 OTFComplexEvent.cxx
 OTFData.cxx
@@ -50,8 +34,6 @@ experiment/OTFMisidentification.cxx
 experiment/OTFMomentumSmearing.cxx
 )
 
-Set(HEADERS )
-Set(LINKDEF HalOTFLinkDef.h)
 Set(LIBRARY_NAME HalOTF)
 Set(DEPENDENCIES HalAna )
 

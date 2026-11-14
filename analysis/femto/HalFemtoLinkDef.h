@@ -105,10 +105,11 @@
 #pragma link C++ class Hal::FemtoSerializationInterface1D + ;
 #pragma link C++ class Hal::FemtoSerializationInterface3D + ;
 #pragma link C++ class Hal::FemtoSerializationInterfaceSH + ;
-#pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < FemtoSHCF, CorrFitVerticalSlicesSH> + ;
-#pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Femto1DCF, CorrFitVerticalSlices1D> + ;
-#pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Femto3DCF, CorrFitVerticalSlices3D> + ;
 //
+#pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Hal::Femto1DCF, Hal::CorrFitVerticalSlices1D> + ;
+#pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Hal::FemtoSHCF, Hal::CorrFitVerticalSlicesSH> + ;
+#pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Hal::Femto3DCF, Hal::CorrFitVerticalSlices3D> + ;
+
 
 #endif
 

@@ -12,109 +12,130 @@ Macro(PathInfo)
     EndIf(USE_PATH_INFO)
 EndMacro(PathInfo)
 
-Macro(FindDependencies)
 
+function(CHANGE_FILE_EXTENSION FILE_EXT1 FILE_EXT2 OUTVAR LIST)
+  if("${FILE_EXT1}" MATCHES "^\\*+(\\..*)$")
+    set(FILE_EXT1_NEW "${CMAKE_MATCH_1}")
+  else()
+    set(FILE_EXT1_NEW "${FILE_EXT1}")
+  endif()
 
-EndMacro(FindDependencies)
+  if("${FILE_EXT2}" MATCHES "^\\*+(\\..*)$")
+    set(FILE_EXT2_NEW "${CMAKE_MATCH_1}")
+  else()
+    set(FILE_EXT2_NEW "${FILE_EXT2}")
+  endif()
+
+  set(_result)
+
+  foreach(_current_FILE IN LISTS LIST)
+    string(REGEX REPLACE
+      "^(.*)${FILE_EXT1_NEW}$"
+      "\\1${FILE_EXT2_NEW}"
+      _new_file
+      "${_current_FILE}"
+    )
+    list(APPEND _result "${_new_file}")
+  endforeach()
+
+  set(${OUTVAR} "${_result}" PARENT_SCOPE)
+endfunction(CHANGE_FILE_EXTENSION)
+
+Function(GENERATE_EXECUTABLE EXE_NAME EXE_SRC DEPENDENCIES)
+
+  Add_Executable(${EXE_NAME} ${EXE_SRC})
+  target_link_libraries(${EXE_NAME} ${DEPENDENCIES})
+
+  if(DEFINED BIN_DESTINATION)
+    install(TARGETS ${EXE_NAME} DESTINATION ${BIN_DESTINATION})
+  else(DEFINED BIN_DESTINATION)
+    install(TARGETS ${EXE_NAME} DESTINATION bin)
+  endif(DEFINED BIN_DESTINATION)
+
+EndFunction(GENERATE_EXECUTABLE)
+
 
  ################################################################################
  #    Macro for building headers outside of include dir                         #
  ################################################################################
-Macro(GENERATE_LIBRARY_HAL)
+Function(GENERATE_LIBRARY_HAL)
+  Include_Directories(${INCLUDE_DIRECTORIES})
+  if(NOT LINKDEF)
+  	set(LINKDEF "${LIBRARY_NAME}LinkDef.h")
+  endif()
+  
+  if(NOT LIBRARY_NAME)
+    message(FATAL_ERROR "LIBRARY_NAME not defined in ${CMAKE_CURRENT_SOURCE_DIR}")
+  endif()
+  
+  set(Int_LIB ${LIBRARY_NAME})
 
-  # TODO: remove this backwards-compatibility check when no longer needed
-  if(DEFINED FAIRROOT_LIBRARY_PROPERTIES AND NOT DEFINED PROJECT_LIBRARY_PROPERTIES)
-    set(PROJECT_LIBRARY_PROPERTIES ${FAIRROOT_LIBRARY_PROPERTIES})
+  set(Int_SRCS ${SRCS})
+
+  if(NOT DICTIONARY)
+    set(DICTIONARY "${CMAKE_CURRENT_BINARY_DIR}/G__${Int_LIB}Dict")
+  elseif(NOT IS_ABSOLUTE "${DICTIONARY}")
+    set(DICTIONARY "${CMAKE_CURRENT_SOURCE_DIR}/${DICTIONARY}")
+  endif()
+
+  if(HEADERS)
+    set(HDRS ${HEADERS})
+  else()
+    CHANGE_FILE_EXTENSION(*.cxx *.h HDRS "${SRCS}")
+  endif(HEADERS)
+
+  if(INCLUDE_HAL_SUBIDIR)
+    install(FILES ${HDRS} DESTINATION include/Hal)
+  else()
+    install(FILES ${HDRS} DESTINATION include)
+  endif()
+  
+  if(LINKDEF)
+    if(IS_ABSOLUTE "${LINKDEF}")
+      set(Int_LINKDEF "${LINKDEF}")
+    else()
+      set(Int_LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/${LINKDEF}")
+    endif()
+
+    ROOT_GENERATE_DICTIONARY(${DICTIONARY} ${HDRS} LINKDEF ${Int_LINKDEF})
+
+    list(APPEND Int_SRCS ${DICTIONARY})
+
+    set_source_files_properties(${DICTIONARY} PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast")
   endif()
 
 
-
-  set(Int_LIB ${LIBRARY_NAME})
-
-  Set(HeaderRuleName "${Int_LIB}_HEADER_RULES")
-  Set(DictName "G__${Int_LIB}Dict.cxx")
-
-  If(NOT DICTIONARY)
-    Set(DICTIONARY ${CMAKE_CURRENT_BINARY_DIR}/${DictName})
-  EndIf(NOT DICTIONARY)
-
-  If( IS_ABSOLUTE ${DICTIONARY})
-    Set(DICTIONARY ${DICTIONARY})
-  Else( IS_ABSOLUTE ${DICTIONARY})
-    Set(Int_DICTIONARY ${CMAKE_CURRENT_SOURCE_DIR}/${DICTIONARY})
-  EndIf( IS_ABSOLUTE ${DICTIONARY})
-
-  Set(Int_SRCS ${SRCS})
-
-  If(HEADERS)
-    Set(HDRS ${HEADERS})
-  Else(HEADERS)
-    CHANGE_FILE_EXTENSION(*.cxx *.h HDRS "${SRCS}")
-  EndIf(HEADERS)
-
-  If(IWYU_FOUND)
-    Set(_INCLUDE_DIRS ${INCLUDE_DIRECTORIES} ${SYSTEM_INCLUDE_DIRECTORIES})
-    CHECK_HEADERS("${Int_SRCS}" "${_INCLUDE_DIRS}" ${HeaderRuleName})
-  EndIf(IWYU_FOUND)
-
-  If(INCLUDE_HAL_SUBIDIR)
-    install(FILES ${HDRS} DESTINATION include/Hal)
-  Else()
-    install(FILES ${HDRS} DESTINATION include)
-  Endif()
-  
-  
-  If(LINKDEF)
-    If( IS_ABSOLUTE ${LINKDEF})
-      Set(Int_LINKDEF ${LINKDEF})
-    Else( IS_ABSOLUTE ${LINKDEF})
-      Set(Int_LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/${LINKDEF})
-    EndIf( IS_ABSOLUTE ${LINKDEF})
-    ROOT_GENERATE_DICTIONARY()
-    SET(Int_SRCS ${Int_SRCS} ${DICTIONARY})
-    SET_SOURCE_FILES_PROPERTIES(${DICTIONARY}
-       PROPERTIES COMPILE_FLAGS "-Wno-old-style-cast"
-    )
-  EndIf(LINKDEF)
-
-
   If (ROOT_FOUND_VERSION LESS 59999)
-    ROOT_GENERATE_ROOTMAP()
+    #ROOT_GENERATE_ROOTMAP()
   EndIf()
 
-  set(Int_DEPENDENCIES)
-  foreach(d ${DEPENDENCIES})
-    get_filename_component(_ext ${d} EXT)
-    If(NOT _ext MATCHES a$)
-      set(Int_DEPENDENCIES ${Int_DEPENDENCIES} ${d})
-    Else()
-      Message("Found Static library with extension ${_ext}")
-      get_filename_component(_lib ${d} NAME_WE)
-      set(Int_DEPENDENCIES ${Int_DEPENDENCIES} ${_lib})
-    EndIf()
-  endforeach()
-
-  ############### build the library #####################
-  If(${CMAKE_GENERATOR} MATCHES Xcode)
-    Add_Library(${Int_LIB} SHARED ${Int_SRCS} ${NO_DICT_SRCS} ${HDRS} ${LINKDEF})
-  Else()
-    Add_Library(${Int_LIB} SHARED ${Int_SRCS} ${NO_DICT_SRCS} ${LINKDEF})
-  EndIf()
+  Add_Library(${Int_LIB} SHARED ${Int_SRCS} ${NO_DICT_SRCS} ${LINKDEF})
   
+  target_link_libraries(${Int_LIB} PUBLIC ${DEPENDENCIES})
 
-  target_link_libraries(${Int_LIB} ${Int_DEPENDENCIES})
-  set_target_properties(${Int_LIB} PROPERTIES ${PROJECT_LIBRARY_PROPERTIES})
-
-  ############### install the library ###################
   install(TARGETS ${Int_LIB} DESTINATION lib)
 
-  Set(LIBRARY_NAME)
-  Set(DICTIONARY)
-  Set(LINKDEF)
-  Set(SRCS)
-  Set(HEADERS)
-  Set(NO_DICT_SRCS)
-  Set(DEPENDENCIES)
+EndFunction(GENERATE_LIBRARY_HAL)
 
-EndMacro(GENERATE_LIBRARY_HAL)
+ ################################################################################
+ #    Write config files                                                        #
+ ################################################################################
 
+Function(GenerateConfig HAL HAL_PATH )
+	file(WRITE ${HAL} "#!/bin/bash\n")
+	file(APPEND ${HAL} "export PATH=$ENV{PATH}\n")
+	file(APPEND ${HAL} "export LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}\n")
+	file(APPEND ${HAL} "export HAL=${HAL_PATH}\n")
+	file(APPEND ${HAL} "export PATH=\$PATH:\$HAL/bin\n")
+	file(APPEND ${HAL} "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${HAL_PATH}/lib\n")
+	file(APPEND ${HAL} "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH::${HAL_PATH}/lib\n")
+	if(DEFINED JSROOT_DIR)
+	       file(APPEND ${HAL} "export JSROOT=${JSROOT_DIR}")
+	endif()
+EndFunction(GenerateConfig)
+
+Function(WriteConfig)
+	GenerateConfig(${CMAKE_BINARY_DIR}/config.sh ${CMAKE_BINARY_DIR})
+	GenerateConfig(${CMAKE_BINARY_DIR}/hal_config.sh ${CMAKE_INSTALL_PREFIX})
+	install(FILES ${CMAKE_BINARY_DIR}/hal_config.sh DESTINATION bin)
+EndFunction(WriteConfig)

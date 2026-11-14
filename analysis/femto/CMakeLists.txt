@@ -6,33 +6,9 @@
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -Wno-strict-aliasing")
 
 Set(INCLUDE_DIRECTORIES
-${HAL_DATA}
-${HAL_FEATURES}
-${HAL_ANA}
+${HAL_PHYS}
 ${HAL_HBT}
-${HAL_CUTS}
 )
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
-
-Include_Directories(
- ${INCLUDE_DIRECTORIES}
- ${GSL_INCLUDE_DIRS}
-)
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-Include_Directories(${GSL_DIR}/include)
-
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-  ${FAIRROOT_LIBRARY_DIR}
-)
- 
-Link_Directories(${LINK_DIRECTORIES})
 
 set(SRCS
 
@@ -111,19 +87,16 @@ set(EXT_HEADERS
 base/FemtoConst.h
 )
 
-Set(LINKDEF HalFemtoLinkDef.h)
-
-
 Set(LIBRARY_NAME HalFemto)
 
 
-Set(DEPENDENCIES HalAna Minuit Minuit2 Fumili)
+Set(DEPENDENCIES HalAna ROOT::Minuit ROOT::Minuit2 ROOT::Fumili)
 if(NOT DEFINED DISABLE_SQLITE)
    # Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
 endif()
 
 if (NOT DEFINED DISABLE_SQLITE)
-	Set(DEPENDENCIES ${DEPENDENCIES} SQLIO)
+	Set(DEPENDENCIES ${DEPENDENCIES} ROOT::SQLIO)
 endif()
 
 

@@ -8,22 +8,6 @@ if(WARNING_FLAGS)
     add_compile_options( ${MY_WARNINGS})
 endif()
 
-Set(SYSTEM_INCLUDE_DIRECTORIES
- ${ROOT_INCLUDE_DIR} 
- ${BASE_INCLUDE_DIRECTORIES}
-)
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
-
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
- 
-Link_Directories( ${LINK_DIRECTORIES})
-
 set(SRCS
 
 SubCut.cxx
@@ -150,8 +134,6 @@ cutmonitors/customized/TrackFlagMonitor.cxx
 cutmonitors/CutMonitorComplex.cxx
 )
 
-Set(HEADERS )
-Set(LINKDEF HalCutLinkDef.h)
 Set(LIBRARY_NAME HalCut)
 Set(DEPENDENCIES HalData)
 

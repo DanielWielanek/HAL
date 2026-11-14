@@ -2,25 +2,7 @@
 # the array .
 # The extension is already found.  Any number of sources could be listed here.
 
-Set(INCLUDE_DIRECTORIES
- ${HAL_FEATURES}
- ${GSL_INCLUDE_DIRS}
-)
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
- ${ROOT_INCLUDE_DIR} 
- ${BASE_INCLUDE_DIRECTORIES}
-)
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-  
-)
-
-link_directories( ${LINK_DIRECTORIES})
+Set(INCLUDE_DIRECTORIES ${HAL_FEATURES})
 
 set(SRCS
 Cout.cxx
@@ -111,14 +93,13 @@ minimizer/MultiDimMinuit.cxx
 minimizer/MultiDimMinimizerSquare.cxx
 
 )
-install(FILES ${EXT_HEADERS}
-        DESTINATION include
-       )
+install(FILES ${EXT_HEADERS} DESTINATION include )
 
-Set(HEADERS )
 Set(LINKDEF HalFeaturesLinkDef.h)
 Set(LIBRARY_NAME HalFeatures)
-Set(DEPENDENCIES Gui Core RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread XMLParser XMLIO SQLIO EG gsl gslcblas )
+Set(DEPENDENCIES ROOT::Gui ROOT::Core ROOT::RIO ROOT::Net ROOT::Hist ROOT::Graf ROOT::Graf3d ROOT::Gpad 
+  ROOT::Tree ROOT::Rint ROOT::Postscript ROOT::Matrix ROOT::Physics ROOT::MathCore 
+  ROOT::Thread ROOT::XMLParser ROOT::XMLIO ROOT::SQLIO ROOT::EG GSL::gsl GSL::gslcblas )
 
 
 if(WARNING_FLAGS)
@@ -138,32 +119,13 @@ Install(DIRECTORY hal_plus
 
 #making executables
 
+if(OpenMP_CXX_FOUND)
+   list(APPEND DEPENDENCIES ${GSL_LIBRARIES} HalFeatures ROOT::Tree HalAna HalFemto HalPhysFlow HalSpectra OpenMP::OpenMP_CXX)
+else()
+   list(APPEND DEPENDENCIES ${GSL_LIBRARIES} HalFeatures ROOT::Tree HalAna HalFemto HalPhysFlow HalSpectra)
+endif()
 
-Set(Exe_Names
-    hal-merger
-    hal-report
-    hal-jobs
-    hal-cmake)
-Set(Exe_Source
-    features_apps/hal_merger.cpp
-    features_apps/hal_report.cpp
-    features_apps/hal_jobs.cpp
-    features_apps/hal_cmake.cpp
-    )
-  List(LENGTH Exe_Names _length)
-  Math(EXPR _length ${_length}-1)
-  ForEach(_file RANGE 0 ${_length})
-    List(GET Exe_Names ${_file} _name)
-    List(GET Exe_Source ${_file} _src)
-    Set(EXE_NAME ${_name})
-    Set(SRCS ${_src})
-    if(OpenMP_CXX_FOUND)
-    	Set(DEPENDENCIES ${GSL_LIBRARIES} HalFeatures Tree HalAna HalFemto HalFlow HalSpectra OpenMP::OpenMP_CXX )
-    else()
-    	Set(DEPENDENCIES ${GSL_LIBRARIES} HalFeatures Tree HalAna HalFemto HalFlow HalSpectra )
-    endif()
-    GENERATE_EXECUTABLE()
-  EndForEach(_file RANGE 0 ${_length})
-
-
-
+GENERATE_EXECUTABLE(hal-merger features_apps/hal_merger.cpp "${DEPENDENCIES}")
+GENERATE_EXECUTABLE(hal-report features_apps/hal_report.cpp "${DEPENDENCIES}")
+GENERATE_EXECUTABLE(hal-jobs features_apps/hal_jobs.cpp "${DEPENDENCIES}")
+GENERATE_EXECUTABLE(hal-cmake features_apps/hal_cmake.cpp "${DEPENDENCIES}")

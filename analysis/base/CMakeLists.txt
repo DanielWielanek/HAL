@@ -8,19 +8,6 @@ ${HAL_CUTS}
 ${HAL_DATA}
 )
 
-Set(SYSTEM_INCLUDE_DIRECTORIES
- ${ROOT_INCLUDE_DIR} 
- ${BASE_INCLUDE_DIRECTORIES}
-)
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-link_directories( ${LINK_DIRECTORIES})
-
 Set(SRCS
 EventAna.cxx
 MemoryMapManager.cxx
@@ -42,8 +29,6 @@ on_the_fly/smear_codes/SmearAlgorithm.cxx
 on_the_fly/smear_codes/TrackSmearMomentumPercent.cxx
 )
 
-Set(HEADERS )
-Set(LINKDEF HalAnaLinkDef.h)
 Set(LIBRARY_NAME HalAna)
 Set(DEPENDENCIES HalCut)
 

@@ -6,37 +6,12 @@
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -Wno-strict-aliasing")
 
 Set(INCLUDE_DIRECTORIES
-${HAL_DATA}
-${HAL_FEATURES}
-${HAL_ANA}
+${HAL_PHYS}
 ${HAL_HBT}
-${HAL_CUTS}
 ${HAL_HBT_FIT}
 )
 
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
-
-Include_Directories(
- ${INCLUDE_DIRECTORIES}
- ${GSL_INCLUDE_DIRS}
-)
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-Include_Directories(${GSL_DIR}/include)
-
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-  ${FAIRROOT_LIBRARY_DIR}
-)
- 
-Link_Directories(${LINK_DIRECTORIES})
-
 set(SRCS
-
 
 base/CorrFit.cxx
 base/CorrFitMask.cxx
@@ -115,7 +90,7 @@ painters/CorrFit3DCFPainter.cxx
 )
 
 
-if(DEFINED CIA)
+if(CIA)
     Set(INCLUDE_DIRECTORIES
         ${INCLUDE_DIRECTORIES} top_secret
     )
@@ -144,8 +119,7 @@ if(DEFINED CIA)
     )
 endif()
 
-Set(HEADERS)
-if(DEFINED CIA)
+if(CIA) # we must set linkdef manually
     Set(LINKDEF HalFemtoCorrFitLinkDef2.h)
 else()
     Set(LINKDEF HalFemtoCorrFitLinkDef.h)
@@ -154,7 +128,7 @@ endif()
 Set(LIBRARY_NAME HalFemtoCorrFit)
 
 
-Set(DEPENDENCIES HalFemto HalAna Minuit Minuit2 Fumili)
+Set(DEPENDENCIES HalFemto HalAna ROOT::Minuit ROOT::Minuit2 ROOT::Fumili)
 if(OpenMP_CXX_FOUND)
 	Set(DEPENDENCIES ${DEPENDENCIES} OpenMP::OpenMP_CXX)
 endif()
@@ -163,18 +137,14 @@ if(NOT DEFINED DISABLE_SQLITE)
 endif()
 
 if (NOT DEFINED DISABLE_SQLITE)
-	Set(DEPENDENCIES ${DEPENDENCIES} SQLIO)
+	Set(DEPENDENCIES ${DEPENDENCIES} ROOT::SQLIO)
 endif()
 
 
 if(INCLUDE_HAL_SUBIDIR)
-install(FILES ${EXT_HEADERS}
-        DESTINATION include/Hal
-       )
+  install(FILES ${EXT_HEADERS} DESTINATION include/Hal)
 else()
-install(FILES ${EXT_HEADERS}
-        DESTINATION include
-       )
+  install(FILES ${EXT_HEADERS} DESTINATION include)
 endif()
 
 
@@ -185,22 +155,11 @@ GENERATE_LIBRARY_HAL()
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
-Set(Exe_Names
-    hal-corrfit)
-Set(Exe_Source
-    mapgenerator_multidim/hal_corrfit.cpp
-    )
-  List(LENGTH Exe_Names _length)
-  Math(EXPR _length ${_length}-1)
-  ForEach(_file RANGE 0 ${_length})
-    List(GET Exe_Names ${_file} _name)
-    List(GET Exe_Source ${_file} _src)
-    Set(EXE_NAME ${_name})
-    Set(SRCS ${_src})
-    Set(DEPENDENCIES gsl gslcblas HalData HalFeatures Tree EG HalAna HalFemto HalFemtoCorrFit)
-    if(OpenMP_CXX_FOUND)
-	Set(DEPENDENCIES ${DEPENDENCIES} OpenMP::OpenMP_CXX)
+Set(DEPENDENCIES GSL::gsl GSL::gslcblas HalData HalFeatures ROOT::Tree ROOT::EG HalAna HalFemto HalFemtoCorrFit)
+if(OpenMP_CXX_FOUND)
+  Set(DEPENDENCIES ${DEPENDENCIES} OpenMP::OpenMP_CXX)
 endif()
-    GENERATE_EXECUTABLE()
-  EndForEach(_file RANGE 0 ${_length})
+
+GENERATE_EXECUTABLE(hal-corrfit mapgenerator_multidim/hal_corrfit.cpp "${DEPENDENCIES}")
+
 

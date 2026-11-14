@@ -95,7 +95,14 @@ set(HAL_V0
 )
 set(HAL_FLUCTUATIONS
     ${HAL_CORE}/analysis/fluctuations
-_)
+)
+set(HAL_PHYS
+	${HAL_ANA}
+	${HAL_FEATURES}
+	${HAL_CUTS}
+	${HAL_DATA}
+)
+
 if(DEFINED CIA)
     add_compile_definitions(__CIA__)
     Set(HAL_HBT_FIT ${HAL_HBT_FIT} ${HAL_CORE}/analysis/femto_corrfit/top_secret)
@@ -150,7 +157,5 @@ Macro(InstallMimes HAL_CORE)
 	file(APPEND $ENV{HOME}/.root.mimes ${CONTENT_B})
 EndMacro(InstallMimes)
 
-if(NOT DEFINED INCLUDE_HAL_SUBDIR)
-  set(INCLUDE_HAL_SUBDIR FALSE)
-endif()
+
 

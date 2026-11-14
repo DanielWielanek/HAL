@@ -3,27 +3,9 @@
 # The extension is already found.  Any number of sources could be listed here.
 
 Set(INCLUDE_DIRECTORIES
-  ${HAL_DATA}
-  ${HAL_FEATURES}
-  ${HAL_ANA}
-  ${HAL_CUTS}
+  ${HAL_PHYS}
   ${HAL_CORE}/analysis/flow
 )
-
-Set(SYSTEM_INCLUDE_DIRECTORIES
- ${ROOT_INCLUDE_DIR} 
- ${BASE_INCLUDE_DIRECTORIES}
-)
-
-Include_Directories(${INCLUDE_DIRECTORIES})
-Include_Directories(SYSTEM ${SYSTEM_INCLUDE_DIRECTORIES})
-
-Set(LINK_DIRECTORIES
-  ${ROOT_LIBRARY_DIR}
-  ${GSL_LIBRARY_DIRS} 
-)
- 
-Link_Directories(${LINK_DIRECTORIES})
 
 # List of source files
 set(SRCS
@@ -33,10 +15,8 @@ set(SRCS
    SimpleVnAnalysis.cxx
 )
 
-Set(HEADERS )
-Set(LINKDEF HalPhysFlowLinkDef.h)
-Set(LIBRARY_NAME HalFlow)
-Set(DEPENDENCIES EG MathCore Physics Core HalAna )
+Set(LIBRARY_NAME HalPhysFlow)
+Set(DEPENDENCIES ROOT::EG ROOT::MathCore ROOT::Physics ROOT::Core HalAna )
 
 GENERATE_LIBRARY_HAL()
 

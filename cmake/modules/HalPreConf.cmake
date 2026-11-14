@@ -1,6 +1,7 @@
 #for test only
 #set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
+################# COMPILER CHECK ##############################
 if(NOT DEFINED CMAKE_CXX_STANDARD)
     Message(WARNING "CMAke standard not set, setting to 17")
     Set(CMAKE_CXX_STANDARD 17)
@@ -11,10 +12,9 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_L
       link_libraries(stdc++fs)
 endif()
 
-
 include(CheckCXXCompilerFlag)
 
-#check if simpath detected
+################# FLAG CHECK ##################################
 
 Set(USE_EXAMPLES FALSE)
 if(DEFINED EXAMPLES)
@@ -30,49 +30,25 @@ if(DEFINED  FULL_FLAGS)
 	endif()
 endif()
 
-find_package(OpenMP)
-if(OpenMP_CXX_FOUND)
-    add_compile_definitions(HAVE_OPENMP)
-    add_compile_options(${OpenMP_CXX_FLAGS})
-	add_link_options(${OpenMP_CXX_FLAGS})
-endif()
-
-set(MY_WARNINGS
-    -Wall
-    -Wextra
-    -Wreorder
-)
-
 if(DEFINED CIA)
-    add_compile_definitions(__CIA__ GLOBAL)
+    set(CIA TRUE)
+    add_compile_definitions(__CIA__)
+else()
+	set(CIA FALSE)
 endif()
 
 if(NOT DEFINED INCLUDE_HAL_SUBIDIR)
   Set(INCLUDE_HAL_SUBIDIR FALSE)
 endif()
 
-
-# SIMD stuff
+################# SIMD CHECK ##################################
 if(NOT DEFINED SIMD)
     set(SIMD OFF)
 endif()
-
-include(${CMAKE_CURRENT_LIST_DIR}/CheckSimd.cmake)
-	
-if(SIMD STREQUAL "OFF")
-	#scalar computing
-	add_compile_definitions(HAL_SIMD_FORCE_SCALAR)
-elseif(SIMD STREQUAL "ON")
-	#simd default
-	message(STATUS "Simple simd")
-elseif(SIMD STREQUAL "AUTO")
-	SETUP_HAL_SIMD()
-endif()
-
-
-
 	
 
-
-
-
+#set(MY_WARNINGS
+#    -Wall
+#    -Wextra
+#    -Wreorder
+#)

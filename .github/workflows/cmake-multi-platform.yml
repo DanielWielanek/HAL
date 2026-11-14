@@ -36,6 +36,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       shell: bash
       run: |
+       sudo add-apt-repository -y universe
        sudo apt-get update
        sudo apt-get install dpkg-dev cmake g++ gcc binutils libx11-dev libxpm-dev libxft-dev libxext-dev python3 libssl-dev \
        gcc pkg-config libwayland-dev libx11-dev libx11-xcb-dev libxkbcommon-x11-dev libgles2-mesa-dev \

@@ -160,8 +160,7 @@ namespace Hal {
 #if __cplusplus >= 201402L
     [[deprecated]]
 #endif
-    virtual void
-    SetCorrFctn(FemtoCorrFunc* h);
+    virtual void SetCorrFctn(FemtoCorrFunc* h);
     /**
      * set correlaction function
      * @param h correlaction function class

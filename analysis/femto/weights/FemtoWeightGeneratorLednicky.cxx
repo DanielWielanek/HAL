@@ -620,7 +620,7 @@ ClassImp(FemtoWeightGeneratorLednicky)
 #endif
   }
 
-  Bool_t FemtoWeightGeneratorLednicky::Init(Int_t task_id, FemtoPair * /*pair*/) {
+  Bool_t FemtoWeightGeneratorLednicky::Init(Int_t task_id, FemtoPair* /*pair*/) {
     FsiInit();
     fTaskID = task_id;
     return kTRUE;
@@ -806,7 +806,7 @@ ClassImp(FemtoWeightGeneratorLednicky)
     return Femto::EPairType::kUnknown;
   }
 
-  void FemtoWeightGeneratorLednicky::Print(Option_t * /*option*/) const {
+  void FemtoWeightGeneratorLednicky::Print(Option_t* /*option*/) const {
     Cout::Text(ClassName(), "L");
     Cout::Text(Femto::PairTypeToString(fPairType), "L");
     if (fIqs == 1) {

@@ -146,7 +146,7 @@ namespace Hal {
         else
           multfrom[iter] = 1;
       } else if (em > 0) {
-        indexfrom[iter] = (el * el) + (em) *2 - 1;
+        indexfrom[iter] = (el * el) + (em) * 2 - 1;
         if (im) indexfrom[iter]++;
         multfrom[iter] = 1;
       }

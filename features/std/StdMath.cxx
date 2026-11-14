@@ -514,5 +514,5 @@ namespace Hal {
         return h;
       }
     }  // namespace Math
-  }    // namespace Std
+  }  // namespace Std
 }  // namespace Hal

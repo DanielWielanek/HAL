@@ -101,15 +101,15 @@ namespace Hal {
           Double_t step_size = (Max - Min) / (Double_t(points - 1));
           if (points == 0) step_size = 0;
 #ifdef _MULTIDIM_DEBUG_
-          std::cout << "SET MAP STEPS " << par_name << "\t" << Min << " " << Max << " " << points << " "
-                    << " " << step_size << std::endl;
+          std::cout << "SET MAP STEPS " << par_name << "\t" << Min << " " << Max << " " << points << " " << " " << step_size
+                    << std::endl;
 #endif
           std::string Name = name.Data();
           min->SetLimitedVariable(i, Name, 0.5 * (Min + Max), step_size, Min, Max);
         } else {
 #ifdef _MULTIDIM_DEBUG_
-          std::cout << "SET FREE STEPS " << par_name << "\t" << GetParMin(i) << " " << GetParMax(i) << " " << points << " "
-                    << " " << 0.01 << std::endl;
+          std::cout << "SET FREE STEPS " << par_name << "\t" << GetParMin(i) << " " << GetParMax(i) << " " << points << " " << " "
+                    << 0.01 << std::endl;
 #endif
           min->SetLimitedVariable(i, par_name, 0.5 * (GetParMin(i) + GetParMax(i)), 0.01, GetParMin(i), GetParMax(i));
         }

@@ -33,6 +33,6 @@ namespace Hal {
 
 #endif
     }  // namespace OpenMP
-  }    // namespace Std
+  }  // namespace Std
 
 } /* namespace Hal */

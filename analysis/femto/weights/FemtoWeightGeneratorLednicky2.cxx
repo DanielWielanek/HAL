@@ -252,8 +252,8 @@ namespace Hal {
             tChargeFactor *= 1;
             break;                  // Gael 21May02
           default: fLL = 0; break;  // Gael 21May02
-        }                           // Gael 21May02
-        break;                      // Gael 21May02
+        }  // Gael 21May02
+        break;  // Gael 21May02
       default: fLL = 0; break;
     }
     if (tChargeFactor != fNuclChargeSign) {

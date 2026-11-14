@@ -52,7 +52,7 @@ namespace Hal {
        */
       TLorentzVector PtEtaM(Double_t pt, Double_t eta, Double_t m, Double_t phi = -100);
     }  // namespace LorentzGenerator
-  }    // namespace Std
+  }  // namespace Std
 }  // namespace Hal
 
 #endif /* HAL_FEATURES_STD_STDPHYS_H_ */

@@ -372,7 +372,7 @@ namespace Hal {
     //     return 0.0;
     //   if (arg > 0.4)
     long double eta = fTwopioverac / arg;
-    return (eta) *1.0 / (exp(eta) - 1.0);
+    return (eta) * 1.0 / (exp(eta) - 1.0);
     //   int bin = arg / 0.0002;
     //   double b1 = bin*0.0002 + 0.0001;
     //   double b2 = bin*0.0002 + 0.0003;
@@ -1013,14 +1013,11 @@ namespace Hal {
     GetFFsingle(ffplus);
 
     if (!std::isfinite(ffplus.re)) {
-      std::cout << "FFPlus Re not a number !"
-                << " " << std::endl;
+      std::cout << "FFPlus Re not a number !" << " " << std::endl;
       std::cout << fRStarS << " " << fKStar << " " << fRStarOutS << " " << fRStarSideS << " " << fRStarLongS << std::endl;
     }
 
-    if (!std::isfinite(ffplus.im))
-      std::cout << "FFPlus Im not a number !"
-                << " " << std::endl;
+    if (!std::isfinite(ffplus.im)) std::cout << "FFPlus Im not a number !" << " " << std::endl;
 
 
     return (Gamow(fabs(fKStar)) * modl2(ffplus));
@@ -1108,13 +1105,9 @@ namespace Hal {
     dcomplex tterm    = mult(expikrc2, mult(ffminus, ffplusc));
 
 
-    if (!std::isfinite(ffminus.re))
-      std::cout << "FFMinus Re not a number !"
-                << " " << ccase << std::endl;
+    if (!std::isfinite(ffminus.re)) std::cout << "FFMinus Re not a number !" << " " << ccase << std::endl;
 
-    if (!std::isfinite(ffminus.im))
-      std::cout << "FFMinus Im not a number !"
-                << " " << ccase << std::endl;
+    if (!std::isfinite(ffminus.im)) std::cout << "FFMinus Im not a number !" << " " << ccase << std::endl;
 
     if ((ffplus.re > 2.0) || (ffplus.re < -2.0)) std::cout << std::endl << "FFplus Re wild !" << ffplus.re << std::endl;
 

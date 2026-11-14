@@ -196,6 +196,6 @@ namespace Hal {
        */
       TH1D* GetHist1D(TMatrixD& matrix, Double_t min, Double_t max, Bool_t overflow = false);
     }  // namespace Math
-  }    // namespace Std
+  }  // namespace Std
 }  // namespace Hal
 #endif /* HAL_FEATURES_STD_HALSTDMATH_H_ */

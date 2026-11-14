@@ -43,7 +43,7 @@ namespace Hal {
        */
       bool HasMP();
     }  // namespace OpenMP
-  }    // namespace Std
+  }  // namespace Std
 
 } /* namespace Hal */
 

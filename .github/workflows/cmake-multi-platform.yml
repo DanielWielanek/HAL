@@ -81,7 +81,7 @@ jobs:
     - name: Format check (Linux)
       if: matrix.os == 'ubuntu-latest'
       run: |
-          find . -name "*.cpp" -o -name "*.h" -o -name "*.cxx" | xargs clang-format-15 -style=file -output-replacements-xml | grep -q "<replacement " && echo "Clang-format check failed" && exit 1 || echo "Clang-format check passed"
+          find . -name "*.cpp" -o -name "*.h" -o -name "*.cxx" | xargs clang-format-18 -style=file -output-replacements-xml | grep -q "<replacement " && echo "Clang-format check failed" && exit 1 || echo "Clang-format check passed"
     - name: Build (Linux)
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04'
       shell: bash

@@ -9,6 +9,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 include(HalEnv)
 include(HalMacros)
+include(CheckSimd)
 include(HalPreConf)
 include(HalConfig)
 

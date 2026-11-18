@@ -253,7 +253,7 @@ void mergeHorizontal() {
   Hal::Array_1<Float_t>* Data_in  = nullptr;
   chain->SetBranchAddress("data", &Data_in);
   tree->Branch("data", &Data_out);
-  int entries = chain->GetEntries() / nJobs;  // n_files *n_bins /nJobs(nbins) = n_files
+  // int entries = chain->GetEntries() / nJobs;  // n_files *n_bins /nJobs(nbins) = n_files
   chain->GetEntry(0);
   Data_out->MakeBigger(Data_in->GetSize() * nJobs);
   int single_size = Data_in->GetSize();
@@ -275,10 +275,10 @@ void mergeHorizontal() {
 void mergeVertical() {
   TFile* info_file      = new TFile("files/config.root");
   Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
-  bool vert             = obj->IsVertical();
-  auto CF               = obj->GetCf()->Clone();
+  // bool vert             = obj->IsVertical();
+  auto CF = obj->GetCf()->Clone();
   std::cout << "CF " << CF->ClassName() << std::endl;
-  auto cfType = Hal::Femto::GetCFType(CF);
+  // auto cfType = Hal::Femto::GetCFType(CF);
   int nSlices = Hal::Femto::GetNSlices(CF);
 
 
@@ -311,12 +311,12 @@ void mergeVertical() {
   Data_out->MakeBigger(slice_size * nSlices);
   Int_t percent = n_params / 100;
   if (percent == 0) percent = 1;
-  int total = chain->GetEntries();
+  // int total = chain->GetEntries();
   for (int iPar = 0; iPar < n_params; iPar++) {
-    int entrypos = 0;
+    // int entrypos = 0;
     for (int iBin = 0; iBin < nSlices; iBin++) {
       chain->GetEntry(iPar + n_params * iBin);
-      entrypos = iPar + n_params * iBin;
+      //  entrypos = iPar + n_params * iBin;
       for (int iS = 0; iS < slice_size; iS++) {
         int pos = iBin * slice_size + iS;
         Data_out->Set(pos, Data_in->Get(iS));
@@ -336,9 +336,9 @@ void compress(bool use_fake) {
   TFile* info_file      = new TFile("files/config.root");
   Hal::CorrFitInfo* obj = new Hal::CorrFitInfo(*(Hal::CorrFitInfo*) info_file->Get("Info"));
   auto CF               = (Hal::DividedHisto1D*) obj->GetCf()->Clone();
-  auto cfType           = Hal::Femto::GetCFType(CF);
-  TFile* fileIn         = new TFile("merged_map.root");
-  TTree* treeIn         = (TTree*) fileIn->Get("map");
+  // auto cfType           = Hal::Femto::GetCFType(CF);
+  TFile* fileIn = new TFile("merged_map.root");
+  TTree* treeIn = (TTree*) fileIn->Get("map");
 
   TFile* fileOut                  = new TFile("compressed_map.root", "recreate");
   TTree* treeOut                  = new TTree("map", "");

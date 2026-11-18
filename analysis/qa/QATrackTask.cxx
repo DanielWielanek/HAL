@@ -157,14 +157,14 @@ namespace Hal {
 
   void QATrackTask::SetEventCollectionNames(const std::initializer_list<TString>& init) {
     fEventColNames.clear();
-    for (auto const name : init) {
+    for (auto const& name : init) {
       fEventColNames.push_back(name);
     }
   }
 
   void QATrackTask::SetTrackCollectionNames(const std::initializer_list<TString>& init) {
     fTrackColNames.clear();
-    for (auto const name : init) {
+    for (auto const& name : init) {
       fTrackColNames.push_back(name);
     }
   }

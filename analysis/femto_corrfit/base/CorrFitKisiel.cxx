@@ -73,9 +73,9 @@ namespace Hal {
     auto colEn = [](Color_t Color) {
 #ifdef __linux__
       if (Color == kRed) {
-        std::cout << "\e[0;31m" << std::endl;
+        std::cout << "\033[0;31m" << std::endl;
       } else if (Color == kGreen) {
-        std::cout << "\e[0;32m" << std::endl;
+        std::cout << "\033[0;32m" << std::endl;
       }
 #endif
     };
@@ -115,7 +115,7 @@ namespace Hal {
       Cout::Database({id, txtRmin, txtRmax, txtRstep, txtKstarmin, txtKstarmax, txtKstardelta});
     }
 #ifdef __linux__
-    std::cout << "\e[0;0m" << std::endl;
+    std::cout << "\033[0;0m" << std::endl;
 #endif
     Cout::SetLineLenght(100);
   }

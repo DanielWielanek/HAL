@@ -298,31 +298,31 @@ namespace Hal {
 #ifdef __linux__
     switch (Color) {
       case kGray: {
-        return ("\e[0;30m");
+        return ("\033[0;30m");
       } break;
       case kRed: {
-        return ("\e[0;31m");
+        return ("\033[0;31m");
       } break;
       case kOrange: {
-        return ("\e[0;33m");
+        return ("\033[0;33m");
       } break;
       case kYellow: {
-        return ("\e[0;33m");
+        return ("\033[0;33m");
       } break;
       case kBlue: {
-        return ("\e[0;34m");
+        return ("\033[0;34m");
       } break;
       case kCyan: {
-        return ("\e[0;36m");
+        return ("\033[0;36m");
       } break;
       case kWhite: {
-        return ("\e[0;37m");
+        return ("\033[0;37m");
       } break;
       case kGreen: {
-        return ("\e[0;32m");
+        return ("\033[0;32m");
       } break;
       case kViolet: {
-        return ("\e[0;35m");
+        return ("\033[0;35m");
       } break;
       default: break;
     }

@@ -506,12 +506,14 @@ namespace Hal {
 
   Double_t CorrFit1DCFCumac::Get(Double_t q, Double_t r) {
     Double_t val[1];
-    val[0] = q;
-    Double_t params[GetParametersNo()];
+    val[0]           = q;
+    Double_t* params = new Double_t[GetParametersNo()];
     for (int i = 0; i < GetParametersNo(); i++)
       params[i] = GetParameter(i);
     FixParameter(RadiusID(), r);
-    return CalculateCF(val, params);
+    Double_t res = CalculateCF(val, params);
+    delete[] params;
+    return res;
   }
 
   Double_t CorrFit1DCFCumacStrong::CalculateCF(const Double_t* x, const Double_t* params) const {

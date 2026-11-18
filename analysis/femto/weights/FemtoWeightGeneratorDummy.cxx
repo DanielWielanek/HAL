@@ -33,7 +33,7 @@ namespace Hal {
     Double_t s           = 4. * (ak2 + mK2);
     Double_t U           = TMath::Sqrt(s);
     Double_t k1prim      = TMath::Sqrt(fKStar * fKStar + mK2 - mpi2);
-    Double_t e           = TMath::Sqrt(ak2 + mK2) * 2.0;
+    // Double_t e           = TMath::Sqrt(ak2 + mK2) * 2.0;
     /* Double_t k3prim =
        TMath::Sqrt(mpi2 * mpi2 - 2.0 * mpi2 * meta2 - 2.0 * e * e * mpi2 + meta2 * meta2 - 2.0 * e * e * meta2 + e * e * e * e)
        / (2.0 * e);*/

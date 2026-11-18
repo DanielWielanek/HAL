@@ -67,13 +67,13 @@ namespace Hal {
 
   Hal::Task::EInitFlag MultiplicityAna::Init() {
     auto status = Hal::TrackAna::Init();
-    if (fEventCollectionsNo != fEventNames.size()) {
+    if (fEventCollectionsNo != (int) fEventNames.size()) {
       Cout::PrintInfo("Incomatible numer of event groups and event labels", EInfo::kWarning);
       fEventNames.clear();
       for (int i = 0; i < fEventCollectionsNo; i++)
         fEventNames.push_back(Form("Event[%i]", i));
     }
-    if (fTrackCollectionsNo != fTrackNames.size()) {
+    if (fTrackCollectionsNo != (int) fTrackNames.size()) {
       Cout::PrintInfo("Incomatible numer of track groups and track labels", EInfo::kWarning);
       for (int i = 0; i < fTrackCollectionsNo; i++)
         fTrackNames.push_back(Form("Track[%i]", i));

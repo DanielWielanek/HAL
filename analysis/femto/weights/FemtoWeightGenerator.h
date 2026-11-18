@@ -90,7 +90,7 @@ namespace Hal {
      * @param aModel object to copy
      * @return new copy of class
      */
-    virtual FemtoWeightGenerator& operator=(const FemtoWeightGenerator& aModel);
+    FemtoWeightGenerator& operator=(const FemtoWeightGenerator& aModel);
     /**
      * return weight of pair
      * @param pair pair used for calculating weights

@@ -34,7 +34,7 @@ namespace Hal {
   }
 
   void CorrFitSmearingMath1DCF::DoMathSingleCore(Int_t nEvents, LorentzVectors data) {
-    Int_t threads           = Hal::Std::OpenMP::GetMaxThreads();
+    // Int_t threads           = Hal::Std::OpenMP::GetMaxThreads();
     Hal::FemtoPair* pair_re = Hal::Femto::MakePair(Hal::Femto::EKinematics::kPRF, false);
     Hal::FemtoPair* pair_mc = Hal::Femto::MakePair(Hal::Femto::EKinematics::kPRF, true);
     pair_re->SetPdgs(fPdg1, fPdg2);

@@ -59,7 +59,7 @@ namespace Hal {
     template<typename TEnum, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
     void SetF(TEnum bit, Float_t val) {
       SetFloatInner(static_cast<Int_t>(bit), val);
-    };
+    }
     /**
      * set integer
      * @tparam TEnum

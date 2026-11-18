@@ -244,7 +244,8 @@ namespace Hal {
   void CorrFitFunc3D::SwitchMode(e3DMode mode) {
     switch (mode) {
       case e3DMode::kNormal3R: {
-        if (GetParametersNo() < 5) throw std::out_of_range(("Using mode normal3 but less then 5 parameters in %s", ClassName()));
+        if (GetParametersNo() < 5)
+          throw std::out_of_range(Form("Using mode normal3 but less then 5 parameters in %s", ClassName()));
         fLambdaParIndex    = 4;
         fNormParIndex      = 3;
         fRoutParIndex      = 0;
@@ -257,7 +258,8 @@ namespace Hal {
         SetParameterName(fRlongParIndex, "R_{long}");
       } break;
       case e3DMode::kPlus3R: {
-        if (GetParametersNo() < 5) throw std::out_of_range(("Using mode plus3r but less then 5 parameters in %s", ClassName()));
+        if (GetParametersNo() < 5)
+          throw std::out_of_range(Form("Using mode plus3r but less then 5 parameters in %s", ClassName()));
         fLambdaParIndex    = 4;
         fNormParIndex      = 3;
         fRoutParIndex      = 0;
@@ -270,7 +272,8 @@ namespace Hal {
         SetParameterName(fRlongParIndex, "R_{#Delta long}");
       } break;
       case e3DMode::kRatio3R: {
-        if (GetParametersNo() < 5) throw std::out_of_range(("Using mode ratio3 but less then 5 parameters in %s", ClassName()));
+        if (GetParametersNo() < 5)
+          throw std::out_of_range(Form("Using mode ratio3 but less then 5 parameters in %s", ClassName()));
         fLambdaParIndex    = 4;
         fNormParIndex      = 3;
         fRoutParIndex      = 0;
@@ -283,7 +286,8 @@ namespace Hal {
         SetParameterName(fRlongParIndex, "R_{#times long}");
       } break;
       case e3DMode::kNormal6R: {
-        if (GetParametersNo() < 8) throw std::out_of_range(("Using mode normal6 but less then 8 parameters in %s", ClassName()));
+        if (GetParametersNo() < 8)
+          throw std::out_of_range(Form("Using mode normal6 but less then 8 parameters in %s", ClassName()));
         fLambdaParIndex    = 7;
         fNormParIndex      = 6;
         fRoutParIndex      = 0;
@@ -300,7 +304,8 @@ namespace Hal {
       } break;
 
       case e3DMode::kRatio6R: {
-        if (GetParametersNo() < 8) throw std::out_of_range(("Using mode ratio6 but less then 8 parameters in %s", ClassName()));
+        if (GetParametersNo() < 8)
+          throw std::out_of_range(Form("Using mode ratio6 but less then 8 parameters in %s", ClassName()));
         fLambdaParIndex    = 7;
         fNormParIndex      = 6;
         fRoutParIndex      = 0;
@@ -318,7 +323,8 @@ namespace Hal {
       } break;
 
       case e3DMode::kPlus6R: {
-        if (GetParametersNo() < 8) throw std::out_of_range(("Using mode plus6 but less then 8 parameters in %s", ClassName()));
+        if (GetParametersNo() < 8)
+          throw std::out_of_range(Form("Using mode plus6 but less then 8 parameters in %s", ClassName()));
         fLambdaParIndex    = 7;
         fNormParIndex      = 6;
         fRoutParIndex      = 0;

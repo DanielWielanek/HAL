@@ -177,7 +177,7 @@ namespace Hal {
             }
             fSimDenominator[j][0] = sumA;
           }
-          const int n = RecoDenominator.GetNrows();
+          //   const int n = RecoDenominator.GetNrows();
           TMatrixD corrected(RecoDenominator.GetNrows(), 1);
 
           for (int j = 0; j < RecoDenominator.GetNrows(); ++j)

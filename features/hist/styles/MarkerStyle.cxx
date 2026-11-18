@@ -58,7 +58,7 @@ namespace Hal {
     }
   }
 
-  void MarkerStyle::SetGlobal(TString opt) const {
+  void MarkerStyle::SetGlobal(TString /*opt*/) const {
     if (Find(EBitFlag::kColor)) gStyle->SetMarkerColor(GetI(EBitFlag::kColor));
     if (Find(EBitFlag::kStyle)) gStyle->SetMarkerStyle(GetI(EBitFlag::kStyle));
     if (Find(EBitFlag::kSize)) gStyle->SetMarkerSize(GetF(EBitFlag::kSize));

@@ -270,14 +270,14 @@ namespace Hal {
       } break;
       default: fPionac = 0; break;
     }
-    fOneoveracsq    = 1.0 / (fPionac * fPionac);
-    fTwopioverac    = 2.0 * TMath::Pi() / fPionac;
-    double tpaoverk = 0;
+    fOneoveracsq = 1.0 / (fPionac * fPionac);
+    fTwopioverac = 2.0 * TMath::Pi() / fPionac;
+    /*double tpaoverk = 0;
 
     for (int iter = 0; iter < 2000; iter++) {
       tpaoverk = fTwopioverac / (iter * 0.0002 + 0.0001);
-      //  gamov[iter] = tpaoverk * 1.0 / (exp(tpaoverk) - 1);
-    }
+      //  gamov[iter] = tpaoverk * 1.0 / (exp(tpaoverk) - 1); why commented?
+    }*/
   }
 
   void FemtoWeightGeneratorKisiel::PairKinematics(FemtoPair* pair) {

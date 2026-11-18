@@ -51,7 +51,7 @@ UEvent::UEvent() {
 
 
 //--------------------------------------------------------------------
-UEvent::UEvent(const UEvent& right) {
+UEvent::UEvent(const UEvent& right) : TObject(right) {
   // Copy constructor
   fEventNr   = right.fEventNr;
   fB         = right.fB;

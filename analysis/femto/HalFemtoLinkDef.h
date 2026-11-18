@@ -5,9 +5,10 @@
 #pragma link off all functions;
 
 #pragma link C++ namespace Hal::Femto;
-#pragma link C++ enum Hal::EFemtoPairType;
-#pragma link C++ enum Hal::EFitExtraMask;
+#pragma link C++ enum Hal::Femto::EPairType;
+#pragma link C++ enum Hal::Femto::ECFType;
 #pragma link C++ enum Hal::Femto::EKinematics;
+#pragma link C++ enum Hal::FemtoFreezeoutsAna::EMode;
 #pragma link C++ class Hal::Femto::CorrFitGammaCalc + ;
 
 #pragma link C++ class Hal::FemtoPair + ;
@@ -43,7 +44,7 @@
 #pragma link C++ class Hal::FemtoFreezeoutGeneratorPRF + ;
 #pragma link C++ class Hal::FemtoFreezeoutGeneratorLAB + ;
 #pragma link C++ class Hal::FemtoFreezeoutsAna + ;
-#pragma link C++ enum Hal::FemtoFreezeoutsAna::EMode;
+
 #pragma link C++ class Hal::FemtoEventBinsAna + ;
 #pragma link C++ class Hal::FemtoFastCutEta + ;
 #pragma link C++ class Hal::FemtoSourceDensity + ;

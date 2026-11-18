@@ -4,8 +4,6 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
-#pragma link C++ namespace Hal::Femto;
-
 #pragma link C++ class Hal::FemtoDumpPairAna + ;
 #pragma link C++ class Hal::CorrFitMapGroupConfig + ;
 #pragma link C++ class Hal::CorrFitDumpedPairAnaVertical + ;

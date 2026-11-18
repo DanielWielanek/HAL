@@ -37,7 +37,8 @@ namespace Hal {
     TLorentzVector fP;
     Int_t fID;
     Int_t fStatus;
-    Int_t fHiddenInfo;
+    Int_t fHiddenInfoIndex;
+    Int_t fHiddenInfoType;
     Int_t fMotherID;
     Int_t fThisID;
     UInt_t fType;
@@ -60,6 +61,7 @@ namespace Hal {
      * @return
      */
     Float_t GetV0IfPossible(Int_t fieldId) const;
+    HiddenTrackInfo* GetHiddenInfo() const;
 
   public:
     Track();
@@ -94,7 +96,7 @@ namespace Hal {
      * return position of hiddend data
      * @return
      */
-    inline Int_t GetHiddenInfoIndex() const { return fHiddenInfo; };
+    inline Int_t GetHiddenInfoIndex() const { return fHiddenInfoIndex; };
     /**
      *
      * @return track Px
@@ -215,11 +217,6 @@ namespace Hal {
      * @return charge of track
      */
     inline Double_t GetCharge() const { return fCharge; };
-    /**
-     *
-     * @return id of hidden info
-     */
-    inline Int_t GetHiddenInfoId() const { return fHiddenInfo; };
     /**
      *
      * @return track id
@@ -377,7 +374,7 @@ namespace Hal {
      *
      * @param vec indexes of needed other tracks
      */
-    virtual void SetLinks(std::vector<int>& vec);
+    // virtual void SetLinks(std::vector<int>& vec);
     /**
      * set event for this track
      * @param event

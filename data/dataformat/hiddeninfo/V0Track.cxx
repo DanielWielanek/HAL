@@ -13,9 +13,6 @@
 
 namespace Hal {
   V0Track::V0Track() :
-    fTrackId(-1),
-    fPosId(-1),
-    fNegId(-1),
     fAssumedPdg(0),
     fAssumedPdgPos(0),
     fAssumedPdgNeg(0),
@@ -67,10 +64,9 @@ namespace Hal {
 
   void V0Track::SetMomNeg(Double_t px, Double_t py, Double_t pz) { fMomNeg.SetXYZ(px, py, pz); }
 
-  void V0Track::CopyData(V0Track* v) {
-    fTrackId       = v->fTrackId;
-    fPosId         = v->fPosId;
-    fNegId         = v->fNegId;
+  void V0Track::CopyData(HiddenTrackInfo* vx) {
+    HiddenTrackInfo::CopyData(vx);
+    auto v         = (V0Track*) vx;
     fS1            = v->fS1;
     fS2            = v->fS2;
     fAlpha         = v->fAlpha;

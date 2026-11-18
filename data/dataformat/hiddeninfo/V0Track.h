@@ -14,18 +14,15 @@
 #include <TVector3.h>
 
 #include "Const.h"
-#include "HiddenInfo.h"
+#include "HiddenTrackInfo.h"
 
 /**
  * representation of V0 track
  */
 namespace Hal {
   class Track;
-  class V0Track : public HiddenInfo {
+  class V0Track : public HiddenTrackInfo {
   protected:
-    Int_t fTrackId;
-    Int_t fPosId;
-    Int_t fNegId;
     Int_t fAssumedPdg;
     Int_t fAssumedPdgPos;
     Int_t fAssumedPdgNeg;
@@ -46,17 +43,7 @@ namespace Hal {
      * copy content
      * @param v
      */
-    virtual void CopyData(V0Track* v);
-    /**
-     * set id of track in event
-     * @param id
-     */
-    void SetTrackId(Int_t id) { fTrackId = id; }
-    /**
-     * get id of track in event
-     * @return
-     */
-    inline Int_t GetTrackId() const { return fTrackId; }
+    virtual void CopyData(HiddenTrackInfo* v);
     /**
      *
      * @return assumed PDG of this particle
@@ -76,12 +63,12 @@ namespace Hal {
      *
      * @return index of negative daughter in track array
      */
-    Int_t GetNegId() const { return fNegId; }
+    Int_t GetNegId() const { return fData[1]; }
     /**
      *
      * @return index of positive daughter in track array
      */
-    Int_t GetPosId() const { return fPosId; }
+    Int_t GetPosId() const { return fData[2]; }
     /**
      *
      * @return armenteros alpha
@@ -134,12 +121,12 @@ namespace Hal {
      * set index of negative particle
      * @param negId
      */
-    void SetNegId(Int_t negId) { fNegId = negId; }
+    void SetNegId(Int_t negId) { fData[1] = negId; }
     /**
      * set index of positve particle
      * @param posId
      */
-    void SetPosId(Int_t posId) { fPosId = posId; }
+    void SetPosId(Int_t posId) { fData[2] = posId; }
     /**
      * set decay length
      * @param L

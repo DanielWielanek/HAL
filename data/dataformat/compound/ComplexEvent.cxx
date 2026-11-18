@@ -34,7 +34,7 @@ namespace Hal {
     fImgEvent->Update(source->GetReal());
     fRealEvent->Update(source->GetImag());
     Event::ShallowCopyEvent(fRealEvent);
-    fV0sHiddenInfo->Clear();
+    ClearHiddenInfo();
     if (fRealEvent->GetTotalTrackNo()) {
       fTotalTracksNo = fRealEvent->GetTotalTrackNo();
       fTracks->ExpandCreateFast(fTotalTracksNo);
@@ -94,7 +94,8 @@ namespace Hal {
     ComplexEvent* mc_event = (ComplexEvent*) event;
     fTotalTracksNo         = mc_event->fTracks->GetEntriesFast();
     fTracks->ExpandCreate(fTotalTracksNo);
-    fV0sHiddenInfo->ExpandCreateFast(fRealEvent->fV0sHiddenInfo->GetEntriesFast());
+    for (int i = 0; i < (int) fHiddenInfo.size(); i++)
+      fHiddenInfo[i]->ExpandCreateFast(fRealEvent->fHiddenInfo[i]->GetEntriesFast());
     for (int i = 0; i < fTotalTracksNo; i++) {
       ComplexTrack* to   = (ComplexTrack*) fTracks->UncheckedAt(i);
       ComplexTrack* from = (ComplexTrack*) mc_event->fTracks->UncheckedAt(i);

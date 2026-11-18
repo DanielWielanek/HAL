@@ -13,7 +13,7 @@
 #include <TObject.h>
 namespace Hal {
   class Track;
-  class HiddenInfo;
+  class HiddenTrackInfo;
 
   /**
    * class for storing pair of tracks
@@ -27,7 +27,7 @@ namespace Hal {
     Track* fTrack2          = {nullptr};
     PairType fType          = {PairType::kOther};
     Bool_t fSame            = {kTRUE};
-    HiddenInfo* fHiddenInfo = {nullptr};
+    HiddenTrackInfo* fHiddenInfo = {nullptr};
 
   public:
     TwoTrack();
@@ -82,7 +82,7 @@ namespace Hal {
      *
      * @return hidden info for pair (if available)
      */
-    inline HiddenInfo* GetHiddenInfo() const { return fHiddenInfo; }
+    inline HiddenTrackInfo* GetHiddenInfo() const { return fHiddenInfo; }
     /**
      * same if particles have the same type
      * @param same
@@ -92,7 +92,7 @@ namespace Hal {
      * set pair hidden info
      * @param info
      */
-    inline void SetHiddenInfo(HiddenInfo* info) { fHiddenInfo = info; };
+    inline void SetHiddenInfo(HiddenTrackInfo* info) { fHiddenInfo = info; };
     /**
      *
      * @return true if both particles are the same type

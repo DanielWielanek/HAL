@@ -52,14 +52,13 @@ namespace Hal {
     friend class SmearedEvent;
     friend class ComplexEvent;
     friend class Track;
-    Int_t fTotalV0s;
-    Int_t fTotalXis;
+    std::vector<TClonesArray*> fHiddenInfo;
+    std::vector<Int_t> fHiddenInfoCount;
 
   protected:
+    enum EHiddenInfoIndex { kV0 = 0, kXi = 1 };
     TDatabasePDG* fPDG;  //!
     TClonesArray* fTracks;
-    TClonesArray* fV0sHiddenInfo;
-    TClonesArray* fXisHiddenInfo;
     TLorentzVector* fVertex;
     Double_t fPhi, fPhiError;
     Int_t fEventId;
@@ -74,7 +73,7 @@ namespace Hal {
     /**
      * set total V0s to zero
      */
-    void ResetHiddenInfoCounter() { fTotalV0s = 0; };
+    void ResetHiddenInfoCounter();
     /**
      * copy into this event and source (if needed)
      * @param event event to copy
@@ -94,6 +93,16 @@ namespace Hal {
      * @param map_size size of map
      */
     void Compress(TClonesArray* array, const CompressionMap& map);
+    /**
+     * clear hidden info
+     * @param opt
+     */
+    void ClearHiddenInfo(TString opt = "");
+    /**
+     * copy hidden info's
+     * @param other
+     */
+    void CopyHiddenInfo(const Event* other);
     /**
      * copy only track data from "event" into this
      * @param event event to copy
@@ -122,16 +131,20 @@ namespace Hal {
      * @return true if all branches are present in tree
      */
     Bool_t CheckBranches(std::initializer_list<TString> list) const;
-
+    /**
+     * enables hidden info and increase the counter
+     * @param info
+     * @return index of hidden ifo
+     */
+    Int_t EnableHiddenInfo(Int_t info);
     /**
      * constructor used by derived classes
      * @param track_class name of track class, e.g. if you have MagicEvent
      * class with MagicTrack  your constructor should look like
      * MagicEvent():Event("MagicTrack"){... .
-     * @param v0_class - name of class with V0 data
-     * @param xi_class - name of class with Xi data
+     * @param hidden -names of hidden classes - note 0 and 1 corresponds to v0 and xi tracks respectively
      */
-    Event(TString track_class, TString v0_class = "Hal::V0Track", TString xi_class = "Hal::XiTrack");
+    Event(TString track_class, std::vector<TString> hidden = {"Hal::V0Track", "Hal::XiTrack"});
 
   public:
     /**
@@ -238,7 +251,7 @@ namespace Hal {
      *
      * @return total number of STORED V0
      */
-    inline Int_t GetTotalV0No() const { return fTotalV0s; };
+    inline Int_t GetTotalV0No() const { return fHiddenInfoCount[EHiddenInfoIndex::kV0]; };
     /**
      *
      * @return multiplicity of event
@@ -296,7 +309,7 @@ namespace Hal {
      *
      * @return pointer to hidden info
      */
-    inline TClonesArray* GetV0HiddenInfo() const { return fV0sHiddenInfo; };
+    inline TClonesArray* GetHiddenInfo(Int_t index) const { return fHiddenInfo[index]; };
     /**
      * default destructor
      */

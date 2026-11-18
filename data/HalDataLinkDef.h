@@ -49,7 +49,10 @@
 #pragma link C++ class Hal::TrackClones + ;
 #pragma link C++ class Hal::V0Track + ;
 #pragma link C++ class Hal::XiTrack + ;
-#pragma link C++ class Hal::HiddenInfo + ;
+#pragma link C++ class Hal::XiTrack2 + ;
+#pragma link C++ class Hal::XiTrack3 + ;
+#pragma link C++ class Hal::HiddenTrackInfo + ;
+#pragma link C++ class Hal::HiddenPairInfo + ;
 #pragma link C++ namespace Hal::DetectorID;
 #pragma link C++ namespace Hal::DataFieldID;
 

@@ -21,7 +21,16 @@
 namespace Hal {
 
   Track::Track() :
-    TObject(), fEvent(nullptr), fID(0), fStatus(0), fHiddenInfo(0), fMotherID(-1), fThisID(-1), fType(0), fCharge(0) {}
+    TObject(),
+    fEvent(nullptr),
+    fID(0),
+    fStatus(0),
+    fHiddenInfoIndex(0),
+    fMotherID(-1),
+    fThisID(-1),
+    fType(0),
+    fCharge(0),
+    fHiddenInfoType(-1) {}
 
   void Track::Print(Option_t* /*option*/) const {
     Cout::Database({"Px", "Py", "Pz"});
@@ -39,22 +48,19 @@ namespace Hal {
   }
 
   void Track::CopyData(Track* other) {
-    fP          = other->fP;
-    fID         = other->fID;
-    fStatus     = other->fStatus;
-    fMotherID   = other->fMotherID;
-    fCharge     = other->fCharge;
-    fType       = other->fType;
-    fHiddenInfo = -1;
-    if (IsV0()) {
-      fHiddenInfo = GetEvent()->fTotalV0s++;
-      V0Track* v0 = (V0Track*) GetEvent()->fV0sHiddenInfo->ConstructedAt(fHiddenInfo);
-      v0->CopyData(other->GetV0Info());
-    }
-    if (IsXi()) {
-      fHiddenInfo = GetEvent()->fTotalXis++;
-      XiTrack* xi = (XiTrack*) GetEvent()->fXisHiddenInfo->ConstructedAt(fHiddenInfo);
-      xi->CopyData(other->GetXiInfo());
+    fP               = other->fP;
+    fID              = other->fID;
+    fStatus          = other->fStatus;
+    fMotherID        = other->fMotherID;
+    fCharge          = other->fCharge;
+    fType            = other->fType;
+    fHiddenInfoIndex = -1;
+    fHiddenInfoType  = -1;
+    if (fHiddenInfoType >= 0) {
+      fHiddenInfoIndex = GetEvent()->EnableHiddenInfo(fHiddenInfoType);
+      auto info        = (HiddenTrackInfo*) GetEvent()->GetHiddenInfo(fHiddenInfoType)->UncheckedAt(fHiddenInfoIndex);
+      auto from = (HiddenTrackInfo*) other->GetEvent()->GetHiddenInfo(fHiddenInfoType)->UncheckedAt(other->fHiddenInfoIndex);
+      info->CopyData(from);
     }
   }
 
@@ -65,15 +71,16 @@ namespace Hal {
   }
 
   Track::Track(const Track& track) : TObject(track) {
-    fEvent      = track.fEvent;
-    fP          = track.fP;
-    fID         = track.fID;
-    fStatus     = track.fStatus;
-    fMotherID   = track.fMotherID;
-    fThisID     = track.fThisID;
-    fType       = track.fType;
-    fCharge     = track.fCharge;
-    fHiddenInfo = track.fHiddenInfo;
+    fEvent           = track.fEvent;
+    fP               = track.fP;
+    fID              = track.fID;
+    fStatus          = track.fStatus;
+    fMotherID        = track.fMotherID;
+    fThisID          = track.fThisID;
+    fType            = track.fType;
+    fCharge          = track.fCharge;
+    fHiddenInfoIndex = track.fHiddenInfoIndex;
+    fHiddenInfoType  = track.fHiddenInfoType;
   }
 
   std::vector<int> Track::GetLinks() const {
@@ -83,97 +90,69 @@ namespace Hal {
   }
 
   Int_t Track::GetLinksFast(std::vector<int>& vec, Bool_t fast) const {
-    if (fast) {
-      Int_t size  = 0;
-      vec[size++] = GetThisID();
-      if (IsGoodSecondary()) { vec[size++] = GetMotherIndex(); }
-      if (IsGoodV0()) {
-        V0Track* v0 = GetV0Info();
-        vec[size++] = v0->GetPosId();
-        vec[size++] = v0->GetNegId();
+    int count = 1;
+    std::array<int, 20> links;
+    links[0] = GetThisID();
+    if (IsGoodSecondary()) { links[count++] = GetMotherIndex(); }
+    if (fHiddenInfoType >= 0) {
+      auto linksHidden = GetHiddenInfo()->GetLinks();
+      // first link is to this track so copy from one, copy only positive
+      for (int i = 1; i < (int) linksHidden.size(); i++) {
+        if (linksHidden[i] >= 0) links[count++] = linksHidden[i];
       }
-      if (IsGoodXi()) {
-        XiTrack* xi  = GetXiInfo();
-        vec[size++]  = xi->GetV0Id();
-        vec[size++]  = xi->GetChId();
-        int v0id     = xi->GetV0Id();
-        auto v0track = GetEvent()->GetTrack(v0id);
-        if (v0track->IsGoodV0()) {
-          V0Track* v0 = v0track->GetV0Info();
-          vec[size++] = v0->GetPosId();
-          vec[size++] = v0->GetNegId();
-        }
-      }
-      return size;
-    } else {
-      vec.push_back(GetThisID());
-      if (IsGoodSecondary()) vec.push_back(GetMotherIndex());
-      if (IsGoodV0()) {
-        vec.push_back(GetV0Info()->GetPosId());
-        vec.push_back(GetV0Info()->GetNegId());
-      }
-      if (IsGoodXi()) {
-        XiTrack* xi = GetXiInfo();
-        vec.push_back(xi->GetV0Id());
-        vec.push_back(xi->GetChId());
-        auto v0track = GetEvent()->GetTrack(xi->GetV0Id());
-        if (v0track->IsGoodV0()) {
-          V0Track* v0 = v0track->GetV0Info();
-          vec.push_back(v0->GetPosId());
-          vec.push_back(v0->GetNegId());
-        }
-      }
-      return (int) vec.size();
     }
+    if (fast) {
+      for (int i = 0; i < count; i++) {
+        vec[i] = links[i];
+      }
+    } else {
+      for (int i = 0; i < count; i++) {
+        vec.push_back(links[i]);
+      }
+    }
+    return count;
   }
 
   void Track::TranslateLinks(const CompressionMap& map) {
     if (IsGoodSecondary()) { SetMotherIndex(map.GetNewIndex(GetMotherIndex())); }
-    if (IsGoodV0()) {
-      auto v0Info = GetV0Info();
-      v0Info->SetPosId(map.GetNewIndex(GetV0Info()->GetPosId()));
-      v0Info->SetNegId(map.GetNewIndex(GetV0Info()->GetNegId()));
-      v0Info->SetTrackId(GetThisID());
-    }
-    if (IsGoodXi()) {
-      auto xiInfo = GetXiInfo();
-      xiInfo->SetV0Id(map.GetNewIndex(GetXiInfo()->GetV0Id()));
-      xiInfo->SetChId(map.GetNewIndex(GetXiInfo()->GetChId()));
-      xiInfo->SetTrackId(GetThisID());
+    if (fHiddenInfoType >= 0) {
+      auto info = GetHiddenInfo();
+      info->TranslateLinks(map);
     }
   }
-
-  void Track::SetLinks(std::vector<int>& vec) {
-    this->SetThisID(vec[0]);
-    if (IsGoodSecondary()) {
-      SetMotherIndex(vec[1]);
+  /*
+    void Track::SetLinks(std::vector<int>& vec) {
+      int shift = 0;
+      this->SetThisID(vec[shift++]);
+      if (IsGoodSecondary()) { SetMotherIndex(vec[shift++]); }
       if (IsGoodV0()) {
         auto v0Info = GetV0Info();
         v0Info->SetTrackId(GetThisID());
-        v0Info->SetPosId(vec[2]);
-        v0Info->SetNegId(vec[3]);
+        v0Info->SetPosId(vec[shift++]);
+        v0Info->SetNegId(vec[shift++]);
       }
+
       if (IsGoodXi()) {
         auto xiInfo = GetXiInfo();
         xiInfo->SetTrackId(GetThisID());
-        xiInfo->SetV0Id(vec[2]);
-        xiInfo->SetChId(vec[3]);
+        xiInfo->SetBachelorId(vec[shift++]);
+        int type = xiInfo->GetType();
+        switch (type) {
+          case 2: {
+            auto xInfo2 = (Hal::XiTrack2*) xiInfo;
+            xInfo2->SetV0Id(vec[shift++]);
+          } break;
+          case 3: {
+            auto xInfo3 = (Hal::XiTrack3*) xiInfo;
+            xInfo3->SetGranddau1Id(vec[shift++]);
+            xInfo3->SetGranddau2Id(vec[shift++]);
+          } break;
+          default: {
+
+          } break;
+        }
       }
-    } else {
-      if (IsGoodV0()) {
-        auto v0Info = GetV0Info();
-        v0Info->SetTrackId(GetThisID());
-        v0Info->SetPosId(vec[1]);
-        v0Info->SetNegId(vec[2]);
-      }
-      if (IsGoodXi()) {
-        auto v0Info = GetXiInfo();
-        v0Info->SetTrackId(GetThisID());
-        v0Info->SetV0Id(vec[1]);
-        v0Info->SetChId(vec[2]);
-      }
-    }
-  }
+    }*/
 
   void Track::SetMass(Double_t mass) {
     Double_t p = GetMomentum().P();
@@ -193,12 +172,12 @@ namespace Hal {
   void Track::EnableV0(Bool_t v0, Bool_t good) {
     if (v0) {
       SETBIT(fType, kV0);
+      fHiddenInfoType  = Event::EHiddenInfoIndex::kV0;
+      fHiddenInfoIndex = fEvent->EnableHiddenInfo(fHiddenInfoType);
       if (good)
         SETBIT(fType, kV0Daughters);
       else
         CLRBIT(fType, kV0Daughters);
-      fHiddenInfo = fEvent->fTotalV0s;
-      fEvent->fV0sHiddenInfo->ConstructedAt(fEvent->fTotalV0s++);
     } else {
       CLRBIT(fType, kV0);
     }
@@ -294,26 +273,28 @@ namespace Hal {
   }
 
   void Track::Clear(Option_t* /*opt*/) {
-    fMotherID   = -1;
-    fHiddenInfo = -1;
-    fThisID     = -1;
-    fType       = 0;
-    fEvent      = nullptr;
-    fID         = -1;
+    fMotherID        = -1;
+    fHiddenInfoIndex = -1;
+    fHiddenInfoType  = -1;
+    fThisID          = -1;
+    fType            = 0;
+    fEvent           = nullptr;
+    fID              = -1;
   }
 
   V0Track* Track::GetV0Info() const {
     if (!TESTBIT(fType, kV0)) return nullptr;
-    return (V0Track*) fEvent->fV0sHiddenInfo->UncheckedAt(fHiddenInfo);
+    return (V0Track*) fEvent->fHiddenInfo[Event::EHiddenInfoIndex::kV0]->UncheckedAt(fHiddenInfoIndex);
   }
 
   void Track::ResetTrack(Int_t thisID, Event* event) {
-    fMotherID   = -1;
-    fHiddenInfo = -1;
-    fThisID     = thisID;
-    fType       = 0;
-    fEvent      = event;
-    fID         = -1;
+    fMotherID        = -1;
+    fHiddenInfoIndex = -1;
+    fHiddenInfoType  = -1;
+    fThisID          = thisID;
+    fType            = 0;
+    fEvent           = event;
+    fID              = -1;
   }
 
   Float_t Track::GetV0IfPossible(Int_t fieldId) const {
@@ -342,12 +323,12 @@ namespace Hal {
   void Track::EnableXi(Bool_t xi, Bool_t good) {
     if (xi) {
       SETBIT(fType, kXi);
+      fHiddenInfoType  = Event::EHiddenInfoIndex::kXi;
+      fHiddenInfoIndex = fEvent->EnableHiddenInfo(fHiddenInfoType);
       if (good)
         SETBIT(fType, kXiDaughters);
       else
         CLRBIT(fType, kXiDaughters);
-      fHiddenInfo = fEvent->fTotalXis;
-      fEvent->fXisHiddenInfo->ConstructedAt(fEvent->fTotalXis++);
     } else {
       CLRBIT(fType, kXi);
     }
@@ -355,7 +336,11 @@ namespace Hal {
 
   XiTrack* Track::GetXiInfo() const {
     if (!TESTBIT(fType, kXi)) return nullptr;
-    return (XiTrack*) fEvent->fXisHiddenInfo->UncheckedAt(fHiddenInfo);
+    return (XiTrack*) fEvent->GetHiddenInfo(Event::EHiddenInfoIndex::kXi)->UncheckedAt(fHiddenInfoIndex);
+  }
+
+  HiddenTrackInfo* Track::GetHiddenInfo() const {
+    return (HiddenTrackInfo*) fEvent->GetHiddenInfo(fHiddenInfoType)->UncheckedAt(fHiddenInfoIndex);
   }
 
 }  // namespace Hal

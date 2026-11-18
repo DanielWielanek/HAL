@@ -17,13 +17,13 @@ class TH2D;
 class TLine;
 namespace Hal {
   class ChiSqMap2D : public TObject {
-    TH2D* fHist;
-    TLine* fLineX;
-    TLine* fLineY;
-    TLine* fLineXlow;
-    TLine* fLineXhigh;
-    TLine* fLineYlow;
-    TLine* fLineYhigh;
+    TH2D* fHist       = {nullptr};
+    TLine* fLineX     = {nullptr};
+    TLine* fLineY     = {nullptr};
+    TLine* fLineXlow  = {nullptr};
+    TLine* fLineXhigh = {nullptr};
+    TLine* fLineYlow  = {nullptr};
+    TLine* fLineYhigh = {nullptr};
     TString fLabel;
     void DrawLineX(TLine* l);
     void DrawLineY(TLine* l);

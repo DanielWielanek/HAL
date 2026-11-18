@@ -25,15 +25,7 @@
 #include <cfloat>
 
 namespace Hal {
-  ChiSqMap2D::ChiSqMap2D() :
-    fHist(NULL),
-    fLineX(NULL),
-    fLineY(NULL),
-    fLineXlow(NULL),
-    fLineXhigh(NULL),
-    fLineYlow(NULL),
-    fLineYhigh(NULL),
-    fLabel("#chi/NDF") {}
+  ChiSqMap2D::ChiSqMap2D() : fLabel("#chi/NDF") {}
 
   ChiSqMap2D::ChiSqMap2D(TString name, Int_t xbins, Double_t xlow, Double_t xhigh, Int_t ybins, Double_t ylow, Double_t yhigh) :
     ChiSqMap2D() {

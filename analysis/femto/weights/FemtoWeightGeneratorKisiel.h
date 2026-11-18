@@ -11,6 +11,7 @@
 
 #include "FemtoWeightGenerator.h"
 
+#include <cmath>
 /**
  * code for FSI based on A. Kisiel TPI software - TODO TEST THIS CODE!
  */
@@ -42,7 +43,7 @@ namespace Hal {
     dcomplex mult(const dcomplex& arga, long double argb) const;
     dcomplex mult(const dcomplex& arga, const dcomplex& argb) const;
     long double modl2(dcomplex arg) const { return arg.re * arg.re + arg.im * arg.im; };
-    long double modl(dcomplex arg) const { return hypot(arg.re, arg.im); };
+    long double modl(dcomplex arg) const { return std::hypot(arg.re, arg.im); };
     dcomplex invr(dcomplex arg) const {
       dcomplex res;
 
@@ -82,8 +83,10 @@ namespace Hal {
     long double GetH(long double eta) const;
     void Getfc(long double kstar, long double eta, long double hfun, dcomplex& fcs, dcomplex& fct) const;  // TODO
     void Bfunpfun(long double eta, long double rho, long double& bret, long double& pret) const;
-    double Funeh(double xarg, double rad, double alfa) const { return exp(-sqrt(xarg * xarg / (rad * rad) + alfa * alfa)); }
-    double Funex(double xarg, double rad) const { return exp(-xarg / rad); }
+    double Funeh(double xarg, double rad, double alfa) const {
+      return std::exp(-std::sqrt(xarg * xarg / (rad * rad) + alfa * alfa));
+    }
+    double Funex(double xarg, double rad) const { return std::exp(-xarg / rad); }
     void InitializeGamow();
     void PairKinematics(FemtoPair* pair);
     double GetCoulomb();

@@ -1,5 +1,7 @@
 #include "Array.h"
 #include <iostream>
+#include <limits>
+
 namespace Hal {
   template<typename T>
   void Array_1<T>::MakeBigger(Int_t new_dim) {

@@ -14,6 +14,7 @@
 #include <TH3.h>
 #include <TNamed.h>
 #include <algorithm>
+#include <cmath>
 #include <vector>
 
 namespace Hal {

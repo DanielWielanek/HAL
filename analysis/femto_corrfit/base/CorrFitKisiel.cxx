@@ -70,15 +70,7 @@ namespace Hal {
                     Form("%4.3f", kstarMax),
                     Form("%4.3f", kstarDx)});
 
-    auto colEn = [](Color_t Color) {
-#ifdef __linux__
-      if (Color == kRed) {
-        std::cout << "\033[0;31m" << std::endl;
-      } else if (Color == kGreen) {
-        std::cout << "\033[0;32m" << std::endl;
-      }
-#endif
-    };
+    auto colEn = [](Color_t Color) { std::cout << Hal::Cout::GetColor(Color) << std::endl; };
 
 
     for (unsigned int i = 0; i < fMaps.size(); i++) {
@@ -114,9 +106,7 @@ namespace Hal {
       TString txtKstardelta = Form("%4.3f", (Kmax - Kmin) / Kbins);
       Cout::Database({id, txtRmin, txtRmax, txtRstep, txtKstarmin, txtKstarmax, txtKstardelta});
     }
-#ifdef __linux__
-    std::cout << "\033[0;0m" << std::endl;
-#endif
+    std::cout << Cout::GetDisableColor() << std::endl;
     Cout::SetLineLenght(100);
   }
 

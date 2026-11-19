@@ -45,7 +45,7 @@ namespace Hal {
     fVertex = new TLorentzVector();
     fTracks = new TClonesArray(track_class);
     if (hidden.size() < 2) {
-      throw std::invalid_argument("Wrong array of hidden vectors in Event constructor at least two need!!");
+      throw std::invalid_argument("Wrong array of hidden vectors in Event constructor at least two needed!!");
     }
     for (auto i : hidden) {
       fHiddenInfo.push_back(new TClonesArray(i));

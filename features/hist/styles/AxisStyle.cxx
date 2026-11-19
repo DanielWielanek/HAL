@@ -13,6 +13,7 @@
 #include <TString.h>
 #include <TStyle.h>
 
+#include "StdString.h"
 #include "XMLNode.h"
 
 namespace Hal {
@@ -371,6 +372,31 @@ namespace Hal {
       default: break;
     }
     return "";
+  }
+
+  AxisStyle::AxisStyle(TString style) : AxisStyle(false) {
+    auto setAx = [&](Double_t _titleSize, Double_t _titleOffset, Double_t _labelSize, Double_t _labelOffset) {
+      SetTitleSize(_titleSize);
+      SetTitleOffset(_titleOffset);
+      SetLabelOffset(_labelOffset);
+      SetLabelSize(_labelSize);
+    };
+    if (Hal::Std::FindParam(style, "center", kTRUE)) { SetCenterTitle(true); }
+    if (Hal::Std::FindParam(style, "apollo", kTRUE)) {
+      SetLabelSize(0.04);
+      SetCenterTitle(kTRUE);
+      SetTitleFont(82);
+      SetLabelFont(82);
+      SetNdivisions(505, kTRUE);
+    }
+    if (Hal::Std::FindParam(style, "black", kTRUE)) {
+      SetLabelColor(kWhite);
+      SetTitleColor(kWhite);
+      SetAxisColor(kWhite);
+    }
+    if (Hal::Std::FindParam(style, "05", kTRUE)) { setAx(0.05, 0.8, 0.05, 0.005); }
+    if (Hal::Std::FindParam(style, "06", kTRUE)) { setAx(0.06, 0.86, 0.06, 0.005); }
+    if (Hal::Std::FindParam(style, "07", kTRUE)) { setAx(0.06, 0.9, 0.07, 0.005); }
   }
 
 } /* namespace Hal */

@@ -40,6 +40,7 @@ namespace Hal {
     if (x == 'z' || x == 'Z') return fZAxis;
     return fXAxis;
   }
+
   void HistoStyle::ExportToXML(XMLNode& node) const {
     if (Find(EBitFlag::kTitle)) node.AddAttrib("Title", fTitle);
     if (Find(EBitFlag::kMin)) node.AddAttrib("Min", Form("%4.4f", GetF(EBitFlag::kMin)));
@@ -246,50 +247,10 @@ namespace Hal {
     }
   }
 
-  HistoStyle::HistoStyle(TString style) : Style(style) {
+  HistoStyle::HistoStyle(TString style) :
+    Style(style), fXAxis(style), fYAxis(style), fZAxis(style), fMarker(style), fLine(style) {
     if (style.Length() == 0) return;
     if (Hal::Std::FindParam(style, "circle", kTRUE)) GetMarkerStyle().SetStyle(kFullCircle);
-    if (Hal::Std::FindParam(style, "center", kTRUE)) {
-      CenterTitle(kTRUE, 'x');
-      CenterTitle(kTRUE, 'y');
-      CenterTitle(kTRUE, 'z');
-    }
-    if (Hal::Std::FindParam(style, "apollo", kTRUE)) {
-      char opt[] = {'x', 'y', 'z'};
-      for (int i = 0; i < 3; i++) {
-        GetAxisStyle(opt[i]).SetLabelSize(0.04);
-        GetAxisStyle(opt[i]).SetCenterTitle(kTRUE);
-        GetAxisStyle(opt[i]).SetTitleFont(82);
-        GetAxisStyle(opt[i]).SetLabelFont(82);
-        GetAxisStyle(opt[i]).SetNdivisions(505, kTRUE);
-      }
-      SetColor(kBlack);
-    }
-    if (Hal::Std::FindParam(style, "05", kTRUE)) {
-      SetAxis(0.05, 0.8, 0.05, 0.005, 'x');
-      SetAxis(0.05, 0.8, 0.05, 0.005, 'y');
-      SetAxis(0.05, 0.8, 0.05, 0.005, 'z');
-    }
-    if (Hal::Std::FindParam(style, "06", kTRUE)) {
-      SetAxis(0.06, 0.86, 0.06, 0.005, 'x');
-      SetAxis(0.06, 0.8, 0.06, 0.005, 'y');
-      SetAxis(0.06, 0.8, 0.06, 0.005, 'z');
-    }
-    if (Hal::Std::FindParam(style, "07", kTRUE)) {
-      SetAxis(0.06, 0.9, 0.07, 0.005, 'x');
-      SetAxis(0.06, 0.8, 0.07, 0.005, 'y');
-      SetAxis(0.06, 0.8, 0.07, 0.005, 'z');
-    }
-    if (Hal::Std::FindParam(style, "black", kTRUE)) {
-      auto SetColor = [&](Char_t x, Color_t col) {
-        GetAxisStyle(x).SetLabelColor(col);
-        GetAxisStyle(x).SetTitleColor(col);
-        GetAxisStyle(x).SetAxisColor(col);
-      };
-      SetColor('x', kWhite);
-      SetColor('y', kWhite);
-      SetColor('z', kWhite);
-    }
     if (Hal::Std::FindParam(style, "color", kTRUE)) SetColor(kRed);
   }
 

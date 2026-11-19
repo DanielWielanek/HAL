@@ -45,6 +45,8 @@ namespace Hal {
       kHideHigh
     };
 
+    AxisStyle(TString style);
+
     AxisStyle(Bool_t skipTitle = kTRUE);
 
     AxisStyle(Double_t titleSize, Double_t labelSize, Double_t titleOffset, Double_t labelOffset);

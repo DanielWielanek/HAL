@@ -33,11 +33,14 @@ namespace Hal {
 
     void ImportFromXML(const XMLNode& node);
 
+    void ApplyDirect(TAttFill& fill) const;
+
     template<class T>
     void Apply(T& x) const;
 
     template<class T>
     void Import(const T& x);
+
     virtual void SetGlobal(TString opt = "") const;
     virtual ~FillStyle() {};
     ClassDef(FillStyle, 1);

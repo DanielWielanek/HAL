@@ -17,7 +17,7 @@ namespace Hal {
   class LineStyle : public Style {
   public:
     enum class EBitFlag : Int_t { kColor, kWidth, kStyle };
-    LineStyle() {};
+    LineStyle(TString style = "");
 
     void SetColor(Int_t val);
 
@@ -41,6 +41,7 @@ namespace Hal {
 
     template<class T>
     void Import(const T& obj);
+    void ApplyDirect(TAttLine& line) const;
     virtual void SetGlobal(TString opt = "") const;
     virtual ~LineStyle() {};
     ClassDef(LineStyle, 1);

@@ -146,7 +146,7 @@ namespace Hal {
   }
 
   void Styles::ApplyText(TAttText* obj, TString name) const {
-    if (auto st = GetTextStyle(name); st) st->Apply(*(TAttText*) obj);
+    if (auto st = GetTextStyle(name); st) st->ApplyDirect(*(TAttText*) obj);
   }
 
   void Styles::ApplyHisto(TObject* obj, TString name) const {
@@ -155,6 +155,66 @@ namespace Hal {
 
   void Styles::ApplyPad(TVirtualPad* obj, TString name) const {
     if (auto st = GetPadStyle(name); st) st->Apply((TVirtualPad*) obj);
+  }
+
+  Bool_t Style::GetSimpleColor(Int_t& colz, TString col) const {
+    if (Hal::Std::FindParam(col, "kBlack")) {
+      colz = kBlack;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kRed")) {
+      colz = kRed;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kGreen")) {
+      colz = kGreen;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kYellow")) {
+      colz = kYellow;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kWhite")) {
+      colz = kWhite;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kOrange")) {
+      colz = kOrange;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kPink")) {
+      colz = kPink;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kMagenta")) {
+      colz = kMagenta;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kViolet")) {
+      colz = kViolet;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kBlue")) {
+      colz = kBlue;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kAzure")) {
+      colz = kAzure;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kCyan")) {
+      colz = kCyan;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kTeal")) {
+      colz = kTeal;
+      return kTRUE;
+    }
+    if (Hal::Std::FindParam(col, "kGray")) {
+      colz = kGray;
+      return kTRUE;
+    }
+    return kFALSE;
   }
 
 }  // namespace Hal

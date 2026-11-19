@@ -9,6 +9,7 @@
 
 #include <TStyle.h>
 
+#include "StdString.h"
 #include "XMLNode.h"
 
 namespace Hal {
@@ -22,40 +23,40 @@ namespace Hal {
     if (style.Contains("05")) { SetSize(0.05); }
   }
 
-  void TextStyle::SetAlign(Int_t align) { SetI(BitFlag::kAlign, align); }
+  void TextStyle::SetAlign(Int_t align) { SetI(EBitFlag::kAlign, align); }
 
-  void TextStyle::SetColor(Int_t color) { SetI(BitFlag::kColor, color); }
+  void TextStyle::SetColor(Int_t color) { SetI(EBitFlag::kColor, color); }
 
-  void TextStyle::SetAngle(Float_t angle) { SetF(BitFlag::kAngle, angle); }
+  void TextStyle::SetAngle(Float_t angle) { SetF(EBitFlag::kAngle, angle); }
 
-  void TextStyle::SetSize(Float_t size) { SetF(BitFlag::kSize, size); }
+  void TextStyle::SetSize(Float_t size) { SetF(EBitFlag::kSize, size); }
 
-  void TextStyle::SetFont(Float_t font) { SetF(BitFlag::kFont, font); }
+  void TextStyle::SetFont(Float_t font) { SetF(EBitFlag::kFont, font); }
 
-  Int_t TextStyle::GetAlign() const { return GetI(BitFlag::kAlign); }
+  Int_t TextStyle::GetAlign() const { return GetI(EBitFlag::kAlign); }
 
-  Int_t TextStyle::GetColor() const { return GetI(BitFlag::kColor); }
+  Int_t TextStyle::GetColor() const { return GetI(EBitFlag::kColor); }
 
-  Float_t TextStyle::GetAngle() const { return GetF(BitFlag::kAngle); }
+  Float_t TextStyle::GetAngle() const { return GetF(EBitFlag::kAngle); }
 
-  Float_t TextStyle::GetSize() const { return GetF(BitFlag::kSize); }
+  Float_t TextStyle::GetSize() const { return GetF(EBitFlag::kSize); }
 
-  Float_t TextStyle::GetFont() const { return GetF(BitFlag::kFont); }
+  Float_t TextStyle::GetFont() const { return GetF(EBitFlag::kFont); }
 
-  void TextStyle::Apply(TAttText& obj) const {
-    if (Find(BitFlag::kAlign)) obj.SetTextAlign(GetI(BitFlag::kAlign));
-    if (Find(BitFlag::kColor)) obj.SetTextColor(GetI(BitFlag::kColor));
-    if (Find(BitFlag::kAngle)) obj.SetTextAngle(GetF(BitFlag::kAngle));
-    if (Find(BitFlag::kSize)) obj.SetTextSize(GetF(BitFlag::kSize));
-    if (Find(BitFlag::kFont)) obj.SetTextFont(GetF(BitFlag::kFont));
+  void TextStyle::ApplyDirect(TAttText& obj) const {
+    if (Find(EBitFlag::kAlign)) obj.SetTextAlign(GetI(EBitFlag::kAlign));
+    if (Find(EBitFlag::kColor)) obj.SetTextColor(GetI(EBitFlag::kColor));
+    if (Find(EBitFlag::kAngle)) obj.SetTextAngle(GetF(EBitFlag::kAngle));
+    if (Find(EBitFlag::kSize)) obj.SetTextSize(GetF(EBitFlag::kSize));
+    if (Find(EBitFlag::kFont)) obj.SetTextFont(GetF(EBitFlag::kFont));
   }
 
   void TextStyle::ExportToXML(XMLNode& node) const {
-    if (Find(BitFlag::kAlign)) node.AddAttrib("Align", Form("%i", GetI(BitFlag::kAlign)));
-    if (Find(BitFlag::kColor)) node.AddAttrib("Color", Form("%i", GetI(BitFlag::kColor)));
-    if (Find(BitFlag::kAngle)) node.AddAttrib("Angle", Form("%4.4f", GetF(BitFlag::kAngle)));
-    if (Find(BitFlag::kSize)) node.AddAttrib("Size", Form("%4.4f", GetF(BitFlag::kSize)));
-    if (Find(BitFlag::kFont)) node.AddAttrib("Font", Form("%4.4f", GetF(BitFlag::kFont)));
+    if (Find(EBitFlag::kAlign)) node.AddAttrib("Align", Form("%i", GetI(EBitFlag::kAlign)));
+    if (Find(EBitFlag::kColor)) node.AddAttrib("Color", Form("%i", GetI(EBitFlag::kColor)));
+    if (Find(EBitFlag::kAngle)) node.AddAttrib("Angle", Form("%4.4f", GetF(EBitFlag::kAngle)));
+    if (Find(EBitFlag::kSize)) node.AddAttrib("Size", Form("%4.4f", GetF(EBitFlag::kSize)));
+    if (Find(EBitFlag::kFont)) node.AddAttrib("Font", Form("%4.4f", GetF(EBitFlag::kFont)));
   }
 
   void TextStyle::ImportFromXML(const XMLNode& node) {
@@ -81,11 +82,20 @@ namespace Hal {
   }
 
   void TextStyle::SetGlobal(TString opt) const {
-    if (Find(BitFlag::kAlign)) gStyle->SetTextAlign(GetI(BitFlag::kAlign));
-    if (Find(BitFlag::kColor)) gStyle->SetTextColor(GetI(BitFlag::kColor));
-    if (Find(BitFlag::kAngle)) gStyle->SetTextAngle(GetF(BitFlag::kAngle));
-    if (Find(BitFlag::kSize)) gStyle->SetTextSize(GetF(BitFlag::kSize));
-    if (Find(BitFlag::kFont)) gStyle->SetTextFont(GetF(BitFlag::kFont));
+    if (opt == "") {
+      if (Find(EBitFlag::kAlign)) gStyle->SetTextAlign(GetI(EBitFlag::kAlign));
+      if (Find(EBitFlag::kColor)) gStyle->SetTextColor(GetI(EBitFlag::kColor));
+      if (Find(EBitFlag::kAngle)) gStyle->SetTextAngle(GetF(EBitFlag::kAngle));
+      if (Find(EBitFlag::kSize)) gStyle->SetTextSize(GetF(EBitFlag::kSize));
+      if (Find(EBitFlag::kFont)) gStyle->SetTextFont(GetF(EBitFlag::kFont));
+    } else if (Hal::Std::FindParam(opt, "leg")) {
+      if (Find(EBitFlag::kFont)) gStyle->SetLegendFont(GetF(EBitFlag::kFont));
+      if (Find(EBitFlag::kSize)) gStyle->SetLegendTextSize(GetF(EBitFlag::kSize));
+    } else if (Hal::Std::FindParam(opt, "stat")) {
+      if (Find(EBitFlag::kFont)) gStyle->SetStatFont(GetF(EBitFlag::kFont));
+      if (Find(EBitFlag::kSize)) gStyle->SetStatFontSize(GetF(EBitFlag::kSize));
+      if (Find(EBitFlag::kColor)) gStyle->SetStatTextColor(GetI(EBitFlag::kColor));
+    }
   }
 
 } /* namespace Hal */

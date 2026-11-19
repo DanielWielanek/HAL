@@ -44,7 +44,7 @@ namespace Hal {
      * color - set line color/marker color to red
      * circle - set marker to full circle
      * center center axes
-     * apollo - use tt fods
+     * apollo - use tt fonts
      * black - reversed color
      * @return
      */
@@ -57,7 +57,7 @@ namespace Hal {
      * color - set line color/marker color to red
      * circle - set marker to full circle
      * center center axes
-     * apollo - use tt fods
+     * apollo - use tt fonts
      * @return
      */
     [[deprecated]] static HistoStyle GetStyle(TString style);

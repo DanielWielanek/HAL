@@ -54,6 +54,7 @@ hist/styles/MarkerStyle.cxx
 hist/styles/PadStyle.cxx
 hist/styles/Style.cxx
 hist/styles/TextStyle.cxx
+hist/styles/PaveStyle.cxx
 
 math/ManyPolynomialsX.cxx
 math/PeakFitterX.cxx

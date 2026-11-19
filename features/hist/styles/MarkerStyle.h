@@ -18,7 +18,7 @@ namespace Hal {
   public:
     enum class EBitFlag : Int_t { kColor, kStyle, kLineWidth, kSize };
 
-    MarkerStyle() {};
+    MarkerStyle(TString style = "");
 
     void SetColor(Int_t val);
 

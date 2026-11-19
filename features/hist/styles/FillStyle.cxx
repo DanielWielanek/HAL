@@ -48,10 +48,18 @@ namespace Hal {
     } else if (Hal::Std::FindParam(opt, "pad")) {
       if (Find(EBitFlag::kColor)) gStyle->SetFrameFillColor(GetI(EBitFlag::kColor));
       if (Find(EBitFlag::kStyle)) gStyle->SetFrameFillStyle(GetI(EBitFlag::kStyle));
+    } else if (Hal::Std::FindParam(opt, "leg")) {
+      if (Find(EBitFlag::kColor)) gStyle->SetLegendFillColor(GetI(EBitFlag::kColor));
+      if (Find(EBitFlag::kStyle)) gStyle->SetLegendFillStyle(GetI(EBitFlag::kStyle));
     } else {
       if (Find(EBitFlag::kColor)) gStyle->SetFillColor(GetI(EBitFlag::kColor));
       if (Find(EBitFlag::kStyle)) gStyle->SetFillStyle(GetI(EBitFlag::kStyle));
     }
+  }
+
+  void FillStyle::ApplyDirect(TAttFill& fill) const {
+    if (Find(EBitFlag::kColor)) fill.SetFillColor(GetI(EBitFlag::kColor));
+    if (Find(EBitFlag::kStyle)) fill.SetFillStyle(GetI(EBitFlag::kColor));
   }
 
 } /* namespace Hal */

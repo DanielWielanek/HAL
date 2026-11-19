@@ -93,6 +93,7 @@ namespace Hal {
     Int_t GetI(TEnum bit) const {
       return GetIntInner(static_cast<Int_t>(bit));
     }
+    Bool_t GetSimpleColor(Int_t& retcol, TString col) const;
 
   public:
     Style() {};

@@ -25,6 +25,11 @@ namespace Hal {
     TextStyle fText;
 
   public:
+    enum class EBitFlag : Int_t { kTitle, kMin, kMax };
+    /**
+     * set legend style
+     * @param style allowed style "apollo", "black" "05" and "06"
+     */
     LegendStyle(TString style = "");
     void Import(const TLegend& x);
     FillStyle& GetFillStyle() { return fFill; }
@@ -33,6 +38,7 @@ namespace Hal {
     void Apply(TLegend& leg) const;
     void ExportToXML(XMLNode& node) const;
     void ImportFromXML(const XMLNode& node);
+    virtual void SetGlobal(TString opt = "") const;
     virtual ~LegendStyle() {};
     ClassDef(LegendStyle, 0);
   };

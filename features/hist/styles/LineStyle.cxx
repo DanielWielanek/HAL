@@ -67,4 +67,15 @@ namespace Hal {
     }
   }
 
+  void LineStyle::ApplyDirect(TAttLine& line) const {
+    if (Find(EBitFlag::kColor)) line.SetLineColor(GetI(EBitFlag::kColor));
+    if (Find(EBitFlag::kWidth)) line.SetLineWidth(GetI(EBitFlag::kWidth));
+    if (Find(EBitFlag::kStyle)) line.SetLineStyle(GetI(EBitFlag::kStyle));
+  }
+
+  LineStyle::LineStyle(TString style) {
+    Int_t col;
+    if (GetSimpleColor(col, style)) { SetColor(col); }
+  }
+
 } /* namespace Hal */

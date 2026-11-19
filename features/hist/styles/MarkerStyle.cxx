@@ -64,4 +64,9 @@ namespace Hal {
     if (Find(EBitFlag::kSize)) gStyle->SetMarkerSize(GetF(EBitFlag::kSize));
   }
 
+  MarkerStyle::MarkerStyle(TString style) {
+    Int_t col;
+    if (GetSimpleColor(col, style)) { SetColor(col); }
+  }
+
 } /* namespace Hal */

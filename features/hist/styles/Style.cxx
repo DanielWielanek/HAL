@@ -82,7 +82,6 @@ namespace Hal {
 
   Hal::PaveStyle* Styles::GetPaveStyle(TString name) const {
     for (auto p : fStylePave) {
-      std::cout << "LOOK " << p->GetName() << std::endl;
       if (p->GetName() == name) return p;
     }
     return nullptr;
@@ -191,30 +190,14 @@ namespace Hal {
 
 
   void Styles::SetGlobal(TString opt) const {
-    std::cout << __FILE__ << " " << __LINE__ << std::endl;
     if (auto paveStyle = GetPaveStyle(opt); paveStyle) {
-      std::cout << __FILE__ << " " << __LINE__ << std::endl;
       paveStyle->SetGlobal();
-      std::cout << __FILE__ << " " << __LINE__ << std::endl;
       paveStyle->SetGlobal("stat");
     }
-    std::cout << __FILE__ << " " << __LINE__ << std::endl;
-    if (auto textStyle = GetTextStyle(opt); textStyle) {
-      std::cout << __FILE__ << " " << __LINE__ << std::endl;
-      textStyle->SetGlobal();
-    }
-    if (auto legStyle = GetLegendStyle(opt); legStyle) {
-      std::cout << __FILE__ << " " << __LINE__ << std::endl;
-      legStyle->SetGlobal();
-    }
-    if (auto padStyle = GetPadStyle(opt); padStyle) {
-      std::cout << __FILE__ << " " << __LINE__ << std::endl;
-      padStyle->SetGlobal();
-    }
-    if (auto histoStyle = GetHistoStyle(opt); histoStyle) {
-      std::cout << __FILE__ << " " << __LINE__ << std::endl;
-      histoStyle->SetGlobal();
-    }
+    if (auto textStyle = GetTextStyle(opt); textStyle) { textStyle->SetGlobal(); }
+    if (auto legStyle = GetLegendStyle(opt); legStyle) { legStyle->SetGlobal(); }
+    if (auto padStyle = GetPadStyle(opt); padStyle) { padStyle->SetGlobal(); }
+    if (auto histoStyle = GetHistoStyle(opt); histoStyle) { histoStyle->SetGlobal(); }
   }
 
   Bool_t Style::GetSimpleColor(Int_t& colz, TString col) const {

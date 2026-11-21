@@ -10,11 +10,13 @@
 #include <TString.h>
 #include <TStyle.h>
 
-#include "StdString.h"
+#include "Std.h"
 #include "XMLNode.h"
 
 namespace Hal {
-
+  FillStyle::FillStyle(TString style) {
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Default(), kTRUE)) { SetStyle(0); }
+  }
   void FillStyle::SetColor(Int_t val) { SetI(EBitFlag::kColor, val); }
 
   void FillStyle::SetStyle(Int_t val) { SetI(EBitFlag::kStyle, val); }

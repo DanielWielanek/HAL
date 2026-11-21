@@ -250,6 +250,7 @@ namespace Hal {
   HistoStyle::HistoStyle(TString style) :
     Style(style), fXAxis(style), fYAxis(style), fZAxis(style), fMarker(style), fLine(style) {
     if (style.Length() == 0) return;
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Default())) { SetColor(kBlack); }
     if (Hal::Std::FindParam(style, "circle", kTRUE)) GetMarkerStyle().SetStyle(kFullCircle);
     if (Hal::Std::FindParam(style, "color", kTRUE)) SetColor(kRed);
   }

@@ -11,6 +11,7 @@
 #include <TString.h>
 #include <TStyle.h>
 
+#include "Std.h"
 #include "XMLNode.h"
 
 namespace Hal {
@@ -65,6 +66,8 @@ namespace Hal {
   }
 
   MarkerStyle::MarkerStyle(TString style) {
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Black(), kTRUE)) { SetColor(kWhite); }
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Default(), kTRUE)) { SetColor(kBlack); }
     Int_t col;
     if (GetSimpleColor(col, style)) { SetColor(col); }
   }

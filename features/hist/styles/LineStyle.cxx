@@ -11,7 +11,7 @@
 #include <TString.h>
 #include <TStyle.h>
 
-#include "StdString.h"
+#include "Std.h"
 #include "XMLNode.h"
 
 namespace Hal {
@@ -75,6 +75,8 @@ namespace Hal {
 
   LineStyle::LineStyle(TString style) {
     Int_t col;
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Black(), kTRUE)) { SetColor(kWhite); }
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Default(), kTRUE)) { SetColor(kBlack); }
     if (GetSimpleColor(col, style)) { SetColor(col); }
   }
 

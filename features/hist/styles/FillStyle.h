@@ -19,7 +19,7 @@ namespace Hal {
   class FillStyle : public Style {
   public:
     enum class EBitFlag : Int_t { kColor, kStyle };
-    FillStyle() {};
+    FillStyle(TString style = "");
 
     void SetColor(Int_t val);
 

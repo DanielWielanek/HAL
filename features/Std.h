@@ -215,6 +215,15 @@ namespace Hal {
      * @return full path to file
      */
     TString GetFullPath(TString path);
+    /**
+     * predefined styles
+     */
+    namespace PredefinedStyle {
+      inline TString Apollo() { return "apollo"; }
+      inline TString Black() { return "black"; }
+      inline TString Contrast() { return "contrast"; }
+      inline TString Default() { return "default"; }
+    };  // namespace PredefinedStyle
   }  // namespace Std
 }  // namespace Hal
 

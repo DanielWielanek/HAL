@@ -13,7 +13,7 @@
 #include <TString.h>
 #include <TStyle.h>
 
-#include "StdString.h"
+#include "Std.h"
 #include "XMLNode.h"
 
 namespace Hal {
@@ -382,18 +382,24 @@ namespace Hal {
       SetLabelSize(_labelSize);
     };
     if (Hal::Std::FindParam(style, "center", kTRUE)) { SetCenterTitle(true); }
-    if (Hal::Std::FindParam(style, "apollo", kTRUE)) {
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Apollo(), kTRUE)) {
       SetLabelSize(0.04);
       SetCenterTitle(kTRUE);
       SetTitleFont(82);
       SetLabelFont(82);
       SetNdivisions(505, kTRUE);
     }
-    if (Hal::Std::FindParam(style, "black", kTRUE)) {
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Black(), kTRUE)) {
       SetLabelColor(kWhite);
       SetTitleColor(kWhite);
       SetAxisColor(kWhite);
     }
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Default(), kTRUE)) {
+      SetLabelColor(kBlack);
+      SetTitleColor(kBlack);
+      SetAxisColor(kBlack);
+    }
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Contrast(), kTRUE)) { setAx(0.06, 0.9, 0.07, 0.005); }
     if (Hal::Std::FindParam(style, "05", kTRUE)) { setAx(0.05, 0.8, 0.05, 0.005); }
     if (Hal::Std::FindParam(style, "06", kTRUE)) { setAx(0.06, 0.86, 0.06, 0.005); }
     if (Hal::Std::FindParam(style, "07", kTRUE)) { setAx(0.06, 0.9, 0.07, 0.005); }

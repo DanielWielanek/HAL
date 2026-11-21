@@ -54,10 +54,8 @@ namespace Hal {
     if (style.Length() == 0) return;
     if (Hal::Std::FindParam(style, "05", kTRUE)) { fText.SetSize(0.05); }
     if (Hal::Std::FindParam(style, "06", kTRUE)) { fText.SetSize(0.06); }
-    if (Hal::Std::FindParam(style, "black", kTRUE)) {
-      GetFillStyle().SetColor(kBlack);
-      GetTextStyle().SetColor(kWhite);
-    }
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Black(), kTRUE)) { GetFillStyle().SetColor(kBlack); }
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Default(), kTRUE)) { GetFillStyle().SetColor(kWhite); }
   }
 
   void LegendStyle::SetGlobal(TString opt) const {

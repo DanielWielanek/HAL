@@ -22,6 +22,8 @@
 class TLegend;
 class TGraph;
 class TVirtualPad;
+class TPave;
+class TPaveText;
 namespace Hal {
   class MultiGraph;
   class XMLNode;
@@ -139,6 +141,7 @@ namespace Hal {
   class LegendStyle;
   class PadStyle;
   class TextStyle;
+  class PaveStyle;
   /**
    * holds histogram, pad and legend style used by drawers
    */
@@ -147,15 +150,18 @@ namespace Hal {
     std::vector<Hal::LegendStyle*> fStyleLegend;
     std::vector<Hal::PadStyle*> fStylePad;
     std::vector<Hal::TextStyle*> fStyleText;
+    std::vector<Hal::PaveStyle*> fStylePave;
     void ApplyLegend(TLegend* obj, TString name) const;
     void ApplyText(TAttText* obj, TString name) const;
     void ApplyHisto(TObject* obj, TString name) const;
     void ApplyPad(TVirtualPad* obj, TString name) const;
+    void ApplyPave(TPave* obj, TString name) const;
 
   public:
     Styles() {};
     Styles(const Styles& other)      = delete;
     Styles& operator=(const Styles&) = delete;
+    void LoadPredefined(TString name);
     static Styles& Instance();
     /**
      * register style with new name
@@ -188,6 +194,12 @@ namespace Hal {
      */
     Hal::TextStyle* GetTextStyle(TString name) const;
     /**
+     *
+     * @param name
+     * @return pave (and pave text) style nullptr if not found
+     */
+    Hal::PaveStyle* GetPaveStyle(TString name) const;
+    /**
      * apply style if found
      * @tparam T
      * @param obj
@@ -202,14 +214,18 @@ namespace Hal {
         ApplyText(obj, name);
       } else if constexpr (std::is_same_v<T, TVirtualPad>) {
         ApplyPad(obj, name);
+      } else if constexpr (std::is_same_v<T, TPave>) {
+        ApplyPave(obj, name);
+      } else if constexpr (std::is_same_v<T, TPaveText>) {
+        ApplyPave(obj, name);
       } else {
         ApplyHisto(obj, name);
       }
     }
     /**
-     * set current style as default
+     * set given styles as default
      */
-    virtual void SetGlobal(TString /*opt = ""*/) const {}
+    virtual void SetGlobal(TString opt = "default") const;
     virtual void Print() const;
     virtual ~Styles();
     ClassDef(Styles, 1)

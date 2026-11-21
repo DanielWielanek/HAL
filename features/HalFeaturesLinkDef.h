@@ -12,6 +12,7 @@
 #pragma link C++ namespace Hal::Std::Math;
 #pragma link C++ namespace Hal::Std::LorentzGenerator;
 #pragma link C++ namespace Hal::Std::OpenMP;
+#pragma link C++ namespace Hal::Std::PredefinedStyle;
 #ifdef __MAKECINT__
 #endif
 

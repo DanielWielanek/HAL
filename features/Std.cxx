@@ -287,7 +287,6 @@ namespace Hal::Std {
   TString GetHalrootPlus() {
     TString hal_var         = gSystem->Getenv("HAL");
     TString vmcworkdir      = gSystem->Getenv("VMCWORKDIR");
-    TString main_dir        = hal_var;
     TString internalPathXml = "hal_plus/conversion_table/generators_patterns.xml";
     TString mainVal;
     std::vector<TString> location;

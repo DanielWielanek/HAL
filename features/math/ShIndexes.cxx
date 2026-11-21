@@ -47,10 +47,9 @@ namespace Hal {
         fEmsi = nullptr;
       }
       fL = newL;
-      if (fL == 0) return;
       if (fL > 10) { Cout::PrintInfo("Creating YLM for L>10!", EInfo::kError); }
       fMaxJM = (fL + 1) * (fL + 1);
-      if (fL > 0) {
+      if (fL >= 0) {
         fEls     = new Double_t[fMaxJM];
         fEms     = new Double_t[fMaxJM];
         fElsi    = new Int_t[fMaxJM];

@@ -41,7 +41,6 @@ namespace Hal {
     void ExportToXML(XMLNode& node) const;
     void ImportFromXML(const XMLNode& node);
     void Apply(TPave& leg) const;
-    void Apply(TPaveText& text) const;
     virtual void SetGlobal(TString opt = "") const;
     virtual ~PaveStyle() {};
     ClassDef(PaveStyle, 1)

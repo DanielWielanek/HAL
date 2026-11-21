@@ -12,14 +12,30 @@
 #include <TString.h>
 #include <TStyle.h>
 
-#include "StdString.h"
+#include <iostream>
+
+#include "Std.h"
 #include "Style.h"
 #include "TextStyle.h"
 #include "XMLNode.h"
 
 namespace Hal {
 
-  PaveStyle::PaveStyle(TString tString) {}
+  PaveStyle::PaveStyle(TString style) : Style(style) {
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Black(), kTRUE)) {
+      fFill.SetColor(kBlack);
+      fText.SetColor(kWhite);
+      fLine.SetColor(kWhite);
+      SetShadowColor(kWhite);
+    }
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Default(), kTRUE)) {
+      fFill.SetColor(kWhite);
+      fText.SetColor(kBlack);
+      fLine.SetColor(kBlack);
+      SetShadowColor(kBlack);
+    }
+    if (Hal::Std::FindParam(style, Std::PredefinedStyle::Apollo(), kTRUE)) { fText.SetFont(82); }
+  }
 
   void PaveStyle::SetBorderSize(Int_t size) { SetI(EBitFlag::kBorderSize, size); }
 
@@ -73,15 +89,7 @@ namespace Hal {
     if (Find(EBitFlag::kCornerRadius)) leg.SetCornerRadius(GetF(EBitFlag::kCornerRadius));
     fFill.ApplyDirect(leg);
     fLine.ApplyDirect(leg);
-  }
-
-  void PaveStyle::Apply(TPaveText& text) const {
-    if (Find(EBitFlag::kBorderSize)) text.SetBorderSize(GetF(EBitFlag::kBorderSize));
-    if (Find(EBitFlag::kShadowColor)) text.SetShadowColor(GetF(EBitFlag::kShadowColor));
-    if (Find(EBitFlag::kCornerRadius)) text.SetCornerRadius(GetF(EBitFlag::kCornerRadius));
-    fFill.ApplyDirect(text);
-    fText.ApplyDirect(text);
-    fLine.ApplyDirect(text);
+    if (leg.InheritsFrom("TPaveText")) { fText.ApplyDirect((TPaveText&) leg); }
   }
 
   void PaveStyle::SetGlobal(TString opt) const {
@@ -90,7 +98,15 @@ namespace Hal {
       if (fText.Find(Hal::TextStyle::EBitFlag::kColor)) gStyle->SetStatTextColor(fText.GetColor());
       if (fText.Find(Hal::TextStyle::EBitFlag::kFont)) gStyle->SetStatFont(fText.GetFont());
       if (fText.Find(Hal::TextStyle::EBitFlag::kSize)) gStyle->SetStatFontSize(fText.GetSize());
+      if (fFill.Find(Hal::FillStyle::EBitFlag::kColor)) gStyle->SetStatColor(fFill.GetColor());
     } else {
+      if (fText.Find(Hal::TextStyle::EBitFlag::kColor)) gStyle->SetTextColor(fText.GetColor());
+      if (fText.Find(Hal::TextStyle::EBitFlag::kFont)) gStyle->SetTextFont(fText.GetFont());
+      if (fText.Find(Hal::TextStyle::EBitFlag::kSize)) gStyle->SetTextSize(fText.GetSize());
+      if (fFill.Find(Hal::FillStyle::EBitFlag::kColor)) gStyle->SetFillColor(fFill.GetColor());
+      if (fLine.Find(Hal::LineStyle::EBitFlag::kColor)) gStyle->SetLineColor(fLine.GetColor());
+      if (fLine.Find(Hal::LineStyle::EBitFlag::kStyle)) gStyle->SetLineStyle(fLine.GetStyle());
+      if (fLine.Find(Hal::LineStyle::EBitFlag::kWidth)) gStyle->SetLineWidth(fLine.GetWidth());
     }
   }
 } /* namespace Hal */

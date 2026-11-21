@@ -485,6 +485,12 @@ namespace Hal {
         }
       }
 
+      void InvertDiagonals(TMatrixD& matrix) {
+        for (int iRow = 0; iRow < matrix.GetNrows(); iRow++) {
+          matrix[iRow][iRow] = 1.0 / matrix[iRow][iRow];
+        }
+      }
+
       void RemoveNan(TMatrixD& m) {
         for (int i = 0; i < m.GetNrows(); i++) {
           for (int j = 0; j < m.GetNcols(); j++) {

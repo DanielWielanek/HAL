@@ -182,6 +182,11 @@ namespace Hal {
        */
       void DiagonalOnEmpty(TMatrixD& matrix, ENorm opt = ENorm::kByRow, Double_t epsilon = 1E-12);
       /**
+       * invert values on diagonals
+       * @param matrix
+       */
+      void InvertDiagonals(TMatrixD& matrix);
+      /**
        * set 0 instead of all NaN
        * @param m
        */

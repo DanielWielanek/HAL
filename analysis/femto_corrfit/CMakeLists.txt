@@ -116,6 +116,7 @@ if(CIA)
         top_secret/BattlestarHelper.cxx
         top_secret/ProjektSkurwol.cxx
         top_secret/Kurwinox.cxx
+       # top_secret/FemtoSHSmearMatrix.cxx
     )
 endif()
 
@@ -131,9 +132,6 @@ Set(LIBRARY_NAME HalFemtoCorrFit)
 Set(DEPENDENCIES HalFemto HalAna ROOT::Minuit ROOT::Minuit2 ROOT::Fumili)
 if(OpenMP_CXX_FOUND)
 	Set(DEPENDENCIES ${DEPENDENCIES} OpenMP::OpenMP_CXX)
-endif()
-if(NOT DEFINED DISABLE_SQLITE)
-   # Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
 endif()
 
 if (NOT DEFINED DISABLE_SQLITE)

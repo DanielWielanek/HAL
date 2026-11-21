@@ -32,6 +32,7 @@ base/source_models/FemtoSourceDensity.cxx
 base/source_models/FemtoSourceModelNumericalPseudo3d.cxx
 base/shmath/FemtoSHSlice.cxx
 base/shmath/FemtoYlmSolver.cxx
+base/shmath/FemtoSHFlatIndexes.cxx
 
 base/funcs_serialization/FemtoSerializationInterface.cxx
 base/funcs_serialization/FemtoSerializationInterface1D.cxx
@@ -91,9 +92,6 @@ Set(LIBRARY_NAME HalFemto)
 
 
 Set(DEPENDENCIES HalAna ROOT::Minuit ROOT::Minuit2 ROOT::Fumili)
-if(NOT DEFINED DISABLE_SQLITE)
-   # Set(DEPENDENCIES ${DEPENDENCIES} sqlite3)
-endif()
 
 if (NOT DEFINED DISABLE_SQLITE)
 	Set(DEPENDENCIES ${DEPENDENCIES} ROOT::SQLIO)

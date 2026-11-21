@@ -103,6 +103,7 @@
 
 #endif
 
-// #pragma link C++ class Led+;
+// #pragma link C++ class Hal::FemtoSHSmearMatrix + ;
+//  #pragma link C++ class Led+;
 
 #endif

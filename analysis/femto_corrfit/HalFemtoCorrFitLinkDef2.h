@@ -134,6 +134,9 @@
 #pragma link C++ class Hal::SkurwolGaussianFitter + ;
 #pragma link C++ class Hal::Kurwinox + ;
 
+
+// #pragma link C++ class Hal::FemtoSHSmearMatrix + ;
+
 #endif
 
 // #pragma link C++ class Led+;

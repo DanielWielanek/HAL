@@ -95,11 +95,10 @@
 #pragma link C++ class Hal::Femto::Gauss3D + ;
 #pragma link C++ class Hal::Femto::Gaus3DSimd + ;
 
-#ifndef GSL_DISABLE
-
 #pragma link C++ class Hal::FemtoSHCF + ;
 #pragma link C++ class Hal::FemtoSHSlice + ;
 #pragma link C++ class Hal::FemtoYlmSolver + ;
+#pragma link C++ class Hal::FemtoSHFlatIndexes + ;
 
 #pragma link C++ class Hal::FemtoSerializationInterface + ;
 #pragma link C++ class Hal::FemtoSerializationInterface1D + ;
@@ -109,9 +108,6 @@
 #pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Hal::Femto1DCF, Hal::CorrFitVerticalSlices1D> + ;
 #pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Hal::FemtoSHCF, Hal::CorrFitVerticalSlicesSH> + ;
 #pragma link C++ class Hal::FemtoSerializationInterfaceTemplate < Hal::Femto3DCF, Hal::CorrFitVerticalSlices3D> + ;
-
-
-#endif
 
 // #pragma link C++ class Led+;
 

@@ -5,23 +5,23 @@
 Set(INCLUDE_DIRECTORIES ${HAL_FEATURES})
 
 set(SRCS
-Cout.cxx
-Array.cxx
-Options.cxx
-Parameter.cxx
-Std.cxx
-ObjectMatrix.cxx
-Const.cxx
-XMLNode.cxx
-CompressionMap.cxx
-UniqueOptions.cxx
-Units.cxx
+core/Cout.cxx
+core/Options.cxx
+core/Std.cxx
+core/Const.cxx
+core/CompressionMap.cxx
+core/UniqueOptions.cxx
+core/Units.cxx
 
 io/Link.cxx
 io/Object.cxx
 io/Package.cxx
 io/AnaFile.cxx
 io/Pointer.cxx
+io/ObjectMatrix.cxx
+io/Parameter.cxx
+io/XMLNode.cxx
+io/Array.cxx
 
 io/html/PackageSql.cxx
 io/html/Package2HTML.cxx
